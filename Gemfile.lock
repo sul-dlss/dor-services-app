@@ -1,0 +1,22 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    grape (0.1.5)
+      multi_json
+      multi_xml
+      rack
+      rack-jsonp
+      rack-mount
+    multi_json (1.1.0)
+    multi_xml (0.4.1)
+    rack (1.4.1)
+    rack-jsonp (1.3.0)
+      rack
+    rack-mount (0.8.3)
+      rack (>= 1.0.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  grape
