@@ -6,9 +6,22 @@ require 'bundler/setup'
 Bundler.require(:default, ENV["RACK_ENV"].to_sym)
 
 $:.unshift File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))
-Dir["./lib/**/*.rb"].each { |f| require f }
-
 require 'dor-services'
+require 'lyber_core'
+
+require 'grape_json_parse'
+require 'dor_services_app'
+require 'registration_response'
+require 'registration_params'
+
+log_dir = File.join(File.dirname(__FILE__), "..", "log")
+FileUtils.mkdir(log_dir) unless File.exists?(log_dir)
+LyberCore::Log.set_logfile(File.join(log_dir, "dor-services-app.log"))
+if(environment == "production")
+  LyberCore::Log.set_level(1)
+else
+  LyberCore::Log.set_level(0)
+end
 
 env_file = File.expand_path(File.dirname(__FILE__) + "/environments/#{environment}")
 require env_file

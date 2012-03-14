@@ -1,22 +1,195 @@
 GEM
   remote: http://rubygems.org/
+  remote: http://sulair-rails-dev.stanford.edu/
   specs:
+    actionpack (3.2.2)
+      activemodel (= 3.2.2)
+      activesupport (= 3.2.2)
+      builder (~> 3.0.0)
+      erubis (~> 2.7.0)
+      journey (~> 1.0.1)
+      rack (~> 1.4.0)
+      rack-cache (~> 1.1)
+      rack-test (~> 0.6.1)
+      sprockets (~> 2.1.2)
+    active-fedora (3.3.2)
+      activeresource (>= 3.0.0)
+      activesupport (>= 3.0.0)
+      equivalent-xml
+      mediashelf-loggable
+      mime-types (>= 1.16)
+      multipart-post (= 1.1.2)
+      nokogiri
+      om (>= 1.5.1)
+      rdf
+      rdf-rdfxml
+      rubydora (~> 0.5.3)
+      solr-ruby (>= 0.0.6)
+      solrizer (~> 1.2.0)
+      xml-simple (>= 1.0.12)
+    activemodel (3.2.2)
+      activesupport (= 3.2.2)
+      builder (~> 3.0.0)
+    activeresource (3.2.2)
+      activemodel (= 3.2.2)
+      activesupport (= 3.2.2)
+    activesupport (3.2.2)
+      i18n (~> 0.6)
+      multi_json (~> 1.0)
+    addressable (2.2.7)
+    akami (1.0.0)
+      gyoku (>= 0.4.0)
+    awesome_print (1.0.2)
+    bagit (0.2.0)
+      validatable (~> 1.6)
+    builder (3.0.0)
+    columnize (0.3.6)
+    confstruct (0.2.2)
+    daemons (1.1.8)
+    dor-services (3.3.0)
+      active-fedora (>= 3.3.2)
+      confstruct (>= 0.2.2)
+      json
+      lyber-utils
+      nokogiri (~> 1.5.0)
+      om (~> 1.5.0)
+      progressbar
+      rest-client
+      rsolr-client-cert (>= 0.5.1)
+      rsolr-ext
+      ruby-cache
+      ruby-graphviz
+      systemu
+      uuidtools
+      validatable
+    equivalent-xml (0.2.9)
+      nokogiri (>= 1.4.3)
+    erubis (2.7.0)
+    fastercsv (1.5.4)
     grape (0.1.5)
       multi_json
       multi_xml
       rack
       rack-jsonp
       rack-mount
+    gyoku (0.4.4)
+      builder (>= 2.1.2)
+    hike (1.2.1)
+    httpi (0.9.6)
+      rack
+    i18n (0.6.0)
+    journey (1.0.3)
+    json (1.6.5)
+    linecache (0.46)
+      rbx-require-relative (> 0.0.4)
+    lyber-core (2.0.2)
+      actionpack
+      bagit (>= 0.1.0)
+      daemons
+      dor-services (~> 3.2)
+      nokogiri (~> 1.5.0)
+      stomp
+      systemu (>= 1.2.0)
+      validatable
+    lyber-utils (0.1.2)
+      bagit (>= 0.1.0)
+      nokogiri (>= 1.4.3.1)
+      systemu (>= 1.2.0)
+      validatable
+    mediashelf-loggable (0.4.9)
+    mime-types (1.17.2)
     multi_json (1.1.0)
     multi_xml (0.4.1)
+    multipart-post (1.1.2)
+    nokogiri (1.5.2)
+    nori (1.1.0)
+    om (1.5.3)
+      mediashelf-loggable
+      nokogiri (>= 1.4.2)
+    progressbar (0.10.0)
     rack (1.4.1)
+    rack-cache (1.2)
+      rack (>= 0.4)
     rack-jsonp (1.3.0)
       rack
     rack-mount (0.8.3)
       rack (>= 1.0.0)
+    rack-test (0.6.1)
+      rack (>= 1.0)
+    rbx-require-relative (0.0.9)
+    rcov (1.0.0)
+    rdf (0.3.5.1)
+      addressable (>= 2.2.6)
+    rdf-rdfxml (0.3.6)
+      rdf (>= 0.3.4)
+      rdf-xsd (>= 0.3.5)
+    rdf-xsd (0.3.5)
+      nokogiri (>= 1.5.0)
+      rdf (>= 0.3.4)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+    rsolr (1.0.7)
+      builder (>= 2.1.2)
+    rsolr-client-cert (0.5.1)
+      rest-client
+      rsolr
+    rsolr-ext (1.0.3)
+      rsolr (>= 1.0.2)
+    rspec (1.3.2)
+    ruby-cache (0.3.0)
+    ruby-debug (0.10.4)
+      columnize (>= 0.1)
+      ruby-debug-base (~> 0.10.4.0)
+    ruby-debug-base (0.10.4)
+      linecache (>= 0.3)
+    ruby-graphviz (1.0.5)
+    rubydora (0.5.7)
+      activemodel
+      activesupport
+      fastercsv
+      mime-types
+      nokogiri
+      rest-client
+      savon
+    savon (0.9.9)
+      akami (~> 1.0)
+      builder (>= 2.1.2)
+      gyoku (>= 0.4.0)
+      httpi (~> 0.9)
+      nokogiri (>= 1.4.0)
+      nori (~> 1.1)
+      wasabi (~> 2.1)
+    solr-ruby (0.0.8)
+    solrizer (1.2.0)
+      daemons
+      mediashelf-loggable (~> 0.4.7)
+      nokogiri
+      om (>= 1.5.0)
+      stomp
+      xml-simple
+    sprockets (2.1.2)
+      hike (~> 1.2)
+      rack (~> 1.0)
+      tilt (~> 1.1, != 1.3.0)
+    stomp (1.2.1)
+    systemu (2.5.0)
+    tilt (1.3.3)
+    uuidtools (2.1.2)
+    validatable (1.6.7)
+    wasabi (2.1.0)
+      nokogiri (>= 1.4.0)
+    xml-simple (1.1.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  awesome_print
+  dor-services (>= 3.3.0)
+  equivalent-xml
   grape
+  lyber-core (>= 2.0.2)
+  rack-test
+  rcov
+  rspec (< 2.0.0)
+  ruby-debug
