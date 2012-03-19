@@ -11,9 +11,8 @@
 #  Future releases will update the code and restart the app 
 #   $ cap dev deploy
 
-
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
-require 'dlss/capistrano'
+require 'dlss/capistrano/robots'
 
 set :application,      "dor-services-app"
 set :rvm_ruby_string, "1.8.7@#{application}"
@@ -24,6 +23,7 @@ task :dev do
 end
 
 task :testing do
+  set :rvm_type, :user
   role :app, "lyberservices-test.stanford.edu"
 end
 
@@ -32,10 +32,12 @@ task :production do
 end
 
 set :user, "lyberadmin" 
-set :repository,  "/afs/ir/dev/dlss/git/lyberteam/dor-services-app.git"
 set :sunetid,   Capistrano::CLI.ui.ask('SUNetID: ') { |q| q.default =  `whoami`.chomp }
-set :local_repository, "ssh://#{sunetid}@corn.stanford.edu#{repository}"
+set :deploy_via, :copy # I got 99 problems, but AFS ain't one
+set :repository, "ssh://#{sunetid}@corn.stanford.edu/afs/ir/dev/dlss/git/lyberteam/dor-services-app.git"
 set :deploy_to, "/home/#{user}/#{application}"
+set :copy_cache, true
+set :copy_exclude, [".git"]
 
 set :shared_config_certs_dir, true
 
@@ -43,10 +45,11 @@ after "deploy:symlink", "dor_services_app:trust_rvmrc"
 
 namespace :dor_services_app do
   task :trust_rvmrc do
-    run "rvmrc trust #{latest_release}"
+    run "rvm rvmrc trust \"#{latest_release}\""
   end
 end
 
+# Override the tasks in 'dlss/capistrano/robots'
 namespace :deploy do
   task :start, :roles => :app do
       run "touch #{current_release}/tmp/restart.txt"

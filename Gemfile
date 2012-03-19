@@ -13,3 +13,7 @@ group :test do
   gem "rspec", "< 2.0.0"
   gem "ruby-debug"
 end
+
+group :deploy do
+  gem "lyberteam-devel"
+end
