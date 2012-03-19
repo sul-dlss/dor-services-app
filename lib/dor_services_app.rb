@@ -41,6 +41,11 @@ module Dor
     end
 
     resource :objects do
+      
+      # Simple ping to see if app is up
+      get do
+        "ok"
+      end
 
       post do
         begin
