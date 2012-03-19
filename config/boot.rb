@@ -15,8 +15,8 @@ require 'registration_response'
 require 'registration_params'
 
 LyberCore::Log.set_logfile(File.join(File.dirname(__FILE__), "..", "log", "dor-services-app.log"))
-ENV[rack.logger] = LyberCore::Log.logfile
-ENV[rack.errors] = LyberCore::Log.logfile
+ENV['rack.logger'] = LyberCore::Log.logfile
+ENV['rack.errors'] = LyberCore::Log.logfile
 if(ENV["RACK_ENV"] == "production")
   LyberCore::Log.set_level(1)
 else

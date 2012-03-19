@@ -45,7 +45,7 @@ after "deploy:symlink", "dor_services_app:trust_rvmrc"
 
 namespace :dor_services_app do
   task :trust_rvmrc do
-    run "rvm rvmrc trust \"/var/opt/home/#{user}/#{application}/#{latest_revision}\""
+    run "rvm rvmrc trust \"/var/opt/home/#{user}/#{application}/releases/#{release_name}\""
   end
 end
 
