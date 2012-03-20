@@ -24,6 +24,8 @@ module LyberCore
   
 end
 
+class ::Logger; alias_method :write, :<<; end
+
 LyberCore::Log.set_logfile(File.join(File.dirname(__FILE__), "..", "log", "dor-services-app.log"))
 if(ENV["RACK_ENV"] == "production")
   LyberCore::Log.set_level(1)
