@@ -1,4 +1,4 @@
 require File.dirname(__FILE__) + '/config/boot.rb'
 
-use Rack::CommonLogger, LyberCore::Log.logfile
+use Rack::CommonLogger, LyberCore::Log.log
 run Dor::DorServicesApi

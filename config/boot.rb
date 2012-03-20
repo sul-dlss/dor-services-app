@@ -14,6 +14,16 @@ require 'dor_services_app'
 require 'registration_response'
 require 'registration_params'
 
+module LyberCore
+  
+  class LyberCore::Log
+    def Log.log
+      @@log
+    end 
+  end
+  
+end
+
 LyberCore::Log.set_logfile(File.join(File.dirname(__FILE__), "..", "log", "dor-services-app.log"))
 if(ENV["RACK_ENV"] == "production")
   LyberCore::Log.set_level(1)
