@@ -26,7 +26,7 @@ describe Dor::DorServicesApi do
     
     it "creates a druid tree in the dor workspace for the passed in druid" do
       post "/v1/objects/#{@item.pid}/initialize_workspace"
-      File.should be_directory('/tmp/dor/aa/123/bb/4567')     
+      File.should be_directory('/tmp/dor/aa/123/bb/4567')
     end
     
     it "creates a link in the dor workspace to the path passed in as source" do
@@ -65,4 +65,22 @@ describe Dor::DorServicesApi do
     end
   end
 
+  describe "object registration" do
+    context "error handling" do
+      it "returns a 409 error with location header when an object already exists" do
+        Dor::RegistrationService.stub!(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
+
+        post "/v1/objects", :some => 'param'
+        last_response.status.should == 409
+        last_response.headers['location'].should == 'http://dor-dev.stanford.edu/fedora/objects/druid:existing123obj'
+      end
+
+      it "logs all unhandled exceptions" do
+        Dor::RegistrationService.stub!(:register_object).and_raise(Exception.new("Testing Exception Logging"))
+        LyberCore::Log.should_receive(:exception)
+
+        post "/v1/objects", :some => 'param'
+      end
+    end
+  end
 end

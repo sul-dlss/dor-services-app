@@ -1,16 +1,15 @@
-
 module Dor
-    
+
   class DorServicesApi < Grape::API
-      
+
     version 'v1'
-    
+
     default_format :txt
-    
+
     Grape::Middleware::Formatter::FORMATTERS[:xml] = Proc.new { |object| object.to_xml }
-    
-    #rescue_from Dor::ParameterError, :default_status => 400, :backtrace => true
-    
+
+    rescue_from :all
+
     helpers do
       def merge_params(hash)
         # convert camelCase parameter names to under_score, and string keys to symbols
@@ -20,7 +19,7 @@ module Dor
           params[key.to_sym] = v
         }
       end
-      
+
       def munge_parameters
         case request.content_type
         when 'application/xml','text/xml'
@@ -47,34 +46,35 @@ module Dor
         "ok"
       end
 
+      # Register new objects in DOR
       post do
         begin
           dor_params = Dor::RegistrationParams.normalize(params)
           LyberCore::Log.info(dor_params.inspect)
-          
+
           dor_obj = Dor::RegistrationService.register_object(dor_params)
           pid = dor_obj.pid
-          
+
           header 'location', object_location(pid)
           status 201
           Dor::RegistrationResponse.new(dor_params.dup.merge({ :location => object_location(pid), :pid => pid }))
         rescue Dor::ParameterError => e
+          LyberCore::Log.exception(e)
           error!(e.message, 400)
         rescue Dor::DuplicateIdError => e
-          error!(e.message, 409) # TODO figure out how to set headers on error :location => help.object_location(e.pid)
-        rescue Exception => e
-          error!(e.message, 500)
-        end                
+          LyberCore::Log.exception(e)
+          error!(e.message, 409, 'location' => object_location(e.pid))
+        end
       end
-              
+
       resource ':id' do
-        
+
         helpers do
           def load_item
             @item = Dor::Item.load_instance(params[:id])
           end
         end
-      
+
         # The param, source, can be passed as apended parameter to url:
         #  http://lyberservices-dev/v1/dor/objects/{druid}/initialize_workspace?source=/path/to/content/dir
         # or
@@ -88,14 +88,15 @@ module Dor
             error!(e.message, 409)
           end
         end
-      
+
+        # Start accessioning
         post :accession do
           load_item
           @item.initiate_apo_workflow('accessionWF')
         end
       end # :id
     end # :objects 
-    
+
   end #class
   
 end # module
