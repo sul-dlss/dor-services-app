@@ -9,6 +9,10 @@ module Dor
     Grape::Middleware::Formatter::FORMATTERS[:xml] = Proc.new { |object| object.to_xml }
 
     rescue_from :all
+    
+    http_basic do |u,p|
+      u == Dor::Config.dor.service_user && p == Dor::Config.dor.service_password
+    end
 
     helpers do
       def merge_params(hash)
@@ -76,7 +80,7 @@ module Dor
         end
 
         # The param, source, can be passed as apended parameter to url:
-        #  http://lyberservices-dev/v1/dor/objects/{druid}/initialize_workspace?source=/path/to/content/dir
+        #  http://lyberservices-dev/dor/v1/objects/{druid}/initialize_workspace?source=/path/to/content/dir/for/druid
         # or
         # It can be passed in the body of the request as application/x-www-form-urlencoded parameters, as if submitted from a form
         # TODO: We could get away with loading a simple object that mixes in Dor::Assembleable.  It just needs to implement #pid

@@ -16,6 +16,7 @@ describe Dor::DorServicesApi do
     @item = AssembleableItem.new
     @item.pid = 'druid:aa123bb4567'
     Dor::Item.stub!(:load_instance).and_return(@item)
+    authorize 'dorAdmin', 'dorAdmin'
   end
   
   after(:all) do
