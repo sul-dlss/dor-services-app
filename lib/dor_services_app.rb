@@ -92,12 +92,17 @@ module Dor
             error!(e.message, 409)
           end
         end
+        
+        resource '/apo_workflows/:wf_name' do
 
-        # Start accessioning
-        post :accession do
-          load_item
-          @item.initiate_apo_workflow('accessionWF')
-        end
+          # Start accessioning
+          post do
+            load_item
+            workflow = (params[:wf_name] =~ /WF$/ ? params[:wf_name] : params[:wf_name] << 'WF')
+            @item.initiate_apo_workflow(workflow)
+          end
+        
+        end # apo_workflows
       end # :id
     end # :objects 
 

@@ -58,11 +58,17 @@ describe Dor::DorServicesApi do
     
   end
 
-  describe "accession" do
+  describe "apo-workflow intialization" do
     it "initiates accessionWF via obj.initiate_apo_workflow" do
+      @item.should_receive(:initiate_apo_workflow).with('assemblyWF')
+      
+      post "/v1/objects/#{@item.pid}/apo_workflows/assemblyWF"
+    end
+    
+    it "handles workflow names without 'WF' appended to the end" do
       @item.should_receive(:initiate_apo_workflow).with('accessionWF')
       
-      post "/v1/objects/#{@item.pid}/accession"
+      post "/v1/objects/#{@item.pid}/apo_workflows/accession"
     end
   end
 
