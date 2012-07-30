@@ -10,7 +10,7 @@ group :test do
   gem "equivalent-xml"
   gem "rack-test", :require => "rack/test"
   gem "rcov"
-  gem "rspec", "< 2.0.0"
+  gem "rspec"
   gem "ruby-debug"
 end
 
