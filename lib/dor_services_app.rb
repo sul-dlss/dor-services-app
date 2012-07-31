@@ -2,17 +2,16 @@ module Dor
 
   class DorServicesApi < Grape::API
 
-    version 'v1'
+    version 'v1', :using => :path
 
-    default_format :txt
-
-    Grape::Middleware::Formatter::FORMATTERS[:xml] = Proc.new { |object| object.to_xml }
-
-    rescue_from :all
-    
-    http_basic do |u,p|
-      u == Dor::Config.dor.service_user && p == Dor::Config.dor.service_password
+    rescue_from :all do |e|
+      LyberCore::Log.exception(e)
+      rack_response(e.message, 500)
     end
+    
+    # http_basic do |u,p|
+    #   u == Dor::Config.dor.service_user && p == Dor::Config.dor.service_password
+    # end
 
     helpers do
       def merge_params(hash)
@@ -47,7 +46,7 @@ module Dor
       
       # Simple ping to see if app is up
       get do
-        "ok"
+        "ok\n"
       end
 
       # Register new objects in DOR
@@ -67,7 +66,8 @@ module Dor
           error!(e.message, 400)
         rescue Dor::DuplicateIdError => e
           LyberCore::Log.exception(e)
-          error!(e.message, 409, 'location' => object_location(e.pid))
+          header 'location', object_location(e.pid)
+          error!(e.message, 409)
         end
       end
 

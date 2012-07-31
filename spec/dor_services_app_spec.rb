@@ -23,6 +23,11 @@ describe Dor::DorServicesApi do
     FileUtils.rm_rf Dir.glob('/tmp/dor/*')
   end
   
+  it "handles simple ping requests to /objects" do
+    get '/v1/objects'
+    last_response.should be_ok
+  end
+  
   describe "initialize_workspace" do
     
     it "creates a druid tree in the dor workspace for the passed in druid" do
@@ -87,6 +92,7 @@ describe Dor::DorServicesApi do
         LyberCore::Log.should_receive(:exception)
 
         post "/v1/objects", :some => 'param'
+        last_response.status.should == 500
       end
     end
   end

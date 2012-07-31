@@ -10,7 +10,6 @@ require 'dor-services'
 require 'lyber_core'
 
 require 'grape_overrides'
-require 'grape_json_parse'
 require 'dor_services_app'
 require 'registration_response'
 require 'registration_params'
