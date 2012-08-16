@@ -9,9 +9,9 @@ module Dor
       rack_response(e.message, 500)
     end
     
-    # http_basic do |u,p|
-    #   u == Dor::Config.dor.service_user && p == Dor::Config.dor.service_password
-    # end
+    http_basic do |u,p|
+      u == Dor::Config.dor.service_user && p == Dor::Config.dor.service_password
+    end
 
     helpers do
       def merge_params(hash)
@@ -75,9 +75,11 @@ module Dor
 
         helpers do
           def load_item
-            @item = Dor::Item.load_instance(params[:id])
+            @item = Dor::Item.find(params[:id])
           end
         end
+        
+        before { load_item }
 
         # The param, source, can be passed as apended parameter to url:
         #  http://lyberservices-dev/dor/v1/objects/{druid}/initialize_workspace?source=/path/to/content/dir/for/druid
@@ -86,9 +88,8 @@ module Dor
         # TODO: We could get away with loading a simple object that mixes in Dor::Assembleable.  It just needs to implement #pid
         post :initialize_workspace do
           begin
-            load_item
             @item.initialize_workspace(params[:source])
-          rescue Dor::SameContentExistsError, Dor::DifferentContentExistsError => e
+          rescue DruidTools::SameContentExistsError, DruidTools::DifferentContentExistsError => e
             error!(e.message, 409)
           end
         end
@@ -97,12 +98,18 @@ module Dor
 
           # Start accessioning
           post do
-            load_item
             workflow = (params[:wf_name] =~ /WF$/ ? params[:wf_name] : params[:wf_name] << 'WF')
             @item.initiate_apo_workflow(workflow)
           end
         
         end # apo_workflows
+        
+        resource '/versions/current' do
+          get do
+            @item.current_version
+          end
+        end #
+        
       end # :id
     end # :objects 
 

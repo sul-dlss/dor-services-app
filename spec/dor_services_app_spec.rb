@@ -1,7 +1,8 @@
 require 'spec_helper'
 
-class AssembleableItem
+class AssembleableVersionableItem < ActiveFedora::Base
   include Dor::Assembleable
+  include Dor::Versionable
   attr_accessor :pid
 end
 
@@ -13,9 +14,9 @@ describe Dor::DorServicesApi do
   before(:each) do
     ActiveFedora.stub!(:fedora).and_return(stub('frepo').as_null_object)
     FileUtils.rm_rf Dir.glob('/tmp/dor/*')
-    @item = AssembleableItem.new
+    @item = AssembleableVersionableItem.new
     @item.pid = 'druid:aa123bb4567'
-    Dor::Item.stub!(:load_instance).and_return(@item)
+    Dor::Item.stub!(:find).and_return(@item)
     authorize 'dorAdmin', 'dorAdmin'
   end
   
@@ -37,13 +38,13 @@ describe Dor::DorServicesApi do
     
     it "creates a link in the dor workspace to the path passed in as source" do
       post "/v1/objects/#{@item.pid}/initialize_workspace", :source => '/tmp/stage/obj1'
-      File.should be_symlink('/tmp/dor/aa/123/bb/4567')
+      File.should be_symlink('/tmp/dor/aa/123/bb/4567/aa123bb4567')
     end
     
     context "error handling" do
       before(:each) do
-        druid = Druid.new(@item.pid)
-        druid.mkdir('/tmp/dor')
+        druid = DruidTools::Druid.new(@item.pid, Dor::Config.stacks.local_workspace_root)
+        druid.mkdir
       end
       
       it "returns a 409 Conflict http status code when the link/directory already exists" do
@@ -96,4 +97,14 @@ describe Dor::DorServicesApi do
       end
     end
   end
+
+  describe "versioning" do
+    
+    it "returns the latest version for an object" do
+      get "/v1/objects/#{@item.pid}/versions/current"
+      
+      last_response.body.should == '1'
+    end
+  end
+
 end
