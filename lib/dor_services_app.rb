@@ -2,7 +2,7 @@ module Dor
 
   class DorServicesApi < Grape::API
 
-    version 'v1', :using => :path
+    version 'v1', :using => :header
 
     rescue_from :all do |e|
       LyberCore::Log.exception(e)
