@@ -4,6 +4,7 @@ module Dor
 
     version 'v1', :using => :header
     
+    format :txt
     default_format :txt
 
     rescue_from :all do |e|
