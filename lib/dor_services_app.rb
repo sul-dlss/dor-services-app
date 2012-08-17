@@ -3,6 +3,8 @@ module Dor
   class DorServicesApi < Grape::API
 
     version 'v1', :using => :header
+    
+    default_format :txt
 
     rescue_from :all do |e|
       LyberCore::Log.exception(e)
