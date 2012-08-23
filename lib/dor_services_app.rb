@@ -107,8 +107,15 @@ module Dor
         
         end # apo_workflows
         
-        resource '/versions/current' do
-          get do
+        resource :versions do
+          
+          post do
+            @item.open_new_version
+            @item.current_version
+          end
+          
+          
+          get '/current' do
             @item.current_version
           end
         end #

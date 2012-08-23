@@ -100,11 +100,25 @@ describe Dor::DorServicesApi do
 
   describe "versioning" do
     
-    it "returns the latest version for an object" do
-      get "/objects/#{@item.pid}/versions/current"
-      
-      last_response.body.should == '1'
+    describe "/versions/current" do
+      it "returns the latest version for an object" do
+        get "/objects/#{@item.pid}/versions/current"
+
+        last_response.body.should == '1'
+      end
     end
+    
+    describe "/versions" do
+      it "opens a new object version when posted to" do
+        Dor::WorkflowService.should_receive(:get_lifecycle).with('dor', @item.pid, 'accessioned').and_return(true)
+        Dor::WorkflowService.should_receive(:get_active_lifecycle).with('dor', @item.pid, 'opened').and_return(nil)
+        @item.should_receive(:instantiate_workflow).with('versioningWF')
+        post "/objects/#{@item.pid}/versions"
+        
+        last_response.body.should == '2'
+      end
+    end
+    
   end
 
 end
