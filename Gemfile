@@ -2,7 +2,7 @@ source :rubygems
 source "http://sulair-rails-dev.stanford.edu"
 
 gem "grape"
-gem "dor-services", ">= 3.3.0"
+gem "dor-services"
 gem "lyber-core", ">= 2.0.2"
 
 group :test do

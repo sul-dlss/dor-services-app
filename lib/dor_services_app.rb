@@ -29,9 +29,9 @@ module Dor
       def munge_parameters
         case request.content_type
         when 'application/xml','text/xml'
-          help.merge_params(Hash.from_xml(request.body.read))
+          merge_params(Hash.from_xml(request.body.read))
         when 'application/json','text/json'
-          help.merge_params(JSON.parse(request.body.read))
+          merge_params(JSON.parse(request.body.read))
         end
       end
             
@@ -54,11 +54,11 @@ module Dor
 
       # Register new objects in DOR
       post do
+        munge_parameters
         begin
-          dor_params = Dor::RegistrationParams.normalize(params)
-          LyberCore::Log.info(dor_params.inspect)
+          LyberCore::Log.info(params.inspect)
 
-          dor_obj = Dor::RegistrationService.register_object(dor_params)
+          dor_obj = Dor::RegistrationService.create_from_request(params)
           pid = dor_obj.pid
 
           header 'location', object_location(pid)
