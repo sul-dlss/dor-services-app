@@ -2,13 +2,15 @@ module Dor
 
   class DorServicesApi < Grape::API
 
-    version 'v1'
-
+    version 'v1', :using => :header
+    
+    format :txt
     default_format :txt
 
-    Grape::Middleware::Formatter::FORMATTERS[:xml] = Proc.new { |object| object.to_xml }
-
-    rescue_from :all
+    rescue_from :all do |e|
+      LyberCore::Log.exception(e)
+      rack_response(e.message, 500)
+    end
     
     http_basic do |u,p|
       u == Dor::Config.dor.service_user && p == Dor::Config.dor.service_password
@@ -27,9 +29,9 @@ module Dor
       def munge_parameters
         case request.content_type
         when 'application/xml','text/xml'
-          help.merge_params(Hash.from_xml(request.body.read))
+          merge_params(Hash.from_xml(request.body.read))
         when 'application/json','text/json'
-          help.merge_params(JSON.parse(request.body.read))
+          merge_params(JSON.parse(request.body.read))
         end
       end
             
@@ -47,16 +49,16 @@ module Dor
       
       # Simple ping to see if app is up
       get do
-        "ok"
+        "ok\n"
       end
 
       # Register new objects in DOR
       post do
+        munge_parameters
         begin
-          dor_params = Dor::RegistrationParams.normalize(params)
-          LyberCore::Log.info(dor_params.inspect)
+          LyberCore::Log.info(params.inspect)
 
-          dor_obj = Dor::RegistrationService.register_object(dor_params)
+          dor_obj = Dor::RegistrationService.create_from_request(params)
           pid = dor_obj.pid
 
           header 'location', object_location(pid)
@@ -67,7 +69,8 @@ module Dor
           error!(e.message, 400)
         rescue Dor::DuplicateIdError => e
           LyberCore::Log.exception(e)
-          error!(e.message, 409, 'location' => object_location(e.pid))
+          header 'location', object_location(e.pid)
+          error!(e.message, 409)
         end
       end
 
@@ -75,9 +78,11 @@ module Dor
 
         helpers do
           def load_item
-            @item = Dor::Item.load_instance(params[:id])
+            @item = Dor::Item.find(params[:id])
           end
         end
+        
+        before { load_item }
 
         # The param, source, can be passed as apended parameter to url:
         #  http://lyberservices-dev/dor/v1/objects/{druid}/initialize_workspace?source=/path/to/content/dir/for/druid
@@ -86,9 +91,8 @@ module Dor
         # TODO: We could get away with loading a simple object that mixes in Dor::Assembleable.  It just needs to implement #pid
         post :initialize_workspace do
           begin
-            load_item
             @item.initialize_workspace(params[:source])
-          rescue Dor::SameContentExistsError, Dor::DifferentContentExistsError => e
+          rescue DruidTools::SameContentExistsError, DruidTools::DifferentContentExistsError => e
             error!(e.message, 409)
           end
         end
@@ -97,12 +101,25 @@ module Dor
 
           # Start accessioning
           post do
-            load_item
             workflow = (params[:wf_name] =~ /WF$/ ? params[:wf_name] : params[:wf_name] << 'WF')
             @item.initiate_apo_workflow(workflow)
           end
         
         end # apo_workflows
+        
+        resource :versions do
+          
+          post do
+            @item.open_new_version
+            @item.current_version
+          end
+          
+          
+          get '/current' do
+            @item.current_version
+          end
+        end #
+        
       end # :id
     end # :objects 
 

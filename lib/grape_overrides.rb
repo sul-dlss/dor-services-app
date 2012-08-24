@@ -8,30 +8,9 @@ module Grape
     #
     # @param message [String] The message to display.
     # @param status [Integer] the HTTP Status Code. Defaults to 403.
-    # @param headers [Hash] An optional hash of headers for the response
-    def error!(message, status=403, headers = {})
-      throw :error, :message => message, :status => status, :headers => headers
+    def error!(message, status=403)
+      throw :error, :message => message, :status => status, :headers => @header
     end
   end
-  
-  module Middleware
-    class Error < Base
-      
-      # Override from Grape gem so that exceptions are logged
-      def call!(env)
-        @env = env
-        
-        begin
-          error_response(catch(:error){ 
-            return @app.call(@env) 
-          })
-        rescue Exception => e
-          raise unless options[:rescue_all] || (options[:rescued_errors] || []).include?(e.class)
-          LyberCore::Log.exception(e)
-          error_response({ :message => e.message, :backtrace => e.backtrace })
-        end
-        
-      end
-    end
-  end
+
 end
