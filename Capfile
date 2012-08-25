@@ -15,8 +15,7 @@ load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 require 'dlss/capistrano/robots'
 
 set :application,      "dor-services-app"
-set :rvm_ruby_string, "1.8.7@#{application}"
-set :rvm_type, :system
+set :rvm_ruby_string,  "1.8.7"
 
 task :dev do
   role :app, "sul-lyberservices-dev.stanford.edu"
