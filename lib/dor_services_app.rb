@@ -111,6 +111,7 @@ module Dor
           
           post do
             @item.open_new_version
+            @item.save
             @item.current_version
           end
           

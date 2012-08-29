@@ -20,26 +20,18 @@ set :rvm_ruby_string,  "1.8.7"
 task :dev do
   role :app, "sul-lyberservices-dev.stanford.edu"
   set :bundle_without, []                         # install all the bundler groups in dev
-  set :home_dir, '/home'
 end
 
 task :testing do
   role :app, "sul-lyberservices-test.stanford.edu"
-  set :home_dir, '/home'
-end
-
-task :testing_old do
-  set :rvm_type, :user
-  role :app, "lyberservices-test.stanford.edu"
-  set :home_dir, '/var/opt/home'
 end
 
 task :production do
   role :app, "sul-lyberservices-prod.stanford.edu"
-  set :home_dir, '/home'
 end
 
-set :user, "lyberadmin" 
+set :user, "lyberadmin"
+set :home_dir, '/home'
 set :sunetid,   Capistrano::CLI.ui.ask('SUNetID: ') { |q| q.default =  `whoami`.chomp }
 set :deploy_via, :copy # I got 99 problems, but AFS ain't one
 set :repository, "ssh://#{sunetid}@corn.stanford.edu/afs/ir/dev/dlss/git/lyberteam/dor-services-app.git"

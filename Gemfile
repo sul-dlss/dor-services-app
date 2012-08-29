@@ -16,4 +16,5 @@ end
 
 group :deploy do
   gem "lyberteam-devel"
+  gem "lyberteam-capistrano-devel"
 end

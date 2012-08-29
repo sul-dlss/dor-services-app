@@ -112,7 +112,8 @@ describe Dor::DorServicesApi do
       it "opens a new object version when posted to" do
         Dor::WorkflowService.should_receive(:get_lifecycle).with('dor', @item.pid, 'accessioned').and_return(true)
         Dor::WorkflowService.should_receive(:get_active_lifecycle).with('dor', @item.pid, 'opened').and_return(nil)
-        @item.should_receive(:instantiate_workflow).with('versioningWF')
+        @item.should_receive(:initialize_workflow).with('versioningWF')
+        @item.stub(:save)
         post "/objects/#{@item.pid}/versions"
         
         last_response.body.should == '2'
