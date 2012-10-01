@@ -34,15 +34,16 @@ end
 
 set :user, "lyberadmin"
 set :home_dir, '/home'
-set :sunetid,   Capistrano::CLI.ui.ask('SUNetID: ') { |q| q.default =  `whoami`.chomp }
-set :deploy_via, :copy
-set :repository, "ssh://#{sunetid}@corn.stanford.edu/afs/ir/dev/dlss/git/lyberteam/dor-services-app.git"
+set :repository, "/afs/ir/dev/dlss/git/lyberteam/dor-services-app.git"
+set :local_repository, "ssh://corn.stanford.edu#{repository}"
 set :deploy_to, "/home/#{user}/#{application}"
 set :copy_cache, '/Users/wmene/dev/afsgit/cap_cache/dor-services-app'
-set :copy_exclude, [".git"]
 
 # Setup the shared_children directories before deploy:setup
 before "deploy:setup", "dlss:set_shared_children"
+
+# Set the shared children before deploy:update
+before "deploy:update", "dlss:set_shared_children"
 
 namespace :dlss do
 
