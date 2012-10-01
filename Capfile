@@ -12,45 +12,68 @@
 #   $ cap dev deploy
 
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
-require 'dlss/capistrano/robots'
+require 'dlss/capistrano'
 
-set :application,      "dor-services-app"
-set :rvm_ruby_string,  "1.8.7"
+set :application,  "dor-services-app"
 
 task :dev do
   role :app, "sul-lyberservices-dev.stanford.edu"
   set :bundle_without, []                         # install all the bundler groups in dev
+  set :deploy_env, 'development'
 end
 
 task :testing do
   role :app, "sul-lyberservices-test.stanford.edu"
+  set :deploy_env, 'test'
 end
 
 task :production do
   role :app, "sul-lyberservices-prod.stanford.edu"
+  set :deploy_env, 'production'
 end
 
 set :user, "lyberadmin"
 set :home_dir, '/home'
 set :sunetid,   Capistrano::CLI.ui.ask('SUNetID: ') { |q| q.default =  `whoami`.chomp }
-set :deploy_via, :copy # I got 99 problems, but AFS ain't one
+set :deploy_via, :copy
 set :repository, "ssh://#{sunetid}@corn.stanford.edu/afs/ir/dev/dlss/git/lyberteam/dor-services-app.git"
 set :deploy_to, "/home/#{user}/#{application}"
 set :copy_cache, '/Users/wmene/dev/afsgit/cap_cache/dor-services-app'
 set :copy_exclude, [".git"]
 
-set :shared_config_certs_dir, true
+# Setup the shared_children directories before deploy:setup
+before "deploy:setup", "dlss:set_shared_children"
 
-after "deploy:symlink", "dor_services_app:trust_rvmrc"
+namespace :dlss do
 
-namespace :dor_services_app do
-  task :trust_rvmrc do
-    run "rvm rvmrc trust \"#{home_dir}/#{user}/#{application}/releases/#{release_name}\""
+  desc <<-DESC
+         Sets the shared directories that will be linked to from each release \
+         overriding the rails specific defaults from capistrano.  Will create \
+         shared/config/certs directory if :shared_config_certs_dir is true. \
+         This task is set to run before deploy:setup and deploy:update
+  DESC
+  task :set_shared_children do
+    dlss_shared_children = %w(log config/environments config/certs)
+
+    set :shared_children, dlss_shared_children
   end
+
 end
 
-# Override the tasks in 'dlss/capistrano/robots'
 namespace :deploy do
+  desc <<-DESC
+        This overrides the default :finalize_update since we don't care about \
+        rails specific directories
+  DESC
+  task :finalize_update, :except => { :no_release => true } do
+    run "chmod -R g+w #{latest_release}" if fetch(:group_writable, true)
+
+    shared_children.map do |d|
+      run "rm -rf #{latest_release}/#{d}"
+      run "ln -s #{shared_path}/#{d.split('/').last} #{latest_release}/#{d}"
+    end
+  end
+
   task :start, :roles => :app do
       run "touch #{current_release}/tmp/restart.txt"
   end
