@@ -6,8 +6,6 @@ require 'bundler/setup'
 Bundler.require(:default, ENV["RACK_ENV"].to_sym)
 
 $:.unshift File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))
-require 'dor-services'
-require 'lyber_core'
 
 require 'grape_overrides'
 require 'dor_services_app'

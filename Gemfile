@@ -3,7 +3,7 @@ source "http://sulair-rails-dev.stanford.edu"
 
 gem "grape"
 gem "dor-services"
-gem "lyber-core", ">= 2.0.2"
+gem "lyber-core", ">= 2.0.2", :require => 'lyber_core'
 
 group :test do
   gem "awesome_print"
