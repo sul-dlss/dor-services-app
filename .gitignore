@@ -1,3 +1,4 @@
 config/environments/*
+config/certs
 .rvmrc
 .bundle
