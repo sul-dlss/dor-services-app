@@ -49,7 +49,8 @@ module Dor
       
       # Simple ping to see if app is up
       get do
-        "ok\n"
+        @version ||= IO.readlines('VERSION').first
+        "ok\nversion: #{@version}"
       end
 
       # Register new objects in DOR
@@ -118,6 +119,11 @@ module Dor
           
           get '/current' do
             @item.current_version
+          end
+
+          post '/current/close' do
+            @item.close_version
+            "version #{@item.current_version} closed"
           end
         end #
         
