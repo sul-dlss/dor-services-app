@@ -18,21 +18,21 @@ describe Dor::DorServicesApi do
     FileUtils.rm_rf Dir.glob('/tmp/dor/*')
     item.pid = 'druid:aa123bb4567'
     Dor::Item.stub!(:find).and_return(item)
-    authorize 'dorAdmin', 'dorAdmin'
   end
   
   after(:all) do
     FileUtils.rm_rf Dir.glob('/tmp/dor/*')
   end
   
-  it "handles simple ping requests to /objects" do
-    get '/objects'
+  it "handles simple ping requests to /about" do
+    get '/about'
     last_response.should be_ok
     last_response.body.should =~ /version: \d\..*$/
   end
   
   describe "initialize_workspace" do
-    
+    before(:each) {authorize 'dorAdmin', 'dorAdmin'}
+      
     it "creates a druid tree in the dor workspace for the passed in druid" do
       post "/objects/#{item.pid}/initialize_workspace"
       File.should be_directory('/tmp/dor/aa/123/bb/4567')
@@ -67,6 +67,8 @@ describe Dor::DorServicesApi do
   end
 
   describe "apo-workflow intialization" do
+    before(:each) {authorize 'dorAdmin', 'dorAdmin'}
+
     it "initiates accessionWF via obj.initiate_apo_workflow" do
       item.should_receive(:initiate_apo_workflow).with('assemblyWF')
       
@@ -81,6 +83,8 @@ describe Dor::DorServicesApi do
   end
 
   describe "object registration" do
+    before(:each) {authorize 'dorAdmin', 'dorAdmin'}
+
     context "error handling" do
       it "returns a 409 error with location header when an object already exists" do
         Dor::RegistrationService.stub!(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
@@ -101,6 +105,7 @@ describe Dor::DorServicesApi do
   end
 
   describe "versioning" do
+    before(:each) {authorize 'dorAdmin', 'dorAdmin'}
     
     describe "/versions/current" do
       it "returns the latest version for an object" do

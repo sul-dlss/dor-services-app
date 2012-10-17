@@ -11,10 +11,6 @@ module Dor
       LyberCore::Log.exception(e)
       rack_response(e.message, 500)
     end
-    
-    http_basic do |u,p|
-      u == Dor::Config.dor.service_user && p == Dor::Config.dor.service_password
-    end
 
     helpers do
       def merge_params(hash)
@@ -44,13 +40,19 @@ module Dor
       end
       
     end
-
-    resource :objects do
-      
+    
+    resource :about do
       # Simple ping to see if app is up
       get do
         @version ||= IO.readlines('VERSION').first
         "ok\nversion: #{@version}"
+      end
+    end
+
+    resource :objects do
+      
+      http_basic do |u,p|
+        u == Dor::Config.dor.service_user && p == Dor::Config.dor.service_password
       end
 
       # Register new objects in DOR
