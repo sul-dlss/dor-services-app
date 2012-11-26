@@ -3,7 +3,7 @@ module Dor
   class DorServicesApi < Grape::API
 
     version 'v1', :using => :header
-    
+
     format :txt
     default_format :txt
 
@@ -16,7 +16,7 @@ module Dor
       def merge_params(hash)
         # convert camelCase parameter names to under_score, and string keys to symbols
         # e.g., 'objectType' to :object_type
-        hash.each_pair { |k,v| 
+        hash.each_pair { |k,v|
           key = k.underscore
           params[key.to_sym] = v
         }
@@ -30,7 +30,7 @@ module Dor
           merge_params(JSON.parse(request.body.read))
         end
       end
-            
+
       def fedora_base
         URI.parse(Dor::Config.fedora.safeurl.sub(/\/*$/,'/'))
       end
@@ -38,9 +38,17 @@ module Dor
       def object_location(pid)
         fedora_base.merge("objects/#{pid}").to_s
       end
-      
+
+      def archiver
+        @archiver ||= {
+          arch = Dor::WorkflowArchiver.new()
+          arch.connect_to_db
+          arch
+        }
+      end
+
     end
-    
+
     resource :about do
       # Simple ping to see if app is up
       get do
@@ -50,7 +58,7 @@ module Dor
     end
 
     resource :objects do
-      
+
       http_basic do |u,p|
         u == Dor::Config.dor.service_user && p == Dor::Config.dor.service_password
       end
@@ -84,7 +92,7 @@ module Dor
             @item = Dor::Item.find(params[:id])
           end
         end
-        
+
         before { load_item }
 
         # The param, source, can be passed as apended parameter to url:
@@ -99,7 +107,7 @@ module Dor
             error!(e.message, 409)
           end
         end
-        
+
         resource '/apo_workflows/:wf_name' do
 
           # Start accessioning
@@ -107,18 +115,18 @@ module Dor
             workflow = (params[:wf_name] =~ /WF$/ ? params[:wf_name] : params[:wf_name] << 'WF')
             @item.initiate_apo_workflow(workflow)
           end
-        
+
         end # apo_workflows
-        
+
         resource :versions do
-          
+
           post do
             @item.open_new_version
             @item.save
             @item.current_version
           end
-          
-          
+
+
           get '/current' do
             @item.current_version
           end
@@ -128,10 +136,14 @@ module Dor
             "version #{@item.current_version} closed"
           end
         end #
-        
+
+        resource 'workflows/:wf_name/archive' do
+          version = @item.current_version
+
+        end
       end # :id
-    end # :objects 
+    end # :objects
 
   end #class
-  
+
 end # module
