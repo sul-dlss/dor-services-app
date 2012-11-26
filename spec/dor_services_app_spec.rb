@@ -142,9 +142,10 @@ describe Dor::DorServicesApi do
     before(:each) {authorize 'dorAdmin', 'dorAdmin'}
 
     it "POSTing to /objects/{druid}/workflows/{wfname}/archive archives a workflow for a given druid and repository" do
-
+      Dor::WorkflowArchiver.any_instance.stub(:connect_to_db)
+      Dor::WorkflowArchiver.any_instance.should_receive(:archive_one_datastream).with('dor', item.pid, 'accessionWF', '1')
       post "/objects/#{item.pid}/workflows/accessionWF/archive"
-
+      
       last_response.body.should == 'accessionWF version 1 archived'
     end
 

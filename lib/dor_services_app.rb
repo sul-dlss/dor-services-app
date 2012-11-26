@@ -1,3 +1,5 @@
+require 'dor/workflow_archiver'
+
 module Dor
 
   class DorServicesApi < Grape::API
@@ -38,13 +40,15 @@ module Dor
       def object_location(pid)
         fedora_base.merge("objects/#{pid}").to_s
       end
+  
+      def create_archiver
+        arch = Dor::WorkflowArchiver.new
+        arch.connect_to_db
+        arch
+      end
 
       def archiver
-        @archiver ||= {
-          arch = Dor::WorkflowArchiver.new()
-          arch.connect_to_db
-          arch
-        }
+        @archiver ||= create_archiver
       end
 
     end
@@ -137,8 +141,13 @@ module Dor
           end
         end #
 
-        resource 'workflows/:wf_name/archive' do
-          version = @item.current_version
+        resource '/workflows/:wf_name/archive' do
+         
+          post do
+            version = @item.current_version
+            archiver.archive_one_datastream 'dor', @item.pid, params[:wf_name], version
+            "#{params[:wf_name]} version #{version} archived"
+          end
 
         end
       end # :id

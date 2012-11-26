@@ -4,6 +4,7 @@ source "http://sul-gems.stanford.edu"
 gem "grape"
 gem "dor-services"
 gem "lyber-core", ">= 2.0.2", :require => 'lyber_core'
+gem "workflow-archiver"
 
 group :test do
   gem "awesome_print"
