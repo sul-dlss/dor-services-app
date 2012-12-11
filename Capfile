@@ -35,15 +35,13 @@ end
 set :user, "lyberadmin"
 set :home_dir, '/home'
 set :repository, "/afs/ir/dev/dlss/git/lyberteam/dor-services-app.git"
-set :local_repository, "ssh://corn.stanford.edu#{repository}"
 set :deploy_to, "/home/#{user}/#{application}"
-set :copy_cache, '/Users/wmene/dev/afsgit/cap_cache/dor-services-app'
 
 # Setup the shared_children directories before deploy:setup
 before "deploy:setup", "dlss:set_shared_children"
 
 # Set the shared children before deploy:update
-before "deploy:update", "dlss:set_shared_children"
+before "deploy:update", "dlss:set_shared_children", "dlss:set_ld_library_path"
 
 namespace :dlss do
 
@@ -57,6 +55,10 @@ namespace :dlss do
     dlss_shared_children = %w(log config/environments config/certs)
 
     set :shared_children, dlss_shared_children
+  end
+
+  task :set_ld_library_path do
+     default_environment["LD_LIBRARY_PATH"] = "/usr/lib/oracle/11.2/client64/lib:$LD_LIBRARY_PATH"
   end
 
 end

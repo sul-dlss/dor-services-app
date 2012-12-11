@@ -4,7 +4,7 @@ module Dor
 
   class DorServicesApi < Grape::API
 
-    version 'v1', :using => :header
+    version 'v1', :using => :path
 
     format :txt
     default_format :txt
