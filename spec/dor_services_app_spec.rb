@@ -148,6 +148,14 @@ describe Dor::DorServicesApi do
       
       last_response.body.should == 'accessionWF version 1 archived'
     end
+ 
+    it "POSTing to /objects/{druid}/workflows/{wfname}/archive/{ver_num} archives a workflow with a specic version" do
+      Dor::WorkflowArchiver.any_instance.stub(:connect_to_db)
+      Dor::WorkflowArchiver.any_instance.should_receive(:archive_one_datastream).with('dor', item.pid, 'accessionWF', '3')
+      post "/v1/objects/#{item.pid}/workflows/accessionWF/archive/3"
+
+      last_response.body.should == 'accessionWF version 3 archived'
+    end
 
     it "checks if all rows are complete before archiving" do
       pending "Maybe check should be in the gem"

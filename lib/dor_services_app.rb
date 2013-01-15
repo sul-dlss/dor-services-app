@@ -93,7 +93,7 @@ module Dor
 
         helpers do
           def load_item
-            @item = Dor::Item.find(params[:id])
+            @item = Dor::Item.find(params[:id]) if(params[:ver_num].nil? || params[:ver_num].strip == '')
           end
         end
 
@@ -145,8 +145,18 @@ module Dor
          
           post do
             version = @item.current_version
-            archiver.archive_one_datastream 'dor', @item.pid, params[:wf_name], version
+            archiver.archive_one_datastream 'dor', params[:id], params[:wf_name], version
             "#{params[:wf_name]} version #{version} archived"
+          end
+
+          resource ':ver_num' do
+
+             post do
+               version = params[:ver_num]
+	       archiver.archive_one_datastream 'dor', params[:id], params[:wf_name], version
+               "#{params[:wf_name]} version #{version} archived"
+             end
+ 
           end
 
         end
