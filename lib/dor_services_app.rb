@@ -136,7 +136,18 @@ module Dor
           end
 
           post '/current/close' do
-            @item.close_version
+            request.body.rewind
+            body = request.body.read
+            if(body.strip.empty?)
+              sym_params = nil
+            else
+              raw_params = JSON.parse body
+              sym_params = Hash[raw_params.map{|(k,v)| [k.to_sym,v]}]
+              if(sym_params[:significance])
+                sym_params[:significance] = sym_params[:significance].to_sym
+              end
+            end
+            @item.close_version sym_params
             "version #{@item.current_version} closed"
           end
         end #

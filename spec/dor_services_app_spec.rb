@@ -122,6 +122,13 @@ describe Dor::DorServicesApi do
 
         last_response.body.should =~ /version 1 closed/
       end
+
+      it "forwards optional params to the Dor::Item#close_version method" do
+        item.should_receive(:close_version).with( {:description => 'some text', :significance => :major} )
+        post "/v1/objects/#{item.pid}/versions/current/close", %( {"description": "some text", "significance": "major"} )
+
+        last_response.body.should =~ /version 1 closed/
+      end
     end
 
     describe "/versions" do
