@@ -2,7 +2,7 @@ source :rubygems
 source "http://sul-gems.stanford.edu"
 
 gem "grape"
-gem "dor-services"
+gem "dor-services", "~> 3.25"
 gem "lyber-core", ">= 2.0.2", :require => 'lyber_core'
 gem "workflow-archiver"
 
