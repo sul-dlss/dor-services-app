@@ -45,7 +45,7 @@ GEM
       docopt (~> 0.5.0)
       validatable (~> 1.6)
     builder (3.0.4)
-    capistrano (2.13.4)
+    capistrano (2.15.5)
       highline
       net-scp (>= 1.0.0)
       net-sftp (>= 2.0.0)
@@ -106,7 +106,7 @@ GEM
       libxml-ruby (~> 2.0)
     hashery (2.1.0)
     hashie (1.2.0)
-    highline (1.6.15)
+    highline (1.6.20)
     hike (1.2.3)
     hooks (0.3.1)
     httpi (2.0.2)
@@ -155,13 +155,13 @@ GEM
       systemu
     multi_json (1.7.6)
     multi_xml (0.5.1)
-    net-scp (1.0.4)
-      net-ssh (>= 1.99.1)
+    net-scp (1.1.2)
+      net-ssh (>= 2.6.5)
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
-    net-ssh (2.6.7)
-    net-ssh-gateway (1.1.0)
-      net-ssh (>= 1.99.1)
+    net-ssh (2.7.0)
+    net-ssh-gateway (1.2.0)
+      net-ssh (>= 2.6.5)
     net-ssh-kerberos (0.2.7)
       net-ssh (>= 2.0)
     nokogiri (1.5.9)
@@ -266,6 +266,7 @@ PLATFORMS
 
 DEPENDENCIES
   awesome_print
+  capistrano (< 3)
   dor-services (~> 3.25)
   equivalent-xml
   grape
