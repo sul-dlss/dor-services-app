@@ -2,3 +2,5 @@ config/environments/*
 config/certs
 .rvmrc
 .bundle
+.ruby-*
+

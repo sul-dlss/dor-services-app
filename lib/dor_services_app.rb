@@ -40,7 +40,7 @@ module Dor
       def object_location(pid)
         fedora_base.merge("objects/#{pid}").to_s
       end
-  
+
       def create_archiver
         arch = Dor::WorkflowArchiver.new
         arch.connect_to_db
@@ -59,6 +59,19 @@ module Dor
         @version ||= IO.readlines('VERSION').first
         "ok\nversion: #{@version}"
       end
+    end
+
+    resource :workflows do
+
+      http_basic do |u,p|
+        u == Dor::Config.dor.service_user && p == Dor::Config.dor.service_password
+      end
+
+      get '/:wf_name/initial' do
+        content_type 'application/xml'
+        Dor::WorkflowObject.initial_workflow params[:wf_name]
+      end
+
     end
 
     resource :objects do
@@ -122,6 +135,12 @@ module Dor
 
         end # apo_workflows
 
+        resource :publish do
+          post do
+            @item.publish_metadata
+          end
+        end
+
         resource :versions do
 
           post do
@@ -153,7 +172,7 @@ module Dor
         end #
 
         resource '/workflows/:wf_name/archive' do
-         
+
           post do
             version = @item.current_version
             archiver.archive_one_datastream 'dor', params[:id], params[:wf_name], version
@@ -167,12 +186,14 @@ module Dor
 	       archiver.archive_one_datastream 'dor', params[:id], params[:wf_name], version
                "#{params[:wf_name]} version #{version} archived"
              end
- 
+
           end
 
         end
       end # :id
     end # :objects
+
+
 
   end #class
 

@@ -152,10 +152,10 @@ describe Dor::DorServicesApi do
       Dor::WorkflowArchiver.any_instance.stub(:connect_to_db)
       Dor::WorkflowArchiver.any_instance.should_receive(:archive_one_datastream).with('dor', item.pid, 'accessionWF', '1')
       post "/v1/objects/#{item.pid}/workflows/accessionWF/archive"
-      
+
       last_response.body.should == 'accessionWF version 1 archived'
     end
- 
+
     it "POSTing to /objects/{druid}/workflows/{wfname}/archive/{ver_num} archives a workflow with a specic version" do
       Dor::WorkflowArchiver.any_instance.stub(:connect_to_db)
       Dor::WorkflowArchiver.any_instance.should_receive(:archive_one_datastream).with('dor', item.pid, 'accessionWF', '3')
@@ -167,5 +167,29 @@ describe Dor::DorServicesApi do
     it "checks if all rows are complete before archiving" do
       pending "Maybe check should be in the gem"
     end
+  end
+
+  describe "workflow definitions" do
+    before(:each) do
+      authorize 'dorAdmin', 'dorAdmin'
+    end
+
+    it "GET of /workflows/{wfname}/initial returns the an initial instance of the workflow's xml" do
+      Dor::WorkflowObject.should_receive(:initial_workflow).with('accessionWF') { <<-XML
+        <workflow id="accessionWF">
+          <process name="start-accession" status="completed" attempts="1" lifecycle="submitted"/>
+          <process name="content-metadata" status="waiting"/>
+        </workflow>
+        XML
+       }
+
+      get '/v1/workflows/accessionWF/initial'
+
+
+      #last_response.should be_ok
+      last_response.content_type.should == 'application/xml'
+      last_response.body.should =~ /start-accession/
+    end
+
   end
 end

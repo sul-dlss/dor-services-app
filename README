@@ -1,0 +1,5 @@
+This app needs the oracle client gem, ruby-oci8.  Follow the instructions here to install on OS X:
+https://coderwall.com/p/nvva7a
+
+TODO
+We could alter the gemspec of workflow archiver to be platform dependent: only install ruby-oci8 on linux platforms
