@@ -1,14 +1,14 @@
 # Initial setup run from laptop
 # 1) Setup directory structure on remote VM
 #   $ cap dev deploy:setup
-# 2) Manually copy environment specific config file to $application/shared/config/environments.  
+# 2) Manually copy environment specific config file to $application/shared/config/environments.
 #      Only necessary for initial install
 # 3) Manually copy certs to $application/shared/config/certs
 #      Only necessary for initial install
 # 4) Copy project from source control to remote
 #   $ cap dev deploy:update
-# 
-#  Future releases will update the code and restart the app 
+#
+#  Future releases will update the code and restart the app
 #   $ cap dev deploy
 
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
@@ -35,6 +35,7 @@ end
 set :user, "lyberadmin"
 set :home_dir, '/home'
 set :repository, "/afs/ir/dev/dlss/git/lyberteam/dor-services-app.git"
+set :local_repository, "ssh://corn.stanford.edu#{repository}"
 set :deploy_to, "/home/#{user}/#{application}"
 
 # Setup the shared_children directories before deploy:setup
