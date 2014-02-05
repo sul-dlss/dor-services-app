@@ -34,15 +34,20 @@ end
 
 set :user, "lyberadmin"
 set :home_dir, '/home'
-set :repository, "/afs/ir/dev/dlss/git/lyberteam/dor-services-app.git"
-set :local_repository, "ssh://corn.stanford.edu#{repository}"
+set :repository do
+  msg = "Sunetid: "
+  sunetid = Capistrano::CLI.ui.ask(msg)
+  "ssh://#{sunetid}@corn.stanford.edu/afs/ir/dev/dlss/git/lyberteam/dor-services-app.git"
+end
 set :deploy_to, "/home/#{user}/#{application}"
+set :deploy_via, :copy
+set :copy_cache, :true
+set :copy_exclude, [".git"]
 
-# Setup the shared_children directories before deploy:setup
-before "deploy:setup", "dlss:set_shared_children"
+set :shared_children, %w(log config/environments config/certs)
 
 # Set the shared children before deploy:update
-before "deploy:update", "dlss:set_shared_children", "dlss:set_ld_library_path"
+before "deploy:update", "dlss:set_ld_library_path"
 
 namespace :dlss do
 
@@ -52,12 +57,6 @@ namespace :dlss do
          shared/config/certs directory if :shared_config_certs_dir is true. \
          This task is set to run before deploy:setup and deploy:update
   DESC
-  task :set_shared_children do
-    dlss_shared_children = %w(log config/environments config/certs)
-
-    set :shared_children, dlss_shared_children
-  end
-
   task :set_ld_library_path do
      default_environment["LD_LIBRARY_PATH"] = "/usr/lib/oracle/11.2/client64/lib:$LD_LIBRARY_PATH"
   end

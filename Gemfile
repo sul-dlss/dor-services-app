@@ -18,5 +18,6 @@ end
 
 group :development do
   gem "capistrano", "< 3"
-  gem "lyberteam-capistrano-devel"
+  gem "lyberteam-capistrano-devel", "1.2.0"
+  gem "net-ssh-krb"
 end
