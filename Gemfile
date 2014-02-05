@@ -16,7 +16,7 @@ group :test do
   gem "debugger"
 end
 
-group :deploy do
+group :development do
   gem "capistrano", "< 3"
   gem "lyberteam-capistrano-devel"
 end
