@@ -14,10 +14,10 @@ describe Dor::DorServicesApi do
   let(:item) {AssembleableVersionableItem.new}
 
   before(:each) do
-    ActiveFedora.stub!(:fedora).and_return(stub('frepo').as_null_object)
+    ActiveFedora.stub(:fedora).and_return(stub('frepo').as_null_object)
     FileUtils.rm_rf Dir.glob('/tmp/dor/*')
     item.pid = 'druid:aa123bb4567'
-    Dor::Item.stub!(:find).and_return(item)
+    Dor::Item.stub(:find).and_return(item)
   end
 
   after(:all) do
@@ -87,7 +87,7 @@ describe Dor::DorServicesApi do
 
     context "error handling" do
       it "returns a 409 error with location header when an object already exists" do
-        Dor::RegistrationService.stub!(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
+        Dor::RegistrationService.stub(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
 
         post "/v1/objects", :some => 'param'
         last_response.status.should == 409
@@ -95,7 +95,7 @@ describe Dor::DorServicesApi do
       end
 
       it "logs all unhandled exceptions" do
-        Dor::RegistrationService.stub!(:register_object).and_raise(Exception.new("Testing Exception Logging"))
+        Dor::RegistrationService.stub(:register_object).and_raise(Exception.new("Testing Exception Logging"))
         LyberCore::Log.should_receive(:exception)
 
         post "/v1/objects", :some => 'param'
@@ -134,6 +134,7 @@ describe Dor::DorServicesApi do
     describe "/versions" do
       it "opens a new object version when posted to" do
         Dor::WorkflowService.should_receive(:get_lifecycle).with('dor', item.pid, 'accessioned').and_return(true)
+        Dor::WorkflowService.should_receive(:get_active_lifecycle).with('dor', item.pid, 'submitted').and_return(nil)
         Dor::WorkflowService.should_receive(:get_active_lifecycle).with('dor', item.pid, 'opened').and_return(nil)
         item.should_receive(:initialize_workflow).with('versioningWF')
         item.stub(:save)
