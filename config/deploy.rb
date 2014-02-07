@@ -8,7 +8,7 @@ set :repo_url, 'https://github.com/sul-dlss/dor-services-app.git'
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 
 # Default deploy_to directory is /var/www/my_app
-set :deploy_to, "/home/#{fetch(:user)}/#{fetch(:application)}"
+set :deploy_to, "/home/lyberadmin/#{fetch(:application)}"
 
 # Default value for :scm is :git
 # set :scm, :git

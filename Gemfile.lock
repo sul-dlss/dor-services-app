@@ -182,7 +182,7 @@ GEM
       rack (>= 1.0.0)
     rack-test (0.6.2)
       rack (>= 1.0)
-    rainbow (2.0.0)
+    rainbow (1.99.2)
     rake (10.1.1)
     rdf (1.0.9)
       addressable (>= 2.3)
@@ -271,6 +271,7 @@ DEPENDENCIES
   lyber-core (>= 2.0.2)
   lyberteam-capistrano-devel (= 3.0.0.pre1)
   rack-test
+  rainbow (< 2.0)
   rspec
   rubydora (= 1.6.5)
   simplecov
