@@ -6,11 +6,11 @@ gem "dor-services", "~> 4.6"
 gem "lyber-core", ">= 2.0.2", :require => 'lyber_core'
 gem "workflow-archiver"
 gem "rubydora", "1.6.5"
+gem "rack-test", :require => "rack/test"
 
 group :test do
   gem "awesome_print"
   gem "equivalent-xml"
-  gem "rack-test", :require => "rack/test"
   gem "simplecov"
   gem "rspec"
   gem "debugger"
