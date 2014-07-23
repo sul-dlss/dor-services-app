@@ -111,7 +111,7 @@ GEM
     libxml-ruby (2.7.0)
     lyber-core (3.2.2)
       dor-workflow-service (~> 1.6, >= 1.6.3)
-    lyberteam-capistrano-devel (3.0.0.pre1)
+    lyberteam-capistrano-devel (3.0.0)
       capistrano (~> 3.0)
       capistrano-holepicker
       capistrano-one_time_key
@@ -240,7 +240,7 @@ DEPENDENCIES
   grape (= 0.2.1)
   holepicker (~> 0.3, >= 0.3.3)
   lyber-core (>= 2.0.2)
-  lyberteam-capistrano-devel (= 3.0.0.pre1)
+  lyberteam-capistrano-devel
   rack-test
   rspec
   rubydora (= 1.6.5)
