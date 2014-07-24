@@ -18,19 +18,4 @@ RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = 'spec/**/*_spec.rb', 'test/**/*.rb'
 end
 
-RSpec::Core::RakeTask.new(:functional) do |spec|
-#  spec.libs << 'lib' << 'spec' << 'test'
-  spec.pattern = 'spec/**/*_spec.rb', 'test/**/*.rb'
-  spec.rcov = true
-  spec.rcov_opts = %w{--exclude spec\/*,gems\/*,ruby\/* --aggregate coverage.data}
-end
-
-task :clean do
-  puts 'Cleaning old coverage.data'
-  FileUtils.rm('coverage.data') if(File.exists? 'coverage.data')
-end
-
-task :rcov => ["functional"] do
-end
-
-task :default => [:rcov]
+task :default => [:spec]
