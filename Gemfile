@@ -1,5 +1,4 @@
 source "https://rubygems.org"
-source "http://sul-gems.stanford.edu"
 
 gem "grape", "0.2.1"
 gem "dor-services", "~> 4.8"

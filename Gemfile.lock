@@ -1,6 +1,5 @@
 GEM
   remote: https://rubygems.org/
-  remote: http://sul-gems.stanford.edu/
   specs:
     active-fedora (5.7.1)
       activeresource (>= 3.0.0)
@@ -41,7 +40,6 @@ GEM
       capistrano (~> 3.0)
     capistrano-releaseboard (0.0.1)
       faraday
-    columnize (0.3.6)
     confstruct (0.2.7)
     daemons (1.1.9)
     debugger (1.6.5)
@@ -220,7 +218,7 @@ GEM
     uber (0.0.6)
     uuidtools (2.1.4)
     validatable (1.6.7)
-    workflow-archiver (1.2.1)
+    workflow-archiver (1.2.2)
       lyber-core
       rest-client
       ruby-oci8
