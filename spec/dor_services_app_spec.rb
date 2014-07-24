@@ -14,7 +14,7 @@ describe Dor::DorServicesApi do
   let(:item) {AssembleableVersionableItem.new}
 
   before(:each) do
-    ActiveFedora.stub(:fedora).and_return(stub('frepo').as_null_object)
+    ActiveFedora.stub(:fedora).and_return(double('frepo').as_null_object)
     FileUtils.rm_rf Dir.glob('/tmp/dor/*')
     item.pid = 'druid:aa123bb4567'
     Dor::Item.stub(:find).and_return(item)
