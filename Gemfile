@@ -13,7 +13,6 @@ group :test do
   gem "equivalent-xml"
   gem "simplecov"
   gem "rspec"
-  gem "debugger"
 end
 
 group :development do
