@@ -101,8 +101,8 @@ GEM
     iso-639 (0.2.4)
     json (1.8.1)
     libxml-ruby (2.7.0)
-    lyber-core (3.2.2)
-      dor-workflow-service (~> 1.6, >= 1.6.3)
+    lyber-core (3.2.4)
+      dor-workflow-service (~> 1.7)
     lyberteam-capistrano-devel (3.0.0)
       capistrano (~> 3.0)
       capistrano-holepicker
@@ -215,7 +215,8 @@ GEM
     uber (0.0.6)
     uuidtools (2.1.4)
     validatable (1.6.7)
-    workflow-archiver (1.2.2)
+    workflow-archiver (1.3.0)
+      confstruct
       lyber-core
       rest-client
       ruby-oci8
@@ -239,4 +240,4 @@ DEPENDENCIES
   rspec
   rubydora (= 1.6.5)
   simplecov
-  workflow-archiver
+  workflow-archiver (~> 1.3)

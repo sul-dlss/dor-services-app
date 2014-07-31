@@ -183,7 +183,7 @@ module Dor
 
              post do
                version = params[:ver_num]
-	       archiver.archive_one_datastream 'dor', params[:id], params[:wf_name], version
+	             archiver.archive_one_datastream 'dor', params[:id], params[:wf_name], version
                "#{params[:wf_name]} version #{version} archived"
              end
 
