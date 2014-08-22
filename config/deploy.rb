@@ -5,7 +5,7 @@ set :application, 'dor-services-app'
 set :repo_url, 'https://github.com/sul-dlss/dor-services-app.git'
 
 # Default branch is :master
-set :branch '1.10.x-prod'
+set :branch, '1.10.x-prod'
 
 # Default deploy_to directory is /var/www/my_app
 set :deploy_to, "/home/lyberadmin/#{fetch(:application)}"
