@@ -85,13 +85,15 @@ module Dor
         munge_parameters
         begin
           LyberCore::Log.info(params.inspect)
-
-          dor_obj = Dor::RegistrationService.create_from_request(params)
-          pid = dor_obj.pid
+          
+          reg_response = Dor::RegistrationService.create_from_request(params)
+          LyberCore::Log.info( reg_response)
+          pid = reg_response['pid']
 
           header 'location', object_location(pid)
           status 201
-          Dor::RegistrationResponse.new(dor_params.dup.merge({ :location => object_location(pid), :pid => pid }))
+          Dor::RegistrationResponse.new(reg_response)
+        
         rescue Dor::ParameterError => e
           LyberCore::Log.exception(e)
           error!(e.message, 400)
