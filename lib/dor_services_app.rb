@@ -85,7 +85,7 @@ module Dor
         munge_parameters
         begin
           LyberCore::Log.info(params.inspect)
-          
+
           reg_response = Dor::RegistrationService.create_from_request(params)
           LyberCore::Log.info( reg_response)
           pid = reg_response['pid']
@@ -93,7 +93,7 @@ module Dor
           header 'location', object_location(pid)
           status 201
           Dor::RegistrationResponse.new(reg_response)
-        
+
         rescue Dor::ParameterError => e
           LyberCore::Log.exception(e)
           error!(e.message, 400)
@@ -129,7 +129,7 @@ module Dor
 
         resource '/apo_workflows/:wf_name' do
 
-          # Start accessioning
+          # Initiate a workflow by name
           post do
             workflow = (params[:wf_name] =~ /WF$/ ? params[:wf_name] : params[:wf_name] << 'WF')
             @item.initiate_apo_workflow(workflow)
