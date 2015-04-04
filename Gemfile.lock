@@ -63,7 +63,7 @@ GEM
     docopt (0.5.0)
     domain_name (0.5.23)
       unf (>= 0.0.5, < 1.0.0)
-    dor-services (4.19.0)
+    dor-services (4.19.1)
       active-fedora (~> 5.7.1)
       activesupport (~> 3.2, >= 3.2.18)
       addressable (= 2.3.5)
