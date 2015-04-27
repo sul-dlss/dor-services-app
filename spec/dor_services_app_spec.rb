@@ -136,6 +136,7 @@ describe Dor::DorServicesApi do
         Dor::WorkflowService.should_receive(:get_lifecycle).with('dor', item.pid, 'accessioned').and_return(true)
         Dor::WorkflowService.should_receive(:get_active_lifecycle).with('dor', item.pid, 'submitted').and_return(nil)
         Dor::WorkflowService.should_receive(:get_active_lifecycle).with('dor', item.pid, 'opened').and_return(nil)
+        expect(Sdr::Client).to receive(:current_version).and_return(1)
         item.should_receive(:initialize_workflow).with('versioningWF')
         item.stub(:save)
         post "/v1/objects/#{item.pid}/versions"
