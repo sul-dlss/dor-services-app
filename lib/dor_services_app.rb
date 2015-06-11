@@ -126,6 +126,20 @@ module Dor
             error!(e.message, 409)
           end
         end
+        
+        #You can post a release tag as JSON in the body to add a release tag to an item.  
+        #If successful it will return a 201 code, otherwise the error that occurred will bubble to the top
+        #
+        # 201
+        resource :release_tags do
+          post do
+            request.body.rewind
+            body = request.body.read
+            raw_params = JSON.parse body #This should produce a hash in valid release tag form
+            @item.add_release_node(raw_params)
+            status 201
+          end
+        end
 
         resource '/apo_workflows/:wf_name' do
 

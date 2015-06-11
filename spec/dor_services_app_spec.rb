@@ -130,6 +130,13 @@ describe Dor::DorServicesApi do
         last_response.body.should =~ /version 1 closed/
       end
     end
+    
+    describe '/release_tags' do
+      it 'adds a release tag when posted to' do
+        item.should_receive(:add_release_node).with( {:to => 'seachworks', :who => 'carrickr', :what=>'self', :release=>true} )
+        post "/v1/objects/{druid}/release_tags", %( {"to":"seachworks","who":"carrickr","what","self","release":true} )
+      end
+    end
 
     describe "/versions" do
       it "opens a new object version when posted to" do
