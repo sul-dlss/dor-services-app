@@ -66,6 +66,17 @@ describe Dor::DorServicesApi do
 
   end
 
+  describe '/release_tags' do
+    before(:each) {authorize 'dorAdmin', 'dorAdmin'}
+
+    it 'adds a release tag when posted to' do
+      item.should_receive(:add_release_node).with( {:to => 'seachworks', :who => 'carrickr', :what=>'self', :release=>true} )
+      post "/v1/objects/#{item.pid}/release_tags", %( {"to":"seachworks","who":"carrickr","what":"self","release":true} )
+
+      last_response.status.should == 201
+    end
+  end
+
   describe "apo-workflow intialization" do
     before(:each) {authorize 'dorAdmin', 'dorAdmin'}
 
@@ -128,13 +139,6 @@ describe Dor::DorServicesApi do
         post "/v1/objects/#{item.pid}/versions/current/close", %( {"description": "some text", "significance": "major"} )
 
         last_response.body.should =~ /version 1 closed/
-      end
-    end
-    
-    describe '/release_tags' do
-      it 'adds a release tag when posted to' do
-        item.should_receive(:add_release_node).with( {:to => 'seachworks', :who => 'carrickr', :what=>'self', :release=>true} )
-        post "/v1/objects/{druid}/release_tags", %( {"to":"seachworks","who":"carrickr","what","self","release":true} )
       end
     end
 
