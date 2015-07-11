@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem "grape", "0.2.1"
-gem "dor-services", "~> 4.20"
+gem "dor-services", "~> 4.21"
 gem "lyber-core", ">= 2.0.2", :require => 'lyber_core'
 gem "workflow-archiver", "~> 1.3"
 gem "rubydora", "1.6.5"
