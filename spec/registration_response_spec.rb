@@ -22,7 +22,7 @@ describe Dor::RegistrationResponse do
     end
     
     it "to_xml marshalls to xml" do
-      pending
+      skip
     end
     
     it "to_json marshalls to json" do

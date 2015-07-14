@@ -178,7 +178,7 @@ describe Dor::DorServicesApi do
     end
 
     it "checks if all rows are complete before archiving" do
-      pending "Maybe check should be in the gem"
+      skip "Maybe check should be in the gem"
     end
   end
 
