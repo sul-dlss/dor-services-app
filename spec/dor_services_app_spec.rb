@@ -14,10 +14,10 @@ describe Dor::DorServicesApi do
   let(:item) {AssembleableVersionableItem.new}
 
   before(:each) do
-    ActiveFedora.stub(:fedora).and_return(double('frepo').as_null_object)
+    allow(ActiveFedora).to receive(:fedora).and_return(double('frepo').as_null_object)
     FileUtils.rm_rf Dir.glob('/tmp/dor/*')
     item.pid = 'druid:aa123bb4567'
-    Dor::Item.stub(:find).and_return(item)
+    allow(Dor::Item).to receive(:find).and_return(item)
   end
 
   after(:all) do
@@ -26,8 +26,8 @@ describe Dor::DorServicesApi do
 
   it "handles simple ping requests to /about" do
     get '/v1/about'
-    last_response.should be_ok
-    last_response.body.should =~ /version: \d\..*$/
+    expect(last_response).to be_ok
+    expect(last_response.body).to match(/version: \d\..*$/)
   end
 
   describe "initialize_workspace" do
@@ -35,12 +35,12 @@ describe Dor::DorServicesApi do
 
     it "creates a druid tree in the dor workspace for the passed in druid" do
       post "/v1/objects/#{item.pid}/initialize_workspace"
-      File.should be_directory('/tmp/dor/aa/123/bb/4567')
+      expect(File).to be_directory('/tmp/dor/aa/123/bb/4567')
     end
 
     it "creates a link in the dor workspace to the path passed in as source" do
       post "/v1/objects/#{item.pid}/initialize_workspace", :source => '/tmp/stage/obj1'
-      File.should be_symlink('/tmp/dor/aa/123/bb/4567/aa123bb4567')
+      expect(File).to be_symlink('/tmp/dor/aa/123/bb/4567/aa123bb4567')
     end
 
     context "error handling" do
@@ -52,15 +52,15 @@ describe Dor::DorServicesApi do
       it "returns a 409 Conflict http status code when the link/directory already exists" do
         post "/v1/objects/#{item.pid}/initialize_workspace"
 
-        last_response.status.should == 409
-        last_response.body.should =~ /The directory already exists/
+        expect(last_response.status).to eq(409)
+        expect(last_response.body).to match(/The directory already exists/)
       end
 
       it "returns a 409 Conflict http status code when the workspace already exists with different content" do
         post "/v1/objects/#{item.pid}/initialize_workspace", :source => '/some/path'
 
-        last_response.status.should == 409
-        last_response.body.should =~ /Unable to create link, directory already exists/
+        expect(last_response.status).to eq(409)
+        expect(last_response.body).to match(/Unable to create link, directory already exists/)
       end
     end
 
@@ -70,10 +70,10 @@ describe Dor::DorServicesApi do
     before(:each) {authorize 'dorAdmin', 'dorAdmin'}
 
     it 'adds a release tag when posted to' do
-      item.should_receive(:add_release_node).with( {:to => 'seachworks', :who => 'carrickr', :what=>'self', :release=>true} )
+      expect(item).to receive(:add_release_node).with( {:to => 'seachworks', :who => 'carrickr', :what=>'self', :release=>true} )
       post "/v1/objects/#{item.pid}/release_tags", %( {"to":"seachworks","who":"carrickr","what":"self","release":true} )
 
-      last_response.status.should == 201
+      expect(last_response.status).to eq(201)
     end
   end
 
@@ -81,13 +81,13 @@ describe Dor::DorServicesApi do
     before(:each) {authorize 'dorAdmin', 'dorAdmin'}
 
     it "initiates accessionWF via obj.initiate_apo_workflow" do
-      item.should_receive(:initiate_apo_workflow).with('assemblyWF')
+      expect(item).to receive(:initiate_apo_workflow).with('assemblyWF')
 
       post "/v1/objects/#{item.pid}/apo_workflows/assemblyWF"
     end
 
     it "handles workflow names without 'WF' appended to the end" do
-      item.should_receive(:initiate_apo_workflow).with('accessionWF')
+      expect(item).to receive(:initiate_apo_workflow).with('accessionWF')
 
       post "/v1/objects/#{item.pid}/apo_workflows/accession"
     end
@@ -98,19 +98,19 @@ describe Dor::DorServicesApi do
 
     context "error handling" do
       it "returns a 409 error with location header when an object already exists" do
-        Dor::RegistrationService.stub(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
+        allow(Dor::RegistrationService).to receive(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
 
         post "/v1/objects", :some => 'param'
-        last_response.status.should == 409
-        last_response.headers['location'].should =~ /\/fedora\/objects\/druid:existing123obj/
+        expect(last_response.status).to eq(409)
+        expect(last_response.headers['location']).to match(/\/fedora\/objects\/druid:existing123obj/)
       end
 
       it "logs all unhandled exceptions" do
-        Dor::RegistrationService.stub(:register_object).and_raise(Exception.new("Testing Exception Logging"))
-        LyberCore::Log.should_receive(:exception)
+        allow(Dor::RegistrationService).to receive(:register_object).and_raise(Exception.new("Testing Exception Logging"))
+        expect(LyberCore::Log).to receive(:exception)
 
         post "/v1/objects", :some => 'param'
-        last_response.status.should == 500
+        expect(last_response.status).to eq(500)
       end
     end
   end
@@ -122,37 +122,38 @@ describe Dor::DorServicesApi do
       it "returns the latest version for an object" do
         get "/v1/objects/#{item.pid}/versions/current"
 
-        last_response.body.should == '1'
+        expect(last_response.body).to eq('1')
       end
     end
 
     describe "/versions/current/close" do
       it "closes the current version when posted to" do
-        item.should_receive(:close_version)
+        expect(item).to receive(:close_version)
         post "/v1/objects/#{item.pid}/versions/current/close"
 
-        last_response.body.should =~ /version 1 closed/
+        expect(last_response.body).to match(/version 1 closed/)
       end
 
       it "forwards optional params to the Dor::Item#close_version method" do
-        item.should_receive(:close_version).with( {:description => 'some text', :significance => :major} )
+        expect(item).to receive(:close_version).with( {:description => 'some text', :significance => :major} )
         post "/v1/objects/#{item.pid}/versions/current/close", %( {"description": "some text", "significance": "major"} )
 
-        last_response.body.should =~ /version 1 closed/
+        expect(last_response.body).to match(/version 1 closed/)
       end
     end
 
     describe "/versions" do
       it "opens a new object version when posted to" do
-        Dor::WorkflowService.should_receive(:get_lifecycle).with('dor', item.pid, 'accessioned').and_return(true)
-        Dor::WorkflowService.should_receive(:get_active_lifecycle).with('dor', item.pid, 'submitted').and_return(nil)
-        Dor::WorkflowService.should_receive(:get_active_lifecycle).with('dor', item.pid, 'opened').and_return(nil)
+        expect(Dor::WorkflowService).to receive(:get_lifecycle).with('dor', item.pid, 'accessioned').and_return(true)
+        expect(Dor::WorkflowService).to receive(:get_active_lifecycle).with('dor', item.pid, 'submitted').and_return(nil)
+        expect(Dor::WorkflowService).to receive(:get_active_lifecycle).with('dor', item.pid, 'opened').and_return(nil)
+
         expect(Sdr::Client).to receive(:current_version).and_return(1)
-        item.should_receive(:initialize_workflow).with('versioningWF')
-        item.stub(:save)
+        expect(item).to receive(:initialize_workflow).with('versioningWF')
+        allow(item).to receive(:save)
         post "/v1/objects/#{item.pid}/versions"
 
-        last_response.body.should == '2'
+        expect(last_response.body).to eq('2')
       end
     end
 
@@ -162,19 +163,19 @@ describe Dor::DorServicesApi do
     before(:each) {authorize 'dorAdmin', 'dorAdmin'}
 
     it "POSTing to /objects/{druid}/workflows/{wfname}/archive archives a workflow for a given druid and repository" do
-      Dor::WorkflowArchiver.any_instance.stub(:connect_to_db)
-      Dor::WorkflowArchiver.any_instance.should_receive(:archive_one_datastream).with('dor', item.pid, 'accessionWF', '1')
+      allow_any_instance_of(Dor::WorkflowArchiver).to receive(:connect_to_db)
+      expect_any_instance_of(Dor::WorkflowArchiver).to receive(:archive_one_datastream).with('dor', item.pid, 'accessionWF', '1')
       post "/v1/objects/#{item.pid}/workflows/accessionWF/archive"
 
-      last_response.body.should == 'accessionWF version 1 archived'
+      expect(last_response.body).to eq('accessionWF version 1 archived')
     end
 
     it "POSTing to /objects/{druid}/workflows/{wfname}/archive/{ver_num} archives a workflow with a specic version" do
-      Dor::WorkflowArchiver.any_instance.stub(:connect_to_db)
-      Dor::WorkflowArchiver.any_instance.should_receive(:archive_one_datastream).with('dor', item.pid, 'accessionWF', '3')
+      allow_any_instance_of(Dor::WorkflowArchiver).to receive(:connect_to_db)
+      expect_any_instance_of(Dor::WorkflowArchiver).to receive(:archive_one_datastream).with('dor', item.pid, 'accessionWF', '3')
       post "/v1/objects/#{item.pid}/workflows/accessionWF/archive/3"
 
-      last_response.body.should == 'accessionWF version 3 archived'
+      expect(last_response.body).to eq('accessionWF version 3 archived')
     end
 
     it "checks if all rows are complete before archiving" do
@@ -188,7 +189,7 @@ describe Dor::DorServicesApi do
     end
 
     it "GET of /workflows/{wfname}/initial returns the an initial instance of the workflow's xml" do
-      Dor::WorkflowObject.should_receive(:initial_workflow).with('accessionWF') { <<-XML
+      expect(Dor::WorkflowObject).to receive(:initial_workflow).with('accessionWF') { <<-XML
         <workflow id="accessionWF">
           <process name="start-accession" status="completed" attempts="1" lifecycle="submitted"/>
           <process name="content-metadata" status="waiting"/>
@@ -198,10 +199,8 @@ describe Dor::DorServicesApi do
 
       get '/v1/workflows/accessionWF/initial'
 
-
-      #last_response.should be_ok
-      last_response.content_type.should == 'application/xml'
-      last_response.body.should =~ /start-accession/
+      expect(last_response.content_type).to eq('application/xml')
+      expect(last_response.body).to match(/start-accession/)
     end
 
   end

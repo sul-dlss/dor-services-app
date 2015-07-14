@@ -27,11 +27,11 @@ describe Dor::RegistrationResponse do
     
     it "to_json marshalls to json" do
       j = @resp.to_json
-      @params.should == JSON.parse(j, :symbolize_names => true)
+      expect(@params).to eq(JSON.parse(j, :symbolize_names => true))
     end
     
     it "to_text returns just the pid" do
-      @resp.to_txt.should == 'druid:xx123'
+      expect(@resp.to_txt).to eq('druid:xx123')
     end
   end
 end
