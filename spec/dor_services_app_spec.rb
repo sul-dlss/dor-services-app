@@ -31,7 +31,7 @@ describe Dor::DorServicesApi do
   end
 
   describe "initialize_workspace" do
-    before(:each) {authorize 'dorAdmin', 'dorAdmin'}
+    before(:each) {authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password}
 
     it "creates a druid tree in the dor workspace for the passed in druid" do
       post "/v1/objects/#{item.pid}/initialize_workspace"
@@ -67,7 +67,7 @@ describe Dor::DorServicesApi do
   end
 
   describe '/release_tags' do
-    before(:each) {authorize 'dorAdmin', 'dorAdmin'}
+    before(:each) {authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password}
 
     it 'adds a release tag when posted to' do
       expect(item).to receive(:add_release_node).with( {:to => 'seachworks', :who => 'carrickr', :what=>'self', :release=>true} )
@@ -78,7 +78,7 @@ describe Dor::DorServicesApi do
   end
 
   describe "apo-workflow intialization" do
-    before(:each) {authorize 'dorAdmin', 'dorAdmin'}
+    before(:each) {authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password}
 
     it "initiates accessionWF via obj.initiate_apo_workflow" do
       expect(item).to receive(:initiate_apo_workflow).with('assemblyWF')
@@ -94,7 +94,7 @@ describe Dor::DorServicesApi do
   end
 
   describe "object registration" do
-    before(:each) {authorize 'dorAdmin', 'dorAdmin'}
+    before(:each) {authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password}
 
     context "error handling" do
       it "returns a 409 error with location header when an object already exists" do
@@ -116,7 +116,7 @@ describe Dor::DorServicesApi do
   end
 
   describe "versioning" do
-    before(:each) {authorize 'dorAdmin', 'dorAdmin'}
+    before(:each) {authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password}
 
     describe "/versions/current" do
       it "returns the latest version for an object" do
@@ -160,7 +160,7 @@ describe Dor::DorServicesApi do
   end
 
   describe "workflow archiving" do
-    before(:each) {authorize 'dorAdmin', 'dorAdmin'}
+    before(:each) {authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password}
 
     it "POSTing to /objects/{druid}/workflows/{wfname}/archive archives a workflow for a given druid and repository" do
       allow_any_instance_of(Dor::WorkflowArchiver).to receive(:connect_to_db)
@@ -185,7 +185,7 @@ describe Dor::DorServicesApi do
 
   describe "workflow definitions" do
     before(:each) do
-      authorize 'dorAdmin', 'dorAdmin'
+      authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password
     end
 
     it "GET of /workflows/{wfname}/initial returns the an initial instance of the workflow's xml" do
