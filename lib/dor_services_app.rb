@@ -136,7 +136,20 @@ module Dor
           body = request.body.read
           raw_params = JSON.parse body #This should produce a hash in valid release tag form=
           raw_params.symbolize_keys!
-          @item.add_release_node(raw_params)
+
+	  if(raw_params.key?(:release))
+            if(raw_params[:release] == true)
+              @item.add_release_node(true, raw_params)
+              @item.save
+            elsif(!raw_params[:release])
+              @item.add_release_node(false, raw_params)
+              @item.save
+            else
+              error!("The JSON release attribute must be either 'true' or 'false'", 400)
+            end
+          else
+            error!("A release attribute is required in the JSON, and its value must be either 'true' or 'false'", 400)
+          end
           status 201
         end
 

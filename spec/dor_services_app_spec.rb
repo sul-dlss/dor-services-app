@@ -69,11 +69,30 @@ describe Dor::DorServicesApi do
   describe '/release_tags' do
     before(:each) {authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password}
 
-    it 'adds a release tag when posted to' do
-      expect(item).to receive(:add_release_node).with( {:to => 'seachworks', :who => 'carrickr', :what=>'self', :release=>true} )
-      post "/v1/objects/#{item.pid}/release_tags", %( {"to":"seachworks","who":"carrickr","what":"self","release":true} )
+    it 'adds a release tag when posted to with false' do
+      expect(item).to receive(:add_release_node).with(false, {:to => 'searchworks', :who => 'carrickr', :what=>'self', :release=>false} )
+      expect(item).to receive(:save)
+      post "/v1/objects/#{item.pid}/release_tags", %( {"to":"searchworks","who":"carrickr","what":"self","release":false} )
 
       expect(last_response.status).to eq(201)
+    end
+
+    it 'adds a release tag when posted to with true' do
+      expect(item).to receive(:add_release_node).with(true, {:to => 'searchworks', :who => 'carrickr', :what=>'self', :release=>true} )
+      expect(item).to receive(:save)
+      post "/v1/objects/#{item.pid}/release_tags", %( {"to":"searchworks","who":"carrickr","what":"self","release":true} )
+
+      expect(last_response.status).to eq(201)
+    end
+
+    it 'errors when posted to with an invalid release attribute' do
+      post "/v1/objects/#{item.pid}/release_tags", %( {"to":"searchworks","who":"carrickr","what":"self","release":"seven"} )
+      expect(last_response.status).to eq(400)
+    end
+
+    it 'errors when posted to with a missing release attribute' do
+      post "/v1/objects/#{item.pid}/release_tags", %( {"to":"searchworks","who":"carrickr","what":"self"} )
+      expect(last_response.status).to eq(400)
     end
   end
 
