@@ -1,0 +1,6 @@
+sudo: false
+notifications:
+  email: false
+
+rvm:
+  - 1.9.3

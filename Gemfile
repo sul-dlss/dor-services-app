@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem "grape", "0.2.1"
-gem "dor-services", "~> 4.21"
+gem "dor-services", "~> 4.22"
 gem "lyber-core", ">= 2.0.2", :require => 'lyber_core'
 gem "workflow-archiver", "~> 1.3"
 gem "rubydora", "1.6.5"
@@ -16,7 +16,7 @@ group :test do
 end
 
 group :development do
-  gem "pry-debugger"
+  gem 'pry-debugger', '0.2.2', :platform => :ruby_19
   gem "capistrano", '~> 3.0'
   gem 'capistrano-bundler', '~> 1.1'
   gem "lyberteam-capistrano-devel"
