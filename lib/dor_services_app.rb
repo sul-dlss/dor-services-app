@@ -57,7 +57,7 @@ module Dor
       # Simple ping to see if app is up
       get do
         @version ||= IO.readlines('VERSION').first
-        "ok\nversion: #{@version}"
+        "ok\nversion: #{@version} dor-services/#{Dor::VERSION}"
       end
     end
 
