@@ -1,0 +1,12 @@
+sudo: false
+notifications:
+  email: false
+
+rvm:
+  - 1.9.3
+
+install:
+  - echo "Travis cannot build ruby-oci8 for Oracle support"
+
+script:
+  - exit -1
