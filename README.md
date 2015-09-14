@@ -26,7 +26,7 @@ is to install the Oracle Instant Client.
 3. Make a symlink to libclntsh.dylib:
 
         cd /opt/oracle_instantclient/instantclient_11_2
-        ln -s libclntsh.dylib.11.1 libclntsh.dylibcd
+        ln -s libclntsh.dylib.11.1 libclntsh.dylib
 
 4. Set the DYLD\_LIBRARY\_PATH environment variable to point to the recently created Instant Client
 directory:
