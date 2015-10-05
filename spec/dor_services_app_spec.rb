@@ -15,14 +15,12 @@ describe Dor::DorServicesApi do
 
   before(:each) do
     allow(ActiveFedora).to receive(:fedora).and_return(double('frepo').as_null_object)
-    FileUtils.rm_rf Dir.glob('/tmp/dor/*')
+    clean_workspace
     item.pid = 'druid:aa123bb4567'
     allow(Dor::Item).to receive(:find).and_return(item)
   end
 
-  after(:all) do
-    FileUtils.rm_rf Dir.glob('/tmp/dor/*')
-  end
+  after(:all) {clean_workspace}
 
   it "handles simple ping requests to /about" do
     get '/v1/about'
@@ -31,21 +29,21 @@ describe Dor::DorServicesApi do
   end
 
   describe "initialize_workspace" do
-    before(:each) {authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password}
+    before(:each) {login}
 
     it "creates a druid tree in the dor workspace for the passed in druid" do
       post "/v1/objects/#{item.pid}/initialize_workspace"
-      expect(File).to be_directory('/tmp/dor/aa/123/bb/4567')
+      expect(File).to be_directory(TEST_WORKSPACE + '/aa/123/bb/4567')
     end
 
     it "creates a link in the dor workspace to the path passed in as source" do
-      post "/v1/objects/#{item.pid}/initialize_workspace", :source => '/tmp/stage/obj1'
-      expect(File).to be_symlink('/tmp/dor/aa/123/bb/4567/aa123bb4567')
+      post "/v1/objects/#{item.pid}/initialize_workspace", :source => '/some/path'
+      expect(File).to be_symlink(TEST_WORKSPACE + '/aa/123/bb/4567/aa123bb4567')
     end
 
     context "error handling" do
       before(:each) do
-        druid = DruidTools::Druid.new(item.pid, Dor::Config.stacks.local_workspace_root)
+        druid = DruidTools::Druid.new(item.pid, TEST_WORKSPACE)
         druid.mkdir
       end
 
@@ -67,7 +65,7 @@ describe Dor::DorServicesApi do
   end
 
   describe '/release_tags' do
-    before(:each) {authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password}
+    before(:each) {login}
 
     it 'adds a release tag when posted to with false' do
       expect(item).to receive(:add_release_node).with(false, {:to => 'searchworks', :who => 'carrickr', :what=>'self', :release=>false} )
@@ -97,7 +95,7 @@ describe Dor::DorServicesApi do
   end
 
   describe "apo-workflow intialization" do
-    before(:each) {authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password}
+    before(:each) {login}
 
     it "initiates accessionWF via obj.initiate_apo_workflow" do
       expect(item).to receive(:initiate_apo_workflow).with('assemblyWF')
@@ -113,7 +111,7 @@ describe Dor::DorServicesApi do
   end
 
   describe "object registration" do
-    before(:each) {authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password}
+    before(:each) {login}
 
     context "error handling" do
       it "returns a 409 error with location header when an object already exists" do
@@ -135,7 +133,7 @@ describe Dor::DorServicesApi do
   end
 
   describe "versioning" do
-    before(:each) {authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password}
+    before(:each) {login}
 
     describe "/versions/current" do
       it "returns the latest version for an object" do
@@ -179,7 +177,7 @@ describe Dor::DorServicesApi do
   end
 
   describe "workflow archiving" do
-    before(:each) {authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password}
+    before(:each) {login}
 
     it "POSTing to /objects/{druid}/workflows/{wfname}/archive archives a workflow for a given druid and repository" do
       allow_any_instance_of(Dor::WorkflowArchiver).to receive(:connect_to_db)
@@ -203,9 +201,7 @@ describe Dor::DorServicesApi do
   end
 
   describe "workflow definitions" do
-    before(:each) do
-      authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password
-    end
+    before(:each) {login}
 
     it "GET of /workflows/{wfname}/initial returns the an initial instance of the workflow's xml" do
       expect(Dor::WorkflowObject).to receive(:initial_workflow).with('accessionWF') { <<-XML
