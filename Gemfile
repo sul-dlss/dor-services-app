@@ -16,7 +16,6 @@ group :test do
 end
 
 group :development do
-  # gem 'pry-debugger' # only supported on 1.9.3, use gem v0.2.2
   gem "capistrano", '~> 3.0'
   gem 'capistrano-bundler', '~> 1.1'
   gem "lyberteam-capistrano-devel"
