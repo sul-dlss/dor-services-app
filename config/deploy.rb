@@ -31,14 +31,13 @@ set :log_level, :info
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
-set :stages, %W(dev staging production)
+set :stages, %w(dev staging production)
 
 set :linked_dirs, %w(log config/environments config/certs)
 
 set :bundle_env_variables, :ld_library_path => '/usr/lib/oracle/11.2/client64/lib:$LD_LIBRARY_PATH'
 
 namespace :deploy do
-
   desc 'Restart application'
   task :restart do
     on roles(:app), in: :sequence, wait: 5 do
@@ -57,5 +56,4 @@ namespace :deploy do
       # end
     end
   end
-
 end

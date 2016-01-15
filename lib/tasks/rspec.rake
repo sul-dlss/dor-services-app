@@ -8,4 +8,3 @@ begin
   task :default => [:spec]
 rescue LoadError => e
 end
-

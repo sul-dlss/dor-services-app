@@ -5,12 +5,23 @@ Style/SpaceBeforeBlockBraces:
   Exclude:
     - 'spec/**/*_spec.rb'
 
+# Far more languages and notations use /regex/ than %r
+# rspec `.to match(/regex/)` is also conventional
+Style/RegexpLiteral:
+  Enabled: false
+
 Style/EmptyLineBetweenDefs:
   AllowAdjacentOneLineDefs: true
+
+# Allow alignment of Dor/Confstruct-y lines (they are effectively assignments)
+Style/SingleSpaceBeforeFirstArg:
+  Exclude:
+    - 'config/environments/*.rb'
 
 # allow for alignment
 Style/SpaceAroundOperators:
   MultiSpaceAllowedForOperators: true
+
 
 # Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:

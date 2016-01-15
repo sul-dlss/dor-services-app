@@ -1,9 +1,7 @@
 require 'dor/workflow_archiver'
 
 module Dor
-
   class DorServicesApi < Grape::API
-
     version 'v1', :using => :path
 
     format :txt
@@ -18,23 +16,23 @@ module Dor
       def merge_params(hash)
         # convert camelCase parameter names to under_score, and string keys to symbols
         # e.g., 'objectType' to :object_type
-        hash.each_pair { |k,v|
+        hash.each_pair do |k, v|
           key = k.underscore
           params[key.to_sym] = v
-        }
+        end
       end
 
       def munge_parameters
         case request.content_type
-        when 'application/xml','text/xml'
+        when 'application/xml', 'text/xml'
           merge_params(Hash.from_xml(request.body.read))
-        when 'application/json','text/json'
+        when 'application/json', 'text/json'
           merge_params(JSON.parse(request.body.read))
         end
       end
 
       def fedora_base
-        URI.parse(Dor::Config.fedora.safeurl.sub(/\/*$/,'/'))
+        URI.parse(Dor::Config.fedora.safeurl.sub(/\/*$/, '/'))
       end
 
       def object_location(pid)
@@ -50,7 +48,6 @@ module Dor
       def archiver
         @archiver ||= create_archiver
       end
-
     end
 
     resource :about do
@@ -62,8 +59,7 @@ module Dor
     end
 
     resource :workflows do
-
-      http_basic do |u,p|
+      http_basic do |u, p|
         u == Dor::Config.dor.service_user && p == Dor::Config.dor.service_password
       end
 
@@ -71,12 +67,10 @@ module Dor
         content_type 'application/xml'
         Dor::WorkflowObject.initial_workflow params[:wf_name]
       end
-
     end
 
     resource :objects do
-
-      http_basic do |u,p|
+      http_basic do |u, p|
         u == Dor::Config.dor.service_user && p == Dor::Config.dor.service_password
       end
 
@@ -85,15 +79,12 @@ module Dor
         munge_parameters
         begin
           LyberCore::Log.info(params.inspect)
-
           reg_response = Dor::RegistrationService.create_from_request(params)
-          LyberCore::Log.info( reg_response)
+          LyberCore::Log.info(reg_response)
           pid = reg_response['pid']
-
           header 'location', object_location(pid)
           status 201
           Dor::RegistrationResponse.new(reg_response)
-
         rescue Dor::ParameterError => e
           LyberCore::Log.exception(e)
           error!(e.message, 400)
@@ -105,10 +96,9 @@ module Dor
       end
 
       resource ':id' do
-
         helpers do
           def load_item
-            @item = Dor::Item.find(params[:id]) if(params[:ver_num].nil? || params[:ver_num].strip == '')
+            @item = Dor::Item.find(params[:id]) if params[:ver_num].nil? || params[:ver_num].strip == ''
           end
         end
 
@@ -127,21 +117,21 @@ module Dor
           end
         end
 
-        #You can post a release tag as JSON in the body to add a release tag to an item.
-        #If successful it will return a 201 code, otherwise the error that occurred will bubble to the top
+        # You can post a release tag as JSON in the body to add a release tag to an item.
+        # If successful it will return a 201 code, otherwise the error that occurred will bubble to the top
         #
         # 201
         post :release_tags do
           request.body.rewind
           body = request.body.read
-          raw_params = JSON.parse body #This should produce a hash in valid release tag form=
+          raw_params = JSON.parse body # This should produce a hash in valid release tag form=
           raw_params.symbolize_keys!
 
-	  if(raw_params.key?(:release))
-            if(raw_params[:release] == true)
+          if raw_params.key?(:release)
+            if raw_params[:release] == true
               @item.add_release_node(true, raw_params)
               @item.save
-            elsif(!raw_params[:release])
+            elsif !raw_params[:release]
               @item.add_release_node(false, raw_params)
               @item.save
             else
@@ -154,13 +144,11 @@ module Dor
         end
 
         resource '/apo_workflows/:wf_name' do
-
           # Initiate a workflow by name
           post do
             workflow = (params[:wf_name] =~ /WF$/ ? params[:wf_name] : params[:wf_name] << 'WF')
             @item.initiate_apo_workflow(workflow)
           end
-
         end # apo_workflows
 
         resource :publish do
@@ -170,13 +158,11 @@ module Dor
         end
 
         resource :versions do
-
           post do
             @item.open_new_version
             @item.save
             @item.current_version
           end
-
 
           get '/current' do
             @item.current_version
@@ -185,12 +171,12 @@ module Dor
           post '/current/close' do
             request.body.rewind
             body = request.body.read
-            if(body.strip.empty?)
+            if body.strip.empty?
               sym_params = nil
             else
               raw_params = JSON.parse body
-              sym_params = Hash[raw_params.map{|(k,v)| [k.to_sym,v]}]
-              if(sym_params[:significance])
+              sym_params = Hash[raw_params.map { |(k, v)| [k.to_sym, v] }]
+              if sym_params[:significance]
                 sym_params[:significance] = sym_params[:significance].to_sym
               end
             end
@@ -200,7 +186,6 @@ module Dor
         end #
 
         resource '/workflows/:wf_name/archive' do
-
           post do
             version = @item.current_version
             archiver.archive_one_datastream 'dor', params[:id], params[:wf_name], version
@@ -208,21 +193,14 @@ module Dor
           end
 
           resource ':ver_num' do
-
-             post do
-               version = params[:ver_num]
-	             archiver.archive_one_datastream 'dor', params[:id], params[:wf_name], version
-               "#{params[:wf_name]} version #{version} archived"
-             end
-
+            post do
+              version = params[:ver_num]
+              archiver.archive_one_datastream 'dor', params[:id], params[:wf_name], version
+              "#{params[:wf_name]} version #{version} archived"
+            end
           end
-
         end
       end # :id
     end # :objects
-
-
-
-  end #class
-
+  end # class
 end # module

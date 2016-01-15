@@ -14,7 +14,7 @@
 # definition into the server list. The second argument
 # something that quacks like a hash can be used to set
 # extended properties on the server.
-server 'sul-lyberservices-prod.stanford.edu', user: 'lyberadmin', roles: %w{web app db}
+server 'sul-lyberservices-prod.stanford.edu', user: 'lyberadmin', roles: %w(web app db)
 
 Capistrano::OneTimeKey.generate_one_time_key!
 
