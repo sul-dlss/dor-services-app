@@ -1,4 +1,4 @@
-# TODO maybe only include this module if Grape::VERSION == 0.1.5
+# TODO: maybe only include this module if Grape::VERSION == 0.1.5
 module Grape
   class Endpoint
     # Override from Grape gem to enable setting of headers in the response
