@@ -3,4 +3,4 @@ config/certs
 .rvmrc
 .bundle
 .ruby-*
-
+workflow_service.log*
