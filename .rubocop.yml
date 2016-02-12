@@ -14,13 +14,13 @@ Style/EmptyLineBetweenDefs:
   AllowAdjacentOneLineDefs: true
 
 # Allow alignment of Dor/Confstruct-y lines (they are effectively assignments)
-Style/SingleSpaceBeforeFirstArg:
+Style/SpaceBeforeFirstArg:
   Exclude:
     - 'config/environments/*.rb'
 
 # allow for alignment
 Style/SpaceAroundOperators:
-  MultiSpaceAllowedForOperators: true
+  AllowForAlignment: true
 
 
 # Configuration parameters: AllowURI, URISchemes.
