@@ -1,5 +1,3 @@
-require 'dor/workflow_archiver'
-
 module Dor
   class DorServicesApi < Grape::API
     version 'v1', :using => :path
@@ -39,14 +37,8 @@ module Dor
         fedora_base.merge("objects/#{pid}").to_s
       end
 
-      def create_archiver
-        arch = Dor::WorkflowArchiver.new
-        arch.connect_to_db
-        arch
-      end
-
       def archiver
-        @archiver ||= create_archiver
+        Dor::WorkflowArchiver.new
       end
     end
 
