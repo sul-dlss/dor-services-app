@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Ruby general dependencies
-gem 'grape', '0.2.1'
+gem 'grape', '~> 0.14'
 gem 'rack-test'
 
 # DLSS/domain-specific dependencies
