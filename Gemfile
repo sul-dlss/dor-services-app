@@ -17,6 +17,7 @@ group :test, :development do
   gem 'rspec'
   gem 'simplecov'
   gem 'equivalent-xml'
+  gem 'fakeweb'
 end
 
 group :deployment do

@@ -28,6 +28,103 @@ describe Dor::DorServicesApi do
     expect(last_response.body).to match(/version: \d\..*$/)
   end
 
+  describe 'sdr' do
+    before(:each) { login }
+
+    describe 'current_version' do
+      let(:mock_response) { '<currentVersion>1</currentVersion>' }
+
+      it 'retrieves the current version from SDR' do
+        FakeWeb.register_uri(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/current_version", body: mock_response, content_type: 'application/xml')
+
+        get "/v1/sdr/objects/#{item.pid}/current_version"
+
+        expect(last_response.status).to eq 200
+        expect(last_response.body).to eq mock_response
+        expect(last_response.content_type).to eq 'application/xml'
+      end
+
+      it 'passes through error codes' do
+        FakeWeb.register_uri(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/current_version", status: 404, body: '')
+
+        get "/v1/sdr/objects/#{item.pid}/current_version"
+
+        expect(last_response.status).to eq 404
+      end
+    end
+
+    describe 'cm-inv-diff' do
+      let(:mock_response) { 'cm-inv-diff' }
+      context 'with an invalid subset value' do
+        it 'fails as a bad request' do
+          post "/v1/sdr/objects/#{item.pid}/cm-inv-diff?subset=wrong"
+
+          expect(last_response.status).to eq 400
+        end
+      end
+
+      context 'with an explicit version' do
+        it 'passes the version to SDR' do
+          FakeWeb.register_uri(:post, "#{Dor::Config.sdr.url}/objects/#{item.pid}/cm-inv-diff?subset=all&version=5", body: mock_response, content_type: 'application/xml')
+
+          post "/v1/sdr/objects/#{item.pid}/cm-inv-diff?subset=all&version=5"
+          expect(last_response.status).to eq 200
+          expect(last_response.body).to eq mock_response
+          expect(last_response.content_type).to eq 'application/xml'
+        end
+      end
+
+      it 'retrieves the diff from SDR' do
+        FakeWeb.register_uri(:post, "#{Dor::Config.sdr.url}/objects/#{item.pid}/cm-inv-diff?subset=all", body: mock_response, content_type: 'application/xml')
+
+        post "/v1/sdr/objects/#{item.pid}/cm-inv-diff?subset=all"
+        expect(last_response.status).to eq 200
+        expect(last_response.body).to eq mock_response
+        expect(last_response.content_type).to eq 'application/xml'
+      end
+    end
+
+    describe 'signatureCatalog' do
+      it 'retrieves the catalog from SDR' do
+        FakeWeb.register_uri(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/manifest/signatureCatalog.xml", body: '<catalog />', content_type: 'application/xml')
+
+        get "/v1/sdr/objects/#{item.pid}/manifest/signatureCatalog.xml"
+
+        expect(last_response.status).to eq 200
+        expect(last_response.body).to eq '<catalog />'
+        expect(last_response.content_type).to eq 'application/xml'
+      end
+
+      it 'passes through errors' do
+        FakeWeb.register_uri(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/manifest/signatureCatalog.xml", status: 428)
+
+        get "/v1/sdr/objects/#{item.pid}/manifest/signatureCatalog.xml"
+
+        expect(last_response.status).to eq 428
+      end
+    end
+
+    describe 'metadata services' do
+      it 'retrieves the datastream from SDR' do
+        FakeWeb.register_uri(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/metadata/whatever", body: 'content', content_type: 'application/xml')
+
+        get "/v1/sdr/objects/#{item.pid}/metadata/whatever"
+
+        expect(last_response.status).to eq 200
+        expect(last_response.body).to eq 'content'
+        expect(last_response.content_type).to eq 'application/xml'
+      end
+
+      it 'passes through errors' do
+        FakeWeb.register_uri(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/metadata/whatever", status: 428)
+
+        get "/v1/sdr/objects/#{item.pid}/metadata/whatever"
+
+        expect(last_response.status).to eq 428
+      end
+    end
+  end
+
   describe 'initialize_workspace' do
     before(:each) { login }
 
