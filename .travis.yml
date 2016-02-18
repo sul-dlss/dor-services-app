@@ -1,12 +1,9 @@
 sudo: false
+
 notifications:
   email: false
 
 rvm:
-  - 1.9.3
+  - 2.2.4
 
-install:
-  - echo "Travis cannot build ruby-oci8 for Oracle support"
-
-script:
-  - exit -1
+bundler_args: --without production
