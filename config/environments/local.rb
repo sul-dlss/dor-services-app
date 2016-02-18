@@ -16,7 +16,11 @@ Dor.configure do
     user 'user'
     pass 'password'
   end
-  
+
+  sdr do
+    url 'http://localhost/sdr'
+  end
+
   metadata do
     exist.url 'http://localhost/exist/rest/'
     catalog.url 'http://localhost/catalog/mods'

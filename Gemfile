@@ -7,12 +7,14 @@ gem "workflow-archiver", "~> 1.3"
 gem "rubydora", "1.6.5"
 gem "rack-test", :require => "rack/test"
 gem "addressable", '2.3.5'
+gem "rest-client"
 
 group :test do
   gem "awesome_print"
   gem "equivalent-xml"
   gem "simplecov"
   gem "rspec"
+  gem "fakeweb"
 end
 
 group :deployment do

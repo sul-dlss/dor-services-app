@@ -51,6 +51,15 @@ module Dor
         @archiver ||= create_archiver
       end
 
+      def sdr_client
+        RestClient::Resource.new(Dor::Config.sdr.url)
+      end
+
+      def proxy_rest_client_response(response)
+        content_type response.headers[:content_type]
+        status response.code
+        response
+      end
     end
 
     resource :about do
@@ -58,6 +67,43 @@ module Dor
       get do
         @version ||= IO.readlines('VERSION').first
         "ok\nversion: #{@version} dor-services/#{Dor::VERSION}"
+      end
+    end
+
+    resource :sdr do
+      post '/objects/:druid/cm-inv-diff' do
+        unless %w(all shelve preserve publish).include?(params[:subset].to_s)
+          status 400
+          return "Invalid subset value: #{params[:subset]}"
+        end
+
+        request.body.rewind
+        current_content = request.body.read
+
+        query_params = { :subset => params[:subset].to_s }
+        query_params[:version] = params[:version].to_s unless params[:version].nil?
+        query_string = URI.encode_www_form(query_params)
+        sdr_query = "objects/#{params[:druid]}/cm-inv-diff?#{query_string}"
+
+        sdr_response = sdr_client[sdr_query].post(current_content, content_type: 'application/xml') { |response, _request, _result| response }
+        proxy_rest_client_response(sdr_response)
+      end
+
+      get '/objects/:druid/manifest/:dsname', requirements: { dsname: /.*/ } do
+        url = "objects/#{params[:druid]}/manifest/#{params[:dsname]}"
+        sdr_response = sdr_client[url].get { |response, _request, _result| response }
+        proxy_rest_client_response(sdr_response)
+      end
+
+      get '/objects/:druid/metadata/:dsname', requirements: { dsname: /.*/ } do
+        url = "objects/#{params[:druid]}/metadata/#{params[:dsname]}"
+        sdr_response = sdr_client[url].get { |response, _request, _result| response }
+        proxy_rest_client_response(sdr_response)
+      end
+
+      get '/objects/:druid/current_version' do
+        sdr_response = sdr_client["objects/#{params[:druid]}/current_version"].get { |response, _request, _result| response }
+        proxy_rest_client_response(sdr_response)
       end
     end
 
