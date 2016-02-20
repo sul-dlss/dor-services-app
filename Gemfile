@@ -5,7 +5,7 @@ gem 'grape', '~> 0.14'
 gem 'rack-test'
 
 # DLSS/domain-specific dependencies
-gem 'dor-services', '~> 5.3'
+gem 'dor-services', '~> 5.4'
 gem 'lyber-core', '>= 2.0.2'
 gem 'workflow-archiver', '~> 2.0'
 
