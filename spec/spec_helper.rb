@@ -13,3 +13,5 @@ end
 def login
   authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password
 end
+
+require 'fakeweb'

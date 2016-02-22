@@ -17,16 +17,16 @@ Dor.configure do
     pass 'password'
   end
 
+  sdr do
+    url 'http://localhost/sdr'
+  end
+
   metadata do
     exist.url   'http://localhost/exist/rest/'
     catalog.url 'http://localhost/catalog/mods'
   end
 
-  gsearch do
-    rest_url 'http://localhost/gsearch/rest'
-    url      'http://localhost/solr/argo_dev'
-  end
-  solrizer.url 'https://localhost/solr/argo_dev'
+  solr.url 'https://localhost/solr/argo_dev'
   workflow.url 'http://localhost/workflow/'
 
   stacks.local_workspace_root '/my/workspace'
