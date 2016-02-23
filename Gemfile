@@ -21,5 +21,8 @@ group :test, :development do
 end
 
 group :deployment do
+  gem 'capistrano'
+  gem 'capistrano-bundler'
+  gem 'capistrano-passenger'
   gem 'dlss-capistrano'
 end

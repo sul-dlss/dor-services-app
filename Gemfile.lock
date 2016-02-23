@@ -38,7 +38,12 @@ GEM
     capistrano-bundle_audit (0.0.5)
       bundler-audit
       capistrano (~> 3.0)
+    capistrano-bundler (1.1.4)
+      capistrano (~> 3.1)
+      sshkit (~> 1.2)
     capistrano-one_time_key (0.0.1)
+      capistrano (~> 3.0)
+    capistrano-passenger (0.2.0)
       capistrano (~> 3.0)
     capistrano-releaseboard (0.0.1)
       faraday
@@ -291,6 +296,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  capistrano
+  capistrano-bundler
+  capistrano-passenger
   dlss-capistrano
   dor-services (~> 5.4)
   equivalent-xml
