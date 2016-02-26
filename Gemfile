@@ -15,7 +15,7 @@ group :test do
   gem "rspec"
 end
 
-group :development do
+group :deployment do
   gem "capistrano", '~> 3.0'
   gem 'capistrano-bundler', '~> 1.1'
   gem "lyberteam-capistrano-devel"
