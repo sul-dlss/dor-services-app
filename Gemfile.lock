@@ -25,6 +25,10 @@ GEM
       multi_json (~> 1.0)
     addressable (2.3.5)
     awesome_print (1.6.1)
+    axiom-types (0.1.1)
+      descendants_tracker (~> 0.0.4)
+      ice_nine (~> 0.11.0)
+      thread_safe (~> 0.3, >= 0.3.1)
     bagit (0.3.2)
       docopt (~> 0.5.0)
       validatable (~> 1.6)
@@ -46,10 +50,14 @@ GEM
       capistrano (~> 3.0)
     capistrano-releaseboard (0.0.1)
       faraday
+    coercible (1.0.0)
+      descendants_tracker (~> 0.0.1)
     confstruct (0.2.7)
     daemons (1.2.3)
     deprecation (0.2.2)
       activesupport
+    descendants_tracker (0.0.4)
+      thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.2.5)
     docile (1.1.5)
     docopt (0.5.0)
@@ -91,23 +99,29 @@ GEM
       rest-client (~> 1.7)
       retries
     druid-tools (0.4.1)
+    equalizer (0.0.11)
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
     fastercsv (1.5.5)
-    grape (0.2.1)
-      hashie (~> 1.2)
-      multi_json
-      multi_xml
-      rack
+    grape (0.14.0)
+      activesupport
+      builder
+      hashie (>= 2.1.0)
+      multi_json (>= 1.3.2)
+      multi_xml (>= 0.5.2)
+      rack (>= 1.3.0)
+      rack-accept
       rack-mount
-    hashie (1.2.0)
+      virtus (>= 1.0.0)
+    hashie (3.4.3)
     hooks (0.3.6)
       uber (~> 0.0.4)
     http-cookie (1.0.2)
       domain_name (~> 0.5)
     i18n (0.7.0)
+    ice_nine (0.11.2)
     iso-639 (0.2.5)
     json (1.8.3)
     lyber-core (3.3.0)
@@ -164,6 +178,8 @@ GEM
       json
     progressbar (0.21.0)
     rack (1.6.4)
+    rack-accept (0.4.5)
+      rack (>= 0.4)
     rack-mount (0.8.3)
       rack (>= 1.0.0)
     rack-test (0.6.3)
@@ -236,6 +252,7 @@ GEM
     term-ansicolor (1.3.2)
       tins (~> 1.0)
     thor (0.19.1)
+    thread_safe (0.3.5)
     tins (1.6.0)
     uber (0.0.15)
     unf (0.1.4)
@@ -243,6 +260,11 @@ GEM
     unf_ext (0.0.7.2)
     uuidtools (2.1.5)
     validatable (1.6.7)
+    virtus (1.0.5)
+      axiom-types (~> 0.1)
+      coercible (~> 1.0)
+      descendants_tracker (~> 0.0, >= 0.0.3)
+      equalizer (~> 0.0, >= 0.0.9)
     workflow-archiver (1.3.0)
       confstruct
       lyber-core
@@ -260,7 +282,7 @@ DEPENDENCIES
   capistrano-bundler (~> 1.1)
   dor-services (~> 4.22)
   equivalent-xml
-  grape (= 0.2.1)
+  grape (= 0.14.0)
   lyber-core (>= 2.0.2)
   lyberteam-capistrano-devel
   rack-test

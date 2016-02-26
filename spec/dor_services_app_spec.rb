@@ -123,7 +123,7 @@ describe Dor::DorServicesApi do
       end
 
       it "logs all unhandled exceptions" do
-        allow(Dor::RegistrationService).to receive(:register_object).and_raise(Exception.new("Testing Exception Logging"))
+        allow(Dor::RegistrationService).to receive(:register_object).and_raise(StandardError.new("Testing Exception Logging"))
         expect(LyberCore::Log).to receive(:exception)
 
         post "/v1/objects", :some => 'param'
