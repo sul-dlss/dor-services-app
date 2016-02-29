@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/sul-dlss/dor-services-app.png?branch=master)](https://travis-ci.org/sul-dlss/dor-services-app)
+
 # DOR Services App
 
 This Ruby application provides a REST API for DOR Services.
