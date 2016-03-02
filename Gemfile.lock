@@ -11,10 +11,10 @@ GEM
       rdf-rdfxml (= 1.0.1)
       rsolr
       rubydora (~> 1.6, >= 1.6.5)
-    activemodel (4.2.5.1)
-      activesupport (= 4.2.5.1)
+    activemodel (4.2.5.2)
+      activesupport (= 4.2.5.2)
       builder (~> 3.1)
-    activesupport (4.2.5.1)
+    activesupport (4.2.5.2)
       i18n (~> 0.7)
       json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
@@ -67,7 +67,7 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     dor-rights-auth (1.0.2)
       nokogiri
-    dor-services (5.4.2)
+    dor-services (5.5.1)
       active-fedora (~> 6.0)
       activesupport (>= 3.2.18)
       confstruct (~> 0.2.7)
@@ -288,7 +288,7 @@ DEPENDENCIES
   capistrano-bundler
   capistrano-passenger
   dlss-capistrano
-  dor-services (~> 5.4, >= 5.4.2)
+  dor-services (~> 5.5, >= 5.5.1)
   equivalent-xml
   fakeweb
   grape (~> 0.14)
