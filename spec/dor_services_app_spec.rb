@@ -246,11 +246,11 @@ describe Dor::DorServicesApi do
 
     describe '/versions' do
       it 'opens a new object version when posted to' do
-        expect(Dor::WorkflowService).to receive(:get_lifecycle).with('dor', item.pid, 'accessioned').and_return(true)
-        expect(Dor::WorkflowService).to receive(:get_active_lifecycle).with('dor', item.pid, 'submitted').and_return(nil)
-        expect(Dor::WorkflowService).to receive(:get_active_lifecycle).with('dor', item.pid, 'opened').and_return(nil)
+        expect(Dor::Config.workflow.client).to receive(:get_lifecycle).with('dor', item.pid, 'accessioned').and_return(true)
+        expect(Dor::Config.workflow.client).to receive(:get_active_lifecycle).with('dor', item.pid, 'submitted').and_return(nil)
+        expect(Dor::Config.workflow.client).to receive(:get_active_lifecycle).with('dor', item.pid, 'opened').and_return(nil)
         expect(Sdr::Client).to receive(:current_version).and_return(1)
-        expect(item).to receive(:initialize_workflow).with('versioningWF')
+        expect(item).to receive(:create_workflow).with('versioningWF')
         allow(item).to receive(:save)
         post "/v1/objects/#{item.pid}/versions"
         expect(last_response.body).to eq('2')
