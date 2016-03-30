@@ -95,6 +95,14 @@ module Dor
         sdr_response = sdr_client["objects/#{params[:druid]}/current_version"].get { |response, _request, _result| response }
         proxy_rest_client_response(sdr_response)
       end
+
+      get '/objects/:druid/content/:filename', requirements: { filename: /.*/ } do
+        query_string = URI.encode_www_form({ version: params[:version].to_s })
+        encoded_filename = URI.encode(params[:filename])
+        url = "objects/#{params[:druid]}/content/#{encoded_filename}?#{query_string}"
+        sdr_response = sdr_client[url].get { |response, _request, _result| response }
+        proxy_rest_client_response(sdr_response)
+      end
     end
 
     resource :workflows do
