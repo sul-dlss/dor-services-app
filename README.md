@@ -35,7 +35,7 @@ directory:
 
    `export DYLD_LIBRARY_PATH=/opt/oracle_instantclient/instantclient_11_2`
 
-You should now be ready to run `bundle install`. Note that DOR Services App requires Ruby 1.9.3.
+You should now be ready to run `bundle install`. Note that DOR Services App requires Ruby 2.
 
 To run the tests, use `bundle exec rake`.
 

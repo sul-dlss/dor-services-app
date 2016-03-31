@@ -53,6 +53,69 @@ describe Dor::DorServicesApi do
       end
     end
 
+    describe 'preserved content' do
+      let(:item_version) { 3 }
+      let(:content_file_name_txt) { 'content_file.txt' }
+      let(:content_type_txt) { 'application/text' }
+      let(:mock_response_txt) { 'some file content' }
+
+      it 'passes through errors' do
+        FakeWeb.register_uri(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/content/no_such_file?version=2", status: 404)
+        FakeWeb.register_uri(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/content/unexpected_error?version=2", status: 500)
+
+        get "/v1/sdr/objects/#{item.pid}/content/no_such_file?version=2"
+        expect(last_response.status).to eq 404
+
+        get "/v1/sdr/objects/#{item.pid}/content/unexpected_error?version=2"
+        expect(last_response.status).to eq 500
+      end
+
+      context 'URI encoding' do
+        let(:filename_with_spaces) { 'filename with spaces' }
+        let(:uri_encoded_filename) { URI.encode(filename_with_spaces) }
+
+        it 'handles file names with characters that need URI encoding' do
+          FakeWeb.register_uri(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/content/#{uri_encoded_filename}?version=#{item_version}", body: mock_response_txt, content_type: content_type_txt)
+
+          get "/v1/sdr/objects/#{item.pid}/content/#{uri_encoded_filename}?version=#{item_version}"
+
+          expect(last_response.status).to eq 200
+          expect(last_response.body).to eq mock_response_txt
+          expect(last_response.content_type).to eq content_type_txt
+        end
+      end
+
+      context 'text file type' do
+        it 'retrieves the content for a version of a text file from SDR' do
+          FakeWeb.register_uri(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/content/#{content_file_name_txt}?version=#{item_version}", body: mock_response_txt, content_type: content_type_txt)
+
+          get "/v1/sdr/objects/#{item.pid}/content/#{content_file_name_txt}?version=#{item_version}"
+
+          expect(last_response.status).to eq 200
+          expect(last_response.body).to eq mock_response_txt
+          expect(last_response.content_type).to eq content_type_txt
+        end
+      end
+
+      # test with a small (but not tiny) chunk of binary content, fixture is just over 3 MB
+      context 'image file type' do
+        let(:img_fixture_filename) { 'spec/fixtures/simple_image_fixture.jpg' }
+        let(:content_file_name_jpg) { 'old_img.jpg' }
+        let(:content_type_jpg) { 'image/jpg' }
+        let(:mock_response_jpg) { URI.encode_www_form_component(File.binread(img_fixture_filename)) }
+
+        it 'retrieves the content for a version of a text file from SDR' do
+          FakeWeb.register_uri(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/content/#{content_file_name_jpg}?version=#{item_version}", body: mock_response_jpg, content_type: content_type_jpg)
+
+          get "/v1/sdr/objects/#{item.pid}/content/#{content_file_name_jpg}?version=#{item_version}"
+
+          expect(last_response.status).to eq 200
+          expect(last_response.body).to eq mock_response_jpg
+          expect(last_response.content_type).to eq content_type_jpg
+        end
+      end
+    end
+
     describe 'cm-inv-diff' do
       let(:mock_response) { 'cm-inv-diff' }
       context 'with an invalid subset value' do
