@@ -50,7 +50,7 @@ GEM
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     confstruct (0.2.7)
-    daemons (1.2.3)
+    daemons (1.2.4)
     deprecation (1.0.0)
       activesupport
     descendants_tracker (0.0.4)
@@ -67,7 +67,7 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     dor-rights-auth (1.2.0)
       nokogiri
-    dor-services (5.9.0)
+    dor-services (5.10.0)
       active-fedora (~> 6.0)
       activesupport (>= 3.2.18)
       confstruct (~> 0.2.7)
@@ -287,7 +287,7 @@ DEPENDENCIES
   capistrano-bundler
   capistrano-passenger
   dlss-capistrano
-  dor-services (~> 5.9, >= 5.9.0)
+  dor-services (~> 5.10, >= 5.10.0)
   equivalent-xml
   fakeweb
   grape (~> 0.14)
@@ -299,4 +299,4 @@ DEPENDENCIES
   workflow-archiver (~> 2.0)
 
 BUNDLED WITH
-   1.11.2
+   1.12.5
