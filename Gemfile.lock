@@ -67,7 +67,7 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     dor-rights-auth (1.2.0)
       nokogiri
-    dor-services (5.10.0)
+    dor-services (5.10.1)
       active-fedora (~> 6.0)
       activesupport (>= 3.2.18)
       confstruct (~> 0.2.7)
@@ -202,10 +202,10 @@ GEM
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
     retries (0.0.5)
-    roo (2.4.0)
+    roo (2.5.1)
       nokogiri (~> 1)
       rubyzip (~> 1.1, < 2.0.0)
-    rsolr (1.1.1)
+    rsolr (1.1.2)
       builder (>= 2.1.2)
     rsolr-ext (1.0.3)
       rsolr (>= 1.0.2)
@@ -255,7 +255,7 @@ GEM
     stanford-mods (1.5.3)
       activesupport
       mods (~> 2.0.2)
-    stomp (1.4.1)
+    stomp (1.4.3)
     systemu (2.6.5)
     thor (0.19.1)
     thread_safe (0.3.5)
@@ -287,7 +287,7 @@ DEPENDENCIES
   capistrano-bundler
   capistrano-passenger
   dlss-capistrano
-  dor-services (~> 5.10, >= 5.10.0)
+  dor-services (~> 5.10, >= 5.10.1)
   equivalent-xml
   fakeweb
   grape (~> 0.14)
