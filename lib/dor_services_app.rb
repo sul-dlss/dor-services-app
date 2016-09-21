@@ -204,7 +204,7 @@ module Dor
           end
         end
 
-        get '/update_marc_record' do
+        post '/update_marc_record' do
           Dor::UpdateMarcRecordService.new(@item).update
         end
         
