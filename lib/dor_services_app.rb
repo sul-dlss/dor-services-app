@@ -204,6 +204,10 @@ module Dor
           end
         end
 
+        get '/update_marc_record' do
+          Dor::UpdateMarcRecordService.new(@item).update
+        end
+        
         resource :versions do
           post do
             @item.open_new_version

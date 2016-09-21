@@ -34,6 +34,7 @@ set :log_level, :info
 set :stages, %w(dev staging production)
 
 set :linked_dirs, %w(log config/environments config/certs)
+set :linked_files, %w{bin/write_marc_record}
 
 set :bundle_env_variables, :ld_library_path => '/usr/lib/oracle/11.2/client64/lib:$LD_LIBRARY_PATH'
 

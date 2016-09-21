@@ -18,6 +18,7 @@ group :test, :development do
   gem 'simplecov'
   gem 'equivalent-xml'
   gem 'fakeweb'
+  gem 'rack-console'
 end
 
 group :deployment do

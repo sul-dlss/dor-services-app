@@ -14,4 +14,17 @@ def login
   authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password
 end
 
+def setup_marc_record(druid,xml)
+  @dor_item=double(Dor::Item)
+  @identityMetadataXML = Dor::IdentityMetadataDS.new
+  allow(@identityMetadataXML).to receive_messages(:ng_xml => Nokogiri::XML(xml))
+  allow(@dor_item).to receive_messages(
+    :id=>druid,
+    :released_for=>{},
+    :datastreams => {"identityMetadata"=>@identityMetadataXML},
+    :identityMetadata => @identityMetadataXML
+  )
+  @umrs=Dor::UpdateMarcRecordService.new @dor_item
+end
+
 require 'fakeweb'
