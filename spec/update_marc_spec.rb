@@ -454,10 +454,33 @@ describe Dor::UpdateMarcRecordService do
       dor_item = double('Dor Item', id: 'aa111aa1111', identityMetadata: identity_metadata_xml)
       release_data = { 'Searchworks' => { 'release' => false } }
       allow(dor_item).to receive(:released_for).and_return(release_data)
-
       updater = Dor::UpdateMarcRecordService.new(dor_item)
       expect(updater.released_to_Searchworks).to be false
     end
+    it 'should return false if release_data tag has release to=SW but no specified release value' do
+      identity_metadata_xml = double('Identity Metadata', ng_xml: Nokogiri::XML(build_identity_metadata_2))
+      dor_item = double('Dor Item', id: 'aa111aa1111', identityMetadata: identity_metadata_xml)
+      release_data = { 'Searchworks' => { 'bogus' => 'yup' } }
+      allow(dor_item).to receive(:released_for).and_return(release_data)
+      updater = Dor::UpdateMarcRecordService.new(dor_item)
+      expect(updater.released_to_Searchworks).to be false
+    end       
+    it 'should return false if there are no release tags at all' do
+      identity_metadata_xml = double('Identity Metadata', ng_xml: Nokogiri::XML(build_identity_metadata_2))
+      dor_item = double('Dor Item', id: 'aa111aa1111', identityMetadata: identity_metadata_xml)
+      release_data = {}
+      allow(dor_item).to receive(:released_for).and_return(release_data)
+      updater = Dor::UpdateMarcRecordService.new(dor_item)
+      expect(updater.released_to_Searchworks).to be false
+    end    
+    it 'should return false if there are non searchworks related release tags' do
+      identity_metadata_xml = double('Identity Metadata', ng_xml: Nokogiri::XML(build_identity_metadata_2))
+      dor_item = double('Dor Item', id: 'aa111aa1111', identityMetadata: identity_metadata_xml)
+      release_data = { 'Revs' => { 'release' => true } }
+      allow(dor_item).to receive(:released_for).and_return(release_data)
+      updater = Dor::UpdateMarcRecordService.new(dor_item)
+      expect(updater.released_to_Searchworks).to be false
+    end       
   end
 
   describe 'dor_items_for_constituents' do

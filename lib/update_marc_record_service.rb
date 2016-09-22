@@ -176,7 +176,7 @@ module Dor
 
     def released_to_Searchworks
       rel = @druid_obj.released_for
-      rel.blank? || rel['Searchworks'].blank? ? false : rel['Searchworks']['release']
+      rel.blank? || rel['Searchworks'].blank? || rel['Searchworks']['release'].blank? ? false : rel['Searchworks']['release']
     end
 
     private
