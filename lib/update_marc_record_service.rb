@@ -175,8 +175,8 @@ module Dor
     end
 
     def released_to_Searchworks
-      rel = @druid_obj.released_for
-      rel.blank? || rel['Searchworks'].blank? || rel['Searchworks']['release'].blank? ? false : rel['Searchworks']['release']
+      rel = @druid_obj.released_for.transform_keys{ |key| key.to_s.upcase } # upcase all release tags to make the check case insensitive
+      rel.blank? || rel['SEARCHWORKS'].blank? || rel['SEARCHWORKS']['release'].blank? ? false : rel['SEARCHWORKS']['release']
     end
 
     private
