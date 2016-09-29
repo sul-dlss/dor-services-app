@@ -10,6 +10,7 @@ $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib
 require 'grape_overrides'
 require 'dor_services_app'
 require 'registration_response'
+require 'update_marc_record_service'
 
 # Override from lyber-core gem so that we can access the log object in the config.ru
 module LyberCore

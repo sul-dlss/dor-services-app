@@ -249,6 +249,16 @@ describe Dor::DorServicesApi do
     end
   end
 
+  describe '/update_marc_record' do
+    before(:each) { login }
+
+    it 'updates a marc record' do
+      #TODO add some more expectations
+      post "/v1/objects/#{item.pid}/update_marc_record"
+      expect(last_response.status).to eq(201)
+    end
+  end
+  
   describe 'apo-workflow intialization' do
     before(:each) { login }
 

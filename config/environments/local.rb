@@ -35,6 +35,13 @@ Dor.configure do
     service_user     'user'
     service_password 'password'
   end
+
+  release do
+    symphony_path './'
+    write_marc_script 'bin/write_marc_record_test'
+    purl_base_uri "http://purl.stanford.edu"
+  end
+    
 end
 
 Dor::WorkflowArchiver.config.configure do
