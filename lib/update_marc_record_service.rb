@@ -43,7 +43,7 @@ module Dor
 
         new856 = "#{druid_ckey}\t#{@druid_id}\t#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{purl_uri}#{get_x1_sdrpurl_marker}#{object_type}"
         new856 << barcode unless barcode.nil?
-        new856 << file_id unless file_id.nil?
+        new856 << thumb unless thumb.nil?
         new856 << collection_info unless collection_info.nil?
         new856 << constituent_info unless constituent_info.nil?
         new856
@@ -102,21 +102,12 @@ module Dor
     end
 
     # the @id attribute of resource/file elements including extension
-    # @return [String] first filename
-    def file_id
-      filename = []
-      unless @druid_obj.datastreams.nil? || @druid_obj.datastreams['contentMetadata'].nil?
-        if @druid_obj.datastreams['contentMetadata'].ng_xml
-          content_md = @druid_obj.datastreams['contentMetadata'].ng_xml.xpath('//contentMetadata')
-          content_md.xpath('//resource[@type="page" or @type="image" or @type="thumb"]').map do |node|
-            filename += node.xpath('./file[@mimetype="image/jp2"]/@id').map { |x| "#{@druid_id}%2F" + x }
-            if filename.empty?
-              filename += node.xpath('./externalFile[@mimetype="image/jp2"]').map do |y| "#{y.attributes['objectId'].text.split(':').last}" + "%2F" + "#{y.attributes['fileId']}" end
-            end
-          end
-        end
+    # @return [String] thumbnail filename (nil if none found)
+    def thumb
+      unless @druid_obj.datastreams.nil?
+        image=@druid_obj.encoded_thumb
+        image.nil? ? nil : image.prepend("|xfile:")
       end
-      filename.detect { |file| file.prepend("|xfile:") unless file.empty? }
     end
 
     # It returns 856 constants

@@ -273,85 +273,33 @@ describe Dor::UpdateMarcRecordService do
     end
   end
 
-  describe '.file_id' do
-    it 'should return file_id from a valid contentMetadata' do
-      d = double(Dor::Item)
+  describe '.thumb' do
+    it 'should return thumb from a valid contentMetadata' do
+      d = Dor::Item.new
       content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_1)
       content_metadata_ds = double(Dor::ContentMetadataDS)
 
-      expect(d).to receive(:id).and_return('bb111bb2222')
-      expect(d).to receive(:datastreams).exactly(4).times.and_return({'contentMetadata' => content_metadata_ds})
-      expect(content_metadata_ds).to receive(:ng_xml).twice.and_return(content_metadata_ng_xml)
+      expect(d).to receive(:id).twice.and_return('bb111bb2222')
+      expect(d).to receive(:datastreams).exactly(3).times.and_return({'contentMetadata' => content_metadata_ds})
+      expect(content_metadata_ds).to receive(:ng_xml).and_return(content_metadata_ng_xml)
 
       updater = Dor::UpdateMarcRecordService.new(d)
-      expect(updater.file_id).to eq('|xfile:bb111bb2222%2Fwt183gy6220_00_0001.jp2')
+      expect(updater.thumb).to eq('|xfile:bb111bb2222%2Fwt183gy6220_00_0001.jp2')
     end
 
-    it 'should return an empty x subfield for contentMetadata without file_id' do
-      d = double(Dor::Item)
+    it 'should return an empty x subfield for contentMetadata without thumb' do
+      d = Dor::Item.new
       content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_3)
       content_metadata_ds = double(Dor::ContentMetadataDS)
 
       expect(d).to receive(:id).and_return('aa111aa2222')
-      expect(d).to receive(:datastreams).exactly(4).times.and_return({'contentMetadata' => content_metadata_ds})
-      expect(content_metadata_ds).to receive(:ng_xml).twice.and_return(content_metadata_ng_xml)
-
+      expect(d).to receive(:datastreams).exactly(3).times.and_return({'contentMetadata' => content_metadata_ds})
+      expect(content_metadata_ds).to receive(:ng_xml).and_return(content_metadata_ng_xml)
+      
       updater = Dor::UpdateMarcRecordService.new(d)
-      expect(updater.file_id).to eq(nil)
+      expect(updater.thumb).to eq(nil)
     end
 
-    it 'should return correct file_id from a valid contentMetadata  with resource type = image' do
-      d = double(Dor::Item)
-      content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_4)
-      content_metadata_ds = double(Dor::ContentMetadataDS)
-
-      expect(d).to receive(:id).and_return('bb111bb2222')
-      expect(d).to receive(:datastreams).exactly(4).times.and_return({'contentMetadata' => content_metadata_ds})
-      expect(content_metadata_ds).to receive(:ng_xml).twice.and_return(content_metadata_ng_xml)
-
-      updater = Dor::UpdateMarcRecordService.new(d)
-      expect(updater.file_id).to eq('|xfile:bb111bb2222%2Fwt183gy6220_00_0001.jp2')
-    end
-
-    it 'should return correct file_id from a valid contentMetadata with resource type = page' do
-      d = double(Dor::Item)
-      content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_5)
-      content_metadata_ds = double(Dor::ContentMetadataDS)
-
-      expect(d).to receive(:id).and_return('aa111aa2222')
-      expect(d).to receive(:datastreams).exactly(4).times.and_return({'contentMetadata' => content_metadata_ds})
-      expect(content_metadata_ds).to receive(:ng_xml).twice.and_return(content_metadata_ng_xml)
-
-      updater = Dor::UpdateMarcRecordService.new(d)
-      expect(updater.file_id).to eq('|xfile:aa111aa2222%2Fwt183gy6220_00_0002.jp2')
-    end
-
-    # Added thumb based upon recommendation from Lynn McRae for future use
-    it 'should return correct file_id from a valid contentMetadata with resource type = thumb' do
-      d = double(Dor::Item)
-      content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_6)
-      content_metadata_ds = double(Dor::ContentMetadataDS)
-
-      expect(d).to receive(:id).and_return('bb111bb2222')
-      expect(d).to receive(:datastreams).exactly(4).times.and_return({'contentMetadata' => content_metadata_ds})
-      expect(content_metadata_ds).to receive(:ng_xml).twice.and_return(content_metadata_ng_xml)
-
-      updater = Dor::UpdateMarcRecordService.new(d)
-      expect(updater.file_id).to eq('|xfile:bb111bb2222%2Fwt183gy6220_00_0002.jp2')
-    end
-
-    it 'should return correct file_id from a valid contentMetadata  with resource type = image' do
-      d = double(Dor::Item)
-      content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_7)
-      content_metadata_ds = double(Dor::ContentMetadataDS)
-
-      expect(d).to receive(:id).and_return('hj097bm8879')
-      expect(d).to receive(:datastreams).exactly(4).times.and_return({'contentMetadata' => content_metadata_ds})
-      expect(content_metadata_ds).to receive(:ng_xml).twice.and_return(content_metadata_ng_xml)
-
-      updater = Dor::UpdateMarcRecordService.new(d)
-      expect(updater.file_id).to eq('|xfile:cg767mn6478%2F2542A.jp2')
-    end
   end
 
   describe '.get_856_cons' do
