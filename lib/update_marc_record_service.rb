@@ -4,7 +4,7 @@ module Dor
   class UpdateMarcRecordService
     def initialize(druid_obj)
       @druid_obj = druid_obj
-      @druid_id = @druid_obj.id.sub('druid:', '')
+      @druid_id = @druid_obj.remove_druid_prefix
     end
 
     def update

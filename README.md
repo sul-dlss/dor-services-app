@@ -50,6 +50,10 @@ To get the rough equivalent of a Rails console:
 
   `RACK_ENV=local bundle exec rack-console`
   
+  or
+  
+  `RACK_ENV=local bin/console`
+  
 ## Development Server
 
 To spin up a local development server (see the output on the console for the exact port #):

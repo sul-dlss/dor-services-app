@@ -18,6 +18,7 @@ describe Dor::DorServicesApi do
     clean_workspace
     item.pid = 'druid:aa123bb4567'
     allow(Dor::Item).to receive(:find).and_return(item)
+    allow(item).to receive(:remove_druid_prefix).and_return('aa123bb4567')
   end
 
   after(:all) { clean_workspace }

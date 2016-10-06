@@ -288,7 +288,7 @@ DEPENDENCIES
   capistrano-bundler
   capistrano-passenger
   dlss-capistrano
-  dor-services (~> 5.10, >= 5.11.0)
+  dor-services (~> 5.11)
   equivalent-xml
   fakeweb
   grape (~> 0.14)
