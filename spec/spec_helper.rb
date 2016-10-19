@@ -22,7 +22,8 @@ def setup_marc_record(druid,xml)
     :id=>druid,
     :released_for=>{},
     :datastreams => {"identityMetadata"=>@identityMetadataXML},
-    :identityMetadata => @identityMetadataXML
+    :identityMetadata => @identityMetadataXML,
+    :remove_druid_prefix=>druid.gsub('druid:','')
   )
   @umrs=Dor::UpdateMarcRecordService.new @dor_item
 end
