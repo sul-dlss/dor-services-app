@@ -6,6 +6,7 @@ gem 'rack-test'
 
 # DLSS/domain-specific dependencies
 gem 'dor-services', '~> 5.11'
+gem 'activesupport', '~> 4.2'
 gem 'lyber-core', '>= 2.0.2'
 gem 'workflow-archiver', '~> 2.0'
 
