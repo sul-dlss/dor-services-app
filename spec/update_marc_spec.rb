@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe Dor::UpdateMarcRecordService do
+RSpec.describe Dor::UpdateMarcRecordService do
   before :all do
     Dor::Config.suri = {}
     Dor::Config.release.write_marc_script = 'bin/write_marc_record_test'

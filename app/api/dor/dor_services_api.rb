@@ -5,10 +5,7 @@ module Dor
     format :txt
     default_format :txt
 
-    rescue_from :all do |e|
-      LyberCore::Log.exception(e)
-      rack_response(e.message, 500)
-    end
+    logger Rails.logger
 
     helpers do
       def merge_params(hash)
@@ -137,8 +134,7 @@ module Dor
           error!(e.message, 400)
         rescue Dor::DuplicateIdError => e
           LyberCore::Log.exception(e)
-          header 'location', object_location(e.pid)
-          error!(e.message, 409)
+          error!(e.message, 409, 'Location' => object_location(e.pid))
         end
       end
 

@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'spec_helper'
 
-describe Dor::RegistrationResponse do
+RSpec.describe Dor::RegistrationResponse do
   describe 'self marshalling' do
     before(:each) do
       @params = {
