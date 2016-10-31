@@ -1,14 +1,10 @@
 require 'open3'
 
 module Dor
-  class UpdateMarcRecordService
-    def initialize(druid_obj)
-      @druid_obj = druid_obj
-      @druid_id = @druid_obj.remove_druid_prefix
-    end
+  class UpdateMarcRecordService < ServiceItem
 
     def update
-      push_symphony_record if ckey(@druid_obj).present?
+      push_symphony_record if ckey.present?
     end
     
     def push_symphony_record
@@ -17,8 +13,7 @@ module Dor
     end
 
     def generate_symphony_record
-      druid_ckey = ckey @druid_obj
-      return '' unless druid_ckey.present?
+      return '' unless ckey.present?
 
       if released_to_Searchworks
         purl_uri = get_u_field
@@ -41,14 +36,14 @@ module Dor
         # Subfield x #6..n (optional): Collection(s) this object is a member of, recorded as collection:druid-value:ckey-value:title
         # Subfield x #7..n (optional): Set(s) this object is a member of, recorded as set:druid-value:ckey-value:title
 
-        new856 = "#{druid_ckey}\t#{@druid_id}\t#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{purl_uri}#{get_x1_sdrpurl_marker}#{object_type}"
-        new856 << barcode unless barcode.nil?
-        new856 << thumb unless thumb.nil?
+        new856 = "#{ckey}\t#{@druid_id}\t#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{purl_uri}#{get_x1_sdrpurl_marker}#{object_type.prepend('|x')}"
+        new856 << barcode.prepend('|xbarcode:') unless barcode.nil?
+        new856 << thumb.prepend("|xfile:") unless thumb.nil?
         new856 << collection_info unless collection_info.nil?
         new856 << constituent_info unless constituent_info.nil?
         new856
       else
-        "#{druid_ckey}\t#{@druid_id}\t"
+        "#{ckey}\t#{@druid_id}\t"
       end
     end
 
@@ -69,47 +64,7 @@ module Dor
         end
       end
     end
-
-    # @return [String] value with SIRSI/Symphony numeric catkey in it, or nil if none exists
-    # look in identityMetadata/otherId[@name='catkey']
-    def ckey(object)
-      unless object.datastreams.nil? || object.datastreams['identityMetadata'].nil?
-        if object.datastreams['identityMetadata'].ng_xml
-          node = object.identityMetadata.ng_xml.at_xpath("//identityMetadata/otherId[@name='catkey']")
-        end
-      end
-      node.content if node && node.content.present?
-    end
-
-    # @return [String] value with object_type in it, or empty x subfield if none exists
-    # look in identityMetadata/objectType
-    def object_type
-      @object_type ||= begin
-        object_type = ''
-        node = @druid_obj.datastreams['identityMetadata'].ng_xml.at_xpath('//identityMetadata/objectType')
-        object_type = node.content unless node.nil?
-        object_type.prepend('|x')
-      end
-    end
-
-    # @return [String] value with barcode in it, or empty x subfield if none exists
-    # look in identityMetadata/otherId name="barcode"
-    def barcode
-      @barcode ||= begin
-        node = @druid_obj.datastreams['identityMetadata'].ng_xml.at_xpath("//identityMetadata/otherId[@name='barcode']")
-        node.content.prepend('|xbarcode:') unless node.nil?
-      end
-    end
-
-    # the @id attribute of resource/file elements including extension
-    # @return [String] thumbnail filename (nil if none found)
-    def thumb
-      unless @druid_obj.datastreams.nil?
-        image=@druid_obj.encoded_thumb
-        image.nil? ? nil : image.prepend("|xfile:")
-      end
-    end
-
+      
     # It returns 856 constants
     def get_856_cons
       '.856.'
@@ -148,7 +103,7 @@ module Dor
 
       if collections.length > 0
         collections.each do |coll|
-          coll_info << "|xcollection:#{coll.id.sub('druid:', '')}:#{ckey(coll)}:#{coll.label}"
+          coll_info << "|xcollection:#{coll.id.sub('druid:', '')}:#{Dor::ServiceItem.get_ckey(coll)}:#{coll.label}"
         end
       end
 
@@ -161,7 +116,7 @@ module Dor
       dor_items_for_constituents.map do |cons_obj|
         cons_obj_id = cons_obj.id.sub('druid:', '')
         cons_obj_title = cons_obj.datastreams['descMetadata'].ng_xml.xpath('//mods/titleInfo/title').first.content
-        "|xset:#{cons_obj_id}:#{ckey(cons_obj)}:#{cons_obj_title}"
+        "|xset:#{cons_obj_id}:#{Dor::ServiceItem.get_ckey(cons_obj)}:#{cons_obj_title}"
       end.join('')
     end
 

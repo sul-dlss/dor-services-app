@@ -208,6 +208,10 @@ module Dor
           Dor::UpdateMarcRecordService.new(@item).update
         end
         
+        post '/notify_goobi' do
+          Dor::GoobiNotify.new(@item).register
+        end
+        
         resource :versions do
           post do
             @item.open_new_version

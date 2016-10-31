@@ -4,6 +4,9 @@ source 'https://rubygems.org'
 gem 'grape', '~> 0.14'
 gem 'rack-test'
 
+gem 'faraday'
+gem 'rest-client'
+
 # DLSS/domain-specific dependencies
 gem 'dor-services', '~> 5.12'
 gem 'activesupport', '~> 4.2'

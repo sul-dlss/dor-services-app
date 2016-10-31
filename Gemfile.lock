@@ -303,14 +303,16 @@ DEPENDENCIES
   dor-services (~> 5.12)
   equivalent-xml
   fakeweb
+  faraday
   grape (~> 0.14)
   lyber-core (>= 2.0.2)
   rack-console
   rack-test
+  rest-client
   rspec
   ruby-oci8
   simplecov
   workflow-archiver (~> 2.0)
 
 BUNDLED WITH
-   1.13.5
+   1.13.6

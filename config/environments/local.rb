@@ -41,6 +41,13 @@ Dor.configure do
     write_marc_script 'bin/write_marc_record_test'
     purl_base_uri "http://purl.stanford.edu"
   end
+
+  goobi do
+    url 'https://goobi-api-url'
+    max_tries  5  # the number of attempts to retry service calls before failing
+    max_sleep_seconds   120  # max sleep seconds between tries
+    base_sleep_seconds  10   # base sleep seconds between tries   
+  end
     
 end
 
