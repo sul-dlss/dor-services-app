@@ -5,7 +5,7 @@ begin
     ENV['RACK_ENV'] = 'local'
   end
 
-  task :default => [:spec]
+  task :default => [:spec, :rubocop]
 rescue LoadError
 end
 

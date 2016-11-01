@@ -25,24 +25,25 @@ def login
   authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password
 end
 
-def setup_test_objects(druid,identityMetadata)
-  @dor_item=double(Dor::Item)
+def setup_test_objects(druid, identityMetadata)
+  @dor_item = double(Dor::Item)
   @identityMetadataXML = Dor::IdentityMetadataDS.new
   allow(@identityMetadataXML).to receive_messages(:ng_xml => Nokogiri::XML(identityMetadata))
   allow(@dor_item).to receive_messages(
-    :id=>druid,
-    :released_for=>{},
-    :datastreams => {"identityMetadata"=>@identityMetadataXML},
+    :id => druid,
+    :released_for => {},
+    :datastreams => { 'identityMetadata' => @identityMetadataXML },
     :identityMetadata => @identityMetadataXML,
-    :remove_druid_prefix=>druid.gsub('druid:','')
+    :remove_druid_prefix => druid.gsub('druid:', '')
   )
-  @umrs=Dor::UpdateMarcRecordService.new @dor_item
-  @si=Dor::ServiceItem.new @dor_item
-  @gn=Dor::Goobi.new @dor_item
+  @umrs = Dor::UpdateMarcRecordService.new @dor_item
+  @si = Dor::ServiceItem.new @dor_item
+  @gn = Dor::Goobi.new @dor_item
 end
 
+# rubocop:disable Metrics/MethodLength, Metrics/LineLength
 def build_identity_metadata_1
-    '<identityMetadata>
+  '<identityMetadata>
   <sourceId source="sul">36105216275185</sourceId>
   <objectId>druid:bb987ch8177</objectId>
   <objectCreator>DOR</objectCreator>
@@ -63,7 +64,7 @@ def build_identity_metadata_1
 end
 
 def build_identity_metadata_2
-      '<identityMetadata>
+  '<identityMetadata>
     <sourceId source="sul">36105216275185</sourceId>
     <objectId>druid:bb987ch8177</objectId>
     <objectCreator>DOR</objectCreator>
@@ -83,7 +84,7 @@ def build_identity_metadata_2
 end
 
 def build_identity_metadata_3
-      '<identityMetadata>
+  '<identityMetadata>
     <sourceId source="sul">36105216275185</sourceId>
     <objectId>druid:bb987ch8177</objectId>
     <objectCreator>DOR</objectCreator>
@@ -99,7 +100,7 @@ def build_identity_metadata_3
 end
 
 def build_identity_metadata_4
-      '<identityMetadata>
+  '<identityMetadata>
     <sourceId source="sul">36105216275185</sourceId>
     <objectId>druid:bb987ch8177</objectId>
     <objectCreator>DOR</objectCreator>
@@ -120,15 +121,15 @@ def build_identity_metadata_4
 end
 
 def build_release_data_1
-      '<release_data>
+  '<release_data>
   <release to="Searchworks">true</release>
   </release_data>'
 end
 
 def build_release_data_2
-    '<release_data>
-    <release to="Searchworks">false</release>
-    </release_data>'
+  '<release_data>
+  <release to="Searchworks">false</release>
+  </release_data>'
 end
 
 def build_content_metadata_1
@@ -143,7 +144,7 @@ def build_content_metadata_1
 end
 
 def build_content_metadata_2
-    '<contentMetadata objectId="wt183gy6220">
+  '<contentMetadata objectId="wt183gy6220">
   <resource id="wt183gy6220_1" sequence="1" type="image">
   <label>Image 1</label>
   <file id="wt183gy6220_00_0001.jp2" mimetype="image/jp2" size="3182927">
@@ -160,12 +161,12 @@ def build_content_metadata_2
 end
 
 def build_content_metadata_3
-    '<contentMetadata objectId="wt183gy6220">
-    </contentMetadata>'
+  '<contentMetadata objectId="wt183gy6220">
+  </contentMetadata>'
 end
 
 def build_content_metadata_4
-      '<contentMetadata objectId="wt183gy6220">
+  '<contentMetadata objectId="wt183gy6220">
   <resource id="wt183gy6220_1" sequence="1" type="image">
   <label>PDF 1</label>
   <file id="wt183gy6220.pdf" mimetype="application/pdf" size="3182927">
@@ -188,7 +189,7 @@ def build_content_metadata_4
 end
 
 def build_content_metadata_5
-      '<contentMetadata objectId="wt183gy6220">
+  '<contentMetadata objectId="wt183gy6220">
   <resource id="wt183gy6220_1" sequence="1" type="image">
   <label>PDF 1</label>
   <file id="wt183gy6220.pdf" mimetype="application/pdf" size="3182927">
@@ -210,9 +211,9 @@ def build_content_metadata_5
   </contentMetadata>'
 end
 
-  # Added thumb based upon recommendation from Lynn McRae for future use
+# Added thumb based upon recommendation from Lynn McRae for future use
 def build_content_metadata_6
-      '<contentMetadata objectId="wt183gy6220">
+  '<contentMetadata objectId="wt183gy6220">
   <resource id="wt183gy6220_1" sequence="1" type="image">
   <label>PDF 1</label>
   <file id="wt183gy6220.pdf" mimetype="application/pdf" size="3182927">
@@ -235,7 +236,7 @@ def build_content_metadata_6
 end
 
 def build_content_metadata_7
-    '<contentMetadata objectId="hj097bm8879" type="image">
+  '<contentMetadata objectId="hj097bm8879" type="image">
   <resource id="hj097bm8879_1" sequence="1" type="image">
   <label>Cover: Carey\'s American atlas.</label>
   <externalFile fileId="2542A.jp2" mimetype="image/jp2" objectId="druid:cg767mn6478" resourceId="cg767mn6478_1">
@@ -403,8 +404,8 @@ def build_content_metadata_7
 end
 
 def build_rels_ext
-    '<rdf:RDF xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:hydra="http://projecthydra.org/ns/relations#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-  <rdf:Description rdf:about="info:fedora/druid:cs003qk0166">
+  '<rdf:RDF xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:hydra="http://projecthydra.org/ns/relations#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <rdf:Description rdf:about="info:fedora/druid:cs003qk0166">
     <hydra:isGovernedBy rdf:resource="info:fedora/druid:sq161jk2248"/>
     <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_Item"/>
     <fedora:isMemberOf rdf:resource="info:fedora/druid:xh235dd9059"/>
@@ -415,12 +416,12 @@ def build_rels_ext
 end
 
 def build_desc_metadata_1
-    '<mods>
+  '<mods>
   <titleInfo>
-    <title>Constituent label</title>
+  <title>Constituent label</title>
   </titleInfo></mods>'
 end
-  
+
 def build_identity_metadata_with_ckey
   '<identityMetadata>
   <sourceId source="sul">36105216275185</sourceId>
@@ -457,3 +458,4 @@ def build_identity_metadata_without_ckey
   <tag>Remediated By : 4.15.4</tag>
   </identityMetadata>'
 end
+# rubocop:enable Metrics/MethodLength, Metrics/LineLength

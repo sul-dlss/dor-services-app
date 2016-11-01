@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Dor::UpdateMarcRecordService do
-  
   before :all do
     Dor::Config.suri = {}
     Dor::Config.release.write_marc_script = 'bin/write_marc_record_test'
@@ -10,36 +9,35 @@ describe Dor::UpdateMarcRecordService do
     @fixtures = './spec/fixtures'
   end
 
-  context "for a druid without a catkey" do
+  context 'for a druid without a catkey' do
     it 'does nothing' do
-      druid='druid:aa222cc3333'
-      setup_test_objects(druid,build_identity_metadata_without_ckey)
+      druid = 'druid:aa222cc3333'
+      setup_test_objects(druid, build_identity_metadata_without_ckey)
       expect(@umrs).to receive(:ckey).and_return(nil)
       expect(@umrs).not_to receive(:push_symphony_record)
       @umrs.update
     end
   end
 
-  context "for a druid with a catkey" do
-    it "executes the UpdateMarcRecordService push_symphony_record method" do
-      druid='druid:bb333dd4444'
-      setup_test_objects(druid,build_identity_metadata_with_ckey)
+  context 'for a druid with a catkey' do
+    it 'executes the UpdateMarcRecordService push_symphony_record method' do
+      druid = 'druid:bb333dd4444'
+      setup_test_objects(druid, build_identity_metadata_with_ckey)
       expect(@umrs).to receive(:ckey).exactly(3).times.and_return('8832162')
-      expect(@umrs.generate_symphony_record).to eq("8832162\t#{druid.gsub('druid:','')}\t")
+      expect(@umrs.generate_symphony_record).to eq("8832162\t#{druid.gsub('druid:', '')}\t")
       expect(@umrs).to receive(:push_symphony_record)
       @umrs.update
     end
   end
-  
+
   describe '.push_symphony_record' do
     pending
   end
 
   describe '.generate_symphony_record' do
-    
     it 'should generate an empty string for a druid object without catkey' do
       Dor::Config.release.purl_base_uri = 'http://purl.stanford.edu'
-      
+
       item = Dor::Item.new
       collection = Dor::Collection.new
       identity_metadata_xml = double(String)
@@ -116,7 +114,9 @@ describe Dor::UpdateMarcRecordService do
 
       allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
       updater = Dor::UpdateMarcRecordService.new(item)
+      # rubocop:disable Metrics/LineLength
       expect(updater.generate_symphony_record).to eq("8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label")
+      # rubocop:enble Metrics/LineLength
     end
 
     it 'should generate symphony record for a collection object with catkey' do
@@ -163,7 +163,7 @@ describe Dor::UpdateMarcRecordService do
     end
 
     it 'should do nothing if the symphony record is empty' do
-      setup_test_objects('druid:aa111aa1111','')
+      setup_test_objects('druid:aa111aa1111', '')
       updater = Dor::UpdateMarcRecordService.new(@dor_item)
       Dor::Config.release.symphony_path = "#{@fixtures}/sdr-purl"
       updater.write_symphony_record ''
@@ -172,7 +172,7 @@ describe Dor::UpdateMarcRecordService do
     end
 
     it 'should do nothing if the symphony record is nil' do
-      setup_test_objects('druid:aa111aa1111','')
+      setup_test_objects('druid:aa111aa1111', '')
       updater = Dor::UpdateMarcRecordService.new(@dor_item)
       Dor::Config.release.symphony_path = "#{@fixtures}/sdr-purl"
       updater.write_symphony_record ''
@@ -187,7 +187,7 @@ describe Dor::UpdateMarcRecordService do
 
   describe '.get_856_cons' do
     it 'should return a valid sdrpurl constant' do
-      setup_test_objects('druid:aa111aa1111','')
+      setup_test_objects('druid:aa111aa1111', '')
       updater = Dor::UpdateMarcRecordService.new(@dor_item)
       expect(updater.get_856_cons).to eq('.856.')
     end
@@ -195,7 +195,7 @@ describe Dor::UpdateMarcRecordService do
 
   describe '.get_1st_indicator' do
     it 'should return 4' do
-      setup_test_objects('druid:aa111aa1111','')
+      setup_test_objects('druid:aa111aa1111', '')
       updater = Dor::UpdateMarcRecordService.new(@dor_item)
       expect(updater.get_1st_indicator).to eq('4')
     end
@@ -203,7 +203,7 @@ describe Dor::UpdateMarcRecordService do
 
   describe '.get_2nd_indicator' do
     it 'should return 1' do
-      setup_test_objects('druid:aa111aa1111','')
+      setup_test_objects('druid:aa111aa1111', '')
       updater = Dor::UpdateMarcRecordService.new(@dor_item)
       expect(updater.get_2nd_indicator).to eq('1')
     end
@@ -211,7 +211,7 @@ describe Dor::UpdateMarcRecordService do
 
   describe '.get_u_field' do
     it 'should return valid purl url' do
-      setup_test_objects('druid:aa111aa1111','')
+      setup_test_objects('druid:aa111aa1111', '')
       updater = Dor::UpdateMarcRecordService.new(@dor_item)
       Dor::Config.release.purl_base_uri = 'http://purl.stanford.edu'
       expect(updater.get_u_field).to eq('|uhttp://purl.stanford.edu/aa111aa1111')
@@ -220,7 +220,7 @@ describe Dor::UpdateMarcRecordService do
 
   describe '.get_x1_sdrpurl_marker' do
     it 'should return a valid sdrpurl constant' do
-      setup_test_objects('druid:aa111aa1111','')
+      setup_test_objects('druid:aa111aa1111', '')
       updater = Dor::UpdateMarcRecordService.new(@dor_item)
       expect(updater.get_x1_sdrpurl_marker).to eq('|xSDR-PURL')
     end
@@ -228,7 +228,7 @@ describe Dor::UpdateMarcRecordService do
 
   describe '.get_x2_collection_info' do
     it 'should return an empty string for an object without collection' do
-      setup_test_objects('druid:aa111aa1111','')
+      setup_test_objects('druid:aa111aa1111', '')
       expect(@dor_item).to receive(:collections).and_return([])
       expect(@umrs.get_x2_collection_info).to be_empty
     end
@@ -242,7 +242,7 @@ describe Dor::UpdateMarcRecordService do
     end
 
     it 'should return the appropriate information for a collection object' do
-      setup_test_objects('druid:aa111aa1111','')
+      setup_test_objects('druid:aa111aa1111', '')
       collection = Dor::Collection.new
       identity_metadata_xml = String
 
@@ -265,60 +265,60 @@ describe Dor::UpdateMarcRecordService do
 
   describe 'Released to Searchworks' do
     it 'should return true if release_data tag has release to=Searchworks and value is true' do
-      setup_test_objects('druid:aa111aa1111',build_identity_metadata_1)
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       release_data = { 'Searchworks' => { 'release' => true } }
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_Searchworks).to be true
+      expect(@umrs.released_to_searchworks).to be true
     end
     it 'should return true if release_data tag has release to=searchworks (all lowercase) and value is true' do
-      setup_test_objects('druid:aa111aa1111',build_identity_metadata_1)
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       release_data = { 'searchworks' => { 'release' => true } }
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_Searchworks).to be true
+      expect(@umrs.released_to_searchworks).to be true
     end
     it 'should return true if release_data tag has release to=SearchWorks (camcelcase) and value is true' do
-      setup_test_objects('druid:aa111aa1111',build_identity_metadata_1)
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       release_data = { 'SearchWorks' => { 'release' => true } }
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_Searchworks).to be true
+      expect(@umrs.released_to_searchworks).to be true
     end
     it 'should return false if release_data tag has release to=Searchworks and value is false' do
-      setup_test_objects('druid:aa111aa1111',build_identity_metadata_2)
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_2)
       release_data = { 'Searchworks' => { 'release' => false } }
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_Searchworks).to be false
+      expect(@umrs.released_to_searchworks).to be false
     end
     it 'should return false if release_data tag has release to=Searchworks but no specified release value' do
-      setup_test_objects('druid:aa111aa1111',build_identity_metadata_2)
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_2)
       release_data = { 'Searchworks' => { 'bogus' => 'yup' } }
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_Searchworks).to be false
-    end   
+      expect(@umrs.released_to_searchworks).to be false
+    end
     it 'should return false if there are no release tags at all' do
-      setup_test_objects('druid:aa111aa1111',build_identity_metadata_2)
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_2)
       release_data = {}
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_Searchworks).to be false
-    end    
+      expect(@umrs.released_to_searchworks).to be false
+    end
     it 'should return false if there are non searchworks related release tags' do
-      setup_test_objects('druid:aa111aa1111',build_identity_metadata_1)
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       release_data = { 'Revs' => { 'release' => true } }
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_Searchworks).to be false
-    end      
+      expect(@umrs.released_to_searchworks).to be false
+    end
   end
 
   describe 'dor_items_for_constituents' do
     it 'should return empty array if no relationships' do
-      setup_test_objects('druid:aa111aa1111',"")
+      setup_test_objects('druid:aa111aa1111', '')
       allow(@dor_item).to receive(:relationships).and_return(nil)
       expect(Dor::UpdateMarcRecordService.new(@dor_item).send(:dor_items_for_constituents)).to eq([])
     end
     it 'successfully determines constituent druid' do
-      setup_test_objects('druid:mb062dy1188',"")
+      setup_test_objects('druid:mb062dy1188', '')
       allow(@dor_item).to receive(:relationships).and_return(['info:fedora/druid:mb062dy1188'])
       expect(Dor::Item).to receive(:find).with('druid:mb062dy1188')
       Dor::UpdateMarcRecordService.new(@dor_item).send(:dor_items_for_constituents)
     end
-  end  
+  end
 end

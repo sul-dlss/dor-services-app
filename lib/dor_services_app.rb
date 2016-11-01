@@ -97,7 +97,7 @@ module Dor
       end
 
       get '/objects/:druid/content/:filename', requirements: { filename: /.*/ } do
-        query_string = URI.encode_www_form({ version: params[:version].to_s })
+        query_string = URI.encode_www_form(version: params[:version].to_s)
         encoded_filename = URI.encode(params[:filename])
         url = "objects/#{params[:druid]}/content/#{encoded_filename}?#{query_string}"
         sdr_response = sdr_client[url].get { |response, _request, _result| response }
@@ -207,11 +207,11 @@ module Dor
         post '/update_marc_record' do
           Dor::UpdateMarcRecordService.new(@item).update
         end
-        
+
         post '/notify_goobi' do
           Dor::GoobiNotify.new(@item).register
         end
-        
+
         resource :versions do
           post do
             @item.open_new_version

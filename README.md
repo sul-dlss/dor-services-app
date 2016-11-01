@@ -45,7 +45,7 @@ To run the tests:
 
   `bundle exec rake`
   
-To run rubocop (not autorun with tests):
+To run rubocop separately (auto run with tests):
 
   `bundle exec rake rubocop`
 
