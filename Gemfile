@@ -19,10 +19,13 @@ end
 
 group :test, :development do
   gem 'rspec'
+  gem 'coveralls', require: false
   gem 'simplecov'
   gem 'equivalent-xml'
   gem 'fakeweb'
   gem 'rack-console'
+  gem 'rubocop'
+  gem 'rubocop-rspec'
 end
 
 group :deployment do

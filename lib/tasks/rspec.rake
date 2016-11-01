@@ -8,3 +8,7 @@ begin
   task :default => [:spec]
 rescue LoadError
 end
+
+require 'rubocop/rake_task'
+
+RuboCop::RakeTask.new

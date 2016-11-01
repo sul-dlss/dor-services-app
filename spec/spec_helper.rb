@@ -1,10 +1,19 @@
+require 'simplecov'
+require 'coveralls'
+require 'fakeweb'
+Coveralls.wear!
+
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 RSpec.configure do |conf|
   conf.include Rack::Test::Methods
+  conf.order = 'random'
 end
 
-require 'fakeweb'
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
+  SimpleCov::Formatter::HTMLFormatter,
+  Coveralls::SimpleCov::Formatter
+])
 
 TEST_WORKSPACE = (Dor::Config.stacks.local_workspace_root = 'tmp/dor/workspace')
 
