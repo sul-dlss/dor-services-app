@@ -209,7 +209,7 @@ module Dor
         end
 
         post '/notify_goobi' do
-          Dor::GoobiNotify.new(@item).register
+          Dor::Goobi.new(@item).register
         end
 
         resource :versions do

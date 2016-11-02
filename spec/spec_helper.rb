@@ -1,6 +1,7 @@
 require 'simplecov'
 require 'coveralls'
 require 'fakeweb'
+
 Coveralls.wear!
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')

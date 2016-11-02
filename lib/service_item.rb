@@ -31,6 +31,15 @@ module Dor
       end
     end
 
+    # @return [String] value with object_type in it, or empty x subfield if none exists
+    # look in identityMetadata/objectType
+    def content_type
+      @object_type ||= begin
+        node = @druid_obj.datastreams['identityMetadata'].ng_xml.at_xpath('//identityMetadata/objectType')
+        node.content unless node.nil?
+      end
+    end
+
     # the barcode
     # @return [String] value with barcode in it, or empty x subfield if none exists
     # look in identityMetadata/otherId name="barcode"
