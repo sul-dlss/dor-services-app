@@ -31,7 +31,12 @@ describe Dor::UpdateMarcRecordService do
   end
 
   describe '.push_symphony_record' do
-    pending
+    it 'should call the relevant methods' do
+      setup_test_objects('druid:aa111aa1111', '')
+      expect(@umrs).to receive(:generate_symphony_record).once
+      expect(@umrs).to receive(:write_symphony_record).once
+      @umrs.push_symphony_record
+    end
   end
 
   describe '.generate_symphony_record' do
@@ -151,37 +156,34 @@ describe Dor::UpdateMarcRecordService do
   end
 
   describe '.write_symphony_record' do
-    xit 'should write the symphony record to the symphony directory' do
-      d = Dor::Item.new
-      updater = Dor::UpdateMarcRecordService.new(d)
-      updater.instance_variable_set(:@druid_id, 'aa111aa1111')
-      Dor::Config.release.symphony_path = "#{@fixtures}/sdr-purl"
+    before :each do
+      Dor::Config.release.symphony_path = "#{@fixtures}/sdr_purl"
       Dor::Config.release.write_marc_script = 'bin/write_marc_record_test'
-      updater.write_symphony_record 'aaa'
+      @output_file = "#{@fixtures}/sdr_purl/sdr-purl-856s"
+      setup_test_objects('druid:aa111aa1111', '')
+      @updater = Dor::UpdateMarcRecordService.new(@dor_item)
+      expect(File.exist?(@output_file)).to be_falsey
+    end
 
-      expect(Dir.glob("#{@fixtures}/sdr-purl/sdr-purl-aa111aa1111-??????????????").empty?).to be false
+    it 'should write the symphony record to the symphony directory' do
+      marc_record = 'abcdef'
+      @updater.write_symphony_record marc_record
+      expect(File.exist?(@output_file)).to be_truthy
+      expect(File.read(@output_file)).to eq "#{marc_record}\n"
     end
 
     it 'should do nothing if the symphony record is empty' do
-      setup_test_objects('druid:aa111aa1111', '')
-      updater = Dor::UpdateMarcRecordService.new(@dor_item)
-      Dor::Config.release.symphony_path = "#{@fixtures}/sdr-purl"
-      updater.write_symphony_record ''
-
-      expect(Dir.glob("#{@fixtures}/sdr-purl/sdr-purl-aa111aa1111-??????????????").empty?).to be true
+      @updater.write_symphony_record ''
+      expect(File.exist?(@output_file)).to be_falsey
     end
 
     it 'should do nothing if the symphony record is nil' do
-      setup_test_objects('druid:aa111aa1111', '')
-      updater = Dor::UpdateMarcRecordService.new(@dor_item)
-      Dor::Config.release.symphony_path = "#{@fixtures}/sdr-purl"
-      updater.write_symphony_record ''
-
-      expect(Dir.glob("#{@fixtures}/sdr-purl/sdr-purl-aa111aa1111-??????????????").empty?).to be true
+      @updater.write_symphony_record nil
+      expect(File.exist?(@output_file)).to be_falsey
     end
 
     after :each do
-      FileUtils.rm_rf("#{@fixtures}/sdr-purl/.")
+      FileUtils.rm_f(@output_file)
     end
   end
 

@@ -26,8 +26,8 @@ module Dor
             <barcode>#{barcode}</barcode>
             <collectionId>#{collection_id}</collectionId>
             <collectionName>#{collection_name.encode(:xml => :text)}</collectionName>
-            <sdrWorkflow>dpgImageWF</sdrWorkflow>
-            <goobiWorkflow>Example_workflow_LayoutWizzard_Stanford</goobiWorkflow>
+            <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
+            <goobiWorkflow>#{Dor::Config.goobi.goobi_workflow_name}</goobiWorkflow>
         </stanfordCreationRequest>
       END
     end
