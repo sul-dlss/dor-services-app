@@ -5,6 +5,8 @@ describe Dor::Goobi do
   let(:item) { Dor::Item.new(pid: pid) }
 
   before(:each) do
+    # all of the methods we are stubbing out below are tested elsewhere,
+    #  this just lets us test the methods in goobi.rb without doing a lot of setup
     allow(Dor::Item).to receive(:find).and_return(item)
     allow(item).to receive(:source_id).and_return('some_source_id')
     allow(item).to receive(:label).and_return('Object Title')
@@ -18,6 +20,7 @@ describe Dor::Goobi do
     allow(@goobi).to receive(:collection_id).and_return('druid:oo000oo0001')
     allow(@goobi).to receive(:collection_name).and_return('collection name')
   end
+
   it 'should create the correct xml request' do
     expect(@goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>
@@ -36,6 +39,11 @@ describe Dor::Goobi do
       </stanfordCreationRequest>
     END
   end
-  xit 'should make a call to the goobi server with the appropriate xml params' do
+
+  it 'should make a call to the goobi server with the appropriate xml params' do
+    FakeWeb.register_uri(:post, Dor::Config.goobi.url, body: '<somexml/>', content_type: 'text/xml')
+    expect(@goobi).to receive(:xml_request)
+    response = @goobi.register
+    expect(response).to eq(200)
   end
 end

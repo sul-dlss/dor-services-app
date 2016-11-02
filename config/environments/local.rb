@@ -46,9 +46,9 @@ Dor.configure do
     url 'https://goobi-api-url'
     dpg_workflow_name 'goobiWF' # the dpg workflow name to put into the XML
     default_goobi_workflow_name 'Sample_workflow' # the default goobi workflow name to use if none found in the object
-    max_tries 5 # the number of attempts to retry service calls before failing
-    max_sleep_seconds 120 # max sleep seconds between tries
-    base_sleep_seconds 10 # base sleep seconds between tries
+    max_tries 3 # the number of attempts to retry service calls before failing
+    max_sleep_seconds 20 # max sleep seconds between tries
+    base_sleep_seconds 2 # base sleep seconds between tries
   end
 end
 
