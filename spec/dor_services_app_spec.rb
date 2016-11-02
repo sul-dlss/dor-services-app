@@ -222,6 +222,16 @@ describe Dor::DorServicesApi do
     end
   end
 
+  describe '/publish' do
+    before(:each) { login }
+
+    it 'calls publish metadata' do
+      expect(item).to receive(:publish_metadata)
+      post "/v1/objects/#{item.pid}/publish"
+      expect(last_response.status).to eq(201)
+    end
+  end
+
   describe '/release_tags' do
     before(:each) { login }
 
