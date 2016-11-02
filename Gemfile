@@ -26,6 +26,7 @@ group :test, :development do
   gem 'rack-console'
   gem 'rubocop'
   gem 'rubocop-rspec'
+  gem 'equivalent-xml'
 end
 
 group :deployment do

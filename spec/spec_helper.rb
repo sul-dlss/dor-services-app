@@ -1,6 +1,8 @@
 require 'simplecov'
 require 'coveralls'
 require 'fakeweb'
+require 'rspec/matchers' # req by equivalent-xml custom matcher `be_equivalent_to`
+require 'equivalent-xml'
 
 Coveralls.wear!
 
@@ -58,6 +60,7 @@ def build_identity_metadata_1
   <tag>Process : Content Type : Map</tag>
   <tag>Project : Batchelor Maps : Batch 1</tag>
   <tag>LAB : MAPS</tag>
+  <tag>DPG : Workflow : book_workflow</tag>
   <tag>Registered By : dfuzzell</tag>
   <tag>Remediated By : 4.15</tag>
   <release displayType="image" release="true" to="Searchworks" what="self" when="2015-07-27T21:43:27Z" who="lauraw15">true</release>

@@ -16,8 +16,8 @@ module Dor
     def xml_request
       <<-END
         <stanfordCreationRequest>
-        <objectId>#{@druid_obj.id}</objectId>
-           <objectType>#{object_type}</objectType>
+            <objectId>#{@druid_obj.id}</objectId>
+            <objectType>#{object_type}</objectType>
             <sourceID>#{@druid_obj.source_id.encode(:xml => :text)}</sourceID>
             <title>#{@druid_obj.label.encode(:xml => :text)}</title>
             <contentType>#{@druid_obj.content_type_tag}</contentType>
@@ -27,7 +27,7 @@ module Dor
             <collectionId>#{collection_id}</collectionId>
             <collectionName>#{collection_name.encode(:xml => :text)}</collectionName>
             <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
-            <goobiWorkflow>#{Dor::Config.goobi.goobi_workflow_name}</goobiWorkflow>
+            <goobiWorkflow>#{goobi_workflow_name}</goobiWorkflow>
         </stanfordCreationRequest>
       END
     end

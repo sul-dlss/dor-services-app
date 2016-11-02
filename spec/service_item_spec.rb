@@ -27,6 +27,42 @@ describe Dor::ServiceItem do
     end
   end
 
+  describe '.goobi_workflow_name' do
+    it 'should return goobi_workflow_name from a valid identityMetadata' do
+      setup_test_objects('druid:aa111aa1111', '')
+      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
+      identity_metadata_ds = double(Dor::IdentityMetadataDS)
+
+      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
+      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
+      allow(@dor_item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
+
+      expect(@si.goobi_workflow_name).to eq('book_workflow')
+    end
+    it 'should return first goobi_workflow_name if multiple are in the tags' do
+      setup_test_objects('druid:aa111aa1111', '')
+      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
+      identity_metadata_ds = double(Dor::IdentityMetadataDS)
+
+      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
+      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
+      allow(@dor_item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'DPG : Workflow : another_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
+
+      expect(@si.goobi_workflow_name).to eq('book_workflow')
+    end
+    it 'should return blank for goobi_workflow_name if none are found' do
+      setup_test_objects('druid:aa111aa1111', '')
+      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
+      identity_metadata_ds = double(Dor::IdentityMetadataDS)
+
+      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
+      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
+      allow(@dor_item).to receive(:tags).and_return(['Process : Content Type : Book (flipbook, ltr)'])
+
+      expect(@si.goobi_workflow_name).to eq(Dor::Config.goobi.default_goobi_workflow_name)
+    end
+  end
+
   describe '.object_type' do
     it 'should return object_type from a valid identityMetadata' do
       setup_test_objects('druid:aa111aa1111', '')
