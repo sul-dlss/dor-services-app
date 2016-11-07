@@ -168,6 +168,32 @@ describe Dor::ServiceItem do
     end
   end
 
+  describe '.content_type' do
+    before :each do
+      druid = 'bb111bb2222'
+      @d = Dor::Item.new(:pid => druid)
+      @content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_1)
+      @content_metadata_ds = double(Dor::ContentMetadataDS)
+      @identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
+      @identity_metadata_ds = double(Dor::IdentityMetadataDS)
+      allow(@d).to receive(:datastreams).and_return('contentMetadata' => @content_metadata_ds, 'identityMetadata' => @identity_metadata_ds)
+      allow(@content_metadata_ds).to receive(:ng_xml).and_return(@content_metadata_ng_xml)
+      allow(@identity_metadata_ds).to receive(:ng_xml).and_return(@identity_metadata_ng_xml)
+    end
+
+    it 'should return the content_type_tag from dor-services if the value exists' do
+      fake_tags = ['Tag 1', 'Tag 2', 'Process : Content Type : Process Value']
+      allow(@identity_metadata_ds).to receive_messages(:tags => fake_tags, :tag => fake_tags)
+      expect(Dor::ServiceItem.new(@d).content_type).to eq('Process Value')
+    end
+
+    it 'should return the type from contentMetadata if content_type_tag from dor-services does not have a value' do
+      fake_tags = ['Tag 1', 'Tag 2', 'Tag 3']
+      allow(@identity_metadata_ds).to receive_messages(:tags => fake_tags, :tag => fake_tags)
+      expect(Dor::ServiceItem.new(@d).content_type).to eq('map')
+    end
+  end
+
   describe '.thumb' do
     it 'should return thumb from a valid contentMetadata' do
       druid = 'bb111bb2222'

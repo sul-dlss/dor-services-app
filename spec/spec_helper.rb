@@ -57,7 +57,6 @@ def build_identity_metadata_1
   <otherId name="catkey">8832162</otherId>
   <otherId name="barcode">36105216275185</otherId>
   <otherId name="uuid">ff3ce224-9ffb-11e3-aaf2-0050569b3c3c</otherId>
-  <tag>Process : Content Type : Map</tag>
   <tag>Project : Batchelor Maps : Batch 1</tag>
   <tag>LAB : MAPS</tag>
   <tag>DPG : Workflow : book_workflow</tag>

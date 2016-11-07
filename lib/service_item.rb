@@ -59,6 +59,17 @@ module Dor
       @druid_obj.collections.empty? ? '' : @druid_obj.collections.first.label
     end
 
+    # returns the value of the content_type_tag from dor services if it exists, else returns the value from contentMetadata object type
+    # @return [String] first collection name the item is in (blank if none)
+    def content_type
+      if @druid_obj.content_type_tag.empty?
+        node = @druid_obj.datastreams['contentMetadata'].ng_xml.at_xpath('//contentMetadata/@type')
+        node.blank? ? '' : node.content
+      else
+        @druid_obj.content_type_tag
+      end
+    end
+
     # returns the name of the project by examining the objects tags
     # @return [String] first project tag value if one exists (blank if none)
     def project_name

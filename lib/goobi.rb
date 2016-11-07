@@ -20,7 +20,7 @@ module Dor
             <objectType>#{object_type}</objectType>
             <sourceID>#{@druid_obj.source_id.encode(:xml => :text)}</sourceID>
             <title>#{@druid_obj.label.encode(:xml => :text)}</title>
-            <contentType>#{@druid_obj.content_type_tag}</contentType>
+            <contentType>#{content_type}</contentType>
             <project>#{project_name.encode(:xml => :text)}</project>
             <catkey>#{ckey}</catkey>
             <barcode>#{barcode}</barcode>
