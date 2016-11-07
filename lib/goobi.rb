@@ -7,7 +7,7 @@ module Dor
 
       # rubocop:disable Metrics/LineLength
       with_retries(max_tries: Dor::Config.goobi.max_tries, handler: handler, base_sleep_seconds: Dor::Config.goobi.base_sleep_seconds, max_sleep_seconds: Dor::Config.goobi.max_sleep_seconds) do |_attempt|
-        response = RestClient.post Dor::Config.goobi.url, xml_request, :content_type => 'text/xml'
+        response = RestClient.post Dor::Config.goobi.url, xml_request, :content_type => 'application/xml'
         response.code
       end
       # rubocop:enable Metrics/LineLength
