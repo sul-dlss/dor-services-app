@@ -39,9 +39,17 @@ Dor.configure do
   release do
     symphony_path './'
     write_marc_script 'bin/write_marc_record_test'
-    purl_base_uri "http://purl.stanford.edu"
+    purl_base_uri 'http://purl.stanford.edu'
   end
-    
+
+  goobi do
+    url 'http://localhost:9292'
+    dpg_workflow_name 'goobiWF' # the dpg workflow name to put into the XML
+    default_goobi_workflow_name 'Example_Workflow' # the default goobi workflow name to use if none found in the object
+    max_tries 3 # the number of attempts to retry service calls before failing
+    max_sleep_seconds 20 # max sleep seconds between tries
+    base_sleep_seconds 2 # base sleep seconds between tries
+  end
 end
 
 Dor::WorkflowArchiver.config.configure do

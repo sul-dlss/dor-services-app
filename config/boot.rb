@@ -9,6 +9,8 @@ $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib
 
 require 'grape_overrides'
 require 'dor_services_app'
+require 'service_item'
+require 'goobi'
 require 'registration_response'
 require 'update_marc_record_service'
 

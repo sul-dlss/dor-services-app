@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/sul-dlss/dor-services-app.png?branch=master)](https://travis-ci.org/sul-dlss/dor-services-app)
+[![Build Status](https://travis-ci.org/sul-dlss/dor-services-app.png?branch=master)](https://travis-ci.org/sul-dlss/dor-services-app) 
+[![Coverage Status](https://coveralls.io/repos/github/sul-dlss/dor-services-app/badge.svg?branch=master)](https://coveralls.io/github/sul-dlss/dor-services-app?branch=master)
 
 # DOR Services App
 
@@ -43,6 +44,10 @@ You should now be ready to run `bundle install`. Note that DOR Services App requ
 To run the tests:
 
   `bundle exec rake`
+  
+To run rubocop separately (auto run with tests):
+
+  `bundle exec rake rubocop`
 
 ## Console
 

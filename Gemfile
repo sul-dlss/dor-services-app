@@ -4,6 +4,9 @@ source 'https://rubygems.org'
 gem 'grape', '~> 0.14'
 gem 'rack-test'
 
+gem 'faraday'
+gem 'rest-client'
+
 # DLSS/domain-specific dependencies
 gem 'dor-services', '~> 5.12'
 gem 'activesupport', '~> 4.2'
@@ -16,10 +19,14 @@ end
 
 group :test, :development do
   gem 'rspec'
+  gem 'coveralls', require: false
   gem 'simplecov'
   gem 'equivalent-xml'
   gem 'fakeweb'
   gem 'rack-console'
+  gem 'rubocop'
+  gem 'rubocop-rspec'
+  gem 'equivalent-xml'
 end
 
 group :deployment do
