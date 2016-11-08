@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'fixtures/datastreams.rb'
 
 class AssembleableVersionableItem < ActiveFedora::Base
   include Dor::Assembleable
