@@ -44,6 +44,6 @@ describe Dor::Goobi do
     FakeWeb.register_uri(:post, Dor::Config.goobi.url, body: '<somexml/>', content_type: 'text/xml')
     expect(@goobi).to receive(:xml_request)
     response = @goobi.register
-    expect(response).to eq(200)
+    expect(response.code).to eq(200)
   end
 end

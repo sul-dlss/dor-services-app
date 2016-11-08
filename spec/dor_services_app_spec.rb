@@ -274,10 +274,13 @@ describe Dor::DorServicesApi do
     before(:each) { login }
 
     it 'notifies goobi of a new registration by making a web service call' do
-      FakeWeb.register_uri(:post, Dor::Config.goobi.url, body: '', content_type: 'text/xml')
-      fake_response = "<stanfordCreationRequest><objectId>#{item.pid}</objectId></stanfordCreationRequest>"
-      allow_any_instance_of(Dor::Goobi).to receive(:xml_request).and_return(fake_response)
-      expect_any_instance_of(Dor::Goobi).to receive(:register).once
+      fake_request = "<stanfordCreationRequest><objectId>#{item.pid}</objectId></stanfordCreationRequest>"
+      FakeWeb.register_uri(:post, Dor::Config.goobi.url, body: fake_request, content_type: 'application/xml', status: 201)
+      allow_any_instance_of(Dor::Goobi).to receive(:xml_request).and_return(fake_request)
+      fake_response = double(RestClient::Response)
+      allow(fake_response).to receive(:headers).and_return(content_type: 'text/xml')
+      allow(fake_response).to receive(:code).and_return(201)
+      expect_any_instance_of(Dor::Goobi).to receive(:register).once.and_return(fake_response)
       post "/v1/objects/#{item.pid}/notify_goobi"
       expect(last_response.status).to eq(201)
     end

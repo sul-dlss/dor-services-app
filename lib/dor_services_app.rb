@@ -209,7 +209,8 @@ module Dor
         end
 
         post '/notify_goobi' do
-          Dor::Goobi.new(@item).register
+          response = Dor::Goobi.new(@item).register
+          proxy_rest_client_response(response)
         end
 
         resource :versions do
