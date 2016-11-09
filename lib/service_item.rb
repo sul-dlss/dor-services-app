@@ -60,6 +60,7 @@ module Dor
     end
 
     # returns the value of the content_type_tag from dor services if it exists, else returns the value from contentMetadata object type
+    # note, the content_type_tag comes from value of the tag called "Process : Content Type"
     # @return [String] first collection name the item is in (blank if none)
     def content_type
       if @druid_obj.content_type_tag.empty?
@@ -81,7 +82,8 @@ module Dor
     # returns the name of the goobiworkflow in the object by examining the objects tags
     # @return [String] first goobi workflow tag value if one exists (default from config if none)
     def goobi_workflow_name
-      content_tag = @druid_obj.tags.select { |tag| tag.include?('DPG : Workflow : ') }
+      dpg_workflow_tag_id = 'DPG : Workflow : '
+      content_tag = @druid_obj.tags.select { |tag| tag.include?(dpg_workflow_tag_id) }
       content_tag.empty? ? Dor::Config.goobi.default_goobi_workflow_name : content_tag[0].split(':').last.strip
     end
   end
