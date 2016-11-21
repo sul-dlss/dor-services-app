@@ -26,10 +26,4 @@ class VersionsController < ApplicationController
     @item.close_version sym_params
     render plain: "version #{@item.current_version} closed"
   end
-
-  private
-
-  def load_item
-    @item = Dor.find(params[:object_id])
-  end
 end

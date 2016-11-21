@@ -14,10 +14,6 @@ class WorkflowsController < ApplicationController
   
   private
 
-  def load_item
-    @item = Dor.find(params[:id])
-  end
-
   def archiver
     Dor::WorkflowArchiver.new
   end

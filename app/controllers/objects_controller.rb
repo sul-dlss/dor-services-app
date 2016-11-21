@@ -108,8 +108,4 @@ class ObjectsController < ApplicationController
       JSON.parse(request.body.read)
     end
   end
-
-  def load_item
-    @item = Dor.find(params[:id])
-  end
 end

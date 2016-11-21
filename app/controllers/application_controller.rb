@@ -8,4 +8,8 @@ class ApplicationController < ActionController::API
   def proxy_rest_client_response(response)
     render status: response.code, content_type: response.headers[:content_type], body: response.body
   end
+
+  def load_item
+    @item = Dor.find(params[:id])
+  end
 end
