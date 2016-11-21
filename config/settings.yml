@@ -1,0 +1,87 @@
+# General
+DATE_FORMAT_STR: '%Y-%m-%d %H:%M:%S.%L'
+
+# Content
+CONTENT:
+  USER: 'user'
+  BASE_DIR: '/foo/bar/'
+  SERVER_HOST: 'example-bar'
+  SDR_SERVER_URL: 'https://sdr.example.com'
+  SDR_USER: 'user'
+  SDR_PASSWORD: 'password'
+
+# Indexer
+INDEXER:
+  # the file to which the indexer log is written
+  LOG: 'log/indexer.log'
+  # the interval at which the indexer log is rotated
+  LOG_ROTATION_INTERVAL: 'daily'
+
+# Metadata
+METADATA:
+  EXIST_URL: 'https://user:password@metadata.example.com/exist/rest'
+  CATALOG_URL: 'https://catalog.example.com/catalog/mods'
+
+# SSL
+SSL:
+  CERT_FILE: 'cert_name.crt'
+  KEY_FILE: 'key_name.key'
+  KEY_PASS: 'password'
+
+# Stacks
+STACKS:
+  DOCUMENT_CACHE_STORAGE_ROOT: '/foo/document_cache'
+  DOCUMENT_CACHE_HOST: 'cache.example.com'
+  DOCUMENT_CACHE_USER: 'user'
+  LOCAL_WORKSPACE_ROOT: '/foo/workspace'
+  STORAGE_ROOT: '/bar'
+  HOST: 'stacks.example.com'
+  USER: 'user'
+
+# Stomp
+STOMP_CLIENT_ID: 'fedora_stomper'
+
+# Suri
+SURI:
+  MINT_IDS: true
+  ID_NAMESPACE: 'druid'
+  URL: 'https://suri.example.com'
+  USER: 'user'
+  PASS: 'pass'
+
+# Workflow
+WORKFLOW:
+  LOGFILE: 'log/workflow_service.log'
+  SHIFT_AGE: 'weekly'
+
+MESSAGE_QUEUES: []
+
+# URLs
+DOR_SERVICES_URL: 'https://user:password@dor-services.example.com'
+FEDORA_URL: 'https://user:password@fedora.example.com:1000/fedora'
+SOLRIZER_URL: 'https://solr.example.com/solr/collection'
+STATUS_INDEXER_URL: 'https://status.example.com/render/?format=json&other=params'
+WORKFLOW_URL: 'https://workflow.example.com/workflow'
+SDR_URL: 'http://localhost/sdr'
+
+DOR:
+  SERVICE_USER: 'user'
+  SERVICE_PASSWORD: 'password'
+
+RELEASE:
+  SYMPHONY_PATH: './'
+  WRITE_MARC_SCRIPT: 'bin/write_marc_record_test'
+  PURL_BASE_URI : 'http://purl.stanford.edu'
+  
+GOOBI:
+  URL: 'http://localhost:9292'
+  DPG_WORKFLOW_NAME: 'goobiWF'
+  DEFAULT_GOOBI_WORKFLOW_NAME: 'Example Workflow'
+  MAX_TRIES: 3
+  MAX_SLEEP_SECONDS: 20
+  BASE_SLEEP_SECONDS: 2
+
+WORKFLOW_ARCHIVER:
+  USER: 'user'
+  PASSWORD: 'password'
+  URI: '//localhost:1521/SID'

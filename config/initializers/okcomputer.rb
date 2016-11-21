@@ -6,4 +6,18 @@ require 'okcomputer'
 OkComputer.mount_at = 'status'
 OkComputer.check_in_parallel = true
 
-OkComputer::Registry.register 'version', OkComputer::AppVersionCheck.new
+class CustomAppVersionCheck < OkComputer::AppVersionCheck
+  def version
+    version_from_version_file || super
+  end
+
+  private
+
+  def version_from_version_file
+    if File.exist?(Rails.root.join("VERSION"))
+      File.read(Rails.root.join("VERSION")).chomp
+    end
+  end
+end
+
+OkComputer::Registry.register 'version', CustomAppVersionCheck.new

@@ -31,20 +31,10 @@ set :log_level, :info
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
-set :stages, %w(dev staging production)
-
-set :linked_dirs, %w(log config/environments config/certs)
-set :linked_files, %w(bin/write_marc_record)
+set :linked_dirs, %w(log tmp/pids tmp/cache tmp/sockets vendor/bundle config/certs config/settings)
+set :linked_files, %w(bin/write_marc_record config/secrets.yml config/honeybadger.yml config/newrelic.yml)
 
 set :bundle_env_variables, :ld_library_path => '/usr/lib/oracle/11.2/client64/lib:$LD_LIBRARY_PATH'
 
-namespace :deploy do
-  after :restart, :clear_cache do
-    on roles(:web), in: :groups, limit: 3, wait: 10 do
-      # Here we can do anything such as:
-      # within release_path do
-      #   execute :rake, 'cache:clear'
-      # end
-    end
-  end
-end
+# update shared_configs before restarting app
+before 'deploy:restart', 'shared_configs:update'

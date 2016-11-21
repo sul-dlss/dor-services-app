@@ -48,16 +48,14 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  config.include AuthHelper
 end
 
 TEST_WORKSPACE = (Dor::Config.stacks.local_workspace_root = 'tmp/dor/workspace')
 
 def clean_workspace
   FileUtils.rm_rf Dir.glob(TEST_WORKSPACE + '/*')
-end
-
-def login
-  authorize Dor::Config.dor.service_user, Dor::Config.dor.service_password
 end
 
 def setup_test_objects(druid, identityMetadata)

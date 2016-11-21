@@ -21,7 +21,6 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Ruby general dependencies
-gem 'grape', '~> 0.14'
 gem 'okcomputer'
 gem 'config'
 
