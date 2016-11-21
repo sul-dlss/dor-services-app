@@ -129,29 +129,24 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
       collection = Dor::Collection.new
       identity_metadata_xml = double(String)
-      content_metadata_xml = double(String)
 
       allow(identity_metadata_xml).to receive_messages(
         ng_xml: Nokogiri::XML(build_identity_metadata_2)
       )
 
       allow(identity_metadata_xml).to receive(:tag).and_return('Project : Batchelor Maps : Batch 1')
-      allow(content_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_content_metadata_2)
-      )
-
       allow(collection).to receive_messages(
         label: 'Collection label',
         id: 'aa111aa1111',
         collections: [],
-        datastreams: { 'identityMetadata' => identity_metadata_xml, 'contentMetadata' => content_metadata_xml }
+        datastreams: { 'identityMetadata' => identity_metadata_xml }
       )
 
       release_data = { 'Searchworks' => { 'release' => true } }
       allow(collection).to receive(:released_for).and_return(release_data)
 
       updater = Dor::UpdateMarcRecordService.new(collection)
-      expect(updater.generate_symphony_record).to eq("8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xcollection|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2")
+      expect(updater.generate_symphony_record).to eq("8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xcollection")
     end
   end
 
