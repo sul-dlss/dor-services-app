@@ -85,3 +85,7 @@ WORKFLOW_ARCHIVER:
   USER: 'user'
   PASSWORD: 'password'
   URI: '//localhost:1521/SID'
+
+CATALOG:
+  SOLR_URL: "http://searchworks-solr.stanford.edu/solr/current/"
+  MARCXML_URL: "https://searchworks.stanford.edu/catalog/%{catkey}.marcxml"
