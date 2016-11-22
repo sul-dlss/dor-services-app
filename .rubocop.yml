@@ -1,5 +1,16 @@
 inherit_from: .rubocop_todo.yml
 
+require: rubocop-rspec
+
+AllCops:
+  TargetRubyVersion: 2.2
+  Exclude:
+    - db/migrate/**
+    - db/schema.rb
+
+Rails:
+  Enabled: true
+
 # rspec expect{...} is conventional
 Style/SpaceBeforeBlockBraces:
   Exclude:

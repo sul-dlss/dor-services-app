@@ -1,14 +1,11 @@
 begin
   require 'rspec/core/rake_task'
-  RSpec::Core::RakeTask.new(:spec) do |spec|
-    spec.pattern = 'spec/**/*_spec.rb'
-    ENV['RACK_ENV'] = 'local'
+  require 'rubocop/rake_task'
+
+  RuboCop::RakeTask.new(:rubocop) do |task|
+    task.fail_on_error = true
   end
 
-  task :default => [:spec, :rubocop]
+  task default: [:spec, :rubocop]
 rescue LoadError
 end
-
-require 'rubocop/rake_task'
-
-RuboCop::RakeTask.new

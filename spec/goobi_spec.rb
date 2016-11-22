@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe Dor::Goobi do
+RSpec.describe Dor::Goobi do
   let(:pid) { 'druid:aa123bb4567' }
   let(:item) { Dor::Item.new(pid: pid) }
 

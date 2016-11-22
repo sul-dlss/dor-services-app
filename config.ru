@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/config/boot.rb'
+# This file is used by Rack-based servers to start the application.
 
-use Rack::CommonLogger, LyberCore::Log.log
-use Rack::ShowExceptions
-run Dor::DorServicesApi
+require_relative 'config/environment'
+
+run Rails.application

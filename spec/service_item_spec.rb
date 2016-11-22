@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe Dor::ServiceItem do
+RSpec.describe Dor::ServiceItem do
   describe '.catkey' do
     it 'should return catkey from a valid identityMetadata' do
       setup_test_objects('druid:aa111aa1111', '')
