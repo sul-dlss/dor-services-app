@@ -88,4 +88,8 @@ WORKFLOW_ARCHIVER:
 
 CATALOG:
   SOLR_URL: "http://searchworks-solr.stanford.edu/solr/current/"
-  MARCXML_URL: "https://searchworks.stanford.edu/catalog/%{catkey}.marcxml"
+  SYMPHONY:
+    JSON_URL: "https://sirsi.example.com/symws/v1/catalog/bib/key/%{catkey}?includeFields=bib"
+    HEADERS:
+      SD-ORIGINATING-APP-ID: DOR-SERVICES-APP
+      SD-PREFERRED-ROLE: GUEST
