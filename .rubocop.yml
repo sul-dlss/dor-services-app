@@ -37,3 +37,6 @@ Style/SpaceAroundOperators:
 # Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:
   Max: 200
+
+Metrics/BlockLength:
+  Enabled: false

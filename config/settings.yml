@@ -19,27 +19,27 @@ INDEXER:
 
 # Metadata
 METADATA:
-  EXIST_URL: 'https://user:password@metadata.example.com/exist/rest'
   CATALOG_URL: 'https://catalog.example.com/catalog/mods'
 
 # SSL
 SSL:
-  CERT_FILE: 'cert_name.crt'
-  KEY_FILE: 'key_name.key'
+  CERT_FILE: "/etc/pki/tls/certs/<%= (`echo $HOSTNAME`).strip.gsub('.stanford.edu', '') %>-dor-prod.crt"
+  KEY_FILE: "/etc/pki/tls/private/<%= (`echo $HOSTNAME`).strip.gsub('.stanford.edu', '') %>-dor-prod.key"
   KEY_PASS: 'password'
 
 # Stacks
 STACKS:
-  DOCUMENT_CACHE_STORAGE_ROOT: '/foo/document_cache'
+  DOCUMENT_CACHE_STORAGE_ROOT: '/purl/document_cache'
   DOCUMENT_CACHE_HOST: 'cache.example.com'
   DOCUMENT_CACHE_USER: 'user'
-  LOCAL_WORKSPACE_ROOT: '/foo/workspace'
-  STORAGE_ROOT: '/bar'
+  LOCAL_WORKSPACE_ROOT: '/dor/workspace'
+  STORAGE_ROOT: '/stacks'
   HOST: 'stacks.example.com'
   USER: 'user'
-
-# Stomp
-STOMP_CLIENT_ID: 'fedora_stomper'
+  LOCAL_STACKS_ROOT: '/stacks'
+  LOCAL_DOCUMENT_CACHE_ROOT: '/purl/document_cache'
+  LOCAL_RECENT_CHANGES: '/purl/recent_changes'
+  URL: 'https://stacks.stanford.edu'
 
 # Suri
 SURI:
@@ -64,6 +64,11 @@ STATUS_INDEXER_URL: 'https://status.example.com/render/?format=json&other=params
 WORKFLOW_URL: 'https://workflow.example.com/workflow'
 SDR_URL: 'http://localhost/sdr'
 
+CLEANUP:
+  LOCAL_WORKSPACE_ROOT: '/dor/workspace'
+  LOCAL_ASSEMBLY_ROOT: '/dor/assembly'
+  LOCAL_EXPORT_HOME: '/dor/export'
+
 DOR:
   SERVICE_USER: 'user'
   SERVICE_PASSWORD: 'password'
@@ -76,7 +81,7 @@ RELEASE:
 GOOBI:
   URL: 'http://localhost:9292'
   DPG_WORKFLOW_NAME: 'goobiWF'
-  DEFAULT_GOOBI_WORKFLOW_NAME: 'Example Workflow'
+  DEFAULT_GOOBI_WORKFLOW_NAME: 'Example_Workflow'
   MAX_TRIES: 3
   MAX_SLEEP_SECONDS: 20
   BASE_SLEEP_SECONDS: 2

@@ -32,7 +32,6 @@ Dor.configure do
   end
 
   metadata do
-    exist.url   Settings.METADATA.EXIST_URL
     catalog.url Settings.METADATA.CATALOG_URL
   end
 
@@ -61,6 +60,11 @@ Dor.configure do
     storage_root                Settings.STACKS.STORAGE_ROOT
     host                        Settings.STACKS.HOST
     user                        Settings.STACKS.USER
+    local_stacks_root           Settings.STACKS.LOCAL_STACKS_ROOT
+    local_document_cache_root   Settings.STACKS.LOCAL_DOCUMENT_CACHE_ROOT
+    local_recent_changes        Settings.STACKS.LOCAL_RECENT_CHANGES
+    url                         Settings.STACKS.URL
+    iiif_profile                'http://iiif.io/api/image/2/level1.json'
   end
 
   indexing_svc do
@@ -71,6 +75,12 @@ Dor.configure do
 
   sdr do
     url Settings.SDR_URL
+  end
+
+  cleanup do
+    local_workspace_root Settings.CLEANUP.LOCAL_WORKSPACE_ROOT
+    local_assembly_root  Settings.CLEANUP.LOCAL_ASSEMBLY_ROOT
+    local_export_home    Settings.CLEANUP.LOCAL_EXPORT_HOME
   end
 
   dor do
