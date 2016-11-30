@@ -20,4 +20,15 @@ class CustomAppVersionCheck < OkComputer::AppVersionCheck
   end
 end
 
+class SymphonyCheck < OkComputer::HttpCheck
+  def perform_request
+    Timeout.timeout(request_timeout) do
+      SymphonyReader.client.get(url.to_s)
+    end
+  end
+end
+
 OkComputer::Registry.register 'version', CustomAppVersionCheck.new
+OkComputer::Registry.register 'external-symphony', SymphonyCheck.new(Settings.CATALOG.SYMPHONY.JSON_URL % { catkey: 12345 })
+
+OkComputer.make_optional %w(external-symphony)

@@ -26,6 +26,7 @@ gem 'config'
 
 gem 'faraday'
 gem 'rest-client'
+gem 'marc'
 
 # DLSS/domain-specific dependencies
 gem 'dor-services', '~> 5.12'

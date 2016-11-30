@@ -16,6 +16,12 @@ Rails.application.routes.draw do
       get 'initial', to: 'workflows#initial'
     end
     
+    scope :catalog do
+      get 'marcxml', to: 'marcxml#marcxml'
+      get 'mods', to: 'marcxml#mods'
+      get 'catkey', to: 'marcxml#catkey'
+    end
+
     resources :objects, only: [:create] do
       member do
         post 'initialize_workspace'
