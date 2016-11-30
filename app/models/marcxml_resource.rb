@@ -32,34 +32,7 @@ class MarcxmlResource
 
   private
 
-  def symphony_client
-    Faraday.new(headers: Settings.CATALOG.SYMPHONY.HEADERS)
-  end
-
-  def symphony_json
-    JSON.parse(symphony_client.get(Settings.CATALOG.SYMPHONY.JSON_URL % { catkey: catkey }).body)
-  end
-
   def marc_record
-    @marc_record ||= begin
-      record = MARC::Record.new
-      data = symphony_json['fields']['bib']
-
-      record.leader = data['leader']
-
-      data['fields'].each do |field|
-        if MARC::ControlField.control_tag? field['tag']
-          record << MARC::ControlField.new(field['tag'], field['subfields'].first['data'])
-        else
-          f = MARC::DataField.new(field['tag'], field['inds'][0], field['inds'][1])
-          field['subfields'].each do |subfield|
-            f.append MARC::Subfield.new(subfield['code'], subfield['data'])
-          end
-          record << f
-        end
-      end
-
-      record
-    end
+    SymphonyReader.new(catkey: catkey).to_marc
   end
 end

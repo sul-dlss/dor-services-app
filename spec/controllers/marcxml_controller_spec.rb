@@ -22,16 +22,16 @@ RSpec.describe MarcxmlController do
 
   describe 'GET marcxml' do
     it 'retrieves MARCXML' do
-      FakeWeb.register_uri(:get, Settings.CATALOG.MARCXML_URL % { catkey: resource.catkey }, body: '<marcxml />')
+      FakeWeb.register_uri(:get, Settings.CATALOG.SYMPHONY.JSON_URL % { catkey: resource.catkey }, body: '{}')
 
       get :marcxml, params: { catkey: '12345' }
-      expect(response.body).to eq '<marcxml />'
+      expect(response.body).to start_with '<record'
     end
   end
 
   describe 'GET mods' do
     it 'transforms the MARCXML into MODS' do
-      FakeWeb.register_uri(:get, Settings.CATALOG.MARCXML_URL % { catkey: resource.catkey }, body: '<marc:record xmlns="http://www.loc.gov/MARC21/slim" />')
+      FakeWeb.register_uri(:get, Settings.CATALOG.SYMPHONY.JSON_URL % { catkey: resource.catkey }, body: '{}')
 
       get :mods, params: { catkey: '12345' }
       expect(response.body).to match(/mods/)
