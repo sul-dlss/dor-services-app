@@ -100,7 +100,7 @@
 		<xsl:variable name="length" select="string-length($chopString)"/>
 		<xsl:choose>
 			<xsl:when test="$length=0"/>
-			<xsl:when test="contains('.:,;/[ ', substring($chopString,1,1))">
+			<xsl:when test="contains('.:,;/ ', substring($chopString,1,1))">
 				<xsl:call-template name="chopPunctuationFront">
 					<xsl:with-param name="chopString" select="substring($chopString,2,$length - 1)"
 					/>
