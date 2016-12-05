@@ -15,7 +15,7 @@ Rails.application.routes.draw do
     scope '/workflows/:wf_name' do
       get 'initial', to: 'workflows#initial'
     end
-    
+
     scope :catalog do
       get 'marcxml', to: 'marcxml#marcxml'
       get 'mods', to: 'marcxml#mods'
@@ -30,6 +30,9 @@ Rails.application.routes.draw do
         post 'notify_goobi'
         post 'release_tags'
         post 'apo_workflows/:wf_name', action: 'apo_workflows'
+
+        get 'contents', to: 'content#list'
+        get 'contents/*path', to: 'content#read', format: false, as: :read_content
       end
       
       resources :versions, only: [:create] do

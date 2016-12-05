@@ -27,6 +27,9 @@ SSL:
   KEY_FILE: "/etc/pki/tls/private/<%= (`echo $HOSTNAME`).strip.gsub('.stanford.edu', '') %>-dor-prod.key"
   KEY_PASS: 'password'
 
+CONTENT:
+  BASE_DIR: '/dor/workspace'
+
 # Stacks
 STACKS:
   DOCUMENT_CACHE_STORAGE_ROOT: '/purl/document_cache'
