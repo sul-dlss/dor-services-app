@@ -252,3 +252,6 @@ Style/VariableName:
 Style/ZeroLengthPredicate:
   Exclude:
     - 'app/models/dor/update_marc_record_service.rb'
+
+Bundler/OrderedGems:
+  Enabled: false
