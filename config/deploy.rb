@@ -1,11 +1,11 @@
-set :application, 'dor-services-app'
+set :application, 'dor_services'
 set :repo_url, 'https://github.com/sul-dlss/dor-services-app.git'
 
 # Default branch is :master
 ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 
 # Default deploy_to directory is /var/www/my_app
-set :deploy_to, "/home/lyberadmin/#{fetch(:application)}"
+set :deploy_to, "/opt/app/dor_services/#{fetch(:application)}"
 
 # Default value for :scm is :git
 # set :scm, :git
@@ -33,8 +33,6 @@ set :log_level, :info
 
 set :linked_dirs, %w(log tmp/pids tmp/cache tmp/sockets vendor/bundle config/certs config/settings)
 set :linked_files, %w(bin/write_marc_record config/secrets.yml config/honeybadger.yml config/newrelic.yml)
-
-set :bundle_env_variables, :ld_library_path => '/usr/lib/oracle/11.2/client64/lib:$LD_LIBRARY_PATH'
 
 # update shared_configs before restarting app
 before 'deploy:restart', 'shared_configs:update'
