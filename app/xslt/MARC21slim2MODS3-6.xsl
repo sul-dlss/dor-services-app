@@ -4696,7 +4696,7 @@
 	</xsl:template>
 
 	<xsl:template name="createNameFrom710">
-		<name typef="corporate">
+		<name type="corporate">
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="nameABCDN"/>
 			<xsl:call-template name="role"/>

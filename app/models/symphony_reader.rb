@@ -15,7 +15,7 @@ class SymphonyReader
 
     record.leader = leader if leader
 
-    fields.each do |field|
+    fields.uniq.each do |field|
       record << marc_field(field)
     end
 

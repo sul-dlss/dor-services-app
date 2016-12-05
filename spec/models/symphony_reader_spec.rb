@@ -16,6 +16,7 @@ RSpec.describe SymphonyReader do
             leader: '00956cem 2200229Ma 4500',
             fields: [
               { tag: '001', subfields: [{ code: '_', data: 'some data' }] },
+              { tag: '001', subfields: [{ code: '_', data: 'some data' }] },
               {
                 tag: '245',
                 inds: '41',
@@ -36,6 +37,10 @@ RSpec.describe SymphonyReader do
 
     it 'parses control fields' do
       expect(reader.to_marc.fields('001').first.value).to eq 'some data'
+    end
+
+    it 'removes duplicate fields' do
+      expect(reader.to_marc.fields('001').length).to eq 1
     end
 
     it 'parses data fields' do
