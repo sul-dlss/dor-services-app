@@ -1,6 +1,6 @@
 # MARC resource model for retrieving and transforming MARC records
 class MarcxmlResource
-  MARC_TO_MODS_XSLT = Nokogiri::XSLT(File.read(File.join(Rails.root, 'app', 'xslt', 'MARC21slim2MODS3-6.xsl')))
+  MARC_TO_MODS_XSLT = Nokogiri::XSLT(File.read(File.join(Rails.root, 'app', 'xslt', 'MARC21slim2MODS3-4.xsl')))
 
   def self.find_by(catkey: nil, barcode: nil)
     if catkey
