@@ -172,6 +172,7 @@ GEM
       activesupport (>= 4.1.0)
     haml (4.0.7)
       tilt
+    honeybadger (2.7.1)
     hooks (0.4.1)
       uber (~> 0.0.14)
     htmlentities (4.3.4)
@@ -502,6 +503,7 @@ DEPENDENCIES
   equivalent-xml
   fakeweb
   faraday
+  honeybadger
   listen (~> 3.0.5)
   lyber-core (>= 2.0.2)
   marc

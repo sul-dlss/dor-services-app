@@ -23,6 +23,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # Ruby general dependencies
 gem 'okcomputer'
 gem 'config'
+gem 'honeybadger'
 
 gem 'faraday'
 gem 'rest-client'
