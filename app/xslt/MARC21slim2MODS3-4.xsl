@@ -1,6 +1,7 @@
 <xsl:stylesheet xmlns="http://www.loc.gov/mods/v3" xmlns:marc="http://www.loc.gov/MARC21/slim"
 	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	exclude-result-prefixes="xlink marc" version="1.0">
+	
 	<!-- 08/08/08: tmee added corrected chopPunctuation templates for 260c -->
 	<!-- 08/19/04: ntra added "marc:" prefix to datafield element -->
 	<!-- 12/14/07: ntra added url encoding template -->
@@ -100,7 +101,7 @@
 		<xsl:variable name="length" select="string-length($chopString)"/>
 		<xsl:choose>
 			<xsl:when test="$length=0"/>
-			<xsl:when test="contains('.:,;/[ ', substring($chopString,1,1))">
+			<xsl:when test="contains('.:,;/ ', substring($chopString,1,1))">
 				<xsl:call-template name="chopPunctuationFront">
 					<xsl:with-param name="chopString" select="substring($chopString,2,$length - 1)"
 					/>
@@ -181,6 +182,10 @@
 	</xsl:template>
 	<xsl:output encoding="UTF-8" indent="yes" method="xml"/>
 	<xsl:strip-space elements="*"/>
+
+<!-- Stanford Custom Revisions to XSLT service
+ Version 1.2.5 - Modifies createSubGeoFrom255, eliminates use of createSubGeoFrom034, and adds createNoteFrom590
+-->
 
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
 	MARC21slim2MODS3-4 (Revision 1.86) 20130610
@@ -986,25 +991,6 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</xsl:if>
 			</xsl:if>
 
-
-			<!-- tmee 1.77 008-06 dateIssued for value 's' -->
-			<xsl:if test="$controlField008-6='s'">
-				<xsl:if test="$controlField008-7-10">
-					<dateIssued encoding="marc">
-						<xsl:value-of select="$controlField008-7-10"/>
-					</dateIssued>
-				</xsl:if>
-			</xsl:if>
-
-
-
-			<xsl:if test="$controlField008-6='t'">
-				<xsl:if test="$controlField008-11-14">
-					<copyrightDate encoding="marc">
-						<xsl:value-of select="$controlField008-11-14"/>
-					</copyrightDate>
-				</xsl:if>
-			</xsl:if>
 			<xsl:for-each
 				select="marc:datafield[@tag=033][@ind1=0 or @ind1=1]/marc:subfield[@code='a']">
 				<dateCaptured encoding="iso8601">
@@ -2037,10 +2023,16 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			select="marc:datafield[@tag=501 or @tag=507 or @tag=513 or @tag=514 or @tag=516 or @tag=522 or @tag=525 or @tag=526 or @tag=544 or @tag=547 or @tag=550 or @tag=552 or @tag=555 or @tag=556 or @tag=565 or @tag=567 or @tag=580 or @tag=584 or @tag=586]">
 			<xsl:call-template name="createNoteFrom5XX"/>
 		</xsl:for-each>
+		
+		<xsl:for-each select="marc:datafield[@tag=590]">
+			<xsl:call-template name="createNoteFrom590"/>
+		</xsl:for-each>
 
+		<!-- alter our MARC to MODS mapping to ignore tag 034 encoded coordinates 
 		<xsl:for-each select="marc:datafield[@tag=034]">
 			<xsl:call-template name="createSubGeoFrom034"/>
 		</xsl:for-each>
+		-->
 
 		<xsl:for-each select="marc:datafield[@tag=043]">
 			<xsl:call-template name="createSubGeoFrom043"/>
@@ -2821,8 +2813,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</recordIdentifier>
 			</xsl:for-each>
 
-			<recordOrigin>Converted from MARCXML to MODS version 3.4 using MARC21slim2MODS3-4.xsl
-				(Revision 1.86 2013/06/10)</recordOrigin>
+			<recordOrigin>Converted from MARCXML to MODS version 3.4 using MARC21slim2MODS3-4_SDR.xsl
+				(Version 1.2.5 2013/08/11)</recordOrigin>
 
 			<xsl:for-each select="marc:datafield[@tag=040]/marc:subfield[@code='b']">
 				<languageOfCataloging>
@@ -4421,7 +4413,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	<!-- name 100 110 111 -->
 
 	<xsl:template name="createNameFrom100">
-		<xsl:if test="@ind1='1'">
+		<xsl:if test="@ind1='0' or @ind1='1'">
 			<name type="personal">
 				<xsl:attribute name="usage">
 					<xsl:text>primary</xsl:text>
@@ -4965,6 +4957,14 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<xsl:value-of select="substring($str,1,string-length($str)-1)"/>
 		</note>
 	</xsl:template>
+	
+	<xsl:template name="createNoteFrom590">
+		<xsl:if test="@ind1=1 or @ind1=' '"> 
+			<note type="local" displayLabel="Local note">
+				<xsl:value-of select="marc:subfield[@code='a']"/>
+			</note>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- subject Geo 034 043 045 255 656 662 752 -->
 
@@ -5009,8 +5009,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	<xsl:template name="createSubGeoFrom255">
 		<subject>
 			<xsl:call-template name="xxx880"/>
-			<xsl:for-each select="marc:subfield[@code='a' or @code='b' or @code='c']">
-				<cartographics>
+			<cartographics>
+				<xsl:for-each select="marc:subfield[@code='a' or @code='b' or @code='c']">
 					<xsl:if test="@code='a'">
 						<scale>
 							<xsl:value-of select="."/>
@@ -5026,8 +5026,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 							<xsl:value-of select="."/>
 						</coordinates>
 					</xsl:if>
-				</cartographics>
-			</xsl:for-each>
+				</xsl:for-each>
+			</cartographics>
 		</subject>
 	</xsl:template>
 
