@@ -49,18 +49,20 @@ To run rubocop separately (auto run with tests):
 
   `bundle exec rake rubocop`
 
-## Console
+## Console and Development Server
 
-  `bundle exec rails c`
+First you'll need to setup configuration files to connect to a valid Fedora and SOLR instance.  See the "config/settings.yml" file for a template.  Create a folder called "config/settings" and then copy that settings.yml file and rename it for the environment you wish to setup (e.g. "config/settings/development.local.yml").
 
-## Development Server
+Edit this file to add the appropriate URLs.  You may also need certs to talk to actual Fedora servers.  Once you have this file in place, you can start your Rails server or console in development mode:
 
-To spin up a local development server (see the output on the console for the exact port #):
+To spin up a local rails console:
+
+ `bundle exec rails c`
+
+To spin up a local development server:
 
   `bundle exec rails s`
 
-You can also copy the config/environments/local.rb file to create a development.rb or production.rb as needed
-for connecting to actual Fedora servers.  Edit those config files, add certs to a config/certs folder if you need.  
 
 ## TODO
 

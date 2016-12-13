@@ -21,3 +21,4 @@ config/certs
 .ruby-*
 coverage/*
 /spec/examples.txt
+/config/settings/*.local.yml
