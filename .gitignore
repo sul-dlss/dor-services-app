@@ -16,10 +16,8 @@
 # Ignore Byebug command history file.
 .byebug_history
 
-config/environments/*
 config/certs
 .rvmrc
 .ruby-*
 coverage/*
-workflow_service.log*
 /spec/examples.txt
