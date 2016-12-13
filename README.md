@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/sul-dlss/dor-services-app.png?branch=master)](https://travis-ci.org/sul-dlss/dor-services-app) 
+[![Build Status](https://travis-ci.org/sul-dlss/dor-services-app.png?branch=master)](https://travis-ci.org/sul-dlss/dor-services-app)
 [![Coverage Status](https://coveralls.io/repos/github/sul-dlss/dor-services-app/badge.svg?branch=master)](https://coveralls.io/github/sul-dlss/dor-services-app?branch=master)
 
 # DOR Services App
@@ -8,7 +8,7 @@ This Ruby application provides a REST API for DOR Services.
 
 ## Developer Notes
 
-DOR Services App is based on the [Grape](http://intridea.github.io/grape/) API framework.
+DOR Services App is a Rails app.
 
 Because the workflows that the app provides access to use Oracle on the backend, the app requires
 the Oracle client gem, [ruby-oci8](https://github.com/kubo/ruby-oci8). In order to install
@@ -44,30 +44,23 @@ You should now be ready to run `bundle install`. Note that DOR Services App requ
 To run the tests:
 
   `bundle exec rake`
-  
+
 To run rubocop separately (auto run with tests):
 
   `bundle exec rake rubocop`
 
 ## Console
 
-To get the rough equivalent of a Rails console:
+  `bundle exec rails c`
 
-  `RACK_ENV=local bundle exec rack-console`
-  
-  or
-  
-  `RACK_ENV=local bin/console`
-  
 ## Development Server
 
 To spin up a local development server (see the output on the console for the exact port #):
 
-  `RACK_ENV=local rackup`
+  `bundle exec rails s`
 
 You can also copy the config/environments/local.rb file to create a development.rb or production.rb as needed
 for connecting to actual Fedora servers.  Edit those config files, add certs to a config/certs folder if you need.  
-adjust the RACK_ENV parameter when starting up the server to pick the environment.
 
 ## TODO
 
