@@ -99,13 +99,13 @@ class ObjectsController < ApplicationController
   end
 
   def body_params
-    return {} unless request.body.any?
-
     case request.content_type
     when 'application/xml', 'text/xml'
       Hash.from_xml(request.body.read)
     when 'application/json', 'text/json'
       JSON.parse(request.body.read)
+    else
+      {}
     end
   end
 end
