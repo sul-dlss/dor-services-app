@@ -19,10 +19,10 @@ class ObjectsController < ApplicationController
     reg_response = Dor::RegistrationService.create_from_request(create_params)
     Rails.logger.info(reg_response)
     pid = reg_response['pid']
-    
+
     respond_to do |format|
       format.json { render status: 201, location: object_location(pid), json: Dor::RegistrationResponse.new(reg_response) }
-      format.txt { render status: 201, location: object_location(pid), plain: Dor::RegistrationResponse.new(reg_response).to_txt }
+      format.all { render status: 201, location: object_location(pid), plain: Dor::RegistrationResponse.new(reg_response).to_txt }
     end
   end     
   
