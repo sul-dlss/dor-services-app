@@ -255,3 +255,6 @@ Style/ZeroLengthPredicate:
 
 Bundler/OrderedGems:
   Enabled: false
+
+RSpec/MessageSpies:
+  Enabled: false

@@ -21,6 +21,16 @@ RSpec.describe ObjectsController do
         expect(response.headers['Location']).to match(/\/fedora\/objects\/druid:existing123obj/)
       end
     end
+    
+    it 'registers the object with the registration service' do
+      allow(Dor::RegistrationService).to receive(:create_from_request).and_return('pid' => 'druid:xyz')
+      
+      post :create, format: :json
+      
+      expect(Dor::RegistrationService).to have_received(:create_from_request)
+      expect(response.status).to eq(201)
+      expect(response.location).to end_with '/fedora/objects/druid:xyz'
+    end
   end
 
   describe 'initialize_workspace' do
