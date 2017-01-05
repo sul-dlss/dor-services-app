@@ -25,7 +25,7 @@ RSpec.describe ObjectsController do
     it 'registers the object with the registration service' do
       allow(Dor::RegistrationService).to receive(:create_from_request).and_return('pid' => 'druid:xyz')
       
-      post :create
+      post :create, format: :json
       
       expect(Dor::RegistrationService).to have_received(:create_from_request)
       expect(response.status).to eq(201)
