@@ -88,7 +88,7 @@ GEM
       capistrano (~> 3.0)
     capistrano-releaseboard (0.0.1)
       faraday
-    capistrano-shared_configs (0.1.1)
+    capistrano-shared_configs (0.1.2)
     capybara (2.11.0)
       addressable
       mime-types (>= 1.16)
@@ -263,7 +263,7 @@ GEM
       activesupport (>= 3.2.18)
       i18n
       nokogiri
-    okcomputer (1.13.0)
+    okcomputer (1.14.0)
     om (3.1.1)
       activemodel
       activesupport
@@ -419,7 +419,7 @@ GEM
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
-    solrizer (3.4.0)
+    solrizer (3.4.1)
       activesupport
       daemons
       nokogiri
