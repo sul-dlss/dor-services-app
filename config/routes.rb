@@ -9,7 +9,7 @@ Rails.application.routes.draw do
       get 'current_version', to: 'sdr#current_version'
       get 'manifest/:dsname', to: 'sdr#ds_manifest', format: false
       get 'metadata/:dsname', to: 'sdr#ds_metadata', format: false
-      get 'content/:filename', to: 'sdr#file_content', format: false
+      get 'content/:filename', to: 'sdr#file_content', format: false, constraints: { filename: /.+/ }
     end
     
     scope '/workflows/:wf_name' do
