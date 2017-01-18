@@ -40,3 +40,7 @@ Metrics/LineLength:
 
 Metrics/BlockLength:
   Enabled: false
+  
+RSpec/ExpectActual:
+  Exclude:
+    - 'spec/routing/**'
