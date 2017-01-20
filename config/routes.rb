@@ -7,8 +7,8 @@ Rails.application.routes.draw do
     scope '/sdr/objects/:druid' do
       post 'cm-inv-diff', to: 'sdr#cm_inv_diff'
       get 'current_version', to: 'sdr#current_version'
-      get 'manifest/:dsname', to: 'sdr#ds_manifest', format: false
-      get 'metadata/:dsname', to: 'sdr#ds_metadata', format: false
+      get 'manifest/:dsname', to: 'sdr#ds_manifest', format: false, constraints: { dsname: /.+/ }
+      get 'metadata/:dsname', to: 'sdr#ds_metadata', format: false, constraints: { dsname: /.+/ }
       get 'content/:filename', to: 'sdr#file_content', format: false, constraints: { filename: /.+/ }
     end
     
