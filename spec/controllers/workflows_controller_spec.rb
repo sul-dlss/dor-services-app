@@ -24,7 +24,7 @@ RSpec.describe WorkflowsController do
     let(:item) { AssembleableVersionableItem.new.tap { |x| x.pid = 'druid:aa123bb4567' } }
 
     before(:each) do
-      allow(Dor).to receive(:find).and_return(item)
+      allow(Dor).to receive(:find).with(item.pid).and_return(item)
     end
 
     it 'POSTing to /objects/{druid}/workflows/{wfname}/archive archives a workflow for a given druid and repository' do
