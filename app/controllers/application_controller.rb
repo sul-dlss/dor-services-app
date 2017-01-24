@@ -11,6 +11,6 @@ class ApplicationController < ActionController::API
   end
 
   def load_item
-    @item = Dor.find(params[:id] || params[:object_id])
+    @item = Dor.find(params[:object_id] || params[:id])
   end
 end
