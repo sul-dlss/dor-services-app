@@ -416,4 +416,50 @@ def build_identity_metadata_without_ckey
   <tag>Remediated By : 4.15.4</tag>
   </identityMetadata>'
 end
+
+def build_rights_metadata_1
+  '<rightsMetadata>
+   <access type="discover">
+    <machine>
+      <world/>
+    </machine>
+   </access>
+   <access type="read">
+    <machine>
+      <world/>
+    </machine>
+   </access>
+   <use>
+    <human type="useAndReproduction">User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.</human>
+   </use>
+  </rightsMetadata>
+  '
+end
+
+def build_rights_metadata_2
+  '<rightsMetadata>
+   <copyright>
+    <human type="copyright">Courtesy of The Revs Institute for Automotive Research, Inc. All rights reserved unless otherwise indicated.</human>
+   </copyright>
+   <access type="discover">
+    <machine>
+      <world/>
+    </machine>
+   </access>
+   <access type="read">
+    <machine>
+      <group>Stanford</group>
+      <world rule="no-download"/>
+    </machine>
+   </access>
+   <use>
+    <human type="useAndReproduction">Users must contact The Revs Institute for Automotive Research, Inc. for re-use and reproduction information.</human>
+   </use>
+   <use>
+    <human type="creativeCommons"/>
+    <machine type="creativeCommons"/>
+   </use>
+  </rightsMetadata>
+  '
+end
 # rubocop:enable Metrics/MethodLength, Metrics/LineLength

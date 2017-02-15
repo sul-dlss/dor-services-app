@@ -34,7 +34,7 @@ module Dor
         collection_info = get_x2_collection_info
         constituent_info = get_x2_constituent_info
 
-        new856 = "#{ckey}\t#{@druid_id}\t#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{purl_uri}#{get_x1_sdrpurl_marker}#{object_type.prepend('|x')}"
+        new856 = "#{ckey}\t#{@druid_id}\t#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{purl_uri}#{get_x1_sdrpurl_marker}#{object_type.prepend('|x')}"
         new856 << barcode.prepend('|xbarcode:') unless barcode.nil?
         new856 << thumb.prepend('|xfile:') unless thumb.nil?
         new856 << collection_info unless collection_info.nil?
@@ -78,9 +78,13 @@ module Dor
       '1'
     end
 
-    # It's a plceholder for the uri label
+    # It returns text in the z field based on permissions
     def get_z_field
-      #  Placeholder to be used in the future
+      if @dra_object.stanford_only_unrestricted? || @dra_object.stanford_only_downloadable?
+        '|zAvailable to Stanford-affiliated users.'
+      else
+        ''
+      end
     end
 
     # It builds the PURL uri based on the druid id
