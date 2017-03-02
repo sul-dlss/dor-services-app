@@ -14,6 +14,7 @@ module Dor
     def initialize(druid_obj)
       @druid_obj = druid_obj
       @druid_id = @druid_obj.remove_druid_prefix
+      @dra_object = druid_obj.rightsMetadata.dra_object
     end
 
     # the ckey for the current object

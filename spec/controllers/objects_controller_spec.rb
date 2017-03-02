@@ -9,7 +9,15 @@ RSpec.describe ObjectsController do
 
   before(:each) do
     allow(Dor).to receive(:find).and_return(item)
-    allow(item).to receive(:remove_druid_prefix).and_return('aa123bb4567')
+    rights_metadata_xml = Dor::RightsMetadataDS.new
+    allow(rights_metadata_xml).to receive_messages(:ng_xml => Nokogiri::XML('<xml/>'))
+    allow(item).to receive_messages(
+      :id => 'druid:aa123bb4567',
+      :datastreams => { 'rightsMetadata' => rights_metadata_xml },
+      :rightsMetadata => rights_metadata_xml,
+      :remove_druid_prefix => 'aa123bb4567'
+    )
+    allow(rights_metadata_xml).to receive(:dra_object).and_return(Dor::RightsAuth.parse(Nokogiri::XML('<xml/>'), true))
   end
 
   describe 'object registration' do
@@ -23,10 +31,10 @@ RSpec.describe ObjectsController do
         expect(response.headers['Location']).to match(/\/fedora\/objects\/druid:existing123obj/)
       end
     end
-    
+
     it 'registers the object with the registration service' do
       allow(Dor::RegistrationService).to receive(:create_from_request).and_return(pid: 'druid:xyz')
-      
+
       post :create
 
       expect(response.body).to eq 'druid:xyz'
@@ -40,7 +48,7 @@ RSpec.describe ObjectsController do
     before do
       clean_workspace
     end
-    
+
     after do
       clean_workspace
     end
@@ -74,7 +82,7 @@ RSpec.describe ObjectsController do
       end
     end
   end
-  
+
   describe '/publish' do
     it 'calls publish metadata' do
       expect(item).to receive(:publish_metadata)
@@ -82,7 +90,7 @@ RSpec.describe ObjectsController do
       expect(response.status).to eq(201)
     end
   end
-  
+
   describe '/update_marc_record' do
     it 'updates a marc record' do
       # TODO: add some more expectations
@@ -102,7 +110,7 @@ RSpec.describe ObjectsController do
       expect(response.status).to eq(201)
     end
   end
-  
+
   describe '/release_tags' do
     it 'adds a release tag when posted to with false' do
       expect(item).to receive(:add_release_node).with(false, :to => 'searchworks', :who => 'carrickr', :what => 'self', :release => false)

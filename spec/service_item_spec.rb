@@ -176,9 +176,13 @@ RSpec.describe Dor::ServiceItem do
       @content_metadata_ds = double(Dor::ContentMetadataDS)
       @identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
       @identity_metadata_ds = double(Dor::IdentityMetadataDS)
-      allow(@d).to receive(:datastreams).and_return('contentMetadata' => @content_metadata_ds, 'identityMetadata' => @identity_metadata_ds)
+      @rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
+      @rights_metadata_ds = double(Dor::RightsMetadataDS)
+      allow(@d).to receive(:datastreams).and_return('rightsMetadata' => @rights_metadata_ds, 'contentMetadata' => @content_metadata_ds, 'identityMetadata' => @identity_metadata_ds)
       allow(@content_metadata_ds).to receive(:ng_xml).and_return(@content_metadata_ng_xml)
       allow(@identity_metadata_ds).to receive(:ng_xml).and_return(@identity_metadata_ng_xml)
+      allow(@rights_metadata_ds).to receive(:ng_xml).and_return(@rights_metadata_ng_xml)
+      allow(@rights_metadata_ds).to receive(:dra_object).and_return(Dor::RightsAuth.parse(@rights_metadata_ng_xml, true))
     end
 
     it 'should return the content_type_tag from dor-services if the value exists' do
@@ -200,8 +204,11 @@ RSpec.describe Dor::ServiceItem do
       d = Dor::Item.new(:pid => druid)
       content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_1)
       content_metadata_ds = double(Dor::ContentMetadataDS)
+      rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
+      rights_metadata_ds = double(Dor::RightsMetadataDS)
+      allow(rights_metadata_ds).to receive(:dra_object).and_return(Dor::RightsAuth.parse(rights_metadata_ng_xml, true))
 
-      allow(d).to receive(:datastreams).and_return('contentMetadata' => content_metadata_ds)
+      allow(d).to receive(:datastreams).and_return('rightsMetadata' => rights_metadata_ds, 'contentMetadata' => content_metadata_ds)
       allow(content_metadata_ds).to receive(:ng_xml).and_return(content_metadata_ng_xml)
 
       expect(Dor::ServiceItem.new(d).thumb).to eq('bb111bb2222%2Fwt183gy6220_00_0001.jp2')
@@ -212,8 +219,11 @@ RSpec.describe Dor::ServiceItem do
       d = Dor::Item.new(:pid => druid)
       content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_3)
       content_metadata_ds = double(Dor::ContentMetadataDS)
+      rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
+      rights_metadata_ds = double(Dor::RightsMetadataDS)
+      allow(rights_metadata_ds).to receive(:dra_object).and_return(Dor::RightsAuth.parse(rights_metadata_ng_xml, true))
 
-      allow(d).to receive(:datastreams).exactly(4).times.and_return('contentMetadata' => content_metadata_ds)
+      allow(d).to receive(:datastreams).exactly(4).times.and_return('rightsMetadata' => rights_metadata_ds, 'contentMetadata' => content_metadata_ds)
       allow(content_metadata_ds).to receive(:ng_xml).and_return(content_metadata_ng_xml)
 
       expect(Dor::ServiceItem.new(d).thumb).to be_nil
