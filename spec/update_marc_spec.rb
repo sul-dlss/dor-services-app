@@ -279,6 +279,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
       updater = Dor::UpdateMarcRecordService.new(@dor_item)
       expect(updater.get_z_field).to eq('|zAvailable to Stanford-affiliated users.')
     end
+    it 'should return a non-blank z message for a location restricted object' do
+      setup_test_objects('druid:aa111aa1111', '', build_rights_metadata_3)
+      updater = Dor::UpdateMarcRecordService.new(@dor_item)
+      expect(updater.get_z_field).to eq('|zAvailable to Stanford-affiliated users.')
+    end
   end
 
   describe '.get_x1_sdrpurl_marker' do
