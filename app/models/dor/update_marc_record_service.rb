@@ -80,7 +80,9 @@ module Dor
 
     # It returns text in the z field based on permissions
     def get_z_field
-      if @dra_object.stanford_only_unrestricted? || @dra_object.stanford_only_downloadable?
+      # @dra_object.stanford_only_rights returns a 2 element list where presence of first element indicates stanford
+      # only read restriction, and second element indicates the rule on the restriction, if any (e.g. 'no-download')
+      if @dra_object.stanford_only_rights.first.present? || @dra_object.restricted_by_location?
         '|zAvailable to Stanford-affiliated users.'
       else
         ''

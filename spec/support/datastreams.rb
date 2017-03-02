@@ -448,8 +448,7 @@ def build_rights_metadata_2
    </access>
    <access type="read">
     <machine>
-      <group>Stanford</group>
-      <world rule="no-download"/>
+      <group rule="no-download">stanford</group>
     </machine>
    </access>
    <use>
@@ -459,6 +458,28 @@ def build_rights_metadata_2
     <human type="creativeCommons"/>
     <machine type="creativeCommons"/>
    </use>
+  </rightsMetadata>
+  '
+end
+
+def build_rights_metadata_3
+  '<rightsMetadata>
+    <access type="discover">
+      <machine>
+        <world/>
+      </machine>
+    </access>
+    <access type="read">
+      <machine>
+        <location>spec</location>
+      </machine>
+    </access>
+    <use>
+      <human type="useAndReproduction">While Special Collections is the owner of the physical and digital items, permission to examine collection materials is not an authorization to publish. These materials are made available for use in research, teaching, and private study. Any transmission or reproduction beyond that allowed by fair use requires permission from the owners of rights, heir(s) or assigns. See: http://library.stanford.edu/spc/using-collections/permission-publish. Access Condition: Content is available for access via the Special Collections Reading Room.</human>
+    </use>
+    <copyright>
+      <human>Materials may be subject to copyright.</human>
+    </copyright>
   </rightsMetadata>
   '
 end
