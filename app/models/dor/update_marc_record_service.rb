@@ -6,14 +6,19 @@ module Dor
     BORN_DIGITAL_APOS = %w(druid:bx911tp9024 druid:jj305hm5259).freeze
 
     def update
-      push_symphony_record if ckey.present?
+      push_symphony_records if ckeys?
     end
 
-    def push_symphony_record
-      symphony_record = generate_symphony_record
-      write_symphony_record symphony_record
+    def ckeys?
+      (ckey.present? || previous_ckeys.present?)
     end
 
+    def push_symphony_records
+      symphony_records = generate_symphony_records
+      write_symphony_records symphony_records
+    end
+
+    # @return [Array] all 856 records for this object
     # catkey: the catalog key that associates a DOR object with a specific Symphony record.
     # druid: the druid
     # .856. 41 or 40 (depending on APO)
@@ -29,41 +34,47 @@ module Dor
     # Subfield x #5 (optional): the file-id to be used as thumb if available, recorded as file:file-id-value
     # Subfield x #6..n (optional): Collection(s) this object is a member of, recorded as collection:druid-value:ckey-value:title
     # Subfield x #7..n (optional): Set(s) this object is a member of, recorded as set:druid-value:ckey-value:title
-    def generate_symphony_record
-      return '' unless ckey.present?
+    def generate_symphony_records
+      return [] unless ckeys?
 
-      if released_to_searchworks
-        purl_uri = get_u_field
-        collection_info = get_x2_collection_info
-        constituent_info = get_x2_constituent_info
+      # first create "blank" records for any previous catkeys
+      records = previous_ckeys.map { |previous_catkey| get_identifier(previous_catkey) }
 
-        new856 = "#{ckey}\t#{@druid_id}\t#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{purl_uri}#{get_x1_sdrpurl_marker}#{object_type.prepend('|x')}"
-        new856 << barcode.prepend('|xbarcode:') unless barcode.nil?
-        new856 << thumb.prepend('|xfile:') unless thumb.nil?
-        new856 << collection_info unless collection_info.nil?
-        new856 << constituent_info unless constituent_info.nil?
-        new856
-      else
-        "#{ckey}\t#{@druid_id}\t"
+      # now add the current ckey
+      if ckey.present?
+        records << (released_to_searchworks? ? new_856_record(ckey) : get_identifier(ckey)) # if released to searchworks, create the record
       end
+
+      records
     end
 
-    def write_symphony_record(symphony_record)
-      return if symphony_record.nil? || symphony_record.empty?
+    def write_symphony_records(symphony_records)
+      return if symphony_records.blank?
       symphony_file_name = "#{Dor::Config.release.symphony_path}/sdr-purl-856s"
-      command = "#{Dor::Config.release.write_marc_script} \'#{symphony_record}\' #{symphony_file_name}"
-      run_write_script(command)
+      symphony_records.each do |symphony_record|
+        command = "#{Dor::Config.release.write_marc_script} \'#{symphony_record}\' #{symphony_file_name}"
+        run_write_script(command)
+      end
     end
 
     def run_write_script(command)
       Open3.popen3(command) do |_stdin, stdout, stderr, _wait_thr|
         stdout_text = stdout.read
         stderr_text = stderr.read
-
-        if stdout_text.length > 0 || stderr_text.length > 0
-          raise "Error in writing marc_record file using the command #{command}\n#{stdout_text}\n#{stderr_text}"
-        end
+        raise "Error in writing marc_record file using the command #{command}\n#{stdout_text}\n#{stderr_text}" if stdout_text.length > 0 || stderr_text.length > 0
       end
+    end
+
+    def new_856_record(ckey)
+      new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}#{object_type.prepend('|x')}"
+      new856 << barcode.prepend('|xbarcode:') unless barcode.nil?
+      new856 << thumb.prepend('|xfile:') unless thumb.nil?
+      new856 << get_x2_collection_info unless get_x2_collection_info.nil?
+      new856 << get_x2_constituent_info unless get_x2_constituent_info.nil?
+    end
+
+    def get_identifier(ckey)
+      "#{ckey}\t#{@druid_id}\t"
     end
 
     # It returns 856 constants
@@ -131,7 +142,7 @@ module Dor
       BORN_DIGITAL_APOS.include? @druid_obj.admin_policy_object_id
     end
 
-    def released_to_searchworks
+    def released_to_searchworks?
       rel = @druid_obj.released_for.transform_keys { |key| key.to_s.upcase } # upcase all release tags to make the check case insensitive
       rel.blank? || rel['SEARCHWORKS'].blank? || rel['SEARCHWORKS']['release'].blank? ? false : rel['SEARCHWORKS']['release']
     end

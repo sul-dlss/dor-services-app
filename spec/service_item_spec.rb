@@ -12,11 +12,12 @@ RSpec.describe Dor::ServiceItem do
       allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
 
       expect(@si.ckey).to eq('8832162')
+      expect(@si.previous_ckeys).to eq([])
     end
 
-    it 'should return nil for an identityMetadata without catkey' do
+    it 'should return nil for current catkey but values for previous catkeys in identityMetadata' do
       setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_3)
+      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_5)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
 
       allow(@dor_item).to receive(:datastreams).times.and_return('identityMetadata' => identity_metadata_ds)
@@ -24,6 +25,20 @@ RSpec.describe Dor::ServiceItem do
       allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
 
       expect(@si.ckey).to be_nil
+      expect(@si.previous_ckeys).to eq(%w(123 456))
+    end
+
+    it 'should return nil for current catkey and empty array for previous catkeys in identityMetadata without either' do
+      setup_test_objects('druid:aa111aa1111', '')
+      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_4)
+      identity_metadata_ds = double(Dor::IdentityMetadataDS)
+
+      allow(@dor_item).to receive(:datastreams).times.and_return('identityMetadata' => identity_metadata_ds)
+      allow(@dor_item).to receive(:identityMetadata).and_return(identity_metadata_ds)
+      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
+
+      expect(@si.ckey).to be_nil
+      expect(@si.previous_ckeys).to eq([])
     end
   end
 
@@ -77,7 +92,7 @@ RSpec.describe Dor::ServiceItem do
 
     it 'should return a blank object type for identityMetadata without object_type' do
       setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_3)
+      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_6)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
 
       allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
@@ -217,7 +232,7 @@ RSpec.describe Dor::ServiceItem do
     it 'should return an empty string for contentMetadata without thumb' do
       druid = 'aa111aa2222'
       d = Dor::Item.new(:pid => druid)
-      content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_3)
+      content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_2)
       content_metadata_ds = double(Dor::ContentMetadataDS)
       rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
       rights_metadata_ds = double(Dor::RightsMetadataDS)

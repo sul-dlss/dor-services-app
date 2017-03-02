@@ -3,12 +3,13 @@ module Dor
     # @return [String] value with SIRSI/Symphony numeric catkey in it for specified object, or nil if none exists
     # look in identityMetadata/otherId[@name='catkey']
     def self.get_ckey(object)
-      unless object.datastreams.nil? || object.datastreams['identityMetadata'].nil?
-        if object.datastreams['identityMetadata'].ng_xml
-          node = object.identityMetadata.ng_xml.at_xpath("//identityMetadata/otherId[@name='catkey']")
-        end
-      end
+      return nil unless identity_metadata?(object)
+      node = object.identityMetadata.ng_xml.at_xpath("//identityMetadata/otherId[@name='catkey']")
       node.content if node && node.content.present?
+    end
+
+    def self.identity_metadata?(object)
+      object.datastreams && object.datastreams['identityMetadata'] && object.datastreams['identityMetadata'].ng_xml
     end
 
     def initialize(druid_obj)
@@ -20,10 +21,20 @@ module Dor
     # the ckey for the current object
     # @return [String] value with SIRSI/Symphony numeric catkey in it for specified object, or nil if none exists
     def ckey
-      self.class.get_ckey(@druid_obj)
+      @ckey ||= self.class.get_ckey(@druid_obj)
     end
 
-    # @return [String] value with object_type in it, or empty x subfield if none exists
+    # the previous ckeys for the current object
+    # @return [Array] previous catkeys for the object in an array, empty array if none exist
+    def previous_ckeys
+      @previous_ckeys ||= if self.class.identity_metadata?(@druid_obj)
+                            @druid_obj.identityMetadata.ng_xml.xpath("//identityMetadata/otherId[@name='previous_catkey']").map(&:content).reject(&:empty?)
+                          else
+                            []
+                          end
+    end
+
+    # @return [String] value with object_type in it (nil if none found)
     # look in identityMetadata/objectType
     def object_type
       @object_type ||= begin
@@ -33,7 +44,7 @@ module Dor
     end
 
     # the barcode
-    # @return [String] value with barcode in it, or empty x subfield if none exists
+    # @return [String] value with barcode in it (nil if none found)
     # look in identityMetadata/otherId name="barcode"
     def barcode
       @barcode ||= begin
