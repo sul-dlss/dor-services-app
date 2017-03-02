@@ -199,10 +199,23 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   describe '.get_2nd_indicator' do
-    it 'should return 1' do
+    it 'should return 1 for a non born digital APO' do
       setup_test_objects('druid:aa111aa1111', '')
+      allow(@dor_item).to receive(:admin_policy_object_id).and_return('info:fedora/druid:mb062dy1188')
       updater = Dor::UpdateMarcRecordService.new(@dor_item)
       expect(updater.get_2nd_indicator).to eq('1')
+    end
+    it 'should return 0 for an ETDs APO' do
+      setup_test_objects('druid:aa111aa1111', '')
+      allow(@dor_item).to receive(:admin_policy_object_id).and_return('druid:bx911tp9024')
+      updater = Dor::UpdateMarcRecordService.new(@dor_item)
+      expect(updater.get_2nd_indicator).to eq('0')
+    end
+    it 'should return 0 for an EEMs APO' do
+      setup_test_objects('druid:aa111aa1111', '')
+      allow(@dor_item).to receive(:admin_policy_object_id).and_return('druid:jj305hm5259')
+      updater = Dor::UpdateMarcRecordService.new(@dor_item)
+      expect(updater.get_2nd_indicator).to eq('0')
     end
   end
 

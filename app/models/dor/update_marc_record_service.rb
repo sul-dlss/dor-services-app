@@ -2,6 +2,9 @@ require 'open3'
 
 module Dor
   class UpdateMarcRecordService < ServiceItem
+    # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
+    BORN_DIGITAL_APOS = %w(druid:bx911tp9024 druid:jj305hm5259).freeze
+
     def update
       push_symphony_record if ckey.present?
     end
@@ -13,7 +16,7 @@ module Dor
 
     # catkey: the catalog key that associates a DOR object with a specific Symphony record.
     # druid: the druid
-    # .856. 41
+    # .856. 41 or 40 (depending on APO)
     # Subfield u (required): the full Purl URL
     # Subfield x #1 (required): The string SDR-PURL as a marker to identify 856 entries managed through DOR
     # Subfield x #2 (required): Object type (<identityMetadata><objectType>) - item, collection,
@@ -73,9 +76,9 @@ module Dor
       '4'
     end
 
-    # It returns Second Indicator for Version of resource (1)
+    # It returns Second Indicator for Version of resource
     def get_2nd_indicator
-      '1'
+      born_digital? ? '0' : '1'
     end
 
     # It's a plceholder for the uri label
@@ -116,6 +119,10 @@ module Dor
         cons_obj_title = cons_obj.datastreams['descMetadata'].ng_xml.xpath('//mods/titleInfo/title').first.content
         "|xset:#{cons_obj_id}:#{Dor::ServiceItem.get_ckey(cons_obj)}:#{cons_obj_title}"
       end.join('')
+    end
+
+    def born_digital?
+      BORN_DIGITAL_APOS.include? @druid_obj.admin_policy_object_id
     end
 
     def released_to_searchworks
