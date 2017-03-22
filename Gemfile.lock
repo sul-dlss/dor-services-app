@@ -255,7 +255,7 @@ GEM
     net-ssh (4.0.1)
     netrc (0.11.0)
     nio4r (1.2.1)
-    nokogiri (1.7.0.1)
+    nokogiri (1.7.1)
       mini_portile2 (~> 2.1.0)
     nokogiri-happymapper (0.5.9)
       nokogiri (~> 1.5)
@@ -411,7 +411,7 @@ GEM
       mime-types
       nokogiri
       rest-client
-    rubyzip (1.2.0)
+    rubyzip (1.2.1)
     scrub_rb (1.0.1)
     sequel (4.42.1)
     simplecov (0.12.0)
@@ -524,4 +524,4 @@ DEPENDENCIES
   workflow-archiver (~> 2.0)
 
 BUNDLED WITH
-   1.13.6
+   1.14.6
