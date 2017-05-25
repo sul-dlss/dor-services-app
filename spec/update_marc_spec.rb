@@ -294,33 +294,62 @@ RSpec.describe Dor::UpdateMarcRecordService do
       @updater = Dor::UpdateMarcRecordService.new(@dor_item)
       expect(File.exist?(@output_file)).to be_falsey
     end
-
-    it 'should write the symphony record to the symphony directory for a single record' do
-      marc_records = ['abcdef']
-      @updater.write_symphony_records marc_records
-      expect(File.exist?(@output_file)).to be_truthy
-      expect(File.read(@output_file)).to eq "#{marc_records.first}\n"
-    end
-
-    it 'should write the symphony record to the symphony directory for multiple records' do
-      marc_records = %w(abcdef 12345)
-      @updater.write_symphony_records marc_records
-      expect(File.exist?(@output_file)).to be_truthy
-      expect(File.read(@output_file)).to eq "#{marc_records[0]}\n#{marc_records[1]}\n"
-    end
-
-    it 'should do nothing if the symphony record is an empty array' do
-      @updater.write_symphony_records []
-      expect(File.exist?(@output_file)).to be_falsey
-    end
-
-    it 'should do nothing if the symphony record is nil' do
-      @updater.write_symphony_records nil
-      expect(File.exist?(@output_file)).to be_falsey
-    end
-
     after :each do
       FileUtils.rm_f(@output_file)
+    end
+
+    subject(:writer) { @updater.write_symphony_records marc_records }
+
+    context 'for a single record' do
+      let(:marc_records) { ['abcdef'] }
+      it 'writes the record' do
+        expect(writer).not_to be_nil
+        expect(File.exist?(@output_file)).to be_truthy
+        expect(File.read(@output_file)).to eq "#{marc_records.first}\n"
+      end
+    end
+
+    context 'for multiple records including special characters' do
+      let(:marc_records) { %w(ab!#cdef 12@345 thirdrecord'withquote fourthrecordwith"doublequote) }
+      it 'writes the record' do
+        expect(writer).not_to be_nil
+        expect(File.exist?(@output_file)).to be_truthy
+        expect(File.read(@output_file)).to eq "#{marc_records[0]}\n#{marc_records[1]}\n#{marc_records[2]}\n#{marc_records[3]}\n"
+      end
+    end
+
+    context 'for an empty array' do
+      let(:marc_records) { [] }
+      it 'does nothing' do
+        expect(writer).to be_nil
+        expect(File.exist?(@output_file)).to be_falsey
+      end
+    end
+
+    context 'for nil' do
+      let(:marc_records) { nil }
+      it 'does nothing' do
+        expect(writer).to be_nil
+        expect(File.exist?(@output_file)).to be_falsey
+      end
+    end
+
+    context 'for a record with single quotes' do
+      let(:marc_records) { ["this is | a record | that has 'single quotes' in it | and it should work"] }
+      it 'writes the record' do
+        expect(writer).not_to be_nil
+        expect(File.exist?(@output_file)).to be_truthy
+        expect(File.read(@output_file)).to eq "#{marc_records.first}\n"
+      end
+    end
+
+    context 'for a record with double and single quotes' do
+      let(:marc_records) { ['record with "double quotes" in it | and it should work'] }
+      it 'writes the record' do
+        expect(writer).not_to be_nil
+        expect(File.exist?(@output_file)).to be_truthy
+        expect(File.read(@output_file)).to eq "#{marc_records.first}\n"
+      end
     end
   end
 
