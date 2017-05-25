@@ -52,7 +52,7 @@ module Dor
       return if symphony_records.blank?
       symphony_file_name = "#{Dor::Config.release.symphony_path}/sdr-purl-856s"
       symphony_records.each do |symphony_record|
-        command = "#{Dor::Config.release.write_marc_script} \'#{symphony_record}\' #{symphony_file_name}"
+        command = "#{Dor::Config.release.write_marc_script} #{Shellwords.escape(symphony_record)} #{Shellwords.escape(symphony_file_name)}"
         run_write_script(command)
       end
     end
