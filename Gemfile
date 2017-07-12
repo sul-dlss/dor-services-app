@@ -1,9 +1,12 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
+gem 'rails', '~> 5.1.0'
 
 # Use Puma as the app server
 gem 'puma', '~> 3.0'
+
+# requirement for rdf-rdfa / haml gem
+gem 'erubis'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -46,8 +49,8 @@ group :test, :development do
   gem 'equivalent-xml'
   gem 'fakeweb'
   gem 'rack-console'
-  gem 'rubocop'
-  gem 'rubocop-rspec'
+  gem 'rubocop', '~> 0.47.1'
+  gem 'rubocop-rspec', '~> 1.10.0'
   gem 'capybara'
 end
 
