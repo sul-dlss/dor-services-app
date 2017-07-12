@@ -7,7 +7,7 @@ class MarcxmlResource
       new(catkey: catkey)
     elsif barcode
       solr = RSolr.connect(url: Settings.CATALOG.SOLR_URL)
-      response = solr.get('barcode', params: { n: barcode })
+      response = solr.get('barcode', params: { n: barcode }).with_indifferent_access
       catkey = response[:response][:docs].first[:id]
 
       new(catkey: catkey)

@@ -14,7 +14,7 @@ RSpec.describe MarcxmlController do
     end
 
     it 'looks up an item by barcode' do
-      FakeWeb.register_uri(:get, Settings.CATALOG.SOLR_URL + 'barcode?wt=ruby&n=98765', body: { response: { docs: [{ id: '12345' }] } }.to_json)
+      FakeWeb.register_uri(:get, Settings.CATALOG.SOLR_URL + 'barcode?wt=json&n=98765', body: { response: { docs: [{ id: '12345' }] } }.to_json)
       get :catkey, params: { barcode: '98765' }
       expect(response.body).to eq '12345'
     end
