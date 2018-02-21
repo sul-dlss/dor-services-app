@@ -30,6 +30,8 @@ gem 'honeybadger'
 
 gem 'faraday'
 gem 'rest-client'
+# Pin net-http-persistent to avoid a problem with exhausting file handles when running under load
+gem 'net-http-persistent', '~> 2.9'
 gem 'marc'
 
 # DLSS/domain-specific dependencies
