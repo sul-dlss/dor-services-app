@@ -12,7 +12,7 @@ Rails:
   Enabled: true
 
 # rspec expect{...} is conventional
-Style/SpaceBeforeBlockBraces:
+Layout/SpaceBeforeBlockBraces:
   Exclude:
     - 'spec/**/*_spec.rb'
 
@@ -21,16 +21,16 @@ Style/SpaceBeforeBlockBraces:
 Style/RegexpLiteral:
   Enabled: false
 
-Style/EmptyLineBetweenDefs:
+Layout/EmptyLineBetweenDefs:
   AllowAdjacentOneLineDefs: true
 
 # Allow alignment of Dor/Confstruct-y lines (they are effectively assignments)
-Style/SpaceBeforeFirstArg:
+Layout/SpaceBeforeFirstArg:
   Exclude:
     - 'config/environments/*.rb'
 
 # allow for alignment
-Style/SpaceAroundOperators:
+Layout/SpaceAroundOperators:
   AllowForAlignment: true
 
 

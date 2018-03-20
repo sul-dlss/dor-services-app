@@ -46,7 +46,7 @@ end
 group :test, :development do
   gem 'rspec-rails'
   gem 'rails-controller-testing'
-  gem 'coveralls', require: false
+  gem 'coveralls', '~> 0.8', require: false
   gem 'simplecov'
   gem 'equivalent-xml'
   gem 'fakeweb'
