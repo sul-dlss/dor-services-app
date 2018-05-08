@@ -78,6 +78,42 @@ RSpec.describe Dor::ServiceItem do
     end
   end
 
+  describe '.goobi_ocr_tag_present?' do
+    it 'should return false if the goobi ocr tag is not present' do
+      setup_test_objects('druid:aa111aa1111', '')
+      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
+      identity_metadata_ds = double(Dor::IdentityMetadataDS)
+
+      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
+      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
+      allow(@dor_item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
+
+      expect(@si.goobi_ocr_tag_present?).to be false
+    end
+    it 'should return true if the goobi ocr tag is present' do
+      setup_test_objects('druid:aa111aa1111', '')
+      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
+      identity_metadata_ds = double(Dor::IdentityMetadataDS)
+
+      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
+      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
+      allow(@dor_item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'])
+
+      expect(@si.goobi_ocr_tag_present?).to be true
+    end
+    it 'should return true if the goobi ocr tag is present even if the case is mixed' do
+      setup_test_objects('druid:aa111aa1111', '')
+      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
+      identity_metadata_ds = double(Dor::IdentityMetadataDS)
+
+      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
+      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
+      allow(@dor_item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'DPG : ocr : true'])
+
+      expect(@si.goobi_ocr_tag_present?).to be true
+    end
+  end
+
   describe '.object_type' do
     it 'returns object_type from a valid identityMetadata' do
       setup_test_objects('druid:aa111aa1111', '')

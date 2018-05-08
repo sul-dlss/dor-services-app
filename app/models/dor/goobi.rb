@@ -30,6 +30,7 @@ module Dor
             <collectionName>#{collection_name.encode(:xml => :text)}</collectionName>
             <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
             <goobiWorkflow>#{goobi_workflow_name}</goobiWorkflow>
+            <ocr>#{goobi_ocr_tag_present?}</ocr>
         </stanfordCreationRequest>
       END
     end
