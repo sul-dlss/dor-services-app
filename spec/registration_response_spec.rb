@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe Dor::RegistrationResponse do
   describe 'self marshalling' do
-    before(:each) do
+    before do
       @params = {
         :object_type => 'item',
         :content_model => 'googleScannedBook',

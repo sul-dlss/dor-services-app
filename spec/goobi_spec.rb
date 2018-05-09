@@ -4,7 +4,7 @@ RSpec.describe Dor::Goobi do
   let(:pid) { 'druid:aa123bb4567' }
   let(:item) { Dor::Item.new(pid: pid) }
 
-  before(:each) do
+  before do
     # all of the methods we are stubbing out below are tested elsewhere,
     #  this just lets us test the methods in goobi.rb without doing a lot of setup
     allow(Dor::Item).to receive(:find).and_return(item)

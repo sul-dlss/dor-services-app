@@ -7,7 +7,7 @@ RSpec.describe ObjectsController do
 
   let(:item) { AssembleableVersionableItem.new.tap { |x| x.pid = 'druid:aa123bb4567' } }
 
-  before(:each) do
+  before do
     allow(Dor).to receive(:find).and_return(item)
     rights_metadata_xml = Dor::RightsMetadataDS.new
     allow(rights_metadata_xml).to receive_messages(:ng_xml => Nokogiri::XML('<xml/>'))
@@ -64,7 +64,7 @@ RSpec.describe ObjectsController do
     end
 
     context 'error handling' do
-      before(:each) do
+      before do
         druid = DruidTools::Druid.new(item.pid, TEST_WORKSPACE)
         druid.mkdir
       end

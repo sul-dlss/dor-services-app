@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe VersionsController do
   let(:item) { AssembleableVersionableItem.new.tap { |x| x.pid = 'druid:aa123bb4567' } }
 
-  before(:each) do
+  before do
     allow(Dor).to receive(:find).and_return(item)
   end
 
