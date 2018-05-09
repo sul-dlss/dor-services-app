@@ -184,7 +184,7 @@ RSpec.describe Dor::ServiceItem do
   end
 
   describe '.content_type' do
-    before :each do
+    before do
       druid = 'bb111bb2222'
       @d = Dor::Item.new(:pid => druid)
       @content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_1)

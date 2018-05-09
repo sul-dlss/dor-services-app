@@ -51,7 +51,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     let(:rights_metadata_xml) { double(String) }
     let(:release_data) { { 'Searchworks' => { 'release' => true } } }
 
-    before :each do
+    before do
       allow(item).to receive(:released_for).and_return(release_data)
       allow(collection).to receive(:released_for).and_return(release_data)
     end
@@ -286,7 +286,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   describe '.write_symphony_records' do
-    before :each do
+    before do
       Dor::Config.release.symphony_path = "#{@fixtures}/sdr_purl"
       Dor::Config.release.write_marc_script = 'bin/write_marc_record_test'
       @output_file = "#{@fixtures}/sdr_purl/sdr-purl-856s"
@@ -294,7 +294,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       @updater = Dor::UpdateMarcRecordService.new(@dor_item)
       expect(File.exist?(@output_file)).to be_falsey
     end
-    after :each do
+    after do
       FileUtils.rm_f(@output_file)
     end
 

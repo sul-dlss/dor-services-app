@@ -210,20 +210,6 @@ RSpec/FilePath:
     - 'spec/service_item_spec.rb'
     - 'spec/update_marc_spec.rb'
 
-# Offense count: 11
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: implicit, each, example
-RSpec/HookArgument:
-  Exclude:
-    - 'spec/controllers/objects_controller_spec.rb'
-    - 'spec/controllers/sdr_controller_spec.rb'
-    - 'spec/controllers/versions_controller_spec.rb'
-    - 'spec/controllers/workflows_controller_spec.rb'
-    - 'spec/goobi_spec.rb'
-    - 'spec/registration_response_spec.rb'
-    - 'spec/service_item_spec.rb'
-    - 'spec/update_marc_spec.rb'
-
 # Offense count: 134
 # Configuration parameters: AssignmentOnly.
 RSpec/InstanceVariable:
