@@ -188,14 +188,6 @@ RSpec/ExampleLength:
     - 'spec/service_item_spec.rb'
     - 'spec/update_marc_spec.rb'
 
-# Offense count: 48
-# Configuration parameters: CustomTransform, IgnoredWords.
-RSpec/ExampleWording:
-  Exclude:
-    - 'spec/goobi_spec.rb'
-    - 'spec/service_item_spec.rb'
-    - 'spec/update_marc_spec.rb'
-
 # Offense count: 1
 RSpec/ExpectInHook:
   Exclude:
