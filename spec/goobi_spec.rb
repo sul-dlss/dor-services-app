@@ -21,7 +21,7 @@ RSpec.describe Dor::Goobi do
     allow(@goobi).to receive(:collection_name).and_return('collection name')
   end
 
-  it 'creates the correct xml request' do
+  it 'creates the correct xml request without ocr tag present' do
     allow(@goobi).to receive(:goobi_ocr_tag_present?).and_return(false)
     expect(@goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>
