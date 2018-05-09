@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Dor::ServiceItem do
   describe '.catkey' do
-    it 'should return catkey from a valid identityMetadata' do
+    it 'returns catkey from a valid identityMetadata' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -15,7 +15,7 @@ RSpec.describe Dor::ServiceItem do
       expect(@si.previous_ckeys).to eq([])
     end
 
-    it 'should return nil for current catkey but values for previous catkeys in identityMetadata' do
+    it 'returns nil for current catkey but values for previous catkeys in identityMetadata' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_5)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -28,7 +28,7 @@ RSpec.describe Dor::ServiceItem do
       expect(@si.previous_ckeys).to eq(%w(123 456))
     end
 
-    it 'should return nil for current catkey and empty array for previous catkeys in identityMetadata without either' do
+    it 'returns nil for current catkey and empty array for previous catkeys in identityMetadata without either' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_4)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -43,7 +43,7 @@ RSpec.describe Dor::ServiceItem do
   end
 
   describe '.goobi_workflow_name' do
-    it 'should return goobi_workflow_name from a valid identityMetadata' do
+    it 'returns goobi_workflow_name from a valid identityMetadata' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -54,7 +54,7 @@ RSpec.describe Dor::ServiceItem do
 
       expect(@si.goobi_workflow_name).to eq('book_workflow')
     end
-    it 'should return first goobi_workflow_name if multiple are in the tags' do
+    it 'returns first goobi_workflow_name if multiple are in the tags' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -65,7 +65,7 @@ RSpec.describe Dor::ServiceItem do
 
       expect(@si.goobi_workflow_name).to eq('book_workflow')
     end
-    it 'should return blank for goobi_workflow_name if none are found' do
+    it 'returns blank for goobi_workflow_name if none are found' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -79,7 +79,7 @@ RSpec.describe Dor::ServiceItem do
   end
 
   describe '.object_type' do
-    it 'should return object_type from a valid identityMetadata' do
+    it 'returns object_type from a valid identityMetadata' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -90,7 +90,7 @@ RSpec.describe Dor::ServiceItem do
       expect(@si.object_type).to eq('item')
     end
 
-    it 'should return a blank object type for identityMetadata without object_type' do
+    it 'returns a blank object type for identityMetadata without object_type' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_6)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -103,7 +103,7 @@ RSpec.describe Dor::ServiceItem do
   end
 
   describe '.project_name' do
-    it 'should return project name from a valid identityMetadata' do
+    it 'returns project name from a valid identityMetadata' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -115,7 +115,7 @@ RSpec.describe Dor::ServiceItem do
       expect(@si.project_name).to eq('Batchelor Maps : Batch 1')
     end
 
-    it 'should return blank for project name if not in tag' do
+    it 'returns blank for project name if not in tag' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -129,7 +129,7 @@ RSpec.describe Dor::ServiceItem do
   end
 
   describe '.collection_name and id' do
-    it 'should return collection name and id from a valid identityMetadata' do
+    it 'returns collection name and id from a valid identityMetadata' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -145,7 +145,7 @@ RSpec.describe Dor::ServiceItem do
       expect(@si.collection_id).to eq('druid:cc111cc1111')
     end
 
-    it 'should return blank for collection name and id if there are none' do
+    it 'returns blank for collection name and id if there are none' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -160,7 +160,7 @@ RSpec.describe Dor::ServiceItem do
   end
 
   describe '.barcode' do
-    it 'should return barcode from a valid identityMetadata' do
+    it 'returns barcode from a valid identityMetadata' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -171,7 +171,7 @@ RSpec.describe Dor::ServiceItem do
       expect(@si.barcode).to eq('36105216275185')
     end
 
-    it 'should return an empty string without barcode' do
+    it 'returns an empty string without barcode' do
       setup_test_objects('druid:aa111aa1111', '')
       identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_3)
       identity_metadata_ds = double(Dor::IdentityMetadataDS)
@@ -200,13 +200,13 @@ RSpec.describe Dor::ServiceItem do
       allow(@rights_metadata_ds).to receive(:dra_object).and_return(Dor::RightsAuth.parse(@rights_metadata_ng_xml, true))
     end
 
-    it 'should return the content_type_tag from dor-services if the value exists' do
+    it 'returns the content_type_tag from dor-services if the value exists' do
       fake_tags = ['Tag 1', 'Tag 2', 'Process : Content Type : Process Value']
       allow(@identity_metadata_ds).to receive_messages(:tags => fake_tags, :tag => fake_tags)
       expect(Dor::ServiceItem.new(@d).content_type).to eq('Process Value')
     end
 
-    it 'should return the type from contentMetadata if content_type_tag from dor-services does not have a value' do
+    it 'returns the type from contentMetadata if content_type_tag from dor-services does not have a value' do
       fake_tags = ['Tag 1', 'Tag 2', 'Tag 3']
       allow(@identity_metadata_ds).to receive_messages(:tags => fake_tags, :tag => fake_tags)
       expect(Dor::ServiceItem.new(@d).content_type).to eq('map')
@@ -214,7 +214,7 @@ RSpec.describe Dor::ServiceItem do
   end
 
   describe '.thumb' do
-    it 'should return thumb from a valid contentMetadata' do
+    it 'returns thumb from a valid contentMetadata' do
       druid = 'bb111bb2222'
       d = Dor::Item.new(:pid => druid)
       content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_1)
@@ -229,7 +229,7 @@ RSpec.describe Dor::ServiceItem do
       expect(Dor::ServiceItem.new(d).thumb).to eq('bb111bb2222%2Fwt183gy6220_00_0001.jp2')
     end
 
-    it 'should return an empty string for contentMetadata without thumb' do
+    it 'returns an empty string for contentMetadata without thumb' do
       druid = 'aa111aa2222'
       d = Dor::Item.new(:pid => druid)
       content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_2)

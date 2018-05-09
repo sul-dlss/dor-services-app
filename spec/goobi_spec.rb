@@ -21,7 +21,7 @@ RSpec.describe Dor::Goobi do
     allow(@goobi).to receive(:collection_name).and_return('collection name')
   end
 
-  it 'should create the correct xml request' do
+  it 'creates the correct xml request' do
     expect(@goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>
         <objectId>#{pid}</objectId>
@@ -40,7 +40,7 @@ RSpec.describe Dor::Goobi do
     END
   end
 
-  it 'should make a call to the goobi server with the appropriate xml params' do
+  it 'makes a call to the goobi server with the appropriate xml params' do
     FakeWeb.register_uri(:post, Dor::Config.goobi.url, body: '<somexml/>', content_type: 'text/xml')
     expect(@goobi).to receive(:xml_request)
     response = @goobi.register
