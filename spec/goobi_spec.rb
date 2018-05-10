@@ -21,7 +21,8 @@ RSpec.describe Dor::Goobi do
     allow(@goobi).to receive(:collection_name).and_return('collection name')
   end
 
-  it 'creates the correct xml request' do
+  it 'creates the correct xml request without ocr tag present' do
+    allow(@goobi).to receive(:goobi_ocr_tag_present?).and_return(false)
     expect(@goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>
         <objectId>#{pid}</objectId>
@@ -36,6 +37,28 @@ RSpec.describe Dor::Goobi do
         <collectionName>collection name</collectionName>
         <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
         <goobiWorkflow>goobi_workflow</goobiWorkflow>
+        <ocr>false</ocr>
+      </stanfordCreationRequest>
+    END
+  end
+
+  it 'creates the correct xml request with ocr tag present' do
+    allow(@goobi).to receive(:goobi_ocr_tag_present?).and_return(true)
+    expect(@goobi.xml_request).to be_equivalent_to <<-END
+      <stanfordCreationRequest>
+        <objectId>#{pid}</objectId>
+        <objectType>item</objectType>
+        <sourceID>some_source_id</sourceID>
+        <title>Object Title</title>
+        <contentType>book</contentType>
+        <project>Project Name</project>
+        <catkey>ckey_12345</catkey>
+        <barcode>barcode_12345</barcode>
+        <collectionId>druid:oo000oo0001</collectionId>
+        <collectionName>collection name</collectionName>
+        <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
+        <goobiWorkflow>goobi_workflow</goobiWorkflow>
+        <ocr>true</ocr>
       </stanfordCreationRequest>
     END
   end

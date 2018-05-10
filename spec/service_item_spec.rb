@@ -3,157 +3,109 @@ require 'rails_helper'
 RSpec.describe Dor::ServiceItem do
   describe '.catkey' do
     it 'returns catkey from a valid identityMetadata' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).times.and_return('identityMetadata' => identity_metadata_ds)
-      allow(@dor_item).to receive(:identityMetadata).and_return(identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
-
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       expect(@si.ckey).to eq('8832162')
       expect(@si.previous_ckeys).to eq([])
     end
 
     it 'returns nil for current catkey but values for previous catkeys in identityMetadata' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_5)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).times.and_return('identityMetadata' => identity_metadata_ds)
-      allow(@dor_item).to receive(:identityMetadata).and_return(identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
-
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_5)
       expect(@si.ckey).to be_nil
       expect(@si.previous_ckeys).to eq(%w(123 456))
     end
 
     it 'returns nil for current catkey and empty array for previous catkeys in identityMetadata without either' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_4)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).times.and_return('identityMetadata' => identity_metadata_ds)
-      allow(@dor_item).to receive(:identityMetadata).and_return(identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
-
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_4)
       expect(@si.ckey).to be_nil
       expect(@si.previous_ckeys).to eq([])
     end
   end
 
   describe '.goobi_workflow_name' do
+    before do
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
+    end
+
     it 'returns goobi_workflow_name from a valid identityMetadata' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
       allow(@dor_item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
-
       expect(@si.goobi_workflow_name).to eq('book_workflow')
     end
+
     it 'returns first goobi_workflow_name if multiple are in the tags' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
       allow(@dor_item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'DPG : Workflow : another_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
-
       expect(@si.goobi_workflow_name).to eq('book_workflow')
     end
+
     it 'returns blank for goobi_workflow_name if none are found' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
       allow(@dor_item).to receive(:tags).and_return(['Process : Content Type : Book (flipbook, ltr)'])
-
       expect(@si.goobi_workflow_name).to eq(Dor::Config.goobi.default_goobi_workflow_name)
+    end
+  end
+
+  describe '.goobi_ocr_tag_present?' do
+    before do
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
+    end
+
+    it 'returns false if the goobi ocr tag is not present' do
+      allow(@dor_item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
+      expect(@si.goobi_ocr_tag_present?).to be false
+    end
+
+    it 'returns true if the goobi ocr tag is present' do
+      allow(@dor_item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'])
+      expect(@si.goobi_ocr_tag_present?).to be true
+    end
+
+    it 'returns true if the goobi ocr tag is present even if the case is mixed' do
+      allow(@dor_item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'DPG : ocr : true'])
+      expect(@si.goobi_ocr_tag_present?).to be true
     end
   end
 
   describe '.object_type' do
     it 'returns object_type from a valid identityMetadata' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
-
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       expect(@si.object_type).to eq('item')
     end
 
     it 'returns a blank object type for identityMetadata without object_type' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_6)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
-
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_6)
       expect(@si.object_type).to be_nil
     end
   end
 
   describe '.project_name' do
+    before do
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
+    end
+
     it 'returns project name from a valid identityMetadata' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
       allow(@dor_item).to receive(:tags).and_return(['Project : Batchelor Maps : Batch 1', 'Process : Content Type : Book (flipbook, ltr)'])
-
       expect(@si.project_name).to eq('Batchelor Maps : Batch 1')
     end
 
     it 'returns blank for project name if not in tag' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
       allow(@dor_item).to receive(:tags).and_return(['Process : Content Type : Book (flipbook, ltr)'])
-
       expect(@si.project_name).to eq('')
     end
   end
 
   describe '.collection_name and id' do
+    before do
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
+    end
+
     it 'returns collection name and id from a valid identityMetadata' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
-
       collection = Dor::Collection.new(:pid => 'druid:cc111cc1111')
       allow(collection).to receive_messages(label: 'Collection label', id: 'druid:cc111cc1111')
       allow(@dor_item).to receive(:collections).and_return([collection])
-
       expect(@si.collection_name).to eq('Collection label')
       expect(@si.collection_id).to eq('druid:cc111cc1111')
     end
 
     it 'returns blank for collection name and id if there are none' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
       allow(@dor_item).to receive(:collections).and_return([])
-
       expect(@si.collection_name).to eq('')
       expect(@si.collection_id).to eq('')
     end
@@ -161,24 +113,12 @@ RSpec.describe Dor::ServiceItem do
 
   describe '.barcode' do
     it 'returns barcode from a valid identityMetadata' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
-
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       expect(@si.barcode).to eq('36105216275185')
     end
 
     it 'returns an empty string without barcode' do
-      setup_test_objects('druid:aa111aa1111', '')
-      identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_3)
-      identity_metadata_ds = double(Dor::IdentityMetadataDS)
-
-      allow(@dor_item).to receive(:datastreams).and_return('identityMetadata' => identity_metadata_ds)
-      allow(identity_metadata_ds).to receive(:ng_xml).and_return(identity_metadata_ng_xml)
-
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_3)
       expect(@si.barcode).to be_nil
     end
   end

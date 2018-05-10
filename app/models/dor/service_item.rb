@@ -103,5 +103,14 @@ module Dor
         content_tag.empty? ? Dor::Config.goobi.default_goobi_workflow_name : content_tag[0].split(':').last.strip
       end
     end
+
+    # returns true or false depending if the specially defined goobi DPG ocr tag is present in the object
+    # @return [boolean]
+    def goobi_ocr_tag_present?
+      @goobi_ocr_tag_present ||= begin
+        dpg_goobi_ocr_tag = 'DPG : OCR : TRUE'
+        @druid_obj.tags.any? { |tag| tag.casecmp(dpg_goobi_ocr_tag).zero? } # case insensitive compare
+      end
+    end
   end
 end
