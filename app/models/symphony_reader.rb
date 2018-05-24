@@ -22,7 +22,7 @@ class SymphonyReader
     # explicitly inject the catkey into the 001 field
     record << marc_field('tag' => '001', 'subfields' => [{ 'code' => '_', 'data' => "a#{catkey}" }])
 
-    # explicitly inject the SIRSI into the 003 field
+    # explicitly inject SIRSI into the 003 field
     record << marc_field('tag' => '003', 'subfields' => [{ 'code' => '_', 'data' => 'SIRSI' }])
 
     record
