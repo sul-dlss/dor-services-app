@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/sul-dlss/dor-services-app.png?branch=master)](https://travis-ci.org/sul-dlss/dor-services-app)
 [![Coverage Status](https://coveralls.io/repos/github/sul-dlss/dor-services-app/badge.svg?branch=master)](https://coveralls.io/github/sul-dlss/dor-services-app?branch=master)
-[![Dependency Status](https://gemnasium.com/badges/github.com/sul-dlss/dor-services-app.svg)](https://gemnasium.com/github.com/sul-dlss/dor-services-app)
+
 [![GitHub version](https://badge.fury.io/gh/sul-dlss%2Fdor-services-app.svg)](https://badge.fury.io/gh/sul-dlss%2Fdor-services-app)
 
 # DOR Services App
