@@ -16,8 +16,14 @@ class SymphonyReader
     record.leader = leader if leader
 
     fields.uniq.each do |field|
-      record << marc_field(field)
+      record << marc_field(field) unless %w[001 003].include? field['tag'] # explicitly remove all 001 and 003 fields from the record
     end
+
+    # explicitly inject the catkey into the 001 field
+    record << marc_field('tag' => '001', 'subfields' => [{ 'code' => '_', 'data' => "a#{catkey}" }])
+
+    # explicitly inject SIRSI into the 003 field
+    record << marc_field('tag' => '003', 'subfields' => [{ 'code' => '_', 'data' => 'SIRSI' }])
 
     record
   end

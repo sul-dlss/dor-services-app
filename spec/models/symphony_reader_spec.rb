@@ -36,7 +36,7 @@ RSpec.describe SymphonyReader do
     end
 
     it 'parses control fields' do
-      expect(reader.to_marc.fields('001').first.value).to eq 'some data'
+      expect(reader.to_marc.fields('001').first.value).to eq 'acatkey'
     end
 
     it 'removes duplicate fields' do
