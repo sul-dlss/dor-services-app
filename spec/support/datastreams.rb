@@ -1,4 +1,3 @@
-
 # rubocop:disable Metrics/MethodLength, Metrics/LineLength
 def build_identity_metadata_1
   '<identityMetadata>

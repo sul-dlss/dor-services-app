@@ -11,7 +11,7 @@ RSpec.describe WorkflowsController do
         <process name="start-accession" status="completed" attempts="1" lifecycle="submitted"/>
         <process name="content-metadata" status="waiting"/>
       </workflow>
-      XML
+    XML
     }
 
     get :initial, params: { wf_name: 'accessionWF' }

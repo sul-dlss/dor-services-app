@@ -51,7 +51,7 @@ group :test, :development do
   gem 'equivalent-xml'
   gem 'fakeweb'
   gem 'rack-console'
-  gem 'rubocop'
+  gem 'rubocop', '~> 0.57.1'
   gem 'rubocop-rspec'
   gem 'capybara'
 end
