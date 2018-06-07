@@ -4,7 +4,6 @@ notifications:
   email: false
 
 rvm:
-  - 2.2.4 # deployed
-  - 2.3.4
+  - 2.3.4 # deployed
 
 bundler_args: --without production
