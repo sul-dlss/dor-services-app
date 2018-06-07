@@ -441,7 +441,7 @@ DEPENDENCIES
   config
   coveralls (~> 0.8)
   dlss-capistrano
-  dor-services (~> 5.12)
+  dor-services (~> 5.31)
   equivalent-xml
   erubis
   fakeweb
