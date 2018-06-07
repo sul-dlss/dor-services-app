@@ -35,7 +35,7 @@ gem 'net-http-persistent', '~> 2.9'
 gem 'marc'
 
 # DLSS/domain-specific dependencies
-gem 'dor-services', '~> 5.12'
+gem 'dor-services', '~> 5.31'
 gem 'lyber-core', '>= 2.0.2'
 gem 'workflow-archiver', '~> 2.0'
 

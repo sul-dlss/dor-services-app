@@ -66,6 +66,7 @@ SOLRIZER_URL: 'https://solr.example.com/solr/collection'
 STATUS_INDEXER_URL: 'https://status.example.com/render/?format=json&other=params'
 WORKFLOW_URL: 'https://workflow.example.com/workflow'
 SDR_URL: 'http://localhost/sdr'
+purl_services_url: ~
 
 CLEANUP:
   LOCAL_WORKSPACE_ROOT: '/dor/workspace'
@@ -80,7 +81,7 @@ RELEASE:
   SYMPHONY_PATH: './'
   WRITE_MARC_SCRIPT: 'bin/write_marc_record_test'
   PURL_BASE_URI : 'http://purl.stanford.edu'
-  
+
 GOOBI:
   URL: 'http://localhost:9292'
   DPG_WORKFLOW_NAME: 'goobiWF'

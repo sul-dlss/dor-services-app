@@ -102,6 +102,10 @@ Dor.configure do
     max_sleep_seconds Settings.GOOBI.MAX_SLEEP_SECONDS # max sleep seconds between tries
     base_sleep_seconds Settings.GOOBI.BASE_SLEEP_SECONDS # base sleep seconds between tries
   end
+
+  purl_services do
+    url Settings.purl_services_url
+  end
 end
 
 Dor::WorkflowArchiver.config.configure do
