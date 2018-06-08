@@ -49,11 +49,11 @@ group :test, :development do
   gem 'coveralls', '~> 0.8', require: false
   gem 'simplecov'
   gem 'equivalent-xml'
-  gem 'fakeweb'
   gem 'rack-console'
   gem 'rubocop', '~> 0.57.1'
   gem 'rubocop-rspec'
   gem 'capybara'
+  gem 'webmock'
 end
 
 group :deployment do

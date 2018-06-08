@@ -102,7 +102,7 @@ RSpec.describe ObjectsController do
   describe '/notify_goobi' do
     it 'notifies goobi of a new registration by making a web service call' do
       fake_request = "<stanfordCreationRequest><objectId>#{item.pid}</objectId></stanfordCreationRequest>"
-      FakeWeb.register_uri(:post, Dor::Config.goobi.url, body: fake_request, content_type: 'application/xml', status: 201)
+      stub_request(:post, Dor::Config.goobi.url).to_return(body: fake_request, headers: { 'Content-Type' => 'application/xml' }, status: 201)
       allow_any_instance_of(Dor::Goobi).to receive(:xml_request).and_return(fake_request)
       fake_response = double(RestClient::Response, headers: { content_type: 'text/xml' }, code: 201, body: '')
       expect_any_instance_of(Dor::Goobi).to receive(:register).once.and_return(fake_response)

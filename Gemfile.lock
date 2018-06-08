@@ -99,6 +99,8 @@ GEM
       term-ansicolor (~> 1.3)
       thor (~> 0.19.4)
       tins (~> 1.6)
+    crack (0.4.3)
+      safe_yaml (~> 1.0.0)
     crass (1.0.4)
     daemons (1.2.6)
     deep_merge (1.2.1)
@@ -181,7 +183,6 @@ GEM
       nokogiri (>= 1.4.3)
     erubi (1.7.1)
     erubis (2.7.0)
-    fakeweb (1.3.0)
     faraday (0.15.2)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.25)
@@ -189,6 +190,7 @@ GEM
       activesupport (>= 4.2.0)
     haml (4.0.7)
       tilt
+    hashdiff (0.3.7)
     honeybadger (3.3.0)
     hooks (0.4.1)
       uber (~> 0.0.14)
@@ -367,6 +369,7 @@ GEM
       mime-types
       nokogiri
       rest-client
+    safe_yaml (1.0.4)
     scrub_rb (1.0.1)
     sequel (5.9.0)
     simplecov (0.14.1)
@@ -416,6 +419,10 @@ GEM
     unf_ext (0.0.7.5)
     unicode-display_width (1.4.0)
     uuidtools (2.1.5)
+    webmock (3.4.2)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
+      hashdiff
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.3)
@@ -444,7 +451,6 @@ DEPENDENCIES
   dor-services (~> 5.31)
   equivalent-xml
   erubis
-  fakeweb
   faraday
   honeybadger
   listen (~> 3.0.5)
@@ -465,6 +471,7 @@ DEPENDENCIES
   spring
   spring-watcher-listen (~> 2.0.0)
   tzinfo-data
+  webmock
   workflow-archiver (~> 2.0)
 
 BUNDLED WITH
