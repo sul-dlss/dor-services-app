@@ -259,7 +259,7 @@ GEM
     parallel (1.12.1)
     parser (2.5.1.0)
       ast (~> 2.4.0)
-    powerpack (0.1.1)
+    powerpack (0.1.2)
     public_suffix (3.0.2)
     puma (3.11.4)
     rack (2.0.5)
