@@ -6,7 +6,7 @@ RSpec.describe SymphonyReader do
 
   describe '#to_marc' do
     before do
-      FakeWeb.register_uri(:get, Settings.CATALOG.SYMPHONY.JSON_URL % { catkey: catkey }, body: body.to_json)
+      stub_request(:get, Settings.CATALOG.SYMPHONY.JSON_URL % { catkey: catkey }).to_return(body: body.to_json)
     end
 
     let(:body) do

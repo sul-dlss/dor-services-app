@@ -64,7 +64,7 @@ RSpec.describe Dor::Goobi do
   end
 
   it 'makes a call to the goobi server with the appropriate xml params' do
-    FakeWeb.register_uri(:post, Dor::Config.goobi.url, body: '<somexml/>', content_type: 'text/xml')
+    stub_request(:post, Dor::Config.goobi.url).to_return(body: '<somexml/>', headers: { 'Content-Type' => 'text/xml' })
     expect(@goobi).to receive(:xml_request)
     response = @goobi.register
     expect(response.code).to eq(200)
