@@ -10,6 +10,7 @@
 	SUL1.4 - createSubFrom653: correct indicator mapping to subject/name types and subject subelements
 	SUL1.5 - createRelatedItemFrom490: remove call to xxx880 as relatedItem cannot have altRepGroup
 	SUL1.6 - createAbstractFrom520: map first indicator to displayLabel instead of type
+	SUL1.7 - Add nameTitleGroup to 700, 710, 711 fields with $t and $a or $q
 -->
 
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
@@ -2176,6 +2177,13 @@
 				</xsl:if>
 				<xsl:call-template name="constituentOrRelatedType"/>
 				<titleInfo>
+					<!-- SUL1.7 addition -->
+					<xsl:if test="marc:subfield[@code='a'] or marc:subfield[@code='q']">
+						<xsl:attribute name="nameTitleGroup">
+							<xsl:text>1</xsl:text>
+						</xsl:attribute>
+					</xsl:if>
+					<!-- end SUL1.7 -->
 					<title>
 						<xsl:call-template name="chopPunctuation">
 							<xsl:with-param name="chopString">
@@ -2190,6 +2198,11 @@
 					<xsl:call-template name="part"/>
 				</titleInfo>
 				<name type="personal">
+					<!--SUL1.7 addition -->
+					<xsl:attribute name="nameTitleGroup">
+						<xsl:text>1</xsl:text>
+					</xsl:attribute>
+					<!-- end SUL1.7 -->
 					<namePart>
 						<xsl:call-template name="specialSubfieldSelect">
 							<xsl:with-param name="anyCodes">aq</xsl:with-param>
@@ -2213,6 +2226,13 @@
 				</xsl:if>
 				<xsl:call-template name="constituentOrRelatedType"/>
 				<titleInfo>
+					<!-- SUL1.7 addition -->
+					<xsl:if test="marc:subfield[@code='a'] or marc:subfield[@code='q']">
+						<xsl:attribute name="nameTitleGroup">
+							<xsl:text>1</xsl:text>
+						</xsl:attribute>
+					</xsl:if>
+					<!-- end SUL1.7 -->
 					<title>
 						<xsl:call-template name="chopPunctuation">
 							<xsl:with-param name="chopString">
@@ -2227,6 +2247,11 @@
 					<xsl:call-template name="relatedPartNumName"/>
 				</titleInfo>
 				<name type="corporate">
+					<!--SUL1.7 addition -->
+					<xsl:attribute name="nameTitleGroup">
+						<xsl:text>1</xsl:text>
+					</xsl:attribute>
+					<!-- end SUL1.7 -->
 					<xsl:for-each select="marc:subfield[@code='a']">
 						<namePart>
 							<xsl:value-of select="."/>
@@ -2263,6 +2288,13 @@
 				</xsl:if>
 				<xsl:call-template name="constituentOrRelatedType"/>
 				<titleInfo>
+					<!-- SUL1.7 addition -->
+					<xsl:if test="marc:subfield[@code='a'] or marc:subfield[@code='q']">
+						<xsl:attribute name="nameTitleGroup">
+							<xsl:text>1</xsl:text>
+						</xsl:attribute>
+					</xsl:if>
+					<!-- end SUL1.7 -->
 					<title>
 						<xsl:call-template name="chopPunctuation">
 							<xsl:with-param name="chopString">
@@ -2277,6 +2309,11 @@
 					<xsl:call-template name="relatedPartNumName"/>
 				</titleInfo>
 				<name type="conference">
+					<!--SUL1.7 addition -->
+					<xsl:attribute name="nameTitleGroup">
+						<xsl:text>1</xsl:text>
+					</xsl:attribute>
+					<!-- end SUL1.7 -->
 					<namePart>
 						<xsl:call-template name="specialSubfieldSelect">
 							<xsl:with-param name="anyCodes">aqdc</xsl:with-param>
