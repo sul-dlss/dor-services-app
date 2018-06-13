@@ -15,6 +15,8 @@
 	SUL1.7 - Add nameTitleGroup to 700, 710, 711 fields with $t and $a or $q
 	SUL1.8 - createGenreFrom655: map second indicator to authority source code
 	SUL1.9 - Add displayLabel $i to 700, 710, 711 fields with $t
+	SUL1.10 - xxx880, scriptCode: do not assign Latn as scriptCode if not defined in $6
+
 -->
 
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
@@ -3774,58 +3776,72 @@
 	</xsl:template>
 
 	<xsl:template name="scriptCode">
-		<xsl:variable name="sf06" select="normalize-space(child::marc:subfield[@code='6'])"/>
-		<xsl:variable name="sf06a" select="substring($sf06, 1, 3)"/>
-		<xsl:variable name="sf06b" select="substring($sf06, 5, 2)"/>
-		<xsl:variable name="sf06c" select="substring($sf06, 7)"/>
-		<xsl:variable name="scriptCode" select="substring($sf06, 8, 2)"/>
-		<xsl:if test="//marc:datafield/marc:subfield[@code='6']">
-			<xsl:attribute name="script">
-				<xsl:choose>
-					<xsl:when test="$scriptCode=''">Latn</xsl:when>
-					<xsl:when test="$scriptCode='(3'">Arab</xsl:when>
-					<xsl:when test="$scriptCode='(4'">Arab</xsl:when>
-					<xsl:when test="$scriptCode='(B'">Latn</xsl:when>
-					<xsl:when test="$scriptCode='!E'">Latn</xsl:when>
-					<xsl:when test="$scriptCode='$1'">CJK</xsl:when>
-					<xsl:when test="$scriptCode='(N'">Cyrl</xsl:when>
-					<xsl:when test="$scriptCode='(Q'">Cyrl</xsl:when>
-					<xsl:when test="$scriptCode='(2'">Hebr</xsl:when>
-					<xsl:when test="$scriptCode='(S'">Grek</xsl:when>
-				</xsl:choose>
-			</xsl:attribute>
-		</xsl:if>
+	  <xsl:variable name="sf06" select="normalize-space(child::marc:subfield[@code='6'])"/>
+	  <xsl:variable name="sf06a" select="substring($sf06, 1, 3)"/>
+	  <xsl:variable name="sf06b" select="substring($sf06, 5, 2)"/>
+	  <xsl:variable name="sf06c" select="substring($sf06, 7)"/>
+	  <xsl:variable name="scriptCode" select="substring($sf06, 8, 2)"/>
+	  <!-- SUL1.10 replacement -->
+	  <xsl:if test="$scriptCode != ''">
+	  <!-- replaced by SUL1.10
+	  <xsl:if test="//marc:datafield/marc:subfield[@code='6']">
+	  -->
+	    <xsl:attribute name="script">
+	      <xsl:choose>
+	        <!-- SUL1.10 deletion
+	        <xsl:when test="$scriptCode=''">Latn</xsl:when>
+	      -->
+	        <xsl:when test="$scriptCode='(3'">Arab</xsl:when>
+	        <xsl:when test="$scriptCode='(4'">Arab</xsl:when>
+	        <xsl:when test="$scriptCode='(B'">Latn</xsl:when>
+	        <xsl:when test="$scriptCode='!E'">Latn</xsl:when>
+	        <xsl:when test="$scriptCode='$1'">CJK</xsl:when>
+	        <xsl:when test="$scriptCode='(N'">Cyrl</xsl:when>
+	        <xsl:when test="$scriptCode='(Q'">Cyrl</xsl:when>
+	        <xsl:when test="$scriptCode='(2'">Hebr</xsl:when>
+	        <xsl:when test="$scriptCode='(S'">Grek</xsl:when>
+	      </xsl:choose>
+	    </xsl:attribute>
+	  </xsl:if>
 	</xsl:template>
 
 	<!-- tmee 20100927 for 880s & corresponding fields  20101123 scriptCode -->
 
 	<xsl:template name="xxx880">
-		<xsl:if test="child::marc:subfield[@code='6']">
-			<xsl:variable name="sf06" select="normalize-space(child::marc:subfield[@code='6'])"/>
-			<xsl:variable name="sf06a" select="substring($sf06, 1, 3)"/>
-			<xsl:variable name="sf06b" select="substring($sf06, 5, 2)"/>
-			<xsl:variable name="sf06c" select="substring($sf06, 7)"/>
-			<xsl:variable name="scriptCode" select="substring($sf06, 8, 2)"/>
-			<xsl:if test="//marc:datafield/marc:subfield[@code='6']">
-				<xsl:attribute name="altRepGroup">
-					<xsl:value-of select="$sf06b"/>
-				</xsl:attribute>
-				<xsl:attribute name="script">
-					<xsl:choose>
-						<xsl:when test="$scriptCode=''">Latn</xsl:when>
-						<xsl:when test="$scriptCode='(3'">Arab</xsl:when>
-						<xsl:when test="$scriptCode='(4'">Arab</xsl:when>
-						<xsl:when test="$scriptCode='(B'">Latn</xsl:when>
-						<xsl:when test="$scriptCode='!E'">Latn</xsl:when>
-						<xsl:when test="$scriptCode='$1'">CJK</xsl:when>
-						<xsl:when test="$scriptCode='(N'">Cyrl</xsl:when>
-						<xsl:when test="$scriptCode='(Q'">Cyrl</xsl:when>
-						<xsl:when test="$scriptCode='(2'">Hebr</xsl:when>
-						<xsl:when test="$scriptCode='(S'">Grek</xsl:when>
-					</xsl:choose>
-				</xsl:attribute>
-			</xsl:if>
-		</xsl:if>
+	  <xsl:if test="child::marc:subfield[@code='6']">
+	    <xsl:variable name="sf06" select="normalize-space(child::marc:subfield[@code='6'])"/>
+	    <xsl:variable name="sf06a" select="substring($sf06, 1, 3)"/>
+	    <xsl:variable name="sf06b" select="substring($sf06, 5, 2)"/>
+	    <xsl:variable name="sf06c" select="substring($sf06, 7)"/>
+	    <xsl:variable name="scriptCode" select="substring($sf06, 8, 2)"/>
+	    <xsl:if test="//marc:datafield/marc:subfield[@code='6']">
+	      <xsl:attribute name="altRepGroup">
+	        <xsl:value-of select="$sf06b"/>
+	      </xsl:attribute>
+	      <!-- SUL1.10 addition -->
+	      <xsl:if test="$scriptCode != ''">
+	      <!-- SUL1.10 end -->
+	        <xsl:attribute name="script">
+	          <xsl:choose>
+	            <!-- SUL1.10 deletion
+	            <xsl:when test="$scriptCode=''">Latn</xsl:when>
+	            -->
+	            <xsl:when test="$scriptCode='(3'">Arab</xsl:when>
+	            <xsl:when test="$scriptCode='(4'">Arab</xsl:when>
+	            <xsl:when test="$scriptCode='(B'">Latn</xsl:when>
+	            <xsl:when test="$scriptCode='!E'">Latn</xsl:when>
+	            <xsl:when test="$scriptCode='$1'">CJK</xsl:when>
+	            <xsl:when test="$scriptCode='(N'">Cyrl</xsl:when>
+	            <xsl:when test="$scriptCode='(Q'">Cyrl</xsl:when>
+	            <xsl:when test="$scriptCode='(2'">Hebr</xsl:when>
+	            <xsl:when test="$scriptCode='(S'">Grek</xsl:when>
+	          </xsl:choose>
+	        </xsl:attribute>
+	      <!-- SUL1.10 addition -->
+	      </xsl:if>
+	      <!-- SUL1.10 end -->
+	    </xsl:if>
+	  </xsl:if>
 	</xsl:template>
 
 	<xsl:template name="yyy880">
@@ -4821,15 +4837,12 @@
 	<!-- 1.100 245c 20140804 -->
 	<xsl:template name="createNoteFrom245c">
 		<xsl:if test="marc:subfield[@code='c']">
-				<note type="statement of responsibility">
-					<xsl:attribute name="altRepGroup">
-						<xsl:text>00</xsl:text>
-					</xsl:attribute>
-					<xsl:call-template name="scriptCode"/>
-					<xsl:call-template name="subfieldSelect">
-						<xsl:with-param name="codes">c</xsl:with-param>
-					</xsl:call-template>
-				</note>
+			<note type="statement of responsibility">
+				<xsl:call-template name="scriptCode"/>
+				<xsl:call-template name="subfieldSelect">
+					<xsl:with-param name="codes">c</xsl:with-param>
+				</xsl:call-template>
+			</note>
 		</xsl:if>
 
 	</xsl:template>
