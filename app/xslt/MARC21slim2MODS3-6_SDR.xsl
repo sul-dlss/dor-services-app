@@ -9,6 +9,7 @@
 	SUL1.3 - createSubFrom653: map each $a to separate subject element
 	SUL1.4 - createSubFrom653: correct indicator mapping to subject/name types and subject subelements
 	SUL1.5 - createRelatedItemFrom490: remove call to xxx880 as relatedItem cannot have altRepGroup
+	SUL1.6 - createAbstractFrom520: map first indicator to displayLabel instead of type
 -->
 
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
@@ -4690,7 +4691,19 @@
 
 	<xsl:template name="createAbstractFrom520">
 		<abstract>
+			<!-- SUL1.6 replacement -->
+			<xsl:attribute name="displayLabel">
+				<xsl:choose>
+					<xsl:when test="@ind1=' '">Summary</xsl:when>
+					<xsl:when test="@ind1='0'">Subject</xsl:when>
+					<xsl:when test="@ind1='1'">Review</xsl:when>
+					<xsl:when test="@ind1='2'">Scope and content</xsl:when>
+					<xsl:when test="@ind1='3'">Abstract</xsl:when>
+					<xsl:when test="@ind1='4'">Content advice</xsl:when>
+				</xsl:choose>
+			</xsl:attribute>
 
+			<!-- Previous version replaced by SUL1.6
 			<xsl:attribute name="type">
 				<xsl:choose>
 					<xsl:when test="@ind1=' '">Summary</xsl:when>
@@ -4701,6 +4714,7 @@
 					<xsl:when test="@ind1='4'">Content advice</xsl:when>
 				</xsl:choose>
 			</xsl:attribute>
+		-->
 
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="uri"/>
