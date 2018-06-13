@@ -19,6 +19,7 @@
 	SUL1.11 - createNoteFrom245c: create altRepGroup attribute only if $6 present
 	SUL1.12 - Strip punctuation from 264 subfields consistent with 260 & 260g like 260c
 	SUL1.13 - Strip punctuation from role term in $e
+	SUL1.14 - Map 264 second indicator 4 to copyrightDate
 
 -->
 
@@ -1293,6 +1294,7 @@
 				-->
 				</dateOther>
 			</originInfo>
+
 		</xsl:for-each>
 		<xsl:for-each select="marc:datafield[@tag=264][@ind2=3]">
 			<originInfo eventType="manufacture">
@@ -1336,6 +1338,15 @@
 			</originInfo>
 		</xsl:for-each>
 
+		<xsl:for-each select="marc:datafield[@tag=264][@ind2=4]">
+			<originInfo eventType="copyright notice">
+				<copyrightDate>
+					<xsl:call-template name="chopPunctuation">
+					  <xsl:with-param name="chopString" select="marc:subfield[@code='c']"/>
+					</xsl:call-template>
+				</copyrightDate>
+			</originInfo>
+		</xsl:for-each>
 
 		<xsl:for-each select="marc:datafield[@tag=880]">
 			<xsl:variable name="related_datafield" select="substring-before(marc:subfield[@code='6'],'-')"/>
