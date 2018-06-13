@@ -8,6 +8,7 @@
 	SUL1.2 - originInfo/place/placeTerm from 260a - keep opening bracket if present
 	SUL1.3 - createSubFrom653: map each $a to separate subject element
 	SUL1.4 - createSubFrom653: correct indicator mapping to subject/name types and subject subelements
+	SUL1.5 - createRelatedItemFrom490: remove call to xxx880 as relatedItem cannot have altRepGroup
 -->
 
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
@@ -4611,7 +4612,10 @@
 				<xsl:when test="@ind2 = '7'">
 					<xsl:if test="marc:subfield[@code='2']">
 						<xsl:attribute name="authority">
+
+							<!--
 							<xsl:value-of select="marc:subfield[@code='2']"/>
+						-->
 						</xsl:attribute>
 					</xsl:if>
 				</xsl:when>
@@ -4686,6 +4690,7 @@
 
 	<xsl:template name="createAbstractFrom520">
 		<abstract>
+
 			<xsl:attribute name="type">
 				<xsl:choose>
 					<xsl:when test="@ind1=' '">Summary</xsl:when>
@@ -5676,7 +5681,9 @@
 
 	<xsl:template name="createRelatedItemFrom490">
 		<relatedItem type="series">
+			<!-- SUL1.5 deletion
 			<xsl:call-template name="xxx880"/>
+		-->
 			<titleInfo>
 				<title>
 					<xsl:call-template name="chopPunctuation">
