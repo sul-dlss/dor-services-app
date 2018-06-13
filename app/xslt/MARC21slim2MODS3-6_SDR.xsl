@@ -11,6 +11,7 @@
 	SUL1.5 - createRelatedItemFrom490: remove call to xxx880 as relatedItem cannot have altRepGroup
 	SUL1.6 - createAbstractFrom520: map first indicator to displayLabel instead of type
 	SUL1.7 - Add nameTitleGroup to 700, 710, 711 fields with $t and $a or $q
+	SUL1.8 - createGenreFrom655: map second indicator to authority source code
 -->
 
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
@@ -4689,8 +4690,24 @@
 	</xsl:template>
 
 	<xsl:template name="createGenreFrom655">
+		<genre>
+			<!-- SUL1.8 replacement -->
+			<xsl:attribute name="authority">
+				<xsl:choose>
+					<xsl:when test="marc:subfield[@code='2']">
+						<xsl:value-of select="marc:subfield[@code='2']" />
+					</xsl:when>
+					<xsl:when test="@ind2 = '0'">lcsh</xsl:when>
+					<xsl:when test="@ind2 = '1'">lcshac</xsl:when>
+					<xsl:when test="@ind2 = '2'">mesh</xsl:when>
+					<xsl:when test="@ind2 = '3'">nal</xsl:when>
+					<xsl:when test="@ind2 = '5'">cash</xsl:when>
+					<xsl:when test="@ind2 = '6'">rvm</xsl:when>
+				</xsl:choose>
+			</xsl:attribute>
+		<!-- Previous version replaced by SUL1.8
 		<genre authority="marcgt">
-			<!-- 1.109 -->
+			<!- 1.109 ->
 			<xsl:choose>
 				<xsl:when test="marc:subfield[@code='2']">
 					<xsl:attribute name="authority">
@@ -4703,6 +4720,7 @@
 					</xsl:attribute>
 				</xsl:when>
 			</xsl:choose>
+		-->
 			<!-- Template checks for altRepGroup - 880 $6 -->
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subfieldSelect">
