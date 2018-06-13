@@ -3,6 +3,13 @@
 	<xsl:output encoding="UTF-8" indent="yes" method="xml"/>
 	<xsl:strip-space elements="*"/>
 
+	<!-- Stanford Library changes version 1 20180613
+	SUL1.1 - Added local conversion info to recordInfo/recordOrigin
+	SUL1.2 - originInfo/place/placeTerm from 260a - keep opening bracket if present
+	SUL1.3 - createSubFrom653: map each $a to separate subject element
+	SUL1.4 - createSubFrom653: correct indicator mapping to subject/name types and subject subelements
+-->
+
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
 	MARC21slim2MODS3-6 (Revision 1.118) 20180131
 
@@ -873,9 +880,19 @@
 				<place>
 					<placeTerm>
 						<xsl:attribute name="type">text</xsl:attribute>
+						<!-- SUL1.2 replacement -->
 						<xsl:call-template name="chopPunctuation">
 							<xsl:with-param name="chopString" select="."/>
 						</xsl:call-template>
+						<!-- Previous version replaced by SUL1.2
+						<xsl:call-template name="chopPunctuationFront">
+							<xsl:with-param name="chopString">
+								<xsl:call-template name="chopPunctuation">
+									<xsl:with-param name="chopString" select="."/>
+								</xsl:call-template>
+							</xsl:with-param>
+						</xsl:call-template>
+					-->
 					</placeTerm>
 				</place>
 			</xsl:for-each>
@@ -2822,8 +2839,14 @@
 				</recordIdentifier>
 			</xsl:for-each>
 
+			<!-- SUL1.1 replacement -->
 			<recordOrigin>Converted from MARCXML to MODS version 3.6 using MARC21slim2MODS3-6_SDR.xsl
+				(SUL version 1 2018/06/13; LC Revision 1.118 2018/01/31)</recordOrigin>
+
+			<!-- Previous version replaced by SUL1.1
+			<recordOrigin>Converted from MARCXML to MODS version 3.6 using MARC21slim2MODS3-6.xsl
 				(Revision 1.118 2018/01/31)</recordOrigin>
+			-->
 
 			<xsl:for-each select="marc:datafield[@tag=040]/marc:subfield[@code='b']">
 				<languageOfCataloging>
@@ -5299,6 +5322,7 @@
 		</subject>
 	</xsl:template>
 
+	<!-- SUL1.3 & SUL1.4 replacement -->
 	<xsl:template name="createSubFrom653">
 		<xsl:choose>
 		<xsl:when test="@ind2=' ' or @ind2='0'">
@@ -5311,7 +5335,6 @@
 			</xsl:for-each>
 		</xsl:when>
 
-<!-- tmee 1.93 20140130 -->
 		<xsl:when test="@ind2='1'">
 			<xsl:for-each select="marc:subfield[@code='a']">
 			<subject>
@@ -5379,6 +5402,84 @@
 		</xsl:when>
 		</xsl:choose>
 	</xsl:template>
+
+	<!-- Previous version replaced by SUL1.3 & SUL1.4
+		<xsl:template name="createSubFrom653">
+			<xsl:if test="@ind2=' '">
+				<subject>
+					<topic>
+						<xsl:value-of select="."/>
+					</topic>
+				</subject>
+			</xsl:if>
+			<xsl:if test="@ind2='0'">
+				<subject>
+					<topic>
+						<xsl:value-of select="."/>
+					</topic>
+				</subject>
+			</xsl:if>
+		<! tmee 1.93 20140130 ->
+		<xsl:if test="@ind=' ' or @ind1='0' or @ind1='1'">
+			<subject>
+				<name type="personal">
+					<namePart>
+						<xsl:value-of select="."/>
+					</namePart>
+				</name>
+			</subject>
+		</xsl:if>
+		<xsl:if test="@ind1='3'">
+			<subject>
+				<name type="family">
+					<namePart>
+						<xsl:value-of select="."/>
+					</namePart>
+				</name>
+			</subject>
+		</xsl:if>
+		<xsl:if test="@ind2='2'">
+			<subject>
+				<name type="corporate">
+					<namePart>
+						<xsl:value-of select="."/>
+					</namePart>
+				</name>
+			</subject>
+		</xsl:if>
+		<xsl:if test="@ind2='3'">
+			<subject>
+				<name type="conference">
+					<namePart>
+						<xsl:value-of select="."/>
+					</namePart>
+				</name>
+			</subject>
+		</xsl:if>
+		<xsl:if test="@ind2=4">
+			<subject>
+				<temporal>
+					<xsl:value-of select="."/>
+				</temporal>
+			</subject>
+		</xsl:if>
+		<xsl:if test="@ind2=5">
+			<subject>
+				<geographic>
+					<xsl:value-of select="."/>
+				</geographic>
+			</subject>
+		</xsl:if>
+
+		<xsl:if test="@ind2=6">
+			<subject>
+				<genre>
+					<xsl:value-of select="."/>
+				</genre>
+			</subject>
+		</xsl:if>
+		</xsl:template>
+		-->
 
 	<xsl:template name="createSubFrom656">
 		<subject>
