@@ -3,8 +3,10 @@
 	<xsl:output encoding="UTF-8" indent="yes" method="xml"/>
 	<xsl:strip-space elements="*"/>
 
-	<!-- Stanford Library changes version 1 20180613
-	SUL1.1 - Added local conversion info to recordInfo/recordOrigin
+	<!-- Stanford Library changes
+
+	version 1 20180613 - LC MODS 3.6 Revision 1.118
+	SUL1.1 - Add local conversion info to recordInfo/recordOrigin
 	SUL1.2 - originInfo/place/placeTerm from 260a - keep opening bracket if present
 	SUL1.3 - createSubFrom653: map each $a to separate subject element
 	SUL1.4 - createSubFrom653: correct indicator mapping to subject/name types and subject subelements
@@ -12,6 +14,7 @@
 	SUL1.6 - createAbstractFrom520: map first indicator to displayLabel instead of type
 	SUL1.7 - Add nameTitleGroup to 700, 710, 711 fields with $t and $a or $q
 	SUL1.8 - createGenreFrom655: map second indicator to authority source code
+	SUL1.9 - Add displayLabel $i to 700, 710, 711 fields with $t
 -->
 
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
@@ -2174,7 +2177,14 @@
 			<relatedItem>
 				<!-- 1.115 -->
 				<xsl:if test="marc:subfield[@code='i']">
-					<xsl:attribute name="otherType"><xsl:value-of select="marc:subfield[@code='i']"/></xsl:attribute>
+					<xsl:attribute name="otherType">
+						<xsl:value-of select="marc:subfield[@code='i']"/>
+					</xsl:attribute>
+					<!-- SUL1.9 addition -->
+					<xsl:attribute name="displayLabel">
+						<xsl:value-of select="marc:subfield[@code='i']"/>
+					</xsl:attribute>
+					<!-- end SUL1.9 -->
 				</xsl:if>
 				<xsl:call-template name="constituentOrRelatedType"/>
 				<titleInfo>
@@ -2223,7 +2233,14 @@
 			<relatedItem>
 				<!-- 1.115 -->
 				<xsl:if test="marc:subfield[@code='i']">
-					<xsl:attribute name="otherType"><xsl:value-of select="marc:subfield[@code='i']"/></xsl:attribute>
+					<xsl:attribute name="otherType">
+						<xsl:value-of select="marc:subfield[@code='i']"/>
+					</xsl:attribute>
+					<!-- SUL1.9 addition -->
+					<xsl:attribute name="displayLabel">
+						<xsl:value-of select="marc:subfield[@code='i']"/>
+					</xsl:attribute>
+					<!-- end SUL1.9 -->
 				</xsl:if>
 				<xsl:call-template name="constituentOrRelatedType"/>
 				<titleInfo>
@@ -2285,7 +2302,14 @@
 			<relatedItem>
 				<!-- 1.115 -->
 				<xsl:if test="marc:subfield[@code='i']">
-					<xsl:attribute name="otherType"><xsl:value-of select="marc:subfield[@code='i']"/></xsl:attribute>
+					<xsl:attribute name="otherType">
+						<xsl:value-of select="marc:subfield[@code='i']"/>
+					</xsl:attribute>
+					<!-- SUL1.9 addition -->
+					<xsl:attribute name="displayLabel">
+						<xsl:value-of select="marc:subfield[@code='i']"/>
+					</xsl:attribute>
+					<!-- end SUL1.9 -->
 				</xsl:if>
 				<xsl:call-template name="constituentOrRelatedType"/>
 				<titleInfo>
