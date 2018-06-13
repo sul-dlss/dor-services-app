@@ -16,6 +16,7 @@
 	SUL1.8 - createGenreFrom655: map second indicator to authority source code
 	SUL1.9 - Add displayLabel $i to 700, 710, 711 fields with $t
 	SUL1.10 - xxx880, scriptCode: do not assign Latn as scriptCode if not defined in $6
+	SUL1.11 - createNoteFrom245c: create altRepGroup attribute only if $6 present
 
 -->
 
@@ -4838,6 +4839,13 @@
 	<xsl:template name="createNoteFrom245c">
 		<xsl:if test="marc:subfield[@code='c']">
 			<note type="statement of responsibility">
+				<!-- SUL1.11 addition -->
+				<xsl:if test="marc:subfield[@code='6']">
+				  <xsl:attribute name="altRepGroup">
+				    <xsl:text>00</xsl:text>
+				  </xsl:attribute>
+				</xsl:if>
+				<!-- SUL1.11 end -->
 				<xsl:call-template name="scriptCode"/>
 				<xsl:call-template name="subfieldSelect">
 					<xsl:with-param name="codes">c</xsl:with-param>
