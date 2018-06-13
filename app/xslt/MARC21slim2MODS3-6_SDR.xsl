@@ -18,6 +18,7 @@
 	SUL1.10 - xxx880, scriptCode: do not assign Latn as scriptCode if not defined in $6
 	SUL1.11 - createNoteFrom245c: create altRepGroup attribute only if $6 present
 	SUL1.12 - Strip punctuation from 264 subfields consistent with 260 & 260g like 260c
+	SUL1.13 - Strip punctuation from role term in $e
 
 -->
 
@@ -3062,7 +3063,13 @@
 		<xsl:for-each select="marc:subfield[@code='e']">
 			<role>
 				<roleTerm type="text">
+					<!-- SUL1.13 replacement -->
+					<xsl:call-template name="chopPunctuation">
+					  <xsl:with-param name="chopString" select="."/>
+					</xsl:call-template>
+					<!-- Previous version replaced by SUL1.13
 					<xsl:value-of select="."/>
+				-->
 				</roleTerm>
 			</role>
 		</xsl:for-each>
