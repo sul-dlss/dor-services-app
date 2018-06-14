@@ -20,6 +20,7 @@
 	SUL1.12 - Strip punctuation from 264 subfields consistent with 260 & 260g like 260c
 	SUL1.13 - Strip punctuation from role term in $e
 	SUL1.14 - Map 264 second indicator 4 to copyrightDate
+	SUL1.15 - Map $0 (authority) to valueURI and $1 (RWO) to nameIdentifier
 
 -->
 
@@ -3346,10 +3347,18 @@
 
 	<!-- 1.116 -->
 	<xsl:template name="nameIdentifier">
+		<!-- SUL1.15 replacement -->
+		<xsl:if test="marc:subfield[@code='1']">
+		<!-- replaced by SUL1.15
 		<xsl:if test="marc:subfield[@code='0']">
+		-->
 			<nameIdentifier>
 				<xsl:call-template name="subfieldSelect">
+					<!-- SUL1.15 replacement -->
+					<xsl:with-param name="codes">1</xsl:with-param>
+					<!-- replaced by SUL1.15
 					<xsl:with-param name="codes">0</xsl:with-param>
+				-->
 				</xsl:call-template>
 			</nameIdentifier>
 		</xsl:if>
@@ -4654,6 +4663,13 @@
 					<xsl:text>primary</xsl:text>
 				</xsl:attribute>
 				<xsl:call-template name="xxx880"/>
+				<!-- SUL1.15 addition -->
+				<xsl:if test="marc:subfield[@code='0']">
+					<xsl:attribute name="valueURI">
+						<xsl:value-of select="marc:subfield[@code='0']"/>
+					</xsl:attribute>
+				</xsl:if>
+				<!-- end SUL1.15 -->
 				<xsl:if test="//marc:datafield[@tag='240']">
 					<xsl:attribute name="nameTitleGroup">
 						<xsl:text>1</xsl:text>
@@ -4673,7 +4689,13 @@
 					<xsl:text>primary</xsl:text>
 				</xsl:attribute>
 				<xsl:call-template name="xxx880"/>
-
+				<!-- SUL1.15 addition -->
+				<xsl:if test="marc:subfield[@code='0']">
+					<xsl:attribute name="valueURI">
+						<xsl:value-of select="marc:subfield[@code='0']"/>
+					</xsl:attribute>
+				</xsl:if>
+				<!-- end SUL1.15 -->
 				<xsl:if test="ancestor::marcrecord//marc:datafield[@tag='240']">
 					<xsl:attribute name="nameTitleGroup">
 						<xsl:text>1</xsl:text>
@@ -4691,6 +4713,13 @@
 	<xsl:template name="createNameFrom110">
 		<name type="corporate">
 			<xsl:call-template name="xxx880"/>
+			<!-- SUL1.15 addition -->
+			<xsl:if test="marc:subfield[@code='0']">
+				<xsl:attribute name="valueURI">
+					<xsl:value-of select="marc:subfield[@code='0']"/>
+				</xsl:attribute>
+			</xsl:if>
+			<!-- end SUL1.15 -->
 			<xsl:if test="//marc:datafield[@tag='240']">
 				<xsl:attribute name="nameTitleGroup">
 					<xsl:text>1</xsl:text>
@@ -4709,6 +4738,13 @@
 	<xsl:template name="createNameFrom111">
 		<name type="conference">
 			<xsl:call-template name="xxx880"/>
+			<!-- SUL1.15 addition -->
+			<xsl:if test="marc:subfield[@code='0']">
+				<xsl:attribute name="valueURI">
+					<xsl:value-of select="marc:subfield[@code='0']"/>
+				</xsl:attribute>
+			</xsl:if>
+			<!-- end SUL1.15 -->
 			<xsl:if test="//marc:datafield[@tag='240']">
 				<xsl:attribute name="nameTitleGroup">
 					<xsl:text>1</xsl:text>
@@ -4729,6 +4765,13 @@
 		<xsl:if test="@ind1='1'">
 			<name type="personal">
 				<xsl:call-template name="xxx880"/>
+				<!-- SUL1.15 addition -->
+				<xsl:if test="marc:subfield[@code='0']">
+					<xsl:attribute name="valueURI">
+						<xsl:value-of select="marc:subfield[@code='0']"/>
+					</xsl:attribute>
+				</xsl:if>
+				<!-- end SUL1.15 -->
 				<xsl:call-template name="nameABCDQ"/>
 				<xsl:call-template name="affiliation"/>
 				<xsl:call-template name="role"/>
@@ -4739,6 +4782,13 @@
 		<xsl:if test="@ind1='3'">
 			<name type="family">
 				<xsl:call-template name="xxx880"/>
+				<!-- SUL1.15 addition -->
+				<xsl:if test="marc:subfield[@code='0']">
+					<xsl:attribute name="valueURI">
+						<xsl:value-of select="marc:subfield[@code='0']"/>
+					</xsl:attribute>
+				</xsl:if>
+				<!-- end SUL1.15 -->
 				<xsl:call-template name="nameABCDQ"/>
 				<xsl:call-template name="affiliation"/>
 				<xsl:call-template name="role"/>
@@ -4752,6 +4802,13 @@
 	<!-- 1.117 -->
 		<name type="corporate">
 			<xsl:call-template name="xxx880"/>
+			<!-- SUL1.15 addition -->
+			<xsl:if test="marc:subfield[@code='0']">
+				<xsl:attribute name="valueURI">
+					<xsl:value-of select="marc:subfield[@code='0']"/>
+				</xsl:attribute>
+			</xsl:if>
+			<!-- end SUL1.15 -->
 			<xsl:call-template name="nameABCDN"/>
 			<xsl:call-template name="role"/>
 			<!-- 1.116 -->
@@ -4763,6 +4820,13 @@
 	<xsl:template name="createNameFrom711">
 		<name type="conference">
 			<xsl:call-template name="xxx880"/>
+			<!-- SUL1.15 addition -->
+			<xsl:if test="marc:subfield[@code='0']">
+				<xsl:attribute name="valueURI">
+					<xsl:value-of select="marc:subfield[@code='0']"/>
+				</xsl:attribute>
+			</xsl:if>
+			<!-- end SUL1.15 -->
 			<xsl:call-template name="nameACDENQ"/>
 			<xsl:call-template name="role"/>
 			<!-- 1.116 -->
