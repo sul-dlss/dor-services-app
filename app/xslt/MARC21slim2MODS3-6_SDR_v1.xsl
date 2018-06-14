@@ -1203,6 +1203,7 @@
 					<xsl:value-of select="marc:subfield[@code='b']"/>
 				-->
 				</publisher>
+
 				<dateOther type="production">
 					<!-- SUL1.12 replacement -->
 					<xsl:call-template name="chopPunctuation">
@@ -1339,6 +1340,7 @@
 			</originInfo>
 		</xsl:for-each>
 
+		<!-- SUL1.14 addition -->
 		<xsl:for-each select="marc:datafield[@tag=264][@ind2=4]">
 			<originInfo eventType="copyright notice">
 				<copyrightDate>
@@ -1348,6 +1350,7 @@
 				</copyrightDate>
 			</originInfo>
 		</xsl:for-each>
+		<!-- end SUL1.14 -->
 
 		<xsl:for-each select="marc:datafield[@tag=880]">
 			<xsl:variable name="related_datafield" select="substring-before(marc:subfield[@code='6'],'-')"/>
