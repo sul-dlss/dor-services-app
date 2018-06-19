@@ -286,6 +286,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   describe '.write_symphony_records' do
+    subject(:writer) { @updater.write_symphony_records marc_records }
+
     before do
       Dor::Config.release.symphony_path = "#{@fixtures}/sdr_purl"
       Dor::Config.release.write_marc_script = 'bin/write_marc_record_test'
@@ -294,11 +296,10 @@ RSpec.describe Dor::UpdateMarcRecordService do
       @updater = Dor::UpdateMarcRecordService.new(@dor_item)
       expect(File.exist?(@output_file)).to be_falsey
     end
+
     after do
       FileUtils.rm_f(@output_file)
     end
-
-    subject(:writer) { @updater.write_symphony_records marc_records }
 
     context 'for a single record' do
       let(:marc_records) { ['abcdef'] }
