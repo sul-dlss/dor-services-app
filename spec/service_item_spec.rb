@@ -42,6 +42,27 @@ RSpec.describe Dor::ServiceItem do
     end
   end
 
+  describe '.goobi_tag_list' do
+    before do
+      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
+    end
+
+    it 'returns an array of arrays with the tags from the object in the key:value format expected to be passed to goobi' do
+      allow(@dor_item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)', 'LAB : Map Work'])
+      expect(@si.goobi_tag_list).to eq([['DPG', 'Workflow : book_workflow'], ['Process', 'Content Type : Book (flipbook, ltr)'], ['LAB', 'Map Work']])
+    end
+
+    it 'returns an empty array when there are no tags' do
+      allow(@dor_item).to receive(:tags).and_return([])
+      expect(@si.goobi_tag_list).to eq([])
+    end
+
+    it 'works with singleton tags (no colon, so no value, just a name)' do
+      allow(@dor_item).to receive(:tags).and_return(['Name : Some Value', 'JustName'])
+      expect(@si.goobi_tag_list).to eq([['Name', 'Some Value'], ['JustName', nil]])
+    end
+  end
+
   describe '.goobi_ocr_tag_present?' do
     before do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)

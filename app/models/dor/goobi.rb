@@ -31,6 +31,9 @@ module Dor
             <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
             <goobiWorkflow>#{goobi_workflow_name}</goobiWorkflow>
             <ocr>#{goobi_ocr_tag_present?}</ocr>
+            <tags>
+              #{goobi_tag_list.map { |tag_name, tag_value| "<tag name=\"#{tag_name}\" value=\"#{tag_value}\"></tag>" }.join("\n")}
+            </tags>
         </stanfordCreationRequest>
       END
     end

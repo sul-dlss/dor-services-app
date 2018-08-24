@@ -112,5 +112,15 @@ module Dor
         @druid_obj.tags.any? { |tag| tag.casecmp(dpg_goobi_ocr_tag).zero? } # case insensitive compare
       end
     end
+
+    # returns an array of arrays, each element contains an array of [name, value] of DOR object tags in the format expected to pass to Goobi
+    # the name of the tag is the first namespace part of the tag (before first colon), value of the tag is everything after this
+    # @return [Array]
+    def goobi_tag_list
+      @druid_obj.tags.map do |tag|
+        tag_split = tag.split(':', 2).map(&:strip) # only split on the first colon
+        [tag_split[0], tag_split[1]]
+      end
+    end
   end
 end
