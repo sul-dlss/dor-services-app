@@ -115,7 +115,7 @@ module Dor
 
     # returns an array of arrays, each element contains an array of [name, value] of DOR object tags in the format expected to pass to Goobi
     # the name of the tag is the first namespace part of the tag (before first colon), value of the tag is everything after this
-    # @return [Array]
+    # @return [Array] of arrays, each element is a [name, value] pair of tags derived from the DOR object, e.g. [['Tag1', 'Value1'], ['Tag2', 'Value2']]
     def goobi_tag_list
       @druid_obj.tags.map do |tag|
         tag_split = tag.split(':', 2).map(&:strip) # only split on the first colon

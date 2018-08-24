@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Dor::ServiceItem do
-  describe '.catkey' do
+  describe '#catkey' do
     it 'returns catkey from a valid identityMetadata' do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       expect(@si.ckey).to eq('8832162')
@@ -21,7 +21,7 @@ RSpec.describe Dor::ServiceItem do
     end
   end
 
-  describe '.goobi_workflow_name' do
+  describe '#goobi_workflow_name' do
     before do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
     end
@@ -42,7 +42,7 @@ RSpec.describe Dor::ServiceItem do
     end
   end
 
-  describe '.goobi_tag_list' do
+  describe '#goobi_tag_list' do
     before do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
     end
@@ -63,7 +63,7 @@ RSpec.describe Dor::ServiceItem do
     end
   end
 
-  describe '.goobi_ocr_tag_present?' do
+  describe '#goobi_ocr_tag_present?' do
     before do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
     end
@@ -84,7 +84,7 @@ RSpec.describe Dor::ServiceItem do
     end
   end
 
-  describe '.object_type' do
+  describe '#object_type' do
     it 'returns object_type from a valid identityMetadata' do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       expect(@si.object_type).to eq('item')
@@ -96,7 +96,7 @@ RSpec.describe Dor::ServiceItem do
     end
   end
 
-  describe '.project_name' do
+  describe '#project_name' do
     before do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
     end
@@ -112,7 +112,7 @@ RSpec.describe Dor::ServiceItem do
     end
   end
 
-  describe '.collection_name and id' do
+  describe '#collection_name and id' do
     before do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
     end
@@ -132,7 +132,7 @@ RSpec.describe Dor::ServiceItem do
     end
   end
 
-  describe '.barcode' do
+  describe '#barcode' do
     it 'returns barcode from a valid identityMetadata' do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       expect(@si.barcode).to eq('36105216275185')
@@ -144,7 +144,7 @@ RSpec.describe Dor::ServiceItem do
     end
   end
 
-  describe '.content_type' do
+  describe '#content_type' do
     before do
       druid = 'bb111bb2222'
       @d = Dor::Item.new(:pid => druid)
@@ -174,7 +174,7 @@ RSpec.describe Dor::ServiceItem do
     end
   end
 
-  describe '.thumb' do
+  describe '#thumb' do
     it 'returns thumb from a valid contentMetadata' do
       druid = 'bb111bb2222'
       d = Dor::Item.new(:pid => druid)

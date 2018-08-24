@@ -22,7 +22,8 @@ RSpec.describe Dor::Goobi do
   end
 
   it 'creates the correct xml request without ocr tag present' do
-    allow(item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)', 'LAB : MAPS'])
+    allow(item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book', 'LAB : MAPS'])
+    expect(@goobi.goobi_xml_tags).to eq('<tag name="DPG" value="Workflow : book_workflow"></tag><tag name="Process" value="Content Type : Book"></tag><tag name="LAB" value="MAPS"></tag>')
     expect(@goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>
         <objectId>#{pid}</objectId>
@@ -40,7 +41,7 @@ RSpec.describe Dor::Goobi do
         <ocr>false</ocr>
         <tags>
             <tag name="DPG" value="Workflow : book_workflow"></tag>
-            <tag name="Process" value="Content Type : Book (flipbook, ltr)"></tag>
+            <tag name="Process" value="Content Type : Book"></tag>
             <tag name="LAB" value="MAPS"></tag>
         </tags>
       </stanfordCreationRequest>
@@ -49,6 +50,7 @@ RSpec.describe Dor::Goobi do
 
   it 'creates the correct xml request with ocr tag present' do
     allow(item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'])
+    expect(@goobi.goobi_xml_tags).to eq('<tag name="DPG" value="Workflow : book_workflow"></tag><tag name="DPG" value="OCR : TRUE"></tag>')
     expect(@goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>
         <objectId>#{pid}</objectId>
@@ -74,24 +76,8 @@ RSpec.describe Dor::Goobi do
 
   it 'creates the correct xml request with no tags present' do
     allow(item).to receive(:tags).and_return([])
-    expect(@goobi.xml_request).to be_equivalent_to <<-END
-      <stanfordCreationRequest>
-        <objectId>#{pid}</objectId>
-        <objectType>item</objectType>
-        <sourceID>some_source_id</sourceID>
-        <title>Object Title</title>
-        <contentType>book</contentType>
-        <project>Project Name</project>
-        <catkey>ckey_12345</catkey>
-        <barcode>barcode_12345</barcode>
-        <collectionId>druid:oo000oo0001</collectionId>
-        <collectionName>collection name</collectionName>
-        <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
-        <goobiWorkflow>goobi_workflow</goobiWorkflow>
-        <ocr>false</ocr>
-        <tags></tags>
-      </stanfordCreationRequest>
-    END
+    expect(@goobi.goobi_xml_tags).to eq('')
+    expect(@goobi.xml_request).to include('<tags></tags>')
   end
 
   it 'makes a call to the goobi server with the appropriate xml params' do
