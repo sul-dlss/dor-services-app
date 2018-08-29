@@ -22,7 +22,8 @@ RSpec.describe Dor::Goobi do
   end
 
   it 'creates the correct xml request without ocr tag present' do
-    allow(@goobi).to receive(:goobi_ocr_tag_present?).and_return(false)
+    allow(item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book', 'LAB : MAPS'])
+    expect(@goobi.goobi_xml_tags).to eq('<tag name="DPG" value="Workflow : book_workflow"></tag><tag name="Process" value="Content Type : Book"></tag><tag name="LAB" value="MAPS"></tag>')
     expect(@goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>
         <objectId>#{pid}</objectId>
@@ -38,12 +39,18 @@ RSpec.describe Dor::Goobi do
         <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
         <goobiWorkflow>goobi_workflow</goobiWorkflow>
         <ocr>false</ocr>
+        <tags>
+            <tag name="DPG" value="Workflow : book_workflow"></tag>
+            <tag name="Process" value="Content Type : Book"></tag>
+            <tag name="LAB" value="MAPS"></tag>
+        </tags>
       </stanfordCreationRequest>
     END
   end
 
   it 'creates the correct xml request with ocr tag present' do
-    allow(@goobi).to receive(:goobi_ocr_tag_present?).and_return(true)
+    allow(item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'])
+    expect(@goobi.goobi_xml_tags).to eq('<tag name="DPG" value="Workflow : book_workflow"></tag><tag name="DPG" value="OCR : TRUE"></tag>')
     expect(@goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>
         <objectId>#{pid}</objectId>
@@ -59,8 +66,18 @@ RSpec.describe Dor::Goobi do
         <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
         <goobiWorkflow>goobi_workflow</goobiWorkflow>
         <ocr>true</ocr>
+        <tags>
+            <tag name="DPG" value="Workflow : book_workflow"></tag>
+            <tag name="DPG" value="OCR : TRUE"></tag>
+        </tags>
       </stanfordCreationRequest>
     END
+  end
+
+  it 'creates the correct xml request with no tags present' do
+    allow(item).to receive(:tags).and_return([])
+    expect(@goobi.goobi_xml_tags).to eq('')
+    expect(@goobi.xml_request).to include('<tags></tags>')
   end
 
   it 'makes a call to the goobi server with the appropriate xml params' do

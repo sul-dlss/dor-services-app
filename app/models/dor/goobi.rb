@@ -15,6 +15,12 @@ module Dor
       # rubocop:enable Metrics/LineLength
     end
 
+    def goobi_xml_tags
+      goobi_tag_list.map do |tag_name, tag_value|
+        "<tag name=\"#{tag_name}\" value=\"#{tag_value}\"></tag>"
+      end.join
+    end
+
     def xml_request
       <<-END
         <stanfordCreationRequest>
@@ -31,6 +37,7 @@ module Dor
             <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
             <goobiWorkflow>#{goobi_workflow_name}</goobiWorkflow>
             <ocr>#{goobi_ocr_tag_present?}</ocr>
+            <tags>#{goobi_xml_tags}</tags>
         </stanfordCreationRequest>
       END
     end
