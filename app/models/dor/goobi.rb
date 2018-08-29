@@ -16,9 +16,7 @@ module Dor
     end
 
     def goobi_xml_tags
-      goobi_tag_list.map do |tag_name, tag_value|
-        "<tag name=\"#{tag_name}\" value=\"#{tag_value}\"></tag>"
-      end.join
+      goobi_tag_list.map(&:to_xml).join
     end
 
     def xml_request

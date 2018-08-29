@@ -278,6 +278,7 @@ Style/Documentation:
     - 'app/controllers/versions_controller.rb'
     - 'app/controllers/workflows_controller.rb'
     - 'app/models/dor/goobi.rb'
+    - 'app/models/dor/goobi_tag.rb'
     - 'app/models/dor/registration_response.rb'
     - 'app/models/dor/service_item.rb'
     - 'app/models/dor/update_marc_record_service.rb'

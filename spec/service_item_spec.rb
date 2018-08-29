@@ -49,7 +49,11 @@ RSpec.describe Dor::ServiceItem do
 
     it 'returns an array of arrays with the tags from the object in the key:value format expected to be passed to goobi' do
       allow(@dor_item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)', 'LAB : Map Work'])
-      expect(@si.goobi_tag_list).to eq([['DPG', 'Workflow : book_workflow'], ['Process', 'Content Type : Book (flipbook, ltr)'], ['LAB', 'Map Work']])
+      expect(@si.goobi_tag_list.length).to eq 3
+      @si.goobi_tag_list.each { |goobi_tag| expect(goobi_tag.class).to eq Dor::GoobiTag }
+      expect(@si.goobi_tag_list[0]).to have_attributes(name: 'DPG', value: 'Workflow : book_workflow')
+      expect(@si.goobi_tag_list[1]).to have_attributes(name: 'Process', value: 'Content Type : Book (flipbook, ltr)')
+      expect(@si.goobi_tag_list[2]).to have_attributes(name: 'LAB', value: 'Map Work')
     end
 
     it 'returns an empty array when there are no tags' do
@@ -59,7 +63,10 @@ RSpec.describe Dor::ServiceItem do
 
     it 'works with singleton tags (no colon, so no value, just a name)' do
       allow(@dor_item).to receive(:tags).and_return(['Name : Some Value', 'JustName'])
-      expect(@si.goobi_tag_list).to eq([['Name', 'Some Value'], ['JustName', nil]])
+      expect(@si.goobi_tag_list.length).to eq 2
+      expect(@si.goobi_tag_list[0].class).to eq Dor::GoobiTag
+      expect(@si.goobi_tag_list[0]).to have_attributes(name: 'Name', value: 'Some Value')
+      expect(@si.goobi_tag_list[1]).to have_attributes(name: 'JustName', value: nil)
     end
   end
 
