@@ -80,7 +80,7 @@ GEM
     capistrano-passenger (0.2.0)
       capistrano (~> 3.0)
     capistrano-shared_configs (0.2.2)
-    capybara (3.5.1)
+    capybara (3.7.1)
       addressable
       mini_mime (>= 0.1.3)
       nokogiri (~> 1.8)
@@ -170,7 +170,7 @@ GEM
       dry-equalizer (~> 0.2)
       dry-inflector (~> 0.1, >= 0.1.2)
       dry-logic (~> 0.4, >= 0.4.2)
-    dry-validation (0.12.1)
+    dry-validation (0.12.2)
       concurrent-ruby (~> 1.0)
       dry-configurable (~> 0.1, >= 0.1.3)
       dry-core (~> 0.2, >= 0.2.1)
@@ -191,13 +191,13 @@ GEM
     haml (4.0.7)
       tilt
     hashdiff (0.3.7)
-    honeybadger (3.3.1)
+    honeybadger (4.0.0)
     hooks (0.4.1)
       uber (~> 0.0.14)
     htmlentities (4.3.4)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    i18n (1.0.1)
+    i18n (1.1.0)
       concurrent-ruby (~> 1.0)
     iso-639 (0.2.8)
     jaro_winkler (1.5.1)
@@ -218,10 +218,10 @@ GEM
       scrub_rb (>= 1.0.1, < 2)
       unf
     method_source (0.9.0)
-    mime-types (3.1)
+    mime-types (3.2.2)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2016.0521)
-    mini_mime (1.0.0)
+    mime-types-data (3.2018.0812)
+    mini_mime (1.0.1)
     mini_portile2 (2.3.0)
     minitest (5.11.3)
     moab-versioning (4.2.2)
@@ -230,11 +230,11 @@ GEM
       json
       nokogiri
       nokogiri-happymapper
-    mods (2.3.1)
+    mods (2.4.0)
       edtf
       iso-639
       nokogiri
-      nom-xml (~> 0.6.0)
+      nom-xml (~> 1.0)
     multipart-post (2.0.0)
     net-http-persistent (2.9.4)
     net-scp (1.2.1)
@@ -246,9 +246,9 @@ GEM
     nio4r (2.3.1)
     nokogiri (1.8.4)
       mini_portile2 (~> 2.3.0)
-    nokogiri-happymapper (0.6.0)
+    nokogiri-happymapper (0.8.0)
       nokogiri (~> 1.5)
-    nom-xml (0.6.0)
+    nom-xml (1.0.0)
       activesupport (>= 3.2.18)
       i18n
       nokogiri
@@ -262,7 +262,7 @@ GEM
     parser (2.5.1.2)
       ast (~> 2.4.0)
     powerpack (0.1.2)
-    public_suffix (3.0.2)
+    public_suffix (3.0.3)
     puma (3.12.0)
     rack (2.0.5)
     rack-console (1.3.1)
@@ -331,7 +331,7 @@ GEM
       faraday (>= 0.9.0)
     rspec-core (3.8.0)
       rspec-support (~> 3.8.0)
-    rspec-expectations (3.8.0)
+    rspec-expectations (3.8.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.8.0)
     rspec-mocks (3.8.0)
@@ -358,8 +358,8 @@ GEM
       rubocop (>= 0.56.0)
     ruby-cache (0.3.0)
     ruby-graphviz (1.2.3)
-    ruby-oci8 (2.2.5.1)
-    ruby-progressbar (1.9.0)
+    ruby-oci8 (2.2.6)
+    ruby-progressbar (1.10.0)
     rubydora (2.1.0)
       activemodel (>= 4.2.10)
       activesupport
@@ -371,7 +371,7 @@ GEM
       rest-client
     safe_yaml (1.0.4)
     scrub_rb (1.0.1)
-    sequel (5.11.0)
+    sequel (5.12.0)
     simplecov (0.16.1)
       docile (~> 1.1)
       json (>= 1.8, < 3)
@@ -475,4 +475,4 @@ DEPENDENCIES
   workflow-archiver (~> 2.0)
 
 BUNDLED WITH
-   1.16.3
+   1.16.4
