@@ -73,6 +73,7 @@ class ObjectsController < ApplicationController
   end
 
   # Initiate a workflow by name
+  # This service is called by several different clients (e.g. was-archiving-robots, preservation-catalog, GIS, Goobi)
   def apo_workflows
     workflow = if params[:wf_name].ends_with? 'WF'
                  params[:wf_name]
