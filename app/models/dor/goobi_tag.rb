@@ -13,7 +13,7 @@ module Dor
     end
 
     def to_xml
-      "<tag name=\"#{name}\" value=\"#{value}\"></tag>"
+      "<tag name=\"#{name.encode(xml: :text)}\" value=\"#{value.encode(xml: :text)}\"></tag>"
     end
   end
 end

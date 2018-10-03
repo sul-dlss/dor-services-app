@@ -22,8 +22,8 @@ RSpec.describe Dor::Goobi do
   end
 
   it 'creates the correct xml request without ocr tag present' do
-    allow(item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book', 'LAB : MAPS'])
-    expect(@goobi.goobi_xml_tags).to eq('<tag name="DPG" value="Workflow : book_workflow"></tag><tag name="Process" value="Content Type : Book"></tag><tag name="LAB" value="MAPS"></tag>')
+    allow(item).to receive(:tags).and_return(['DPG : Workflow : book_workflow & stuff', 'Process : Content Type : Book', 'LAB : MAPS'])
+    expect(@goobi.goobi_xml_tags).to eq('<tag name="DPG" value="Workflow : book_workflow &amp; stuff"></tag><tag name="Process" value="Content Type : Book"></tag><tag name="LAB" value="MAPS"></tag>')
     expect(@goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>
         <objectId>#{pid}</objectId>
@@ -40,7 +40,7 @@ RSpec.describe Dor::Goobi do
         <goobiWorkflow>goobi_workflow</goobiWorkflow>
         <ocr>false</ocr>
         <tags>
-            <tag name="DPG" value="Workflow : book_workflow"></tag>
+            <tag name="DPG" value="Workflow : book_workflow &amp; stuff"></tag>
             <tag name="Process" value="Content Type : Book"></tag>
             <tag name="LAB" value="MAPS"></tag>
         </tags>
