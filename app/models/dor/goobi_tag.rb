@@ -13,7 +13,10 @@ module Dor
     end
 
     def to_xml
-      "<tag name=\"#{name.encode(xml: :text)}\" value=\"#{value.encode(xml: :text)}\"></tag>"
+      Nokogiri::XML::Node.new('tag', Nokogiri::XML::Document.new).tap do |node|
+        node['name'] = name
+        node['value'] = value
+      end.to_xml
     end
   end
 end

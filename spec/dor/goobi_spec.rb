@@ -23,7 +23,7 @@ RSpec.describe Dor::Goobi do
 
   it 'creates the correct xml request without ocr tag present' do
     allow(item).to receive(:tags).and_return(['DPG : Workflow : book_workflow & stuff', 'Process : Content Type : Book', 'LAB : MAPS'])
-    expect(@goobi.goobi_xml_tags).to eq('<tag name="DPG" value="Workflow : book_workflow &amp; stuff"></tag><tag name="Process" value="Content Type : Book"></tag><tag name="LAB" value="MAPS"></tag>')
+    expect(@goobi.goobi_xml_tags).to eq('<tag name="DPG" value="Workflow : book_workflow &amp; stuff"/><tag name="Process" value="Content Type : Book"/><tag name="LAB" value="MAPS"/>')
     expect(@goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>
         <objectId>#{pid}</objectId>
@@ -40,9 +40,9 @@ RSpec.describe Dor::Goobi do
         <goobiWorkflow>goobi_workflow</goobiWorkflow>
         <ocr>false</ocr>
         <tags>
-            <tag name="DPG" value="Workflow : book_workflow &amp; stuff"></tag>
-            <tag name="Process" value="Content Type : Book"></tag>
-            <tag name="LAB" value="MAPS"></tag>
+            <tag name="DPG" value="Workflow : book_workflow &amp; stuff"/>
+            <tag name="Process" value="Content Type : Book"/>
+            <tag name="LAB" value="MAPS"/>
         </tags>
       </stanfordCreationRequest>
     END
@@ -50,7 +50,7 @@ RSpec.describe Dor::Goobi do
 
   it 'creates the correct xml request with ocr tag present' do
     allow(item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'])
-    expect(@goobi.goobi_xml_tags).to eq('<tag name="DPG" value="Workflow : book_workflow"></tag><tag name="DPG" value="OCR : TRUE"></tag>')
+    expect(@goobi.goobi_xml_tags).to eq('<tag name="DPG" value="Workflow : book_workflow"/><tag name="DPG" value="OCR : TRUE"/>')
     expect(@goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>
         <objectId>#{pid}</objectId>
@@ -67,8 +67,8 @@ RSpec.describe Dor::Goobi do
         <goobiWorkflow>goobi_workflow</goobiWorkflow>
         <ocr>true</ocr>
         <tags>
-            <tag name="DPG" value="Workflow : book_workflow"></tag>
-            <tag name="DPG" value="OCR : TRUE"></tag>
+            <tag name="DPG" value="Workflow : book_workflow"/>
+            <tag name="DPG" value="OCR : TRUE"/>
         </tags>
       </stanfordCreationRequest>
     END
