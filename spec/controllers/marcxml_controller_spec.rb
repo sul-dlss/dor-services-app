@@ -32,7 +32,6 @@ RSpec.describe MarcxmlController do
   describe 'GET mods' do
     it 'transforms the MARCXML into MODS' do
       stub_request(:get, Settings.CATALOG.SYMPHONY.JSON_URL % { catkey: resource.catkey }).to_return(body: '{}')
-
       get :mods, params: { catkey: '12345' }
       expect(response.body).to match(/mods/)
     end
