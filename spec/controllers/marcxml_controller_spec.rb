@@ -30,11 +30,8 @@ RSpec.describe MarcxmlController do
   end
 
   describe 'GET mods' do
-    pending 'transforms the MARCXML into MODS' do
-      # 10/8/2018 -- this test is currently failing due to an .xsl file at loc.gov being unavailable
-      #  when it comes back, removing pending from this test
+    it 'transforms the MARCXML into MODS' do
       stub_request(:get, Settings.CATALOG.SYMPHONY.JSON_URL % { catkey: resource.catkey }).to_return(body: '{}')
-
       get :mods, params: { catkey: '12345' }
       expect(response.body).to match(/mods/)
     end
