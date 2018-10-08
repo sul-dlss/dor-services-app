@@ -1,6 +1,5 @@
 # MARC resource model for retrieving and transforming MARC records
 class MarcxmlResource
-
   def self.find_by(catkey: nil, barcode: nil)
     if catkey
       new(catkey: catkey)
@@ -30,6 +29,7 @@ class MarcxmlResource
   end
 
   private
+
   def marc_to_mods_xslt
     @marc_to_mods_xslt ||= Nokogiri::XSLT(File.read(File.join(Rails.root, 'app', 'xslt', 'MARC21slim2MODS3-6_SDR_v1.xsl')))
   end
