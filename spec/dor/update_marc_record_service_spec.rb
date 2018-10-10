@@ -1,6 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Dor::UpdateMarcRecordService do
+  let(:dor_item) { @dor_item }
+  subject(:umrs) { Dor::UpdateMarcRecordService.new dor_item }
+
   before :all do
     Dor::Config.suri = {}
     Dor::Config.release.write_marc_script = 'bin/write_marc_record_test'
@@ -13,9 +16,9 @@ RSpec.describe Dor::UpdateMarcRecordService do
     it 'does nothing' do
       druid = 'druid:aa222cc3333'
       setup_test_objects(druid, build_identity_metadata_without_ckey)
-      expect(@umrs).to receive(:ckey).and_return(nil)
-      expect(@umrs).not_to receive(:push_symphony_records)
-      @umrs.update
+      expect(umrs).to receive(:ckey).and_return(nil)
+      expect(umrs).not_to receive(:push_symphony_records)
+      umrs.update
     end
   end
 
@@ -23,19 +26,19 @@ RSpec.describe Dor::UpdateMarcRecordService do
     it 'executes the UpdateMarcRecordService push_symphony_records method' do
       druid = 'druid:bb333dd4444'
       setup_test_objects(druid, build_identity_metadata_with_ckey)
-      expect(@umrs).to receive(:ckey).exactly(4).times.and_return('8832162')
-      expect(@umrs.generate_symphony_records).to eq(["8832162\t#{druid.gsub('druid:', '')}\t"])
-      expect(@umrs).to receive(:push_symphony_records)
-      @umrs.update
+      expect(umrs).to receive(:ckey).exactly(4).times.and_return('8832162')
+      expect(umrs.generate_symphony_records).to eq(["8832162\t#{druid.gsub('druid:', '')}\t"])
+      expect(umrs).to receive(:push_symphony_records)
+      umrs.update
     end
   end
 
   describe '.push_symphony_records' do
     it 'calls the relevant methods' do
       setup_test_objects('druid:aa111aa1111', '')
-      expect(@umrs).to receive(:generate_symphony_records).once
-      expect(@umrs).to receive(:write_symphony_records).once
-      @umrs.push_symphony_records
+      expect(umrs).to receive(:generate_symphony_records).once
+      expect(umrs).to receive(:write_symphony_records).once
+      umrs.push_symphony_records
     end
   end
 
@@ -430,7 +433,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     it 'returns an empty string for an object without collection' do
       setup_test_objects('druid:aa111aa1111', '')
       expect(@dor_item).to receive(:collections).and_return([])
-      expect(@umrs.get_x2_collection_info).to be_empty
+      expect(umrs.get_x2_collection_info).to be_empty
     end
 
     it 'returns an empty string for a collection object' do
@@ -462,7 +465,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
         id: 'aa111aa1111',
         collections: [collection]
       )
-      expect(@umrs.get_x2_collection_info).to eq('|xcollection:cc111cc1111:8832162:Collection label')
+      expect(umrs.get_x2_collection_info).to eq('|xcollection:cc111cc1111:8832162:Collection label')
     end
   end
 
@@ -471,43 +474,43 @@ RSpec.describe Dor::UpdateMarcRecordService do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       release_data = { 'Searchworks' => { 'release' => true } }
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_searchworks?).to be true
+      expect(umrs.released_to_searchworks?).to be true
     end
     it 'returns true if release_data tag has release to=searchworks (all lowercase) and value is true' do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       release_data = { 'searchworks' => { 'release' => true } }
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_searchworks?).to be true
+      expect(umrs.released_to_searchworks?).to be true
     end
     it 'returns true if release_data tag has release to=SearchWorks (camcelcase) and value is true' do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       release_data = { 'SearchWorks' => { 'release' => true } }
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_searchworks?).to be true
+      expect(umrs.released_to_searchworks?).to be true
     end
     it 'returns false if release_data tag has release to=Searchworks and value is false' do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_2)
       release_data = { 'Searchworks' => { 'release' => false } }
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_searchworks?).to be false
+      expect(umrs.released_to_searchworks?).to be false
     end
     it 'returns false if release_data tag has release to=Searchworks but no specified release value' do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_2)
       release_data = { 'Searchworks' => { 'bogus' => 'yup' } }
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_searchworks?).to be false
+      expect(umrs.released_to_searchworks?).to be false
     end
     it 'returns false if there are no release tags at all' do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_2)
       release_data = {}
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_searchworks?).to be false
+      expect(umrs.released_to_searchworks?).to be false
     end
     it 'returns false if there are non searchworks related release tags' do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
       release_data = { 'Revs' => { 'release' => true } }
       allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(@umrs.released_to_searchworks?).to be false
+      expect(umrs.released_to_searchworks?).to be false
     end
   end
 
