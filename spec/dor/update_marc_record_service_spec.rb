@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Dor::UpdateMarcRecordService do
-  let(:dor_item) { @dor_item }
   subject(:umrs) { Dor::UpdateMarcRecordService.new dor_item }
+
+  let(:dor_item) { @dor_item }
 
   before :all do
     Dor::Config.suri = {}
@@ -466,6 +467,175 @@ RSpec.describe Dor::UpdateMarcRecordService do
         collections: [collection]
       )
       expect(umrs.get_x2_collection_info).to eq('|xcollection:cc111cc1111:8832162:Collection label')
+    end
+  end
+
+  describe '#get_x2_part_info' do
+    let(:dor_item) { setup_test_objects('druid:aa111aa1111', '') }
+    let(:desc_metadata_xml) { instance_double(Dor::DescMetadataDS, ng_xml: Nokogiri::XML(xml)) }
+
+    context 'without descMetadata' do
+      it 'returns nil for objects with part information' do
+        expect(umrs.get_x2_part_info).to be_nil
+      end
+    end
+
+    context 'with descMetadata without part information' do
+      let(:xml) do
+        <<-XML
+          <mods>
+          <titleInfo>
+          <title>Some label</title>
+          </titleInfo></mods>
+        XML
+      end
+
+      before do
+        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
+      end
+
+      it 'returns an empty string for objects with part information' do
+        expect(umrs.get_x2_part_info).to be_empty
+      end
+    end
+
+    context 'with descMetadata with some part numbers' do
+      let(:xml) do
+        <<-XML
+          <mods>
+          <titleInfo>
+          <title>Some label</title>
+          <partNumber>55th legislature</partNumber>
+          <partNumber>1997-1998</partNumber>
+          </titleInfo></mods>
+        XML
+      end
+
+      before do
+        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
+      end
+
+      it 'returns a part label' do
+        expect(umrs.get_x2_part_info).to eq '|xlabel:55th legislature, 1997-1998'
+      end
+    end
+
+    context 'with descMetadata with a part name and number' do
+      let(:xml) do
+        <<-XML
+          <mods>
+          <titleInfo>
+          <title>Some label</title>
+          <partName>Issue #3</partName>
+          <partNumber>2011</partNumber>
+          </titleInfo></mods>
+        XML
+      end
+
+      before do
+        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
+      end
+
+      it 'returns a part label' do
+        expect(umrs.get_x2_part_info).to eq '|xlabel:Issue #3. 2011'
+      end
+    end
+
+    context 'with descMetadata with a sequential designation in a note' do
+      let(:xml) do
+        <<-XML
+          <mods>
+          <titleInfo>
+          <title>Some label</title>
+          <partName>Issue #3</partName>
+          <partNumber>2011</partNumber>
+          </titleInfo>
+          <note type="date/sequential designation">123</note>
+          </mods>
+        XML
+      end
+
+      before do
+        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
+      end
+
+      it 'returns both the label and part number' do
+        expect(umrs.get_x2_part_info).to eq '|xlabel:Issue #3. 2011|xsort:123'
+      end
+    end
+
+    context 'with descMetadata with a sequential designation on a part number' do
+      let(:xml) do
+        <<-XML
+          <mods>
+          <titleInfo>
+          <title>Some label</title>
+          <partName>Issue #3</partName>
+          <partNumber type="date/sequential designation">2011</partNumber>
+          </titleInfo>
+          </mods>
+        XML
+      end
+
+      before do
+        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
+      end
+
+      it 'returns both the label and part number' do
+        expect(umrs.get_x2_part_info).to eq '|xlabel:Issue #3. 2011|xsort:2011'
+      end
+    end
+
+    context 'with descMetadata with multiple titles, one of them marked as the primary title' do
+      let(:xml) do
+        <<-XML
+          <mods>
+          <titleInfo type="alternative" usage="garbage">
+          <title>Some label</title>
+          <partName>Some lie</partName>
+          </titleInfo>
+          <titleInfo type="alternative" usage="primary">
+          <title>Some label</title>
+          <partName>Issue #3</partName>
+          <partNumber>2011</partNumber>
+          </titleInfo>
+          </mods>
+        XML
+      end
+
+      before do
+        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
+      end
+
+      it 'returns the label from the primary title' do
+        expect(umrs.get_x2_part_info).to eq '|xlabel:Issue #3. 2011'
+      end
+    end
+
+    context 'with descMetadata with multiple titles' do
+      let(:xml) do
+        <<-XML
+          <mods>
+          <titleInfo type="alternative">
+          <title>Some label</title>
+          <partName>Issue #3</partName>
+          <partNumber>2011</partNumber>
+          </titleInfo>
+          <titleInfo type="alternative">
+          <title>Some label</title>
+          <partName>Some lie</partName>
+          </titleInfo>
+          </mods>
+        XML
+      end
+
+      before do
+        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
+      end
+
+      it 'returns the label from the first title' do
+        expect(umrs.get_x2_part_info).to eq '|xlabel:Issue #3. 2011'
+      end
     end
   end
 

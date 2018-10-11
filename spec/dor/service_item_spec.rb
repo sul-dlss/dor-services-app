@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Dor::ServiceItem do
-  let(:dor_item) { @dor_item }
   subject(:si) { Dor::ServiceItem.new dor_item }
+
+  let(:dor_item) { @dor_item }
 
   describe '#catkey' do
     it 'returns catkey from a valid identityMetadata' do

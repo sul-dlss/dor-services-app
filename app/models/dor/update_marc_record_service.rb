@@ -34,6 +34,7 @@ module Dor
     # Subfield x #5 (optional): the file-id to be used as thumb if available, recorded as file:file-id-value
     # Subfield x #6..n (optional): Collection(s) this object is a member of, recorded as collection:druid-value:ckey-value:title
     # Subfield x #7..n (optional): Set(s) this object is a member of, recorded as set:druid-value:ckey-value:title
+    # Subfield x #8..n (optional): label and part sort keys for the member
     def generate_symphony_records
       return [] unless ckeys?
 
@@ -71,6 +72,8 @@ module Dor
       new856 << thumb.prepend('|xfile:') unless thumb.nil?
       new856 << get_x2_collection_info unless get_x2_collection_info.nil?
       new856 << get_x2_constituent_info unless get_x2_constituent_info.nil?
+      new856 << get_x2_part_info unless get_x2_part_info.nil?
+      new856
     end
 
     def get_identifier(ckey)
@@ -138,6 +141,26 @@ module Dor
       end.join('')
     end
 
+    def get_x2_part_info
+      title_info = primary_mods_title_info_element
+
+      return unless title_info
+
+      part_parts = title_info.children.select do |child|
+        %w(partName partNumber).include?(child.name)
+      end
+
+      part_label = part_parts.map(&:text).compact.join(parts_delimiter(part_parts))
+
+      part_sort = @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//*[@type="date/sequential designation"]').first
+
+      str = ''
+      str << "|xlabel:#{part_label}" unless part_label.empty?
+      str << "|xsort:#{part_sort.text}" if part_sort
+
+      str
+    end
+
     def born_digital?
       BORN_DIGITAL_APOS.include? @druid_obj.admin_policy_object_id
     end
@@ -154,6 +177,27 @@ module Dor
       @druid_obj.relationships(:is_constituent_of).map do |cons|
         cons_druid = cons.sub('info:fedora/', '')
         Dor::Item.find(cons_druid)
+      end
+    end
+
+    def primary_mods_title_info_element
+      return nil unless @druid_obj.datastreams['descMetadata']
+
+      title_info = @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods/titleInfo[not(@type)]').first
+      title_info ||= @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods/titleInfo[@usage="primary"]').first
+      title_info ||= @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods/titleInfo').first
+
+      title_info
+    end
+
+    # adapted from mods_display
+    def parts_delimiter(elements)
+      # index will retun nil which is not comparable so we call 100
+      # if the element isn't present (thus meaning it's at the end of the list)
+      if (elements.index { |c| c.name == 'partNumber' } || 100) < (elements.index { |c| c.name == 'partName' } || 100)
+        ', '
+      else
+        '. '
       end
     end
   end
