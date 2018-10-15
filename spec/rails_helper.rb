@@ -74,7 +74,5 @@ def setup_test_objects(druid, identityMetadata, rightsMetadata = '<xml/>')
     :identityMetadata => @identityMetadataXML, :rightsMetadata => @rightsMetadataXML,
     :remove_druid_prefix=>druid.gsub('druid:','')
   )
-  @umrs=Dor::UpdateMarcRecordService.new @dor_item
-  @si = Dor::ServiceItem.new @dor_item
-  @gn = Dor::Goobi.new @dor_item
+  @dor_item
 end
