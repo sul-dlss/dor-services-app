@@ -483,7 +483,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'with descMetadata without part information' do
       let(:xml) do
         <<-XML
-          <mods>
+          <mods xmlns="http://www.loc.gov/mods/v3">
           <titleInfo>
           <title>Some label</title>
           </titleInfo></mods>
@@ -502,7 +502,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'with descMetadata with some part numbers' do
       let(:xml) do
         <<-XML
-          <mods>
+          <mods xmlns="http://www.loc.gov/mods/v3">
           <titleInfo>
           <title>Some label</title>
           <partNumber>55th legislature</partNumber>
@@ -523,7 +523,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'with descMetadata with a part name and number' do
       let(:xml) do
         <<-XML
-          <mods>
+          <mods xmlns="http://www.loc.gov/mods/v3">
           <titleInfo>
           <title>Some label</title>
           <partName>Issue #3</partName>
@@ -544,7 +544,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'with descMetadata with a sequential designation in a note' do
       let(:xml) do
         <<-XML
-          <mods>
+          <mods xmlns="http://www.loc.gov/mods/v3">
           <titleInfo>
           <title>Some label</title>
           <partName>Issue #3</partName>
@@ -567,7 +567,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'with descMetadata with a sequential designation on a part number' do
       let(:xml) do
         <<-XML
-          <mods>
+          <mods xmlns="http://www.loc.gov/mods/v3">
           <titleInfo>
           <title>Some label</title>
           <partName>Issue #3</partName>
@@ -589,7 +589,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'with descMetadata with multiple titles, one of them marked as the primary title' do
       let(:xml) do
         <<-XML
-          <mods>
+          <mods xmlns="http://www.loc.gov/mods/v3">
           <titleInfo type="alternative" usage="garbage">
           <title>Some label</title>
           <partName>Some lie</partName>
@@ -615,7 +615,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'with descMetadata with multiple titles' do
       let(:xml) do
         <<-XML
-          <mods>
+          <mods xmlns="http://www.loc.gov/mods/v3">
           <titleInfo type="alternative">
           <title>Some label</title>
           <partName>Issue #3</partName>
