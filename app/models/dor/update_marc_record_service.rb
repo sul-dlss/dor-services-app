@@ -136,7 +136,7 @@ module Dor
     def get_x2_constituent_info
       dor_items_for_constituents.map do |cons_obj|
         cons_obj_id = cons_obj.id.sub('druid:', '')
-        cons_obj_title = cons_obj.datastreams['descMetadata'].ng_xml.xpath('//mods/titleInfo/title').first.content
+        cons_obj_title = cons_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo/mods:title', mods: 'http://www.loc.gov/mods/v3').first.content
         "|xset:#{cons_obj_id}:#{Dor::ServiceItem.get_ckey(cons_obj)}:#{cons_obj_title}"
       end.join('')
     end
@@ -183,9 +183,9 @@ module Dor
     def primary_mods_title_info_element
       return nil unless @druid_obj.datastreams['descMetadata']
 
-      title_info = @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods/titleInfo[not(@type)]').first
-      title_info ||= @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods/titleInfo[@usage="primary"]').first
-      title_info ||= @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods/titleInfo').first
+      title_info = @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo[not(@type)]', mods: 'http://www.loc.gov/mods/v3').first
+      title_info ||= @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo[@usage="primary"]', mods: 'http://www.loc.gov/mods/v3').first
+      title_info ||= @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo', mods: 'http://www.loc.gov/mods/v3').first
 
       title_info
     end

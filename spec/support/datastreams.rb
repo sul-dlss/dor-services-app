@@ -148,7 +148,7 @@ def build_rels_ext
 end
 
 def build_desc_metadata_1
-  '<mods>
+  '<mods xmlns="http://www.loc.gov/mods/v3">
   <titleInfo>
   <title>Constituent label</title>
   </titleInfo></mods>'
