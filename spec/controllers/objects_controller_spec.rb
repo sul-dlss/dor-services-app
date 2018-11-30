@@ -113,14 +113,14 @@ RSpec.describe ObjectsController do
 
   describe '/release_tags' do
     it 'adds a release tag when posted to with false' do
-      expect(item).to receive(:add_release_node).with(false, :to => 'searchworks', :who => 'carrickr', :what => 'self', :release => false)
+      expect(ReleaseTags).to receive(:create).with(AssembleableVersionableItem, release: false, to: 'searchworks', who: 'carrickr', what: 'self')
       expect(item).to receive(:save)
       post :release_tags, params: { id: item.pid }, body: %( {"to":"searchworks","who":"carrickr","what":"self","release":false} )
       expect(response.status).to eq(201)
     end
 
     it 'adds a release tag when posted to with true' do
-      expect(item).to receive(:add_release_node).with(true, :to => 'searchworks', :who => 'carrickr', :what => 'self', :release => true)
+      expect(ReleaseTags).to receive(:create).with(AssembleableVersionableItem, release: true, to: 'searchworks', who: 'carrickr', what: 'self')
       expect(item).to receive(:save)
       post :release_tags, params: { id: item.pid }, body: %( {"to":"searchworks","who":"carrickr","what":"self","release":true} )
       expect(response.status).to eq(201)

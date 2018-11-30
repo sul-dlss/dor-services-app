@@ -65,7 +65,7 @@ class ObjectsController < ApplicationController
     raw_params.symbolize_keys!
 
     if raw_params.key?(:release) && (raw_params[:release] == true || raw_params[:release] == false)
-      @item.add_release_node(raw_params[:release], raw_params)
+      ReleaseTags.create(@item, raw_params.slice(:release, :what, :to, :who, :when))
       @item.save
       head :created
     else
