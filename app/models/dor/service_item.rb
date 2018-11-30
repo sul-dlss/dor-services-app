@@ -57,7 +57,7 @@ module Dor
     # the @id attribute of resource/file elements including extension
     # @return [String] thumbnail filename (nil if none found)
     def thumb
-      @thumb ||= @druid_obj.encoded_thumb unless @druid_obj.datastreams.nil?
+      @thumb ||= ERB::Util.url_encode(ThumbnailService.new(@druid_obj).thumb).presence unless @druid_obj.datastreams.nil?
     end
 
     # returns the first collection_id the object is contained in (if any)

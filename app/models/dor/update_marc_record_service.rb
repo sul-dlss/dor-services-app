@@ -68,8 +68,8 @@ module Dor
 
     def new_856_record(ckey)
       new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}#{object_type.prepend('|x')}"
-      new856 << barcode.prepend('|xbarcode:') unless barcode.nil?
-      new856 << thumb.prepend('|xfile:') unless thumb.nil?
+      new856 << "|xbarcode:#{barcode}" unless barcode.nil?
+      new856 << "|xfile:#{thumb}" unless thumb.nil?
       new856 << get_x2_collection_info unless get_x2_collection_info.nil?
       new856 << get_x2_constituent_info unless get_x2_constituent_info.nil?
       new856 << get_x2_part_info unless get_x2_part_info.nil?

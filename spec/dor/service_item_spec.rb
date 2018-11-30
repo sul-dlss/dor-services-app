@@ -201,7 +201,7 @@ RSpec.describe Dor::ServiceItem do
       expect(Dor::ServiceItem.new(d).thumb).to eq('bb111bb2222%2Fwt183gy6220_00_0001.jp2')
     end
 
-    it 'returns an empty string for contentMetadata without thumb' do
+    it 'returns nil for contentMetadata without thumb' do
       druid = 'aa111aa2222'
       d = Dor::Item.new(:pid => druid)
       content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_2)
