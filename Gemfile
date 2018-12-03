@@ -1,11 +1,11 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 5.1.0'
+gem 'rails', '~> 5.2.0'
 
 # Use Puma as the app server
 gem 'puma', '~> 3.0'
 
-# requirement for rdf-rdfa / haml gem
+# requirement for rdf-rdfa 1.99 / haml 4 gem
 gem 'erubis'
 
 group :development, :test do
