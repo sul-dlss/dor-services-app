@@ -4,6 +4,8 @@ require "rails"
 # Pick the frameworks you want:
 require "action_controller/railtie"
 
+require_relative 'initializers/monkey_patch_haml4'
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
