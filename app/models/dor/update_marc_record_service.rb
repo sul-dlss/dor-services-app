@@ -180,16 +180,6 @@ module Dor
       end
     end
 
-    def primary_mods_title_info_element
-      return nil unless @druid_obj.datastreams['descMetadata']
-
-      title_info = @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo[not(@type)]', mods: 'http://www.loc.gov/mods/v3').first
-      title_info ||= @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo[@usage="primary"]', mods: 'http://www.loc.gov/mods/v3').first
-      title_info ||= @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo', mods: 'http://www.loc.gov/mods/v3').first
-
-      title_info
-    end
-
     # adapted from mods_display
     def parts_delimiter(elements)
       # index will retun nil which is not comparable so we call 100
