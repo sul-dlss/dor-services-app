@@ -122,5 +122,23 @@ module Dor
         GoobiTag.new(name: tag_split[0], value: tag_split[1])
       end
     end
+
+    private
+
+    def title_or_label
+      title_element = primary_mods_title_info_element
+      return title_element.content.strip if title_element.respond_to?(:content) && title_element.content.present?
+      @druid_obj.label.encode(xml: :text)
+    end
+
+    def primary_mods_title_info_element
+      return nil unless @druid_obj.datastreams['descMetadata']
+
+      title_info = @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo[not(@type)]', mods: 'http://www.loc.gov/mods/v3').first
+      title_info ||= @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo[@usage="primary"]', mods: 'http://www.loc.gov/mods/v3').first
+      title_info ||= @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo', mods: 'http://www.loc.gov/mods/v3').first
+
+      title_info
+    end
   end
 end
