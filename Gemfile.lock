@@ -188,7 +188,6 @@ GEM
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
     erubi (1.7.1)
-    erubis (2.7.0)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.25)
@@ -462,7 +461,6 @@ DEPENDENCIES
   dlss-capistrano
   dor-services (~> 6.0)
   equivalent-xml
-  erubis
   faraday
   honeybadger
   listen (~> 3.0.5)
