@@ -5,13 +5,13 @@ class ContentController < ApplicationController
   end
 
   def read
-    location = druid_tools.path(params[:path])
-
+    location = druid_tools.find(:content, params[:path])
+    return render status: :not_found unless location
     send_file location
   end
 
   def list
-    location = druid_tools.path
+    location = druid_tools.content_dir(false)
 
     raise ActionController::MissingFile, location unless Dir.exist? location
 
