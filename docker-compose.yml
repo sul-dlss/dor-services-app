@@ -1,0 +1,39 @@
+version: '3.6'
+
+services:
+  web:
+    build: .
+    volumes:
+      - ./:/app
+    working_dir: /app
+    ports:
+      - 3000:3000
+    environment:
+      SOLR_URL: http://solr:8983/solr/dorservices
+      SETTINGS__SSL__CERT_FILE: /app/spec/support/certs/spec.crt
+      SETTINGS__SSL__KEY_FILE: /app/spec/support/certs/spec.key
+      SETTINGS__SSL__KEY_PASS: thisisatleast4bytes
+      SETTINGS__SOLRIZER_URL: http://solr:8983/solr/dorservices
+      SETTINGS__FEDORA_URL: http://fedoraAdmin:fedoraAdmin@fcrepo:8080/fedora
+      SETTINGS__SURI__URL: http://suri:3000
+      SETTINGS__WORKFLOW_URL: http://workflow:3000
+
+  solr:
+    image: solr:7
+    volumes:
+      - ./solr_conf/conf/:/myconfig
+    command: solr-create -c dorservices -d /myconfig
+    ports:
+      - 8984:8983
+  fcrepo:
+    image: suldlss/fcrepo:no-messaging-latest
+    ports:
+      - 8983:8080
+  suri:
+    image: suldlss/suri-rails:latest
+    ports:
+      - 3002:3000
+  workflow:
+    image: suldlss/workflow-server:latest
+    ports:
+      - 3001:3000
