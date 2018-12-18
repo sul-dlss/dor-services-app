@@ -34,7 +34,7 @@ gem 'marc'
 # DLSS/domain-specific dependencies
 gem 'dor-services', '~> 6.0'
 gem 'lyber-core', '>= 2.0.2'
-gem 'workflow-archiver', '~> 2.0'
+gem 'workflow-archiver', '~> 3.0'
 
 group :production do
   gem 'ruby-oci8'
