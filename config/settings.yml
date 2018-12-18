@@ -20,6 +20,8 @@ INDEXER:
 # Metadata
 METADATA:
   CATALOG_URL: 'https://catalog.example.com/catalog/mods'
+  CATALOG_USER: 'user'
+  CATALOG_PASS: 'password'
 
 # SSL
 SSL:
