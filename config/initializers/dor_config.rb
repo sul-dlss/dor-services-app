@@ -31,8 +31,11 @@ Dor.configure do
     pass         Settings.SURI.PASS
   end
 
+  # Configure the client that connects to the catalog service during object registration
   metadata do
     catalog.url Settings.METADATA.CATALOG_URL
+    catalog.user Settings.METADATA.CATALOG_USER
+    catalog.pass Settings.METADATA.CATALOG_PASS
   end
 
   stomp do
