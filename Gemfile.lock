@@ -480,9 +480,8 @@ DEPENDENCIES
   simplecov
   spring
   spring-watcher-listen (~> 2.0.0)
-  tzinfo-data
   webmock
   workflow-archiver (~> 3.0)
 
 BUNDLED WITH
-   1.17.2
+   1.17.3
