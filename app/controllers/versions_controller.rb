@@ -2,8 +2,7 @@ class VersionsController < ApplicationController
   before_action :load_item
 
   def create
-    @item.open_new_version
-    @item.save
+    Dor::VersionService.open(@item)
     render plain: @item.current_version
   end
 
@@ -23,7 +22,7 @@ class VersionsController < ApplicationController
         sym_params[:significance] = sym_params[:significance].to_sym
       end
     end
-    @item.close_version sym_params
+    Dor::VersionService.close(@item, sym_params)
     render plain: "version #{@item.current_version} closed"
   end
 end

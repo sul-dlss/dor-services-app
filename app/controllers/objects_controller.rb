@@ -26,14 +26,13 @@ class ObjectsController < ApplicationController
     end
   end
 
-  # The param, source, can be passed as apended parameter to url:
+  # The param, source, can be passed as appended parameter to url:
   #  http://lyberservices-dev/dor/v1/objects/{druid}/initialize_workspace?source=/path/to/content/dir/for/druid
   # or
   # It can be passed in the body of the request as application/x-www-form-urlencoded parameters, as if submitted from a form
   # TODO: We could get away with loading a simple object that mixes in Dor::Assembleable.  It just needs to implement #pid
   def initialize_workspace
     WorkspaceService.create(@item, params[:source])
-    @item.initialize_workspace(params[:source])
     head :created
   end
 
