@@ -20,13 +20,13 @@ RSpec.describe VersionsController do
 
   describe '/versions/current/close' do
     it 'closes the current version when posted to' do
-      expect(item).to receive(:close_version)
+      expect(Dor::VersionService).to receive(:close)
       post :close_current, params: { object_id: item.pid }
       expect(response.body).to match(/version 1 closed/)
     end
 
-    it 'forwards optional params to the Dor::Item#close_version method' do
-      expect(item).to receive(:close_version).with(:description => 'some text', :significance => :major)
+    it 'forwards optional params to the Dor::VersionService#close method' do
+      expect(Dor::VersionService).to receive(:close).with(item, description: 'some text', significance: :major)
       post :close_current, params: { object_id: item.pid }, body: %( {"description": "some text", "significance": "major"} )
       expect(response.body).to match(/version 1 closed/)
     end
@@ -38,8 +38,8 @@ RSpec.describe VersionsController do
       expect(Dor::Config.workflow.client).to receive(:get_active_lifecycle).with('dor', item.pid, 'submitted').and_return(nil)
       expect(Dor::Config.workflow.client).to receive(:get_active_lifecycle).with('dor', item.pid, 'opened').and_return(nil)
       expect(Sdr::Client).to receive(:current_version).and_return(1)
-      expect(item).to receive(:create_workflow).with('versioningWF')
-      allow(item).to receive(:save)
+      # Do not test workflow side effects in dor-services-app; that is dor-services' responsibility
+      allow(Dor::CreateWorkflowService).to receive(:create_workflow)
       post :create, params: { object_id: item.pid }
       expect(response.body).to eq('2')
     end

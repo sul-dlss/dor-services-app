@@ -17,9 +17,6 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
-
 # Ruby general dependencies
 gem 'okcomputer'
 gem 'config'
@@ -32,7 +29,7 @@ gem 'net-http-persistent', '~> 2.9'
 gem 'marc'
 
 # DLSS/domain-specific dependencies
-gem 'dor-services', '~> 6.0'
+gem 'dor-services', '~> 6.1'
 gem 'lyber-core', '>= 2.0.2'
 gem 'workflow-archiver', '~> 3.0'
 
