@@ -18,5 +18,10 @@ module DorServices
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # If an object isn't found in DOR, return a 404
+    config.action_dispatch.rescue_responses.merge!(
+      "ActiveFedora::ObjectNotFoundError" => :not_found
+    )
   end
 end
