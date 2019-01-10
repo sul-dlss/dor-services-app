@@ -49,34 +49,41 @@ RSpec.describe VersionsController do
     end
     let(:opening_user_name) { 'foo' }
 
-    # rubocop:disable RSpec/ExpectInHook
     before do
-      expect(Dor::Config.workflow.client).to receive(:get_lifecycle).with('dor', item.pid, 'accessioned').and_return(true)
-      expect(Dor::Config.workflow.client).to receive(:get_active_lifecycle).with('dor', item.pid, 'submitted').and_return(nil)
-      expect(Dor::Config.workflow.client).to receive(:get_active_lifecycle).with('dor', item.pid, 'opened').and_return(nil)
-      expect(Sdr::Client).to receive(:current_version).and_return(1)
-
-      allow(fake_events_ds).to receive(:add_event)
-      allow(item).to receive(:events).and_return(fake_events_ds)
-      allow(item).to receive(:save)
-      # Do not test workflow side effects in dor-services-app; that is dor-services' responsibility
-      allow(Dor::CreateWorkflowService).to receive(:create_workflow)
-    end
-    # rubocop:enable RSpec/ExpectInHook
-
-    it 'opens a new object version when posted to' do
-      post :create, params: { object_id: item.pid }, as: :json
-      expect(response.body).to eq('2')
+      allow(item).to receive(:current_version).and_return('2')
     end
 
-    it 'forwards optional params to the Dor::VersionService#open method' do
-      expect(Dor::VersionService).to receive(:open).with(
-        item,
-        open_params
-      ).and_call_original
-      post :create, params: { object_id: item.pid }, body: open_params.to_json, as: :json
-      expect(fake_events_ds).to have_received(:add_event).with('open', opening_user_name, 'Version 2 opened')
-      expect(response.body).to eq('2')
+    context 'when opening a version succeedes' do
+      before do
+        # Do not test version service side effects in dor-services-app; that is dor-services' responsibility
+        allow(Dor::VersionService).to receive(:open)
+      end
+
+      it 'opens a new object version when posted to' do
+        post :create, params: { object_id: item.pid }, as: :json
+        expect(response.body).to eq('2')
+        expect(response).to be_successful
+      end
+
+      it 'forwards optional params to the Dor::VersionService#open method' do
+        post :create, params: { object_id: item.pid }, body: open_params.to_json, as: :json
+        expect(Dor::VersionService).to have_received(:open).with(item, open_params)
+        expect(response.body).to eq('2')
+        expect(response).to be_successful
+      end
+    end
+
+    context 'when opening a version fails' do
+      before do
+        # Do not test version service side effects in dor-services-app; that is dor-services' responsibility
+        allow(Dor::VersionService).to receive(:open).and_raise(Dor::Exception, 'Object net yet accessioned')
+      end
+
+      it 'returns an error' do
+        post :create, params: { object_id: item.pid }, as: :json
+        expect(response.body).to eq('{"errors":[{"status":"422","title":"Unable to open version","detail":"Object net yet accessioned"}]}')
+        expect(response.status).to eq 422
+      end
     end
   end
 end
