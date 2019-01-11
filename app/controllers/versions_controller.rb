@@ -4,6 +4,8 @@ class VersionsController < ApplicationController
   def create
     Dor::VersionService.open(@item, open_params)
     render plain: @item.current_version
+  rescue Dor::Exception => e
+    render build_error(e)
   end
 
   def current
@@ -16,6 +18,23 @@ class VersionsController < ApplicationController
   end
 
   private
+
+  # JSON-API error response
+  def build_error(err)
+    {
+      json: {
+        errors: [
+          {
+            "status": '422',
+            "title":  'Unable to open version',
+            "detail": err.message
+          }
+        ]
+      },
+      content_type: 'application/vnd.api+json',
+      status: :unprocessable_entity
+    }
+  end
 
   def open_params
     params.permit(
