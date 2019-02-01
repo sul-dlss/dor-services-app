@@ -138,13 +138,14 @@ RSpec.describe ObjectsController do
   end
 
   describe 'apo-workflow intialization' do
-    it 'initiates accessionWF via obj.initiate_apo_workflow' do
-      expect(item).to receive(:initiate_apo_workflow).with('assemblyWF')
+    it 'initiates assemblyWF' do
+      expect(Dor::CreateWorkflowService).to receive(:create_workflow).with(item, name: 'assemblyWF')
+
       post 'apo_workflows', params: { id: item.pid, wf_name: 'assemblyWF' }
     end
 
     it "handles workflow names without 'WF' appended to the end" do
-      expect(item).to receive(:initiate_apo_workflow).with('accessionWF')
+      expect(Dor::CreateWorkflowService).to receive(:create_workflow).with(item, name: 'accessionWF')
       post 'apo_workflows', params: { id: item.pid, wf_name: 'accession' }
     end
   end

@@ -81,7 +81,7 @@ class ObjectsController < ApplicationController
                  "#{params[:wf_name]}WF"
                end
 
-    @item.initiate_apo_workflow(workflow)
+    Dor::CreateWorkflowService.create_workflow(@item, name: workflow)
 
     head :created
   end
