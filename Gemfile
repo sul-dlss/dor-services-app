@@ -46,7 +46,6 @@ group :test, :development do
   gem 'rack-console'
   gem 'rubocop', '~> 0.57.1'
   gem 'rubocop-rspec', '~> 1.27.0'
-  gem 'capybara'
   gem 'webmock'
 end
 
