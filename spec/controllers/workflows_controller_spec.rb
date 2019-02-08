@@ -21,7 +21,7 @@ RSpec.describe WorkflowsController do
   end
 
   describe 'workflow archiving' do
-    let(:item) { AssembleableVersionableItem.new.tap { |x| x.pid = 'druid:aa123bb4567' } }
+    let(:item) { VersionableItem.new.tap { |x| x.pid = 'druid:aa123bb4567' } }
 
     before do
       allow(Dor).to receive(:find).with(item.pid).and_return(item)
