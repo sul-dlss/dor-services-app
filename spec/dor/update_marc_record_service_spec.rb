@@ -134,7 +134,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       )
 
       allow(item).to receive_messages(
-        id: 'aa111aa1111',
+        pid: 'aa111aa1111',
         collections: [collection],
         datastreams: { 'rightsMetadata' => rights_metadata_xml, 'identityMetadata' => identity_metadata_xml, 'contentMetadata' => content_metadata_xml, 'RELS-EXT' => rels_ext_xml }
       )
@@ -148,7 +148,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
       updater = Dor::UpdateMarcRecordService.new(item)
       # rubocop:disable Metrics/LineLength
       expect(updater.generate_symphony_records).to eq(["8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"])
-      # rubocop:enble Metrics/LineLength
     end
 
     it 'generates symphony record with a z subfield for a stanford only item object with catkey' do
@@ -176,7 +175,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       )
 
       allow(item).to receive_messages(
-        id: 'aa111aa1111',
+        pid: 'aa111aa1111',
         collections: [collection],
         datastreams: { 'rightsMetadata' => rights_metadata_xml, 'identityMetadata' => identity_metadata_xml, 'contentMetadata' => content_metadata_xml, 'RELS-EXT' => rels_ext_xml }
       )
@@ -216,7 +215,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       )
 
       allow(item).to receive_messages(
-        id: 'aa111aa1111',
+        pid: 'aa111aa1111',
         collections: [collection],
         datastreams: { 'rightsMetadata' => rights_metadata_xml, 'identityMetadata' => identity_metadata_xml, 'contentMetadata' => content_metadata_xml, 'RELS-EXT' => rels_ext_xml }
       )
@@ -443,9 +442,9 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
 
     it 'returns an empty string for a collection object' do
-      c = double(Dor::Collection)
+      c = double(Dor::Collection, id: 'bb222bb2222')
       rights_metadata = double(Dor::RightsMetadataDS)
-      expect(c).to receive(:remove_druid_prefix).and_return('')
+      expect(Dor::PidUtils).to receive(:remove_druid_prefix).and_return('')
       expect(c).to receive(:collections).and_return([])
       allow(c).to receive(:rightsMetadata).and_return(rights_metadata)
       allow(rights_metadata).to receive(:dra_object).and_return(double(Dor::RightsAuth))

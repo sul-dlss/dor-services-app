@@ -18,7 +18,7 @@ module Dor
 
     def initialize(druid_obj)
       @druid_obj = druid_obj
-      @druid_id = @druid_obj.remove_druid_prefix
+      @druid_id = Dor::PidUtils.remove_druid_prefix(@druid_obj.id)
       @dra_object = druid_obj.rightsMetadata.dra_object
     end
 

@@ -158,32 +158,31 @@ RSpec.describe Dor::ServiceItem do
   end
 
   describe '#content_type' do
+    let(:druid) { 'bb111bb2222' }
+    let(:item) { Dor::Item.new(pid: druid) }
+
     before do
-      druid = 'bb111bb2222'
-      @d = Dor::Item.new(pid: druid)
-      @content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_1)
-      @content_metadata_ds = double(Dor::ContentMetadataDS)
-      @identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
-      @identity_metadata_ds = double(Dor::IdentityMetadataDS)
-      @rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
-      @rights_metadata_ds = double(Dor::RightsMetadataDS)
-      allow(@d).to receive(:datastreams).and_return('rightsMetadata' => @rights_metadata_ds, 'contentMetadata' => @content_metadata_ds, 'identityMetadata' => @identity_metadata_ds)
-      allow(@content_metadata_ds).to receive(:ng_xml).and_return(@content_metadata_ng_xml)
-      allow(@identity_metadata_ds).to receive(:ng_xml).and_return(@identity_metadata_ng_xml)
-      allow(@rights_metadata_ds).to receive(:ng_xml).and_return(@rights_metadata_ng_xml)
-      allow(@rights_metadata_ds).to receive(:dra_object).and_return(Dor::RightsAuth.parse(@rights_metadata_ng_xml, true))
+      content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_1)
+      content_metadata_ds = double(Dor::ContentMetadataDS)
+      rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
+      rights_metadata_ds = double(Dor::RightsMetadataDS)
+      allow(item).to receive(:datastreams).and_return('rightsMetadata' => rights_metadata_ds,
+                                                      'contentMetadata' => content_metadata_ds)
+      allow(content_metadata_ds).to receive(:ng_xml).and_return(content_metadata_ng_xml)
+      allow(rights_metadata_ds).to receive(:ng_xml).and_return(rights_metadata_ng_xml)
+      allow(rights_metadata_ds).to receive(:dra_object).and_return(
+        Dor::RightsAuth.parse(rights_metadata_ng_xml, true)
+      )
     end
 
     it 'returns the content_type_tag from dor-services if the value exists' do
-      fake_tags = ['Tag 1', 'Tag 2', 'Process : Content Type : Process Value']
-      allow(@identity_metadata_ds).to receive_messages(tags: fake_tags, tag: fake_tags)
-      expect(Dor::ServiceItem.new(@d).content_type).to eq('Process Value')
+      allow(item).to receive(:content_type_tag).and_return('Process Value')
+      expect(Dor::ServiceItem.new(item).content_type).to eq('Process Value')
     end
 
     it 'returns the type from contentMetadata if content_type_tag from dor-services does not have a value' do
-      fake_tags = ['Tag 1', 'Tag 2', 'Tag 3']
-      allow(@identity_metadata_ds).to receive_messages(tags: fake_tags, tag: fake_tags)
-      expect(Dor::ServiceItem.new(@d).content_type).to eq('map')
+      allow(item).to receive(:content_type_tag).and_return('')
+      expect(Dor::ServiceItem.new(item).content_type).to eq('map')
     end
   end
 
