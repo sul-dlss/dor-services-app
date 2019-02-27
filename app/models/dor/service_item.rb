@@ -128,7 +128,7 @@ module Dor
     def title_or_label
       title_element = primary_mods_title_info_element
       return title_element.content.strip if title_element.respond_to?(:content) && title_element.content.present?
-      @druid_obj.label.encode(xml: :text)
+      @druid_obj.label
     end
 
     def primary_mods_title_info_element

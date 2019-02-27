@@ -12,7 +12,7 @@ RSpec.describe Dor::Goobi do
     #  this just lets us test the methods in goobi.rb without doing a lot of setup
     allow(Dor::Item).to receive(:find).and_return(item)
     allow(item).to receive(:source_id).and_return('some_source_id')
-    allow(item).to receive(:label).and_return('Object Title')
+    allow(item).to receive(:label).and_return('Object Title & A Special character')
     allow(item).to receive(:content_type_tag).and_return('book')
     allow(goobi).to receive(:project_name).and_return('Project Name')
     allow(goobi).to receive(:object_type).and_return('item')
@@ -39,7 +39,7 @@ RSpec.describe Dor::Goobi do
 
     context 'when MODS title is absent or empty' do
       it 'returns object label' do
-        expect(xml).to eq 'Object Title'
+        expect(xml).to eq 'Object Title & A Special character'
       end
     end
   end
@@ -52,7 +52,7 @@ RSpec.describe Dor::Goobi do
         <objectId>#{pid}</objectId>
         <objectType>item</objectType>
         <sourceID>some_source_id</sourceID>
-        <title>Object Title</title>
+        <title>Object Title &amp; A Special character</title>
         <contentType>book</contentType>
         <project>Project Name</project>
         <catkey>ckey_12345</catkey>
@@ -79,7 +79,7 @@ RSpec.describe Dor::Goobi do
         <objectId>#{pid}</objectId>
         <objectType>item</objectType>
         <sourceID>some_source_id</sourceID>
-        <title>Object Title</title>
+        <title>Object Title &amp; A Special character</title>
         <contentType>book</contentType>
         <project>Project Name</project>
         <catkey>ckey_12345</catkey>
