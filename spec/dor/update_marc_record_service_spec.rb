@@ -129,7 +129,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
       updater = Dor::UpdateMarcRecordService.new(item)
       # rubocop:disable Metrics/LineLength
-      expect(updater.generate_symphony_records).to eq(["8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label"])
+      expect(updater.generate_symphony_records).to eq(["8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"])
       # rubocop:enble Metrics/LineLength
     end
 
@@ -174,7 +174,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
       allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
       updater = Dor::UpdateMarcRecordService.new(item)
-      expect(updater.generate_symphony_records).to match_array(["8832162\taa111aa1111\t.856. 41|zAvailable to Stanford-affiliated users.|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label"])
+      expect(updater.generate_symphony_records).to match_array(["8832162\taa111aa1111\t.856. 41|zAvailable to Stanford-affiliated users.|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"])
     end
 
     it 'generates blank symphony records and a regular symphony record for an item object with both previous and current catkeys' do
@@ -218,7 +218,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
       allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
       updater = Dor::UpdateMarcRecordService.new(item)
-      expect(updater.generate_symphony_records).to match_array(["123\taa111aa1111\t", "456\taa111aa1111\t", "8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label"])
+      expect(updater.generate_symphony_records).to match_array(["123\taa111aa1111\t", "456\taa111aa1111\t", "8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"])
     end
 
     it 'generates blank symphony records for an item object with only previous catkeys' do
