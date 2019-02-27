@@ -150,7 +150,7 @@ end
 def build_desc_metadata_1
   '<mods xmlns="http://www.loc.gov/mods/v3">
   <titleInfo>
-  <title>Constituent label</title>
+  <title>Constituent label &amp; A Special character</title>
   </titleInfo></mods>'
 end
 
