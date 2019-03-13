@@ -10,12 +10,12 @@ RSpec.describe ObjectsController do
   before do
     allow(Dor).to receive(:find).and_return(item)
     rights_metadata_xml = Dor::RightsMetadataDS.new
-    allow(rights_metadata_xml).to receive_messages(:ng_xml => Nokogiri::XML('<xml/>'))
+    allow(rights_metadata_xml).to receive_messages(ng_xml: Nokogiri::XML('<xml/>'))
     allow(item).to receive_messages(
-      :id => 'druid:aa123bb4567',
-      :datastreams => { 'rightsMetadata' => rights_metadata_xml },
-      :rightsMetadata => rights_metadata_xml,
-      :remove_druid_prefix => 'aa123bb4567'
+      id: 'druid:aa123bb4567',
+      datastreams: { 'rightsMetadata' => rights_metadata_xml },
+      rightsMetadata: rights_metadata_xml,
+      remove_druid_prefix: 'aa123bb4567'
     )
     allow(rights_metadata_xml).to receive(:dra_object).and_return(Dor::RightsAuth.parse(Nokogiri::XML('<xml/>'), true))
   end

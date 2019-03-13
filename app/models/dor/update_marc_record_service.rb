@@ -51,6 +51,7 @@ module Dor
 
     def write_symphony_records(symphony_records)
       return if symphony_records.blank?
+
       symphony_file_name = "#{Dor::Config.release.symphony_path}/sdr-purl-856s"
       symphony_records.each do |symphony_record|
         command = "#{Dor::Config.release.write_marc_script} #{Shellwords.escape(symphony_record)} #{Shellwords.escape(symphony_file_name)}"
@@ -174,6 +175,7 @@ module Dor
 
     def dor_items_for_constituents
       return [] unless @druid_obj.relationships(:is_constituent_of)
+
       @druid_obj.relationships(:is_constituent_of).map do |cons|
         cons_druid = cons.sub('info:fedora/', '')
         Dor::Item.find(cons_druid)

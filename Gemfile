@@ -18,15 +18,15 @@ group :development do
 end
 
 # Ruby general dependencies
-gem 'okcomputer'
 gem 'config'
 gem 'honeybadger'
+gem 'okcomputer'
 
 gem 'faraday'
 gem 'rest-client'
 # Pin net-http-persistent to avoid a problem with exhausting file handles when running under load
-gem 'net-http-persistent', '~> 2.9'
 gem 'marc'
+gem 'net-http-persistent', '~> 2.9'
 gem 'uuidtools', '~> 2.1.4'
 
 # DLSS/domain-specific dependencies
@@ -39,14 +39,14 @@ group :production do
 end
 
 group :test, :development do
-  gem 'rspec-rails'
-  gem 'rails-controller-testing'
   gem 'coveralls', '~> 0.8', require: false
-  gem 'simplecov'
   gem 'equivalent-xml'
   gem 'rack-console'
-  gem 'rubocop', '~> 0.57.1'
-  gem 'rubocop-rspec', '~> 1.27.0'
+  gem 'rails-controller-testing'
+  gem 'rspec-rails'
+  gem 'rubocop', '~> 0.65.0'
+  gem 'rubocop-rspec', '~> 1.32.0'
+  gem 'simplecov'
   gem 'webmock'
 end
 

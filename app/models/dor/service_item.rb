@@ -5,6 +5,7 @@ module Dor
     # look in identityMetadata/otherId[@name='catkey']
     def self.get_ckey(object)
       return nil unless identity_metadata?(object)
+
       node = object.identityMetadata.ng_xml.at_xpath("//identityMetadata/otherId[@name='catkey']")
       node.content if node && node.content.present?
     end
@@ -128,6 +129,7 @@ module Dor
     def title_or_label
       title_element = primary_mods_title_info_element
       return title_element.content.strip if title_element.respond_to?(:content) && title_element.content.present?
+
       @druid_obj.label
     end
 
