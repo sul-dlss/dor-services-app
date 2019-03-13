@@ -30,6 +30,12 @@ RSpec.describe ObjectsController do
         expect(response.status).to eq(409)
         expect(response.headers['Location']).to match(/\/fedora\/objects\/druid:existing123obj/)
       end
+
+      it 'returns a 422 error when an object has a bad name' do
+        allow(RegistrationService).to receive(:register_object).and_raise(ArgumentError)
+        post :create
+        expect(response.status).to eq(422)
+      end
     end
 
     it 'registers the object with the registration service' do
