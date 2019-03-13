@@ -474,6 +474,7 @@ DEPENDENCIES
   simplecov
   spring
   spring-watcher-listen (~> 2.0.0)
+  uuidtools (~> 2.1.4)
   webmock
   workflow-archiver (~> 3.0)
 

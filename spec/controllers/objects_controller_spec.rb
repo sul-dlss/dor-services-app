@@ -25,7 +25,7 @@ RSpec.describe ObjectsController do
 
     context 'error handling' do
       it 'returns a 409 error with location header when an object already exists' do
-        allow(Dor::RegistrationService).to receive(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
+        allow(RegistrationService).to receive(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
         post :create
         expect(response.status).to eq(409)
         expect(response.headers['Location']).to match(/\/fedora\/objects\/druid:existing123obj/)
@@ -33,12 +33,12 @@ RSpec.describe ObjectsController do
     end
 
     it 'registers the object with the registration service' do
-      allow(Dor::RegistrationService).to receive(:create_from_request).and_return(pid: 'druid:xyz')
+      allow(RegistrationService).to receive(:create_from_request).and_return(pid: 'druid:xyz')
 
       post :create
 
       expect(response.body).to eq 'druid:xyz'
-      expect(Dor::RegistrationService).to have_received(:create_from_request)
+      expect(RegistrationService).to have_received(:create_from_request)
       expect(response.status).to eq(201)
       expect(response.location).to end_with '/fedora/objects/druid:xyz'
     end

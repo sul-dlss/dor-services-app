@@ -27,6 +27,7 @@ gem 'rest-client'
 # Pin net-http-persistent to avoid a problem with exhausting file handles when running under load
 gem 'net-http-persistent', '~> 2.9'
 gem 'marc'
+gem 'uuidtools', '~> 2.1.4'
 
 # DLSS/domain-specific dependencies
 gem 'dor-services', '~> 6.1'

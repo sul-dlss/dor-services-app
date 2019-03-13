@@ -7,6 +7,7 @@ require 'spec_helper'
 require 'rspec/matchers'
 require 'equivalent-xml/rspec_matchers'
 require 'rspec/rails'
+require 'support/foxml_helper'
 
 # Add additional requires below this line. Rails is not loaded until this point!
 
@@ -76,3 +77,16 @@ def setup_test_objects(druid, identityMetadata, rightsMetadata = '<xml/>')
   )
   @dor_item
 end
+
+def instantiate_fixture(druid, klass = ActiveFedora::Base)
+  mask = File.join(fixture_dir, "*_#{druid.sub(/:/, '_')}.xml")
+  fname = Dir[mask].first
+  return nil if fname.nil?
+
+  item_from_foxml(File.read(fname), klass)
+end
+
+def fixture_dir
+  @fixture_dir ||= File.join(File.dirname(__FILE__), 'fixtures')
+end
+

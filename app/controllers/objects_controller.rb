@@ -16,7 +16,7 @@ class ObjectsController < ApplicationController
   # Register new objects in DOR
   def create
     Rails.logger.info(params.inspect)
-    reg_response = Dor::RegistrationService.create_from_request(create_params)
+    reg_response = RegistrationService.create_from_request(create_params)
     Rails.logger.info(reg_response)
     pid = reg_response[:pid]
 

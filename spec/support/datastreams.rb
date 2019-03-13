@@ -1,4 +1,4 @@
-# rubocop:disable Metrics/MethodLength, Metrics/LineLength
+# rubocop:disable Metrics/LineLength
 def build_identity_metadata_1
   '<identityMetadata>
   <sourceId source="sul">36105216275185</sourceId>
@@ -257,4 +257,4 @@ def build_rights_metadata_3
   </rightsMetadata>
   '
 end
-# rubocop:enable Metrics/MethodLength, Metrics/LineLength
+# rubocop:enable Metrics/LineLength
