@@ -129,7 +129,7 @@ RSpec.describe Dor::ServiceItem do
     end
 
     it 'returns collection name and id from a valid identityMetadata' do
-      collection = Dor::Collection.new(:pid => 'druid:cc111cc1111')
+      collection = Dor::Collection.new(pid: 'druid:cc111cc1111')
       allow(collection).to receive_messages(label: 'Collection label', id: 'druid:cc111cc1111')
       allow(@dor_item).to receive(:collections).and_return([collection])
       expect(si.collection_name).to eq('Collection label')
@@ -158,7 +158,7 @@ RSpec.describe Dor::ServiceItem do
   describe '#content_type' do
     before do
       druid = 'bb111bb2222'
-      @d = Dor::Item.new(:pid => druid)
+      @d = Dor::Item.new(pid: druid)
       @content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_1)
       @content_metadata_ds = double(Dor::ContentMetadataDS)
       @identity_metadata_ng_xml = Nokogiri::XML(build_identity_metadata_1)
@@ -174,13 +174,13 @@ RSpec.describe Dor::ServiceItem do
 
     it 'returns the content_type_tag from dor-services if the value exists' do
       fake_tags = ['Tag 1', 'Tag 2', 'Process : Content Type : Process Value']
-      allow(@identity_metadata_ds).to receive_messages(:tags => fake_tags, :tag => fake_tags)
+      allow(@identity_metadata_ds).to receive_messages(tags: fake_tags, tag: fake_tags)
       expect(Dor::ServiceItem.new(@d).content_type).to eq('Process Value')
     end
 
     it 'returns the type from contentMetadata if content_type_tag from dor-services does not have a value' do
       fake_tags = ['Tag 1', 'Tag 2', 'Tag 3']
-      allow(@identity_metadata_ds).to receive_messages(:tags => fake_tags, :tag => fake_tags)
+      allow(@identity_metadata_ds).to receive_messages(tags: fake_tags, tag: fake_tags)
       expect(Dor::ServiceItem.new(@d).content_type).to eq('map')
     end
   end
@@ -188,7 +188,7 @@ RSpec.describe Dor::ServiceItem do
   describe '#thumb' do
     it 'returns thumb from a valid contentMetadata' do
       druid = 'bb111bb2222'
-      d = Dor::Item.new(:pid => druid)
+      d = Dor::Item.new(pid: druid)
       content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_1)
       content_metadata_ds = double(Dor::ContentMetadataDS)
       rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
@@ -203,7 +203,7 @@ RSpec.describe Dor::ServiceItem do
 
     it 'returns nil for contentMetadata without thumb' do
       druid = 'aa111aa2222'
-      d = Dor::Item.new(:pid => druid)
+      d = Dor::Item.new(pid: druid)
       content_metadata_ng_xml = Nokogiri::XML(build_content_metadata_2)
       content_metadata_ds = double(Dor::ContentMetadataDS)
       rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)

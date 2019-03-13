@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   scope '/v1' do
     get '/about' => 'ok_computer/ok_computer#show', defaults: { check: 'version' }
-    
+
     scope '/sdr/objects/:druid' do
       post 'cm-inv-diff', to: 'sdr#cm_inv_diff'
       get 'current_version', to: 'sdr#current_version'
@@ -11,7 +11,7 @@ Rails.application.routes.draw do
       get 'metadata/:dsname', to: 'sdr#ds_metadata', format: false, constraints: { dsname: /.+/ }
       get 'content/:filename', to: 'sdr#file_content', format: false, constraints: { filename: /.+/ }
     end
-    
+
     scope '/workflows/:wf_name' do
       get 'initial', to: 'workflows#initial'
     end
@@ -34,14 +34,14 @@ Rails.application.routes.draw do
         get 'contents', to: 'content#list'
         get 'contents/*path', to: 'content#read', format: false, as: :read_content
       end
-      
+
       resources :versions, only: [:create] do
         collection do
           get 'current'
           post 'current/close', action: 'close_current'
         end
       end
-      
+
       resources :workflows, only: [] do
         member do
           post 'archive'

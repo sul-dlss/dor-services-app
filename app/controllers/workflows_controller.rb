@@ -4,14 +4,14 @@ class WorkflowsController < ApplicationController
   def initial
     render content_type: 'application/xml', body: Dor::WorkflowObject.initial_workflow(params[:wf_name])
   end
-  
+
   def archive
     version = params.fetch(:ver_num) { @item.current_version }
     archiver.archive_one_datastream 'dor', params[:object_id], params[:id], version
-    
+
     render plain: "#{params[:id]} version #{version} archived"
   end
-  
+
   private
 
   def archiver

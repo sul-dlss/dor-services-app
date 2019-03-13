@@ -6,12 +6,13 @@ RSpec.describe WorkflowsController do
   end
 
   it "GET of /workflows/{wfname}/initial returns the an initial instance of the workflow's xml" do
-    expect(Dor::WorkflowObject).to receive(:initial_workflow).with('accessionWF') { <<-XML
+    expect(Dor::WorkflowObject).to receive(:initial_workflow).with('accessionWF') {
+      <<-XML
       <workflow id="accessionWF">
         <process name="start-accession" status="completed" attempts="1" lifecycle="submitted"/>
         <process name="content-metadata" status="waiting"/>
       </workflow>
-    XML
+      XML
     }
 
     get :initial, params: { wf_name: 'accessionWF' }

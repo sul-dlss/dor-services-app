@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe RegistrationService do
-
   before do
     @pid = 'druid:ab123cd4567'
     @mock_repo = instance_double(Rubydora::Repository)
