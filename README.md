@@ -33,10 +33,10 @@ http://www.rubydoc.info/github/kubo/ruby-oci8/file/docs/install-on-osx.md or fol
         cd /opt/oracle_instantclient/instantclient_11_2
         ln -s libclntsh.dylib.11.1 libclntsh.dylib
 
-4. Set the DYLD\_LIBRARY\_PATH environment variable to point to the recently created Instant Client
+4. Set the OCI\_DIR environment variable to point to the recently created Instant Client
 directory:
 
-   `export DYLD_LIBRARY_PATH=/opt/oracle_instantclient/instantclient_11_2`
+   `export OCI_DIR=/opt/oracle_instantclient/instantclient_11_2`
 
 You should now be ready to run `bundle install`. Note that DOR Services App requires Ruby 2.
 
