@@ -7,6 +7,7 @@ class ContentController < ApplicationController
   def read
     location = druid_tools.find(:content, params[:path])
     return render status: :not_found unless location
+
     send_file location
   end
 

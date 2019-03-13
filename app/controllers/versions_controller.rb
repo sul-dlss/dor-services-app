@@ -26,7 +26,7 @@ class VersionsController < ApplicationController
         errors: [
           {
             "status": '422',
-            "title":  'Unable to open version',
+            "title": 'Unable to open version',
             "detail": err.message
           }
         ]

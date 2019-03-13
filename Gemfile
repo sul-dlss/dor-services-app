@@ -45,8 +45,8 @@ group :test, :development do
   gem 'simplecov'
   gem 'equivalent-xml'
   gem 'rack-console'
-  gem 'rubocop', '~> 0.57.1'
-  gem 'rubocop-rspec', '~> 1.27.0'
+  gem 'rubocop', '~> 0.65.0'
+  gem 'rubocop-rspec', '~> 1.32.0'
   gem 'webmock'
 end
 

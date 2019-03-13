@@ -204,7 +204,7 @@ GEM
     i18n (1.5.3)
       concurrent-ruby (~> 1.0)
     iso-639 (0.2.8)
-    jaro_winkler (1.5.1)
+    jaro_winkler (1.5.2)
     json (2.1.0)
     link_header (0.0.8)
     listen (3.0.8)
@@ -265,10 +265,11 @@ GEM
       activesupport
       nokogiri (>= 1.4.2)
       solrizer (~> 3.3)
-    parallel (1.12.1)
-    parser (2.5.3.0)
+    parallel (1.14.0)
+    parser (2.6.0.0)
       ast (~> 2.4.0)
     powerpack (0.1.2)
+    psych (3.1.0)
     public_suffix (3.0.3)
     puma (3.12.0)
     rack (2.0.6)
@@ -354,16 +355,17 @@ GEM
       rspec-mocks (~> 3.8.0)
       rspec-support (~> 3.8.0)
     rspec-support (3.8.0)
-    rubocop (0.57.2)
+    rubocop (0.65.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
-      parser (>= 2.5)
+      parser (>= 2.5, != 2.5.1.1)
       powerpack (~> 0.1)
+      psych (>= 3.1.0)
       rainbow (>= 2.2.2, < 4.0)
       ruby-progressbar (~> 1.7)
-      unicode-display_width (~> 1.0, >= 1.0.1)
-    rubocop-rspec (1.27.0)
-      rubocop (>= 0.56.0)
+      unicode-display_width (~> 1.4.0)
+    rubocop-rspec (1.32.0)
+      rubocop (>= 0.60.0)
     ruby-cache (0.3.0)
     ruby-oci8 (2.2.6.1)
     ruby-progressbar (1.10.0)
@@ -425,7 +427,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.5)
-    unicode-display_width (1.4.0)
+    unicode-display_width (1.4.1)
     uuidtools (2.1.5)
     webmock (3.4.2)
       addressable (>= 2.3.6)
@@ -468,8 +470,8 @@ DEPENDENCIES
   rails-controller-testing
   rest-client
   rspec-rails
-  rubocop (~> 0.57.1)
-  rubocop-rspec (~> 1.27.0)
+  rubocop (~> 0.65.0)
+  rubocop-rspec (~> 1.32.0)
   ruby-oci8
   simplecov
   spring

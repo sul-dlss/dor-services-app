@@ -70,10 +70,10 @@ def setup_test_objects(druid, identityMetadata, rightsMetadata = '<xml/>')
   allow(@identityMetadataXML).to receive_messages(:ng_xml => Nokogiri::XML(identityMetadata))
   allow(@rightsMetadataXML).to receive_messages(:ng_xml => Nokogiri::XML(rightsMetadata))
   allow(@dor_item).to receive_messages(
-    :id=>druid, :released_for=>{},
+    :id => druid, :released_for=>{},
     :datastreams => { 'identityMetadata' => @identityMetadataXML, 'rightsMetadata' => @rightsMetadataXML },
     :identityMetadata => @identityMetadataXML, :rightsMetadata => @rightsMetadataXML,
-    :remove_druid_prefix=>druid.gsub('druid:','')
+    :remove_druid_prefix => druid.gsub('druid:','')
   )
   @dor_item
 end
