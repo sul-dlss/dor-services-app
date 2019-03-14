@@ -16,7 +16,11 @@ class ObjectsController < ApplicationController
   # Register new objects in DOR
   def create
     Rails.logger.info(params.inspect)
-    reg_response = RegistrationService.create_from_request(create_params)
+    begin
+      reg_response = RegistrationService.create_from_request(create_params)
+    rescue ArgumentError => e
+      return render status: 422, plain: e.message
+    end
     Rails.logger.info(reg_response)
     pid = reg_response[:pid]
 
