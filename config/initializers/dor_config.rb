@@ -110,10 +110,3 @@ Dor.configure do
     url Settings.purl_services_url
   end
 end
-
-Dor::WorkflowArchiver.config.configure do
-  db_login    Settings.WORKFLOW_ARCHIVER.USER
-  db_password Settings.WORKFLOW_ARCHIVER.PASSWORD
-  db_uri      Settings.WORKFLOW_ARCHIVER.URI
-  dor_service_uri Settings.DOR_SERVICES_URL
-end

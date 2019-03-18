@@ -92,11 +92,6 @@ GOOBI:
   MAX_SLEEP_SECONDS: 20
   BASE_SLEEP_SECONDS: 2
 
-WORKFLOW_ARCHIVER:
-  USER: 'user'
-  PASSWORD: 'password'
-  URI: '//localhost:1521/SID'
-
 CATALOG:
   SOLR_URL: "http://searchworks-solr.stanford.edu/solr/current/"
   SYMPHONY:

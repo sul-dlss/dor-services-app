@@ -82,8 +82,3 @@ To spin up a local rails console:
 To spin up a local development server:
 
   `bundle exec rails s`
-
-
-## TODO
-
-We could alter the gemspec of workflow archiver to be platform dependent: only install ruby-oci8 on Linux platforms
