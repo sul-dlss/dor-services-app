@@ -41,13 +41,6 @@ Rails.application.routes.draw do
           post 'current/close', action: 'close_current'
         end
       end
-
-      resources :workflows, only: [] do
-        member do
-          post 'archive'
-          post 'archive/:ver_num', action: :archive
-        end
-      end
     end
   end
 end

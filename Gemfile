@@ -32,11 +32,6 @@ gem 'uuidtools', '~> 2.1.4'
 # DLSS/domain-specific dependencies
 gem 'dor-services', '~> 6.1'
 gem 'lyber-core', '>= 2.0.2'
-gem 'workflow-archiver', '~> 3.0'
-
-group :production do
-  gem 'ruby-oci8'
-end
 
 group :test, :development do
   gem 'coveralls', '~> 0.8', require: false
