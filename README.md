@@ -11,35 +11,6 @@ This Ruby application provides a REST API for DOR Services. [View the REST API d
 
 DOR Services App is a Rails app.
 
-Because the workflows that the app provides access to use Oracle on the backend, the app requires
-the Oracle client gem, [ruby-oci8](https://github.com/kubo/ruby-oci8). In order to install
-ruby-oci8, you need to go through a couple of hoops to set up an Oracle client. The easiest approach
-is to install the Oracle Instant Client.   Read detailed instructions for installing with homebrew at
-http://www.rubydoc.info/github/kubo/ruby-oci8/file/docs/install-on-osx.md or follow directions below.
-
-1. Download the "Instant Client Package - Basic" and the "Instant Client Package - SDK" from the
-[Oracle download page](http://www.oracle.com/technetwork/topics/intel-macsoft-096467.html)
-(requires a free Oracle account).
-
-2. Unzip the downloaded zip files into a directory on your computer. For example (version numbers may be different):
-
-        mkdir /opt/oracle_instantclient/
-        cd /opt/oracle_instantclient/
-        unzip instantclient-basic-macos.x64-11.2.0.4.0.zip
-        unzip instantclient-sdk-macos.x64-11.2.0.4.0.zip
-
-3. Make a symlink to libclntsh.dylib:
-
-        cd /opt/oracle_instantclient/instantclient_11_2
-        ln -s libclntsh.dylib.11.1 libclntsh.dylib
-
-4. Set the OCI\_DIR environment variable to point to the recently created Instant Client
-directory:
-
-   `export OCI_DIR=/opt/oracle_instantclient/instantclient_11_2`
-
-You should now be ready to run `bundle install`. Note that DOR Services App requires Ruby 2.
-
 ## Running Tests
 
 To run the tests:
