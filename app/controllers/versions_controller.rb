@@ -2,7 +2,7 @@ class VersionsController < ApplicationController
   before_action :load_item
 
   def create
-    Dor::VersionService.open(@item, open_params)
+    VersionService.open(@item, open_params)
     render plain: @item.current_version
   rescue Dor::Exception => e
     render build_error(e)
@@ -13,7 +13,7 @@ class VersionsController < ApplicationController
   end
 
   def close_current
-    Dor::VersionService.close(@item, close_params)
+    VersionService.close(@item, close_params)
     render plain: "version #{@item.current_version} closed"
   end
 
