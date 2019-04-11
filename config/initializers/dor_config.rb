@@ -86,11 +86,6 @@ Dor.configure do
     local_export_home    Settings.CLEANUP.LOCAL_EXPORT_HOME
   end
 
-  dor do
-    service_user     Settings.DOR.SERVICE_USER
-    service_password Settings.DOR.SERVICE_PASSWORD
-  end
-
   release do
     symphony_path Settings.RELEASE.SYMPHONY_PATH
     write_marc_script Settings.RELEASE.WRITE_MARC_SCRIPT

@@ -1,7 +1,7 @@
 module AuthHelper
   def login
-    user = Dor::Config.dor.service_user
-    pass = Dor::Config.dor.service_password
+    user = Settings.DOR.SERVICE_USER
+    pass = Settings.DOR.SERVICE_PASSWORD
     request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(user, pass)
   end
 end
