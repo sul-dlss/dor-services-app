@@ -20,13 +20,13 @@ RSpec.describe VersionsController do
 
   describe '/versions/current/close' do
     it 'closes the current version when posted to' do
-      expect(Dor::VersionService).to receive(:close)
+      expect(VersionService).to receive(:close)
       post :close_current, params: { object_id: item.pid }, as: :json
       expect(response.body).to match(/version 1 closed/)
     end
 
-    it 'forwards optional params to the Dor::VersionService#close method' do
-      expect(Dor::VersionService).to receive(:close).with(item, description: 'some text', significance: :major)
+    it 'forwards optional params to the VersionService#close method' do
+      expect(VersionService).to receive(:close).with(item, description: 'some text', significance: :major)
       post :close_current, params: { object_id: item.pid }, body: %( {"description": "some text", "significance": "major"} ), as: :json
       expect(response.body).to match(/version 1 closed/)
     end
@@ -56,7 +56,7 @@ RSpec.describe VersionsController do
     context 'when opening a version succeedes' do
       before do
         # Do not test version service side effects in dor-services-app; that is dor-services' responsibility
-        allow(Dor::VersionService).to receive(:open)
+        allow(VersionService).to receive(:open)
       end
 
       it 'opens a new object version when posted to' do
@@ -65,9 +65,9 @@ RSpec.describe VersionsController do
         expect(response).to be_successful
       end
 
-      it 'forwards optional params to the Dor::VersionService#open method' do
+      it 'forwards optional params to the VersionService#open method' do
         post :create, params: { object_id: item.pid }, body: open_params.to_json, as: :json
-        expect(Dor::VersionService).to have_received(:open).with(item, open_params)
+        expect(VersionService).to have_received(:open).with(item, open_params)
         expect(response.body).to eq('2')
         expect(response).to be_successful
       end
@@ -76,7 +76,7 @@ RSpec.describe VersionsController do
     context 'when opening a version fails' do
       before do
         # Do not test version service side effects in dor-services-app; that is dor-services' responsibility
-        allow(Dor::VersionService).to receive(:open).and_raise(Dor::Exception, 'Object net yet accessioned')
+        allow(VersionService).to receive(:open).and_raise(Dor::Exception, 'Object net yet accessioned')
       end
 
       it 'returns an error' do
