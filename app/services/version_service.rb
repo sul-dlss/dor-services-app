@@ -27,7 +27,7 @@ class VersionService
     raise Dor::VersionAlreadyOpenError, 'Object already opened for versioning' if open?
     raise Dor::Exception, 'Object currently being accessioned' if Dor::Config.workflow.client.active_lifecycle('dor', work.pid, 'submitted')
 
-    sdr_version = Sdr::Client.current_version work.pid
+    sdr_version = SdrClient.current_version work.pid
 
     vmd_ds = work.versionMetadata
     vmd_ds.sync_then_increment_version sdr_version

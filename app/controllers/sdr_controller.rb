@@ -45,6 +45,6 @@ class SdrController < ApplicationController
   private
 
   def sdr_client
-    Dor::Config.sdr.rest_client
+    SdrClient.create
   end
 end

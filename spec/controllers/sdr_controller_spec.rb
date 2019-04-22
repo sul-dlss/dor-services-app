@@ -15,7 +15,7 @@ RSpec.describe SdrController do
     let(:mock_response) { '<currentVersion>1</currentVersion>' }
 
     it 'retrieves the current version from SDR' do
-      stub_request(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/current_version").to_return(body: mock_response, headers: { 'Content-Type' => 'application/xml' })
+      stub_request(:get, "#{Settings.SDR_URL}/objects/#{item.pid}/current_version").to_return(body: mock_response, headers: { 'Content-Type' => 'application/xml' })
 
       get :current_version, params: { druid: item.pid }
 
@@ -25,7 +25,7 @@ RSpec.describe SdrController do
     end
 
     it 'passes through error codes' do
-      stub_request(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/current_version").to_return(status: 404, body: '')
+      stub_request(:get, "#{Settings.SDR_URL}/objects/#{item.pid}/current_version").to_return(status: 404, body: '')
 
       get :current_version, params: { druid: item.pid }
 
@@ -40,8 +40,8 @@ RSpec.describe SdrController do
     let(:mock_response_txt) { 'some file content' }
 
     it 'passes through errors' do
-      stub_request(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/content/no_such_file?version=2").to_return(status: 404)
-      stub_request(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/content/unexpected_error?version=2").to_return(status: 500)
+      stub_request(:get, "#{Settings.SDR_URL}/objects/#{item.pid}/content/no_such_file?version=2").to_return(status: 404)
+      stub_request(:get, "#{Settings.SDR_URL}/objects/#{item.pid}/content/unexpected_error?version=2").to_return(status: 500)
 
       get :file_content, params: { druid: item.pid, filename: 'no_such_file', version: 2 }
       expect(response.status).to eq 404
@@ -55,7 +55,7 @@ RSpec.describe SdrController do
       let(:uri_encoded_filename) { URI.encode(filename_with_spaces) }
 
       it 'handles file names with characters that need URI encoding' do
-        stub_request(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/content/#{uri_encoded_filename}?version=#{item_version}")
+        stub_request(:get, "#{Settings.SDR_URL}/objects/#{item.pid}/content/#{uri_encoded_filename}?version=#{item_version}")
           .to_return(body: mock_response_txt, headers: { 'Content-Type' => content_type_txt })
 
         get :file_content, params: { druid: item.pid, filename: filename_with_spaces, version: item_version }
@@ -68,7 +68,7 @@ RSpec.describe SdrController do
 
     context 'text file type' do
       it 'retrieves the content for a version of a text file from SDR' do
-        stub_request(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/content/#{content_file_name_txt}?version=#{item_version}")
+        stub_request(:get, "#{Settings.SDR_URL}/objects/#{item.pid}/content/#{content_file_name_txt}?version=#{item_version}")
           .to_return(body: mock_response_txt, headers: { 'Content-Type' => content_type_txt })
 
         get :file_content, params: { druid: item.pid, filename: content_file_name_txt, version: item_version }
@@ -87,7 +87,7 @@ RSpec.describe SdrController do
       let(:mock_response_jpg) { URI.encode_www_form_component(File.binread(img_fixture_filename)) }
 
       it 'retrieves the content for a version of a text file from SDR' do
-        stub_request(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/content/#{content_file_name_jpg}?version=#{item_version}")
+        stub_request(:get, "#{Settings.SDR_URL}/objects/#{item.pid}/content/#{content_file_name_jpg}?version=#{item_version}")
           .to_return(body: mock_response_jpg, headers: { 'Content-Type' => content_type_jpg })
 
         get :file_content, params: { druid: item.pid, filename: content_file_name_jpg, version: item_version }
@@ -111,7 +111,7 @@ RSpec.describe SdrController do
 
     context 'with an explicit version' do
       it 'passes the version to SDR' do
-        stub_request(:post, "#{Dor::Config.sdr.url}/objects/#{item.pid}/cm-inv-diff?subset=all&version=5")
+        stub_request(:post, "#{Settings.SDR_URL}/objects/#{item.pid}/cm-inv-diff?subset=all&version=5")
           .to_return(body: mock_response, headers: { 'Content-Type' => 'application/xml' })
 
         post :cm_inv_diff, params: { druid: item.pid, subset: 'all', version: 5 }
@@ -122,7 +122,7 @@ RSpec.describe SdrController do
     end
 
     it 'retrieves the diff from SDR' do
-      stub_request(:post, "#{Dor::Config.sdr.url}/objects/#{item.pid}/cm-inv-diff?subset=all")
+      stub_request(:post, "#{Settings.SDR_URL}/objects/#{item.pid}/cm-inv-diff?subset=all")
         .to_return(body: mock_response, headers: { 'Content-Type' => 'application/xml' })
 
       post :cm_inv_diff, params: { druid: item.pid, subset: 'all' }
@@ -134,7 +134,7 @@ RSpec.describe SdrController do
 
   describe 'signatureCatalog' do
     it 'retrieves the catalog from SDR' do
-      stub_request(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/manifest/signatureCatalog.xml")
+      stub_request(:get, "#{Settings.SDR_URL}/objects/#{item.pid}/manifest/signatureCatalog.xml")
         .to_return(body: '<catalog />', headers: { 'Content-Type' => 'application/xml' })
 
       get :ds_manifest, params: { druid: item.pid, dsname: 'signatureCatalog.xml' }
@@ -145,7 +145,7 @@ RSpec.describe SdrController do
     end
 
     it 'passes through errors' do
-      stub_request(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/manifest/signatureCatalog.xml")
+      stub_request(:get, "#{Settings.SDR_URL}/objects/#{item.pid}/manifest/signatureCatalog.xml")
         .to_return(status: 428)
 
       get :ds_manifest, params: { druid: item.pid, dsname: 'signatureCatalog.xml' }
@@ -156,7 +156,7 @@ RSpec.describe SdrController do
 
   describe 'metadata services' do
     it 'retrieves the datastream from SDR' do
-      stub_request(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/metadata/whatever")
+      stub_request(:get, "#{Settings.SDR_URL}/objects/#{item.pid}/metadata/whatever")
         .to_return(body: 'content', headers: { 'Content-Type' => 'application/xml' })
 
       get :ds_metadata, params: { druid: item.pid, dsname: 'whatever' }
@@ -167,7 +167,7 @@ RSpec.describe SdrController do
     end
 
     it 'passes through errors' do
-      stub_request(:get, "#{Dor::Config.sdr.url}/objects/#{item.pid}/metadata/whatever")
+      stub_request(:get, "#{Settings.SDR_URL}/objects/#{item.pid}/metadata/whatever")
         .to_return(status: 428)
 
       get :ds_metadata, params: { druid: item.pid, dsname: 'whatever' }
