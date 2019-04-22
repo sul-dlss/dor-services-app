@@ -31,7 +31,7 @@ RSpec.describe VersionService do
         allow(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(true)
         allow(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened').and_return(nil)
         allow(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted').and_return(nil)
-        allow(Sdr::Client).to receive(:current_version).and_return(1)
+        allow(SdrClient).to receive(:current_version).and_return(1)
         allow(Dor::CreateWorkflowService).to receive(:create_workflow).with(obj, name: 'versioningWF')
         allow(obj).to receive(:new_record?).and_return(false)
         allow(vmd_ds).to receive(:save)
@@ -41,7 +41,7 @@ RSpec.describe VersionService do
         expect(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(true)
         expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened').and_return(nil)
         expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted').and_return(nil)
-        expect(Sdr::Client).to receive(:current_version).and_return(1)
+        expect(SdrClient).to receive(:current_version).and_return(1)
         expect(Dor::CreateWorkflowService).to receive(:create_workflow).with(obj, name: 'versioningWF')
         expect(obj).to receive(:new_record?).and_return(false)
         expect(vmd_ds).to receive(:save)
@@ -100,7 +100,7 @@ RSpec.describe VersionService do
         expect(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(true)
         expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened').and_return(nil)
         expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted').and_return(nil)
-        expect(Sdr::Client).to receive(:current_version).and_return(3)
+        expect(SdrClient).to receive(:current_version).and_return(3)
         expect { open }.to raise_error(Dor::Exception, 'Cannot sync to a version greater than current: 1, requested 3')
       end
     end

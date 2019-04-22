@@ -76,10 +76,6 @@ Dor.configure do
     log_rotation_interval Settings.INDEXER.LOG_ROTATION_INTERVAL
   end
 
-  sdr do
-    url Settings.SDR_URL
-  end
-
   cleanup do
     local_workspace_root Settings.CLEANUP.LOCAL_WORKSPACE_ROOT
     local_assembly_root  Settings.CLEANUP.LOCAL_ASSEMBLY_ROOT
