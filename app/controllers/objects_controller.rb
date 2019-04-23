@@ -41,7 +41,7 @@ class ObjectsController < ApplicationController
   end
 
   def publish
-    @item.publish_metadata
+    Dor::PublishMetadataService.publish(@item)
     head :created
   end
 
