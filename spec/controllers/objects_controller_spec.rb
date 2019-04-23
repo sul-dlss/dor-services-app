@@ -5,7 +5,7 @@ RSpec.describe ObjectsController do
     login
   end
 
-  let(:item) { VersionableItem.new.tap { |x| x.pid = 'druid:aa123bb4567' } }
+  let(:item) { Dor::Item.new(pid: 'druid:aa123bb4567') }
 
   before do
     allow(Dor).to receive(:find).and_return(item)
@@ -119,14 +119,14 @@ RSpec.describe ObjectsController do
 
   describe '/release_tags' do
     it 'adds a release tag when posted to with false' do
-      expect(ReleaseTags).to receive(:create).with(VersionableItem, release: false, to: 'searchworks', who: 'carrickr', what: 'self')
+      expect(ReleaseTags).to receive(:create).with(Dor::Item, release: false, to: 'searchworks', who: 'carrickr', what: 'self')
       expect(item).to receive(:save)
       post :release_tags, params: { id: item.pid }, body: %( {"to":"searchworks","who":"carrickr","what":"self","release":false} )
       expect(response.status).to eq(201)
     end
 
     it 'adds a release tag when posted to with true' do
-      expect(ReleaseTags).to receive(:create).with(VersionableItem, release: true, to: 'searchworks', who: 'carrickr', what: 'self')
+      expect(ReleaseTags).to receive(:create).with(Dor::Item, release: true, to: 'searchworks', who: 'carrickr', what: 'self')
       expect(item).to receive(:save)
       post :release_tags, params: { id: item.pid }, body: %( {"to":"searchworks","who":"carrickr","what":"self","release":true} )
       expect(response.status).to eq(201)

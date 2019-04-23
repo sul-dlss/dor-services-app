@@ -23,7 +23,7 @@ RSpec.describe WorkspaceService do
 
   describe '.create' do
     let(:druid_path) { File.join(temp_workspace, 'aa', '123', 'bb', '7890', 'aa123bb7890') }
-    let(:work) { VersionableItem.new.tap { |x| x.pid = 'druid:aa123bb7890' } }
+    let(:work) { Dor::Item.new(pid: 'druid:aa123bb7890') }
 
     before do
       FileUtils.rm_rf(File.join(temp_workspace, 'aa'))

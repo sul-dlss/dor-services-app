@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe SdrController do
-  let(:item) { VersionableItem.new.tap { |x| x.pid = 'druid:aa123bb4567' } }
+  let(:item) { Dor::Item.new(pid: 'druid:aa123bb4567') }
 
   before do
     allow(Dor).to receive(:find).and_return(item)
