@@ -3,15 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe VersionService do
-  class VersionableItem < ActiveFedora::Base
-    include Dor::Versionable
-    include Dor::Eventable
-  end
-
-  let(:druid) { 'ab12cd3456' }
+  let(:druid) { 'druid:ab12cd3456' }
 
   let(:obj) do
-    VersionableItem.new
+    Dor::Item.new(pid: druid)
   end
 
   let(:vmd_ds) { obj.datastreams['versionMetadata'] }
