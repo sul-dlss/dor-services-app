@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Creates workspaces.  This replaces https://github.com/sul-dlss/dor-services/blob/master/lib/dor/models/concerns/assembleable.rb
 class WorkspaceService
   # @param [Dor::Item] work the work to create the workspace for

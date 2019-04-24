@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 ENV['RACK_ENV'] = ARGV.first unless ARGV.first.nil?
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require 'irb'

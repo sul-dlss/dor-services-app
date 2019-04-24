@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # A client for talking to sdr-services-app
 class SdrClient
   def self.create

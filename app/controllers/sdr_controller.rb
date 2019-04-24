@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SdrController < ApplicationController
   def cm_inv_diff
     unless %w(all shelve preserve publish).include?(params[:subset].to_s)

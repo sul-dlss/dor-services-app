@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # API to retrieve file listings and file content from the DOR workspace
 class ContentController < ApplicationController
   rescue_from ActionController::MissingFile do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # MARC resource model for retrieving and transforming MARC records
 class MarcxmlResource
   def self.find_by(catkey: nil, barcode: nil)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Dor
   class ServiceItem
     # @return [String] value with SIRSI/Symphony numeric catkey in it for specified object, or nil if none exists
@@ -41,7 +43,7 @@ module Dor
     def object_type
       @object_type ||= begin
         node = @druid_obj.datastreams['identityMetadata'].ng_xml.at_xpath('//identityMetadata/objectType')
-        node.content unless node.nil?
+        node&.content
       end
     end
 
@@ -51,7 +53,7 @@ module Dor
     def barcode
       @barcode ||= begin
         node = @druid_obj.datastreams['identityMetadata'].ng_xml.at_xpath("//identityMetadata/otherId[@name='barcode']")
-        node.content unless node.nil?
+        node&.content
       end
     end
 
