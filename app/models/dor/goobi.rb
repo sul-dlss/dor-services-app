@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Dor
   # This class passes data to the Goobi server using a custom XML message that was developed by Intranda
   class Goobi < ServiceItem

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'open3'
 
 module Dor
@@ -69,11 +71,11 @@ module Dor
 
     def new_856_record(ckey)
       new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}#{object_type.prepend('|x')}"
-      new856 << "|xbarcode:#{barcode}" unless barcode.nil?
-      new856 << "|xfile:#{thumb}" unless thumb.nil?
-      new856 << get_x2_collection_info unless get_x2_collection_info.nil?
-      new856 << get_x2_constituent_info unless get_x2_constituent_info.nil?
-      new856 << get_x2_part_info unless get_x2_part_info.nil?
+      new856 += "|xbarcode:#{barcode}" unless barcode.nil?
+      new856 += "|xfile:#{thumb}" unless thumb.nil?
+      new856 += get_x2_collection_info unless get_x2_collection_info.nil?
+      new856 += get_x2_constituent_info unless get_x2_constituent_info.nil?
+      new856 += get_x2_part_info unless get_x2_part_info.nil?
       new856
     end
 
@@ -125,7 +127,7 @@ module Dor
 
       unless collections.empty?
         collections.each do |coll|
-          coll_info << "|xcollection:#{coll.id.sub('druid:', '')}:#{Dor::ServiceItem.get_ckey(coll)}:#{coll.label}"
+          coll_info += "|xcollection:#{coll.id.sub('druid:', '')}:#{Dor::ServiceItem.get_ckey(coll)}:#{coll.label}"
         end
       end
 
@@ -156,8 +158,8 @@ module Dor
       part_sort = @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//*[@type="date/sequential designation"]').first
 
       str = ''
-      str << "|xlabel:#{part_label}" unless part_label.empty?
-      str << "|xsort:#{part_sort.text}" if part_sort
+      str += "|xlabel:#{part_label}" unless part_label.empty?
+      str += "|xsort:#{part_sort.text}" if part_sort
 
       str
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Reader from symphony's JSON API to a MARC record
 class SymphonyReader
   attr_reader :catkey

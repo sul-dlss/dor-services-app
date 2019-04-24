@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 set :application, 'dor_services'
 set :repo_url, 'https://github.com/sul-dlss/dor-services-app.git'
 

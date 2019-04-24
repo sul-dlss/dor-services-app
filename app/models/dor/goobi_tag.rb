@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Dor
   # This represents a tag from Argo that we want to pass to Goobi.
   # So the tag from Argo:

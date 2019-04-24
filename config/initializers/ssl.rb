@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # By default Ruby 2.5 tries to use SSLv23.
 # This sometimes causes this error:
 #   OpenSSL::SSL::SSLError: SSL_connect returned=1 errno=0 state=SSLv2/v3 read server hello A

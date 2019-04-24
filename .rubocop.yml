@@ -3,7 +3,7 @@ inherit_from: .rubocop_todo.yml
 require: rubocop-rspec
 
 AllCops:
-  TargetRubyVersion: 2.2
+  TargetRubyVersion: 2.5
   Exclude:
     - db/migrate/**
     - db/schema.rb
@@ -40,7 +40,7 @@ Metrics/LineLength:
 
 Metrics/BlockLength:
   Enabled: false
-  
+
 RSpec/ExpectActual:
   Exclude:
     - 'spec/routing/**'

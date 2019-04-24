@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ObjectsController < ApplicationController
   before_action :load_item, except: [:create]
 

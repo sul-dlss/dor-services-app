@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MarcxmlController < ApplicationController #:nodoc:
   before_action :set_marcxml_resource
 
