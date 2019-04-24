@@ -16,8 +16,7 @@ class PublicXmlService
     pub.add_child(public_identity_metadata.root) # add in modified identityMetadata datastream
     pub.add_child(public_content_metadata.root) if public_content_metadata.xpath('//resource').any?
     pub.add_child(public_rights_metadata.root)
-
-    pub.add_child(public_relationships.root) unless public_relationships.nil? # TODO: Should never be nil in practice; working around an ActiveFedora quirk for testing
+    pub.add_child(public_relationships.root)
     pub.add_child(DublinCoreService.new(object).ng_xml.root)
     pub.add_child(Dor::PublicDescMetadataService.new(object).ng_xml.root)
     pub.add_child(release_xml.root) unless release_xml.xpath('//release').children.empty? # If there are no release_tags, this prevents an empty <releaseData/> from being added
@@ -48,7 +47,7 @@ class PublicXmlService
   end
 
   def public_relationships
-    @public_relationships ||= object.public_relationships.clone
+    PublishedRelationshipsFilter.new(object).xml
   end
 
   def public_rights_metadata
