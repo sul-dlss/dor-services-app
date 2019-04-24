@@ -32,19 +32,25 @@ class PublicXmlService
     new_pub.to_xml
   end
 
+  private
+
   # Generate XML structure for inclusion to Purl
   # @return [String] The XML release node as a string, with ReleaseDigest as the root document
   def release_xml
     @release_xml ||= begin
       builder = Nokogiri::XML::Builder.new do |xml|
         xml.releaseData do
-          object.released_for.each do |project, released_value|
+          released_for.each do |project, released_value|
             xml.release(released_value['release'], to: project)
           end
         end
       end
       Nokogiri::XML(builder.to_xml)
     end
+  end
+
+  def released_for
+    Dor::ReleaseTagService.for(object).released_for(skip_live_purl: false)
   end
 
   def public_relationships

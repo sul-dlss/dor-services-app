@@ -66,13 +66,13 @@ def clean_workspace
 end
 
 def setup_test_objects(druid, identityMetadata, rightsMetadata = '<xml/>')
-  @dor_item = double(Dor::Item)
+  @dor_item = instance_double(Dor::Item)
   @identityMetadataXML = Dor::IdentityMetadataDS.new
   @rightsMetadataXML = Dor::RightsMetadataDS.new
   allow(@identityMetadataXML).to receive_messages(ng_xml: Nokogiri::XML(identityMetadata))
   allow(@rightsMetadataXML).to receive_messages(ng_xml: Nokogiri::XML(rightsMetadata))
   allow(@dor_item).to receive_messages(
-    id: druid, released_for: {},
+    id: druid,
     datastreams: { 'identityMetadata' => @identityMetadataXML, 'rightsMetadata' => @rightsMetadataXML },
     identityMetadata: @identityMetadataXML, rightsMetadata: @rightsMetadataXML,
     remove_druid_prefix: druid.gsub('druid:', '')

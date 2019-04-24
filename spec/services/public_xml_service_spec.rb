@@ -70,8 +70,10 @@ RSpec.describe PublicXmlService do
     let(:ng_xml) { Nokogiri::XML(xml) }
 
     context 'when there are no release tags' do
+      let(:release_service) { instance_double(Dor::ReleaseTagService, released_for: {}) }
+
       before do
-        expect(item).to receive(:released_for).and_return({})
+        allow(Dor::ReleaseTagService).to receive(:for).and_return(release_service)
       end
 
       it 'does not include a releaseData element and any info in identityMetadata' do
@@ -181,10 +183,17 @@ RSpec.describe PublicXmlService do
         expect(releases.map { |r| r['to'] }).to eq %w[Searchworks Some_special_place]
       end
 
-      it 'include a releaseData element when there is content inside it, but does not include this release data in identityMetadata' do
-        allow(item).to receive(:released_for).and_return('' => { 'release' => 'foo' })
-        expect(ng_xml.at_xpath('/publicObject/releaseData/release').inner_text).to eq 'foo'
-        expect(ng_xml.at_xpath('/publicObject/identityMetadata/release')).to be_nil
+      context 'when there is content inside it' do
+        let(:release_service) { instance_double(Dor::ReleaseTagService, released_for: { '' => { 'release' => 'foo' } }) }
+
+        before do
+          allow(Dor::ReleaseTagService).to receive(:for).and_return(release_service)
+        end
+
+        it 'include a releaseData element, but does not include this release data in identityMetadata' do
+          expect(ng_xml.at_xpath('/publicObject/releaseData/release').inner_text).to eq 'foo'
+          expect(ng_xml.at_xpath('/publicObject/identityMetadata/release')).to be_nil
+        end
       end
     end
 
