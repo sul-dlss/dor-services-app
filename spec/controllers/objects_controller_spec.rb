@@ -93,7 +93,7 @@ RSpec.describe ObjectsController do
 
   describe '/publish' do
     it 'calls publish metadata' do
-      expect(Dor::PublishMetadataService).to receive(:publish).with(item)
+      expect(PublishMetadataService).to receive(:publish).with(item)
       post :publish, params: { id: item.pid }
       expect(response.status).to eq(201)
     end

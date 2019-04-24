@@ -35,7 +35,7 @@ CONTENT:
 # Stacks
 STACKS:
   DOCUMENT_CACHE_STORAGE_ROOT: '/purl/document_cache'
-  DOCUMENT_CACHE_HOST: 'cache.example.com'
+  DOCUMENT_CACHE_HOST: 'purl-test.stanford.edu'
   DOCUMENT_CACHE_USER: 'user'
   LOCAL_WORKSPACE_ROOT: '/dor/workspace'
   STORAGE_ROOT: '/stacks'

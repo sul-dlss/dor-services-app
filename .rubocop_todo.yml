@@ -29,7 +29,7 @@ Lint/UriEscapeUnescape:
     - 'app/controllers/sdr_controller.rb'
     - 'spec/controllers/sdr_controller_spec.rb'
 
-# Offense count: 15
+# Offense count: 19
 Metrics/AbcSize:
   Max: 119
 
@@ -42,7 +42,7 @@ Metrics/ClassLength:
 Metrics/CyclomaticComplexity:
   Max: 24
 
-# Offense count: 22
+# Offense count: 25
 # Configuration parameters: CountComments, ExcludedMethods.
 Metrics/MethodLength:
   Max: 58
@@ -78,12 +78,19 @@ Naming/VariableName:
   Exclude:
     - 'spec/rails_helper.rb'
 
-# Offense count: 11
+# Offense count: 26
 RSpec/AnyInstance:
   Exclude:
     - 'spec/controllers/objects_controller_spec.rb'
     - 'spec/dor/update_marc_record_service_spec.rb'
+    - 'spec/services/public_xml_service_spec.rb'
+    - 'spec/services/publish_metadata_service_spec.rb'
     - 'spec/services/registration_service_spec.rb'
+
+# Offense count: 21
+RSpec/Be:
+  Exclude:
+    - 'spec/services/public_xml_service_spec.rb'
 
 # Offense count: 1
 RSpec/BeforeAfterAll:
@@ -93,7 +100,7 @@ RSpec/BeforeAfterAll:
     - 'spec/support/**/*.rb'
     - 'spec/dor/update_marc_record_service_spec.rb'
 
-# Offense count: 20
+# Offense count: 22
 # Configuration parameters: Prefixes.
 # Prefixes: when, with, without
 RSpec/ContextWording:
@@ -101,6 +108,8 @@ RSpec/ContextWording:
     - 'spec/controllers/objects_controller_spec.rb'
     - 'spec/controllers/sdr_controller_spec.rb'
     - 'spec/dor/update_marc_record_service_spec.rb'
+    - 'spec/services/public_xml_service_spec.rb'
+    - 'spec/services/publish_metadata_service_spec.rb'
     - 'spec/services/registration_service_spec.rb'
     - 'spec/services/version_service_spec.rb'
 
@@ -134,7 +143,7 @@ RSpec/EmptyLineAfterSubject:
   Exclude:
     - 'spec/models/symphony_reader_spec.rb'
 
-# Offense count: 34
+# Offense count: 39
 # Configuration parameters: Max.
 RSpec/ExampleLength:
   Exclude:
@@ -144,14 +153,19 @@ RSpec/ExampleLength:
     - 'spec/dor/goobi_spec.rb'
     - 'spec/dor/service_item_spec.rb'
     - 'spec/dor/update_marc_record_service_spec.rb'
+    - 'spec/services/dublin_core_service_spec.rb'
+    - 'spec/services/public_xml_service_spec.rb'
+    - 'spec/services/publish_metadata_service_spec.rb'
     - 'spec/services/registration_service_spec.rb'
     - 'spec/services/release_tags_spec.rb'
     - 'spec/services/version_service_spec.rb'
 
-# Offense count: 4
+# Offense count: 19
 RSpec/ExpectInHook:
   Exclude:
     - 'spec/dor/update_marc_record_service_spec.rb'
+    - 'spec/services/public_xml_service_spec.rb'
+    - 'spec/services/publish_metadata_service_spec.rb'
     - 'spec/services/registration_service_spec.rb'
 
 # Offense count: 146
@@ -163,7 +177,7 @@ RSpec/InstanceVariable:
     - 'spec/dor/update_marc_record_service_spec.rb'
     - 'spec/services/registration_service_spec.rb'
 
-# Offense count: 54
+# Offense count: 56
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: have_received, receive
 RSpec/MessageSpies:
@@ -173,15 +187,17 @@ RSpec/MessageSpies:
     - 'spec/controllers/workflows_controller_spec.rb'
     - 'spec/dor/goobi_spec.rb'
     - 'spec/dor/update_marc_record_service_spec.rb'
+    - 'spec/services/public_xml_service_spec.rb'
+    - 'spec/services/publish_metadata_service_spec.rb'
     - 'spec/services/registration_service_spec.rb'
     - 'spec/services/version_service_spec.rb'
 
-# Offense count: 65
+# Offense count: 75
 # Configuration parameters: AggregateFailuresByDefault.
 RSpec/MultipleExpectations:
   Max: 8
 
-# Offense count: 9
+# Offense count: 17
 RSpec/NestedGroups:
   Max: 5
 
@@ -201,12 +217,18 @@ RSpec/ReturnFromStub:
   Exclude:
     - 'spec/controllers/workflows_controller_spec.rb'
 
-# Offense count: 6
+# Offense count: 1
+RSpec/ScatteredLet:
+  Exclude:
+    - 'spec/services/public_xml_service_spec.rb'
+
+# Offense count: 8
 RSpec/ScatteredSetup:
   Exclude:
     - 'spec/controllers/objects_controller_spec.rb'
     - 'spec/controllers/sdr_controller_spec.rb'
     - 'spec/controllers/versions_controller_spec.rb'
+    - 'spec/services/publish_metadata_service_spec.rb'
 
 # Offense count: 5
 RSpec/SubjectStub:
@@ -252,7 +274,7 @@ Style/ConditionalAssignment:
   Exclude:
     - 'spec/support/foxml_helper.rb'
 
-# Offense count: 12
+# Offense count: 14
 Style/Documentation:
   Exclude:
     - 'spec/**/*'
@@ -265,6 +287,8 @@ Style/Documentation:
     - 'app/models/dor/registration_response.rb'
     - 'app/models/dor/service_item.rb'
     - 'app/models/dor/update_marc_record_service.rb'
+    - 'app/services/dublin_core_service.rb'
+    - 'app/services/public_xml_service.rb'
     - 'app/services/registration_service.rb'
     - 'config/application.rb'
     - 'config/initializers/okcomputer.rb'
