@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+begin
+  load File.expand_path('spring', __dir__)
+rescue LoadError => e
+  raise unless e.message.include?('spring')
+end
+require_relative '../config/boot'
+
+IO.readlines('/home/lyberadmin/repub_druids.txt').each do |druid|
+  puts "Republishing #{druid}"
+  object = Dor.find(druid)
+  PublishMetadataService.publish(object)
+rescue StandardError => e
+  puts "ERR Problem with #{druid}\n" << e.inspect << "\n" << e.backtrace.join("\n")
+end
+puts 'Done!'
