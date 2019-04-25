@@ -6,6 +6,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
   subject(:umrs) { Dor::UpdateMarcRecordService.new dor_item }
 
   let(:dor_item) { @dor_item }
+  let(:release_service) { instance_double(Dor::ReleaseTagService, released_for: {}) }
+
+  before do
+    allow(Dor::ReleaseTagService).to receive(:for).and_return(release_service)
+  end
 
   before :all do
     Dor::Config.suri = {}
@@ -16,9 +21,28 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   context 'for a druid without a catkey' do
+    let(:build_identity_metadata_without_ckey) do
+      <<~XML
+        <identityMetadata>
+          <sourceId source="sul">36105216275185</sourceId>
+          <objectId>druid:aa222cc3333</objectId>
+          <objectCreator>DOR</objectCreator>
+          <objectLabel>A  new map of Africa</objectLabel>
+          <objectType>item</objectType>
+          <displayType>image</displayType>
+          <adminPolicy>druid:dd051ys2703</adminPolicy>
+          <otherId name="uuid">ff3ce224-9ffb-11e3-aaf2-0050569b3c3c</otherId>
+          <tag>Process : Content Type : Map</tag>
+          <tag>Project : Batchelor Maps : Batch 1</tag>
+          <tag>LAB : MAPS</tag>
+          <tag>Registered By : dfuzzell</tag>
+          <tag>Remediated By : 4.15.4</tag>
+        </identityMetadata>
+      XML
+    end
+
     it 'does nothing' do
-      druid = 'druid:aa222cc3333'
-      setup_test_objects(druid, build_identity_metadata_without_ckey)
+      setup_test_objects('druid:aa222cc3333', build_identity_metadata_without_ckey)
       expect(umrs).to receive(:ckey).and_return(nil)
       expect(umrs).not_to receive(:push_symphony_records)
       umrs.update
@@ -50,17 +74,13 @@ RSpec.describe Dor::UpdateMarcRecordService do
     let(:collection) { Dor::Collection.new }
     let(:constituent) { Dor::Item.new }
 
-    let(:rels_ext_xml) { double(String) }
-    let(:identity_metadata_xml) { double(String) }
-    let(:content_metadata_xml) { double(String) }
-    let(:desc_metadata_xml) { double(String) }
-    let(:rights_metadata_xml) { double(String) }
+    let(:rels_ext_xml) { instance_double(ActiveFedora::RelsExtDatastream) }
+    let(:identity_metadata_xml) { instance_double(Dor::IdentityMetadataDS) }
+    let(:content_metadata_xml) { instance_double(Dor::ContentMetadataDS) }
+    let(:desc_metadata_xml) { instance_double(Dor::DescMetadataDS) }
+    let(:rights_metadata_xml) { instance_double(Dor::RightsMetadataDS) }
     let(:release_data) { { 'Searchworks' => { 'release' => true } } }
-
-    before do
-      allow(item).to receive(:released_for).and_return(release_data)
-      allow(collection).to receive(:released_for).and_return(release_data)
-    end
+    let(:release_service) { instance_double(Dor::ReleaseTagService, released_for: release_data) }
 
     it 'generates an empty array for a druid object without catkey or previous catkeys' do
       rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
@@ -100,10 +120,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
       allow(desc_metadata_xml).to receive_messages(
         ng_xml: Nokogiri::XML(build_desc_metadata_1)
-      )
-
-      allow(rels_ext_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_rels_ext)
       )
 
       rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
@@ -148,10 +164,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
         ng_xml: Nokogiri::XML(build_desc_metadata_1)
       )
 
-      allow(rels_ext_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_rels_ext)
-      )
-
       rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_2)
       allow(rights_metadata_xml).to receive_messages(
         ng_xml: rights_metadata_ng_xml,
@@ -190,10 +202,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
       allow(desc_metadata_xml).to receive_messages(
         ng_xml: Nokogiri::XML(build_desc_metadata_1)
-      )
-
-      allow(rels_ext_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_rels_ext)
       )
 
       rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
@@ -236,10 +244,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
         ng_xml: Nokogiri::XML(build_desc_metadata_1)
       )
 
-      allow(rels_ext_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_rels_ext)
-      )
-
       rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
       allow(rights_metadata_xml).to receive_messages(
         ng_xml: rights_metadata_ng_xml,
@@ -278,7 +282,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
         ng_xml: Nokogiri::XML(build_identity_metadata_2)
       )
 
-      allow(identity_metadata_xml).to receive(:tag).and_return('Project : Batchelor Maps : Batch 1')
       allow(collection).to receive_messages(
         label: 'Collection label',
         id: 'aa111aa1111',
@@ -642,47 +645,69 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   describe 'Released to Searchworks' do
-    it 'returns true if release_data tag has release to=Searchworks and value is true' do
-      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
-      release_data = { 'Searchworks' => { 'release' => true } }
-      allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(umrs.released_to_searchworks?).to be true
+    let(:release_service) { instance_double(Dor::ReleaseTagService, released_for: release_data) }
+
+    context 'when release_data tag has release to=Searchworks and value is true' do
+      let(:release_data) { { 'Searchworks' => { 'release' => true } } }
+
+      it 'returns true' do
+        setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
+        expect(umrs.released_to_searchworks?).to be true
+      end
     end
-    it 'returns true if release_data tag has release to=searchworks (all lowercase) and value is true' do
-      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
-      release_data = { 'searchworks' => { 'release' => true } }
-      allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(umrs.released_to_searchworks?).to be true
+
+    context 'when release_data tag has release to=searchworks (all lowercase) and value is true' do
+      let(:release_data) { { 'searchworks' => { 'release' => true } } }
+
+      it 'returns true' do
+        setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
+        expect(umrs.released_to_searchworks?).to be true
+      end
     end
-    it 'returns true if release_data tag has release to=SearchWorks (camcelcase) and value is true' do
-      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
-      release_data = { 'SearchWorks' => { 'release' => true } }
-      allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(umrs.released_to_searchworks?).to be true
+
+    context 'when release_data tag has release to=SearchWorks (camcelcase) and value is true' do
+      let(:release_data) { { 'SearchWorks' => { 'release' => true } } }
+
+      it 'returns true' do
+        setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
+        expect(umrs.released_to_searchworks?).to be true
+      end
     end
-    it 'returns false if release_data tag has release to=Searchworks and value is false' do
-      setup_test_objects('druid:aa111aa1111', build_identity_metadata_2)
-      release_data = { 'Searchworks' => { 'release' => false } }
-      allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(umrs.released_to_searchworks?).to be false
+
+    context 'when release_data tag has release to=Searchworks and value is false' do
+      let(:release_data) { { 'Searchworks' => { 'release' => false } } }
+
+      it 'returns false' do
+        setup_test_objects('druid:aa111aa1111', build_identity_metadata_2)
+        expect(umrs.released_to_searchworks?).to be false
+      end
     end
-    it 'returns false if release_data tag has release to=Searchworks but no specified release value' do
-      setup_test_objects('druid:aa111aa1111', build_identity_metadata_2)
-      release_data = { 'Searchworks' => { 'bogus' => 'yup' } }
-      allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(umrs.released_to_searchworks?).to be false
+
+    context 'when release_data tag has release to=Searchworks but no specified release value' do
+      let(:release_data) { { 'Searchworks' => { 'bogus' => 'yup' } } }
+
+      it 'returns false' do
+        setup_test_objects('druid:aa111aa1111', build_identity_metadata_2)
+        expect(umrs.released_to_searchworks?).to be false
+      end
     end
-    it 'returns false if there are no release tags at all' do
-      setup_test_objects('druid:aa111aa1111', build_identity_metadata_2)
-      release_data = {}
-      allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(umrs.released_to_searchworks?).to be false
+
+    context 'when there are no release tags at all' do
+      let(:release_data) { {} }
+
+      it 'returns false' do
+        setup_test_objects('druid:aa111aa1111', build_identity_metadata_2)
+        expect(umrs.released_to_searchworks?).to be false
+      end
     end
-    it 'returns false if there are non searchworks related release tags' do
-      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
-      release_data = { 'Revs' => { 'release' => true } }
-      allow(@dor_item).to receive(:released_for).and_return(release_data)
-      expect(umrs.released_to_searchworks?).to be false
+
+    context 'when there are non searchworks related release tags' do
+      let(:release_data) { { 'Revs' => { 'release' => true } } }
+
+      it 'returns false' do
+        setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
+        expect(umrs.released_to_searchworks?).to be false
+      end
     end
   end
 

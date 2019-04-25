@@ -169,11 +169,15 @@ module Dor
     end
 
     def released_to_searchworks?
-      rel = @druid_obj.released_for.transform_keys { |key| key.to_s.upcase } # upcase all release tags to make the check case insensitive
+      rel = released_for.transform_keys { |key| key.to_s.upcase } # upcase all release tags to make the check case insensitive
       rel.blank? || rel['SEARCHWORKS'].blank? || rel['SEARCHWORKS']['release'].blank? ? false : rel['SEARCHWORKS']['release']
     end
 
     private
+
+    def released_for
+      Dor::ReleaseTagService.for(@druid_obj).released_for(skip_live_purl: false)
+    end
 
     def dor_items_for_constituents
       return [] unless @druid_obj.relationships(:is_constituent_of)

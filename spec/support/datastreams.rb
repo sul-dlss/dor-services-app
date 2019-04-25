@@ -175,24 +175,6 @@ def build_identity_metadata_with_ckey
   </identityMetadata>'
 end
 
-def build_identity_metadata_without_ckey
-  '<identityMetadata>
-  <sourceId source="sul">36105216275185</sourceId>
-  <objectId>druid:aa222cc3333</objectId>
-  <objectCreator>DOR</objectCreator>
-  <objectLabel>A  new map of Africa</objectLabel>
-  <objectType>item</objectType>
-  <displayType>image</displayType>
-  <adminPolicy>druid:dd051ys2703</adminPolicy>
-  <otherId name="uuid">ff3ce224-9ffb-11e3-aaf2-0050569b3c3c</otherId>
-  <tag>Process : Content Type : Map</tag>
-  <tag>Project : Batchelor Maps : Batch 1</tag>
-  <tag>LAB : MAPS</tag>
-  <tag>Registered By : dfuzzell</tag>
-  <tag>Remediated By : 4.15.4</tag>
-  </identityMetadata>'
-end
-
 def build_rights_metadata_1
   '<rightsMetadata>
    <access type="discover">
