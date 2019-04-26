@@ -7,6 +7,12 @@
 
 This Ruby application provides a REST API for DOR Services. [View the REST API documentation](https://consul.stanford.edu/display/chimera/REST+mappings+for+dor-services+gem).
 
+
+## Authentication
+
+To generate an authentication token run `rake generate_token` on the prod server.
+This will use the HMAC secret to sign the token.
+
 ## Developer Notes
 
 DOR Services App is a Rails app.

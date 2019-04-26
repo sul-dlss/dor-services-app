@@ -78,6 +78,8 @@ CLEANUP:
 DOR:
   SERVICE_USER: 'user'
   SERVICE_PASSWORD: 'password'
+dor:
+  hmac_secret: 'my$ecretK3y'
 
 RELEASE:
   SYMPHONY_PATH: './'
