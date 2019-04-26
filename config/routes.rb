@@ -33,6 +33,8 @@ Rails.application.routes.draw do
         post 'release_tags'
         post 'apo_workflows/:wf_name', action: 'apo_workflows'
 
+        post 'refresh_metadata', to: 'metadata_refresh#refresh'
+
         get 'contents', to: 'content#list'
         get 'contents/*path', to: 'content#read', format: false, as: :read_content
       end
