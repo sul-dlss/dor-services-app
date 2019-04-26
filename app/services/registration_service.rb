@@ -103,7 +103,7 @@ class RegistrationService
       if rights && %w(item collection).include?(object_type)
         rights_xml = apo_object.defaultObjectRights.ng_xml
         new_item.datastreams['rightsMetadata'].content = rights_xml.to_s
-        new_item.set_read_rights(rights) unless rights == 'default' # already defaulted to default!
+        new_item.read_rights = rights unless rights == 'default' # already defaulted to default!
       end
       # create basic mods from the label
       build_desc_metadata_from_label(new_item, label) if metadata_source == 'label'
