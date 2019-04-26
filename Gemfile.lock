@@ -275,6 +275,7 @@ GEM
     parser (2.6.2.1)
       ast (~> 2.4.0)
     powerpack (0.1.2)
+    progressbar (1.10.0)
     psych (3.1.0)
     public_suffix (3.0.3)
     puma (3.12.1)
@@ -463,6 +464,7 @@ DEPENDENCIES
   marc
   net-http-persistent (~> 2.9)
   okcomputer
+  progressbar
   puma (~> 3.0)
   rack-console
   rails (~> 5.2.0)
