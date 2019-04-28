@@ -29,6 +29,7 @@ gem 'rest-client'
 # Pin net-http-persistent to avoid a problem with exhausting file handles when running under load
 gem 'marc'
 gem 'net-http-persistent', '~> 2.9'
+gem 'progressbar' # for the cleaner rake task
 gem 'uuidtools', '~> 2.1.4'
 
 # DLSS/domain-specific dependencies
