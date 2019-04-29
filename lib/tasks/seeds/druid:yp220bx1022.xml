@@ -118,7 +118,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 </foxml:datastream>
 <foxml:datastream ID="workflows" STATE="A" CONTROL_GROUP="E" VERSIONABLE="false">
 <foxml:datastreamVersion ID="workflows.0" LABEL="Workflow" CREATED="2012-06-05T23:51:36.220Z" MIMETYPE="application/xml">
-<foxml:contentLocation TYPE="URL" REF="https://lyberservices-prod.stanford.edu/workflow/dor/objects/druid:yp220bx1022/workflows"/>
+<foxml:contentLocation TYPE="URL" REF="https://lyberservices-test.stanford.edu/workflow/dor/objects/druid:yp220bx1022/workflows"/>
 </foxml:datastreamVersion>
 </foxml:datastream>
 <foxml:datastream ID="descMetadata" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">

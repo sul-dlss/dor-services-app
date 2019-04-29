@@ -370,7 +370,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>addDatastream</audit:action>
 <audit:componentID>workflows</audit:componentID>
-<audit:responsibility>workflow@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>workflow@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2013-02-12T04:02:16.252Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -378,7 +378,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>addDatastream</audit:action>
 <audit:componentID>rightsMetadata</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2013-02-12T04:13:33.137Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -394,7 +394,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>addDatastream</audit:action>
 <audit:componentID>provenanceMetadata</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2013-02-12T18:32:02.796Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -402,7 +402,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>identityMetadata</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2013-02-12T18:44:38.279Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -410,7 +410,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByReference</audit:action>
 <audit:componentID>events</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2013-02-12T18:44:38.412Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -418,7 +418,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>addDatastream</audit:action>
 <audit:componentID>versionMetadata</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2013-02-12T18:44:38.716Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -570,7 +570,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>versionMetadata</audit:componentID>
-<audit:responsibility>preassembly@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>preassembly@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2014-07-17T23:55:00.903Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -578,7 +578,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByReference</audit:action>
 <audit:componentID>workflows</audit:componentID>
-<audit:responsibility>workflow@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>workflow@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2014-07-17T23:55:01.120Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -586,7 +586,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>versionMetadata</audit:componentID>
-<audit:responsibility>preassembly@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>preassembly@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2014-07-17T23:55:01.620Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -594,7 +594,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>roleMetadata</audit:componentID>
-<audit:responsibility>preassembly@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>preassembly@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2014-07-17T23:55:01.758Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -602,7 +602,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>versionMetadata</audit:componentID>
-<audit:responsibility>preassembly@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>preassembly@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2014-07-18T00:01:56.189Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -610,7 +610,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>roleMetadata</audit:componentID>
-<audit:responsibility>preassembly@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>preassembly@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2014-07-18T00:01:56.310Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -634,7 +634,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByReference</audit:action>
 <audit:componentID>workflows</audit:componentID>
-<audit:responsibility>workflow@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>workflow@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2014-08-06T22:27:25.816Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -650,7 +650,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>rightsMetadata</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2014-08-06T22:28:00.523Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -658,7 +658,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>identityMetadata</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2014-08-07T06:28:26.241Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -666,7 +666,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByReference</audit:action>
 <audit:componentID>events</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2014-08-07T06:28:26.372Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -674,7 +674,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>provenanceMetadata</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2014-08-07T06:29:09.562Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -690,7 +690,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByReference</audit:action>
 <audit:componentID>workflows</audit:componentID>
-<audit:responsibility>workflow@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>workflow@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2015-04-06T21:17:41.597Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -762,7 +762,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>identityMetadata</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2015-04-06T21:23:28.754Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -770,7 +770,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByReference</audit:action>
 <audit:componentID>events</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2015-04-06T21:23:28.876Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -778,7 +778,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>provenanceMetadata</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2015-04-06T21:24:27.069Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -786,7 +786,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByReference</audit:action>
 <audit:componentID>workflows</audit:componentID>
-<audit:responsibility>workflow@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>workflow@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2015-04-06T21:27:22.946Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -882,7 +882,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>identityMetadata</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2015-11-11T22:27:14.490Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -890,7 +890,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByReference</audit:action>
 <audit:componentID>events</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2015-11-11T22:27:14.641Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -898,7 +898,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>provenanceMetadata</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2015-11-11T22:28:43.765Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -970,7 +970,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>identityMetadata</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2016-04-18T18:41:34.131Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -978,7 +978,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByReference</audit:action>
 <audit:componentID>events</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2016-04-18T18:41:34.302Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -986,7 +986,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:process type="Fedora API-M"/>
 <audit:action>modifyDatastreamByValue</audit:action>
 <audit:componentID>provenanceMetadata</audit:componentID>
-<audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+<audit:responsibility>robots@sul-lyberservices-test.stanford.edu</audit:responsibility>
 <audit:date>2016-04-18T18:42:40.434Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
@@ -2745,7 +2745,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 </foxml:datastream>
 <foxml:datastream ID="workflows" STATE="A" CONTROL_GROUP="E" VERSIONABLE="false">
 <foxml:datastreamVersion ID="workflows.4" LABEL="Workflow" CREATED="2015-04-06T21:27:22.946Z" MIMETYPE="application/xml">
-<foxml:contentLocation TYPE="URL" REF="https://lyberservices-prod.stanford.edu/workflow/dor/objects/druid:hv992ry2431/workflows"/>
+<foxml:contentLocation TYPE="URL" REF="https://lyberservices-test.stanford.edu/workflow/dor/objects/druid:hv992ry2431/workflows"/>
 </foxml:datastreamVersion>
 </foxml:datastream>
 <foxml:datastream ID="RELS-EXT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
@@ -2800,7 +2800,36 @@ NOTE: we have used this work-around to give DPG and SPEC privileges that should 
 </foxml:datastream>
 <foxml:datastream ID="events" STATE="A" CONTROL_GROUP="M" VERSIONABLE="false">
 <foxml:datastreamVersion ID="events.12" LABEL="" CREATED="2016-04-18T18:41:34.302Z" MIMETYPE="text/xml" SIZE="1674">
-<foxml:contentLocation TYPE="INTERNAL_ID" REF="druid:hv992ry2431+events+events.12"/>
+<foxml:binaryContent>
+              PGV2ZW50cz4KICA8ZXZlbnQgdHlwZT0icmVtZWRpYXRpb24iIHdobz0iRG9yOjpJZGVudGlmaWFibGUg
+              My42LjEiIHdoZW49IjIwMTItMDUtMDdUMTY6MzU6MDEtMDc6MDAiPlJlY29yZCBSZW1lZGlhdGlvbiBW
+              ZXJzaW9uPC9ldmVudD4KICA8ZXZlbnQgdHlwZT0icmVtZWRpYXRpb24iIHdobz0iRG9yOjpJZGVudGlm
+              aWFibGUgMy42LjEiIHdoZW49IjIwMTItMDUtMDdUMTY6MzU6MDEtMDc6MDAiPkFzc2VydCBjb3JyZWN0
+              IG1vZGVsczwvZXZlbnQ+CjxldmVudCB3aG89IkRvcjo6SWRlbnRpZmlhYmxlIDMuNi4xIiB0eXBlPSJy
+              ZW1lZGlhdGlvbiIgd2hlbj0iMjAxMy0wMi0xMlQxMDo0NDozOC0wODowMCI+UmVjb3JkIFJlbWVkaWF0
+              aW9uIFZlcnNpb248L2V2ZW50PjxldmVudCB3aG89IkRvcjo6VmVyc2lvbmFibGUgMy4xMi4yIiB0eXBl
+              PSJyZW1lZGlhdGlvbiIgd2hlbj0iMjAxMy0wMi0xMlQxMDo0NDozOC0wODowMCI+QWRkIG1pc3Npbmcg
+              dmVyc2lvbk1ldGFkYXRhPC9ldmVudD48ZXZlbnQgdHlwZT0iY2xvc2UiIHdobz0iQmVuamFtaW4gTCBB
+              bGJyaXR0b24iIHdoZW49IjIwMTQtMDgtMDZUMTU6Mjc6MjUtMDc6MDAiPlZlcnNpb24gMiBjbG9zZWQ8
+              L2V2ZW50PjxldmVudCB0eXBlPSJyZW1lZGlhdGlvbiIgd2hvPSJEb3I6OklkZW50aWZpYWJsZSAzLjYu
+              MSIgd2hlbj0iMjAxNC0wOC0wNlQyMzoyODoyNi0wNzowMCI+UmVjb3JkIFJlbWVkaWF0aW9uIFZlcnNp
+              b248L2V2ZW50PjxldmVudCB0eXBlPSJvcGVuIiB3aG89Ikx5bm4gTWNSYWUiIHdoZW49IjIwMTUtMDQt
+              MDZUMTQ6MTc6NDEtMDc6MDAiPlZlcnNpb24gMyBvcGVuZWQ8L2V2ZW50PjxldmVudCB0eXBlPSJjbG9z
+              ZSIgd2hvPSJMeW5uIE1jUmFlIiB3aGVuPSIyMDE1LTA0LTA2VDE0OjIxOjU2LTA3OjAwIj5WZXJzaW9u
+              IDMgY2xvc2VkPC9ldmVudD48ZXZlbnQgdHlwZT0icmVtZWRpYXRpb24iIHdobz0iRG9yOjpJZGVudGlm
+              aWFibGUgMy42LjEiIHdoZW49IjIwMTUtMDQtMDZUMTQ6MjM6MjgtMDc6MDAiPlJlY29yZCBSZW1lZGlh
+              dGlvbiBWZXJzaW9uPC9ldmVudD48ZXZlbnQgdHlwZT0ib3BlbiIgd2hvPSJCZW5qYW1pbiBMIEFsYnJp
+              dHRvbiIgd2hlbj0iMjAxNS0xMS0xMVQxNDoyMDowOC0wODowMCI+VmVyc2lvbiA0IG9wZW5lZDwvZXZl
+              bnQ+PGV2ZW50IHR5cGU9ImNsb3NlIiB3aG89IkJlbmphbWluIEwgQWxicml0dG9uIiB3aGVuPSIyMDE1
+              LTExLTExVDE0OjI0OjQyLTA4OjAwIj5WZXJzaW9uIDQgY2xvc2VkPC9ldmVudD48ZXZlbnQgdHlwZT0i
+              cmVtZWRpYXRpb24iIHdobz0iRG9yOjpJZGVudGlmaWFibGUgMy42LjEiIHdoZW49IjIwMTUtMTEtMTFU
+              MTQ6Mjc6MTQtMDg6MDAiPlJlY29yZCBSZW1lZGlhdGlvbiBWZXJzaW9uPC9ldmVudD48ZXZlbnQgdHlw
+              ZT0ib3BlbiIgd2hvPSJMeW5uIE1jUmFlIiB3aGVuPSIyMDE2LTA0LTE4VDE4OjM4OjQ2WiI+VmVyc2lv
+              biA1IG9wZW5lZDwvZXZlbnQ+PGV2ZW50IHR5cGU9ImNsb3NlIiB3aG89Ikx5bm4gTWNSYWUiIHdoZW49
+              IjIwMTYtMDQtMThUMTg6Mzk6NDRaIj5WZXJzaW9uIDUgY2xvc2VkPC9ldmVudD48ZXZlbnQgdHlwZT0i
+              cmVtZWRpYXRpb24iIHdobz0iRG9yOjpJZGVudGlmaWFibGUgMy42LjEiIHdoZW49IjIwMTYtMDQtMThU
+              MTg6NDE6MzNaIj5SZWNvcmQgUmVtZWRpYXRpb24gVmVyc2lvbjwvZXZlbnQ+PC9ldmVudHM+
+</foxml:binaryContent>
 </foxml:datastreamVersion>
 </foxml:datastream>
 </foxml:digitalObject>
