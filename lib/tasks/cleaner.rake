@@ -17,4 +17,22 @@ task delete_all_objects: :environment do
       Dor::CleanupService.nuke!(object.pid)
     end
   end
+
+  # Clear out anything else remaining in solr:
+  conn = ActiveFedora::SolrService.instance.conn
+  conn.delete_by_query('*:*')
+  conn.commit
+
+  Rake::Task['seeds'].invoke
+end
+
+desc 'Seed the repository with workflows and APOs'
+task seed: :environment do
+  druids = File.readlines(File.join(__dir__, 'seeds', 'druids'))
+  druids.each do |line|
+    druid, description = line.split(/\s/, 2)
+    puts "Loading '#{description.chomp}'"
+    file = File.join(__dir__, 'seeds', "#{druid}.xml")
+    ActiveFedora::FixtureLoader.import_to_fedora(file, druid)
+  end
 end
