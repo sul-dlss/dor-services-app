@@ -10,7 +10,7 @@ RSpec.describe 'Refresh metadata' do
 
   before do
     allow(Dor).to receive(:find).and_return(object)
-    allow(RefreshMetadataAction).to receive(:run)
+    allow(RefreshMetadataAction).to receive(:run).and_return('<xml />')
     allow(object).to receive(:save)
   end
 

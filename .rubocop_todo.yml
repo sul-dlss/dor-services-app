@@ -119,7 +119,7 @@ RSpec/ContextWording:
 RSpec/DescribeClass:
   Exclude:
     - 'spec/requests/about_spec.rb'
-    - 'spec/requests/metadata_refresh.rb'
+    - 'spec/requests/metadata_refresh_spec.rb'
     - 'spec/requests/metadata_spec.rb'
 
 # Offense count: 32
