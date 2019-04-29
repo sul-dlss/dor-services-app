@@ -17,4 +17,9 @@ task delete_all_objects: :environment do
       Dor::CleanupService.nuke!(object.pid)
     end
   end
+
+  # Clear out anything else remaining in solr:
+  conn = ActiveFedora::SolrService.instance.conn
+  conn.delete_by_query('*:*')
+  conn.commit
 end
