@@ -23,7 +23,7 @@ task delete_all_objects: :environment do
   conn.delete_by_query('*:*')
   conn.commit
 
-  Rake::Task['seeds'].invoke
+  Rake::Task['seed'].invoke
 end
 
 desc 'Seed the repository with workflows and APOs'
