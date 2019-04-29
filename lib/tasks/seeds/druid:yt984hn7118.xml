@@ -196,15 +196,27 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 </foxml:datastream>
 <foxml:datastream ID="workflows" STATE="A" CONTROL_GROUP="E" VERSIONABLE="true">
 <foxml:datastreamVersion ID="workflows.0" LABEL="Workflows" CREATED="2014-06-11T22:56:04.940Z" MIMETYPE="application/xml">
-<foxml:contentLocation TYPE="URL" REF="https://lyberservices-prod.stanford.edu/workflow/dor/objects/druid:yt984hn7118/workflows"/>
+<foxml:contentLocation TYPE="URL" REF="https://lyberservices-test.stanford.edu/workflow/dor/objects/druid:yt984hn7118/workflows"/>
 </foxml:datastreamVersion>
 </foxml:datastream>
 <foxml:datastream ID="descMetadata" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
 <foxml:datastreamVersion ID="descMetadata.0" LABEL="Descriptive Metadata" CREATED="2014-06-11T22:56:05.100Z" MIMETYPE="text/xml" SIZE="290">
-<foxml:contentLocation TYPE="INTERNAL_ID" REF="druid:yt984hn7118+descMetadata+descMetadata.0"/>
+<foxml:binaryContent>
+              PG1vZHMgeG1sbnM9Imh0dHA6Ly93d3cubG9jLmdvdi9tb2RzL3YzIiB4bWxuczp4c2k9Imh0dHA6Ly93
+              d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB2ZXJzaW9uPSIzLjMiIHhzaTpzY2hlbWFM
+              b2NhdGlvbj0iaHR0cDovL3d3dy5sb2MuZ292L21vZHMvdjMgaHR0cDovL3d3dy5sb2MuZ292L3N0YW5k
+              YXJkcy9tb2RzL3YzL21vZHMtMy0zLnhzZCI+CiAgPHRpdGxlSW5mbz4KICAgIDx0aXRsZT5ET1IgRGlz
+              c2VtaW5hdGlvbiB3b3JrZmxvdzwvdGl0bGU+CiAgPC90aXRsZUluZm8+CjwvbW9kcz4=
+</foxml:binaryContent>
 </foxml:datastreamVersion>
 <foxml:datastreamVersion ID="descMetadata.1" LABEL="Descriptive Metadata" CREATED="2016-08-22T19:55:48.648Z" MIMETYPE="text/xml" SIZE="279">
-<foxml:contentLocation TYPE="INTERNAL_ID" REF="druid:yt984hn7118+descMetadata+descMetadata.1"/>
+<foxml:binaryContent>
+              PG1vZHMgeG1sbnM9Imh0dHA6Ly93d3cubG9jLmdvdi9tb2RzL3YzIiB4bWxuczp4c2k9Imh0dHA6Ly93
+              d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB2ZXJzaW9uPSIzLjMiIHhzaTpzY2hlbWFM
+              b2NhdGlvbj0iaHR0cDovL3d3dy5sb2MuZ292L21vZHMvdjMgaHR0cDovL3d3dy5sb2MuZ292L3N0YW5k
+              YXJkcy9tb2RzL3YzL21vZHMtMy0zLnhzZCI+DSAgPHRpdGxlSW5mbz4NICAgIDx0aXRsZT5kaXNzZW1p
+              bmF0aW9uV0Y8L3RpdGxlPg0gIDwvdGl0bGVJbmZvPg08L21vZHM+
+</foxml:binaryContent>
 </foxml:datastreamVersion>
 </foxml:datastream>
 <foxml:datastream ID="rightsMetadata" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
