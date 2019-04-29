@@ -39,6 +39,12 @@ Rails.application.routes.draw do
         get 'contents/*path', to: 'content#read', format: false, as: :read_content
       end
 
+      resources :metadata, only: [] do
+        collection do
+          get 'dublin_core'
+        end
+      end
+
       resources :versions, only: [:create] do
         collection do
           get 'current'
