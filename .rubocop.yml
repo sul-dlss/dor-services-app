@@ -41,6 +41,13 @@ Metrics/LineLength:
 Metrics/BlockLength:
   Enabled: false
 
+RSpec/ExampleLength:
+  Max: 8
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Max: 8
+
 RSpec/ExpectActual:
   Exclude:
     - 'spec/routing/**'
