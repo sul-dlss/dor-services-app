@@ -95,7 +95,7 @@ class ObjectsController < ApplicationController
   private
 
   def fedora_base
-    URI.parse(Dor::Config.fedora.safeurl.sub(/\/*$/, '/'))
+    URI.parse(Dor::Config.fedora.safeurl.sub(%r{/*$}, '/'))
   end
 
   def object_location(pid)

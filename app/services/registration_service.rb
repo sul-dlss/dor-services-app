@@ -164,7 +164,7 @@ class RegistrationService
 
       dor_obj = register_object(dor_params)
       pid = dor_obj.pid
-      location = URI.parse(Dor::Config.fedora.safeurl.sub(/\/*$/, '/')).merge("objects/#{pid}").to_s
+      location = URI.parse(Dor::Config.fedora.safeurl.sub(%r{/*$}, '/')).merge("objects/#{pid}").to_s
       dor_params.dup.merge(location: location, pid: pid)
     end
 

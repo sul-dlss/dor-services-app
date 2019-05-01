@@ -30,7 +30,7 @@ RSpec.describe ObjectsController do
         allow(RegistrationService).to receive(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
         post :create
         expect(response.status).to eq(409)
-        expect(response.headers['Location']).to match(/\/fedora\/objects\/druid:existing123obj/)
+        expect(response.headers['Location']).to match(%r{/fedora/objects/druid:existing123obj})
       end
 
       it 'returns a 422 error when an object has a bad name' do
