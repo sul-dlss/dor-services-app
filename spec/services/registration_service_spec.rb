@@ -150,6 +150,14 @@ RSpec.describe RegistrationService do
         @params.delete(:object_type)
         expect { described_class.register_object(@params) }.to raise_error(Dor::ParameterError)
       end
+
+      context 'when seed_datastream is present and something other than descMetadata' do
+        it 'raises an error' do
+          @params[:seed_datastream] = ['invalid']
+          expect { described_class.register_object(@params) }.to raise_error(Dor::ParameterError)
+        end
+      end
+
       context 'empty label' do
         before do
           @params[:label] = ''
@@ -185,6 +193,18 @@ RSpec.describe RegistrationService do
       it_behaves_like 'common registration'
       it 'produces rightsMetadata XML' do
         expect(@obj.datastreams['rightsMetadata'].ng_xml).to be_equivalent_to stanford_xml
+      end
+    end
+
+    context 'when seed_datastream is provided' do
+      before do
+        @params[:seed_datastream] = ['descMetadata']
+        allow(RefreshMetadataAction).to receive(:run)
+      end
+
+      it 'creates the datastream' do
+        @obj = described_class.register_object(@params)
+        expect(RefreshMetadataAction).to have_received(:run)
       end
     end
 

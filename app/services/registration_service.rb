@@ -42,7 +42,7 @@ class RegistrationService
     # @option params [Hash] :other_ids including :uuid if known
     # @option params [String] :pid Fully qualified PID if you don't want one generated for you
     # @option params [Integer] :workflow_priority]
-    # @option params [Array<String>] :seed_datastream datastream_names
+    # @option params [Array<String>] :seed_datastream datastream_names (only 'descMetadata' is a permitted value)
     # @option params [Array<String>] :initiate_workflow workflow_ids
     # @option params [Array] :tags
     def register_object(params = {})
@@ -56,8 +56,13 @@ class RegistrationService
       item_class = Dor.registered_classes[object_type]
       raise Dor::ParameterError, "Unknown item type: '#{object_type}'" if item_class.nil?
 
-      # content_model = params[:content_model]
-      # parent        = params[:parent]
+      seed_desc_metadata = false
+      if params[:seed_datastream]
+        raise Dor::ParameterError, "Unknown value for seed_datastream: '#{params[:seed_datastream]}'" if params[:seed_datastream] != ['descMetadata']
+
+        seed_desc_metadata = true
+      end
+
       label         = params[:label]
       source_id     = params[:source_id] || {}
       other_ids     = params[:other_ids] || {}
@@ -107,10 +112,9 @@ class RegistrationService
       end
       # create basic mods from the label
       build_desc_metadata_from_label(new_item, label) if metadata_source == 'label'
+      RefreshMetadataAction.run(new_item) if seed_desc_metadata
 
       workflow_priority = params[:workflow_priority] ? params[:workflow_priority].to_i : 0
-
-      seed_datastreams(Array(params[:seed_datastream]), new_item)
       initiate_workflow(workflows: Array(params[:initiate_workflow]), item: new_item, priority: workflow_priority)
 
       new_item.class.ancestors.select { |x| x.respond_to?(:to_class_uri) && x != ActiveFedora::Base }.each do |parent_class|
@@ -170,12 +174,6 @@ class RegistrationService
       return nil if ids.nil?
 
       Hash[Array(ids).map { |id| id.split(':', 2) }]
-    end
-
-    def seed_datastreams(names, item)
-      names.each do |datastream_name|
-        item.build_datastream(datastream_name)
-      end
     end
 
     def initiate_workflow(workflows:, item:, priority:)
