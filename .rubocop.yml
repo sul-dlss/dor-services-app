@@ -11,35 +11,15 @@ AllCops:
 Rails:
   Enabled: true
 
-# rspec expect{...} is conventional
-Layout/SpaceBeforeBlockBraces:
-  Exclude:
-    - 'spec/**/*_spec.rb'
-
-# Far more languages and notations use /regex/ than %r
-# rspec `.to match(/regex/)` is also conventional
-Style/RegexpLiteral:
-  Enabled: false
-
-Layout/EmptyLineBetweenDefs:
-  AllowAdjacentOneLineDefs: true
-
-# Allow alignment of Dor/Confstruct-y lines (they are effectively assignments)
-Layout/SpaceBeforeFirstArg:
-  Exclude:
-    - 'config/environments/*.rb'
-
-# allow for alignment
-Layout/SpaceAroundOperators:
-  AllowForAlignment: true
-
-
 # Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:
   Max: 200
 
 Metrics/BlockLength:
-  Enabled: false
+  Exclude:
+    - 'spec/**/*'
+    - 'config/routes.rb'
+    - 'config/initializers/dor_config.rb'
 
 RSpec/ExampleLength:
   Max: 8
