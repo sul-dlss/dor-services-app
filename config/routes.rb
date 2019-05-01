@@ -42,6 +42,7 @@ Rails.application.routes.draw do
       resources :metadata, only: [] do
         collection do
           get 'dublin_core'
+          get 'descriptive'
         end
       end
 

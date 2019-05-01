@@ -8,4 +8,9 @@ class MetadataController < ApplicationController
     service = DublinCoreService.new(@item)
     render xml: service
   end
+
+  def descriptive
+    service = Dor::PublicDescMetadataService.new(@item)
+    render xml: service
+  end
 end
