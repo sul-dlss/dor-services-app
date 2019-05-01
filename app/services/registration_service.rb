@@ -1,132 +1,8 @@
 # frozen_string_literal: true
 
-require 'uuidtools'
-
+# Registers an object. Creates a skeleton object in Fedora with a Druid.
 class RegistrationService
   class << self
-    # @TODO: Why isn't all this logic in, for example, Dor::Item.create? or Dor::Base.create? or Dor::Creatable.create?
-    # @TODO: these duplicate checks could be combined into 1 query
-
-    # @param [String] pid an ID to check, if desired.  If not passed (or nil), a new ID is minted
-    # @return [String] a pid you can use immidately, either freshly minted or your checked value
-    # @raise [Dor::DuplicateIdError]
-    def unduplicated_pid(pid = nil)
-      return Dor::SuriService.mint_id unless pid
-
-      existing_pid = Dor::SearchService.query_by_id(pid).first
-      raise Dor::DuplicateIdError.new(existing_pid), "An object with the PID #{pid} has already been registered." unless existing_pid.nil?
-
-      pid
-    end
-
-    # @param [String] source_id_string a fully qualified source:val or empty string
-    # @return [String] the same qualified source:id for immediate use
-    # @raise [Dor::DuplicateIdError]
-    def check_source_id(source_id_string)
-      return '' if source_id_string == ''
-      unless Dor::SearchService.query_by_id(source_id_string.to_s).first.nil?
-        raise Dor::DuplicateIdError.new(source_id_string), "An object with the source ID '#{source_id_string}' has already been registered."
-      end
-
-      source_id_string
-    end
-
-    # @param [Hash{Symbol => various}] params
-    # @option params [String] :object_type required
-    # @option params [String] :label required
-    # @option params [String] :admin_policy required
-    # @option params [String] :metadata_source
-    # @option params [String] :rights
-    # @option params [String] :collection
-    # @option params [Hash{String => String}] :source_id Primary ID from another system, max one key/value pair!
-    # @option params [Hash] :other_ids including :uuid if known
-    # @option params [String] :pid Fully qualified PID if you don't want one generated for you
-    # @option params [Integer] :workflow_priority]
-    # @option params [Array<String>] :seed_datastream datastream_names (only 'descMetadata' is a permitted value)
-    # @option params [Array<String>] :initiate_workflow workflow_ids
-    # @option params [Array] :tags
-    def register_object(params = {})
-      %i[object_type label].each do |required_param|
-        raise Dor::ParameterError, "#{required_param.inspect} must be specified in call to #{name}.register_object" unless params[required_param]
-      end
-      metadata_source = params[:metadata_source]
-      raise Dor::ParameterError, "label cannot be empty to call #{name}.register_object" if params[:label].length < 1 && %w[label none].include?(metadata_source)
-
-      object_type = params[:object_type]
-      item_class = Dor.registered_classes[object_type]
-      raise Dor::ParameterError, "Unknown item type: '#{object_type}'" if item_class.nil?
-
-      seed_desc_metadata = false
-      if params[:seed_datastream]
-        raise Dor::ParameterError, "Unknown value for seed_datastream: '#{params[:seed_datastream]}'" if params[:seed_datastream] != ['descMetadata']
-
-        seed_desc_metadata = true
-      end
-
-      label         = params[:label]
-      source_id     = params[:source_id] || {}
-      other_ids     = params[:other_ids] || {}
-      tags          = params[:tags] || []
-      collection    = params[:collection]
-
-      # Check for sourceId conflict *before* potentially minting PID
-      source_id_string = check_source_id [source_id.keys.first, source_id[source_id.keys.first]].compact.join(':')
-      pid = unduplicated_pid(params[:pid])
-
-      raise ArgumentError, ":source_id Hash can contain at most 1 pair: recieved #{source_id.size}" if source_id.size > 1
-
-      rights = nil
-      if params[:rights]
-        rights = params[:rights]
-        raise Dor::ParameterError, "Unknown rights setting '#{rights}' when calling #{name}.register_object" unless rights == 'default' || Dor::RightsMetadataDS.valid_rights_type?(rights)
-      end
-
-      other_ids[:uuid] = UUIDTools::UUID.timestamp_create.to_s if (other_ids.key?(:uuid) || other_ids.key?('uuid')) == false
-      apo_object = Dor.find(params[:admin_policy])
-      new_item = item_class.new(pid: pid)
-      new_item.label = label.length > 254 ? label[0, 254] : label
-      idmd = new_item.identityMetadata
-      idmd.sourceId = source_id_string
-      idmd.add_value(:objectId, pid)
-      idmd.add_value(:objectCreator, 'DOR')
-      idmd.add_value(:objectLabel, label)
-      idmd.add_value(:objectType, object_type)
-      other_ids.each_pair { |name, value| idmd.add_otherId("#{name}:#{value}") }
-      tags.each { |tag| idmd.add_value(:tag, tag) }
-      new_item.admin_policy_object = apo_object
-
-      apo_object.administrativeMetadata.ng_xml.xpath('/administrativeMetadata/relationships/*').each do |rel|
-        short_predicate = ActiveFedora::RelsExtDatastream.short_predicate rel.namespace.href + rel.name
-        if short_predicate.nil?
-          ix = 0
-          ix += 1 while ActiveFedora::Predicates.predicate_mappings[rel.namespace.href].key?(short_predicate = :"extra_predicate_#{ix}")
-          ActiveFedora::Predicates.predicate_mappings[rel.namespace.href][short_predicate] = rel.name
-        end
-        new_item.add_relationship short_predicate, rel['rdf:resource']
-      end
-      new_item.add_collection(collection) if collection
-      if rights && %w(item collection).include?(object_type)
-        rights_xml = apo_object.defaultObjectRights.ng_xml
-        new_item.datastreams['rightsMetadata'].content = rights_xml.to_s
-        new_item.read_rights = rights unless rights == 'default' # already defaulted to default!
-      end
-      # create basic mods from the label
-      build_desc_metadata_from_label(new_item, label) if metadata_source == 'label'
-      RefreshMetadataAction.run(new_item) if seed_desc_metadata
-
-      new_item.class.ancestors.select { |x| x.respond_to?(:to_class_uri) && x != ActiveFedora::Base }.each do |parent_class|
-        new_item.add_relationship(:has_model, parent_class.to_class_uri)
-      end
-
-      new_item.save
-
-      # Once we save, then it's safe to start any workflows. Otherwise there could be a race condition
-      workflow_priority = params[:workflow_priority] ? params[:workflow_priority].to_i : 0
-      initiate_workflow(workflows: Array(params[:initiate_workflow]), item: new_item, priority: workflow_priority)
-
-      new_item
-    end
-
     # @param [Hash] params
     # @see register_object similar but different
     def create_from_request(params)
@@ -164,13 +40,92 @@ class RegistrationService
       }
       dor_params.delete_if { |_k, v| v.nil? }
 
-      dor_obj = register_object(dor_params)
+      request = RegistrationRequest.new(dor_params)
+      dor_obj = register_object(request)
       pid = dor_obj.pid
       location = URI.parse(Dor::Config.fedora.safeurl.sub(%r{/*$}, '/')).merge("objects/#{pid}").to_s
       dor_params.dup.merge(location: location, pid: pid)
     end
 
     private
+
+    # @TODO: these duplicate checks could be combined into 1 query
+
+    # @param [String] pid an ID to check, if desired.  If not passed (or nil), a new ID is minted
+    # @return [String] a pid you can use immidately, either freshly minted or your checked value
+    # @raise [Dor::DuplicateIdError]
+    def unduplicated_pid(pid = nil)
+      return Dor::SuriService.mint_id unless pid
+
+      existing_pid = Dor::SearchService.query_by_id(pid).first
+      raise Dor::DuplicateIdError.new(existing_pid), "An object with the PID #{pid} has already been registered." unless existing_pid.nil?
+
+      pid
+    end
+
+    # @param [String] source_id_string a fully qualified source:val or empty string
+    # @return [String] the same qualified source:id for immediate use
+    # @raise [Dor::DuplicateIdError]
+    def check_source_id(source_id_string)
+      return '' if source_id_string == ''
+      unless Dor::SearchService.query_by_id(source_id_string.to_s).first.nil?
+        raise Dor::DuplicateIdError.new(source_id_string), "An object with the source ID '#{source_id_string}' has already been registered."
+      end
+
+      source_id_string
+    end
+
+    # @param [RegistrationRequest] RegistrationRequest
+    def register_object(request)
+      request.validate!
+
+      # Check for sourceId conflict *before* potentially minting PID
+      source_id_string = check_source_id [request.source_id.keys.first, request.source_id[request.source_id.keys.first]].compact.join(':')
+      pid = unduplicated_pid(request.pid)
+
+      apo_object = Dor.find(request.admin_policy)
+      new_item = request.item_class.new(pid: pid)
+      new_item.label = request.label.length > 254 ? request.label[0, 254] : request.label
+      idmd = new_item.identityMetadata
+      idmd.sourceId = source_id_string
+      idmd.add_value(:objectId, pid)
+      idmd.add_value(:objectCreator, 'DOR')
+      idmd.add_value(:objectLabel, request.label)
+      idmd.add_value(:objectType, request.object_type)
+      request.other_ids.each_pair { |name, value| idmd.add_otherId("#{name}:#{value}") }
+      request.tags.each { |tag| idmd.add_value(:tag, tag) }
+      new_item.admin_policy_object = apo_object
+
+      apo_object.administrativeMetadata.ng_xml.xpath('/administrativeMetadata/relationships/*').each do |rel|
+        short_predicate = ActiveFedora::RelsExtDatastream.short_predicate rel.namespace.href + rel.name
+        if short_predicate.nil?
+          ix = 0
+          ix += 1 while ActiveFedora::Predicates.predicate_mappings[rel.namespace.href].key?(short_predicate = :"extra_predicate_#{ix}")
+          ActiveFedora::Predicates.predicate_mappings[rel.namespace.href][short_predicate] = rel.name
+        end
+        new_item.add_relationship short_predicate, rel['rdf:resource']
+      end
+      new_item.add_collection(request.collection) if request.collection
+      if request.rights && %w(item collection).include?(request.object_type)
+        rights_xml = apo_object.defaultObjectRights.ng_xml
+        new_item.datastreams['rightsMetadata'].content = rights_xml.to_s
+        new_item.read_rights = request.rights unless request.rights == 'default' # already defaulted to default!
+      end
+      # create basic mods from the label
+      build_desc_metadata_from_label(new_item, request.label) if request.metadata_source == 'label'
+      RefreshMetadataAction.run(new_item) if request.seed_desc_metadata
+
+      new_item.class.ancestors.select { |x| x.respond_to?(:to_class_uri) && x != ActiveFedora::Base }.each do |parent_class|
+        new_item.add_relationship(:has_model, parent_class.to_class_uri)
+      end
+
+      new_item.save
+
+      # Once we save, then it's safe to start any workflows. Otherwise there could be a race condition
+      initiate_workflow(workflows: request.initiate_workflow, item: new_item, priority: request.workflow_priority)
+
+      new_item
+    end
 
     def ids_to_hash(ids)
       return nil if ids.nil?

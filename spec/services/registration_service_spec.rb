@@ -12,6 +12,8 @@ RSpec.describe RegistrationService do
   end
 
   context '#register_object' do
+    subject(:register) { described_class.send(:register_object, request) }
+
     before do
       allow(Dor::SuriService).to receive(:mint_id).and_return(@pid)
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
@@ -30,6 +32,8 @@ RSpec.describe RegistrationService do
         tags: ['Google : Google Tag!', 'Google : Other Google Tag!']
       }
     end
+
+    let(:request) { RegistrationRequest.new(@params) }
 
     let(:mock_collection) do
       coll = Dor::Collection.new
@@ -140,21 +144,21 @@ RSpec.describe RegistrationService do
       it 'registering a duplicate PID' do
         @params[:pid] = @pid
         expect(Dor::SearchService).to receive(:query_by_id).with('druid:ab123cd4567').and_return([@pid])
-        expect { described_class.register_object(@params) }.to raise_error(Dor::DuplicateIdError)
+        expect { register }.to raise_error(Dor::DuplicateIdError)
       end
       it 'registering a duplicate source ID' do
         expect(Dor::SearchService).to receive(:query_by_id).with('barcode:9191919191').and_return([@pid])
-        expect { described_class.register_object(@params) }.to raise_error(Dor::DuplicateIdError)
+        expect { register }.to raise_error(Dor::DuplicateIdError)
       end
       it 'missing a required parameter' do
         @params.delete(:object_type)
-        expect { described_class.register_object(@params) }.to raise_error(Dor::ParameterError)
+        expect { register }.to raise_error(Dor::ParameterError)
       end
 
       context 'when seed_datastream is present and something other than descMetadata' do
         it 'raises an error' do
           @params[:seed_datastream] = ['invalid']
-          expect { described_class.register_object(@params) }.to raise_error(Dor::ParameterError)
+          expect { register }.to raise_error(Dor::ParameterError)
         end
       end
 
@@ -165,9 +169,9 @@ RSpec.describe RegistrationService do
 
         it 'and metadata_source is label or none' do
           @params[:metadata_source] = 'label'
-          expect { described_class.register_object(@params) }.to raise_error(Dor::ParameterError)
+          expect { register }.to raise_error(Dor::ParameterError)
           @params[:metadata_source] = 'none'
-          expect { described_class.register_object(@params) }.to raise_error(Dor::ParameterError)
+          expect { register }.to raise_error(Dor::ParameterError)
         end
       end
     end
@@ -187,7 +191,7 @@ RSpec.describe RegistrationService do
         expect(Dor::Collection).to receive(:new).with(pid: @pid).and_return(@coll)
         @params[:rights] = 'stanford'
         @params[:object_type] = 'collection'
-        @obj = described_class.register_object(@params)
+        @obj = register
       end
 
       it_behaves_like 'common registration'
@@ -203,7 +207,7 @@ RSpec.describe RegistrationService do
       end
 
       it 'creates the datastream' do
-        @obj = described_class.register_object(@params)
+        @obj = register
         expect(RefreshMetadataAction).to have_received(:run)
       end
     end
@@ -215,7 +219,7 @@ RSpec.describe RegistrationService do
 
       describe 'object registration' do
         before do
-          @obj = described_class.register_object(@params)
+          @obj = register
         end
 
         it_behaves_like 'common registration'
@@ -239,7 +243,7 @@ RSpec.describe RegistrationService do
         before do
           @params[:collection] = 'druid:something'
           expect(Dor::Collection).to receive(:find).with('druid:something').and_return(mock_collection)
-          @obj = described_class.register_object(@params)
+          @obj = register
         end
 
         it_behaves_like 'common registration'
@@ -265,7 +269,7 @@ RSpec.describe RegistrationService do
         describe 'default' do
           before do
             @params[:rights] = 'default'
-            @obj = described_class.register_object(@params)
+            @obj = register
           end
 
           it_behaves_like 'common registration'
@@ -277,7 +281,7 @@ RSpec.describe RegistrationService do
         describe 'world' do
           before do
             @params[:rights] = 'world'
-            @obj = described_class.register_object(@params)
+            @obj = register
           end
 
           it_behaves_like 'common registration'
@@ -289,7 +293,7 @@ RSpec.describe RegistrationService do
         describe 'loc:music' do
           before do
             @params[:rights] = 'loc:music'
-            @obj = described_class.register_object(@params)
+            @obj = register
           end
 
           it_behaves_like 'common registration'
@@ -301,7 +305,7 @@ RSpec.describe RegistrationService do
         describe 'stanford no-download' do
           before do
             @params[:rights] = 'stanford-nd'
-            @obj = described_class.register_object(@params)
+            @obj = register
           end
 
           it_behaves_like 'common registration'
@@ -314,7 +318,7 @@ RSpec.describe RegistrationService do
       describe 'when passed metadata_source=label' do
         before do
           @params[:metadata_source] = 'label'
-          @obj = described_class.register_object(@params)
+          @obj = register
         end
 
         it_behaves_like 'common registration'
@@ -333,7 +337,7 @@ RSpec.describe RegistrationService do
       it 'truncates label if >= 255 chars' do
         # expect(Dor.logger).to receive(:warn).at_least(:once)
         @params[:label] = 'a' * 256
-        obj = described_class.register_object(@params)
+        obj = register
         expect(obj.label).to eq('a' * 254)
       end
 
@@ -347,7 +351,7 @@ RSpec.describe RegistrationService do
         it 'sets priority' do
           @params[:workflow_priority] = 50
           @params[:initiate_workflow] = 'digitizationWF'
-          described_class.register_object(@params)
+          register
           expect(workflow_client).to have_received(:create_workflow_by_name).with(String, 'digitizationWF', priority: 50)
         end
       end
