@@ -10,7 +10,7 @@ class MetadataController < ApplicationController
   end
 
   def descriptive
-    service = Dor::PublicDescMetadataService.new(@item)
+    service = PublicDescMetadataService.new(@item)
     render xml: service
   end
 end

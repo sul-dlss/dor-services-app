@@ -29,7 +29,7 @@ class DublinCoreService
   private
 
   def desc_md
-    return Dor::PublicDescMetadataService.new(work).ng_xml(include_access_conditions: false) if include_collection?
+    return PublicDescMetadataService.new(work).ng_xml(include_access_conditions: false) if include_collection?
 
     work.descMetadata.ng_xml
   end

@@ -93,14 +93,14 @@ RSpec.describe PublishMetadataService do
           </mods:mods>
         EOXML
       end
-      let(:md_service) { instance_double(Dor::PublicDescMetadataService, to_xml: mods, ng_xml: Nokogiri::XML(mods)) }
+      let(:md_service) { instance_double(PublicDescMetadataService, to_xml: mods, ng_xml: Nokogiri::XML(mods)) }
       let(:dc_service) { instance_double(DublinCoreService, ng_xml: Nokogiri::XML('<oai_dc:dc></oai_dc:dc>')) }
       let(:public_service) { instance_double(PublicXmlService, to_xml: '<publicObject></publicObject>') }
 
       before do
         allow(DublinCoreService).to receive(:new).and_return(dc_service)
         allow(PublicXmlService).to receive(:new).and_return(public_service)
-        allow(Dor::PublicDescMetadataService).to receive(:new).and_return(md_service)
+        allow(PublicDescMetadataService).to receive(:new).and_return(md_service)
       end
 
       context 'with an item' do
@@ -119,7 +119,7 @@ RSpec.describe PublishMetadataService do
           service.publish
           expect(DublinCoreService).to have_received(:new).with(item)
           expect(PublicXmlService).to have_received(:new).with(item)
-          expect(Dor::PublicDescMetadataService).to have_received(:new).with(item)
+          expect(PublicDescMetadataService).to have_received(:new).with(item)
         end
 
         it 'even when rightsMetadata uses xml namespaces' do

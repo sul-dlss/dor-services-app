@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Exports the full object XML that we display on purl.stanford.edu
 class PublicXmlService
   attr_reader :object
 
@@ -18,7 +19,7 @@ class PublicXmlService
     pub.add_child(public_rights_metadata.root)
     pub.add_child(public_relationships.root)
     pub.add_child(DublinCoreService.new(object).ng_xml.root)
-    pub.add_child(Dor::PublicDescMetadataService.new(object).ng_xml.root)
+    pub.add_child(PublicDescMetadataService.new(object).ng_xml.root)
     pub.add_child(release_xml.root) unless release_xml.xpath('//release').children.empty? # If there are no release_tags, this prevents an empty <releaseData/> from being added
     # Note we cannot base this on if an individual object has release tags or not, because the collection may cause one to be generated for an item,
     # so we need to calculate it and then look at the final result.
