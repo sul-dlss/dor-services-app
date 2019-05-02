@@ -26,7 +26,7 @@ RSpec/ExampleLength:
   Enabled: false
 
 RSpec/MultipleExpectations:
-  Max: 8
+  Max: 11
 
 RSpec/ExpectActual:
   Exclude:
