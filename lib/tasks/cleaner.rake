@@ -34,5 +34,6 @@ task seed: :environment do
     puts "Loading '#{description.chomp}'"
     file = File.join(__dir__, 'seeds', "#{druid}.xml")
     ActiveFedora::FixtureLoader.import_to_fedora(file, druid)
+    ActiveFedora::FixtureLoader.index(druid)
   end
 end
