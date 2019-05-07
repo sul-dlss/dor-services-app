@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'rails_helper'
 
 RSpec.describe RefreshMetadataAction do
   subject(:refresh) { described_class.run(item) }
@@ -13,7 +13,7 @@ RSpec.describe RefreshMetadataAction do
   end
 
   it 'gets the data an puts it in descMetadata' do
-    refresh
+    expect(refresh).not_to be_nil
     expect(item.descMetadata.content).to eq '<xml/>'
   end
 end
