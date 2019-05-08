@@ -214,6 +214,7 @@ GEM
     iso-639 (0.2.8)
     jaro_winkler (1.5.2)
     json (2.2.0)
+    jwt (2.1.0)
     link_header (0.0.8)
     listen (3.0.8)
       rb-fsevent (~> 0.9, >= 0.9.4)
@@ -459,6 +460,7 @@ DEPENDENCIES
   equivalent-xml
   faraday
   honeybadger
+  jwt
   listen (~> 3.0.5)
   lyber-core (>= 2.0.2)
   marc

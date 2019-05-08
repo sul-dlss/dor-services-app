@@ -25,6 +25,7 @@ gem 'honeybadger'
 gem 'okcomputer'
 
 gem 'faraday'
+gem 'jwt'
 gem 'rest-client'
 # Pin net-http-persistent to avoid a problem with exhausting file handles when running under load
 gem 'marc'
