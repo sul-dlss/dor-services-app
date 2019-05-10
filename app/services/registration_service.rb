@@ -114,14 +114,16 @@ class RegistrationService
       build_desc_metadata_from_label(new_item, label) if metadata_source == 'label'
       RefreshMetadataAction.run(new_item) if seed_desc_metadata
 
-      workflow_priority = params[:workflow_priority] ? params[:workflow_priority].to_i : 0
-      initiate_workflow(workflows: Array(params[:initiate_workflow]), item: new_item, priority: workflow_priority)
-
       new_item.class.ancestors.select { |x| x.respond_to?(:to_class_uri) && x != ActiveFedora::Base }.each do |parent_class|
         new_item.add_relationship(:has_model, parent_class.to_class_uri)
       end
 
       new_item.save
+
+      # Once we save, then it's safe to start any workflows. Otherwise there could be a race condition
+      workflow_priority = params[:workflow_priority] ? params[:workflow_priority].to_i : 0
+      initiate_workflow(workflows: Array(params[:initiate_workflow]), item: new_item, priority: workflow_priority)
+
       new_item
     end
 
