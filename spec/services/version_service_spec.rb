@@ -23,25 +23,29 @@ RSpec.describe VersionService do
 
     context 'normal behavior' do
       before do
-        allow(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(true)
-        allow(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened').and_return(nil)
-        allow(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted').and_return(nil)
         allow(SdrClient).to receive(:current_version).and_return(1)
-        allow(Dor::CreateWorkflowService).to receive(:create_workflow).with(obj, name: 'versioningWF')
+        allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
         allow(obj).to receive(:new_record?).and_return(false)
         allow(vmd_ds).to receive(:save)
       end
 
+      let(:workflow_client) do
+        instance_double(Dor::Workflow::Client,
+                        create_workflow_by_name: true,
+                        lifecycle: true,
+                        active_lifecycle: nil)
+      end
+
       it 'creates the versionMetadata datastream and starts a workflow' do
-        expect(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(true)
-        expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened').and_return(nil)
-        expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted').and_return(nil)
         expect(SdrClient).to receive(:current_version).and_return(1)
-        expect(Dor::CreateWorkflowService).to receive(:create_workflow).with(obj, name: 'versioningWF')
         expect(obj).to receive(:new_record?).and_return(false)
         expect(vmd_ds).to receive(:save)
         expect(vmd_ds.ng_xml.to_xml).to match(/Initial Version/)
         open
+        expect(workflow_client).to have_received(:lifecycle).with('dor', druid, 'accessioned')
+        expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'opened')
+        expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'submitted')
+        expect(workflow_client).to have_received(:create_workflow_by_name).with(obj.pid, 'versioningWF')
       end
 
       it 'includes vers_md_upd_info' do

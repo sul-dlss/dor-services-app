@@ -41,7 +41,6 @@ RSpec.describe VersionsController do
     let(:open_params) do
       {
         assume_accessioned: false,
-        create_workflows_ds: false,
         vers_md_upd_info: {
           significance: 'minor',
           description: 'bar',

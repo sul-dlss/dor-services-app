@@ -178,9 +178,7 @@ class RegistrationService
 
     def initiate_workflow(workflows:, item:, priority:)
       workflows.each do |workflow_id|
-        Dor::CreateWorkflowService.create_workflow(item, name: workflow_id,
-                                                         create_ds: !item.new_record?,
-                                                         priority: priority)
+        Dor::Config.workflow.client.create_workflow_by_name(item.pid, workflow_id, priority: priority)
       end
     end
 

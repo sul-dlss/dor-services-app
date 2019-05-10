@@ -87,7 +87,8 @@ class ObjectsController < ApplicationController
                  "#{params[:wf_name]}WF"
                end
 
-    Dor::CreateWorkflowService.create_workflow(@item, name: workflow)
+    Honeybadger.notify("Call to deprecated API #{request.path}. Use workflow-service instead")
+    Dor::Config.workflow.client.create_workflow_by_name(@item.pid, workflow)
 
     head :created
   end
