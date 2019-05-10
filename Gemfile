@@ -35,7 +35,6 @@ gem 'uuidtools', '~> 2.1.4'
 
 # DLSS/domain-specific dependencies
 gem 'dor-services', '~> 7.0'
-gem 'lyber-core', '>= 2.0.2'
 
 group :test, :development do
   gem 'coveralls', '~> 0.8', require: false
