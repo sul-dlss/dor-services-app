@@ -26,7 +26,7 @@ task delete_all_objects: :environment do
   Rake::Task['seed'].invoke
 end
 
-desc 'Seed the repository with workflows and APOs'
+desc 'Seed the repository with APO'
 task seed: :environment do
   druids = File.readlines(File.join(__dir__, 'seeds', 'druids'))
   druids.each do |line|
