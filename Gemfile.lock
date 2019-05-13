@@ -464,6 +464,7 @@ DEPENDENCIES
   rspec-rails
   rubocop (~> 0.65.0)
   rubocop-rspec (~> 1.32.0)
+  ruby-cache (~> 0.3.0)
   simplecov
   spring
   spring-watcher-listen (~> 2.0.0)
