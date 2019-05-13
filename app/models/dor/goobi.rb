@@ -10,12 +10,18 @@ module Dor
         end
       end
 
-      # rubocop:disable Metrics/LineLength
-      with_retries(max_tries: Dor::Config.goobi.max_tries, handler: handler, base_sleep_seconds: Dor::Config.goobi.base_sleep_seconds, max_sleep_seconds: Dor::Config.goobi.max_sleep_seconds) do |_attempt|
-        response = RestClient.post(Dor::Config.goobi.url, xml_request, content_type: 'application/xml') { |resp, _request, _result| resp }
+      xml = xml_request
+      with_retries(max_tries: Dor::Config.goobi.max_tries,
+                   handler: handler,
+                   base_sleep_seconds: Dor::Config.goobi.base_sleep_seconds,
+                   max_sleep_seconds: Dor::Config.goobi.max_sleep_seconds) do |_attempt|
+        response = RestClient.post(Dor::Config.goobi.url, xml, content_type: 'application/xml')
+        case response.code
+        when 400..404
+          Honeybadger.notify("Goobi notify got a #{response.code}. Request:\n#{xml}")
+        end
         response
       end
-      # rubocop:enable Metrics/LineLength
     end
 
     def goobi_xml_tags
