@@ -337,11 +337,19 @@ RSpec.describe RegistrationService do
         expect(obj.label).to eq('a' * 254)
       end
 
-      it 'sets workflow priority when passed in' do
-        expect(Dor::CreateWorkflowService).to receive(:create_workflow).with(Dor::Item, name: 'digitizationWF', create_ds: false, priority: 50)
-        @params[:workflow_priority] = 50
-        @params[:initiate_workflow] = 'digitizationWF'
-        described_class.register_object(@params)
+      context 'when workflow priority is passed in' do
+        let(:workflow_client) { instance_double(Dor::Workflow::Client, create_workflow_by_name: true) }
+
+        before do
+          allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
+        end
+
+        it 'sets priority' do
+          @params[:workflow_priority] = 50
+          @params[:initiate_workflow] = 'digitizationWF'
+          described_class.register_object(@params)
+          expect(workflow_client).to have_received(:create_workflow_by_name).with(String, 'digitizationWF', priority: 50)
+        end
       end
     end # context common cases
   end

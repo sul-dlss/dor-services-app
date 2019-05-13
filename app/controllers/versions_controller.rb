@@ -41,7 +41,6 @@ class VersionsController < ApplicationController
   def open_params
     params.permit(
       :assume_accessioned,
-      :create_workflows_ds,
       vers_md_upd_info: [
         :description,
         :opening_user_name,
