@@ -9,7 +9,7 @@ RSpec.describe RefreshMetadataAction do
 
   before do
     allow(item.identityMetadata).to receive(:otherId).and_return(['catkey:123'])
-    allow(Dor::MetadataService).to receive(:fetch).and_return('<xml/>')
+    allow(MetadataService).to receive(:fetch).and_return('<xml/>')
   end
 
   it 'gets the data an puts it in descMetadata' do

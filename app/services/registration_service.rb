@@ -141,8 +141,8 @@ class RegistrationService
       if params[:label] == ':auto'
         params.delete(:label)
         params.delete('label')
-        metadata_id = Dor::MetadataService.resolvable(other_ids).first
-        params[:label] = Dor::MetadataService.label_for(metadata_id)
+        metadata_id = MetadataService.resolvable(other_ids).first
+        params[:label] = MetadataService.label_for(metadata_id)
       end
 
       dor_params = {

@@ -26,7 +26,7 @@ class RefreshMetadataAction
 
   def fetch_datastream
     candidates = @object.identityMetadata.otherId.collect(&:to_s)
-    metadata_id = Dor::MetadataService.resolvable(candidates).first
-    metadata_id.nil? ? nil : Dor::MetadataService.fetch(metadata_id.to_s)
+    metadata_id = MetadataService.resolvable(candidates).first
+    metadata_id.nil? ? nil : MetadataService.fetch(metadata_id.to_s)
   end
 end
