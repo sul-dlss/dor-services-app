@@ -7,7 +7,7 @@ class VersionsController < ApplicationController
     VersionService.open(@item, open_params)
     render plain: @item.current_version
   rescue Dor::Exception => e
-    render build_error(e)
+    render build_error('Unable to open version', e)
   end
 
   def current
@@ -17,18 +17,20 @@ class VersionsController < ApplicationController
   def close_current
     VersionService.close(@item, close_params)
     render plain: "version #{@item.current_version} closed"
+  rescue Dor::Exception => e
+    render build_error('Unable to close version', e)
   end
 
   private
 
   # JSON-API error response
-  def build_error(err)
+  def build_error(msg, err)
     {
       json: {
         errors: [
           {
             "status": '422',
-            "title": 'Unable to open version',
+            "title": msg,
             "detail": err.message
           }
         ]

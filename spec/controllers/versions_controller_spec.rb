@@ -21,16 +21,38 @@ RSpec.describe VersionsController do
   end
 
   describe '/versions/current/close' do
-    it 'closes the current version when posted to' do
-      expect(VersionService).to receive(:close)
-      post :close_current, params: { object_id: item.pid }, as: :json
-      expect(response.body).to match(/version 1 closed/)
+    context 'when closing a version succeedes' do
+      before do
+        allow(VersionService).to receive(:close)
+      end
+
+      it 'closes the current version when posted to' do
+        post :close_current, params: { object_id: item.pid }, as: :json
+        expect(VersionService).to have_received(:close)
+        expect(response.body).to match(/version 1 closed/)
+      end
+
+      it 'forwards optional params to the VersionService#close method' do
+        post :close_current, params: { object_id: item.pid }, body: %( {"description": "some text", "significance": "major"} ), as: :json
+        expect(response.body).to match(/version 1 closed/)
+        expect(VersionService).to have_received(:close).with(item, description: 'some text', significance: :major)
+      end
     end
 
-    it 'forwards optional params to the VersionService#close method' do
-      expect(VersionService).to receive(:close).with(item, description: 'some text', significance: :major)
-      post :close_current, params: { object_id: item.pid }, body: %( {"description": "some text", "significance": "major"} ), as: :json
-      expect(response.body).to match(/version 1 closed/)
+    context 'when closing a version fails' do
+      before do
+        allow(VersionService).to receive(:close)
+          .and_raise(Dor::Exception, 'Trying to close version on an object not opened for versioning')
+      end
+
+      it 'returns an error' do
+        post :close_current, params: { object_id: item.pid }, as: :json
+        expect(response.body).to eq(
+          '{"errors":[{"status":"422","title":"Unable to close version",' \
+          '"detail":"Trying to close version on an object not opened for versioning"}]}'
+        )
+        expect(response.status).to eq 422
+      end
     end
   end
 
