@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe WorkflowsController do
   before do
     login
+    allow(Honeybadger).to receive(:notify)
   end
 
   it "GET of /workflows/{wfname}/initial returns the an initial instance of the workflow's xml" do
@@ -21,5 +22,6 @@ RSpec.describe WorkflowsController do
 
     expect(response.content_type).to eq('application/xml')
     expect(response.body).to match(/start-accession/)
+    expect(Honeybadger).to have_received(:notify).with(/Call to deprecated API/)
   end
 end
