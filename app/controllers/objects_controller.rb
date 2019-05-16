@@ -57,6 +57,8 @@ class ObjectsController < ApplicationController
   def notify_goobi
     response = Dor::Goobi.new(@item).register
     proxy_rest_client_response(response)
+  rescue RestClient::Conflict => e
+    render status: 409, plain: e.http_body
   end
 
   # You can post a release tag as JSON in the body to add a release tag to an item.

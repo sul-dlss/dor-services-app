@@ -87,7 +87,7 @@ RELEASE:
   PURL_BASE_URI : 'http://purl.stanford.edu'
 
 GOOBI:
-  URL: 'http://localhost:9292'
+  URL: 'http://goobi-env.stanford.edu:9292'
   DPG_WORKFLOW_NAME: 'goobiWF'
   DEFAULT_GOOBI_WORKFLOW_NAME: 'Example_Workflow'
   MAX_TRIES: 3
