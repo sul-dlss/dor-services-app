@@ -127,12 +127,35 @@ RSpec.describe Dor::Goobi do
     expect(goobi.xml_request).to include('<tags></tags>')
   end
 
-  # rubocop:disable RSpec/SubjectStub
-  it 'makes a call to the goobi server with the appropriate xml params' do
-    stub_request(:post, Dor::Config.goobi.url).to_return(body: '<somexml/>', headers: { 'Content-Type' => 'text/xml' })
-    expect(goobi).to receive(:xml_request)
-    response = goobi.register
-    expect(response.code).to eq(200)
+  describe '#register' do
+    subject(:response) { goobi.register }
+
+    before do
+      allow(goobi).to receive(:xml_request)
+    end
+
+    context 'with a successful response' do
+      before do
+        stub_request(:post, Dor::Config.goobi.url)
+          .to_return(body: '<somexml/>', headers: { 'Content-Type' => 'text/xml' }, status: 201)
+      end
+
+      it 'makes a call to the goobi server with the appropriate xml params' do
+        expect(response.code).to eq 201
+      end
+    end
+
+    context 'with a 409 response' do
+      before do
+        allow(RestClient).to receive(:post).and_call_original
+        stub_request(:post, Dor::Config.goobi.url)
+          .to_return(body: '<somexml/>', headers: { 'Content-Type' => 'text/xml' }, status: 409)
+      end
+
+      it 'makes a call to the goobi server with the appropriate xml params' do
+        expect { response }.to raise_error(RestClient::Conflict)
+        expect(RestClient).to have_received(:post).once # Don't retry request errors
+      end
+    end
   end
-  # rubocop:enable RSpec/SubjectStub
 end

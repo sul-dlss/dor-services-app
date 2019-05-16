@@ -3,12 +3,18 @@
 module Dor
   # This class passes data to the Goobi server using a custom XML message that was developed by Intranda
   class Goobi < ServiceItem
+    # Any RestClient exception that is a 500 or greater
+    RETRIABLE_EXCEPTIONS = RestClient::Exceptions::EXCEPTIONS_MAP.select { |k, _v| k >= 500 }.values +
+                           [RestClient::RequestTimeout,
+                            RestClient::ServerBrokeConnection,
+                            RestClient::SSLCertificateNotVerified]
+
     def register
       with_retries(max_tries: Dor::Config.goobi.max_tries,
                    base_sleep_seconds: Dor::Config.goobi.base_sleep_seconds,
-                   max_sleep_seconds: Dor::Config.goobi.max_sleep_seconds) do |_attempt|
-        response = RestClient.post(Dor::Config.goobi.url, xml_request, content_type: 'application/xml')
-        response
+                   max_sleep_seconds: Dor::Config.goobi.max_sleep_seconds,
+                   rescue: RETRIABLE_EXCEPTIONS) do |_attempt|
+        RestClient.post(Dor::Config.goobi.url, xml_request, content_type: 'application/xml')
       end
     end
 

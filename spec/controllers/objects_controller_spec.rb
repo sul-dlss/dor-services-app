@@ -133,9 +133,6 @@ RSpec.describe ObjectsController do
         stub_request(:post, Dor::Config.goobi.url)
           .to_return(body: 'conflict',
                      status: 409)
-
-        # This just speeds up the test by avoiding retries
-        allow_any_instance_of(Dor::Goobi).to receive(:with_retries).and_yield(nil)
       end
 
       it 'returns the conflict code' do
