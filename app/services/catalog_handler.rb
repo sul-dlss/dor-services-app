@@ -2,13 +2,8 @@
 
 class CatalogHandler
   def fetch(prefix, identifier)
-    client = RestClient::Resource.new(Dor::Config.metadata.catalog.url,
-                                      Dor::Config.metadata.catalog.user,
-                                      Dor::Config.metadata.catalog.pass)
-    params = "?#{prefix.chomp}=#{identifier.chomp}"
-    client[params].get
-  rescue RestClient::Exception => e
-    raise BadResponseFromCatalog, "#{e.class} - when contacting (with BasicAuth hidden): #{Dor::Config.metadata.catalog.url}#{params}"
+    marcxml = MarcxmlResource.find_by(prefix.to_sym => identifier)
+    marcxml.mods
   end
 
   def label(metadata)
