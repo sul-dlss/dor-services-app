@@ -17,12 +17,6 @@ INDEXER:
   # the interval at which the indexer log is rotated
   LOG_ROTATION_INTERVAL: 'daily'
 
-# Metadata
-METADATA:
-  CATALOG_URL: 'https://catalog.example.com/catalog/mods'
-  CATALOG_USER: 'user'
-  CATALOG_PASS: 'password'
-
 # SSL
 SSL:
   CERT_FILE: "/etc/pki/tls/certs/<%= (`echo $HOSTNAME`).strip.gsub('.stanford.edu', '') %>-dor-prod.crt"
