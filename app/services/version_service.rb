@@ -20,10 +20,16 @@ class VersionService
   # @option opts [Hash] :vers_md_upd_info If present, used to add to the events datastream and set the desc and significance on the versionMetadata datastream
   # @raise [Dor::Exception] if the object hasn't been accessioned, or if a version is already opened
   def open(opts = {})
+    # Raised when the object has never been accessioned.
+    # The accessioned milestone is the last step of the accessionWF.
     # During local development, we need a way to open a new version even if the object has not been accessioned.
     raise(Dor::Exception, 'Object net yet accessioned') unless
       opts[:assume_accessioned] || Dor::Config.workflow.client.lifecycle('dor', work.pid, 'accessioned')
+    # Raised when the current version has any incomplete wf steps and there is a versionWF.
+    # The open milestone is part of the versioningWF.
     raise Dor::VersionAlreadyOpenError, 'Object already opened for versioning' if open?
+    # Raised when the current version has any incomplete wf steps and there is an accessionWF.
+    # The submitted milestone is part of the accessionWF.
     raise Dor::Exception, 'Object currently being accessioned' if Dor::Config.workflow.client.active_lifecycle('dor', work.pid, 'submitted')
 
     sdr_version = SdrClient.current_version work.pid
