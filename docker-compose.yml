@@ -13,7 +13,7 @@ services:
       SETTINGS__SSL__CERT_FILE: /app/spec/support/certs/spec.crt
       SETTINGS__SSL__KEY_FILE: /app/spec/support/certs/spec.key
       SETTINGS__SSL__KEY_PASS: thisisatleast4bytes
-      SETTINGS__SOLRIZER_URL: http://solr:8983/solr/dorservices
+      SETTINGS__SOLR__URL: http://solr:8983/solr/dorservices
       SETTINGS__FEDORA_URL: http://fedoraAdmin:fedoraAdmin@fcrepo:8080/fedora
       SETTINGS__SURI__URL: http://suri:3000
       SETTINGS__WORKFLOW_URL: http://workflow:3000

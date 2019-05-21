@@ -12,7 +12,7 @@ Dor.configure do
   end
 
   solr do
-    url Settings.SOLRIZER_URL
+    url Settings.solr.url
   end
 
   workflow do
