@@ -6,39 +6,7 @@ class RegistrationService
     # @param [Hash] params
     # @see register_object similar but different
     def create_from_request(params)
-      other_ids = Array(params[:other_id]).map do |id|
-        if id =~ /^symphony:(.+)$/
-          "#{$1.length < 14 ? 'catkey' : 'barcode'}:#{$1}"
-        else
-          id
-        end
-      end
-
-      if params[:label] == ':auto'
-        params.delete(:label)
-        params.delete('label')
-        metadata_id = MetadataService.resolvable(other_ids).first
-        params[:label] = MetadataService.label_for(metadata_id)
-      end
-
-      dor_params = {
-        pid: params[:pid],
-        admin_policy: params[:admin_policy],
-        content_model: params[:model],
-        label: params[:label],
-        object_type: params[:object_type],
-        other_ids: ids_to_hash(other_ids),
-        parent: params[:parent],
-        source_id: ids_to_hash(params[:source_id]),
-        tags: params[:tag] || [],
-        seed_datastream: params[:seed_datastream],
-        initiate_workflow: Array(params[:initiate_workflow]) + Array(params[:workflow_id]),
-        rights: params[:rights],
-        metadata_source: params[:metadata_source],
-        collection: params[:collection],
-        workflow_priority: params[:workflow_priority]
-      }
-      dor_params.delete_if { |_k, v| v.nil? }
+      dor_params = registration_request_params(params)
 
       request = RegistrationRequest.new(dor_params)
       dor_obj = register_object(request)
@@ -48,6 +16,40 @@ class RegistrationService
     end
 
     private
+
+    # Transform the user provided parameters into something suitable to pass to RegistrationRequest
+    def registration_request_params(params)
+      other_ids = namespace_identifiers(Array(params[:other_id]))
+      handle_auto_label(params, other_ids)
+
+      params.slice(:pid, :admin_policy, :label, :object_type, :parent, :seed_datastream, :rights, :metadata_source, :collection, :workflow_priority)
+            .merge(
+              content_model: params[:model],
+              other_ids: ids_to_hash(other_ids),
+              source_id: ids_to_hash(params[:source_id]),
+              tags: params[:tag] || [],
+              initiate_workflow: Array(params[:initiate_workflow]) + Array(params[:workflow_id])
+            )
+            .reject { |_k, v| v.nil? }
+    end
+
+    # This mutates the value of params[:label] if the value is currently ':auto'
+    def handle_auto_label(params, other_ids)
+      return unless params[:label] == ':auto'
+
+      metadata_id = MetadataService.resolvable(other_ids).first
+      params[:label] = MetadataService.label_for(metadata_id)
+    end
+
+    def namespace_identifiers(other_ids)
+      other_ids.map do |id|
+        if id =~ /^symphony:(.+)$/
+          "#{$1.length < 14 ? 'catkey' : 'barcode'}:#{$1}"
+        else
+          id
+        end
+      end
+    end
 
     # @TODO: these duplicate checks could be combined into 1 query
 
