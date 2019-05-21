@@ -58,7 +58,9 @@ MESSAGE_QUEUES: []
 # URLs
 DOR_SERVICES_URL: 'https://user:password@dor-services.example.com'
 FEDORA_URL: 'https://user:password@fedora.example.com:1000/fedora'
-SOLRIZER_URL: 'https://solr.example.com/solr/collection'
+solr:
+  url: 'https://solr.example.com/solr/collection'
+
 STATUS_INDEXER_URL: 'https://status.example.com/render/?format=json&other=params'
 WORKFLOW_URL: 'https://workflow.example.com/workflow'
 SDR_URL: 'http://sdr-services.example.com/sdr'
