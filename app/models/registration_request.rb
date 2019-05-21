@@ -16,7 +16,7 @@ class RegistrationRequest
   # @option params [String] :pid Fully qualified PID if you don't want one generated for you
   # @option params [Integer] :workflow_priority]
   # @option params [Array<String>] :seed_datastream datastream_names (only 'descMetadata' is a permitted value)
-  # @option params [Array<String>] :initiate_workflow workflow_ids
+  # @option params [Array<String>] :initiate_workflow workflow_ids this parameter is deprecated
   # @option params [Array] :tags
   def initialize(params)
     @params = params
