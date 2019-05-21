@@ -139,7 +139,7 @@ class RegistrationService
       Honeybadger.notify("RegistrationService received deprecated parameter `initiate_workflow' with: `#{workflows.inspect}'") if workflows.present?
 
       workflows.each do |workflow_id|
-        Dor::Config.workflow.client.create_workflow_by_name(item.pid, workflow_id, priority: priority)
+        Dor::Config.workflow.client.create_workflow_by_name(item.pid, workflow_id, priority: priority, version: item.current_version)
       end
     end
 
