@@ -59,7 +59,7 @@ RSpec.configure do |config|
   end
 end
 
-TEST_WORKSPACE = (Dor::Config.stacks.local_workspace_root = 'tmp/dor/workspace')
+TEST_WORKSPACE = (Settings.stacks.local_workspace_root = 'tmp/dor/workspace')
 
 def clean_workspace
   FileUtils.rm_rf Dir.glob(TEST_WORKSPACE + '/*')

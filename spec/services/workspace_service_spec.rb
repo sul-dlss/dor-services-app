@@ -12,8 +12,9 @@ RSpec.describe WorkspaceService do
       config.suri.mint_ids false
       config.solr.url 'http://solr.edu/solrizer'
       config.fedora.url 'http://fedora.edu'
-      config.stacks.local_workspace_root temp_workspace
     end
+
+    allow(Settings.stacks).to receive(:local_workspace_root).and_return(temp_workspace)
 
     FileUtils.mkdir_p(temp_workspace)
   end

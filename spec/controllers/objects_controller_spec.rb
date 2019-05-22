@@ -116,7 +116,7 @@ RSpec.describe ObjectsController do
 
     context 'when it is successful' do
       before do
-        stub_request(:post, Dor::Config.goobi.url)
+        stub_request(:post, Settings.goobi.url)
           .to_return(body: fake_request,
                      headers: { 'Content-Type' => 'application/xml' },
                      status: 201)
@@ -130,7 +130,7 @@ RSpec.describe ObjectsController do
 
     context 'when it is a conflict' do
       before do
-        stub_request(:post, Dor::Config.goobi.url)
+        stub_request(:post, Settings.goobi.url)
           .to_return(body: 'conflict',
                      status: 409)
       end

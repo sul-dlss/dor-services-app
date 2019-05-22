@@ -54,9 +54,9 @@ module Dor
     def write_symphony_records(symphony_records)
       return if symphony_records.blank?
 
-      symphony_file_name = "#{Dor::Config.release.symphony_path}/sdr-purl-856s"
+      symphony_file_name = "#{Settings.release.symphony_path}/sdr-purl-856s"
       symphony_records.each do |symphony_record|
-        command = "#{Dor::Config.release.write_marc_script} #{Shellwords.escape(symphony_record)} #{Shellwords.escape(symphony_file_name)}"
+        command = "#{Settings.release.write_marc_script} #{Shellwords.escape(symphony_record)} #{Shellwords.escape(symphony_file_name)}"
         run_write_script(command)
       end
     end
@@ -111,7 +111,7 @@ module Dor
 
     # It builds the PURL uri based on the druid id
     def get_u_field
-      "|u#{Dor::Config.release.purl_base_uri}/#{@druid_id}"
+      "|u#{Settings.release.purl_base_uri}/#{@druid_id}"
     end
 
     # It returns the SDR-PURL subfield

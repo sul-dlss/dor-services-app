@@ -1,99 +1,68 @@
-# General
-DATE_FORMAT_STR: '%Y-%m-%d %H:%M:%S.%L'
-
-# Content
-CONTENT:
-  USER: 'user'
-  BASE_DIR: '/foo/bar/'
-  SERVER_HOST: 'example-bar'
-  SDR_SERVER_URL: 'https://sdr.example.com'
-  SDR_USER: 'user'
-  SDR_PASSWORD: 'password'
-
-# Indexer
-INDEXER:
-  # the file to which the indexer log is written
-  LOG: 'log/indexer.log'
-  # the interval at which the indexer log is rotated
-  LOG_ROTATION_INTERVAL: 'daily'
-
 # SSL
-SSL:
-  CERT_FILE: "/etc/pki/tls/certs/<%= (`echo $HOSTNAME`).strip.gsub('.stanford.edu', '') %>-dor-prod.crt"
-  KEY_FILE: "/etc/pki/tls/private/<%= (`echo $HOSTNAME`).strip.gsub('.stanford.edu', '') %>-dor-prod.key"
-  KEY_PASS: 'password'
+ssl:
+  cert_file: "/etc/pki/tls/certs/<%= (`echo $HOSTNAME`).strip.gsub('.stanford.edu', '') %>-dor-prod.crt"
+  key_file: "/etc/pki/tls/private/<%= (`echo $HOSTNAME`).strip.gsub('.stanford.edu', '') %>-dor-prod.key"
+  key_pass: 'password'
 
-CONTENT:
-  BASE_DIR: '/dor/workspace'
+content:
+  base_dir: '/dor/workspace'
 
 # Stacks
-STACKS:
-  DOCUMENT_CACHE_STORAGE_ROOT: '/purl/document_cache'
-  DOCUMENT_CACHE_HOST: 'purl-test.stanford.edu'
-  DOCUMENT_CACHE_USER: 'user'
-  LOCAL_WORKSPACE_ROOT: '/dor/workspace'
-  STORAGE_ROOT: '/stacks'
-  HOST: 'stacks.example.com'
-  USER: 'user'
-  LOCAL_STACKS_ROOT: '/stacks'
-  LOCAL_DOCUMENT_CACHE_ROOT: '/purl/document_cache'
-  LOCAL_RECENT_CHANGES: '/purl/recent_changes'
-  URL: 'https://stacks.stanford.edu'
+stacks:
+  document_cache_host: 'purl-test.stanford.edu'
+  local_workspace_root: '/dor/workspace'
+  local_stacks_root: '/stacks'
+  local_document_cache_root: '/purl/document_cache'
 
 # Suri
-SURI:
-  MINT_IDS: true
-  ID_NAMESPACE: 'druid'
-  URL: 'https://suri.example.com'
-  USER: 'user'
-  PASS: 'pass'
+suri:
+  mint_ids: true
+  id_namespace: 'druid'
+  url: 'https://suri.example.com'
+  user: 'user'
+  pass: 'pass'
 
 # Workflow
-WORKFLOW:
-  LOGFILE: 'log/workflow_service.log'
-  SHIFT_AGE: 'weekly'
-
-MESSAGE_QUEUES: []
+workflow:
+  logfile: 'log/workflow_service.log'
+  shift_age: 'weekly'
 
 # URLs
-DOR_SERVICES_URL: 'https://user:password@dor-services.example.com'
-FEDORA_URL: 'https://user:password@fedora.example.com:1000/fedora'
+fedora_url: 'https://user:password@fedora.example.com:1000/fedora'
 solr:
   url: 'https://solr.example.com/solr/collection'
 
-STATUS_INDEXER_URL: 'https://status.example.com/render/?format=json&other=params'
-WORKFLOW_URL: 'https://workflow.example.com/workflow'
-SDR_URL: 'http://sdr-services.example.com/sdr'
+workflow_url: 'https://workflow.example.com/workflow'
+sdr_url: 'http://sdr-services.example.com/sdr'
 purl_services_url: ~
 
-CLEANUP:
-  LOCAL_WORKSPACE_ROOT: '/dor/workspace'
-  LOCAL_ASSEMBLY_ROOT: '/dor/assembly'
-  LOCAL_EXPORT_HOME: '/dor/export'
+cleanup:
+  local_workspace_root: '/dor/workspace'
+  local_assembly_root: '/dor/assembly'
+  local_export_home: '/dor/export'
 
-DOR:
-  SERVICE_USER: 'user'
-  SERVICE_PASSWORD: 'password'
 dor:
+  service_user: 'user'
+  service_password: 'password'
   hmac_secret: 'my$ecretK3y'
 
-RELEASE:
-  SYMPHONY_PATH: './'
-  WRITE_MARC_SCRIPT: 'bin/write_marc_record_test'
-  PURL_BASE_URI : 'http://purl.stanford.edu'
+release:
+  symphony_path: './'
+  write_marc_script: 'bin/write_marc_record_test'
+  purl_base_url: 'http://purl.stanford.edu'
 
-GOOBI:
-  URL: 'http://goobi-env.stanford.edu:9292'
-  DPG_WORKFLOW_NAME: 'goobiWF'
-  DEFAULT_GOOBI_WORKFLOW_NAME: 'Example_Workflow'
-  MAX_TRIES: 3
-  MAX_SLEEP_SECONDS: 20
-  BASE_SLEEP_SECONDS: 2
+goobi:
+  url: 'http://goobi-env.stanford.edu:9292'
+  dpg_workflow_name: 'goobiWF'
+  default_goobi_workflow_name: 'Example_Workflow'
+  max_tries: 3
+  max_sleep_seconds: 20
+  base_sleep_seconds: 2
 
-CATALOG:
-  SOLR_URL: "http://searchworks-solr.stanford.edu/solr/current/"
-  SYMPHONY:
-    JSON_URL: "https://sirsi.example.com/symws/v1/catalog/bib/key/%{catkey}?includeFields=bib"
-    HEADERS:
+catalog:
+  solr_url: "http://searchworks-solr.stanford.edu/solr/current/"
+  symphony:
+    json_url: "https://sirsi.example.com/symws/v1/catalog/bib/key/%{catkey}?includeFields=bib"
+    headers:
       SD-ORIGINATING-APP-ID: DOR-SERVICES-APP
       SD-PREFERRED-ROLE: GUEST

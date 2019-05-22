@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe ContentController do
   before do
     login
-    allow(Dor::Config.content).to receive(:content_base_dir).and_return(File.join(FIXTURES_PATH, 'dor_workspace'))
+    allow(Settings.content).to receive(:content_base_dir).and_return(File.join(FIXTURES_PATH, 'dor_workspace'))
   end
 
   describe '#list' do

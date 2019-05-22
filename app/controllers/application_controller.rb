@@ -4,8 +4,8 @@ class ApplicationController < ActionController::API
   include ActionController::HttpAuthentication::Basic::ControllerMethods
   include ActionController::MimeResponds
 
-  http_basic_authenticate_with name: Settings.DOR.SERVICE_USER,
-                               password: Settings.DOR.SERVICE_PASSWORD
+  http_basic_authenticate_with name: Settings.dor.service_user,
+                               password: Settings.dor.service_password
 
   before_action :check_auth_token
 

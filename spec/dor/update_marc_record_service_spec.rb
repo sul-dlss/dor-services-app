@@ -14,9 +14,9 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
   before :all do
     Dor::Config.suri = {}
-    Dor::Config.release.write_marc_script = 'bin/write_marc_record_test'
-    Dor::Config.release.symphony_path = './spec/fixtures/sdr-purl'
-    Dor::Config.release.purl_base_uri = 'http://purl.stanford.edu'
+    Settings.release.write_marc_script = 'bin/write_marc_record_test'
+    Settings.release.symphony_path = './spec/fixtures/sdr-purl'
+    Settings.release.purl_base_uri = 'http://purl.stanford.edu'
     @fixtures = './spec/fixtures'
   end
 
@@ -297,8 +297,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
     subject(:writer) { @updater.write_symphony_records marc_records }
 
     before do
-      Dor::Config.release.symphony_path = "#{@fixtures}/sdr_purl"
-      Dor::Config.release.write_marc_script = 'bin/write_marc_record_test'
+      Settings.release.symphony_path = "#{@fixtures}/sdr_purl"
+      Settings.release.write_marc_script = 'bin/write_marc_record_test'
       @output_file = "#{@fixtures}/sdr_purl/sdr-purl-856s"
       setup_test_objects('druid:aa111aa1111', '')
       @updater = Dor::UpdateMarcRecordService.new(@dor_item)
@@ -421,7 +421,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     it 'returns valid purl url' do
       setup_test_objects('druid:aa111aa1111', '')
       updater = Dor::UpdateMarcRecordService.new(@dor_item)
-      Dor::Config.release.purl_base_uri = 'http://purl.stanford.edu'
+      Settings.release.purl_base_uri = 'http://purl.stanford.edu'
       expect(updater.get_u_field).to eq('|uhttp://purl.stanford.edu/aa111aa1111')
     end
   end

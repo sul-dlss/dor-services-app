@@ -3,7 +3,7 @@
 # A client for talking to sdr-services-app
 class SdrClient
   def self.create
-    RestClient::Resource.new(Settings.SDR_URL, {})
+    RestClient::Resource.new(Settings.sdr_url, {})
   end
 
   def self.current_version(druid)

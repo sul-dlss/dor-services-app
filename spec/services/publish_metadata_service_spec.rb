@@ -52,17 +52,14 @@ RSpec.describe PublishMetadataService do
           </rightsMetadata>
         EOXML
 
-        Dor::Config.push! do |config|
-          config.stacks.local_document_cache_root purl_root
-          config.purl_services.url 'http://example.com/purl'
-        end
+        allow(Settings).to receive(:purl_services_url).and_return('http://example.com/purl')
+        allow(Settings.stacks).to receive(:local_document_cache_root).and_return(purl_root)
 
         stub_request(:delete, 'example.com/purl/purls/ab123cd4567')
       end
 
       after do
         FileUtils.remove_entry purl_root
-        Dor::Config.pop!
       end
 
       it 'notifies the purl service of the deletion' do
@@ -160,7 +157,7 @@ RSpec.describe PublishMetadataService do
 
     context 'when purl-fetcher is configured' do
       before do
-        allow(Dor::Config.purl_services).to receive(:url).and_return('http://example.com/purl')
+        allow(Settings).to receive(:purl_services_url).and_return('http://example.com/purl')
 
         stub_request(:post, 'example.com/purl/purls/ab123cd4567')
       end
@@ -177,11 +174,11 @@ RSpec.describe PublishMetadataService do
       let(:changes_file) { File.join(changes_dir, item.pid.gsub('druid:', '')) }
 
       before do
-        allow(Dor::Config.purl_services).to receive(:url).and_return(nil)
+        allow(Settings).to receive(:purl_services_url).and_return(nil)
       end
 
       it 'writes empty notification file' do
-        expect { notify }.to raise_error 'You have not configured perl-fetcher (Dor::Config.purl_services.url).'
+        expect { notify }.to raise_error 'You have not configured perl-fetcher (Settings.purl_services_url).'
       end
     end
   end
@@ -191,8 +188,8 @@ RSpec.describe PublishMetadataService do
     let(:workspace_root) { Dir.mktmpdir }
 
     before do
-      allow(Dor::Config.stacks).to receive(:local_document_cache_root).and_return(purl_root)
-      allow(Dor::Config.stacks).to receive(:local_workspace_root).and_return(workspace_root)
+      allow(Settings.stacks).to receive(:local_document_cache_root).and_return(purl_root)
+      allow(Settings.stacks).to receive(:local_workspace_root).and_return(workspace_root)
     end
 
     after do

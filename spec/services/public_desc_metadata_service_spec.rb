@@ -92,8 +92,7 @@ RSpec.describe PublicDescMetadataService do
       allow(obj).to receive(:relationships).with(:is_member_of).and_return(['info:fedora/druid:zb871zd0767'])
       allow(obj).to receive(:relationships).with(:is_member_of_collection).and_return(['info:fedora/druid:zb871zd0767'])
       allow(obj).to receive(:relationships).with(:is_constituent_of).and_return([])
-
-      Dor::Config.push! { stacks.document_cache_host 'purl.stanford.edu' }
+      allow(Settings.stacks).to receive(:document_cache_host).and_return('purl.stanford.edu')
 
       obj.rightsMetadata.content = rights_xml
 
@@ -103,10 +102,6 @@ RSpec.describe PublicDescMetadataService do
       allow(Dor).to receive(:find) do |pid|
         pid == 'druid:ab123cd4567' ? obj : collection
       end
-    end
-
-    after do
-      Dor::Config.pop!
     end
 
     context 'when using ex2_related_mods.xml' do
@@ -319,16 +314,11 @@ RSpec.describe PublicDescMetadataService do
       allow(obj).to receive(:relationships).with(:is_member_of).and_return(['info:fedora/druid:zb871zd0767'])
       allow(obj).to receive(:relationships).with(:is_member_of_collection).and_return(['info:fedora/druid:zb871zd0767'])
       allow(obj).to receive(:relationships).with(:is_constituent_of).and_return([])
-
-      Dor::Config.push! { stacks.document_cache_host 'purl.stanford.edu' }
+      allow(Settings.stacks).to receive(:document_cache_host).and_return('purl.stanford.edu')
 
       allow(Dor).to receive(:find) do |pid|
         pid == 'druid:ab123cd4567' ? obj : collection
       end
-    end
-
-    after do
-      Dor::Config.pop!
     end
 
     describe 'relatedItem' do

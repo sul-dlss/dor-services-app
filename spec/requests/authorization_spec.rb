@@ -3,8 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Authorization' do
-  let(:user) { Settings.DOR.SERVICE_USER }
-  let(:password) { Settings.DOR.SERVICE_PASSWORD }
+  let(:user) { Settings.dor.service_user }
+  let(:password) { Settings.dor.service_password }
   let(:basic_auth) { ActionController::HttpAuthentication::Basic.encode_credentials(user, password) }
   let(:object) { instance_double(Dor::Item, current_version: '5') }
 

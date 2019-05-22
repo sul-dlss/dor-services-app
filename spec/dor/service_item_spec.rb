@@ -44,7 +44,7 @@ RSpec.describe Dor::ServiceItem do
 
     it 'returns blank for goobi_workflow_name if none are found' do
       allow(@dor_item).to receive(:tags).and_return(['Process : Content Type : Book (flipbook, ltr)'])
-      expect(si.goobi_workflow_name).to eq(Dor::Config.goobi.default_goobi_workflow_name)
+      expect(si.goobi_workflow_name).to eq(Settings.goobi.default_goobi_workflow_name)
     end
   end
 
