@@ -76,7 +76,7 @@ RSpec.describe VersionsController do
       allow(item).to receive(:current_version).and_return('2')
     end
 
-    context 'when opening a version succeedes' do
+    context 'when opening a version succeeds' do
       before do
         # Do not test version service side effects in dor-services-app; that is dor-services' responsibility
         allow(VersionService).to receive(:open)
@@ -106,6 +106,32 @@ RSpec.describe VersionsController do
         post :create, params: { object_id: item.pid }, as: :json
         expect(response.body).to eq('{"errors":[{"status":"422","title":"Unable to open version","detail":"Object net yet accessioned"}]}')
         expect(response.status).to eq 422
+      end
+    end
+  end
+
+  describe '/versions/openeable' do
+    context 'when a new version can be opened' do
+      before do
+        allow(VersionService).to receive(:can_open?).and_return(true)
+      end
+
+      it 'returns true' do
+        get :openeable, params: { object_id: item.pid }
+        expect(response.body).to eq('true')
+        expect(response).to be_successful
+      end
+    end
+
+    context 'when a new version cannot be opened' do
+      before do
+        allow(VersionService).to receive(:can_open?).and_return(false)
+      end
+
+      it 'returns true' do
+        get :openeable, params: { object_id: item.pid }
+        expect(response.body).to eq('false')
+        expect(response).to be_successful
       end
     end
   end
