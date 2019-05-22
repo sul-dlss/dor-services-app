@@ -33,6 +33,6 @@ class ContentController < ApplicationController
   private
 
   def druid_tools
-    DruidTools::Druid.new(params[:id], Dor::Config.content.content_base_dir)
+    DruidTools::Druid.new(params[:id], Settings.content.content_base_dir)
   end
 end

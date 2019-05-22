@@ -5,7 +5,7 @@ class SymphonyReader
   attr_reader :catkey
 
   def self.client
-    Faraday.new(headers: Settings.CATALOG.SYMPHONY.HEADERS)
+    Faraday.new(headers: Settings.catalog.symphony.headers)
   end
 
   def initialize(catkey:)
@@ -37,7 +37,7 @@ class SymphonyReader
   end
 
   def json
-    @json ||= JSON.parse(client.get(Settings.CATALOG.SYMPHONY.JSON_URL % { catkey: catkey }).body)
+    @json ||= JSON.parse(client.get(Settings.catalog.symphony.json_url % { catkey: catkey }).body)
   end
 
   def bib_record

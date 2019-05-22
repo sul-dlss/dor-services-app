@@ -103,7 +103,7 @@ module Dor
       @goobi_workflow_name ||= begin
         dpg_workflow_tag_id = 'DPG : Workflow : '
         content_tag = @druid_obj.tags.select { |tag| tag.include?(dpg_workflow_tag_id) }
-        content_tag.empty? ? Dor::Config.goobi.default_goobi_workflow_name : content_tag[0].split(':').last.strip
+        content_tag.empty? ? Settings.goobi.default_goobi_workflow_name : content_tag[0].split(':').last.strip
       end
     end
 

@@ -53,7 +53,7 @@ class PublishMetadataService
   end
 
   def purl_druid
-    @purl_druid ||= DruidTools::PurlDruid.new item.pid, Dor::Config.stacks.local_document_cache_root
+    @purl_druid ||= DruidTools::PurlDruid.new item.pid, Settings.stacks.local_document_cache_root
   end
 
   def prune_purl_dir
@@ -62,25 +62,25 @@ class PublishMetadataService
 
   ##
   # When publishing a PURL, we notify purl-fetcher of changes.
-  # If the purl service isn't configured, instead we drop a `aa11bb2222` file into the `local_recent_changes` folder
-  # to notify other applications watching the filesystem (i.e., purl-fetcher).
-  # We also remove any .deletes entry that may have left over from a previous removal
+  #
   def publish_notify_on_success
     id = item.pid.gsub(/^druid:/, '')
-    raise 'You have not configured perl-fetcher (Dor::Config.purl_services.url).' unless Dor::Config.purl_services.url
 
-    purl_services = Dor::Config.purl_services.rest_client
-    purl_services["purls/#{id}"].post ''
+    rest_client["purls/#{id}"].post ''
   end
 
   ##
-  # When publishing a PURL, we notify purl-fetcher of changes.
+  # When deleting a PURL, we notify purl-fetcher of changes.
+  #
   def publish_delete_on_success
-    return unless Dor::Config.purl_services.url
-
     id = item.pid.gsub(/^druid:/, '')
 
-    purl_services = Dor::Config.purl_services.rest_client
-    purl_services["purls/#{id}"].delete
+    rest_client["purls/#{id}"].delete
+  end
+
+  def rest_client
+    raise 'You have not configured perl-fetcher (Settings.purl_services_url).' unless Settings.purl_services_url
+
+    RestClient::Resource.new(Settings.purl_services_url)
   end
 end

@@ -32,7 +32,7 @@ RSpec.describe SdrClient do
   describe '.create' do
     context 'with SDR configuration' do
       before do
-        allow(Settings).to receive(:SDR_URL).and_return('http://example.com')
+        allow(Settings).to receive(:sdr_url).and_return('http://example.com')
       end
 
       it 'is configured to use SDR' do

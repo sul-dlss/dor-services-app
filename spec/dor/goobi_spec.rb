@@ -61,7 +61,7 @@ RSpec.describe Dor::Goobi do
         <barcode>barcode_12345</barcode>
         <collectionId>druid:oo000oo0001</collectionId>
         <collectionName>collection name</collectionName>
-        <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
+        <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
         <goobiWorkflow>goobi_workflow</goobiWorkflow>
         <ocr>false</ocr>
         <tags>
@@ -88,7 +88,7 @@ RSpec.describe Dor::Goobi do
         <barcode>barcode_12345</barcode>
         <collectionId>druid:oo000oo0001</collectionId>
         <collectionName>collection name</collectionName>
-        <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
+        <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
         <goobiWorkflow>goobi_workflow</goobiWorkflow>
         <ocr>true</ocr>
         <tags>
@@ -113,7 +113,7 @@ RSpec.describe Dor::Goobi do
         <barcode>barcode_12345</barcode>
         <collectionId>druid:oo000oo0001</collectionId>
         <collectionName>collection name</collectionName>
-        <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
+        <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
         <goobiWorkflow>goobi_workflow</goobiWorkflow>
         <ocr>false</ocr>
         <tags></tags>
@@ -136,7 +136,7 @@ RSpec.describe Dor::Goobi do
 
     context 'with a successful response' do
       before do
-        stub_request(:post, Dor::Config.goobi.url)
+        stub_request(:post, Settings.goobi.url)
           .to_return(body: '<somexml/>', headers: { 'Content-Type' => 'text/xml' }, status: 201)
       end
 
@@ -148,7 +148,7 @@ RSpec.describe Dor::Goobi do
     context 'with a 409 response' do
       before do
         allow(RestClient).to receive(:post).and_call_original
-        stub_request(:post, Dor::Config.goobi.url)
+        stub_request(:post, Settings.goobi.url)
           .to_return(body: '<somexml/>', headers: { 'Content-Type' => 'text/xml' }, status: 409)
       end
 

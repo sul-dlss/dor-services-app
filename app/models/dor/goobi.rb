@@ -10,11 +10,11 @@ module Dor
                             RestClient::SSLCertificateNotVerified]
 
     def register
-      with_retries(max_tries: Dor::Config.goobi.max_tries,
-                   base_sleep_seconds: Dor::Config.goobi.base_sleep_seconds,
-                   max_sleep_seconds: Dor::Config.goobi.max_sleep_seconds,
+      with_retries(max_tries: Settings.goobi.max_tries,
+                   base_sleep_seconds: Settings.goobi.base_sleep_seconds,
+                   max_sleep_seconds: Settings.goobi.max_sleep_seconds,
                    rescue: RETRIABLE_EXCEPTIONS) do |_attempt|
-        RestClient.post(Dor::Config.goobi.url, xml_request, content_type: 'application/xml')
+        RestClient.post(Settings.goobi.url, xml_request, content_type: 'application/xml')
       end
     end
 
@@ -35,7 +35,7 @@ module Dor
             <barcode>#{barcode}</barcode>
             <collectionId>#{collection_id}</collectionId>
             <collectionName>#{collection_name.encode(xml: :text)}</collectionName>
-            <sdrWorkflow>#{Dor::Config.goobi.dpg_workflow_name}</sdrWorkflow>
+            <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
             <goobiWorkflow>#{goobi_workflow_name}</goobiWorkflow>
             <ocr>#{goobi_ocr_tag_present?}</ocr>
             <tags>#{goobi_xml_tags}</tags>

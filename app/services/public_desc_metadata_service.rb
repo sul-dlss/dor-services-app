@@ -101,7 +101,7 @@ class PublicDescMetadataService
       # point to the PURL for the parent
       location = doc.create_element 'location'
       url = doc.create_element 'url'
-      url.content = "http://#{Dor::Config.stacks.document_cache_host}/#{druid.split(':').last}"
+      url.content = "http://#{Settings.stacks.document_cache_host}/#{druid.split(':').last}"
       location << url
       relatedItem << location
 
@@ -151,7 +151,7 @@ class PublicDescMetadataService
     #   </location>
     loc_node = doc.create_element('location')
     url_node = doc.create_element('url')
-    url_node.content = "https://#{Dor::Config.stacks.document_cache_host}/#{collection_druid.split(':').last}"
+    url_node.content = "https://#{Settings.stacks.document_cache_host}/#{collection_druid.split(':').last}"
     loc_node << url_node
 
     type_node = Nokogiri::XML::Node.new('typeOfResource', doc)
