@@ -21,6 +21,10 @@ class VersionsController < ApplicationController
     render build_error('Unable to close version', e)
   end
 
+  def openeable
+    render plain: VersionService.can_open?(@item, open_params).to_s
+  end
+
   private
 
   # JSON-API error response

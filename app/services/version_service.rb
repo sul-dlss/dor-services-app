@@ -6,6 +6,10 @@ class VersionService
     new(work).open(opts)
   end
 
+  def self.can_open?(work, opts = {})
+    new(work).can_open?(opts)
+  end
+
   def self.close(work, opts = {})
     new(work).close(opts)
   end
@@ -20,17 +24,7 @@ class VersionService
   # @option opts [Hash] :vers_md_upd_info If present, used to add to the events datastream and set the desc and significance on the versionMetadata datastream
   # @raise [Dor::Exception] if the object hasn't been accessioned, or if a version is already opened
   def open(opts = {})
-    # Raised when the object has never been accessioned.
-    # The accessioned milestone is the last step of the accessionWF.
-    # During local development, we need a way to open a new version even if the object has not been accessioned.
-    raise(Dor::Exception, 'Object net yet accessioned') unless
-      opts[:assume_accessioned] || Dor::Config.workflow.client.lifecycle('dor', work.pid, 'accessioned')
-    # Raised when the current version has any incomplete wf steps and there is a versionWF.
-    # The open milestone is part of the versioningWF.
-    raise Dor::VersionAlreadyOpenError, 'Object already opened for versioning' if open?
-    # Raised when the current version has any incomplete wf steps and there is an accessionWF.
-    # The submitted milestone is part of the accessionWF.
-    raise Dor::Exception, 'Object currently being accessioned' if Dor::Config.workflow.client.active_lifecycle('dor', work.pid, 'submitted')
+    raise_for_open(opts[:assume_accessioned])
 
     sdr_version = SdrClient.current_version work.pid
 
@@ -46,6 +40,17 @@ class VersionService
     work.events.add_event('open', vmd_upd_info[:opening_user_name], "Version #{vmd_ds.current_version_id} opened")
     vmd_ds.update_current_version(description: vmd_upd_info[:description], significance: vmd_upd_info[:significance].to_sym)
     work.save
+  end
+
+  # Determines whether a new version can be opened for an object.
+  # @param [Hash] opts optional params
+  # @option opts [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
+  # @return [Boolean] true if a new version can be opened.
+  def can_open?(opts = {})
+    raise_for_open(opts[:assume_accessioned])
+    true
+  rescue Dor::Exception
+    false
   end
 
   # Sets versioningWF:submit-version to completed and initiates accessionWF for the object
@@ -64,15 +69,41 @@ class VersionService
     end
 
     raise Dor::Exception, 'latest version in versionMetadata requires tag and description before it can be closed' unless work.versionMetadata.current_version_closeable?
-    raise Dor::Exception, 'Trying to close version on an object not opened for versioning' unless open?
-    raise Dor::Exception, 'accessionWF already created for versioned object' if Dor::Config.workflow.client.active_lifecycle('dor', work.pid, 'submitted')
+    raise Dor::Exception, 'Trying to close version on an object not opened for versioning' unless open_for_versioning?
+    raise Dor::Exception, 'accessionWF already created for versioned object' if accessioning?
 
     Dor::Config.workflow.client.close_version 'dor', work.pid, opts.fetch(:start_accession, true) # Default to creating accessionWF when calling close_version
   end
 
-  # @return [Boolean] true if 'opened' lifecycle is active, false otherwise
-  def open?
+  # Performs checks on whether a new version can be opened for an object
+  # @param [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
+  # @raise [Dor::Exception] if the object hasn't been accessioned, or if a version is already opened
+  def raise_for_open(assume_accessioned = false)
+    # Raised when the object has never been accessioned.
+    # The accessioned milestone is the last step of the accessionWF.
+    # During local development, we need a way to open a new version even if the object has not been accessioned.
+    raise(Dor::Exception, 'Object net yet accessioned') unless
+        assume_accessioned || Dor::Config.workflow.client.lifecycle('dor', work.pid, 'accessioned')
+    # Raised when the current version has any incomplete wf steps and there is a versionWF.
+    # The open milestone is part of the versioningWF.
+    raise Dor::VersionAlreadyOpenError, 'Object already opened for versioning' if open_for_versioning?
+    # Raised when the current version has any incomplete wf steps and there is an accessionWF.
+    # The submitted milestone is part of the accessionWF.
+    raise Dor::Exception, 'Object currently being accessioned' if accessioning?
+  end
+
+  # Checks if current version has any incomplete wf steps and there is a versionWF
+  # @return [Boolean] true if object is open for versioning
+  def open_for_versioning?
     return true if Dor::Config.workflow.client.active_lifecycle('dor', work.pid, 'opened')
+
+    false
+  end
+
+  # Checks if the current version has any incomplete wf steps and there is an accessionWF.
+  # @return [Boolean] true if object is currently being accessioned
+  def accessioning?
+    return true if Dor::Config.workflow.client.active_lifecycle('dor', work.pid, 'submitted')
 
     false
   end

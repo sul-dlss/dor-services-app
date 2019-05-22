@@ -70,27 +70,16 @@ RSpec.describe VersionService do
       end
     end
 
-    context 'when the object has not been accessioned' do
+    context 'when a new version cannot be opened' do
+      let(:instance) { described_class.new obj }
+
+      before do
+        allow(instance).to receive(:raise_for_open).and_raise(Dor::Exception, 'Object net yet accessioned')
+        allow(described_class).to receive(:new).and_return(instance)
+      end
+
       it 'raises an exception' do
-        expect(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(false)
         expect { open }.to raise_error(Dor::Exception, 'Object net yet accessioned')
-      end
-    end
-
-    context 'when the object has already been opened' do
-      it 'raises an exception' do
-        expect(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(true)
-        expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened').and_return(Time.new)
-        expect { open }.to raise_error(Dor::VersionAlreadyOpenError, 'Object already opened for versioning')
-      end
-    end
-
-    context 'when the object is still being accessioned' do
-      it 'raises an exception' do
-        expect(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(true)
-        expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened').and_return(nil)
-        expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted').and_return(Time.new)
-        expect { open }.to raise_error(Dor::Exception, 'Object currently being accessioned')
       end
     end
 
@@ -101,6 +90,62 @@ RSpec.describe VersionService do
         expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted').and_return(nil)
         expect(SdrClient).to receive(:current_version).and_return(3)
         expect { open }.to raise_error(Dor::Exception, 'Cannot sync to a version greater than current: 1, requested 3')
+      end
+    end
+  end
+
+  describe '.can_open?' do
+    subject(:can_open?) { described_class.can_open?(obj) }
+
+    before do
+      allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
+    end
+
+    let(:workflow_client) do
+      instance_double(Dor::Workflow::Client,
+                      lifecycle: true,
+                      active_lifecycle: nil)
+    end
+
+    context 'when a new version can be opened' do
+      it 'returns true' do
+        expect(can_open?).to be true
+        expect(workflow_client).to have_received(:lifecycle).with('dor', druid, 'accessioned')
+        expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'opened')
+        expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'submitted')
+      end
+    end
+
+    context 'when the object has not been accessioned' do
+      before do
+        allow(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(false)
+      end
+
+      it 'returns false' do
+        expect(can_open?).to be false
+        expect(Dor::Config.workflow.client).to have_received(:lifecycle).with('dor', druid, 'accessioned')
+      end
+    end
+
+    context 'when the object has already been opened' do
+      before do
+        allow(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened').and_return(Time.new)
+      end
+
+      it 'raises an exception' do
+        expect(can_open?).to be false
+        expect(Dor::Config.workflow.client).to have_received(:active_lifecycle).with('dor', druid, 'opened')
+      end
+    end
+
+    context 'when the object is still being accessioned' do
+      before do
+        allow(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted').and_return(Time.new)
+      end
+
+      it 'raises an exception' do
+        expect(can_open?).to be false
+        expect(Dor::Config.workflow.client).to have_received(:active_lifecycle).with('dor', druid, 'submitted')
       end
     end
   end
