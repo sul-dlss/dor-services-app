@@ -24,7 +24,7 @@ Rails.application.routes.draw do
       get 'catkey', to: 'marcxml#catkey'
     end
 
-    resources :objects, only: [:create] do
+    resources :objects, only: [:create, :show] do
       member do
         post 'initialize_workspace'
         post 'publish'

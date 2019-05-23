@@ -166,6 +166,11 @@ GEM
       concurrent-ruby (~> 1.0)
       dry-core (~> 0.2)
       dry-equalizer (~> 0.2)
+    dry-struct (0.6.0)
+      dry-core (~> 0.4, >= 0.4.3)
+      dry-equalizer (~> 0.2)
+      dry-types (~> 0.13)
+      ice_nine (~> 0.11)
     dry-types (0.14.1)
       concurrent-ruby (~> 1.0)
       dry-container (~> 0.3)
@@ -204,6 +209,7 @@ GEM
       domain_name (~> 0.5)
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
+    ice_nine (0.11.2)
     iso-639 (0.2.8)
     jaro_winkler (1.5.2)
     json (2.2.0)
@@ -447,6 +453,8 @@ DEPENDENCIES
   coveralls (~> 0.8)
   dlss-capistrano
   dor-services (~> 7.0)
+  dry-struct
+  dry-types
   equivalent-xml
   faraday
   honeybadger

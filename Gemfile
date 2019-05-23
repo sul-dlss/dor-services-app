@@ -36,6 +36,8 @@ gem 'uuidtools', '~> 2.1.4'
 
 # DLSS/domain-specific dependencies
 gem 'dor-services', '~> 7.0'
+gem 'dry-struct'
+gem 'dry-types'
 
 group :test, :development do
   gem 'coveralls', '~> 0.8', require: false

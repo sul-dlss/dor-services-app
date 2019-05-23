@@ -32,6 +32,12 @@ class ObjectsController < ApplicationController
     end
   end
 
+  def show
+    item = Dor.find(params[:id])
+
+    render json: Cocina::Mapper.build(item)
+  end
+
   # The param, source, can be passed as appended parameter to url:
   #  http://lyberservices-dev/dor/v1/objects/{druid}/initialize_workspace?source=/path/to/content/dir/for/druid
   # or
