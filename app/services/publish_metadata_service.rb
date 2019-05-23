@@ -56,10 +56,6 @@ class PublishMetadataService
     @purl_druid ||= DruidTools::PurlDruid.new item.pid, Settings.stacks.local_document_cache_root
   end
 
-  def prune_purl_dir
-    purl_druid.prune!
-  end
-
   ##
   # When publishing a PURL, we notify purl-fetcher of changes.
   #
