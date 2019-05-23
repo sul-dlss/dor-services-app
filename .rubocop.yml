@@ -13,6 +13,9 @@ AllCops:
 Rails:
   Enabled: true
 
+Lint/UnusedMethodArgument:
+  AllowUnusedKeywordArguments: true
+
 # Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:
   Max: 200
@@ -37,3 +40,7 @@ RSpec/MultipleExpectations:
 RSpec/ExpectActual:
   Exclude:
     - 'spec/routing/**'
+
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/requests/**'

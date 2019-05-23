@@ -2,13 +2,9 @@
 
 # API to retrieve file listings and file content from the DOR workspace
 class ContentController < ApplicationController
-  rescue_from ActionController::MissingFile do
-    render status: :not_found
-  end
-
   def read
     location = druid_tools.find(:content, params[:path])
-    return render status: :not_found unless location
+    return not_found(location) unless location
 
     send_file location
   end
@@ -16,7 +12,7 @@ class ContentController < ApplicationController
   def list
     location = druid_tools.content_dir(false)
 
-    raise ActionController::MissingFile, location unless Dir.exist? location
+    return not_found(location) unless Dir.exist? location
 
     render json: {
       items: Dir.glob(File.join(location, '**', '*')).map do |file|
@@ -31,6 +27,10 @@ class ContentController < ApplicationController
   end
 
   private
+
+  def not_found(location)
+    render status: :not_found, plain: "Unable to locate file #{location}"
+  end
 
   def druid_tools
     DruidTools::Druid.new(params[:id], Settings.content.content_base_dir)
