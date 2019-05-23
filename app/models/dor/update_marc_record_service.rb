@@ -111,7 +111,7 @@ module Dor
 
     # It builds the PURL uri based on the druid id
     def get_u_field
-      "|u#{Settings.release.purl_base_uri}/#{@druid_id}"
+      "|u#{Settings.release.purl_base_url}/#{@druid_id}"
     end
 
     # It returns the SDR-PURL subfield
