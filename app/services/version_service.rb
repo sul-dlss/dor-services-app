@@ -24,9 +24,7 @@ class VersionService
   # @option opts [Hash] :vers_md_upd_info If present, used to add to the events datastream and set the desc and significance on the versionMetadata datastream
   # @raise [Dor::Exception] if the object hasn't been accessioned, or if a version is already opened
   def open(opts = {})
-    raise_for_open(opts[:assume_accessioned])
-
-    sdr_version = SdrClient.current_version work.pid
+    sdr_version = try_to_get_current_version(opts[:assume_accessioned])
 
     vmd_ds = work.versionMetadata
     vmd_ds.sync_then_increment_version sdr_version
@@ -47,7 +45,7 @@ class VersionService
   # @option opts [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
   # @return [Boolean] true if a new version can be opened.
   def can_open?(opts = {})
-    raise_for_open(opts[:assume_accessioned])
+    try_to_get_current_version(opts[:assume_accessioned])
     true
   rescue Dor::Exception
     false
@@ -76,9 +74,12 @@ class VersionService
   end
 
   # Performs checks on whether a new version can be opened for an object
+  # @return [Integer] the version from sdr-services-app if a version can be opened
   # @param [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
-  # @raise [Dor::Exception] if the object hasn't been accessioned, or if a version is already opened
-  def raise_for_open(assume_accessioned = false)
+  # @raise [Dor::Exception] if the object hasn't been accessioned, if a version is already opened,
+  #                         or if SDR app returns 404 when queried.
+  #
+  def try_to_get_current_version(assume_accessioned = false)
     # Raised when the object has never been accessioned.
     # The accessioned milestone is the last step of the accessionWF.
     # During local development, we need a way to open a new version even if the object has not been accessioned.
@@ -90,6 +91,13 @@ class VersionService
     # Raised when the current version has any incomplete wf steps and there is an accessionWF.
     # The submitted milestone is part of the accessionWF.
     raise Dor::Exception, 'Object currently being accessioned' if accessioning?
+
+    begin
+      return SdrClient.current_version work.pid
+    rescue RestClient::NotFound
+      raise Dor::Exception, 'SDR is not yet answering queries about this object. ' \
+        "We've seen that when an object has been transfered, SDR isn't immediately ready to answer queries"
+    end
   end
 
   # Checks if current version has any incomplete wf steps and there is a versionWF
