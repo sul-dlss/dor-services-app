@@ -62,20 +62,14 @@ RSpec.describe PublishMetadataService do
         FileUtils.remove_entry purl_root
       end
 
-      it 'notifies the purl service of the deletion' do
-        service.publish
-        expect(WebMock).to have_requested(:delete, 'example.com/purl/purls/ab123cd4567')
-      end
-
-      it "removes the item's content from the Purl document cache and creates a .delete entry" do
+      it "removes the item's content from the Purl document cache and notifies the purl service of the deletion" do
         # create druid tree and dummy content in purl root
         druid1 = DruidTools::Druid.new item.pid, purl_root
         druid1.mkdir
-        expect(druid1).not_to be_deletes_record_exists # deletes record not there yet
         File.open(File.join(druid1.path, 'tmpfile'), 'w') { |f| f.write 'junk' }
         service.publish
         expect(File).not_to exist(druid1.path) # it should now be gone
-        expect(druid1).to be_deletes_record_exists # deletes record created
+        expect(WebMock).to have_requested(:delete, 'example.com/purl/purls/ab123cd4567')
       end
     end
 
