@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem 'rails', '~> 5.2.0'
 
@@ -35,7 +36,7 @@ gem 'progressbar' # for the cleaner rake task
 gem 'uuidtools', '~> 2.1.4'
 
 # DLSS/domain-specific dependencies
-gem 'dor-services', '~> 7.0'
+gem 'dor-services', github: 'sul-dlss/dor-services'
 
 group :test, :development do
   gem 'coveralls', '~> 0.8', require: false
