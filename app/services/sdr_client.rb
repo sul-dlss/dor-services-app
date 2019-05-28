@@ -6,6 +6,8 @@ class SdrClient
     RestClient::Resource.new(Settings.sdr_url, {})
   end
 
+  # @raises [RestClient::NotFound] if SDR doesn't know about the object (i.e. 404 response code)
+  # @raises [StandardError] if the response from SDR can't be parsed
   def self.current_version(druid)
     xml = create["objects/#{druid}/current_version"].get
 

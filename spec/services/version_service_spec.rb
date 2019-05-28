@@ -21,7 +21,7 @@ RSpec.describe VersionService do
   describe '.open' do
     subject(:open) { described_class.open(obj) }
 
-    context 'normal behavior' do
+    context 'when on the expected path' do
       before do
         allow(SdrClient).to receive(:current_version).and_return(1)
         allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
@@ -74,7 +74,7 @@ RSpec.describe VersionService do
       let(:instance) { described_class.new obj }
 
       before do
-        allow(instance).to receive(:raise_for_open).and_raise(Dor::Exception, 'Object net yet accessioned')
+        allow(instance).to receive(:try_to_get_current_version).and_raise(Dor::Exception, 'Object net yet accessioned')
         allow(described_class).to receive(:new).and_return(instance)
       end
 
@@ -83,13 +83,30 @@ RSpec.describe VersionService do
       end
     end
 
-    context "SDR's current version is greater than the current version" do
+    context "when SDR's current version is greater than the current version" do
       it 'raises an exception' do
         expect(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(true)
         expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened').and_return(nil)
         expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted').and_return(nil)
         expect(SdrClient).to receive(:current_version).and_return(3)
         expect { open }.to raise_error(Dor::Exception, 'Cannot sync to a version greater than current: 1, requested 3')
+      end
+    end
+
+    context "when sdr-services-app doesn't know about the object" do
+      before do
+        allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
+        allow(SdrClient).to receive(:current_version).and_raise(RestClient::NotFound)
+      end
+
+      let(:workflow_client) do
+        instance_double(Dor::Workflow::Client,
+                        lifecycle: true,
+                        active_lifecycle: nil)
+      end
+
+      it 'raises an exception' do
+        expect { open }.to raise_error(Dor::Exception, /SDR is not yet answering queries about this object/)
       end
     end
   end
@@ -108,6 +125,10 @@ RSpec.describe VersionService do
     end
 
     context 'when a new version can be opened' do
+      before do
+        allow(SdrClient).to receive(:current_version).and_return(1)
+      end
+
       it 'returns true' do
         expect(can_open?).to be true
         expect(workflow_client).to have_received(:lifecycle).with('dor', druid, 'accessioned')
@@ -118,34 +139,44 @@ RSpec.describe VersionService do
 
     context 'when the object has not been accessioned' do
       before do
-        allow(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(false)
+        allow(workflow_client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(false)
       end
 
       it 'returns false' do
         expect(can_open?).to be false
-        expect(Dor::Config.workflow.client).to have_received(:lifecycle).with('dor', druid, 'accessioned')
+        expect(workflow_client).to have_received(:lifecycle).with('dor', druid, 'accessioned')
       end
     end
 
     context 'when the object has already been opened' do
       before do
-        allow(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened').and_return(Time.new)
+        allow(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened').and_return(Time.new)
       end
 
-      it 'raises an exception' do
+      it 'returns false' do
         expect(can_open?).to be false
-        expect(Dor::Config.workflow.client).to have_received(:active_lifecycle).with('dor', druid, 'opened')
+        expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'opened')
       end
     end
 
     context 'when the object is still being accessioned' do
       before do
-        allow(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted').and_return(Time.new)
+        allow(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'submitted').and_return(Time.new)
       end
 
-      it 'raises an exception' do
+      it 'returns false' do
         expect(can_open?).to be false
-        expect(Dor::Config.workflow.client).to have_received(:active_lifecycle).with('dor', druid, 'submitted')
+        expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'submitted')
+      end
+    end
+
+    context "when sdr-services-app doesn't know about the object" do
+      before do
+        allow(SdrClient).to receive(:current_version).and_raise(RestClient::NotFound)
+      end
+
+      it 'returns false' do
+        expect(can_open?).to be false
       end
     end
   end
