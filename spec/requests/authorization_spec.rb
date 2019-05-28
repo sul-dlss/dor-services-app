@@ -3,9 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Authorization' do
-  let(:user) { Settings.dor.service_user }
-  let(:password) { Settings.dor.service_password }
-  let(:basic_auth) { ActionController::HttpAuthentication::Basic.encode_credentials(user, password) }
   let(:object) { instance_double(Dor::Item, current_version: '5') }
 
   before do
@@ -17,9 +14,9 @@ RSpec.describe 'Authorization' do
   context 'without a bearer token' do
     it 'Logs tokens to honeybadger' do
       get '/v1/objects/druid:mk420bs7601/versions/current',
-          headers: { 'Authorization' => basic_auth }
-      expect(response.body).to eq '5'
-      expect(Honeybadger).to have_received(:notify).with('no X-Auth token was provided by 127.0.0.1')
+          headers: {}
+      expect(response.body).to eq '{"error":"Not Authorized"}'
+      expect(response).to be_unauthorized
     end
   end
 
@@ -29,7 +26,7 @@ RSpec.describe 'Authorization' do
 
     it 'Logs tokens to honeybadger' do
       get '/v1/objects/druid:mk420bs7601/versions/current',
-          headers: { 'Authorization' => basic_auth, 'X-Auth' => "Bearer #{jwt}" }
+          headers: { 'X-Auth' => "Bearer #{jwt}" }
       expect(response.body).to eq '5'
       expect(Honeybadger).not_to have_received(:notify)
       expect(Honeybadger).to have_received(:context).with(invoked_by: 'argo')

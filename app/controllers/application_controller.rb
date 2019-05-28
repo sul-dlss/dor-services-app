@@ -1,26 +1,22 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::API
-  include ActionController::HttpAuthentication::Basic::ControllerMethods
   include ActionController::MimeResponds
-
-  http_basic_authenticate_with name: Settings.dor.service_user,
-                               password: Settings.dor.service_password
 
   before_action :check_auth_token
 
-  # Since Basic auth is already using the Authorization header, we'll use something
+  # Since Basic auth was already using the Authorization header, we used something
   # non-standard:
   TOKEN_HEADER = 'X-Auth'
 
   private
 
-  # In the transition period, we are going to check auth tokens, but we won't
-  # require them.  We will continue to use BasicAuth.
-  # Later we will ensurer that the tokens are present and remove BasicAuth
+  # Ensure a valid token is present, or renders "401: Not Authorized"
   def check_auth_token
     token = decoded_auth_token
-    Honeybadger.context(invoked_by: token[:sub]) if token
+    return render json: { error: 'Not Authorized' }, status: 401 unless token
+
+    Honeybadger.context(invoked_by: token[:sub])
   end
 
   def decoded_auth_token
@@ -33,10 +29,7 @@ class ApplicationController < ActionController::API
   end
 
   def http_auth_header
-    if request.headers[TOKEN_HEADER].blank?
-      Honeybadger.notify("no #{TOKEN_HEADER} token was provided by #{request.remote_ip}")
-      return
-    end
+    return if request.headers[TOKEN_HEADER].blank?
 
     request.headers[TOKEN_HEADER].split(' ').last
   end

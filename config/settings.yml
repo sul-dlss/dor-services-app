@@ -42,8 +42,6 @@ cleanup:
   local_export_home: '/dor/export'
 
 dor:
-  service_user: 'user'
-  service_password: 'password'
   hmac_secret: 'my$ecretK3y'
 
 release:
