@@ -14,7 +14,7 @@ task delete_all_objects: :environment do
       next if object.pid.start_with?('fedora-system:')
       next unless DruidTools::Druid.valid?(object.pid)
 
-      Dor::CleanupService.nuke!(object.pid)
+      DeleteService.destroy(object.pid)
     end
   end
 
