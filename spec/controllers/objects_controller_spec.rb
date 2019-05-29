@@ -52,45 +52,6 @@ RSpec.describe ObjectsController do
     end
   end
 
-  describe 'initialize_workspace' do
-    before do
-      clean_workspace
-    end
-
-    after do
-      clean_workspace
-    end
-
-    it 'creates a druid tree in the dor workspace for the passed in druid' do
-      post 'initialize_workspace', params: { id: item.pid }
-      expect(File).to be_directory(TEST_WORKSPACE + '/aa/123/bb/4567')
-    end
-
-    it 'creates a link in the dor workspace to the path passed in as source' do
-      post 'initialize_workspace', params: { id: item.pid, source: '/some/path' }
-      expect(File).to be_symlink(TEST_WORKSPACE + '/aa/123/bb/4567/aa123bb4567')
-    end
-
-    context 'error handling' do
-      before do
-        druid = DruidTools::Druid.new(item.pid, TEST_WORKSPACE)
-        druid.mkdir
-      end
-
-      it 'returns a 409 Conflict http status code when the link/directory already exists' do
-        post 'initialize_workspace', params: { id: item.pid }
-        expect(response.status).to eq(409)
-        expect(response.body).to match(/The directory already exists/)
-      end
-
-      it 'returns a 409 Conflict http status code when the workspace already exists with different content' do
-        post 'initialize_workspace', params: { id: item.pid, source: '/some/path' }
-        expect(response.status).to eq(409)
-        expect(response.body).to match(/Unable to create link, directory already exists/)
-      end
-    end
-  end
-
   describe '/publish' do
     it 'calls publish metadata' do
       expect(PublishMetadataService).to receive(:publish).with(item)

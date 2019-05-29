@@ -26,7 +26,7 @@ Rails.application.routes.draw do
 
     resources :objects, only: [:create] do
       member do
-        post 'initialize_workspace'
+        post 'initialize_workspace', to: 'workspaces#create' # deprecated
         post 'publish'
         post 'update_marc_record'
         post 'notify_goobi'
@@ -38,6 +38,8 @@ Rails.application.routes.draw do
         get 'contents', to: 'content#list'
         get 'contents/*path', to: 'content#read', format: false, as: :read_content
       end
+
+      resource :workspace, only: [:create]
 
       resources :metadata, only: [] do
         collection do
