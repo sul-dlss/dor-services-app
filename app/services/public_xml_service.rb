@@ -24,7 +24,7 @@ class PublicXmlService
     # Note we cannot base this on if an individual object has release tags or not, because the collection may cause one to be generated for an item,
     # so we need to calculate it and then look at the final result.
 
-    thumb = Dor::ThumbnailService.new(object).thumb
+    thumb = ThumbnailService.new(object).thumb
     pub.add_child(Nokogiri("<thumb>#{thumb}</thumb>").root) unless thumb.nil?
 
     new_pub = Nokogiri::XML(pub.to_xml, &:noblanks)
