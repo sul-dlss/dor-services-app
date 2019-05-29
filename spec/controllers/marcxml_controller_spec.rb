@@ -16,7 +16,7 @@ RSpec.describe MarcxmlController do
     end
 
     it 'looks up an item by barcode' do
-      stub_request(:get, Settings.catalog.solr_url + 'barcode?wt=json&n=98765').to_return(body: { response: { docs: [{ id: '12345' }] } }.to_json)
+      stub_request(:get, format(Settings.catalog.barcode_search_url, barcode: '98765')).to_return(body: { barcode: '98765', id: '12345' }.to_json)
       get :catkey, params: { barcode: '98765' }
       expect(response.body).to eq '12345'
     end
