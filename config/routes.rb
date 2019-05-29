@@ -39,7 +39,7 @@ Rails.application.routes.draw do
         get 'contents/*path', to: 'content#read', format: false, as: :read_content
       end
 
-      resource :workspace, only: [:create]
+      resource :workspace, only: [:create, :destroy]
 
       resources :metadata, only: [] do
         collection do
