@@ -6,9 +6,9 @@ class MarcxmlResource
     if catkey
       new(catkey: catkey)
     elsif barcode
-      solr = RSolr.connect(url: Settings.catalog.solr_url)
-      response = solr.get('barcode', params: { n: barcode }).with_indifferent_access
-      catkey = response[:response][:docs].first[:id]
+      barcode_search_url = format(Settings.catalog.barcode_search_url, barcode: barcode)
+      response = Faraday.get(barcode_search_url)
+      catkey = JSON.parse(response.body)['id']
 
       new(catkey: catkey)
     else

@@ -60,7 +60,7 @@ goobi:
   base_sleep_seconds: 2
 
 catalog:
-  solr_url: "http://searchworks-solr.stanford.edu/solr/current/"
+  barcode_search_url: "https://searchworks.stanford.edu/barcode/%{barcode}"
   symphony:
     json_url: "https://sirsi.example.com/symws/v1/catalog/bib/key/%{catkey}?includeFields=bib"
     headers:
