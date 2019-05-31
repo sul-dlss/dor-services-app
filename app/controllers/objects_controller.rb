@@ -11,10 +11,6 @@ class ObjectsController < ApplicationController
     render status: 409, plain: e.message, location: object_location(e.pid)
   end
 
-  rescue_from(DruidTools::SameContentExistsError, DruidTools::DifferentContentExistsError) do |e|
-    render status: 409, plain: e.message
-  end
-
   # Register new objects in DOR
   def create
     Rails.logger.info(params.inspect)
@@ -30,16 +26,6 @@ class ObjectsController < ApplicationController
       format.all { render status: 201, location: object_location(pid), plain: Dor::RegistrationResponse.new(reg_response).to_txt }
       format.json { render status: 201, location: object_location(pid), json: Dor::RegistrationResponse.new(reg_response) }
     end
-  end
-
-  # The param, source, can be passed as appended parameter to url:
-  #  http://lyberservices-dev/dor/v1/objects/{druid}/initialize_workspace?source=/path/to/content/dir/for/druid
-  # or
-  # It can be passed in the body of the request as application/x-www-form-urlencoded parameters, as if submitted from a form
-  # TODO: We could get away with loading a simple object that mixes in Dor::Assembleable.  It just needs to implement #pid
-  def initialize_workspace
-    WorkspaceService.create(@item, params[:source])
-    head :created
   end
 
   def publish
