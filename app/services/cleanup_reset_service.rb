@@ -8,8 +8,8 @@ class CleanupResetService
   # @return [void] remove copy of the reset data that was exported to preservation core
   def self.cleanup_by_reset_druid(druid)
     last_version = get_druid_last_version(druid)
-    cleanup_reset_workspace_content(druid, last_version, Dor::Config.cleanup.local_workspace_root)
-    cleanup_assembly_content(druid, Dor::Config.cleanup.local_assembly_root)
+    cleanup_reset_workspace_content(druid, last_version, Settings.cleanup.local_workspace_root)
+    cleanup_assembly_content(druid, Settings.cleanup.local_assembly_root)
     cleanup_reset_export(druid, last_version)
   end
 
@@ -55,7 +55,7 @@ class CleanupResetService
   # @return [void] remove copy of the reset data that was exported to preservation core
   def self.cleanup_reset_export(druid, last_version)
     id = druid.split(':').last
-    base_bag_directory = File.join(Dor::Config.cleanup.local_export_home, id)
+    base_bag_directory = File.join(Settings.cleanup.local_export_home, id)
 
     bag_dir_list = get_reset_bag_dir_list(last_version, base_bag_directory)
     bag_dir_list.each do |bag_dir|
