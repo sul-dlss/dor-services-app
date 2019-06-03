@@ -21,4 +21,5 @@ config/certs
 .ruby-*
 coverage/*
 /spec/examples.txt
+/spec/fixtures/export
 /config/settings/*.local.yml

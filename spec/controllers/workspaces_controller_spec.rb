@@ -5,22 +5,19 @@ require 'rails_helper'
 RSpec.describe WorkspacesController do
   let(:item) { Dor::Item.new(pid: 'druid:aa123bb4567') }
 
-  before do
-    login
-    allow(Dor).to receive(:find).and_return(item)
-    rights_metadata_xml = Dor::RightsMetadataDS.new
-    allow(rights_metadata_xml).to receive_messages(ng_xml: Nokogiri::XML('<xml/>'))
-    allow(item).to receive_messages(
-      id: 'druid:aa123bb4567',
-      datastreams: { 'rightsMetadata' => rights_metadata_xml },
-      rightsMetadata: rights_metadata_xml,
-      remove_druid_prefix: 'aa123bb4567'
-    )
-    allow(rights_metadata_xml).to receive(:dra_object).and_return(Dor::RightsAuth.parse(Nokogiri::XML('<xml/>'), true))
-  end
-
   describe '#create' do
     before do
+      login
+      allow(Dor).to receive(:find).and_return(item)
+      rights_metadata_xml = Dor::RightsMetadataDS.new
+      allow(rights_metadata_xml).to receive_messages(ng_xml: Nokogiri::XML('<xml/>'))
+      allow(item).to receive_messages(
+        id: 'druid:aa123bb4567',
+        datastreams: { 'rightsMetadata' => rights_metadata_xml },
+        rightsMetadata: rights_metadata_xml,
+        remove_druid_prefix: 'aa123bb4567'
+      )
+      allow(rights_metadata_xml).to receive(:dra_object).and_return(Dor::RightsAuth.parse(Nokogiri::XML('<xml/>'), true))
       clean_workspace
     end
 
@@ -62,6 +59,21 @@ RSpec.describe WorkspacesController do
         expect(response.status).to eq(409)
         expect(response.body).to match(/Unable to create link, directory already exists/)
       end
+    end
+  end
+
+  describe '#destroy' do
+    before do
+      login
+      allow(Dor::CleanupService).to receive(:cleanup_by_druid)
+    end
+
+    let(:druid) { 'druid:aa222cc3333' }
+
+    it 'is successful' do
+      delete :destroy, params: { object_id: druid }
+      expect(Dor::CleanupService).to have_received(:cleanup_by_druid).with(druid)
+      expect(response).to be_no_content
     end
   end
 end

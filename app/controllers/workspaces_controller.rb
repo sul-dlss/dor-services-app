@@ -2,8 +2,6 @@
 
 # Handles API routes for managing the DOR workspace
 class WorkspacesController < ApplicationController
-  before_action :load_item
-
   rescue_from(DruidTools::SameContentExistsError, DruidTools::DifferentContentExistsError) do |e|
     render status: 409, plain: e.message
   end
@@ -12,7 +10,28 @@ class WorkspacesController < ApplicationController
   # and the deprecated:
   # POST /v1/objects/:druid/initialize_workspace
   def create
-    WorkspaceService.create(@item, params[:source])
+    WorkspaceService.create(load_item, params[:source])
     head :created
+  end
+
+  def destroy
+    druid = params[:object_id]
+    # decide whether the druid is full or truncated
+    if full_druid_tree?(druid)
+      CleanupResetService.cleanup_by_reset_druid druid
+    else
+      Dor::CleanupService.cleanup_by_druid druid
+    end
+    head :no_content
+  end
+
+  private
+
+  # determines if the druid is the regular druid tree or the truncated one
+  def full_druid_tree?(druid)
+    workspace_root = Dor::Config.cleanup.local_workspace_root
+    full_druid_tree = DruidTools::Druid.new(druid, workspace_root)
+    truncate_druid_tree = DruidTools::AccessDruid.new(druid, workspace_root)
+    (!Dir.glob(truncate_druid_tree.path).empty? && !Dir.glob(full_druid_tree.path + '*').empty?)
   end
 end
