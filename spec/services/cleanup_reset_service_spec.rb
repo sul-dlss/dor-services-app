@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-RSpec.describe CleanupResetService, order: :defined do
-  before(:all) do
+RSpec.describe CleanupResetService do
+  before do
     @fixtures = fixtures = Pathname(File.dirname(__FILE__)).join('../fixtures')
 
     Dor::Config.push! do
@@ -261,6 +261,12 @@ RSpec.describe CleanupResetService, order: :defined do
       @druid_1v = 'cc111ca1111'
       @druid_2v = 'cc111cb1111'
       @druid_1_1v = 'cc111cc1111'
+      create_bag_dir(@druid_1v + '_v1')
+      create_bag_dir(@druid_2v + '_v2')
+      create_bag_dir(@druid_2v + '_v3')
+      create_bag_dir(@druid_1_1v + '_v1')
+      create_bag_dir(@druid_1_1v)
+
       create_bag_tar(@druid_1v + '_v1')
       create_bag_tar(@druid_2v + '_v2')
       create_bag_tar(@druid_2v + '_v3')
