@@ -35,10 +35,4 @@ Dor.configure do
     local_stacks_root           Settings.stacks.local_stacks_root
     local_document_cache_root   Settings.stacks.local_document_cache_root
   end
-
-  cleanup do
-    local_workspace_root Settings.cleanup.local_workspace_root
-    local_assembly_root  Settings.cleanup.local_assembly_root
-    local_export_home    Settings.cleanup.local_export_home
-  end
 end

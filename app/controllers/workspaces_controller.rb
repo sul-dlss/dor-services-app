@@ -20,7 +20,7 @@ class WorkspacesController < ApplicationController
     if full_druid_tree?(druid)
       CleanupResetService.cleanup_by_reset_druid druid
     else
-      Dor::CleanupService.cleanup_by_druid druid
+      CleanupService.cleanup_by_druid druid
     end
     head :no_content
   end
@@ -29,7 +29,7 @@ class WorkspacesController < ApplicationController
 
   # determines if the druid is the regular druid tree or the truncated one
   def full_druid_tree?(druid)
-    workspace_root = Dor::Config.cleanup.local_workspace_root
+    workspace_root = Settings.cleanup.local_workspace_root
     full_druid_tree = DruidTools::Druid.new(druid, workspace_root)
     truncate_druid_tree = DruidTools::AccessDruid.new(druid, workspace_root)
     (!Dir.glob(truncate_druid_tree.path).empty? && !Dir.glob(full_druid_tree.path + '*').empty?)

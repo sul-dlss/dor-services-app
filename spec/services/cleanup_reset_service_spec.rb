@@ -6,20 +6,20 @@ RSpec.describe CleanupResetService do
   before do
     @fixtures = fixtures = Pathname(File.dirname(__FILE__)).join('../fixtures')
 
-    Dor::Config.push! do
-      cleanup.local_workspace_root fixtures.join('workspace').to_s
-      cleanup.local_assembly_root  fixtures.join('assembly').to_s
-      cleanup.local_export_home    fixtures.join('export').to_s
-    end
+    allow(Settings.cleanup).to receive_messages(
+      local_workspace_root: fixtures.join('workspace').to_s,
+      local_assembly_root: fixtures.join('assembly').to_s,
+      local_export_home: fixtures.join('export').to_s
+    )
 
-    @workspace_root_pathname = Pathname(Dor::Config.cleanup.local_workspace_root)
+    @workspace_root_pathname = Pathname(Settings.cleanup.local_workspace_root)
     @reset_workitems_pathname = @workspace_root_pathname.join('cc/111')
     @reset_workitems_pathname.rmtree if @reset_workitems_pathname.exist?
 
-    @assembly_root_pathname = Pathname(Dor::Config.cleanup.local_assembly_root)
+    @assembly_root_pathname = Pathname(Settings.cleanup.local_assembly_root)
     @assembly_root_pathname.rmtree if @assembly_root_pathname.exist?
 
-    @export_pathname = Pathname(Dor::Config.cleanup.local_export_home)
+    @export_pathname = Pathname(Settings.cleanup.local_export_home)
     @export_pathname.rmtree if @export_pathname.exist?
   end
 
