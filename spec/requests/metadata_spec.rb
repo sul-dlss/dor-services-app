@@ -3,9 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Display metadata' do
-  let(:user) { Settings.dor.service_user }
-  let(:password) { Settings.dor.service_password }
-  let(:basic_auth) { ActionController::HttpAuthentication::Basic.encode_credentials(user, password) }
+  let(:payload) { { sub: 'argo' } }
+  let(:jwt) { JWT.encode(payload, Settings.dor.hmac_secret, 'HS256') }
   let(:object) { Dor::Item.new(pid: 'druid:1234') }
 
   before do
@@ -16,7 +15,7 @@ RSpec.describe 'Display metadata' do
   describe 'dublin core' do
     it 'returns the DC xml' do
       get '/v1/objects/druid:mk420bs7601/metadata/dublin_core',
-          headers: { 'Authorization' => basic_auth }
+          headers: { 'X-Auth' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(response.body).to include '<dc:title>Hello</dc:title>'
     end
@@ -25,7 +24,7 @@ RSpec.describe 'Display metadata' do
   describe 'descriptive' do
     it 'returns the DC xml' do
       get '/v1/objects/druid:mk420bs7601/metadata/descriptive',
-          headers: { 'Authorization' => basic_auth }
+          headers: { 'X-Auth' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(response.body).to be_equivalent_to <<~XML
         <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
