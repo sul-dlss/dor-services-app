@@ -129,22 +129,4 @@ RSpec.describe ObjectsController do
       expect(response.status).to eq(400)
     end
   end
-
-  describe 'apo-workflow initalization' do
-    let(:workflow_client) { instance_double(Dor::Workflow::Client, create_workflow_by_name: true) }
-
-    before do
-      allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
-    end
-
-    it 'initiates assemblyWF' do
-      post 'apo_workflows', params: { id: item.pid, wf_name: 'assemblyWF' }
-      expect(workflow_client).to have_received(:create_workflow_by_name).with(item.pid, 'assemblyWF')
-    end
-
-    it "handles workflow names without 'WF' appended to the end" do
-      post 'apo_workflows', params: { id: item.pid, wf_name: 'accession' }
-      expect(workflow_client).to have_received(:create_workflow_by_name).with(item.pid, 'accessionWF')
-    end
-  end
 end

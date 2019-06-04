@@ -66,21 +66,6 @@ class ObjectsController < ApplicationController
     end
   end
 
-  # Initiate a workflow by name
-  # This service is called by several different clients (e.g. was-archiving-robots, preservation-catalog, GIS, Goobi)
-  def apo_workflows
-    workflow = if params[:wf_name].ends_with? 'WF'
-                 params[:wf_name]
-               else
-                 "#{params[:wf_name]}WF"
-               end
-
-    Honeybadger.notify("Call to deprecated API #{request.path}. Use workflow-service instead")
-    Dor::Config.workflow.client.create_workflow_by_name(@item.pid, workflow)
-
-    head :created
-  end
-
   private
 
   def fedora_base

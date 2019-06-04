@@ -22,13 +22,12 @@ class RegistrationService
       other_ids = namespace_identifiers(Array(params[:other_id]))
       handle_auto_label(params, other_ids)
 
-      params.slice(:pid, :admin_policy, :label, :object_type, :parent, :seed_datastream, :rights, :metadata_source, :collection, :workflow_priority)
+      params.slice(:pid, :admin_policy, :label, :object_type, :parent, :seed_datastream, :rights, :metadata_source, :collection)
             .merge(
               content_model: params[:model],
               other_ids: ids_to_hash(other_ids),
               source_id: ids_to_hash(params[:source_id]),
-              tags: params[:tag] || [],
-              initiate_workflow: Array(params[:initiate_workflow]) + Array(params[:workflow_id])
+              tags: params[:tag] || []
             )
             .reject { |_k, v| v.nil? }
     end
@@ -122,10 +121,6 @@ class RegistrationService
       end
 
       new_item.save
-
-      # Once we save, then it's safe to start any workflows. Otherwise there could be a race condition
-      initiate_workflow(workflows: request.initiate_workflow, item: new_item, priority: request.workflow_priority)
-
       new_item
     end
 
@@ -133,14 +128,6 @@ class RegistrationService
       return nil if ids.nil?
 
       Hash[Array(ids).map { |id| id.split(':', 2) }]
-    end
-
-    def initiate_workflow(workflows:, item:, priority:)
-      Honeybadger.notify("RegistrationService received deprecated parameter `initiate_workflow' with: `#{workflows.inspect}'") if workflows.present?
-
-      workflows.each do |workflow_id|
-        Dor::Config.workflow.client.create_workflow_by_name(item.pid, workflow_id, priority: priority, version: item.current_version)
-      end
     end
 
     def build_desc_metadata_from_label(new_item, label)

@@ -14,9 +14,7 @@ class RegistrationRequest
   # @option params [Hash{String => String}] :source_id Primary ID from another system, max one key/value pair!
   # @option params [Hash] :other_ids including :uuid if known
   # @option params [String] :pid Fully qualified PID if you don't want one generated for you
-  # @option params [Integer] :workflow_priority]
   # @option params [Array<String>] :seed_datastream datastream_names (only 'descMetadata' is a permitted value)
-  # @option params [Array<String>] :initiate_workflow workflow_ids this parameter is deprecated
   # @option params [Array] :tags
   def initialize(params)
     @params = params
@@ -45,14 +43,6 @@ class RegistrationRequest
   # TODO: Move to validate
   def rights
     params[:rights]
-  end
-
-  def initiate_workflow
-    Array(params[:initiate_workflow])
-  end
-
-  def workflow_priority
-    params[:workflow_priority] ? params[:workflow_priority].to_i : 0
   end
 
   def object_type
