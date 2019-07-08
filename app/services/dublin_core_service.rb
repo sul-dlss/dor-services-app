@@ -17,8 +17,8 @@ class DublinCoreService
   def ng_xml
     dc_doc = MODS_TO_DC_XSLT.transform(desc_md)
     dc_doc.xpath('/oai_dc:dc/*[count(text()) = 0]', oai_dc: XMLNS_OAI_DC).remove # Remove empty nodes
-    raise CrosswalkError, "Dor::Item#generate_dublin_core produced incorrect xml (no root):\n#{dc_doc.to_xml}" if dc_doc.root.nil?
-    raise CrosswalkError, "Dor::Item#generate_dublin_core produced incorrect xml (no children):\n#{dc_doc.to_xml}" if dc_doc.root.children.empty?
+    raise CrosswalkError, "DublinCoreService#ng_xml produced incorrect xml (no root):\n#{dc_doc.to_xml}" if dc_doc.root.nil?
+    raise CrosswalkError, "DublinCoreService#ng_xml produced incorrect xml (no children):\n#{dc_doc.to_xml}" if dc_doc.root.children.empty?
 
     dc_doc
   end
