@@ -11,7 +11,11 @@ This Ruby application provides a REST API for DOR Services. [View the REST API d
 ## Authentication
 
 To generate an authentication token run `rake generate_token` on the prod server.
-This will use the HMAC secret to sign the token.
+This will use the HMAC secret to sign the token. It will ask you to submit a value for "Account".  This should be the name of the calling service, or a username if this is to be used by a specific individual.  This value is used for tracability of errors and can be seen in the "Context" section of a Honeybadger error.  For example:
+
+```
+{"invoked_by" => "workflow-service"}
+```
 
 ## Developer Notes
 
