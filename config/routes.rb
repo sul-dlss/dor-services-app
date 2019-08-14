@@ -14,10 +14,6 @@ Rails.application.routes.draw do
       get 'content/:filename', to: 'sdr#file_content', format: false, constraints: { filename: /.+/ }
     end
 
-    scope '/workflows/:wf_name' do
-      get 'initial', to: 'workflows#initial'
-    end
-
     scope :catalog do
       get 'marcxml', to: 'marcxml#marcxml'
       get 'mods', to: 'marcxml#mods'
@@ -31,8 +27,6 @@ Rails.application.routes.draw do
         post 'update_marc_record'
         post 'notify_goobi'
         post 'release_tags'
-        post 'apo_workflows/:wf_name', action: 'apo_workflows'
-
         post 'refresh_metadata', to: 'metadata_refresh#refresh'
 
         get 'contents', to: 'content#list'
