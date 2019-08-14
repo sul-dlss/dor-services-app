@@ -123,14 +123,6 @@ RSpec/ContextWording:
     - 'spec/services/registration_service_spec.rb'
     - 'spec/services/thumbnail_service_spec.rb'
 
-# Offense count: 4
-RSpec/DescribeClass:
-  Exclude:
-    - 'spec/requests/about_spec.rb'
-    - 'spec/requests/authorization_spec.rb'
-    - 'spec/requests/metadata_refresh_spec.rb'
-    - 'spec/requests/metadata_spec.rb'
-
 # Offense count: 32
 # Cop supports --auto-correct.
 # Configuration parameters: SkipBlocks, EnforcedStyle.

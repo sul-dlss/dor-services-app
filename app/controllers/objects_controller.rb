@@ -28,6 +28,20 @@ class ObjectsController < ApplicationController
     end
   end
 
+  # Handles updates to the record.
+  # Presently this only needs to handle the merge object use case.
+  # Do this by providing: constituent_ids => ['druid:123', 'druid:345']
+  def update
+    # validate that the constituent_ids parameter is an present, raises ActionController::ParameterMissing
+    params.require(:constituent_ids)
+    filtered_params = params.permit(constituent_ids: [])
+    raise ActionController::ParameterMissing, 'constituent_ids must be an array' unless filtered_params[:constituent_ids]
+
+    # Update the constituent relationship
+    ConstituentService.new(parent_druid: params[:id]).add(child_druids: filtered_params[:constituent_ids])
+    head :no_content
+  end
+
   def publish
     PublishMetadataService.publish(@item)
     head :created
