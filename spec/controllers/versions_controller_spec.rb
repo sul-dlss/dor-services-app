@@ -110,14 +110,14 @@ RSpec.describe VersionsController do
     end
   end
 
-  describe '/versions/openeable' do
+  describe '/versions/openable' do
     context 'when a new version can be opened' do
       before do
         allow(VersionService).to receive(:can_open?).and_return(true)
       end
 
       it 'returns true' do
-        get :openeable, params: { object_id: item.pid }
+        get :openable, params: { object_id: item.pid }
         expect(response.body).to eq('true')
         expect(response).to be_successful
       end
@@ -129,10 +129,25 @@ RSpec.describe VersionsController do
       end
 
       it 'returns true' do
-        get :openeable, params: { object_id: item.pid }
+        get :openable, params: { object_id: item.pid }
         expect(response.body).to eq('false')
         expect(response).to be_successful
       end
+    end
+  end
+
+  # TODO: Remove this in 3.0.0
+  describe '/versions/openeable' do
+    before do
+      allow(VersionService).to receive(:can_open?).and_return(true)
+      allow(Deprecation).to receive(:warn)
+    end
+
+    it 'delegates' do
+      get :openeable, params: { object_id: item.pid }
+      expect(response.body).to eq('true')
+      expect(response).to be_successful
+      expect(Deprecation).to have_received(:warn)
     end
   end
 end
