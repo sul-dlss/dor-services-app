@@ -21,6 +21,7 @@ end
 
 # Ruby general dependencies
 gem 'config'
+gem 'deprecation'
 gem 'honeybadger'
 gem 'okcomputer'
 

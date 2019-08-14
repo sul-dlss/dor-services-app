@@ -443,6 +443,7 @@ DEPENDENCIES
   capistrano-shared_configs
   config
   coveralls (~> 0.8)
+  deprecation
   dlss-capistrano
   dor-services (~> 7.0)
   equivalent-xml
