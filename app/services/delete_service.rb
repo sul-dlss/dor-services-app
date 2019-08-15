@@ -33,11 +33,13 @@ class DeleteService
   attr_reader :druid
 
   def cleanup_stacks
-    DruidTools::StacksDruid.new(druid, Dor::Config.stacks.local_stacks_root).prune!
+    stacks_druid = DruidTools::StacksDruid.new(druid, Dor::Config.stacks.local_stacks_root)
+    PruneService.new(druid: stacks_druid).prune!
   end
 
   def cleanup_purl_doc_cache
-    DruidTools::PurlDruid.new(druid, Dor::Config.stacks.local_document_cache_root).prune!
+    purl_druid = DruidTools::PurlDruid.new(druid, Dor::Config.stacks.local_document_cache_root)
+    PruneService.new(druid: purl_druid).prune!
   end
 
   def remove_active_workflows

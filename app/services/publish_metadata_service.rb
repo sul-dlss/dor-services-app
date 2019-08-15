@@ -34,7 +34,7 @@ class PublishMetadataService
 
   # Clear out the document cache for this item
   def unpublish
-    purl_druid.prune!
+    PruneService.new(druid: purl_druid).prune!
     publish_delete_on_success
   end
 

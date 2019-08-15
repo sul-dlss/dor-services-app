@@ -14,7 +14,7 @@ class CleanupService
   # @param [String] base The base directory to delete from
   # @return [void] remove the object's data files from the workspace area
   def self.cleanup_workspace_content(druid, base)
-    DruidTools::Druid.new(druid, base).prune!
+    PruneService.new(druid: DruidTools::Druid.new(druid, base)).prune!
   end
   private_class_method :cleanup_workspace_content
 
