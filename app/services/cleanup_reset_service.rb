@@ -36,7 +36,7 @@ class CleanupResetService
     reset_directories.each do |path|
       FileUtils.rm_rf(path)
     end
-    base_druid.prune_ancestors(base_druid.pathname.parent)
+    PruneService.new(druid: base_druid).prune_ancestors(base_druid.pathname.parent)
   end
 
   # @param [String] base_druid_tree The base directory to delete from
@@ -92,10 +92,11 @@ class CleanupResetService
     reset_bags
   end
 
+  # TODO: This is exactly the same as CleanupService#cleanup_workspace_content
   # @param [String] druid The identifier for the object whose data is to be removed
   # @param [String] base The base directory to delete from
   # @return [void] remove the object's data files from the assembly area
   def self.cleanup_assembly_content(druid, base)
-    DruidTools::Druid.new(druid, base).prune!
+    PruneService.new(druid: DruidTools::Druid.new(druid, base)).prune!
   end
 end
