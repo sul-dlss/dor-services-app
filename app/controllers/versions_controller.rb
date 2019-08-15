@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'deprecation'
-
 class VersionsController < ApplicationController
   extend Deprecation
   self.deprecation_horizon = 'dor-services-app 3.0.0'
