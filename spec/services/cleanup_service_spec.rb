@@ -148,10 +148,10 @@ RSpec.describe CleanupService do
         dr1_assembly = DruidTools::Druid.new(druid_1, assembly_dir)
         dr2_assembly = DruidTools::Druid.new(druid_2, assembly_dir)
 
-        dr1_wspace.mkdir
-        dr2_wspace.mkdir
-        dr1_assembly.mkdir
-        dr2_assembly.mkdir
+        DruidPath.new(druid: dr1_wspace).mkdir
+        DruidPath.new(druid: dr2_wspace).mkdir
+        DruidPath.new(druid: dr1_assembly).mkdir
+        DruidPath.new(druid: dr2_assembly).mkdir
 
         # Add some 'content'
         create_tempfile dr1_wspace.path
@@ -192,7 +192,7 @@ RSpec.describe CleanupService do
 
       it 'cleans up without assembly content' do
         dr1_wspace = DruidTools::Druid.new(druid_1, workspace_dir)
-        dr1_wspace.mkdir
+        DruidPath.new(druid: dr1_wspace).mkdir
 
         described_class.cleanup_by_druid druid_1
         expect(File).not_to exist(dr1_wspace.path)

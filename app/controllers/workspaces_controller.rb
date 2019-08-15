@@ -2,7 +2,7 @@
 
 # Handles API routes for managing the DOR workspace
 class WorkspacesController < ApplicationController
-  rescue_from(DruidTools::SameContentExistsError, DruidTools::DifferentContentExistsError) do |e|
+  rescue_from(DruidPath::SameContentExistsError, DruidPath::DifferentContentExistsError) do |e|
     render status: 409, plain: e.message
   end
 

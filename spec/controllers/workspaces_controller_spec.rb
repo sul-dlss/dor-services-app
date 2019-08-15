@@ -38,7 +38,7 @@ RSpec.describe WorkspacesController do
     context 'when the link/directory already exists' do
       before do
         druid = DruidTools::Druid.new(item.pid, TEST_WORKSPACE)
-        druid.mkdir
+        DruidPath.new(druid: druid).mkdir
       end
 
       it 'returns a 409 Conflict http status code' do
@@ -51,7 +51,7 @@ RSpec.describe WorkspacesController do
     context 'when the workspace already exists with different content' do
       before do
         druid = DruidTools::Druid.new(item.pid, TEST_WORKSPACE)
-        druid.mkdir
+        DruidPath.new(druid: druid).mkdir
       end
 
       it 'returns a 409 Conflict http status code' do
