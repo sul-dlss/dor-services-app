@@ -22,7 +22,6 @@ Rails.application.routes.draw do
 
     resources :objects, only: [:create] do
       member do
-        post 'initialize_workspace', to: 'workspaces#create' # deprecated
         post 'publish'
         post 'update_marc_record'
         post 'notify_goobi'
@@ -44,9 +43,7 @@ Rails.application.routes.draw do
 
       resources :versions, only: [:create] do
         collection do
-          # TODO: Remove this route in dor-services-app 3.0.0
-          get 'openeable', to: 'openeable'
-          get 'openable', to: 'openable'
+          get 'openable'
           get 'current'
           post 'current/close', action: 'close_current'
         end

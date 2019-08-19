@@ -7,8 +7,6 @@ class WorkspacesController < ApplicationController
   end
 
   # POST /v1/objects/:druid/workspace
-  # and the deprecated:
-  # POST /v1/objects/:druid/initialize_workspace
   def create
     WorkspaceService.create(load_item, params[:source])
     head :created
