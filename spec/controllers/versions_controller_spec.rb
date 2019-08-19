@@ -135,19 +135,4 @@ RSpec.describe VersionsController do
       end
     end
   end
-
-  # TODO: Remove this in 3.0.0
-  describe '/versions/openeable' do
-    before do
-      allow(VersionService).to receive(:can_open?).and_return(true)
-      allow(Deprecation).to receive(:warn)
-    end
-
-    it 'delegates' do
-      get :openeable, params: { object_id: item.pid }
-      expect(response.body).to eq('true')
-      expect(response).to be_successful
-      expect(Deprecation).to have_received(:warn)
-    end
-  end
 end

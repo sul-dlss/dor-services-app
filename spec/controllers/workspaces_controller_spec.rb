@@ -26,12 +26,12 @@ RSpec.describe WorkspacesController do
     end
 
     it 'creates a druid tree in the dor workspace for the passed in druid' do
-      post :create, params: { id: item.pid }
+      post :create, params: { object_id: item.pid }
       expect(File).to be_directory(TEST_WORKSPACE + '/aa/123/bb/4567')
     end
 
     it 'creates a link in the dor workspace to the path passed in as source' do
-      post :create, params: { id: item.pid, source: '/some/path' }
+      post :create, params: { object_id: item.pid, source: '/some/path' }
       expect(File).to be_symlink(TEST_WORKSPACE + '/aa/123/bb/4567/aa123bb4567')
     end
 
@@ -42,7 +42,7 @@ RSpec.describe WorkspacesController do
       end
 
       it 'returns a 409 Conflict http status code' do
-        post :create, params: { id: item.pid }
+        post :create, params: { object_id: item.pid }
         expect(response.status).to eq(409)
         expect(response.body).to match(/The directory already exists/)
       end
@@ -55,7 +55,7 @@ RSpec.describe WorkspacesController do
       end
 
       it 'returns a 409 Conflict http status code' do
-        post :create, params: { id: item.pid, source: '/some/path' }
+        post :create, params: { object_id: item.pid, source: '/some/path' }
         expect(response.status).to eq(409)
         expect(response.body).to match(/Unable to create link, directory already exists/)
       end

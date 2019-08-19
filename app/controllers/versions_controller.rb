@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 class VersionsController < ApplicationController
-  extend Deprecation
-  self.deprecation_horizon = 'dor-services-app 3.0.0'
-
   before_action :load_item
 
   def create
@@ -23,11 +20,6 @@ class VersionsController < ApplicationController
   rescue Dor::Exception => e
     render build_error('Unable to close version', e)
   end
-
-  def openeable
-    openable
-  end
-  deprecation_deprecate openeable: 'use openable instead'
 
   def openable
     render plain: VersionService.can_open?(@item, open_params).to_s
