@@ -22,7 +22,6 @@ Rails.application.routes.draw do
 
     resources :objects, only: [:create] do
       member do
-        post 'initialize_workspace', to: 'workspaces#create' # deprecated
         post 'publish'
         post 'update_marc_record'
         post 'notify_goobi'
