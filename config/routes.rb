@@ -43,7 +43,7 @@ Rails.application.routes.draw do
 
       resources :versions, only: [:create] do
         collection do
-          get 'openable', to: 'openable'
+          get 'openable'
           get 'current'
           post 'current/close', action: 'close_current'
         end
