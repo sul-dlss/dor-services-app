@@ -3,6 +3,14 @@
 class ApplicationController < ActionController::API
   include ActionController::MimeResponds
 
+  rescue_from ActionController::ParameterMissing do |exception|
+    render json: {
+      errors: [
+        { title: 'bad request', detail: exception.message }
+      ]
+    }, status: :bad_request
+  end
+
   before_action :check_auth_token
 
   # Since Basic auth was already using the Authorization header, we used something

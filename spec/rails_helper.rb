@@ -95,3 +95,6 @@ end
 def read_fixture(fname)
   File.read(File.join(fixture_dir, fname))
 end
+
+# Creates a `not_change` matcher
+RSpec::Matchers.define_negated_matcher :not_change, :change

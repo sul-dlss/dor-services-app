@@ -21,6 +21,10 @@ Metrics/BlockLength:
     - 'config/routes.rb'
     - 'config/initializers/dor_config.rb'
 
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/requests/**/*'
+
 RSpec/ExampleLength:
   Max: 8
   Enabled: false

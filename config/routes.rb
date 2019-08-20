@@ -20,7 +20,7 @@ Rails.application.routes.draw do
       get 'catkey', to: 'marcxml#catkey'
     end
 
-    resources :objects, only: [:create] do
+    resources :objects, only: [:create, :update] do
       member do
         post 'publish'
         post 'update_marc_record'
