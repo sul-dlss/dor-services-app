@@ -11,6 +11,10 @@ class ObjectsController < ApplicationController
     render status: 409, plain: e.message, location: object_location(e.pid)
   end
 
+  rescue_from(DublinCoreService::CrosswalkError) do |e|
+    render status: 400, plain: e.message
+  end
+
   # Register new objects in DOR
   def create
     Rails.logger.info(params.inspect)
