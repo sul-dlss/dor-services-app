@@ -53,10 +53,21 @@ RSpec.describe ObjectsController do
   end
 
   describe '/publish' do
-    it 'calls publish metadata' do
+    it 'calls PublishMetadataService and returns 201' do
       expect(PublishMetadataService).to receive(:publish).with(item)
       post :publish, params: { id: item.pid }
       expect(response.status).to eq(201)
+    end
+
+    context 'with bad metadata' do
+      let(:error_message) { "DublinCoreService#ng_xml produced incorrect xml (no children):\n<xml/>" }
+
+      it 'returns a 400 error' do
+        allow(PublishMetadataService).to receive(:publish).and_raise(DublinCoreService::CrosswalkError, error_message)
+        post :publish, params: { id: item.pid }
+        expect(response.status).to eq(400)
+        expect(response.body).to eq(error_message)
+      end
     end
   end
 
