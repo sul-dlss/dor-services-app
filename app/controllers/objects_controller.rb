@@ -12,7 +12,7 @@ class ObjectsController < ApplicationController
   end
 
   rescue_from(DublinCoreService::CrosswalkError) do |e|
-    render status: 400, plain: e.message
+    render status: 500, plain: e.message
   end
 
   # Register new objects in DOR
