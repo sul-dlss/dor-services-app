@@ -12,7 +12,7 @@ class ItemQueryService
   delegate :allows_modification?, to: :work
 
   # @raises [RuntimeError] if the item is not modifiable
-  def self.find_modifiable_work(druid)
+  def self.find_modifiable_item(druid)
     query_service = ItemQueryService.new(id: druid)
     query_service.work do |work|
       raise "Item #{work.pid} is not open for modification" unless query_service.allows_modification?

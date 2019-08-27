@@ -8,7 +8,7 @@ class ResetContentMetadataService
   end
 
   def reset
-    work = ItemQueryService.find_modifiable_work(@druid)
+    work = ItemQueryService.find_modifiable_item(@druid)
     work.contentMetadata.content = "<contentMetadata objectId='#{work.id}' type='#{@type}'/>"
     work.save!
   end
