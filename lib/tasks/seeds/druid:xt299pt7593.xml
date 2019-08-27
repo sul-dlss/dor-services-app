@@ -1,0 +1,1898 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foxml:digitalObject VERSION="1.1" PID="druid:xt299pt7593"
+                     xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+  <foxml:objectProperties>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Web Archive Seed Object APO"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="argo.stanford.edu"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2015-09-09T22:58:26.241Z"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2019-08-22T22:31:28.531Z"/>
+  </foxml:objectProperties>
+  <foxml:datastream ID="AUDIT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
+    <foxml:datastreamVersion ID="AUDIT.0" LABEL="Audit Trail for this object" CREATED="2015-09-09T22:58:26.241Z" MIMETYPE="text/xml" FORMAT_URI="info:fedora/fedora-system:format/xml.fedora.audit">
+      <foxml:xmlContent>
+        <audit:auditTrail xmlns:audit="info:fedora/fedora-system:def/audit#">
+          <audit:record ID="AUDREC1">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>addDatastream</audit:action>
+            <audit:componentID>RELS-EXT</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:58:26.377Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC2">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>addDatastream</audit:action>
+            <audit:componentID>identityMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:58:26.493Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC3">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>addDatastream</audit:action>
+            <audit:componentID>workflows</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:58:26.732Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC4">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>addDatastream</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:58:26.869Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC5">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>RELS-EXT</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:58:28.577Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC6">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>identityMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:58:28.692Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC7">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>addDatastream</audit:action>
+            <audit:componentID>descMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:58:28.804Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC8">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>addDatastream</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:58:29.180Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC9">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>addDatastream</audit:action>
+            <audit:componentID>roleMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:58:29.299Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC10">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>addDatastream</audit:action>
+            <audit:componentID>defaultObjectRights</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:58:29.419Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC11">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:58:29.594Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC12">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>addDatastream</audit:action>
+            <audit:componentID>rightsMetadata</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:59:00.625Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC13">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>identityMetadata</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:59:56.051Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC14">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>addDatastream</audit:action>
+            <audit:componentID>events</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T22:59:56.190Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC15">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>addDatastream</audit:action>
+            <audit:componentID>provenanceMetadata</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-09T23:01:38.928Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC16">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-21T18:38:59.452Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC17">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-21T18:39:02.477Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC18">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>events</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-21T18:39:02.609Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC19">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-21T18:39:28.060Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC20">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>events</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-21T18:39:48.362Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC21">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>provenanceMetadata</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-21T21:44:12.452Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC22">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-26T00:02:23.485Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC23">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-26T00:04:21.379Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC24">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-09-26T00:04:21.501Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC25">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-10-09T15:44:10.419Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC26">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-10-09T15:44:49.699Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC27">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-10-09T15:44:49.783Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC28">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-10-09T21:07:44.219Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC29">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-10-09T21:09:09.613Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC30">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-10-09T21:09:09.720Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC31">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T21:51:48.225Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC32">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:01:19.575Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC33">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:01:19.660Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC34">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:08:16.819Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC35">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:08:53.943Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC36">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:08:54.068Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC37">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:27:33.502Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC38">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:28:07.421Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC39">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:28:07.561Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC40">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:31:45.065Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC41">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:33:14.898Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC42">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:33:15.009Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC43">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:35:18.337Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC44">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:37:48.741Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC45">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2015-12-04T22:37:48.838Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC46">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2016-01-22T17:12:31.493Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC47">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2016-01-22T17:13:11.439Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC48">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo.stanford.edu</audit:responsibility>
+            <audit:date>2016-01-22T17:13:11.531Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC49">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2016-07-08T20:28:03.529Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC50">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2016-07-08T20:28:09.232Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC51">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2016-07-08T20:28:41.184Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC52">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2016-07-08T20:30:01.226Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC53">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2016-07-08T20:30:01.670Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC54">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2016-08-16T23:36:34.559Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC55">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2016-08-16T23:36:44.955Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC56">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2016-08-16T23:37:25.658Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC57">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2016-08-16T23:37:25.804Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC58">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>roleMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2017-08-25T17:34:26.037Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC59">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-08-25T17:43:26.133Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC60">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>events</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-08-25T17:43:27.025Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC61">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-08-25T17:43:27.111Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC62">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2017-08-25T17:43:36.308Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC63">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>events</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2017-08-25T17:43:36.851Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC64">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>provenanceMetadata</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2017-08-25T17:46:01.675Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC65">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-10-02T22:27:34.228Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC66">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>RELS-EXT</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2017-10-04T22:22:06.066Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC67">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByReference</audit:action>
+            <audit:componentID>descMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2017-10-04T22:22:06.190Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC68">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2017-10-04T22:22:06.317Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC69">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>roleMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2017-10-04T22:22:06.398Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC70">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>defaultObjectRights</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2017-10-04T22:22:06.485Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC71">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-10-04T22:22:26.593Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC72">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-10-04T22:22:28.075Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC73">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>events</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-10-04T22:22:28.162Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC74">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2017-10-04T22:22:39.250Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC75">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>events</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2017-10-04T22:22:41.255Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC76">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>provenanceMetadata</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2017-10-04T22:25:04.595Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC77">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2017-11-07T00:36:45.617Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC78">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-11-09T16:35:31.289Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC79">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-11-09T16:35:32.777Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC80">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>events</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-11-09T16:35:32.876Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC81">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>RELS-EXT</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-11-09T16:37:13.773Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC82">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-11-09T16:37:23.639Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC83">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>events</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-11-09T16:37:25.278Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC84">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>provenanceMetadata</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2017-11-09T16:42:14.079Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC85">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2017-12-14T17:07:06.832Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC86">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2018-01-22T22:37:03.308Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC87">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2018-02-16T19:41:01.346Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC88">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2018-04-18T16:16:19.156Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC89">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>roleMetadata</audit:componentID>
+            <audit:responsibility>blalbrit.stanford.edu</audit:responsibility>
+            <audit:date>2018-05-22T00:44:52.211Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC90">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2018-12-07T17:49:43.273Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC91">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>dor-services-prod.stanford.edu</audit:responsibility>
+            <audit:date>2019-05-30T22:18:10.832Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC92">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>dor-services-prod.stanford.edu</audit:responsibility>
+            <audit:date>2019-05-30T22:18:11.159Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC93">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>events</audit:componentID>
+            <audit:responsibility>dor-services-prod.stanford.edu</audit:responsibility>
+            <audit:date>2019-05-30T22:18:11.204Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC94">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>roleMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2019-05-30T22:18:39.472Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC95">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2019-05-30T22:18:46.963Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC96">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>events</audit:componentID>
+            <audit:responsibility>argo-prod-a.stanford.edu</audit:responsibility>
+            <audit:date>2019-05-30T22:18:47.685Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC97">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByReference</audit:action>
+            <audit:componentID>descMetadata</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2019-05-30T22:18:48.200Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC98">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>rightsMetadata</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2019-05-30T22:18:48.803Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC99">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>provenanceMetadata</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2019-05-30T22:18:51.662Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC100">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>dor-services-prod.stanford.edu</audit:responsibility>
+            <audit:date>2019-08-22T22:30:46.527Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC101">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>dor-services-prod.stanford.edu</audit:responsibility>
+            <audit:date>2019-08-22T22:30:46.938Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC102">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>events</audit:componentID>
+            <audit:responsibility>dor-services-prod.stanford.edu</audit:responsibility>
+            <audit:date>2019-08-22T22:30:46.977Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC103">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>administrativeMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2019-08-22T22:31:10.649Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC104">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>versionMetadata</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2019-08-22T22:31:25.160Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC105">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>events</audit:componentID>
+            <audit:responsibility>argo-prod-b.stanford.edu</audit:responsibility>
+            <audit:date>2019-08-22T22:31:26.177Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC106">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByReference</audit:action>
+            <audit:componentID>descMetadata</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2019-08-22T22:31:26.503Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC107">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>rightsMetadata</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2019-08-22T22:31:26.901Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+          <audit:record ID="AUDREC108">
+            <audit:process type="Fedora API-M"/>
+            <audit:action>modifyDatastreamByValue</audit:action>
+            <audit:componentID>provenanceMetadata</audit:componentID>
+            <audit:responsibility>robots@sul-lyberservices-prod.stanford.edu</audit:responsibility>
+            <audit:date>2019-08-22T22:31:28.531Z</audit:date>
+            <audit:justification></audit:justification>
+          </audit:record>
+        </audit:auditTrail>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream ID="DC" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+    <foxml:datastreamVersion ID="DC1.0" LABEL="Dublin Core Record for this object" CREATED="2015-09-09T22:58:26.241Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="397">
+      <foxml:xmlContent>
+        <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+          <dc:title>Web Archive Seed Object APO</dc:title>
+          <dc:identifier>druid:xt299pt7593</dc:identifier>
+        </oai_dc:dc>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream ID="RELS-EXT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+    <foxml:datastreamVersion ID="RELS-EXT.0" LABEL="Fedora Object-to-Object Relationship Metadata" CREATED="2015-09-09T22:58:26.377Z" MIMETYPE="application/rdf+xml" SIZE="471">
+      <foxml:xmlContent>
+        <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:hydra="http://projecthydra.org/ns/relations#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+          <rdf:Description rdf:about="info:fedora/druid:xt299pt7593">
+            <hydra:isGovernedBy rdf:resource="info:fedora/druid:hv992ry2431"></hydra:isGovernedBy>
+            <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_AdminPolicyObject"></fedora-model:hasModel>
+          </rdf:Description>
+        </rdf:RDF>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="RELS-EXT.1" LABEL="Fedora Object-to-Object Relationship Metadata" CREATED="2015-09-09T22:58:28.577Z" MIMETYPE="application/rdf+xml" SIZE="576">
+      <foxml:xmlContent>
+        <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:hydra="http://projecthydra.org/ns/relations#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+          <rdf:Description rdf:about="info:fedora/druid:xt299pt7593">
+            <hydra:isGovernedBy rdf:resource="info:fedora/druid:hv992ry2431"></hydra:isGovernedBy>
+            <hydra:referencesAgreement rdf:resource="info:fedora/druid:wn586st0695"></hydra:referencesAgreement>
+            <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_AdminPolicyObject"></fedora-model:hasModel>
+          </rdf:Description>
+        </rdf:RDF>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="RELS-EXT.2" LABEL="Fedora Object-to-Object Relationship Metadata" CREATED="2017-10-04T22:22:06.066Z" MIMETYPE="application/rdf+xml" SIZE="681">
+      <foxml:xmlContent>
+        <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:hydra="http://projecthydra.org/ns/relations#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+          <rdf:Description rdf:about="info:fedora/druid:xt299pt7593">
+            <hydra:isGovernedBy rdf:resource="info:fedora/druid:hv992ry2431"></hydra:isGovernedBy>
+            <hydra:referencesAgreement rdf:resource="info:fedora/druid:wn586st0695"></hydra:referencesAgreement>
+            <hydra:referencesAgreement rdf:resource="info:fedora/druid:sb526wm1291"></hydra:referencesAgreement>
+            <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_AdminPolicyObject"></fedora-model:hasModel>
+          </rdf:Description>
+        </rdf:RDF>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="RELS-EXT.3" LABEL="Fedora Object-to-Object Relationship Metadata" CREATED="2017-11-09T16:37:13.773Z" MIMETYPE="application/rdf+xml" SIZE="576">
+      <foxml:xmlContent>
+        <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:hydra="http://projecthydra.org/ns/relations#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+          <rdf:Description rdf:about="info:fedora/druid:xt299pt7593">
+            <hydra:isGovernedBy rdf:resource="info:fedora/druid:hv992ry2431"></hydra:isGovernedBy>
+            <hydra:referencesAgreement rdf:resource="info:fedora/druid:wn586st0695"></hydra:referencesAgreement>
+            <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_AdminPolicyObject"></fedora-model:hasModel>
+          </rdf:Description>
+        </rdf:RDF>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream ID="identityMetadata" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+    <foxml:datastreamVersion ID="identityMetadata.0" LABEL="Identity Metadata" CREATED="2015-09-09T22:58:26.493Z" MIMETYPE="text/xml" SIZE="284">
+      <foxml:xmlContent>
+        <identityMetadata>
+          <objectId>druid:xt299pt7593</objectId>
+          <objectCreator>DOR</objectCreator>
+          <objectLabel>Web Archive Seed Object APO</objectLabel>
+          <objectType>adminPolicy</objectType>
+          <otherId name="uuid">4502a2be-5746-11e5-9cdb-0050569b3c3c</otherId>
+        </identityMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="identityMetadata.1" LABEL="Identity Metadata" CREATED="2015-09-09T22:58:28.692Z" MIMETYPE="text/xml" SIZE="318">
+      <foxml:xmlContent>
+        <identityMetadata>
+          <objectId>druid:xt299pt7593</objectId>
+          <objectCreator>DOR</objectCreator>
+          <objectLabel>Web Archive Seed Object APO</objectLabel>
+          <objectType>adminPolicy</objectType>
+          <otherId name="uuid">4502a2be-5746-11e5-9cdb-0050569b3c3c</otherId>
+          <tag>Registered By : ntay</tag>
+        </identityMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="identityMetadata.2" LABEL="Identity Metadata" CREATED="2015-09-09T22:59:56.051Z" MIMETYPE="text/xml" SIZE="354">
+      <foxml:xmlContent>
+        <identityMetadata>
+          <objectId>druid:xt299pt7593</objectId>
+          <objectCreator>DOR</objectCreator>
+          <objectLabel>Web Archive Seed Object APO</objectLabel>
+          <objectType>adminPolicy</objectType>
+          <otherId name="uuid">4502a2be-5746-11e5-9cdb-0050569b3c3c</otherId>
+          <tag>Registered By : ntay</tag>
+          <tag>Remediated By : 4.21.4</tag>
+        </identityMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream ID="workflows" STATE="A" CONTROL_GROUP="E" VERSIONABLE="true">
+    <foxml:datastreamVersion ID="workflows.0" LABEL="Workflows" CREATED="2015-09-09T22:58:26.732Z" MIMETYPE="application/xml">
+      <foxml:contentLocation TYPE="URL" REF="https://lyberservices-prod.stanford.edu/workflow/dor/objects/druid:xt299pt7593/workflows"/>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream ID="descMetadata" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+    <foxml:datastreamVersion ID="descMetadata.0" LABEL="Descriptive Metadata" CREATED="2015-09-09T22:58:28.804Z" MIMETYPE="text/xml" SIZE="291">
+      <foxml:binaryContent>
+        PG1vZHMgeG1sbnM9Imh0dHA6Ly93d3cubG9jLmdvdi9tb2RzL3YzIiB4bWxuczp4c2k9Imh0dHA6Ly93
+        d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB2ZXJzaW9uPSIzLjMiIHhzaTpzY2hlbWFM
+        b2NhdGlvbj0iaHR0cDovL3d3dy5sb2MuZ292L21vZHMvdjMgaHR0cDovL3d3dy5sb2MuZ292L3N0YW5k
+        YXJkcy9tb2RzL3YzL21vZHMtMy0zLnhzZCI+CiAgPHRpdGxlSW5mbz4KICAgIDx0aXRsZT5XZWIgQXJj
+        aGl2ZSBTZWVkIE9iamVjdCBBUE88L3RpdGxlPgogIDwvdGl0bGVJbmZvPgo8L21vZHM+
+      </foxml:binaryContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="descMetadata.1" LABEL="Descriptive Metadata" CREATED="2017-10-04T22:22:06.190Z" MIMETYPE="text/xml" SIZE="291">
+      <foxml:binaryContent>
+        PG1vZHMgeG1sbnM9Imh0dHA6Ly93d3cubG9jLmdvdi9tb2RzL3YzIiB4bWxuczp4c2k9Imh0dHA6Ly93
+        d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB2ZXJzaW9uPSIzLjMiIHhzaTpzY2hlbWFM
+        b2NhdGlvbj0iaHR0cDovL3d3dy5sb2MuZ292L21vZHMvdjMgaHR0cDovL3d3dy5sb2MuZ292L3N0YW5k
+        YXJkcy9tb2RzL3YzL21vZHMtMy0zLnhzZCI+CiAgPHRpdGxlSW5mbz4KICAgIDx0aXRsZT5XZWIgQXJj
+        aGl2ZSBTZWVkIE9iamVjdCBBUE88L3RpdGxlPgogIDwvdGl0bGVJbmZvPgo8L21vZHM+
+      </foxml:binaryContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="descMetadata.2" LABEL="Descriptive Metadata" CREATED="2019-05-30T22:18:48.200Z" MIMETYPE="text/xml" SIZE="291">
+      <foxml:binaryContent>
+        PG1vZHMgeG1sbnM9Imh0dHA6Ly93d3cubG9jLmdvdi9tb2RzL3YzIiB4bWxuczp4c2k9Imh0dHA6Ly93
+        d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB2ZXJzaW9uPSIzLjMiIHhzaTpzY2hlbWFM
+        b2NhdGlvbj0iaHR0cDovL3d3dy5sb2MuZ292L21vZHMvdjMgaHR0cDovL3d3dy5sb2MuZ292L3N0YW5k
+        YXJkcy9tb2RzL3YzL21vZHMtMy0zLnhzZCI+CiAgPHRpdGxlSW5mbz4KICAgIDx0aXRsZT5XZWIgQXJj
+        aGl2ZSBTZWVkIE9iamVjdCBBUE88L3RpdGxlPgogIDwvdGl0bGVJbmZvPgo8L21vZHM+
+      </foxml:binaryContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="descMetadata.3" LABEL="Descriptive Metadata" CREATED="2019-08-22T22:31:26.503Z" MIMETYPE="text/xml" SIZE="291">
+      <foxml:binaryContent>
+        PG1vZHMgeG1sbnM9Imh0dHA6Ly93d3cubG9jLmdvdi9tb2RzL3YzIiB4bWxuczp4c2k9Imh0dHA6Ly93
+        d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB2ZXJzaW9uPSIzLjMiIHhzaTpzY2hlbWFM
+        b2NhdGlvbj0iaHR0cDovL3d3dy5sb2MuZ292L21vZHMvdjMgaHR0cDovL3d3dy5sb2MuZ292L3N0YW5k
+        YXJkcy9tb2RzL3YzL21vZHMtMy0zLnhzZCI+CiAgPHRpdGxlSW5mbz4KICAgIDx0aXRsZT5XZWIgQXJj
+        aGl2ZSBTZWVkIE9iamVjdCBBUE88L3RpdGxlPgogIDwvdGl0bGVJbmZvPgo8L21vZHM+
+      </foxml:binaryContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream ID="administrativeMetadata" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+    <foxml:datastreamVersion ID="administrativeMetadata.0" LABEL="Administrative Metadata" CREATED="2015-09-09T22:58:29.180Z" MIMETYPE="text/xml" SIZE="226">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+          </registration>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.1" LABEL="Administrative Metadata" CREATED="2015-09-21T18:39:28.060Z" MIMETYPE="text/xml" SIZE="313">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.2" LABEL="Administrative Metadata" CREATED="2015-09-26T00:04:21.501Z" MIMETYPE="text/xml" SIZE="366">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.3" LABEL="Administrative Metadata" CREATED="2015-10-09T15:44:49.783Z" MIMETYPE="text/xml" SIZE="419">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.4" LABEL="Administrative Metadata" CREATED="2015-10-09T21:09:09.720Z" MIMETYPE="text/xml" SIZE="472">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.5" LABEL="Administrative Metadata" CREATED="2015-12-04T22:01:19.660Z" MIMETYPE="text/xml" SIZE="525">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.6" LABEL="Administrative Metadata" CREATED="2015-12-04T22:08:54.068Z" MIMETYPE="text/xml" SIZE="578">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.7" LABEL="Administrative Metadata" CREATED="2015-12-04T22:28:07.561Z" MIMETYPE="text/xml" SIZE="631">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.8" LABEL="Administrative Metadata" CREATED="2015-12-04T22:33:15.009Z" MIMETYPE="text/xml" SIZE="684">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.9" LABEL="Administrative Metadata" CREATED="2015-12-04T22:37:48.838Z" MIMETYPE="text/xml" SIZE="737">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+            <collection id="druid:ny668qj7064"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.10" LABEL="Administrative Metadata" CREATED="2016-01-22T17:13:11.531Z" MIMETYPE="text/xml" SIZE="790">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+            <collection id="druid:ny668qj7064"></collection>
+            <collection id="druid:mm553tf6423"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.11" LABEL="Administrative Metadata" CREATED="2016-07-08T20:30:01.670Z" MIMETYPE="text/xml" SIZE="843">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+            <collection id="druid:ny668qj7064"></collection>
+            <collection id="druid:mm553tf6423"></collection>
+            <collection id="druid:cr827qv5481"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.12" LABEL="Administrative Metadata" CREATED="2016-08-16T23:37:25.804Z" MIMETYPE="text/xml" SIZE="896">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+            <collection id="druid:ny668qj7064"></collection>
+            <collection id="druid:mm553tf6423"></collection>
+            <collection id="druid:cr827qv5481"></collection>
+            <collection id="druid:jr718nx9401"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.13" LABEL="Administrative Metadata" CREATED="2017-10-02T22:27:34.228Z" MIMETYPE="text/xml" SIZE="949">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+            <collection id="druid:ny668qj7064"></collection>
+            <collection id="druid:mm553tf6423"></collection>
+            <collection id="druid:cr827qv5481"></collection>
+            <collection id="druid:jr718nx9401"></collection>
+            <collection id="druid:bg567wp9439"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.14" LABEL="Administrative Metadata" CREATED="2017-10-04T22:22:06.317Z" MIMETYPE="text/xml" SIZE="949">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+            <collection id="druid:ny668qj7064"></collection>
+            <collection id="druid:mm553tf6423"></collection>
+            <collection id="druid:cr827qv5481"></collection>
+            <collection id="druid:jr718nx9401"></collection>
+            <collection id="druid:bg567wp9439"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.15" LABEL="Administrative Metadata" CREATED="2017-11-07T00:36:45.617Z" MIMETYPE="text/xml" SIZE="1002">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+            <collection id="druid:ny668qj7064"></collection>
+            <collection id="druid:mm553tf6423"></collection>
+            <collection id="druid:cr827qv5481"></collection>
+            <collection id="druid:jr718nx9401"></collection>
+            <collection id="druid:bg567wp9439"></collection>
+            <collection id="druid:gq905qc8869"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.16" LABEL="Administrative Metadata" CREATED="2017-12-14T17:07:06.832Z" MIMETYPE="text/xml" SIZE="1055">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+            <collection id="druid:ny668qj7064"></collection>
+            <collection id="druid:mm553tf6423"></collection>
+            <collection id="druid:cr827qv5481"></collection>
+            <collection id="druid:jr718nx9401"></collection>
+            <collection id="druid:bg567wp9439"></collection>
+            <collection id="druid:gq905qc8869"></collection>
+            <collection id="druid:sr233xh9483"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.17" LABEL="Administrative Metadata" CREATED="2018-01-22T22:37:03.308Z" MIMETYPE="text/xml" SIZE="1108">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+            <collection id="druid:ny668qj7064"></collection>
+            <collection id="druid:mm553tf6423"></collection>
+            <collection id="druid:cr827qv5481"></collection>
+            <collection id="druid:jr718nx9401"></collection>
+            <collection id="druid:bg567wp9439"></collection>
+            <collection id="druid:gq905qc8869"></collection>
+            <collection id="druid:sr233xh9483"></collection>
+            <collection id="druid:vw167kj7922"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.18" LABEL="Administrative Metadata" CREATED="2018-02-16T19:41:01.346Z" MIMETYPE="text/xml" SIZE="1161">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+            <collection id="druid:ny668qj7064"></collection>
+            <collection id="druid:mm553tf6423"></collection>
+            <collection id="druid:cr827qv5481"></collection>
+            <collection id="druid:jr718nx9401"></collection>
+            <collection id="druid:bg567wp9439"></collection>
+            <collection id="druid:gq905qc8869"></collection>
+            <collection id="druid:sr233xh9483"></collection>
+            <collection id="druid:vw167kj7922"></collection>
+            <collection id="druid:rf785yk7955"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.19" LABEL="Administrative Metadata" CREATED="2018-04-18T16:16:19.156Z" MIMETYPE="text/xml" SIZE="1214">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+            <collection id="druid:ny668qj7064"></collection>
+            <collection id="druid:mm553tf6423"></collection>
+            <collection id="druid:cr827qv5481"></collection>
+            <collection id="druid:jr718nx9401"></collection>
+            <collection id="druid:bg567wp9439"></collection>
+            <collection id="druid:gq905qc8869"></collection>
+            <collection id="druid:sr233xh9483"></collection>
+            <collection id="druid:vw167kj7922"></collection>
+            <collection id="druid:rf785yk7955"></collection>
+            <collection id="druid:mz235vf0338"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.20" LABEL="Administrative Metadata" CREATED="2018-12-07T17:49:43.273Z" MIMETYPE="text/xml" SIZE="1267">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+            <collection id="druid:ny668qj7064"></collection>
+            <collection id="druid:mm553tf6423"></collection>
+            <collection id="druid:cr827qv5481"></collection>
+            <collection id="druid:jr718nx9401"></collection>
+            <collection id="druid:bg567wp9439"></collection>
+            <collection id="druid:gq905qc8869"></collection>
+            <collection id="druid:sr233xh9483"></collection>
+            <collection id="druid:vw167kj7922"></collection>
+            <collection id="druid:rf785yk7955"></collection>
+            <collection id="druid:mz235vf0338"></collection>
+            <collection id="druid:tj980cm1072"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="administrativeMetadata.21" LABEL="Administrative Metadata" CREATED="2019-08-22T22:31:10.649Z" MIMETYPE="text/xml" SIZE="2115">
+      <foxml:xmlContent>
+        <administrativeMetadata>
+          <descMetadata>
+            <format>MODS</format>
+            <source>DOR</source>
+          </descMetadata>
+          <registration>
+            <workflow id="wasCrawlPreassemblyWF"></workflow>
+            <collection id="druid:bg567wp9439"></collection>
+            <collection id="druid:bp350ns9783"></collection>
+            <collection id="druid:cr827qv5481"></collection>
+            <collection id="druid:ct981gp6651"></collection>
+            <collection id="druid:dd229dt6421"></collection>
+            <collection id="druid:fj976ng3949"></collection>
+            <collection id="druid:gq905qc8869"></collection>
+            <collection id="druid:jr020vk9176"></collection>
+            <collection id="druid:jr718nx9401"></collection>
+            <collection id="druid:jt898xc8096"></collection>
+            <collection id="druid:kb263cw9779"></collection>
+            <collection id="druid:kh149kf8484"></collection>
+            <collection id="druid:kz219qj4741"></collection>
+            <collection id="druid:mk656nf8485"></collection>
+            <collection id="druid:mm553tf6423"></collection>
+            <collection id="druid:mz235vf0338"></collection>
+            <collection id="druid:nd454jc5512"></collection>
+            <collection id="druid:ny668qj7064"></collection>
+            <collection id="druid:pr667nx7047"></collection>
+            <collection id="druid:qc398by6897"></collection>
+            <collection id="druid:qf441zz1840"></collection>
+            <collection id="druid:rf785yk7955"></collection>
+            <collection id="druid:rt529ft9258"></collection>
+            <collection id="druid:sr233xh9483"></collection>
+            <collection id="druid:tf197ww0897"></collection>
+            <collection id="druid:tj980cm1072"></collection>
+            <collection id="druid:tr960gh0976"></collection>
+            <collection id="druid:vw167kj7922"></collection>
+            <collection id="druid:wk956yb8565"></collection>
+            <collection id="druid:wx013sp9826"></collection>
+            <collection id="druid:xq062nv6119"></collection>
+            <collection id="druid:xs048zp7815"></collection>
+            <collection id="druid:yw234wp7868"></collection>
+            <collection id="druid:zh439hc0988"></collection>
+          </registration>
+          <dissemination>
+            <workflow id="wasDisseminationWF"></workflow>
+          </dissemination>
+        </administrativeMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream ID="roleMetadata" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+    <foxml:datastreamVersion ID="roleMetadata.0" LABEL="Role Metadata" CREATED="2015-09-09T22:58:29.299Z" MIMETYPE="text/xml" SIZE="163">
+      <foxml:xmlContent>
+        <roleMetadata>
+          <role type="dor-apo-manager">
+            <group>
+              <identifier type="workgroup">dlss:pmag-staff</identifier>
+            </group>
+          </role>
+        </roleMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="roleMetadata.1" LABEL="Role Metadata" CREATED="2017-08-25T17:34:26.037Z" MIMETYPE="text/xml" SIZE="250">
+      <foxml:xmlContent>
+        <roleMetadata>
+          <role type="dor-apo-manager">
+            <group>
+              <identifier type="workgroup">dlss:pmag-staff</identifier>
+            </group>
+            <group>
+              <identifier type="workgroup">sdr:eal-staff</identifier>
+            </group>
+          </role>
+        </roleMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="roleMetadata.2" LABEL="Role Metadata" CREATED="2017-10-04T22:22:06.398Z" MIMETYPE="text/xml" SIZE="340">
+      <foxml:xmlContent>
+        <roleMetadata>
+          <role type="dor-apo-manager">
+            <group>
+              <identifier type="workgroup">dlss:pmag-staff</identifier>
+            </group>
+            <group>
+              <identifier type="workgroup">sdr:eal-staff</identifier>
+            </group>
+            <group>
+              <identifier type="workgroup">sdr:lockss-staff</identifier>
+            </group>
+          </role>
+        </roleMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="roleMetadata.3" LABEL="Role Metadata" CREATED="2018-05-22T00:44:52.211Z" MIMETYPE="text/xml" SIZE="338">
+      <foxml:xmlContent>
+        <roleMetadata>
+          <role type="dor-apo-manager">
+            <group>
+              <identifier type="workgroup">sdr:psm-staff</identifier>
+            </group>
+            <group>
+              <identifier type="workgroup">sdr:eal-staff</identifier>
+            </group>
+            <group>
+              <identifier type="workgroup">sdr:lockss-staff</identifier>
+            </group>
+          </role>
+        </roleMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="roleMetadata.4" LABEL="Role Metadata" CREATED="2019-05-30T22:18:39.472Z" MIMETYPE="text/xml" SIZE="426">
+      <foxml:xmlContent>
+        <roleMetadata>
+          <role type="dor-apo-manager">
+            <group>
+              <identifier type="workgroup">sdr:psm-staff</identifier>
+            </group>
+            <group>
+              <identifier type="workgroup">sdr:eal-staff</identifier>
+            </group>
+            <group>
+              <identifier type="workgroup">sdr:lockss-staff</identifier>
+            </group>
+            <group>
+              <identifier type="workgroup">sdr:spec-staff</identifier>
+            </group>
+          </role>
+        </roleMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream ID="defaultObjectRights" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+    <foxml:datastreamVersion ID="defaultObjectRights.0" LABEL="Default Object Rights" CREATED="2015-09-09T22:58:29.419Z" MIMETYPE="text/xml" SIZE="680">
+      <foxml:xmlContent>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <world></world>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <world></world>
+            </machine>
+          </access>
+          <use>
+            <human type="useAndReproduction">Access is provided in a manner consistent with the Stanford University Libraries Web Archiving Policy (https://library.stanford.edu/projects/web-archiving/policy).</human>
+            <human type="creativeCommons"></human>
+            <machine type="creativeCommons"></machine>
+          </use>
+          <copyright>
+            <human>Copyright resides with the creators of the materials or their heirs. An open content license may apply.</human>
+          </copyright>
+        </rightsMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="defaultObjectRights.1" LABEL="Default Object Rights" CREATED="2017-10-04T22:22:06.485Z" MIMETYPE="text/xml" SIZE="590">
+      <foxml:xmlContent>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <world></world>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <world></world>
+            </machine>
+          </access>
+          <use>
+            <human type="useAndReproduction">Access is provided in a manner consistent with the Stanford University Libraries Web Archiving Policy (https://library.stanford.edu/projects/web-archiving/policy).</human>
+          </use>
+          <copyright>
+            <human>Copyright resides with the creators of the materials or their heirs. An open content license may apply.</human>
+          </copyright>
+        </rightsMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream ID="rightsMetadata" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+    <foxml:datastreamVersion ID="rightsMetadata.0" LABEL="Rights Metadata" CREATED="2015-09-09T22:59:00.625Z" MIMETYPE="text/xml" SIZE="208">
+      <foxml:xmlContent>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <none></none>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <none></none>
+            </machine>
+          </access>
+        </rightsMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="rightsMetadata.1" LABEL="Rights Metadata" CREATED="2019-05-30T22:18:48.803Z" MIMETYPE="text/xml" SIZE="208">
+      <foxml:xmlContent>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <none></none>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <none></none>
+            </machine>
+          </access>
+        </rightsMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="rightsMetadata.2" LABEL="Rights Metadata" CREATED="2019-08-22T22:31:26.901Z" MIMETYPE="text/xml" SIZE="208">
+      <foxml:xmlContent>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <none></none>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <none></none>
+            </machine>
+          </access>
+        </rightsMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream ID="provenanceMetadata" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+    <foxml:datastreamVersion ID="provenanceMetadata.0" LABEL="Provenance Metadata" CREATED="2015-09-09T23:01:38.928Z" MIMETYPE="text/xml" SIZE="265">
+      <foxml:xmlContent>
+        <provenanceMetadata objectId="druid:xt299pt7593">
+          <agent name="DOR">
+            <what object="druid:xt299pt7593">
+              <event when="2015-09-09T16:01:38-07:00" who="DOR-accessionWF">DOR Common Accessioning completed</event>
+            </what>
+          </agent>
+        </provenanceMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="provenanceMetadata.1" LABEL="Provenance Metadata" CREATED="2015-09-21T21:44:12.452Z" MIMETYPE="text/xml" SIZE="265">
+      <foxml:xmlContent>
+        <provenanceMetadata objectId="druid:xt299pt7593">
+          <agent name="DOR">
+            <what object="druid:xt299pt7593">
+              <event when="2015-09-21T14:44:12-07:00" who="DOR-accessionWF">DOR Common Accessioning completed</event>
+            </what>
+          </agent>
+        </provenanceMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="provenanceMetadata.2" LABEL="Provenance Metadata" CREATED="2017-08-25T17:46:01.675Z" MIMETYPE="text/xml" SIZE="265">
+      <foxml:xmlContent>
+        <provenanceMetadata objectId="druid:xt299pt7593">
+          <agent name="DOR">
+            <what object="druid:xt299pt7593">
+              <event when="2017-08-25T10:46:01-07:00" who="DOR-accessionWF">DOR Common Accessioning completed</event>
+            </what>
+          </agent>
+        </provenanceMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="provenanceMetadata.3" LABEL="Provenance Metadata" CREATED="2017-10-04T22:25:04.595Z" MIMETYPE="text/xml" SIZE="265">
+      <foxml:xmlContent>
+        <provenanceMetadata objectId="druid:xt299pt7593">
+          <agent name="DOR">
+            <what object="druid:xt299pt7593">
+              <event when="2017-10-04T15:25:04-07:00" who="DOR-accessionWF">DOR Common Accessioning completed</event>
+            </what>
+          </agent>
+        </provenanceMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="provenanceMetadata.4" LABEL="Provenance Metadata" CREATED="2017-11-09T16:42:14.079Z" MIMETYPE="text/xml" SIZE="265">
+      <foxml:xmlContent>
+        <provenanceMetadata objectId="druid:xt299pt7593">
+          <agent name="DOR">
+            <what object="druid:xt299pt7593">
+              <event when="2017-11-09T08:42:13-08:00" who="DOR-accessionWF">DOR Common Accessioning completed</event>
+            </what>
+          </agent>
+        </provenanceMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="provenanceMetadata.5" LABEL="Provenance Metadata" CREATED="2019-05-30T22:18:51.662Z" MIMETYPE="text/xml" SIZE="265">
+      <foxml:xmlContent>
+        <provenanceMetadata objectId="druid:xt299pt7593">
+          <agent name="DOR">
+            <what object="druid:xt299pt7593">
+              <event when="2019-05-30T15:18:51-07:00" who="DOR-accessionWF">DOR Common Accessioning completed</event>
+            </what>
+          </agent>
+        </provenanceMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+    <foxml:datastreamVersion ID="provenanceMetadata.6" LABEL="Provenance Metadata" CREATED="2019-08-22T22:31:28.531Z" MIMETYPE="text/xml" SIZE="265">
+      <foxml:xmlContent>
+        <provenanceMetadata objectId="druid:xt299pt7593">
+          <agent name="DOR">
+            <what object="druid:xt299pt7593">
+              <event when="2019-08-22T15:31:28-07:00" who="DOR-accessionWF">DOR Common Accessioning completed</event>
+            </what>
+          </agent>
+        </provenanceMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream ID="versionMetadata" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
+    <foxml:datastreamVersion ID="versionMetadata.43" LABEL="Version Metadata" CREATED="2019-08-22T22:31:25.160Z" MIMETYPE="text/xml" SIZE="875">
+      <foxml:xmlContent>
+        <versionMetadata objectId="druid:xt299pt7593">
+          <version tag="1.0.0" versionId="1">
+            <description>Initial Version</description>
+          </version>
+          <version tag="2.0.0" versionId="2">
+            <description>Update admin metadata</description>
+          </version>
+          <version tag="2.0.1" versionId="3">
+            <description>update roleMetadata (add EAL staff)</description>
+          </version>
+          <version tag="2.0.2" versionId="4">
+            <description>add lockss workgroup to roles</description>
+          </version>
+          <version tag="2.1.0" versionId="5">
+            <description>Corrected referenced agreement.</description>
+          </version>
+          <version tag="2.2.0" versionId="6">
+            <description>add sdr:spec-staff workgroup to roleMetadata</description>
+          </version>
+          <version tag="2.3.0" versionId="7">
+            <description>updating collection druids in administrativeMetadata</description>
+          </version>
+        </versionMetadata>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream ID="events" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
+    <foxml:datastreamVersion ID="events.12" LABEL="Events" CREATED="2019-08-22T22:31:26.177Z" MIMETYPE="text/xml" SIZE="1326">
+      <foxml:xmlContent>
+        <events>
+          <event type="remediation" when="2015-09-09T15:59:55-07:00" who="Dor::Identifiable 3.6.1">Record Remediation Version</event>
+          <event type="open" when="2015-09-21T11:39:01-07:00" who="Ahmed AlSum">Version 2 opened</event>
+          <event type="close" when="2015-09-21T11:39:48-07:00" who="Ahmed AlSum">Version 2 closed</event>
+          <event type="open" when="2017-08-25T17:43:26Z" who="Benjamin L Albritton">Version 3 opened</event>
+          <event type="close" when="2017-08-25T17:43:36Z" who="Benjamin L Albritton">Version 3 closed</event>
+          <event type="open" when="2017-10-04T22:22:27Z" who="Benjamin L Albritton">Version 4 opened</event>
+          <event type="close" when="2017-10-04T22:22:41Z" who="Benjamin L Albritton">Version 4 closed</event>
+          <event type="open" when="2017-11-09T16:35:32Z" who="Nicholas Taylor">Version 5 opened</event>
+          <event type="close" when="2017-11-09T16:37:25Z" who="Nicholas Taylor">Version 5 closed</event>
+          <event type="open" when="2019-05-30T22:18:11Z" who="Nicholas Taylor">Version 6 opened</event>
+          <event type="close" when="2019-05-30T22:18:47Z" who="Nicholas Taylor">Version 6 closed</event>
+          <event type="open" when="2019-08-22T22:30:46Z" who="Nicholas Taylor">Version 7 opened</event>
+          <event type="close" when="2019-08-22T22:31:26Z" who="Nicholas Taylor">Version 7 closed</event>
+        </events>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+</foxml:digitalObject>
