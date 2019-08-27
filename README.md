@@ -19,11 +19,10 @@ This will use the HMAC secret to sign the token. It will ask you to submit a val
 
 ## Seeding the staging environment
 
-It's possible to clear out and re-seed the staging environment by using the following rake tasks:
+It's possible to clear out and re-seed the staging environment by using the following rake task:
 
 ```
 ./bin/rake delete_all_objects
-./bin/rake seed
 ```
 
 This will load all the FOXML from https://github.com/sul-dlss/dor-services-app/blob/master/lib/tasks/seeds/
