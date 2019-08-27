@@ -29,7 +29,7 @@ class ConstituentService
   attr_reader :parent_druid
 
   def add_constituent(child_druid:)
-    child = ItemQueryService.find_modifiable_work(child_druid)
+    child = ItemQueryService.find_modifiable_item(child_druid)
     child.contentMetadata.ng_xml.search('//resource').each do |resource|
       parent.contentMetadata.add_virtual_resource(child.id, resource)
     end
@@ -38,6 +38,6 @@ class ConstituentService
   end
 
   def parent
-    @parent ||= ItemQueryService.find_modifiable_work(parent_druid)
+    @parent ||= ItemQueryService.find_modifiable_item(parent_druid)
   end
 end
