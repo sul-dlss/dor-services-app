@@ -184,32 +184,39 @@ RSpec.describe VersionService do
   describe '.close' do
     subject(:close) { described_class.close(obj) }
 
-    it 'sets tag and description if passed in as optional paramaters' do
-      allow(vmd_ds).to receive(:pid).and_return('druid:ab123cd4567')
-      allow(Dor::Config.workflow.client).to receive(:active_lifecycle).and_return(true, false)
+    context 'when significance, description and user_name are passed in' do
+      before do
+      end
 
-      # Stub out calls to update and archive workflow
-      allow(Dor::Config.workflow.client).to receive(:update_workflow_status)
+      it 'sets tag, description and an event' do
+        allow(vmd_ds).to receive(:pid).and_return('druid:ab123cd4567')
+        allow(Dor::Config.workflow.client).to receive(:active_lifecycle).and_return(true, false)
 
-      expect(Dor::Config.workflow.client).to receive(:close_version).with('dor', druid, true)
+        # Stub out calls to update and archive workflow
+        allow(Dor::Config.workflow.client).to receive(:update_workflow_status)
 
-      allow(obj).to receive(:create_workflow)
+        expect(Dor::Config.workflow.client).to receive(:close_version).with('dor', druid, true)
 
-      vmd_ds.increment_version
-      expect(vmd_ds).to receive(:save)
-      described_class.close obj, description: 'closing text', significance: :major
+        allow(obj).to receive(:create_workflow)
+        vmd_ds.increment_version
 
-      expect(vmd_ds.to_xml).to be_equivalent_to(<<-XML
-        <versionMetadata objectId="druid:ab123cd4567">
-          <version versionId="1" tag="1.0.0">
-            <description>Initial Version</description>
-          </version>
-          <version versionId="2" tag="2.0.0">
-            <description>closing text</description>
-          </version>
-        </versionMetadata>
-      XML
-                                               )
+        expect(vmd_ds).to receive(:save)
+        expect(ev_ds).to receive(:add_event).with('close', 'jcoyne', 'Version 2 closed')
+        expect(obj).to receive(:save!)
+
+        described_class.close obj, description: 'closing text', significance: 'major', user_name: 'jcoyne'
+
+        expect(vmd_ds.to_xml).to be_equivalent_to <<~XML
+          <versionMetadata objectId="druid:ab123cd4567">
+            <version versionId="1" tag="1.0.0">
+              <description>Initial Version</description>
+            </version>
+            <version versionId="2" tag="2.0.0">
+              <description>closing text</description>
+            </version>
+          </versionMetadata>
+        XML
+      end
     end
 
     context 'when the object has not been opened for versioning' do
