@@ -59,9 +59,9 @@ RSpec.describe ConstituentService do
       # Used in ContentMetadataDS#add_virtual_resource
       allow(parent.contentMetadata).to receive(:pid).and_return('druid:parent1')
 
-      allow(ItemQueryService).to receive(:find_modifiable_item).with('druid:parent1').and_return(parent)
-      allow(ItemQueryService).to receive(:find_modifiable_item).with('druid:child1').and_return(child1)
-      allow(ItemQueryService).to receive(:find_modifiable_item).with('druid:child2').and_return(child2)
+      allow(ItemQueryService).to receive(:find_combinable_item).with('druid:parent1').and_return(parent)
+      allow(ItemQueryService).to receive(:find_combinable_item).with('druid:child1').and_return(child1)
+      allow(ItemQueryService).to receive(:find_combinable_item).with('druid:child2').and_return(child2)
 
       allow(Dor::Services::Client).to receive(:object).and_return(client)
     end
@@ -88,9 +88,9 @@ RSpec.describe ConstituentService do
       end
     end
 
-    context 'when the parent is closed for modification' do
+    context 'when the parent is not combinable' do
       before do
-        allow(ItemQueryService).to receive(:find_modifiable_item).with(parent.id).and_raise('nope')
+        allow(ItemQueryService).to receive(:find_combinable_item).with(parent.id).and_raise('nope')
       end
 
       it 'merges nothing' do
@@ -100,9 +100,9 @@ RSpec.describe ConstituentService do
       end
     end
 
-    context 'when the child is closed for modification' do
+    context 'when a child is not combinable' do
       before do
-        allow(ItemQueryService).to receive(:find_modifiable_item).with(child2.id).and_raise('not modifiable')
+        allow(ItemQueryService).to receive(:find_combinable_item).with(child2.id).and_raise('not modifiable')
       end
 
       it 'merges all the chidren before an error is encountered' do

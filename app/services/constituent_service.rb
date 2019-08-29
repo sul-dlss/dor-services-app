@@ -16,7 +16,7 @@ class ConstituentService
   # subsequent calls will erase the previous changes.
   # @param [Array<String>] child_druids the identifiers of the child objects
   def add(child_druids:)
-    ResetContentMetadataService.new(druid: parent_druid).reset
+    ResetContentMetadataService.new(item: parent).reset
 
     child_druids.each do |child_druid|
       add_constituent(child_druid: child_druid)
@@ -29,7 +29,7 @@ class ConstituentService
   attr_reader :parent_druid
 
   def add_constituent(child_druid:)
-    child = ItemQueryService.find_modifiable_item(child_druid)
+    child = ItemQueryService.find_combinable_item(child_druid)
     child.contentMetadata.ng_xml.search('//resource').each do |resource|
       parent.contentMetadata.add_virtual_resource(child.id, resource)
     end
@@ -38,6 +38,6 @@ class ConstituentService
   end
 
   def parent
-    @parent ||= ItemQueryService.find_modifiable_item(parent_druid)
+    @parent ||= ItemQueryService.find_combinable_item(parent_druid)
   end
 end
