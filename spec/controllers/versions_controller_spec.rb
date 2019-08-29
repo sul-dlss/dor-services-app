@@ -35,7 +35,7 @@ RSpec.describe VersionsController do
       it 'forwards optional params to the VersionService#close method' do
         post :close_current, params: { object_id: item.pid }, body: %( {"description": "some text", "significance": "major"} ), as: :json
         expect(response.body).to match(/version 1 closed/)
-        expect(VersionService).to have_received(:close).with(item, description: 'some text', significance: :major)
+        expect(VersionService).to have_received(:close).with(item, description: 'some text', significance: 'major')
       end
     end
 
@@ -63,11 +63,9 @@ RSpec.describe VersionsController do
     let(:open_params) do
       {
         assume_accessioned: false,
-        vers_md_upd_info: {
-          significance: 'minor',
-          description: 'bar',
-          opening_user_name: opening_user_name
-        }
+        significance: 'minor',
+        description: 'bar',
+        opening_user_name: opening_user_name
       }
     end
     let(:opening_user_name) { 'foo' }
