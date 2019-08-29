@@ -11,21 +11,13 @@ class ItemQueryService
 
   delegate :allows_modification?, to: :item
 
-  # @raises [RuntimeError] if the item is not modifiable
+  # @raises [RuntimeError] if the item is dark, citation_only, or not modifiable
   def self.find_combinable_item(druid)
     query_service = ItemQueryService.new(id: druid)
     query_service.item do |item|
       raise "Item #{item.pid} is not open for modification" unless query_service.allows_modification?
       raise "Item #{item.pid} is dark" if item.rightsMetadata.dra_object.dark?
       raise "Item #{item.pid} is citation_only" if item.rightsMetadata.dra_object.citation_only?
-    end
-  end
-
-  # @raises [RuntimeError] if the item is not modifiable
-  def self.find_modifiable_item(druid)
-    query_service = ItemQueryService.new(id: druid)
-    query_service.item do |item|
-      raise "Item #{item.pid} is not open for modification" unless query_service.allows_modification?
     end
   end
 

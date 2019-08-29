@@ -39,15 +39,4 @@ RSpec.describe ItemQueryService do
       service.find_combinable_item('ab123cd4567')
     end
   end
-
-  describe '.find_modifiable_item' do
-    it 'raises error if object does not allow modification' do
-      allow(item).to receive(:allows_modification?).and_return(false)
-      expect { service.find_modifiable_item('ab123cd4567') }.to raise_error(RuntimeError, 'Item druid:ab123cd4567 is not open for modification')
-    end
-    it 'returns item if it is modifiable' do
-      allow(item).to receive(:allows_modification?).and_return(true)
-      service.find_modifiable_item('ab123cd4567')
-    end
-  end
 end

@@ -16,7 +16,7 @@ class ConstituentService
   # subsequent calls will erase the previous changes.
   # @param [Array<String>] child_druids the identifiers of the child objects
   def add(child_druids:)
-    ResetContentMetadataService.new(druid: parent_druid).reset if parent # ensures parent is combinable
+    ResetContentMetadataService.new(item: parent).reset
 
     child_druids.each do |child_druid|
       add_constituent(child_druid: child_druid)

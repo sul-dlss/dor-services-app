@@ -60,7 +60,6 @@ RSpec.describe ConstituentService do
       allow(parent.contentMetadata).to receive(:pid).and_return('druid:parent1')
 
       allow(ItemQueryService).to receive(:find_combinable_item).with('druid:parent1').and_return(parent)
-      allow(ItemQueryService).to receive(:find_modifiable_item).with('druid:parent1').and_return(parent)
       allow(ItemQueryService).to receive(:find_combinable_item).with('druid:child1').and_return(child1)
       allow(ItemQueryService).to receive(:find_combinable_item).with('druid:child2').and_return(child2)
 
