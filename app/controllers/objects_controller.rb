@@ -56,6 +56,15 @@ class ObjectsController < ApplicationController
     head :created
   end
 
+  def update_embargo
+    # validate that the embargo_date parameter was provided
+    params.require(:embargo_date)
+    Dor::EmbargoService.new(@item).update(params[:embargo_date])
+    head :no_content
+  rescue ArgumentError => e
+    render status: 422, plain: e.message
+  end
+
   # This endpoint is called by the goobi-notify process in the goobiWF (code in https://github.com/sul-dlss/goobi-robot)
   # This proxies a request to the Goobi server and proxies it's response to the client.
   def notify_goobi

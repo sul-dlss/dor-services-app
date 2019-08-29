@@ -71,6 +71,47 @@ RSpec.describe ObjectsController do
     end
   end
 
+  describe '/update_embargo' do
+    let(:mock_embargo_service) { instance_double(Dor::EmbargoService) }
+
+    context 'without the :embargo_date param' do
+      it 'returns HTTP 400' do
+        post :update_embargo, params: { id: item.pid }
+        expect(response.status).to eq(400)
+        expect(response.body).to eq('{"errors":[{"title":"bad request","detail":"param is missing or the value is empty: embargo_date"}]}')
+      end
+    end
+
+    context 'when Dor::EmbargoService raises an ArgumentError' do
+      let(:error_message) { 'You cannot change the embargo date of an item that is not embargoed.' }
+
+      before do
+        allow(Dor::EmbargoService).to receive(:new).and_return(mock_embargo_service)
+        allow(mock_embargo_service).to receive(:update).and_raise(ArgumentError, error_message)
+      end
+
+      it 'hits the Dor::EmbargoService and returns HTTP 422' do
+        post :update_embargo, params: { id: item.pid, embargo_date: '2100-01-01' }
+        expect(mock_embargo_service).to have_received(:update).once
+        expect(response.status).to eq(422)
+        expect(response.body).to eq(error_message)
+      end
+    end
+
+    context 'when Dor::EmbargoService succeeds' do
+      before do
+        allow(Dor::EmbargoService).to receive(:new).and_return(mock_embargo_service)
+        allow(mock_embargo_service).to receive(:update)
+      end
+
+      it 'hits the Dor::EmbargoService and returns HTTP 204' do
+        post :update_embargo, params: { id: item.pid, embargo_date: '2100-01-01' }
+        expect(mock_embargo_service).to have_received(:update).once
+        expect(response.status).to eq(204)
+      end
+    end
+  end
+
   describe '/update_marc_record' do
     it 'updates a marc record' do
       # TODO: add some more expectations
