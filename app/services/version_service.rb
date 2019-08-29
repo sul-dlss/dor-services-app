@@ -21,7 +21,9 @@ class VersionService
   # Increments the version number and initializes versioningWF for the object
   # @param [Hash] opts optional params
   # @option opts [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
-  # @option opts [Hash] :vers_md_upd_info If present, used to add to the events datastream and set the desc and significance on the versionMetadata datastream
+  # @option opts [String] :significance set significance (major/minor/patch) of version change
+  # @option opts [String] :description set description of version change
+  # @option opts [String] :opening_user_name add opening username to the events datastream
   # @raise [Dor::Exception] if the object hasn't been accessioned, or if a version is already opened
   def open(opts = {})
     sdr_version = try_to_get_current_version(opts[:assume_accessioned])
@@ -32,12 +34,13 @@ class VersionService
 
     Dor::Config.workflow.client.create_workflow_by_name(work.pid, 'versioningWF')
 
-    vmd_upd_info = opts[:vers_md_upd_info]
-    return unless vmd_upd_info
+    return if (opts.keys & open_options_requiring_work_save).empty?
 
-    work.events.add_event('open', vmd_upd_info[:opening_user_name], "Version #{vmd_ds.current_version_id} opened")
-    vmd_ds.update_current_version(description: vmd_upd_info[:description], significance: vmd_upd_info[:significance].to_sym)
-    work.save
+    work.events.add_event('open', opts[:opening_user_name], "Version #{vmd_ds.current_version_id} opened") if opts[:opening_user_name]
+
+    vmd_ds.update_current_version(description: opts[:description], significance: opts[:significance].to_sym) if opts[:description] && opts[:significance]
+
+    work.save!
   end
 
   # Determines whether a new version can be opened for an object.
@@ -117,4 +120,10 @@ class VersionService
   end
 
   attr_reader :work
+
+  private
+
+  def open_options_requiring_work_save
+    [:opening_user_name, :significance, :description]
+  end
 end

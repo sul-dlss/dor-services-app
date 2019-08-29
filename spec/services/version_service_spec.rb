@@ -48,23 +48,23 @@ RSpec.describe VersionService do
         expect(workflow_client).to have_received(:create_workflow_by_name).with(obj.pid, 'versioningWF')
       end
 
-      it 'includes vers_md_upd_info' do
-        vers_md_upd_info = { significance: 'real_major', description: 'same as it ever was', opening_user_name: 'sunetid' }
+      it 'includes options' do
+        options = { significance: 'real_major', description: 'same as it ever was', opening_user_name: 'sunetid' }
         cur_vers = '2'
         allow(vmd_ds).to receive(:current_version).and_return(cur_vers)
-        allow(obj).to receive(:save)
+        allow(obj).to receive(:save!)
 
-        expect(ev_ds).to receive(:add_event).with('open', vers_md_upd_info[:opening_user_name], "Version #{cur_vers} opened")
-        expect(vmd_ds).to receive(:update_current_version).with(description: vers_md_upd_info[:description], significance: vers_md_upd_info[:significance].to_sym)
-        expect(obj).to receive(:save)
+        expect(ev_ds).to receive(:add_event).with('open', options[:opening_user_name], "Version #{cur_vers} opened")
+        expect(vmd_ds).to receive(:update_current_version).with(description: options[:description], significance: options[:significance].to_sym)
+        expect(obj).to receive(:save!)
 
-        described_class.open(obj, vers_md_upd_info: vers_md_upd_info)
+        described_class.open(obj, **options)
       end
 
-      it "doesn't include vers_md_upd_info" do
+      it "doesn't include options" do
         expect(ev_ds).not_to receive(:add_event)
         expect(vmd_ds).not_to receive(:update_current_version)
-        expect(obj).not_to receive(:save)
+        expect(obj).not_to receive(:save!)
 
         open
       end

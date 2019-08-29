@@ -47,23 +47,18 @@ class VersionsController < ApplicationController
   def open_params
     params.permit(
       :assume_accessioned,
-      vers_md_upd_info: [
-        :description,
-        :opening_user_name,
-        :significance
-      ]
-    ).to_h.deep_symbolize_keys
+      :description,
+      :opening_user_name,
+      :significance
+    ).to_h.symbolize_keys
   end
 
   def close_params
-    symbolized_hash = params.permit(
+    params.permit(
       :description,
       :significance,
       :start_accession,
       :version_num
     ).to_h.symbolize_keys
-    # Downstream code expects the significance value to be a symbol
-    symbolized_hash[:significance] = symbolized_hash[:significance].to_sym if symbolized_hash.key?(:significance)
-    symbolized_hash
   end
 end
