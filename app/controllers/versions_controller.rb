@@ -58,6 +58,7 @@ class VersionsController < ApplicationController
       :description,
       :significance,
       :start_accession,
+      :user_name,
       :version_num
     ).to_h.symbolize_keys
   end

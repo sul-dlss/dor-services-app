@@ -60,12 +60,14 @@ class VersionService
   # @option opts [Symbol] :significance which part of the version tag to increment
   #  :major, :minor, :admin (see Dor::VersionTag#increment)
   # @option opts [String] :version_num version number to archive rows with. Otherwise, current version is used
+  # @option opts [String] :user_name add username to the events datastream
   # @option opts [Boolean] :start_accesion set to true if you want accessioning to start (default), false otherwise
   # @raise [Dor::Exception] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a tag or description
   def close(opts = {})
     unless opts.empty?
-      work.versionMetadata.update_current_version opts
+      work.versionMetadata.update_current_version(description: opts[:description], significance: opts[:significance].to_sym) if opts[:description] && opts[:significance]
+
       work.versionMetadata.save
     end
 
@@ -74,6 +76,8 @@ class VersionService
     raise Dor::Exception, 'accessionWF already created for versioned object' if accessioning?
 
     Dor::Config.workflow.client.close_version 'dor', work.pid, opts.fetch(:start_accession, true) # Default to creating accessionWF when calling close_version
+    work.events.add_event('close', opts[:user_name], "Version #{work.current_version} closed") if opts[:user_name]
+    work.save!
   end
 
   # Performs checks on whether a new version can be opened for an object
