@@ -36,8 +36,21 @@ class SymphonyReader
     self.class.client
   end
 
+  def symphony_response
+    resp = client.get(Settings.catalog.symphony.json_url % { catkey: catkey })
+    validate_response(resp)
+  end
+
+  def validate_response(resp)
+    exp_content_length = resp.headers['Content-Length'].to_i
+    actual_content_length = resp.body.length
+    errmsg = "Incomplete response received from Symphony - expected #{exp_content_length} bytes but got #{actual_content_length}"
+    raise errmsg unless actual_content_length == exp_content_length
+    resp
+  end
+
   def json
-    @json ||= JSON.parse(client.get(Settings.catalog.symphony.json_url % { catkey: catkey }).body)
+    @json ||= JSON.parse(symphony_response.body)
   end
 
   def bib_record
