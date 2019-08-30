@@ -8,17 +8,22 @@ RSpec.describe SymphonyReader do
 
   describe '#to_marc' do
     before do
-      stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: catkey)).to_return(body: body.to_json)
+      stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: catkey)).to_return(body: body.to_json, headers: headers)
     end
 
     let(:body) do
       {
+        resource: '/catalog/bib',
+        key: '111',
         fields: {
           bib: {
+            standard: 'MARC21',
+            type: 'BIB',
             leader: '00956cem 2200229Ma 4500',
             fields: [
               { tag: '001', subfields: [{ code: '_', data: 'some data' }] },
-              { tag: '001', subfields: [{ code: '_', data: 'some data' }] },
+              { tag: '001', subfields: [{ code: '_', data: 'some other data' }] },
+              { tag: '009', subfields: [{ code: '_', data: 'whatever' }] },
               {
                 tag: '245',
                 inds: '41',
@@ -29,6 +34,8 @@ RSpec.describe SymphonyReader do
         }
       }
     end
+    let(:headers) { { 'Content-Length': 394 } }
+
     it 'converts symphony json to marc records' do
       expect(reader.to_marc).to be_a_kind_of MARC::Record
     end
@@ -38,11 +45,12 @@ RSpec.describe SymphonyReader do
     end
 
     it 'parses control fields' do
-      expect(reader.to_marc.fields('001').first.value).to eq 'acatkey'
+      expect(reader.to_marc.fields('009').first.value).to eq 'whatever'
     end
 
-    it 'removes duplicate fields' do
+    it 'removes original 001 fields and puts catkey in 001 field' do
       expect(reader.to_marc.fields('001').length).to eq 1
+      expect(reader.to_marc.fields('001').first.value).to eq 'acatkey'
     end
 
     it 'parses data fields' do
@@ -51,6 +59,13 @@ RSpec.describe SymphonyReader do
       expect(field.indicator2).to eq '1'
       expect(field.subfields.first.code).to eq 'a'
       expect(field.subfields.first.value).to eq 'some data'
+    end
+
+    context 'when wrong number of bytes received from Symphony' do
+      let(:headers) { { 'Content-Length': 268 } }
+      it 'raises RecordIncompleteError' do
+        expect { reader.to_marc }.to raise_error(SymphonyReader::RecordIncompleteError, 'Incomplete response received from Symphony for catkey - expected 268 bytes but got 394')
+      end
     end
   end
 end
