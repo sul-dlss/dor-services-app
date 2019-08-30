@@ -215,10 +215,11 @@ RSpec/SubjectStub:
   Exclude:
     - 'spec/dor/update_marc_record_service_spec.rb'
 
-# Offense count: 10
+# Offense count: 11
 # Configuration parameters: IgnoreNameless, IgnoreSymbolicNames.
 RSpec/VerifiedDoubles:
   Exclude:
+    - 'spec/controllers/objects_controller_spec.rb'
     - 'spec/dor/service_item_spec.rb'
     - 'spec/dor/update_marc_record_service_spec.rb'
     - 'spec/services/version_service_spec.rb'
