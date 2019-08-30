@@ -3,6 +3,10 @@
 class MarcxmlController < ApplicationController #:nodoc:
   before_action :set_marcxml_resource
 
+  rescue_from(SymphonyReader::RecordIncompleteError) do |e|
+    render status: :internal_server_error, plain: e.message
+  end
+
   def catkey
     render plain: @marcxml.catkey
   end

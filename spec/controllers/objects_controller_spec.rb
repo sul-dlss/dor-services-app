@@ -26,6 +26,8 @@ RSpec.describe ObjectsController do
     render_views
 
     context 'error handling' do
+      let(:errmsg) { 'my unique snowflake error message' }
+
       it 'returns a 409 error with location header when an object already exists' do
         allow(RegistrationService).to receive(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
         post :create
@@ -34,9 +36,17 @@ RSpec.describe ObjectsController do
       end
 
       it 'returns a 422 error when an object has a bad name' do
-        allow(RegistrationService).to receive(:register_object).and_raise(ArgumentError)
+        allow(RegistrationService).to receive(:register_object).and_raise(ArgumentError.new(errmsg))
         post :create
         expect(response.status).to eq(422)
+        expect(response.body).to eq(errmsg)
+      end
+
+      it 'returns a 500 error when the SymphonyReader gets an incomplete response' do
+        allow(RegistrationService).to receive(:register_object).and_raise(SymphonyReader::RecordIncompleteError.new(errmsg))
+        post :create
+        expect(response.status).to eq(500)
+        expect(response.body).to eq(errmsg)
       end
     end
 

@@ -4,6 +4,10 @@
 class MetadataRefreshController < ApplicationController
   before_action :load_item
 
+  rescue_from(SymphonyReader::RecordIncompleteError) do |e|
+    render status: :internal_server_error, plain: e.message
+  end
+
   def refresh
     status = RefreshMetadataAction.run(@item)
     @item.save if status
