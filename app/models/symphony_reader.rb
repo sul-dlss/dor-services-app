@@ -17,7 +17,8 @@ class SymphonyReader
   def to_marc
     record = MARC::Record.new
 
-    record.leader = leader if leader
+    # note that new record already has default leader, but we don't want it unless it's from Symphony
+    record.leader = leader
 
     fields.uniq.each do |field|
       record << marc_field(field) unless %w[001 003].include? field['tag'] # explicitly remove all 001 and 003 fields from the record
