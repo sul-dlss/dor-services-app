@@ -71,68 +71,6 @@ RSpec.describe ObjectsController do
     end
   end
 
-  describe '/update_embargo' do
-    let(:mock_embargo_service) { instance_double(Dor::EmbargoService) }
-    let(:events_datastream) { double('events', add_event: true) }
-
-    before do
-      allow(item).to receive(:events).and_return(events_datastream)
-    end
-
-    context 'without the :embargo_date param' do
-      it 'returns HTTP 400' do
-        post :update_embargo, params: { id: item.pid }
-        expect(response.status).to eq(400)
-        expect(response.body).to eq('{"errors":[{"title":"bad request","detail":"param is missing or the value is empty: embargo_date"}]}')
-      end
-    end
-
-    context 'without the :requesting_user param' do
-      it 'returns HTTP 400' do
-        post :update_embargo, params: { id: item.pid, embargo_date: '2100-01-01' }
-        expect(events_datastream).not_to have_received(:add_event)
-        expect(response.status).to eq(400)
-        expect(response.body).to eq('{"errors":[{"title":"bad request","detail":"param is missing or the value is empty: requesting_user"}]}')
-      end
-    end
-
-    context 'when Dor::EmbargoService raises an ArgumentError' do
-      let(:error_message) { 'You cannot change the embargo date of an item that is not embargoed.' }
-
-      before do
-        allow(Dor::EmbargoService).to receive(:new).and_return(mock_embargo_service)
-        allow(mock_embargo_service).to receive(:update).and_raise(ArgumentError, error_message)
-      end
-
-      it 'hits the Dor::EmbargoService and returns HTTP 422' do
-        post :update_embargo, params: { id: item.pid, embargo_date: '2100-01-01', requesting_user: 'mjg' }
-        expect(mock_embargo_service).to have_received(:update).once
-        expect(events_datastream).not_to have_received(:add_event)
-        expect(response.status).to eq(422)
-        expect(response.body).to eq(error_message)
-      end
-    end
-
-    context 'when Dor::EmbargoService succeeds' do
-      before do
-        allow(Dor::EmbargoService).to receive(:new).and_return(mock_embargo_service)
-        allow(mock_embargo_service).to receive(:update)
-        allow(item).to receive(:events).and_return(events_datastream)
-      end
-
-      it 'hits the Dor::EmbargoService and returns HTTP 204' do
-        post :update_embargo, params: { id: item.pid, embargo_date: '2100-01-01', requesting_user: 'mjg' }
-        expect(mock_embargo_service).to have_received(:update).once
-        expect(events_datastream).to have_received(:add_event).with(
-          'Embargo',
-          'mjg',
-          'Embargo date modified'
-        )
-        expect(response.status).to eq(204)
-      end
-    end
-  end
-
   describe '/update_marc_record' do
     it 'updates a marc record' do
       # TODO: add some more expectations
