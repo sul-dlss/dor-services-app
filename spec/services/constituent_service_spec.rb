@@ -3,15 +3,19 @@
 require 'rails_helper'
 
 RSpec.describe ConstituentService do
+  let(:parent_content) do
+    <<~XML
+      <contentMetadata objectId="druid:parent1" type="image">
+        <resource sequence="1" id="wrongthing_1" type="image">
+          <relationship type="alsoAvailableAs" objectId="druid:wrongthing"/>
+        </resource>
+      </contentMetadata>
+    XML
+  end
+
   let(:parent) do
     Dor::Item.new.tap do |item|
-      item.contentMetadata.content = <<~XML
-        <contentMetadata objectId="druid:parent1" type="image">
-          <resource sequence="1" id="wrongthing_1" type="image">
-            <relationship type="alsoAvailableAs" objectId="druid:wrongthing"/>
-          </resource>
-        </contentMetadata>
-      XML
+      item.contentMetadata.content = parent_content
     end
   end
 
@@ -90,31 +94,26 @@ RSpec.describe ConstituentService do
 
     context 'when the parent is not combinable' do
       before do
-        allow(ItemQueryService).to receive(:find_combinable_item).with(parent.id).and_raise('nope')
+        allow(ItemQueryService).to receive(:validate_combinable_items).with([parent.id, child1.id, child2.id]).and_return(parent.id => 'nope')
       end
 
       it 'merges nothing' do
-        expect { add }.to raise_error(RuntimeError).and(not_change { parent.contentMetadata.content })
-
+        expect(add).to eq(parent.id => 'nope')
+        expect(parent.contentMetadata.content).to be_equivalent_to(parent_content)
         expect(child1.object_relations[:is_constituent_of]).to be_empty
+        expect(child2.object_relations[:is_constituent_of]).to be_empty
       end
     end
 
     context 'when a child is not combinable' do
       before do
-        allow(ItemQueryService).to receive(:find_combinable_item).with(child2.id).and_raise('not modifiable')
+        allow(ItemQueryService).to receive(:validate_combinable_items).with([parent.id, child1.id, child2.id]).and_return(child1.id => 'not modifiable message')
       end
 
-      it 'merges all the chidren before an error is encountered' do
-        expect { add }.to raise_error RuntimeError
-        expect(parent.contentMetadata.content).to be_equivalent_to <<~XML
-          <contentMetadata objectId="druid:parent1" type="image">
-            <resource sequence="1" id="parent1_1" type="image">
-              <relationship type="alsoAvailableAs" objectId="druid:child1"/>
-            </resource>
-          </contentMetadata>
-        XML
-        expect(child1.object_relations[:is_constituent_of]).to eq [parent]
+      it 'does not merge any children' do
+        expect(add).to eq(child1.id => 'not modifiable message')
+        expect(parent.contentMetadata.content).to be_equivalent_to(parent_content)
+        expect(child1.object_relations[:is_constituent_of]).to be_empty
         expect(child2.object_relations[:is_constituent_of]).to be_empty
       end
     end

@@ -10,7 +10,7 @@ RSpec.describe 'Virtual merge of objects' do
   let(:child2_id) { 'druid:child2' }
 
   let(:object) { Dor::Item.new(pid: parent_id) }
-  let(:service) { instance_double(ConstituentService, add: true) }
+  let(:service) { instance_double(ConstituentService, add: nil) }
 
   before do
     allow(Dor).to receive(:find).and_return(object)
@@ -48,6 +48,22 @@ RSpec.describe 'Virtual merge of objects' do
       expect(response).to be_bad_request
       json = JSON.parse(response.body)
       expect(json['errors'][0]['detail']).to eq 'param is missing or the value is empty: constituent_ids must be an array'
+    end
+  end
+
+  context 'when constituent_ids contain objects that are not combinable' do
+    before do
+      allow(service).to receive(:add).and_return(child2_id => "Item #{child2_id} is not open for modification")
+    end
+
+    it 'renders an error' do
+      put "/v1/objects/#{parent_id}",
+          params: { constituent_ids: [child1_id, child2_id] },
+          headers: { 'X-Auth' => "Bearer #{jwt}" }
+      expect(service).to have_received(:add).with(child_druids: [child1_id, child2_id])
+      expect(response).to be_unprocessable
+      json = JSON.parse(response.body)
+      expect(json['errors']).to eq '{"druid:child2":"Item druid:child2 is not open for modification"}'
     end
   end
 end

@@ -42,7 +42,10 @@ class ObjectsController < ApplicationController
     raise ActionController::ParameterMissing, 'constituent_ids must be an array' unless filtered_params[:constituent_ids]
 
     # Update the constituent relationship
-    ConstituentService.new(parent_druid: params[:id]).add(child_druids: filtered_params[:constituent_ids])
+    errors = ConstituentService.new(parent_druid: params[:id]).add(child_druids: filtered_params[:constituent_ids])
+
+    return render json: { errors: errors.to_json }, status: 422 if errors
+
     head :no_content
   end
 
