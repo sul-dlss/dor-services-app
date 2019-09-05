@@ -3,7 +3,7 @@
 class SdrController < ApplicationController
   def cm_inv_diff
     unless %w(all shelve preserve publish).include?(params[:subset].to_s)
-      render status: 400, plain: "Invalid subset value: #{params[:subset]}"
+      render status: :bad_request, plain: "Invalid subset value: #{params[:subset]}"
       return
     end
 

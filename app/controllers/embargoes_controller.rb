@@ -11,6 +11,6 @@ class EmbargoesController < ApplicationController
     @item.events.add_event('Embargo', params[:requesting_user], 'Embargo date modified')
     head :no_content
   rescue ArgumentError => e
-    render status: 422, plain: e.message
+    render status: :unprocessable_entity, plain: e.message
   end
 end
