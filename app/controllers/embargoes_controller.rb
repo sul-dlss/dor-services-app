@@ -7,7 +7,7 @@ class EmbargoesController < ApplicationController
   def update
     # validate that the embargo_date and requesting_user parameters were provided
     params.require([:embargo_date, :requesting_user])
-    Dor::EmbargoService.new(@item).update(params[:embargo_date])
+    Dor::EmbargoService.new(@item).update(Date.parse(params[:embargo_date]))
     @item.events.add_event('Embargo', params[:requesting_user], 'Embargo date modified')
     head :no_content
   rescue ArgumentError => e
