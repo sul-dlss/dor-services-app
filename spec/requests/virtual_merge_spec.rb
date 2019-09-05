@@ -62,8 +62,7 @@ RSpec.describe 'Virtual merge of objects' do
           headers: { 'X-Auth' => "Bearer #{jwt}" }
       expect(service).to have_received(:add).with(child_druids: [child1_id, child2_id])
       expect(response).to be_unprocessable
-      json = JSON.parse(response.body)
-      expect(json['errors']).to eq '{"druid:child2":"Item druid:child2 is not open for modification"}'
+      expect(response.body).to eq '{"errors":{"druid:child2":"Item druid:child2 is not open for modification"}}'
     end
   end
 end
