@@ -16,7 +16,7 @@ class PublicDescMetadataService
   end
 
   # @return [String] Public descriptive medatada XML
-  def to_xml(include_access_conditions: true)
+  def to_xml(include_access_conditions: true, prefixes: nil, template: nil)
     ng_xml(include_access_conditions: include_access_conditions).to_xml
   end
 

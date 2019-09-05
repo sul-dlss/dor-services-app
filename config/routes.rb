@@ -20,7 +20,7 @@ Rails.application.routes.draw do
       get 'catkey', to: 'marcxml#catkey'
     end
 
-    resources :objects, only: [:create, :update] do
+    resources :objects, only: [:create, :update, :show] do
       member do
         post 'publish'
         post 'update_marc_record'
@@ -30,6 +30,12 @@ Rails.application.routes.draw do
 
         get 'contents', to: 'content#list'
         get 'contents/*path', to: 'content#read', format: false, as: :read_content
+      end
+
+      resource :query, only: [], defaults: { format: :json } do
+        collection do
+          get 'collections'
+        end
       end
 
       resource :workspace, only: [:create, :destroy]

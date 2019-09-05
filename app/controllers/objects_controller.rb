@@ -49,6 +49,10 @@ class ObjectsController < ApplicationController
     head :no_content
   end
 
+  def show
+    render json: Cocina::Mapper.build(@item)
+  end
+
   def publish
     PublishMetadataService.publish(@item)
     head :created
