@@ -23,7 +23,6 @@ Rails.application.routes.draw do
     resources :objects, only: [:create, :update] do
       member do
         post 'publish'
-        post 'update_embargo'
         post 'update_marc_record'
         post 'notify_goobi'
         post 'release_tags'
@@ -34,6 +33,7 @@ Rails.application.routes.draw do
       end
 
       resource :workspace, only: [:create, :destroy]
+      resource :embargo, only: [:update]
 
       resources :metadata, only: [] do
         collection do
