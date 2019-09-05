@@ -118,7 +118,7 @@ RSpec.describe PublicDescMetadataService do
         doc = Nokogiri::XML(xml)
         expect(doc.encoding).to eq('UTF-8')
         expect(doc.xpath('//comment()').size).to eq 0
-        collections      = doc.search('//mods:relatedItem/mods:typeOfResource[@collection=\'yes\']')
+        collections = doc.search('//mods:relatedItem/mods:typeOfResource[@collection=\'yes\']')
         collection_title = doc.search('//mods:relatedItem/mods:titleInfo/mods:title')
         collection_uri   = doc.search('//mods:relatedItem/mods:location/mods:url')
         expect(collections.length).to eq 1
@@ -147,7 +147,7 @@ RSpec.describe PublicDescMetadataService do
 
       it 'handles mods as the default namespace' do
         doc = Nokogiri::XML(xml)
-        collections      = doc.search('//xmlns:relatedItem/xmlns:typeOfResource[@collection=\'yes\']')
+        collections = doc.search('//xmlns:relatedItem/xmlns:typeOfResource[@collection=\'yes\']')
         collection_title = doc.search('//xmlns:relatedItem/xmlns:titleInfo/xmlns:title')
         collection_uri   = doc.search('//xmlns:relatedItem/xmlns:location/xmlns:url')
         expect(collections.length).to eq 1

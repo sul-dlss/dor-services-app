@@ -4,15 +4,15 @@ class ObjectsController < ApplicationController
   before_action :load_item, except: [:create]
 
   rescue_from(Dor::ParameterError) do |e|
-    render status: 400, plain: e.message
+    render status: :bad_request, plain: e.message
   end
 
   rescue_from(Dor::DuplicateIdError) do |e|
-    render status: 409, plain: e.message, location: object_location(e.pid)
+    render status: :conflict, plain: e.message, location: object_location(e.pid)
   end
 
   rescue_from(DublinCoreService::CrosswalkError) do |e|
-    render status: 500, plain: e.message
+    render status: :internal_server_error, plain: e.message
   end
 
   # Register new objects in DOR
@@ -21,14 +21,14 @@ class ObjectsController < ApplicationController
     begin
       reg_response = RegistrationService.create_from_request(create_params)
     rescue ArgumentError => e
-      return render status: 422, plain: e.message
+      return render status: :unprocessable_entity, plain: e.message
     end
     Rails.logger.info(reg_response)
     pid = reg_response[:pid]
 
     respond_to do |format|
-      format.all { render status: 201, location: object_location(pid), plain: Dor::RegistrationResponse.new(reg_response).to_txt }
-      format.json { render status: 201, location: object_location(pid), json: Dor::RegistrationResponse.new(reg_response) }
+      format.all { render status: :created, location: object_location(pid), plain: Dor::RegistrationResponse.new(reg_response).to_txt }
+      format.json { render status: :created, location: object_location(pid), json: Dor::RegistrationResponse.new(reg_response) }
     end
   end
 
@@ -62,7 +62,7 @@ class ObjectsController < ApplicationController
     response = Dor::Goobi.new(@item).register
     proxy_rest_client_response(response)
   rescue RestClient::Conflict => e
-    render status: 409, plain: e.http_body
+    render status: :conflict, plain: e.http_body
   end
 
   # You can post a release tag as JSON in the body to add a release tag to an item.
@@ -80,7 +80,7 @@ class ObjectsController < ApplicationController
       @item.save
       head :created
     else
-      render status: 400, plain: "A release attribute is required in the JSON, and its value must be either 'true' or 'false'. You sent '#{raw_params[:release]}'"
+      render status: :bad_request, plain: "A release attribute is required in the JSON, and its value must be either 'true' or 'false'. You sent '#{raw_params[:release]}'"
     end
   end
 

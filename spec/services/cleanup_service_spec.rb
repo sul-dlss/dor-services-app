@@ -24,8 +24,8 @@ RSpec.describe CleanupService do
     workitem_pathname.rmtree if workitem_pathname.exist?
     export_pathname = Pathname(Settings.cleanup.local_export_home)
     export_pathname.rmtree if export_pathname.exist?
-    bag_pathname            = export_pathname.join(druid.split(':').last)
-    tarfile_pathname        = export_pathname.join(bag_pathname + '.tar')
+    bag_pathname = export_pathname.join(druid.split(':').last)
+    tarfile_pathname = export_pathname.join(bag_pathname + '.tar')
 
     workitem_pathname.join('content').mkpath
     workitem_pathname.join('temp').mkpath

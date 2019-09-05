@@ -22,7 +22,7 @@ class ApplicationController < ActionController::API
   # Ensure a valid token is present, or renders "401: Not Authorized"
   def check_auth_token
     token = decoded_auth_token
-    return render json: { error: 'Not Authorized' }, status: 401 unless token
+    return render json: { error: 'Not Authorized' }, status: :unauthorized unless token
 
     Honeybadger.context(invoked_by: token[:sub])
   end
