@@ -37,7 +37,7 @@ class SymphonyReader
   end
 
   def json
-    @json ||= JSON.parse(client.get(Settings.catalog.symphony.json_url % { catkey: catkey }).body)
+    @json ||= JSON.parse(client.get(format(Settings.catalog.symphony.json_url, catkey: catkey)).body)
   end
 
   def bib_record

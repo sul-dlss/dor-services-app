@@ -24,7 +24,7 @@ RSpec.describe MarcxmlController do
 
   describe 'GET marcxml' do
     it 'retrieves MARCXML' do
-      stub_request(:get, Settings.catalog.symphony.json_url % { catkey: resource.catkey }).to_return(body: '{}')
+      stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: resource.catkey)).to_return(body: '{}')
 
       get :marcxml, params: { catkey: '12345' }
       expect(response.body).to start_with '<record'
@@ -33,7 +33,7 @@ RSpec.describe MarcxmlController do
 
   describe 'GET mods' do
     it 'transforms the MARCXML into MODS' do
-      stub_request(:get, Settings.catalog.symphony.json_url % { catkey: resource.catkey }).to_return(body: '{}')
+      stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: resource.catkey)).to_return(body: '{}')
       get :mods, params: { catkey: '12345' }
       expect(response.body).to match(/mods/)
     end

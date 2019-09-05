@@ -44,7 +44,7 @@ class ObjectsController < ApplicationController
     # Update the constituent relationship
     errors = ConstituentService.new(parent_druid: params[:id]).add(child_druids: filtered_params[:constituent_ids])
 
-    return render json: { errors: errors.to_json }, status: 422 if errors
+    return render json: { errors: errors.to_json }, status: :unprocessable_entity if errors
 
     head :no_content
   end
