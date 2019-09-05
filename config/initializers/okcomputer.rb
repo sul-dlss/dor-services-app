@@ -32,6 +32,6 @@ class SymphonyCheck < OkComputer::HttpCheck
 end
 
 OkComputer::Registry.register 'version', CustomAppVersionCheck.new
-OkComputer::Registry.register 'external-symphony', SymphonyCheck.new(Settings.catalog.symphony.json_url % { catkey: 12345 })
+OkComputer::Registry.register 'external-symphony', SymphonyCheck.new(format(Settings.catalog.symphony.json_url, catkey: 12345))
 
 OkComputer.make_optional %w(external-symphony)
