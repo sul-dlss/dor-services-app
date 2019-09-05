@@ -84,6 +84,10 @@ GEM
     capistrano-passenger (0.2.0)
       capistrano (~> 3.0)
     capistrano-shared_configs (0.2.2)
+    cocina-models (0.1.0)
+      dry-struct
+      dry-types
+      zeitwerk (~> 2.1)
     concurrent-ruby (1.1.5)
     config (2.0.0)
       activesupport (>= 4.2)
@@ -451,6 +455,7 @@ DEPENDENCIES
   capistrano-bundler
   capistrano-passenger
   capistrano-shared_configs
+  cocina-models (~> 0.1.0)
   config
   coveralls (~> 0.8)
   dlss-capistrano

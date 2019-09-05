@@ -1,3 +1,4 @@
+
 # frozen_string_literal: true
 
 module Cocina
@@ -12,9 +13,9 @@ module Cocina
     end
 
     def build
-      Cocina::DRO.new(externalIdentifier: item.pid,
-                      type: type,
-                      label: item.label)
+      Cocina::Models::DRO.new(externalIdentifier: item.pid,
+                              type: type,
+                              label: item.label)
     end
 
     private
