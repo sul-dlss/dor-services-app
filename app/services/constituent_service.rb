@@ -15,13 +15,21 @@ class ConstituentService
   # Typically this is only called one time (with a list of all the pids) because
   # subsequent calls will erase the previous changes.
   # @param [Array<String>] child_druids the identifiers of the child objects
+  # @raises ActiveFedora::RecordInvalid if AF object validations fail on #save!
+  # @returns [NilClass, Hash] true if successful, hash of errors otherwise (if combinable validation fails)
   def add(child_druids:)
+    errors = ItemQueryService.validate_combinable_items([parent_druid] + child_druids)
+
+    return errors if errors.any?
+
     ResetContentMetadataService.new(item: parent).reset
 
     child_druids.each do |child_druid|
       add_constituent(child_druid: child_druid)
     end
     parent.save!
+
+    nil
   end
 
   private
