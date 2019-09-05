@@ -21,13 +21,13 @@ end
 
 # Ruby general dependencies
 gem 'config'
-gem 'honeybadger'
-gem 'okcomputer'
-
+gem 'dry-struct'
+gem 'dry-types'
 gem 'faraday'
+gem 'honeybadger'
 gem 'jbuilder'
 gem 'jwt'
-gem 'marc'
+gem 'okcomputer'
 gem 'rest-client'
 gem 'ruby-cache', '~> 0.3.0'
 # Pin net-http-persistent to avoid a problem with exhausting file handles when running under load
@@ -36,9 +36,9 @@ gem 'progressbar' # for the cleaner rake task
 gem 'uuidtools', '~> 2.1.4'
 
 # DLSS/domain-specific dependencies
+gem 'cocina-models', '~> 0.1.0'
 gem 'dor-services', '~> 7.0'
-gem 'dry-struct'
-gem 'dry-types'
+gem 'marc'
 
 group :test, :development do
   gem 'coveralls', '~> 0.8', require: false
