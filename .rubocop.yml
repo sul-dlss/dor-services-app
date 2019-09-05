@@ -40,7 +40,3 @@ RSpec/MultipleExpectations:
 RSpec/ExpectActual:
   Exclude:
     - 'spec/routing/**'
-
-RSpec/DescribeClass:
-  Exclude:
-    - 'spec/requests/**'
