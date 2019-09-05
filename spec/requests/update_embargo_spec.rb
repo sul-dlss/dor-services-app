@@ -57,14 +57,13 @@ RSpec.describe 'Update embargo' do
     before do
       allow(Dor::EmbargoService).to receive(:new).and_return(mock_embargo_service)
       allow(mock_embargo_service).to receive(:update)
-      allow(item).to receive(:events).and_return(events_datastream)
     end
 
     it 'hits the Dor::EmbargoService and returns HTTP 204' do
       patch '/v1/objects/druid:mk420bs7601/embargo',
             params: { embargo_date: '2100-01-01', requesting_user: 'mjg' },
             headers: { 'X-Auth' => "Bearer #{jwt}" }
-      expect(mock_embargo_service).to have_received(:update).once
+      expect(mock_embargo_service).to have_received(:update).with(Date.parse('2100-01-01'))
       expect(events_datastream).to have_received(:add_event).with(
         'Embargo',
         'mjg',
