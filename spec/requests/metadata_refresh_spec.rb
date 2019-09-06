@@ -29,7 +29,7 @@ RSpec.describe 'Refresh metadata' do
   context 'when incomplete response from Symphony' do
     before do
       allow(object.identityMetadata).to receive(:otherId).and_return(['catkey:666'])
-      stub_request(:get, Settings.catalog.symphony.json_url % { catkey: '666' }).to_return(body: '{}', headers: { 'Content-Length': 0 })
+      stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: '666')).to_return(body: '{}', headers: { 'Content-Length': 0 })
     end
 
     it 'returns a 500 error' do
