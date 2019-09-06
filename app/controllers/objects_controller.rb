@@ -3,6 +3,10 @@
 class ObjectsController < ApplicationController
   before_action :load_item, except: [:create]
 
+  rescue_from(ActiveFedora::ObjectNotFoundError) do |e|
+    render status: :not_found, plain: e.message
+  end
+
   rescue_from(Dor::ParameterError) do |e|
     render status: :bad_request, plain: e.message
   end

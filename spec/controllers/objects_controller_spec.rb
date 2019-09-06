@@ -48,6 +48,13 @@ RSpec.describe ObjectsController do
         expect(response.status).to eq(500)
         expect(response.body).to eq(errmsg)
       end
+
+      it 'returns a 404 error for ActiveFedora::ObjectNotFoundError' do
+        allow(RegistrationService).to receive(:register_object).and_raise(ActiveFedora::ObjectNotFoundError.new(errmsg))
+        post :create
+        expect(response.status).to eq(404)
+        expect(response.body).to eq(errmsg)
+      end
     end
 
     it 'registers the object with the registration service' do
