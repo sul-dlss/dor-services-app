@@ -2,6 +2,8 @@
 
 # Reader from symphony's JSON API to a MARC record
 class SymphonyReader
+  class RecordIncompleteError < RuntimeError; end
+
   attr_reader :catkey
 
   def self.client
@@ -15,7 +17,8 @@ class SymphonyReader
   def to_marc
     record = MARC::Record.new
 
-    record.leader = leader if leader
+    # note that new record already has default leader, but we don't want it unless it's from Symphony
+    record.leader = leader
 
     fields.uniq.each do |field|
       record << marc_field(field) unless %w[001 003].include? field['tag'] # explicitly remove all 001 and 003 fields from the record
@@ -36,8 +39,22 @@ class SymphonyReader
     self.class.client
   end
 
+  def symphony_response
+    resp = client.get(format(Settings.catalog.symphony.json_url, catkey: catkey))
+    validate_response(resp)
+  end
+
+  def validate_response(resp)
+    exp_content_length = resp.headers['Content-Length'].to_i
+    actual_content_length = resp.body.length
+    return resp if actual_content_length == exp_content_length
+
+    errmsg = "Incomplete response received from Symphony for #{@catkey} - expected #{exp_content_length} bytes but got #{actual_content_length}"
+    raise RecordIncompleteError, errmsg
+  end
+
   def json
-    @json ||= JSON.parse(client.get(format(Settings.catalog.symphony.json_url, catkey: catkey)).body)
+    @json ||= JSON.parse(symphony_response.body)
   end
 
   def bib_record

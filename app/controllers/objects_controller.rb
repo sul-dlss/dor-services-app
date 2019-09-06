@@ -15,6 +15,10 @@ class ObjectsController < ApplicationController
     render status: :internal_server_error, plain: e.message
   end
 
+  rescue_from(SymphonyReader::RecordIncompleteError) do |e|
+    render status: :internal_server_error, plain: e.message
+  end
+
   # Register new objects in DOR
   def create
     Rails.logger.info(params.inspect)
