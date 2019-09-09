@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-json.collections @collections, :externalIdentifier
+json.collections @collections

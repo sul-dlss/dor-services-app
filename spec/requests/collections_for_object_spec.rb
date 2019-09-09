@@ -21,7 +21,7 @@ RSpec.describe 'Get the object' do
       get '/v1/objects/druid:mk420bs7601/query/collections',
           headers: { 'X-Auth' => "Bearer #{jwt}" }
       expect(response).to be_successful
-      expect(response.body).to eq '{"collections":[{"externalIdentifier":"druid:999123"}]}'
+      expect(response.body).to eq '{"collections":[{"externalIdentifier":"druid:999123","type":"collection","label":"collection #1"}]}'
     end
   end
 end
