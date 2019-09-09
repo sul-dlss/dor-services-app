@@ -40,6 +40,7 @@ class ObjectsController < ApplicationController
     end
   end
 
+  # TODO: Remove this once Argo, in stage and prod, uses a version of dor-services-client that no longer hits this endpoint
   # Handles updates to the record.
   # Presently this only needs to handle the merge object use case.
   # Do this by providing: constituent_ids => ['druid:123', 'druid:345']
