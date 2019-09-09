@@ -13,14 +13,16 @@ class ItemQueryService
 
   delegate :allows_modification?, to: :item
 
-  # @param [Array] druids a list of druids
-  def self.validate_combinable_items(druids)
-    errors = {}
+  # @param [String] parent a parent druid
+  # @param [Array] children a list of child druids
+  # @return [Hash]
+  def self.validate_combinable_items(parent:, children:)
+    errors = Hash.new { |hash, key| hash[key] = [] }
 
-    druids.each do |druid|
+    ([parent] + children).each do |druid|
       find_combinable_item(druid)
     rescue UncombinableItemError => e
-      errors[druid] = e.message
+      errors[parent] << e.message
     end
 
     errors
