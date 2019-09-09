@@ -63,8 +63,12 @@ RSpec.describe SymphonyReader do
 
     context 'when wrong number of bytes received from Symphony' do
       let(:headers) { { 'Content-Length': 268 } }
-      it 'raises RecordIncompleteError' do
-        expect { reader.to_marc }.to raise_error(SymphonyReader::RecordIncompleteError, 'Incomplete response received from Symphony for catkey - expected 268 bytes but got 394')
+
+      it 'raises RecordIncompleteError and notifies Honeybadger' do
+        msg = 'Incomplete response received from Symphony for catkey - expected 268 bytes but got 394'
+        allow(Honeybadger).to receive(:notify)
+        expect { reader.to_marc }.to raise_error(SymphonyReader::RecordIncompleteError, msg)
+        expect(Honeybadger).to have_received(:notify).with(msg)
       end
     end
   end

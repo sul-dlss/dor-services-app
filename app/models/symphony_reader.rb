@@ -50,6 +50,7 @@ class SymphonyReader
     return resp if actual_content_length == exp_content_length
 
     errmsg = "Incomplete response received from Symphony for #{@catkey} - expected #{exp_content_length} bytes but got #{actual_content_length}"
+    Honeybadger.notify(errmsg)
     raise RecordIncompleteError, errmsg
   end
 
