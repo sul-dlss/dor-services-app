@@ -10,6 +10,10 @@ class VersionService
     new(work).can_open?(opts)
   end
 
+  def self.open?(work)
+    new(work).open_for_versioning?
+  end
+
   def self.close(work, opts = {})
     new(work).close(opts)
   end
