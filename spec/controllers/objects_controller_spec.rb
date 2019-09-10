@@ -88,14 +88,6 @@ RSpec.describe ObjectsController do
     end
   end
 
-  describe '/update_marc_record' do
-    it 'updates a marc record' do
-      # TODO: add some more expectations
-      post :update_marc_record, params: { id: item.pid }
-      expect(response.status).to eq(201)
-    end
-  end
-
   describe '/notify_goobi' do
     let(:fake_request) { "<stanfordCreationRequest><objectId>#{item.pid}</objectId></stanfordCreationRequest>" }
 
