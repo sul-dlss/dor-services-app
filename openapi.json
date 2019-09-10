@@ -295,6 +295,41 @@
         ]
       }
     },
+    "/virtual_objects": {
+      "post": {
+        "tags": [
+          "objects"
+        ],
+        "summary": "Create a virtual object.",
+        "description": "Combines a parent object with child objects to create an object like an Atlas (composed of several images)",
+        "operationId": "virtual_objects#create",
+        "responses": {
+          "204": {
+            "description": "objects created"
+          },
+          "422": {
+            "description": "unable to process request"
+          },
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "virtual_objects": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/VirtualObjectRequest"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/objects/{id}/publish": {
       "post": {
         "tags": [
@@ -790,7 +825,8 @@
           "objects"
         ],
         "summary": "Update the object metadata",
-        "description": "Currently this handles the create virtual object use case.",
+        "description": "[DEPRECATED] Currently this handles the create virtual object use case. Use POST /virtual_objects instead",
+        "deprecated": true,
         "operationId": "objects#update",
         "responses": {
           "200": {
@@ -815,6 +851,20 @@
     "schemas": {
       "Druid": {
         "type": "string"
+      },
+      "VirtualObjectRequest": {
+        "type": "object",
+        "properties": {
+          "parent_druid": {
+            "$ref": "#/components/schemas/Druid"
+          },
+          "child_druids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        }
       }
     }
   }
