@@ -61,14 +61,53 @@ RSpec.describe SymphonyReader do
       expect(field.subfields.first.value).to eq 'some data'
     end
 
-    context 'when wrong number of bytes received from Symphony' do
-      let(:headers) { { 'Content-Length': 268 } }
+    describe 'when errors in response from Symphony' do
+      context 'when wrong number of bytes received' do
+        let(:headers) { { 'Content-Length': 268 } }
 
-      it 'raises RecordIncompleteError and notifies Honeybadger' do
-        msg = 'Incomplete response received from Symphony for catkey - expected 268 bytes but got 394'
-        allow(Honeybadger).to receive(:notify)
-        expect { reader.to_marc }.to raise_error(SymphonyReader::RecordIncompleteError, msg)
-        expect(Honeybadger).to have_received(:notify).with(msg)
+        it 'raises ResponseError and notifies Honeybadger' do
+          msg = 'Incomplete response received from Symphony for catkey - expected 268 bytes but got 394'
+          allow(Honeybadger).to receive(:notify)
+          expect { reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg)
+          expect(Honeybadger).to have_received(:notify).with(msg)
+        end
+      end
+
+      context 'when catkey not found' do
+        before do
+          stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: catkey)).to_return(status: 404)
+        end
+
+        it 'raises ResponseError and does not notify Honeybadger' do
+          msg = 'Record not found in Symphony: catkey'
+          allow(Honeybadger).to receive(:notify)
+          expect { reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg)
+          expect(Honeybadger).not_to have_received(:notify).with(msg)
+        end
+      end
+
+      context 'when other HTTP error' do
+        let(:err_body) do
+          {
+            messageList: [
+              {
+                code: 'oops',
+                message: 'Something somewhere went wrong.'
+              }
+            ]
+          }
+        end
+
+        before do
+          stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: catkey)).to_return(status: 403, body: err_body.to_json)
+        end
+
+        it 'raises ResponseError and notifies Honeybadger' do
+          msg_regex = /^Got HTTP Status-Code 403 retrieving catkey from Symphony:.*Something somewhere went wrong./
+          allow(Honeybadger).to receive(:notify)
+          expect { reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
+          expect(Honeybadger).to have_received(:notify).with(msg_regex)
+        end
       end
     end
   end

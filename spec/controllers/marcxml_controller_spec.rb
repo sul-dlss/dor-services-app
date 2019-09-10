@@ -51,8 +51,18 @@ RSpec.describe MarcxmlController do
       get :marcxml, params: { catkey: '12345' }
       expect(response.body).to start_with '<record'
     end
+  end
 
-    context 'when incomplete response from Symphony' do
+  describe 'GET mods' do
+    it 'transforms the MARCXML into MODS' do
+      stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: resource.catkey)).to_return(body: body.to_json, headers: { 'Content-Length': 394 })
+      get :mods, params: { catkey: '12345' }
+      expect(response.body).to match(/mods/)
+    end
+  end
+
+  describe 'errors in response from Symphony' do
+    context 'when incomplete response' do
       before do
         stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: resource.catkey)).to_return(body: '{}', headers: { 'Content-Length': 0 })
       end
@@ -63,24 +73,39 @@ RSpec.describe MarcxmlController do
         expect(response.body).to eq('Incomplete response received from Symphony for 12345 - expected 0 bytes but got 2')
       end
     end
-  end
 
-  describe 'GET mods' do
-    it 'transforms the MARCXML into MODS' do
-      stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: resource.catkey)).to_return(body: body.to_json, headers: { 'Content-Length': 394 })
-      get :mods, params: { catkey: '12345' }
-      expect(response.body).to match(/mods/)
-    end
-
-    context 'when incomplete response from Symphony' do
+    context 'when catkey not found' do
       before do
-        stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: resource.catkey)).to_return(body: '{}', headers: { 'Content-Length': 0 })
+        stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: resource.catkey)).to_return(status: 404)
       end
 
       it 'returns a 500 error' do
-        get :mods, params: { catkey: '12345' }
+        get :marcxml, params: { catkey: '12345' }
         expect(response.status).to eq(500)
-        expect(response.body).to eq('Incomplete response received from Symphony for 12345 - expected 0 bytes but got 2')
+        expect(response.body).to eq('Record not found in Symphony: 12345')
+      end
+    end
+
+    context 'when other HTTP error' do
+      let(:err_body) do
+        {
+          messageList: [
+            {
+              code: 'oops',
+              message: 'Something somewhere went wrong.'
+            }
+          ]
+        }
+      end
+
+      before do
+        stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: resource.catkey)).to_return(status: 403, body: err_body.to_json)
+      end
+
+      it 'returns a 500 error' do
+        get :marcxml, params: { catkey: '12345' }
+        expect(response.status).to eq(500)
+        expect(response.body).to match(/^Got HTTP Status-Code 403 retrieving 12345 from Symphony:.*Something somewhere went wrong./)
       end
     end
   end

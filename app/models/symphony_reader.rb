@@ -2,7 +2,7 @@
 
 # Reader from symphony's JSON API to a MARC record
 class SymphonyReader
-  class RecordIncompleteError < RuntimeError; end
+  class ResponseError < StandardError; end
 
   attr_reader :catkey
 
@@ -39,11 +39,24 @@ class SymphonyReader
     self.class.client
   end
 
+  # see https://symphony-webservices-dev.stanford.edu/symws/resource_Catalog_Bib.html for response info
   def symphony_response
     resp = client.get(format(Settings.catalog.symphony.json_url, catkey: catkey))
-    validate_response(resp)
+
+    if resp.status == 200
+      validate_response(resp)
+      return resp
+    elsif resp.status == 404
+      errmsg = "Record not found in Symphony: #{@catkey}"
+    else
+      errmsg = "Got HTTP Status-Code #{resp.status} retrieving #{@catkey} from Symphony: #{resp.body}"
+      Honeybadger.notify(errmsg)
+    end
+
+    raise ResponseError, errmsg
   end
 
+  # expects resp.status to be 200;  does not check response code
   def validate_response(resp)
     exp_content_length = resp.headers['Content-Length'].to_i
     actual_content_length = resp.body.length
@@ -51,7 +64,7 @@ class SymphonyReader
 
     errmsg = "Incomplete response received from Symphony for #{@catkey} - expected #{exp_content_length} bytes but got #{actual_content_length}"
     Honeybadger.notify(errmsg)
-    raise RecordIncompleteError, errmsg
+    raise ResponseError, errmsg
   end
 
   def json
