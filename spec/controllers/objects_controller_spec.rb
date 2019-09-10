@@ -22,53 +22,6 @@ RSpec.describe ObjectsController do
     allow(rights_metadata_xml).to receive(:dra_object).and_return(Dor::RightsAuth.parse(Nokogiri::XML('<xml/>'), true))
   end
 
-  describe 'object registration' do
-    render_views
-
-    context 'error handling' do
-      let(:errmsg) { 'my unique snowflake error message' }
-
-      it 'returns a 409 error with location header when an object already exists' do
-        allow(RegistrationService).to receive(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
-        post :create
-        expect(response.status).to eq(409)
-        expect(response.headers['Location']).to match(%r{/fedora/objects/druid:existing123obj})
-      end
-
-      it 'returns a 422 error when an object has a bad name' do
-        allow(RegistrationService).to receive(:register_object).and_raise(ArgumentError.new(errmsg))
-        post :create
-        expect(response.status).to eq(422)
-        expect(response.body).to eq(errmsg)
-      end
-
-      it 'returns a 500 error when the SymphonyReader gets an incomplete response' do
-        allow(RegistrationService).to receive(:register_object).and_raise(SymphonyReader::RecordIncompleteError.new(errmsg))
-        post :create
-        expect(response.status).to eq(500)
-        expect(response.body).to eq(errmsg)
-      end
-
-      it 'returns a 404 error for ActiveFedora::ObjectNotFoundError' do
-        allow(RegistrationService).to receive(:register_object).and_raise(ActiveFedora::ObjectNotFoundError.new(errmsg))
-        post :create
-        expect(response.status).to eq(404)
-        expect(response.body).to eq(errmsg)
-      end
-    end
-
-    it 'registers the object with the registration service' do
-      allow(RegistrationService).to receive(:create_from_request).and_return(pid: 'druid:xyz')
-
-      post :create
-
-      expect(response.body).to eq 'druid:xyz'
-      expect(RegistrationService).to have_received(:create_from_request)
-      expect(response.status).to eq(201)
-      expect(response.location).to end_with '/fedora/objects/druid:xyz'
-    end
-  end
-
   describe '/publish' do
     it 'calls PublishMetadataService and returns 201' do
       expect(PublishMetadataService).to receive(:publish).with(item)
