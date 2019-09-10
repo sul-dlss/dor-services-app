@@ -5,8 +5,9 @@
 
 # DOR Services App
 
-This Ruby application provides a REST API for DOR Services. [View the REST API documentation](https://consul.stanford.edu/display/chimera/REST+mappings+for+dor-services+gem).
-
+This Ruby application provides a REST API for DOR Services.
+There is a (OAS 3.0 spec)[http://spec.openapis.org/oas/v3.0.2] that documents the
+API in [openapi.json].  If you clone this repo, you can view this by opening [docs/index.html].
 
 ## Authentication
 

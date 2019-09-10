@@ -1,0 +1,821 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Backend API for the Stanford digital repository",
+    "version": "1.0.0",
+    "title": "DOR Services API",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://dor-services-{env}.stanford.edu/{version}",
+      "description": "Production service",
+      "variables": {
+        "env": {
+          "default": "prod"
+        },
+        "version": {
+          "default": "v1"
+        }
+      }
+    },
+    {
+      "url": "https://dor-services-{env}.stanford.edu/{version}",
+      "description": "Staging service",
+      "variables": {
+        "env": {
+          "default": "stage"
+        },
+        "version": {
+          "default": "v1"
+        }
+      }
+    }
+  ],
+  "tags": [
+    {
+      "name": "objects",
+      "description": "Digital Repository Objects"
+    },
+    {
+      "name": "integrations",
+      "description": "Integrations with other Systems"
+    },
+    {
+      "name": "versions",
+      "description": "Operations about object versions"
+    },
+    {
+      "name": "files",
+      "description": "Operations about files"
+    },
+    {
+      "name": "preservation",
+      "description": "Operations about preservation (SDR)"
+    },
+    {
+      "name": "workspaces",
+      "description": "Operations about workspaces"
+    },
+    {
+      "name": "embargoes",
+      "description": "Operations about embargoes"
+    }
+  ],
+  "paths": {
+    "/sdr/objects/{id}/cm-inv-diff": {
+      "post": {
+        "tags": [
+          "preservation"
+        ],
+        "summary": "Get the diff of the content metadata from DOR and SDR",
+        "description": "",
+        "operationId": "sdr#cm_inv_diff",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/sdr/objects/{id}/current_version": {
+      "get": {
+        "tags": [
+          "preservation"
+        ],
+        "summary": "Get the current version of the object from SDR",
+        "description": "",
+        "operationId": "sdr#current_version",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/sdr/objects/{id}/manifest/{datastream}": {
+      "get": {
+        "tags": [
+          "preservation"
+        ],
+        "summary": "Get the manifest of the datastream from SDR",
+        "description": "",
+        "operationId": "sdr#ds_manifest",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          },
+          {
+            "name": "datastream",
+            "in": "path",
+            "description": "ID of the datastream",
+            "required": true,
+          }
+        ]
+      }
+    },
+    "/sdr/objects/{id}/metadata/{datastream}": {
+      "get": {
+        "tags": [
+          "preservation"
+        ],
+        "summary": "Get the metadata from the datastream from SDR",
+        "description": "",
+        "operationId": "sdr#ds_metadata",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          },
+          {
+            "name": "datastream",
+            "in": "path",
+            "description": "ID of the datastream",
+            "required": true,
+          }
+        ]
+      }
+    },
+    "/sdr/objects/{id}/content/{filename}": {
+      "get": {
+        "tags": [
+          "preservation"
+        ],
+        "summary": "Get the file content from SDR",
+        "description": "",
+        "operationId": "sdr#file_content",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "description": "name of the file",
+            "required": true,
+          }
+        ]
+      }
+    },
+    "/catalog/marcxml": {
+      "get": {
+        "tags": [
+          "integrations"
+        ],
+        "summary": "Lookup the MARC XML from Symphony",
+        "description": "",
+        "operationId": "marcxml#marcxml",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "barcode",
+            "in": "body",
+            "description": "barcode of an item",
+            "required": false,
+          },
+          {
+            "name": "catkey",
+            "in": "body",
+            "description": "catalog identifier of an item",
+            "required": false,
+          }
+        ]
+      }
+    },
+    "/catalog/mods": {
+      "get": {
+        "tags": [
+          "integrations"
+        ],
+          "summary": "Lookup the MODS for an item from Symphony",
+        "description": "",
+        "operationId": "marcxml#mods",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "barcode",
+            "in": "body",
+            "description": "barcode of an item",
+            "required": false,
+          },
+          {
+            "name": "catkey",
+            "in": "body",
+            "description": "catalog identifier of an item",
+            "required": false,
+          }
+        ]
+      }
+    },
+    "/catalog/catkey": {
+      "get": {
+        "tags": [
+          "integrations"
+        ],
+        "summary": "Lookup the catkey for an item given the barcode",
+        "description": "",
+        "operationId": "marcxml#catkey",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "barcode",
+            "in": "body",
+            "description": "barcode of an item",
+            "required": false,
+          }
+        ]
+      }
+    },
+    "/objects/{id}/publish": {
+      "post": {
+        "tags": [
+          "objects"
+        ],
+        "summary": "Publish object to Searchworks",
+        "description": "",
+        "operationId": "objects#publish",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/update_marc_record": {
+      "post": {
+        "tags": [
+          "integrations"
+        ],
+        "summary": "Update Symphony with a new marc record from DOR",
+        "description": "",
+        "operationId": "objects#update_marc_record",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/notify_goobi": {
+      "post": {
+        "tags": [
+          "integrations"
+        ],
+        "summary": "Registers an object with the Goobi server",
+        "description": "",
+        "operationId": "objects#notify_goobi",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/release_tags": {
+      "post": {
+        "tags": [
+          "objects"
+        ],
+        "summary": "Assign the release tags",
+        "description": "",
+        "operationId": "objects#release_tags",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/refresh_metadata": {
+      "post": {
+        "tags": [
+          "integrations"
+        ],
+        "summary": "Update object metadata with marc from Symphony",
+        "description": "",
+        "operationId": "metadata_refresh#refresh_metadata",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/contents": {
+      "get": {
+        "tags": [
+          "files"
+        ],
+        "summary": "List the files for a particular object",
+        "description": "",
+        "operationId": "content#list",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/contents/{path}": {
+      "get": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Retrieve file content from the DOR workspace",
+        "description": "",
+        "operationId": "content#read",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          },
+          {
+            "name": "path",
+            "in": "path",
+            "description": "Name of the file",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/query/collections": {
+      "get": {
+        "tags": [
+          "objects"
+        ],
+        "summary": "List the collections that an object belongs to",
+        "description": "",
+        "operationId": "queries#collections",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/workspace": {
+      "delete": {
+        "tags": [
+          "workspaces"
+        ],
+        "summary": "Remove an object's workspace",
+        "description": "",
+        "operationId": "workspaces#destroy",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "workspaces"
+        ],
+        "summary": "Create a workspace for an object",
+        "description": "",
+        "operationId": "workspaces#create",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/embargo": {
+      "patch": {
+        "tags": [
+          "embargoes"
+        ],
+        "summary": "Update the embargo for an object",
+        "description": "",
+        "operationId": "embargoes#update",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/metadata/dublin_core": {
+      "get": {
+        "tags": [
+          "objects"
+        ],
+        "summary": "Retrieve the public Dublin Core metadata for the object",
+        "description": "",
+        "operationId": "metadata#dublin_core",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/metadata/descriptive": {
+      "get": {
+        "tags": [
+          "objects"
+        ],
+        "summary": "Retrieve the public descriptive (MODS) metadata for the object",
+        "description": "",
+        "operationId": "metadata#descriptive",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/versions/openable": {
+      "get": {
+        "tags": [
+          "versions"
+        ],
+        "summary": "Query to determine whether a version can be opened for this object",
+        "description": "",
+        "operationId": "versions#openable",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/versions/current": {
+      "get": {
+        "tags": [
+          "versions"
+        ],
+        "summary": "Return the current version number for this object",
+        "description": "",
+        "operationId": "versions#current",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/versions/current/close": {
+      "post": {
+        "tags": [
+          "versions"
+        ],
+        "summary": "Close the currently open version for this object",
+        "description": "",
+        "operationId": "versions#close_current",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{id}/versions": {
+      "post": {
+        "tags": [
+          "versions"
+        ],
+        "summary": "Open a new version for this object",
+        "description": "",
+        "operationId": "versions#create",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects": {
+      "post": {
+        "tags": [
+          "objects"
+        ],
+        "summary": "Register a new object",
+        "description": "",
+        "operationId": "objects#create",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/objects/{id}": {
+      "get": {
+        "tags": [
+          "objects"
+        ],
+        "summary": "Retrieve the object COCINA metadata",
+        "description": "",
+        "operationId": "objects#show",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "objects"
+        ],
+        "summary": "Update the object metadata",
+        "description": "Currently this handles the create virtual object use case.",
+        "operationId": "objects#update",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Druid": {
+        "type": "string"
+      }
+    }
+  }
+}
