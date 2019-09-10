@@ -18,6 +18,19 @@ RSpec.describe VersionService do
     allow(obj.inner_object).to receive(:repository).and_return(double('frepo').as_null_object)
   end
 
+  describe '.open?' do
+    let(:instance) { instance_double(described_class, open_for_versioning?: true) }
+
+    before do
+      allow(described_class).to receive(:new).and_return(instance)
+    end
+
+    it 'creates a new service instance and sends #open_for_versioning?' do
+      described_class.open?(obj)
+      expect(instance).to have_received(:open_for_versioning?).once
+    end
+  end
+
   describe '.open' do
     subject(:open) { described_class.open(obj) }
 

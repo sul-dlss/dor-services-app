@@ -72,6 +72,9 @@ RSpec.describe ConstituentService do
 
     context 'when the parent is open for modification' do
       before do
+        allow(VersionService).to receive(:open?).and_return(true)
+        allow(VersionService).to receive(:open)
+        allow(VersionService).to receive(:close)
         add
       end
 
@@ -89,16 +92,19 @@ RSpec.describe ConstituentService do
         XML
         expect(child1.object_relations[:is_constituent_of]).to eq [parent]
         expect(child2.object_relations[:is_constituent_of]).to eq [parent]
+        expect(VersionService).to have_received(:open?).exactly(3).times
+        expect(VersionService).not_to have_received(:open)
+        expect(VersionService).to have_received(:close).exactly(3).times
       end
     end
 
     context 'when the parent is not combinable' do
       before do
-        allow(ItemQueryService).to receive(:validate_combinable_items).with([parent.id, child1.id, child2.id]).and_return(parent.id => 'nope')
+        allow(ItemQueryService).to receive(:validate_combinable_items).with(parent: parent.id, children: [child1.id, child2.id]).and_return(parent.id => ['that is a nope for child2'])
       end
 
       it 'merges nothing' do
-        expect(add).to eq(parent.id => 'nope')
+        expect(add).to eq(parent.id => ['that is a nope for child2'])
         expect(parent.contentMetadata.content).to be_equivalent_to(parent_content)
         expect(child1.object_relations[:is_constituent_of]).to be_empty
         expect(child2.object_relations[:is_constituent_of]).to be_empty
@@ -107,7 +113,7 @@ RSpec.describe ConstituentService do
 
     context 'when a child is not combinable' do
       before do
-        allow(ItemQueryService).to receive(:validate_combinable_items).with([parent.id, child1.id, child2.id]).and_return(child1.id => 'not modifiable message')
+        allow(ItemQueryService).to receive(:validate_combinable_items).with(parent: parent.id, children: [child1.id, child2.id]).and_return(child1.id => 'not modifiable message')
       end
 
       it 'does not merge any children' do

@@ -18,16 +18,21 @@ class ConstituentService
   # @raises ActiveFedora::RecordInvalid if AF object validations fail on #save!
   # @returns [NilClass, Hash] true if successful, hash of errors otherwise (if combinable validation fails)
   def add(child_druids:)
-    errors = ItemQueryService.validate_combinable_items([parent_druid] + child_druids)
+    errors = ItemQueryService.validate_combinable_items(parent: parent_druid, children: child_druids)
 
     return errors if errors.any?
+
+    # Make sure the parent is open before making modifications
+    VersionService.open(parent) unless VersionService.open?(parent)
 
     ResetContentMetadataService.new(item: parent).reset
 
     child_druids.each do |child_druid|
       add_constituent(child_druid: child_druid)
     end
-    parent.save!
+
+    # NOTE: parent object is saved as part of closing the version
+    VersionService.close(parent)
 
     nil
   end
@@ -38,11 +43,16 @@ class ConstituentService
 
   def add_constituent(child_druid:)
     child = ItemQueryService.find_combinable_item(child_druid)
+    # Make sure the child is open before making modifications
+    VersionService.open(child) unless VersionService.open?(child)
+
     child.contentMetadata.ng_xml.search('//resource').each do |resource|
       parent.contentMetadata.add_virtual_resource(child.id, resource)
     end
     child.add_relationship :is_constituent_of, parent
-    child.save!
+
+    # NOTE: child object is saved as part of closing the version
+    VersionService.close(child)
   end
 
   def parent
