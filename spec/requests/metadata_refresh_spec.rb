@@ -26,17 +26,59 @@ RSpec.describe 'Refresh metadata' do
     end
   end
 
-  context 'when incomplete response from Symphony' do
+  describe 'errors in response from Symphony' do
     before do
       allow(object.identityMetadata).to receive(:otherId).and_return(['catkey:666'])
-      stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: '666')).to_return(body: '{}', headers: { 'Content-Length': 0 })
     end
 
-    it 'returns a 500 error' do
-      post '/v1/objects/druid:mk420bs7601/refresh_metadata',
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
-      expect(response.status).to eq(500)
-      expect(response.body).to eq('Incomplete response received from Symphony for 666 - expected 0 bytes but got 2')
+    context 'when incomplete response' do
+      before do
+        stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: '666')).to_return(body: '{}', headers: { 'Content-Length': 0 })
+      end
+
+      it 'returns a 500 error' do
+        post '/v1/objects/druid:mk420bs7601/refresh_metadata',
+             headers: { 'X-Auth' => "Bearer #{jwt}" }
+        expect(response.status).to eq(500)
+        expect(response.body).to eq('Incomplete response received from Symphony for 666 - expected 0 bytes but got 2')
+      end
+    end
+
+    context 'when catkey not found' do
+      before do
+        stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: '666')).to_return(status: 404)
+      end
+
+      it 'returns a 500 error' do
+        post '/v1/objects/druid:mk420bs7601/refresh_metadata',
+             headers: { 'X-Auth' => "Bearer #{jwt}" }
+        expect(response.status).to eq(500)
+        expect(response.body).to eq('Record not found in Symphony: 666')
+      end
+    end
+
+    context 'when HTTP error' do
+      let(:err_body) do
+        {
+          messageList: [
+            {
+              code: 'oops',
+              message: 'Something somewhere went wrong.'
+            }
+          ]
+        }
+      end
+
+      before do
+        stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: '666')).to_return(status: 403, body: err_body.to_json)
+      end
+
+      it 'returns a 500 error' do
+        post '/v1/objects/druid:mk420bs7601/refresh_metadata',
+             headers: { 'X-Auth' => "Bearer #{jwt}" }
+        expect(response.status).to eq(500)
+        expect(response.body).to match(/^Got HTTP Status-Code 403 retrieving 666 from Symphony:.*Something somewhere went wrong./)
+      end
     end
   end
 end
