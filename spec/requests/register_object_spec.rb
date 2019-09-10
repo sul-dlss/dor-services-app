@@ -41,7 +41,7 @@ RSpec.describe 'Register object' do
     let(:errmsg) { 'my unique snowflake error message' }
 
     before do
-      allow(RegistrationService).to receive(:register_object).and_raise(SymphonyReader::RecordIncompleteError.new(errmsg))
+      allow(RegistrationService).to receive(:register_object).and_raise(SymphonyReader::ResponseError.new(errmsg))
     end
 
     it 'returns a 500 error' do

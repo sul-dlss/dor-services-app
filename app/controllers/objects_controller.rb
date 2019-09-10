@@ -19,7 +19,7 @@ class ObjectsController < ApplicationController
     render status: :internal_server_error, plain: e.message
   end
 
-  rescue_from(SymphonyReader::RecordIncompleteError) do |e|
+  rescue_from(SymphonyReader::ResponseError) do |e|
     render status: :internal_server_error, plain: e.message
   end
 
