@@ -28,7 +28,6 @@ gem 'honeybadger'
 gem 'jbuilder'
 gem 'jwt'
 gem 'okcomputer'
-gem 'rest-client'
 gem 'ruby-cache', '~> 0.3.0'
 # Pin net-http-persistent to avoid a problem with exhausting file handles when running under load
 gem 'net-http-persistent', '~> 2.9'

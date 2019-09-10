@@ -60,23 +60,21 @@ class PublishMetadataService
   # When publishing a PURL, we notify purl-fetcher of changes.
   #
   def publish_notify_on_success
-    id = item.pid.gsub(/^druid:/, '')
-
-    rest_client["purls/#{id}"].post ''
+    Faraday.post(purl_services_url)
   end
 
   ##
   # When deleting a PURL, we notify purl-fetcher of changes.
   #
   def publish_delete_on_success
-    id = item.pid.gsub(/^druid:/, '')
-
-    rest_client["purls/#{id}"].delete
+    Faraday.delete(purl_services_url)
   end
 
-  def rest_client
+  def purl_services_url
+    id = item.pid.gsub(/^druid:/, '')
+
     raise 'You have not configured perl-fetcher (Settings.purl_services_url).' unless Settings.purl_services_url
 
-    RestClient::Resource.new(Settings.purl_services_url)
+    "#{Settings.purl_services_url}/purls/#{id}"
   end
 end

@@ -3,18 +3,26 @@
 module Dor
   # This class passes data to the Goobi server using a custom XML message that was developed by Intranda
   class Goobi < ServiceItem
-    # Any RestClient exception that is a 500 or greater
-    RETRIABLE_EXCEPTIONS = RestClient::Exceptions::EXCEPTIONS_MAP.select { |k, _v| k >= 500 }.values +
-                           [RestClient::RequestTimeout,
-                            RestClient::ServerBrokeConnection,
-                            RestClient::SSLCertificateNotVerified]
+    SERVER_ERROR_STATUSES = (500...600).freeze
+    class ServerError < StandardError; end
+
+    # Any status that is a 500 or greater and timeouts
+    RETRIABLE_EXCEPTIONS = [ServerError,
+                            Errno::ETIMEDOUT,
+                            'Timeout::Error',
+                            Faraday::TimeoutError,
+                            Faraday::RetriableResponse].freeze
 
     def register
       with_retries(max_tries: Settings.goobi.max_tries,
                    base_sleep_seconds: Settings.goobi.base_sleep_seconds,
                    max_sleep_seconds: Settings.goobi.max_sleep_seconds,
                    rescue: RETRIABLE_EXCEPTIONS) do |_attempt|
-        RestClient.post(Settings.goobi.url, xml_request, content_type: 'application/xml')
+        response = Faraday.post(Settings.goobi.url, xml_request, 'Content-Type' => 'application/xml')
+        # When we upgrade to Faraday 1.0, we can rely on Faraday::ServerError
+        raise ServerError, status: response.status, body: response.body if SERVER_ERROR_STATUSES.include?(response.status)
+
+        response
       end
     end
 

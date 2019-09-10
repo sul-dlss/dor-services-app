@@ -99,12 +99,7 @@ class VersionService
     # The submitted milestone is part of the accessionWF.
     raise Dor::Exception, 'Object currently being accessioned' if accessioning?
 
-    begin
-      return SdrClient.current_version work.pid
-    rescue RestClient::NotFound
-      raise Dor::Exception, 'SDR is not yet answering queries about this object. ' \
-        "We've seen that when an object has been transfered, SDR isn't immediately ready to answer queries"
-    end
+    SdrClient.current_version work.pid
   end
 
   # Checks if current version has any incomplete wf steps and there is a versionWF

@@ -477,7 +477,6 @@ DEPENDENCIES
   rack-console
   rails (~> 5.2.0)
   rails-controller-testing
-  rest-client
   rspec-rails
   rubocop (~> 0.74.0)
   rubocop-rails
