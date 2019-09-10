@@ -11,8 +11,6 @@ class ItemQueryService
     @item_relation = item_relation
   end
 
-  delegate :allows_modification?, to: :item
-
   # @param [String] parent a parent druid
   # @param [Array] children a list of child druids
   # @return [Hash]
@@ -32,7 +30,7 @@ class ItemQueryService
   def self.find_combinable_item(druid)
     query_service = ItemQueryService.new(id: druid)
     query_service.item do |item|
-      raise UncombinableItemError, "Item #{item.pid} is not open for modification" unless query_service.allows_modification?
+      raise UncombinableItemError, "Item #{item.pid} is not open or openable" unless VersionService.open?(item) || VersionService.can_open?(item)
       raise UncombinableItemError, "Item #{item.pid} is dark" if item.rightsMetadata.dra_object.dark?
       raise UncombinableItemError, "Item #{item.pid} is citation_only" if item.rightsMetadata.dra_object.citation_only?
     end

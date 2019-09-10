@@ -10,19 +10,21 @@ RSpec.describe ItemQueryService do
 
   before do
     allow(Dor::Item).to receive(:find).and_return(item)
+    allow(VersionService).to receive(:can_open?).with(item).and_return(true)
+    allow(VersionService).to receive(:open?).with(item).and_return(true)
   end
 
   describe '.find_combinable_item' do
-    it 'raises error if object does not allow modification' do
-      allow(item).to receive(:allows_modification?).and_return(false)
-      expect { service.find_combinable_item('ab123cd4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:ab123cd4567 is not open for modification')
+    it 'raises error if object is neither open nor openable' do
+      allow(VersionService).to receive(:can_open?).with(item).and_return(false)
+      allow(VersionService).to receive(:open?).with(item).and_return(false)
+      expect { service.find_combinable_item('ab123cd4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:ab123cd4567 is not open or openable')
     end
 
     it 'raises error if object is dark' do
       dra = instance_double(Dor::RightsAuth, dark?: true, citation_only?: false)
       rights_ds = instance_double(Dor::RightsMetadataDS, dra_object: dra)
       allow(item).to receive(:rightsMetadata).and_return(rights_ds)
-      allow(item).to receive(:allows_modification?).and_return(true)
       expect { service.find_combinable_item('ab123cd4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:ab123cd4567 is dark')
     end
 
@@ -30,7 +32,6 @@ RSpec.describe ItemQueryService do
       dra = instance_double(Dor::RightsAuth, dark?: false, citation_only?: true)
       rights_ds = instance_double(Dor::RightsMetadataDS, dra_object: dra)
       allow(item).to receive(:rightsMetadata).and_return(rights_ds)
-      allow(item).to receive(:allows_modification?).and_return(true)
       expect { service.find_combinable_item('ab123cd4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:ab123cd4567 is citation_only')
     end
 
@@ -38,7 +39,6 @@ RSpec.describe ItemQueryService do
       dra = instance_double(Dor::RightsAuth, dark?: false, citation_only?: false)
       rights_ds = instance_double(Dor::RightsMetadataDS, dra_object: dra)
       allow(item).to receive(:rightsMetadata).and_return(rights_ds)
-      allow(item).to receive(:allows_modification?).and_return(true)
       service.find_combinable_item('ab123cd4567')
     end
   end
@@ -58,19 +58,21 @@ RSpec.describe ItemQueryService do
       allow(Dor::Item).to receive(:find).with('druid:xh235dd9059').and_return(item2)
       allow(Dor::Item).to receive(:find).with('druid:hj097bm8879').and_return(item3)
       [item, item2, item3].each do |i|
-        allow(i).to receive(:allows_modification?).and_return(true)
         allow(i).to receive(:rightsMetadata).and_return(permissive_rights_ds)
+        allow(VersionService).to receive(:can_open?).with(i).and_return(true)
+        allow(VersionService).to receive(:open?).with(i).and_return(true)
       end
     end
 
-    context 'when any objects do not allow modification' do
+    context 'when any objects are both not open and not openable' do
       before do
-        allow(item).to receive(:allows_modification?).and_return(false)
+        allow(VersionService).to receive(:open?).with(item).and_return(false)
+        allow(VersionService).to receive(:can_open?).with(item).and_return(false)
       end
 
       it 'returns a single error if one object does not allow modification' do
         expect(service.validate_combinable_items(parent: 'druid:ab123cd4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
-          'druid:ab123cd4567' => ['Item druid:ab123cd4567 is not open for modification']
+          'druid:ab123cd4567' => ['Item druid:ab123cd4567 is not open or openable']
         )
       end
     end
