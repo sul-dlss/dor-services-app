@@ -146,6 +146,9 @@
             "in": "path",
             "description": "ID of the datastream",
             "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ]
       }
@@ -178,6 +181,9 @@
             "in": "path",
             "description": "ID of the datastream",
             "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ]
       }
@@ -210,6 +216,9 @@
             "in": "path",
             "description": "name of the file",
             "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ]
       }
@@ -233,12 +242,18 @@
             "in": "query",
             "description": "barcode of an item",
             "required": false,
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "catkey",
             "in": "query",
             "description": "catalog identifier of an item",
             "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ]
       }
@@ -262,12 +277,18 @@
             "in": "query",
             "description": "barcode of an item",
             "required": false,
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "catkey",
             "in": "query",
             "description": "catalog identifier of an item",
             "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ]
       }
@@ -291,6 +312,9 @@
             "in": "query",
             "description": "barcode of an item",
             "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ]
       }
