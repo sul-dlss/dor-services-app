@@ -19,8 +19,6 @@ Rails.application.routes.draw do
     end
 
     scope :catalog do
-      get 'marcxml', to: 'marcxml#marcxml'
-      get 'mods', to: 'marcxml#mods'
       get 'catkey', to: 'marcxml#catkey'
     end
 
