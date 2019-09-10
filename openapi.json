@@ -230,13 +230,13 @@
         "parameters": [
           {
             "name": "barcode",
-            "in": "body",
+            "in": "query",
             "description": "barcode of an item",
             "required": false,
           },
           {
             "name": "catkey",
-            "in": "body",
+            "in": "query",
             "description": "catalog identifier of an item",
             "required": false,
           }
@@ -259,13 +259,13 @@
         "parameters": [
           {
             "name": "barcode",
-            "in": "body",
+            "in": "query",
             "description": "barcode of an item",
             "required": false,
           },
           {
             "name": "catkey",
-            "in": "body",
+            "in": "query",
             "description": "catalog identifier of an item",
             "required": false,
           }
@@ -288,7 +288,7 @@
         "parameters": [
           {
             "name": "barcode",
-            "in": "body",
+            "in": "query",
             "description": "barcode of an item",
             "required": false,
           }
