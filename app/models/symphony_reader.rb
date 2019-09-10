@@ -47,12 +47,18 @@ class SymphonyReader
       validate_response(resp)
       return resp
     elsif resp.status == 404
+      # 404 received here is for the catkey, but this app cares about the druid
+      #   for the DOR object, hence raising 404 from here could be misleading
       errmsg = "Record not found in Symphony: #{@catkey}"
     else
       errmsg = "Got HTTP Status-Code #{resp.status} retrieving #{@catkey} from Symphony: #{resp.body}"
       Honeybadger.notify(errmsg)
     end
 
+    raise ResponseError, errmsg
+  rescue Faraday::TimeoutError => e
+    errmsg = "Timeout for Symphony response for catkey #{@catkey}: #{e}"
+    Honeybadger.notify(errmsg)
     raise ResponseError, errmsg
   end
 

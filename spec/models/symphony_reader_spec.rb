@@ -86,7 +86,7 @@ RSpec.describe SymphonyReader do
         end
       end
 
-      context 'when other HTTP error' do
+      context 'when other HTTP error from Symphony' do
         let(:err_body) do
           {
             messageList: [
@@ -104,6 +104,21 @@ RSpec.describe SymphonyReader do
 
         it 'raises ResponseError and notifies Honeybadger' do
           msg_regex = /^Got HTTP Status-Code 403 retrieving catkey from Symphony:.*Something somewhere went wrong./
+          allow(Honeybadger).to receive(:notify)
+          expect { reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
+          expect(Honeybadger).to have_received(:notify).with(msg_regex)
+        end
+      end
+
+      context 'when Faraday::Timeout' do
+        let(:faraday_msg) { 'faraday failed' }
+
+        before do
+          stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: catkey)).to_raise(Faraday::TimeoutError.new(faraday_msg))
+        end
+
+        it 'raises ResponseError and notifies Honeybadger' do
+          msg_regex = /^Timeout for Symphony response for catkey catkey: #{faraday_msg}/
           allow(Honeybadger).to receive(:notify)
           expect { reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
           expect(Honeybadger).to have_received(:notify).with(msg_regex)
