@@ -42,8 +42,8 @@ class ApplicationController < ActionController::API
     request.headers[TOKEN_HEADER].split(' ').last
   end
 
-  def proxy_rest_client_response(response)
-    render status: response.code, content_type: response.headers[:content_type], body: response.body
+  def proxy_faraday_response(response)
+    render status: response.status, content_type: response.headers['Content-Type'], body: response.body
   end
 
   def load_item

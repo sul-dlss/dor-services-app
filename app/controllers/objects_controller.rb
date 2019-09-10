@@ -75,9 +75,9 @@ class ObjectsController < ApplicationController
   # This proxies a request to the Goobi server and proxies it's response to the client.
   def notify_goobi
     response = Dor::Goobi.new(@item).register
-    proxy_rest_client_response(response)
-  rescue RestClient::Conflict => e
-    render status: :conflict, plain: e.http_body
+    return render status: :conflict, plain: response.body if response.status == 409
+
+    proxy_faraday_response(response)
   end
 
   # You can post a release tag as JSON in the body to add a release tag to an item.

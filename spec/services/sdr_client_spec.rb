@@ -37,19 +37,7 @@ RSpec.describe SdrClient do
       end
 
       it 'raises an error' do
-        expect { current_version }.to raise_error RestClient::NotFound
-      end
-    end
-  end
-
-  describe '.create' do
-    context 'with SDR configuration' do
-      before do
-        allow(Settings).to receive(:sdr_url).and_return('http://example.com')
-      end
-
-      it 'is configured to use SDR' do
-        expect(described_class.create.url).to eq 'http://example.com'
+        expect { current_version }.to raise_error Dor::Exception
       end
     end
   end

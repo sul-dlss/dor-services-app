@@ -141,20 +141,20 @@ RSpec.describe Dor::Goobi do
       end
 
       it 'makes a call to the goobi server with the appropriate xml params' do
-        expect(response.code).to eq 201
+        expect(response.status).to eq 201
       end
     end
 
     context 'with a 409 response' do
       before do
-        allow(RestClient).to receive(:post).and_call_original
+        allow(Faraday).to receive(:post).and_call_original
         stub_request(:post, Settings.goobi.url)
           .to_return(body: '<somexml/>', headers: { 'Content-Type' => 'text/xml' }, status: 409)
       end
 
       it 'makes a call to the goobi server with the appropriate xml params' do
-        expect { response }.to raise_error(RestClient::Conflict)
-        expect(RestClient).to have_received(:post).once # Don't retry request errors
+        expect(response.status).to eq 409
+        expect(Faraday).to have_received(:post).once # Don't retry request errors
       end
     end
   end

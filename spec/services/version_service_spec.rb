@@ -96,7 +96,7 @@ RSpec.describe VersionService do
     context "when sdr-services-app doesn't know about the object" do
       before do
         allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
-        allow(SdrClient).to receive(:current_version).and_raise(RestClient::NotFound)
+        allow(SdrClient).to receive(:current_version).and_raise(Dor::Exception, 'SDR is not yet answering queries about this object')
       end
 
       let(:workflow_client) do
@@ -172,7 +172,7 @@ RSpec.describe VersionService do
 
     context "when sdr-services-app doesn't know about the object" do
       before do
-        allow(SdrClient).to receive(:current_version).and_raise(RestClient::NotFound)
+        allow(SdrClient).to receive(:current_version).and_raise(Dor::Exception)
       end
 
       it 'returns false' do
