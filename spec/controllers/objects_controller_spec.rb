@@ -87,40 +87,4 @@ RSpec.describe ObjectsController do
       end
     end
   end
-
-  describe '/notify_goobi' do
-    let(:fake_request) { "<stanfordCreationRequest><objectId>#{item.pid}</objectId></stanfordCreationRequest>" }
-
-    before do
-      allow_any_instance_of(Dor::Goobi).to receive(:xml_request).and_return fake_request
-    end
-
-    context 'when it is successful' do
-      before do
-        stub_request(:post, Settings.goobi.url)
-          .to_return(body: fake_request,
-                     headers: { 'Content-Type' => 'application/xml' },
-                     status: 201)
-      end
-
-      it 'notifies goobi of a new registration by making a web service call' do
-        post :notify_goobi, params: { id: item.pid }
-        expect(response.status).to eq(201)
-      end
-    end
-
-    context 'when it is a conflict' do
-      before do
-        stub_request(:post, Settings.goobi.url)
-          .to_return(body: 'conflict',
-                     status: 409)
-      end
-
-      it 'returns the conflict code' do
-        post :notify_goobi, params: { id: item.pid }
-        expect(response.status).to eq(409)
-        expect(response.body).to eq('conflict')
-      end
-    end
-  end
 end
