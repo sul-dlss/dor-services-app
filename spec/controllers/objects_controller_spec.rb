@@ -131,30 +131,4 @@ RSpec.describe ObjectsController do
       end
     end
   end
-
-  describe '/release_tags' do
-    it 'adds a release tag when posted to with false' do
-      expect(ReleaseTags).to receive(:create).with(Dor::Item, release: false, to: 'searchworks', who: 'carrickr', what: 'self')
-      expect(item).to receive(:save)
-      post :release_tags, params: { id: item.pid }, body: %( {"to":"searchworks","who":"carrickr","what":"self","release":false} )
-      expect(response.status).to eq(201)
-    end
-
-    it 'adds a release tag when posted to with true' do
-      expect(ReleaseTags).to receive(:create).with(Dor::Item, release: true, to: 'searchworks', who: 'carrickr', what: 'self')
-      expect(item).to receive(:save)
-      post :release_tags, params: { id: item.pid }, body: %( {"to":"searchworks","who":"carrickr","what":"self","release":true} )
-      expect(response.status).to eq(201)
-    end
-
-    it 'errors when posted to with an invalid release attribute' do
-      post :release_tags, params: { id: item.pid }, body: %( {"to":"searchworks","who":"carrickr","what":"self","release":"seven"} )
-      expect(response.status).to eq(400)
-    end
-
-    it 'errors when posted to with a missing release attribute' do
-      post :release_tags, params: { id: item.pid }, body: %( {"to":"searchworks","who":"carrickr","what":"self"} )
-      expect(response.status).to eq(400)
-    end
-  end
 end
