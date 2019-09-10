@@ -847,7 +847,9 @@
   "components": {
     "schemas": {
       "Druid": {
-        "type": "string"
+        "type": "string",
+        "pattern": "^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$",
+        "example": "druid:bc123df4567"
       },
       "DRO": {
         "type": "object",
