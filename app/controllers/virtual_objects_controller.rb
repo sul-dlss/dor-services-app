@@ -12,7 +12,7 @@ class VirtualObjectsController < ApplicationController
       parent_id, child_ids = virtual_object.values_at(:parent_id, :child_ids)
       # Update the constituent relationship between the parent and child druids
       errors << ConstituentService.new(parent_druid: parent_id).add(child_druids: child_ids)
-    rescue ActiveFedora::ObjectNotFoundError, Rubydora::FedoraInvalidRequest => e
+    rescue ActiveFedora::ObjectNotFoundError, Rubydora::FedoraInvalidRequest, Dor::Exception => e
       errors << { parent_id => [e.message] }
     end
 
