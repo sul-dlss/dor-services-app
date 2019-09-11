@@ -235,7 +235,7 @@ RSpec.describe VersionService do
     context 'when the object has not been opened for versioning' do
       it 'raises an exception' do
         expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened').and_return(nil)
-        expect { close }.to raise_error(Dor::Exception, 'Trying to close version on an object not opened for versioning')
+        expect { close }.to raise_error(Dor::Exception, 'Trying to close version on druid:ab12cd3456 which is not opened for versioning')
       end
     end
 
@@ -243,14 +243,14 @@ RSpec.describe VersionService do
       it 'raises an exception' do
         expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened').and_return(Time.new)
         expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted').and_return(true)
-        expect { close }.to raise_error(Dor::Exception, 'accessionWF already created for versioned object')
+        expect { close }.to raise_error(Dor::Exception, 'accessionWF already created for versioned object druid:ab12cd3456')
       end
     end
 
     context 'when the latest version does not have a tag and a description' do
       it 'raises an exception' do
         vmd_ds.increment_version
-        expect { close }.to raise_error(Dor::Exception, 'latest version in versionMetadata requires tag and description before it can be closed')
+        expect { close }.to raise_error(Dor::Exception, 'latest version in versionMetadata for druid:ab12cd3456 requires tag and description before it can be closed')
       end
     end
   end

@@ -27,6 +27,21 @@ RSpec.describe 'Batch creation of virtual objects' do
     end
   end
 
+  context 'when virtual_objects contain objects that raise Dor::Exception' do
+    before do
+      allow(service).to receive(:add).and_raise(Dor::Exception, 'versioning is messed up')
+    end
+
+    it 'renders an error' do
+      post '/v1/virtual_objects',
+           params: { virtual_objects: [{ parent_id: parent_id, child_ids: [child1_id, child2_id] }] },
+           headers: { 'X-Auth' => "Bearer #{jwt}" }
+      expect(service).to have_received(:add).with(child_druids: [child1_id, child2_id])
+      expect(response).to be_unprocessable
+      expect(response.body).to eq '{"errors":[{"druid:mk420bs7601":["versioning is messed up"]}]}'
+    end
+  end
+
   context 'when virtual_objects contain objects that are not combinable' do
     before do
       allow(service).to receive(:add).and_return(parent_id => ["Item #{child2_id} is not open for modification"])

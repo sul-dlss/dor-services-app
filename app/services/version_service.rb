@@ -75,9 +75,9 @@ class VersionService
       work.versionMetadata.save
     end
 
-    raise Dor::Exception, 'latest version in versionMetadata requires tag and description before it can be closed' unless work.versionMetadata.current_version_closeable?
-    raise Dor::Exception, 'Trying to close version on an object not opened for versioning' unless open_for_versioning?
-    raise Dor::Exception, 'accessionWF already created for versioned object' if accessioning?
+    raise Dor::Exception, "latest version in versionMetadata for #{work.pid} requires tag and description before it can be closed" unless work.versionMetadata.current_version_closeable?
+    raise Dor::Exception, "Trying to close version on #{work.pid} which is not opened for versioning" unless open_for_versioning?
+    raise Dor::Exception, "accessionWF already created for versioned object #{work.pid}" if accessioning?
 
     Dor::Config.workflow.client.close_version 'dor', work.pid, opts.fetch(:start_accession, true) # Default to creating accessionWF when calling close_version
     work.events.add_event('close', opts[:user_name], "Version #{work.current_version} closed") if opts[:user_name]
