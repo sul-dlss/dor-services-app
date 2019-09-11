@@ -7,9 +7,11 @@ RSpec.describe SdrClient do
     subject(:current_version) { described_class.current_version('druid:ab123cd4567') }
 
     let(:url) { 'http://sdr-services.example.com/sdr/objects/druid:ab123cd4567/current_version' }
+    let(:url_with_basic_auth) { url.sub('http://', 'http://user:password@') }
 
     it 'returns the current of the object from SDR' do
       stub_request(:get, url)
+        .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
         .to_return(body: '<currentVersion>2</currentVersion>')
       expect(current_version).to eq 2
     end
@@ -19,7 +21,7 @@ RSpec.describe SdrClient do
         stub_request(:get, url)
           .to_return(body: '<wrongRoot>2</wrongRoot>')
         expect { current_version }.to raise_error(RuntimeError,
-                                                  "Unable to parse XML from SDR current_version API call.\n\turl: #{url}\n\tstatus: 200\n\tbody: <wrongRoot>2</wrongRoot>")
+                                                  "Unable to parse XML from SDR current_version API call.\n\turl: #{url_with_basic_auth}\n\tstatus: 200\n\tbody: <wrongRoot>2</wrongRoot>")
       end
     end
 
@@ -28,7 +30,7 @@ RSpec.describe SdrClient do
         stub_request(:get, url)
           .to_return(body: '<currentVersion>two</currentVersion>')
         expect { current_version }.to raise_error(RuntimeError,
-                                                  "Unable to parse XML from SDR current_version API call.\n\turl: #{url}\n\tstatus: 200\n\tbody: <currentVersion>two</currentVersion>")
+                                                  "Unable to parse XML from SDR current_version API call.\n\turl: #{url_with_basic_auth}\n\tstatus: 200\n\tbody: <currentVersion>two</currentVersion>")
       end
     end
 
