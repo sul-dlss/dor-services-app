@@ -5,6 +5,7 @@ class SdrClient
   # @raises [Dor::Exception] if SDR doesn't know about the object (i.e. 404 response code)
   # @raises [StandardError] if the response from SDR can't be parsed
   def self.current_version(druid)
+    url = "#{Settings.sdr_url}/objects/#{druid}/current_version"
     response = Faraday.get "#{Settings.sdr_url}/objects/#{druid}/current_version"
 
     if response.status == 404
@@ -18,7 +19,7 @@ class SdrClient
 
       return Integer(doc.text)
     rescue StandardError
-      raise "Unable to parse XML from SDR current_version API call: #{response.body}"
+      raise "Unable to parse XML from SDR current_version API call.\n\turl: #{url}\n\tstatus: #{response.status}\n\tbody: #{response.body}"
     end
   end
 end
