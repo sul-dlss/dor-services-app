@@ -61,6 +61,14 @@ RSpec.describe SymphonyReader do
       expect(field.subfields.first.value).to eq 'some data'
     end
 
+    context 'when response is chunked' do
+      let(:headers) { { 'Content-Length': 0, 'Transfer-Encoding': 'chunked' } }
+
+      it 'does not validate content length' do
+        expect(reader.to_marc).to be_a_kind_of MARC::Record
+      end
+    end
+
     describe 'when errors in response from Symphony' do
       context 'when wrong number of bytes received' do
         let(:headers) { { 'Content-Length': 268 } }

@@ -64,6 +64,9 @@ class SymphonyReader
 
   # expects resp.status to be 200;  does not check response code
   def validate_response(resp)
+    # The length for a chunked response is 0, so checking it isn't meaningful.
+    return resp if resp.headers['Transfer-Encoding'] == 'chunked'
+
     exp_content_length = resp.headers['Content-Length'].to_i
     actual_content_length = resp.body.length
     return resp if actual_content_length == exp_content_length
