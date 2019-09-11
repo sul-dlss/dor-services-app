@@ -33,7 +33,7 @@ solr:
   url: 'https://solr.example.com/solr/collection'
 
 workflow_url: 'https://workflow.example.com/workflow'
-sdr_url: 'http://sdr-services.example.com/sdr'
+sdr_url: 'http://user:password@sdr-services.example.com/sdr'
 purl_services_url: ~
 
 cleanup:
