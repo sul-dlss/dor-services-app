@@ -13,7 +13,7 @@ RSpec.describe 'Update MARC record' do
 
   context 'when the request is successful' do
     it 'returns a 201 response' do
-      post '/v1/objects/druid:1234/update_marc_record', headers: { 'X-Auth' => "Bearer #{jwt}" }
+      post '/v1/objects/druid:1234/update_marc_record', headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(response.status).to eq(201)
     end

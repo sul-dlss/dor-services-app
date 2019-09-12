@@ -17,7 +17,7 @@ RSpec.describe 'Add release tags' do
     it 'adds a release tag' do
       post '/v1/objects/druid:1234/release_tags',
            params: %( {"to":"searchworks","who":"carrickr","what":"self","release":false} ),
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(ReleaseTags).to have_received(:create)
         .with(Dor::Item, release: false, to: 'searchworks', who: 'carrickr', what: 'self')
@@ -31,7 +31,7 @@ RSpec.describe 'Add release tags' do
     it 'adds a release tag' do
       post '/v1/objects/druid:1234/release_tags',
            params: %( {"to":"searchworks","who":"carrickr","what":"self","release":true} ),
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(ReleaseTags).to have_received(:create)
         .with(Dor::Item, release: true, to: 'searchworks', who: 'carrickr', what: 'self')
@@ -44,7 +44,7 @@ RSpec.describe 'Add release tags' do
     it 'returns an error' do
       post '/v1/objects/druid:1234/release_tags',
            params: %( {"to":"searchworks","who":"carrickr","what":"self","release":"seven"} ),
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq(400)
     end
   end
@@ -53,7 +53,7 @@ RSpec.describe 'Add release tags' do
     it 'returns an error' do
       post '/v1/objects/druid:1234/release_tags',
            params: %( {"to":"searchworks","who":"carrickr","what":"self"} ),
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq(400)
     end
   end

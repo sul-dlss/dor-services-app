@@ -15,7 +15,7 @@ RSpec.describe 'Display metadata' do
   describe 'dublin core' do
     it 'returns the DC xml' do
       get '/v1/objects/druid:mk420bs7601/metadata/dublin_core',
-          headers: { 'X-Auth' => "Bearer #{jwt}" }
+          headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(response.body).to include '<dc:title>Hello</dc:title>'
     end
@@ -24,7 +24,7 @@ RSpec.describe 'Display metadata' do
   describe 'descriptive' do
     it 'returns the DC xml' do
       get '/v1/objects/druid:mk420bs7601/metadata/descriptive',
-          headers: { 'X-Auth' => "Bearer #{jwt}" }
+          headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(response.body).to be_equivalent_to <<~XML
         <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">

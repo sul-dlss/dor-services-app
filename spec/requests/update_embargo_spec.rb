@@ -17,7 +17,7 @@ RSpec.describe 'Update embargo' do
   context 'without the :embargo_date param' do
     it 'returns HTTP 400' do
       patch '/v1/objects/druid:mk420bs7601/embargo',
-            headers: { 'X-Auth' => "Bearer #{jwt}" }
+            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq(400)
       expect(response.body).to eq('{"errors":[{"title":"bad request","detail":"param is missing or the value is empty: embargo_date"}]}')
     end
@@ -27,7 +27,7 @@ RSpec.describe 'Update embargo' do
     it 'returns HTTP 400' do
       patch '/v1/objects/druid:mk420bs7601/embargo',
             params: { embargo_date: '2100-01-01' },
-            headers: { 'X-Auth' => "Bearer #{jwt}" }
+            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(events_datastream).not_to have_received(:add_event)
       expect(response.status).to eq(400)
       expect(response.body).to eq('{"errors":[{"title":"bad request","detail":"param is missing or the value is empty: requesting_user"}]}')
@@ -45,7 +45,7 @@ RSpec.describe 'Update embargo' do
     it 'hits the Dor::EmbargoService and returns HTTP 422' do
       patch '/v1/objects/druid:mk420bs7601/embargo',
             params: { embargo_date: '2100-01-01', requesting_user: 'mjg' },
-            headers: { 'X-Auth' => "Bearer #{jwt}" }
+            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(mock_embargo_service).to have_received(:update).once
       expect(events_datastream).not_to have_received(:add_event)
       expect(response.status).to eq(422)
@@ -62,7 +62,7 @@ RSpec.describe 'Update embargo' do
     it 'hits the Dor::EmbargoService and returns HTTP 204' do
       patch '/v1/objects/druid:mk420bs7601/embargo',
             params: { embargo_date: '2100-01-01', requesting_user: 'mjg' },
-            headers: { 'X-Auth' => "Bearer #{jwt}" }
+            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(mock_embargo_service).to have_received(:update).with(Date.parse('2100-01-01'))
       expect(events_datastream).to have_received(:add_event).with(
         'Embargo',
