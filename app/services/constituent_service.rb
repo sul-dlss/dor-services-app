@@ -6,6 +6,9 @@
 #  2. add isConstituentOf assertions to the RELS-EXT of the children
 #  3. saving the parent and the children
 class ConstituentService
+  VERSION_CLOSE_DESCRIPTION = 'Virtual object created'
+  VERSION_CLOSE_SIGNIFICANCE = :major
+
   # @param [String] parent_druid the identifier of the parent object
   def initialize(parent_druid:)
     @parent_druid = parent_druid
@@ -32,7 +35,7 @@ class ConstituentService
     end
 
     # NOTE: parent object is saved as part of closing the version
-    VersionService.close(parent)
+    VersionService.close(parent, description: VERSION_CLOSE_DESCRIPTION, significance: VERSION_CLOSE_SIGNIFICANCE)
 
     nil
   end
@@ -52,7 +55,7 @@ class ConstituentService
     child.add_relationship :is_constituent_of, parent
 
     # NOTE: child object is saved as part of closing the version
-    VersionService.close(child)
+    VersionService.close(child, description: VERSION_CLOSE_DESCRIPTION, significance: VERSION_CLOSE_SIGNIFICANCE)
   end
 
   def parent
