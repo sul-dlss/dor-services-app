@@ -44,7 +44,7 @@ Rails.application.routes.draw do
       end
 
       resource :workspace, only: [:create, :destroy]
-      resource :embargo, only: [:update]
+      resource :embargo, only: [:update, :show]
       resource :shelve, only: [:create]
 
       resources :metadata, only: [] do

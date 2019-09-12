@@ -2,7 +2,12 @@
 
 # Manages the embargo for a repository object
 class EmbargoesController < ApplicationController
-  before_action :load_item, only: :update
+  before_action :load_item, only: [:show, :update]
+
+  def show
+    result = { embargoed: !!@item&.embargoed?, release_date: @item&.embargoMetadata&.release_date }
+    render status: :ok, json: result.to_json
+  end
 
   def update
     # validate that the embargo_date and requesting_user parameters were provided
