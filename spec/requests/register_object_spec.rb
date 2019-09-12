@@ -17,7 +17,7 @@ RSpec.describe 'Register object' do
     end
 
     it 'returns a 409 error with location header' do
-      post '/v1/objects', headers: { 'X-Auth' => "Bearer #{jwt}" }
+      post '/v1/objects', headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq(409)
       expect(response.headers['Location']).to match(%r{/fedora/objects/druid:existing123obj})
     end
@@ -31,7 +31,7 @@ RSpec.describe 'Register object' do
     end
 
     it 'returns a 422 error' do
-      post '/v1/objects', headers: { 'X-Auth' => "Bearer #{jwt}" }
+      post '/v1/objects', headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq(422)
       expect(response.body).to eq(errmsg)
     end
@@ -45,7 +45,7 @@ RSpec.describe 'Register object' do
     end
 
     it 'returns a 500 error' do
-      post '/v1/objects', headers: { 'X-Auth' => "Bearer #{jwt}" }
+      post '/v1/objects', headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq(500)
       expect(response.body).to eq(errmsg)
     end
@@ -59,7 +59,7 @@ RSpec.describe 'Register object' do
     end
 
     it 'returns a 404 error' do
-      post '/v1/objects', headers: { 'X-Auth' => "Bearer #{jwt}" }
+      post '/v1/objects', headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq(404)
       expect(response.body).to eq(errmsg)
     end
@@ -71,7 +71,7 @@ RSpec.describe 'Register object' do
     end
 
     it 'registers the object with the registration service' do
-      post '/v1/objects', headers: { 'X-Auth' => "Bearer #{jwt}" }
+      post '/v1/objects', headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(response.body).to eq 'druid:xyz'
       expect(RegistrationService).to have_received(:create_from_request)

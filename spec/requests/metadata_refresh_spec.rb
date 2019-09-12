@@ -19,7 +19,7 @@ RSpec.describe 'Refresh metadata' do
 
     it 'updates the metadata and saves the changes' do
       post '/v1/objects/druid:mk420bs7601/refresh_metadata',
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(RefreshMetadataAction).to have_received(:run).with(object)
       expect(object).to have_received(:save)
@@ -38,7 +38,7 @@ RSpec.describe 'Refresh metadata' do
 
       it 'returns a 500 error' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
-             headers: { 'X-Auth' => "Bearer #{jwt}" }
+             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.status).to eq(500)
         expect(response.body).to eq('Incomplete response received from Symphony for 666 - expected 0 bytes but got 2')
       end
@@ -51,7 +51,7 @@ RSpec.describe 'Refresh metadata' do
 
       it 'returns a 500 error' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
-             headers: { 'X-Auth' => "Bearer #{jwt}" }
+             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.status).to eq(500)
         expect(response.body).to eq('Record not found in Symphony: 666')
       end
@@ -75,7 +75,7 @@ RSpec.describe 'Refresh metadata' do
 
       it 'returns a 500 error' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
-             headers: { 'X-Auth' => "Bearer #{jwt}" }
+             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.status).to eq(500)
         expect(response.body).to match(/^Got HTTP Status-Code 403 retrieving 666 from Symphony:.*Something somewhere went wrong./)
       end

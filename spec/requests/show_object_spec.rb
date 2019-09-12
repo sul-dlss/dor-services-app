@@ -20,7 +20,7 @@ RSpec.describe 'Get the object' do
 
     it 'returns the object' do
       get '/v1/objects/druid:mk420bs7601',
-          headers: { 'X-Auth' => "Bearer #{jwt}" }
+          headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(response.body).to eq '{"externalIdentifier":"druid:1234","type":"object","label":"foo"}'
     end

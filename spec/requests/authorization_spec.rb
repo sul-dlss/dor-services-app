@@ -20,13 +20,26 @@ RSpec.describe 'Authorization' do
     end
   end
 
-  context 'with a bearer token' do
+  context 'with a bearer token in the old field' do
     let(:payload) { { sub: 'argo' } }
     let(:jwt) { JWT.encode(payload, Settings.dor.hmac_secret, 'HS256') }
 
     it 'Logs tokens to honeybadger' do
       get '/v1/objects/druid:mk420bs7601/versions/current',
           headers: { 'X-Auth' => "Bearer #{jwt}" }
+      expect(response.body).to eq '5'
+      expect(Honeybadger).to have_received(:notify).with("Deprecated authorization header 'X-Auth' was provided, but 'Authorization' is expected")
+      expect(Honeybadger).to have_received(:context).with(invoked_by: 'argo')
+    end
+  end
+
+  context 'with a bearer token' do
+    let(:payload) { { sub: 'argo' } }
+    let(:jwt) { JWT.encode(payload, Settings.dor.hmac_secret, 'HS256') }
+
+    it 'Logs tokens to honeybadger' do
+      get '/v1/objects/druid:mk420bs7601/versions/current',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.body).to eq '5'
       expect(Honeybadger).not_to have_received(:notify)
       expect(Honeybadger).to have_received(:context).with(invoked_by: 'argo')

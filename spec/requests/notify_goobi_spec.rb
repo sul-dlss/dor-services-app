@@ -22,7 +22,7 @@ RSpec.describe 'Notify Goobi' do
     end
 
     it 'notifies goobi of a new registration by making a web service call' do
-      post '/v1/objects/druid:1234/notify_goobi', headers: { 'X-Auth' => "Bearer #{jwt}" }
+      post '/v1/objects/druid:1234/notify_goobi', headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(response.status).to eq(201)
     end
@@ -36,7 +36,7 @@ RSpec.describe 'Notify Goobi' do
     end
 
     it 'returns the conflict code' do
-      post '/v1/objects/druid:1234/notify_goobi', headers: { 'X-Auth' => "Bearer #{jwt}" }
+      post '/v1/objects/druid:1234/notify_goobi', headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq(409)
       expect(response.body).to eq('conflict')
     end

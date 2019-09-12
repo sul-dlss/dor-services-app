@@ -19,7 +19,7 @@ RSpec.describe 'Publish object' do
     end
 
     it 'returns a 409 error with location header' do
-      post '/v1/objects/druid:1234/publish', headers: { 'X-Auth' => "Bearer #{jwt}" }
+      post '/v1/objects/druid:1234/publish', headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq(500)
       expect(response.body).to eq(error_message)
     end
@@ -31,7 +31,7 @@ RSpec.describe 'Publish object' do
     end
 
     it 'calls PublishMetadataService and returns 201' do
-      post '/v1/objects/druid:1234/publish', headers: { 'X-Auth' => "Bearer #{jwt}" }
+      post '/v1/objects/druid:1234/publish', headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(PublishMetadataService).to have_received(:publish)
       expect(response.status).to eq(201)

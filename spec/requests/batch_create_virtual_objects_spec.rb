@@ -21,7 +21,7 @@ RSpec.describe 'Batch creation of virtual objects' do
     it 'creates a virtual object out of the parent object and all child objects' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ parent_id: parent_id, child_ids: [child1_id, child2_id] }] },
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(service).to have_received(:add).with(child_druids: [child1_id, child2_id])
       expect(response).to be_successful
     end
@@ -35,7 +35,7 @@ RSpec.describe 'Batch creation of virtual objects' do
     it 'renders an error' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ parent_id: parent_id, child_ids: [child1_id, child2_id] }] },
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(service).to have_received(:add).with(child_druids: [child1_id, child2_id])
       expect(response).to be_unprocessable
       expect(response.body).to eq '{"errors":[{"druid:mk420bs7601":["versioning is messed up"]}]}'
@@ -50,7 +50,7 @@ RSpec.describe 'Batch creation of virtual objects' do
     it 'renders an error' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ parent_id: parent_id, child_ids: [child1_id, child2_id] }] },
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(service).to have_received(:add).with(child_druids: [child1_id, child2_id])
       expect(response).to be_unprocessable
       expect(response.body).to eq '{"errors":[{"druid:mk420bs7601":["Item druid:child2 is not open for modification"]}]}'
@@ -61,7 +61,7 @@ RSpec.describe 'Batch creation of virtual objects' do
     it 'renders an error' do
       post '/v1/virtual_objects',
            params: { title: 'New name' },
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(service).not_to have_received(:add)
       expect(response).to be_bad_request
       json = JSON.parse(response.body)
@@ -73,7 +73,7 @@ RSpec.describe 'Batch creation of virtual objects' do
     it 'renders an error' do
       post '/v1/virtual_objects',
            params: { virtual_objects: child1_id },
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(service).not_to have_received(:add)
       expect(response).to be_bad_request
       json = JSON.parse(response.body)
@@ -85,7 +85,7 @@ RSpec.describe 'Batch creation of virtual objects' do
     it 'renders an error' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [] },
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(service).not_to have_received(:add)
       expect(response).to be_bad_request
       json = JSON.parse(response.body)
@@ -97,7 +97,7 @@ RSpec.describe 'Batch creation of virtual objects' do
     it 'renders an error' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ child_ids: ['foo'] }] },
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(service).not_to have_received(:add)
       expect(response).to be_bad_request
       json = JSON.parse(response.body)
@@ -109,7 +109,7 @@ RSpec.describe 'Batch creation of virtual objects' do
     it 'renders an error' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ parent_id: '' }] },
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(service).not_to have_received(:add)
       expect(response).to be_bad_request
       json = JSON.parse(response.body)
@@ -121,7 +121,7 @@ RSpec.describe 'Batch creation of virtual objects' do
     it 'renders an error' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ parent_id: 'foo' }] },
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(service).not_to have_received(:add)
       expect(response).to be_bad_request
       json = JSON.parse(response.body)
@@ -133,7 +133,7 @@ RSpec.describe 'Batch creation of virtual objects' do
     it 'renders an error' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ parent_id: 'foo', child_ids: '' }] },
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(service).not_to have_received(:add)
       expect(response).to be_bad_request
       json = JSON.parse(response.body)
@@ -145,7 +145,7 @@ RSpec.describe 'Batch creation of virtual objects' do
     it 'renders an error' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ parent_id: 'foo', child_ids: [] }] },
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(service).not_to have_received(:add)
       expect(response).to be_bad_request
       json = JSON.parse(response.body)
@@ -157,7 +157,7 @@ RSpec.describe 'Batch creation of virtual objects' do
     it 'renders an error' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ parent_id: 'foo', child_ids: ['foo', 'bar', ''] }] },
-           headers: { 'X-Auth' => "Bearer #{jwt}" }
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(service).not_to have_received(:add)
       expect(response).to be_bad_request
       json = JSON.parse(response.body)
