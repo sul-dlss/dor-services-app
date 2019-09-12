@@ -45,6 +45,7 @@ group :test, :development do
   gem 'rack-console'
   gem 'rails-controller-testing'
   gem 'rspec-rails'
+  gem 'rspec_junit_formatter'
   gem 'rubocop', '~> 0.74.0'
   gem 'rubocop-rails'
   gem 'rubocop-rspec', '~> 1.32.0'
