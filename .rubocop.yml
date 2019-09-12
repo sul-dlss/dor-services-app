@@ -9,6 +9,7 @@ AllCops:
   Exclude:
     - db/migrate/**
     - db/schema.rb
+    - vendor/**/*
 
 Rails:
   Enabled: true
