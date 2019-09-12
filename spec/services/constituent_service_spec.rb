@@ -94,7 +94,9 @@ RSpec.describe ConstituentService do
         expect(child2.object_relations[:is_constituent_of]).to eq [parent]
         expect(VersionService).to have_received(:open?).exactly(3).times
         expect(VersionService).not_to have_received(:open)
-        expect(VersionService).to have_received(:close).exactly(3).times
+        expect(VersionService).to have_received(:close).with(anything,
+                                                             description: described_class::VERSION_CLOSE_DESCRIPTION,
+                                                             significance: described_class::VERSION_CLOSE_SIGNIFICANCE).exactly(3).times
       end
     end
 
