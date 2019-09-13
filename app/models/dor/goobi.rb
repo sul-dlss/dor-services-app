@@ -9,7 +9,6 @@ module Dor
     # Any status that is a 500 or greater and timeouts
     RETRIABLE_EXCEPTIONS = [ServerError,
                             Errno::ETIMEDOUT,
-                            'Timeout::Error',
                             Faraday::TimeoutError,
                             Faraday::RetriableResponse].freeze
 
