@@ -50,7 +50,7 @@ release:
   purl_base_url: 'http://purl.stanford.edu'
 
 goobi:
-  url: 'http://goobi-env.stanford.edu:9292'
+  url: 'https://goobi-env.stanford.edu:9292/goobi/api/process/stanfordcreate?token=faketoken'
   dpg_workflow_name: 'goobiWF'
   default_goobi_workflow_name: 'Example_Workflow'
   max_tries: 3
