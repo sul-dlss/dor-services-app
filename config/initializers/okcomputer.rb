@@ -33,5 +33,6 @@ end
 
 OkComputer::Registry.register 'version', CustomAppVersionCheck.new
 OkComputer::Registry.register 'external-symphony', SymphonyCheck.new(format(Settings.catalog.symphony.json_url, catkey: 12345))
+OkComputer::Registry.register 'background_jobs', OkComputer::SidekiqLatencyCheck.new('default', 25)
 
 OkComputer.make_optional %w(external-symphony)

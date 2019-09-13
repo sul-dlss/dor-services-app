@@ -36,6 +36,10 @@ set :log_level, :info
 set :linked_dirs, %w(log tmp/pids tmp/cache tmp/sockets vendor/bundle config/certs config/settings)
 set :linked_files, %w(bin/write_marc_record config/secrets.yml config/honeybadger.yml config/newrelic.yml)
 
+# Sidekiq configuration (run one process)
+# see sidekiq.yml for concurrency and queue settings
+set :sidekiq_processes, 1
+
 # honeybadger_env otherwise defaults to rails_env
 set :honeybadger_env, fetch(:stage)
 

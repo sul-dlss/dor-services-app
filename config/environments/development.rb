@@ -31,6 +31,10 @@ Rails.application.configure do
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
+  # Use a real queuing backend for ActiveJob (and separate queues per environment)
+  config.active_job.queue_adapter     = :sidekiq
+  config.active_job.queue_name_prefix = 'dor-services-dev'
+
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
