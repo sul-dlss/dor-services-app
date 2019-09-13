@@ -52,6 +52,8 @@ class ConstituentService
     child.contentMetadata.ng_xml.search('//resource').each do |resource|
       parent.contentMetadata.add_virtual_resource(child.id, resource)
     end
+
+    child.clear_relationship :is_constituent_of
     child.add_relationship :is_constituent_of, parent
 
     # NOTE: child object is saved as part of closing the version

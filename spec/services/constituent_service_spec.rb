@@ -75,6 +75,8 @@ RSpec.describe ConstituentService do
         allow(VersionService).to receive(:open?).and_return(true)
         allow(VersionService).to receive(:open)
         allow(VersionService).to receive(:close)
+        allow(child1).to receive(:clear_relationship)
+        allow(child2).to receive(:clear_relationship)
         add
       end
 
@@ -90,6 +92,8 @@ RSpec.describe ConstituentService do
             </resource>
           </contentMetadata>
         XML
+        expect(child1).to have_received(:clear_relationship).once
+        expect(child2).to have_received(:clear_relationship).once
         expect(child1.object_relations[:is_constituent_of]).to eq [parent]
         expect(child2.object_relations[:is_constituent_of]).to eq [parent]
         expect(VersionService).to have_received(:open?).exactly(3).times
