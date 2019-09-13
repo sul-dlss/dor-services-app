@@ -28,7 +28,7 @@ class ApplicationController < ActionController::API
     Honeybadger.context(invoked_by: token[:sub])
     return unless request.headers[OLD_TOKEN_HEADER]
 
-    Honeybadger.notify("Deprecated authorization header '#{OLD_TOKEN_HEADER}' was provided, but '#{TOKEN_HEADER}' is expected")
+    Honeybadger.notify("Warning: Deprecated authorization header '#{OLD_TOKEN_HEADER}' was provided, but '#{TOKEN_HEADER}' is expected")
   end
 
   def decoded_auth_token

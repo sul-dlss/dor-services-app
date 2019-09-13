@@ -28,7 +28,7 @@ RSpec.describe 'Authorization' do
       get '/v1/objects/druid:mk420bs7601/versions/current',
           headers: { 'X-Auth' => "Bearer #{jwt}" }
       expect(response.body).to eq '5'
-      expect(Honeybadger).to have_received(:notify).with("Deprecated authorization header 'X-Auth' was provided, but 'Authorization' is expected")
+      expect(Honeybadger).to have_received(:notify).with("Warning: Deprecated authorization header 'X-Auth' was provided, but 'Authorization' is expected")
       expect(Honeybadger).to have_received(:context).with(invoked_by: 'argo')
     end
   end
