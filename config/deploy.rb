@@ -39,6 +39,10 @@ set :linked_files, %w(bin/write_marc_record config/secrets.yml config/honeybadge
 # Sidekiq configuration (run one process)
 # see sidekiq.yml for concurrency and queue settings
 set :sidekiq_processes, 1
+# All of our deployed environments use RAILS_ENV=production. Without this line,
+# capistrano will run sidekiq in the `stage` or `prod` env (from the capistrano
+# stage rather than the Rails environment).
+set :sidekiq_env, 'production'
 
 # honeybadger_env otherwise defaults to rails_env
 set :honeybadger_env, fetch(:stage)
