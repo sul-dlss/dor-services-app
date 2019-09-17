@@ -63,10 +63,10 @@ RSpec.describe SdrController do
 
     context 'URI encoding' do
       let(:filename_with_spaces) { 'filename with spaces' }
-      let(:uri_encoded_filename) { URI.encode(filename_with_spaces) }
+      let(:cgi_escaped_filename) { CGI.escape(filename_with_spaces) }
 
       it 'handles file names with characters that need URI encoding' do
-        stub_request(:get, "http://sdr-services.example.com/sdr/objects/#{item.pid}/content/#{uri_encoded_filename}?version=#{item_version}")
+        stub_request(:get, "http://sdr-services.example.com/sdr/objects/#{item.pid}/content/#{cgi_escaped_filename}?version=#{item_version}")
           .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
           .to_return(body: mock_response_txt, headers: { 'Content-Type' => content_type_txt })
 
