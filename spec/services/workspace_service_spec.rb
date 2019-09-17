@@ -6,13 +6,6 @@ RSpec.describe WorkspaceService do
   describe '.create' do
     before do
       FileUtils.rm_rf(temp_workspace)
-
-      Dor::Config.push! do |config|
-        config.suri.mint_ids false
-        config.solr.url 'http://solr.edu/solrizer'
-        config.fedora.url 'http://fedora.edu'
-      end
-
       allow(Settings.stacks).to receive(:local_workspace_root).and_return(temp_workspace)
 
       FileUtils.mkdir_p(temp_workspace)
@@ -20,7 +13,6 @@ RSpec.describe WorkspaceService do
     end
 
     after do
-      Dor::Config.pop!
       FileUtils.rm_rf(temp_workspace)
     end
 
