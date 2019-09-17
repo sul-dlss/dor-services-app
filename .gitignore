@@ -17,6 +17,9 @@
 .byebug_history
 .pry_history
 
+# Ignore PG data directory added by containers
+/postgres-data
+
 config/certs
 .rvmrc
 .ruby-*
