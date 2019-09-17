@@ -28,7 +28,7 @@ class ConstituentService
     # Make sure the parent is open before making modifications
     VersionService.open(parent) unless VersionService.open?(parent)
 
-    ResetContentMetadataService.new(item: parent).reset
+    reset_metadata!
 
     child_druids.each do |child_druid|
       add_constituent(child_druid: child_druid)
@@ -58,6 +58,10 @@ class ConstituentService
 
     # NOTE: child object is saved as part of closing the version
     VersionService.close(child, description: VERSION_CLOSE_DESCRIPTION, significance: VERSION_CLOSE_SIGNIFICANCE)
+  end
+
+  def reset_metadata!
+    ResetContentMetadataService.new(item: parent).reset
   end
 
   def parent
