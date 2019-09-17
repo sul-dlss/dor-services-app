@@ -10,10 +10,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
   before do
     allow(Dor::ReleaseTagService).to receive(:for).and_return(release_service)
-  end
-
-  before :all do
-    Dor::Config.suri = {}
     Settings.release.write_marc_script = 'bin/write_marc_record_test'
     Settings.release.symphony_path = './spec/fixtures/sdr-purl'
     Settings.release.purl_base_url = 'http://purl.stanford.edu'

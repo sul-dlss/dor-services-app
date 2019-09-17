@@ -25,12 +25,6 @@ RSpec.describe PublicXmlService do
     end
 
     before do
-      # allow(Dor.config)
-      Dor.configure do
-        stacks do
-          host 'stacks.stanford.edu'
-        end
-      end
       mods = <<-EOXML
         <mods:mods xmlns:mods="http://www.loc.gov/mods/v3"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

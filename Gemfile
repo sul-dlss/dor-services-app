@@ -37,7 +37,7 @@ gem 'uuidtools', '~> 2.1.4'
 
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.1.0'
-gem 'dor-services', '~> 7.0'
+gem 'dor-services', '~> 8.0'
 gem 'marc'
 
 group :test, :development do

@@ -52,8 +52,6 @@ RSpec.describe ConstituentService do
       described_class.new(parent_druid: parent.id)
     end
     let(:namespaceless) { parent.id.sub('druid:', '') }
-    let(:client) { instance_double(Dor::Services::Client::Object, version: version_client) }
-    let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, close: true) }
 
     before do
       allow(parent).to receive_messages(id: 'druid:parent1', save!: true)
@@ -66,8 +64,6 @@ RSpec.describe ConstituentService do
       allow(ItemQueryService).to receive(:find_combinable_item).with('druid:parent1').and_return(parent)
       allow(ItemQueryService).to receive(:find_combinable_item).with('druid:child1').and_return(child1)
       allow(ItemQueryService).to receive(:find_combinable_item).with('druid:child2').and_return(child2)
-
-      allow(Dor::Services::Client).to receive(:object).and_return(client)
     end
 
     context 'when the parent is open for modification' do
