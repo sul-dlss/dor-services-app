@@ -47,6 +47,7 @@ Rails.application.routes.draw do
 
       resource :workspace, only: [:create, :destroy]
       resource :embargo, only: [:update]
+      resource :shelve, only: [:create]
 
       resources :metadata, only: [] do
         collection do
