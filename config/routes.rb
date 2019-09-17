@@ -3,6 +3,10 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
+  require 'sidekiq/web'
+  Sidekiq::Web.set :session_secret, Rails.application.credentials[:secret_key_base]
+  mount Sidekiq::Web => '/queues'
+
   scope '/v1' do
     get '/about' => 'ok_computer/ok_computer#show', defaults: { check: 'version' }
 

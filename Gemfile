@@ -27,11 +27,12 @@ gem 'faraday'
 gem 'honeybadger'
 gem 'jbuilder'
 gem 'jwt'
+gem 'net-http-persistent', '~> 2.9' # Pin to avoid problem exhausting file handles under load
 gem 'okcomputer'
-gem 'ruby-cache', '~> 0.3.0'
-# Pin net-http-persistent to avoid a problem with exhausting file handles when running under load
-gem 'net-http-persistent', '~> 2.9'
 gem 'progressbar' # for the cleaner rake task
+gem 'ruby-cache', '~> 0.3.0'
+gem 'sidekiq'
+gem 'sidekiq-statistic'
 gem 'uuidtools', '~> 2.1.4'
 
 # DLSS/domain-specific dependencies

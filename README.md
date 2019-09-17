@@ -33,6 +33,18 @@ This will load all the FOXML from https://github.com/sul-dlss/dor-services-app/b
 
 DOR Services App is a Rails app.
 
+### Background Jobs
+
+Dor Services App uses Sidekiq to process background jobs, which requires Redis. You can either install this locally, if running services locally, or run it via `docker-compose`. To spin up Sidekiq, run:
+
+```shell
+bundle exec sidekiq # use -d option to daemonize/run in the background
+```
+
+See the output of `bundle exec sidekiq --help` for more information.
+
+Note that the application has a web UI for monitoring Sidekiq activity at `/queues`.
+
 ## Running Tests
 
 To run the tests:
