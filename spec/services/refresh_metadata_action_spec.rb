@@ -12,7 +12,7 @@ RSpec.describe RefreshMetadataAction do
     allow(MetadataService).to receive(:fetch).and_return('<xml/>')
   end
 
-  it 'gets the data an puts it in descMetadata' do
+  it 'gets the data and puts it in descMetadata' do
     expect(refresh).not_to be_nil
     expect(item.descMetadata.content).to eq '<xml/>'
   end
