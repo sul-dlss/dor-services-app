@@ -899,7 +899,9 @@
       }
     }
   },
-  "security": {
-    "bearerAuth": []
-  }
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
 }
