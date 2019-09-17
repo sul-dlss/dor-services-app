@@ -84,6 +84,9 @@ GEM
     capistrano-passenger (0.2.0)
       capistrano (~> 3.0)
     capistrano-shared_configs (0.2.2)
+    capistrano-sidekiq (1.0.3)
+      capistrano (>= 3.9.0)
+      sidekiq (>= 3.4, < 6.0)
     cocina-models (0.1.2)
       dry-struct (~> 1.0)
       dry-types (~> 1.1)
@@ -476,6 +479,7 @@ DEPENDENCIES
   capistrano-bundler
   capistrano-passenger
   capistrano-shared_configs
+  capistrano-sidekiq
   cocina-models (~> 0.1.0)
   config
   coveralls (~> 0.8)
