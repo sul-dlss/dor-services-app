@@ -64,6 +64,9 @@ RSpec.describe ConstituentService do
       allow(ItemQueryService).to receive(:find_combinable_item).with('druid:parent1').and_return(parent)
       allow(ItemQueryService).to receive(:find_combinable_item).with('druid:child1').and_return(child1)
       allow(ItemQueryService).to receive(:find_combinable_item).with('druid:child2').and_return(child2)
+
+      # Stub `#reset_metadata!` because ResetContentMetadataService is tested in its own spec
+      allow(instance).to receive(:reset_metadata!)
     end
 
     context 'when the parent is open for modification' do
@@ -77,17 +80,7 @@ RSpec.describe ConstituentService do
       end
 
       it 'merges objects' do
-        expect(parent.contentMetadata.content).to be_equivalent_to <<~XML
-          <contentMetadata objectId="druid:parent1" type="image">
-            <resource sequence="1" id="#{namespaceless}_1" type="image">
-              <relationship type="alsoAvailableAs" objectId="#{child1.id}"/>
-            </resource>
-            <resource sequence="2" id="#{namespaceless}_2" type="image">
-              <externalFile objectId="druid:child2" resourceId="bb000ff1111_1" fileId="bb000ff1111.jpg" mimetype="image/jpeg"/>
-              <relationship type="alsoAvailableAs" objectId="#{child2.id}"/>
-            </resource>
-          </contentMetadata>
-        XML
+        expect(instance).to have_received(:reset_metadata!).once
         expect(child1).to have_received(:clear_relationship).once
         expect(child2).to have_received(:clear_relationship).once
         expect(child1.object_relations[:is_constituent_of]).to eq [parent]
