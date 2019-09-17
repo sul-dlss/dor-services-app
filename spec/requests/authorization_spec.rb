@@ -21,9 +21,6 @@ RSpec.describe 'Authorization' do
   end
 
   context 'with a bearer token in the old field' do
-    let(:payload) { { sub: 'argo' } }
-    let(:jwt) { JWT.encode(payload, Settings.dor.hmac_secret, 'HS256') }
-
     it 'Logs tokens to honeybadger' do
       get '/v1/objects/druid:mk420bs7601/versions/current',
           headers: { 'X-Auth' => "Bearer #{jwt}" }
@@ -34,9 +31,6 @@ RSpec.describe 'Authorization' do
   end
 
   context 'with a bearer token' do
-    let(:payload) { { sub: 'argo' } }
-    let(:jwt) { JWT.encode(payload, Settings.dor.hmac_secret, 'HS256') }
-
     it 'Logs tokens to honeybadger' do
       get '/v1/objects/druid:mk420bs7601/versions/current',
           headers: { 'Authorization' => "Bearer #{jwt}" }

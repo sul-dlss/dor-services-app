@@ -3,8 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Update embargo' do
-  let(:payload) { { sub: 'argo' } }
-  let(:jwt) { JWT.encode(payload, Settings.dor.hmac_secret, 'HS256') }
   let(:item) { Dor::Item.new(pid: 'druid:1234') }
   let(:mock_embargo_service) { instance_double(Dor::EmbargoService) }
   let(:events_datastream) { instance_double(Dor::EventsDS, add_event: true) }

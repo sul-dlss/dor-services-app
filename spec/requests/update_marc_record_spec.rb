@@ -3,8 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Update MARC record' do
-  let(:payload) { { sub: 'argo' } }
-  let(:jwt) { JWT.encode(payload, Settings.dor.hmac_secret, 'HS256') }
   let(:object) { Dor::Item.new(pid: 'druid:1234') }
 
   before do
