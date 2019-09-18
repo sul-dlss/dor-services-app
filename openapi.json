@@ -45,6 +45,10 @@
       "description": "Integrations with other Systems"
     },
     {
+      "name": "jobs",
+      "description": "Operations involving background jobs"
+    },
+    {
       "name": "versions",
       "description": "Operations about object versions"
     },
@@ -914,7 +918,7 @@
             "format": "date-time",
             "example": "2029-06-22T07:00:00.000+00:00"
           }
-        },
+        }
       },
       "Administrative": {
         "type": "object",
@@ -925,7 +929,7 @@
               "$ref": "#/components/schemas/ReleaseTag"
             }
           }
-        },
+        }
       },
       "DRO": {
         "type": "object",
@@ -955,7 +959,7 @@
           },
           "structural": {
             "$ref": "#/components/schemas/Structural"
-          },
+          }
         },
         "required": ["externalIdentifier", "label", "type", "version", "access", "administrative", "identification", "structural"]
       },
@@ -1011,7 +1015,7 @@
       },
       "Identification": {
         "type": "object",
-        "properties": { },
+        "properties": { }
       },
       "ReleaseTag": {
         "type": "object",
@@ -1037,19 +1041,19 @@
             "type": "boolean"
           }
 
-        },
+        }
       },
       "Structural": {
         "type": "object",
-        "properties": { },
+        "properties": { }
       },
       "VirtualObjectRequest": {
         "type": "object",
         "properties": {
-          "parent_druid": {
+          "parent_id": {
             "$ref": "#/components/schemas/Druid"
           },
-          "child_druids": {
+          "child_ids": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Druid"
