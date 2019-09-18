@@ -1,31 +1,10 @@
 # frozen_string_literal: true
 
-class MarcxmlController < ApplicationController #:nodoc:
-  before_action :set_marcxml_resource
-
-  rescue_from(SymphonyReader::ResponseError) do |e|
-    render status: :internal_server_error, plain: e.message
-  end
-
+# Given a barcode, returns a catkey by looking in searchworks
+class MarcxmlController < ApplicationController
   def catkey
-    render plain: @marcxml.catkey
-  end
+    marcxml = MarcxmlResource.find_by(barcode: params[:barcode])
 
-  def marcxml
-    render xml: @marcxml.marcxml
-  end
-
-  def mods
-    render xml: @marcxml.mods
-  end
-
-  private
-
-  def set_marcxml_resource
-    @marcxml = MarcxmlResource.find_by(**marcxml_resource_params)
-  end
-
-  def marcxml_resource_params
-    params.slice(:barcode, :catkey).to_unsafe_h.symbolize_keys
+    render plain: marcxml.catkey
   end
 end
