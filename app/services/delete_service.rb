@@ -38,7 +38,7 @@ class DeleteService
   end
 
   def cleanup_purl_doc_cache
-    purl_druid = DruidTools::PurlDruid.new(druid, Dor::Config.stacks.local_document_cache_root)
+    purl_druid = DruidTools::PurlDruid.new(druid, Settings.stacks.local_document_cache_root)
     PruneService.new(druid: purl_druid).prune!
   end
 

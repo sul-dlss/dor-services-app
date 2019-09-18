@@ -12,7 +12,7 @@ class SdrClient
     @druid = druid
   end
 
-  def content_diff(current_content:, subset:, version:)
+  def content_diff(current_content:, subset:, version: nil)
     query_params = { subset: subset }
     query_params[:version] = version unless version.nil?
     query_string = URI.encode_www_form(query_params)

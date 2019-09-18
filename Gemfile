@@ -40,6 +40,7 @@ gem 'uuidtools', '~> 2.1.4'
 gem 'cocina-models', '~> 0.1.0'
 gem 'dor-services', '~> 8.0'
 gem 'marc'
+gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'
 
 group :test, :development do
   gem 'coveralls', '~> 0.8', require: false
