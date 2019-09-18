@@ -82,11 +82,11 @@ RSpec.describe 'background job result' do
     end
 
     context 'with errors' do
-      let(:code) { 422 }
+      let(:code) { 200 }
       let(:output) { { errors: [{ detail: 'failed!' }] } }
 
-      it 'renders an HTTP 422 status code' do
-        expect(response).to have_http_status(:unprocessable_entity)
+      it 'renders an HTTP 200 status code' do
+        expect(response).to have_http_status(:ok)
       end
 
       it 'states the job is complete' do

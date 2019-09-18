@@ -260,7 +260,7 @@
         "operationId": "background_job_results#show",
         "responses": {
           "200": {
-            "description": "The background job has completed successfully",
+            "description": "The background job has completed",
             "content": {
               "application/json": {
                 "schema": {
@@ -279,12 +279,12 @@
               }
             }
           },
-          "422": {
-            "description": "One or more errors occurred running the background job",
+          "404": {
+            "description": "The background job with the given id was not found",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BackgroundJobResultResponse"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }

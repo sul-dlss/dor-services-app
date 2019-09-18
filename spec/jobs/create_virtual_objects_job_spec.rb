@@ -62,8 +62,8 @@ RSpec.describe CreateVirtualObjectsJob, type: :job do
       expect(result).to be_complete
     end
 
-    it 'sets the HTTP status code to 422' do
-      expect(result.code).to eq(422)
+    it 'sets the HTTP status code to 200' do
+      expect(result.code).to eq(200)
     end
 
     it 'has output with errors' do

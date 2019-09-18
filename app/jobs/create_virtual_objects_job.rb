@@ -19,12 +19,8 @@ class CreateVirtualObjectsJob < ApplicationJob
       errors << { parent_id => [e.message] }
     end
 
-    if errors.any?
-      background_job_result.output = { errors: errors }
-      background_job_result.code = 422
-    else
-      background_job_result.code = 200
-    end
+    background_job_result.output = { errors: errors } if errors.any?
+    background_job_result.code = 200
 
     background_job_result.complete!
   end
