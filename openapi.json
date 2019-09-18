@@ -795,7 +795,14 @@
         "operationId": "objects#show",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DRO"
+                }
+              }
+            }
           }
         },
         "parameters": [
@@ -842,19 +849,21 @@
       "Druid": {
         "type": "string"
       },
-      "VirtualObjectRequest": {
+      "DRO": {
         "type": "object",
         "properties": {
-          "parent_druid": {
+          "type": {
+            "type": "string",
+            "example": "item"
+          },
+          "externalIdentifier": {
             "$ref": "#/components/schemas/Druid"
           },
-          "child_druids": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Druid"
-            }
+          "label": {
+            "type": "string"
           }
-        }
+        },
+        "required": ["externalIdentifier", "label", "type"]
       },
       "ErrorResponse": {
         "type": "object",
@@ -887,6 +896,20 @@
                 "type": "string",
                 "example": "/data/attributes/title"
               }
+            }
+          }
+        }
+      },
+      "VirtualObjectRequest": {
+        "type": "object",
+        "properties": {
+          "parent_druid": {
+            "$ref": "#/components/schemas/Druid"
+          },
+          "child_druids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Druid"
             }
           }
         }
