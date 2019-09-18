@@ -13,6 +13,8 @@ jobs:
         BUNDLE_JOBS: 3
         BUNDLE_RETRY: 3
         BUNDLE_PATH: vendor/bundle
+        PGHOST: 127.0.0.1
+        PGUSER: circleci-demo-ruby
         RAILS_ENV: test
         NOKOGIRI_USE_SYSTEM_LIBRARIES: true
     - image: circleci/postgres:10
@@ -55,6 +57,14 @@ jobs:
         command: |
           sudo apt update -y
           sudo apt install -y postgresql-client || true
+
+    - run:
+        name: Wait for DB
+        command: dockerize -wait tcp://localhost:5432 -timeout 1m
+
+    - run:
+        name: Test prepare
+        command: bin/rails db:test:prepare
 
     - run:
         name: Check styles using rubocop
