@@ -613,6 +613,9 @@
         ]
       },
       "get": {
+        "tags": [
+          "embargoes"
+        ],
         "summary": "Determine if an object has an embargo, and if so, its release date",
         "description": "",
         "operationId": "embargoes#show",
