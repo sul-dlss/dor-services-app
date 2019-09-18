@@ -83,7 +83,7 @@ services:
       DATABASE_PORT: 5432
       SETTINGS__REDIS__HOSTNAME: redis
   db:
-    image: postgres:9.5-alpine
+    image: postgres:10
     ports:
       - 5432:5432
     environment:
