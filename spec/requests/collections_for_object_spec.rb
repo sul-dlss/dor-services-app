@@ -3,9 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Get the object' do
-  let(:payload) { { sub: 'argo' } }
-  let(:jwt) { JWT.encode(payload, Settings.dor.hmac_secret, 'HS256') }
-  let(:basic_auth) { ActionController::HttpAuthentication::Basic.encode_credentials(user, password) }
   let(:object) { instance_double(Dor::Item, collections: [collection]) }
   let(:collection_id) { 'druid:999123' }
   let(:collection) do

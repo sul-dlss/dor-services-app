@@ -3,8 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Virtual merge of objects' do
-  let(:payload) { { sub: 'argo' } }
-  let(:jwt) { JWT.encode(payload, Settings.dor.hmac_secret, 'HS256') }
   let(:parent_id) { 'druid:mk420bs7601' }
   let(:child1_id) { 'druid:child1' }
   let(:child2_id) { 'druid:child2' }
