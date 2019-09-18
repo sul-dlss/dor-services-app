@@ -48,6 +48,18 @@ Note that the application has a web UI for monitoring Sidekiq activity at `/queu
 
 ## Running Tests
 
+First, ensure the database container is spun up:
+
+```shell
+docker-compose up db # use -d to daemonize/run in background
+```
+
+And if you haven't yet prepared the test database, run:
+
+```shell
+RAILS_ENV=test rails db:test:prepare
+```
+
 To run the tests:
 
   `bundle exec rake`
