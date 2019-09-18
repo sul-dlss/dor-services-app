@@ -76,7 +76,7 @@ services:
       - DATABASE_PORT=5432
       - SETTINGS__REDIS__HOSTNAME=redis
   db:
-    image: postgres
+    image: postgres:10
     ports:
       - 5432:5432
     environment:
