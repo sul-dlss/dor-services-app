@@ -3,9 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Shelve object' do
-  let(:payload) { { sub: 'argo' } }
-  let(:jwt) { JWT.encode(payload, Settings.dor.hmac_secret, 'HS256') }
-
   before do
     allow(Dor).to receive(:find).and_return(object)
     allow(ShelvingService).to receive(:shelve)
