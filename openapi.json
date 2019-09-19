@@ -45,6 +45,10 @@
       "description": "Integrations with other Systems"
     },
     {
+      "name": "jobs",
+      "description": "Operations involving background jobs"
+    },
+    {
       "name": "versions",
       "description": "Operations about object versions"
     },
@@ -249,6 +253,45 @@
         ]
       }
     },
+    "/background_job_results/{id}": {
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "View results of a background job",
+        "description": "Used to allow the application run long-running processes out of the request/response cycle",
+        "operationId": "background_job_results#show",
+        "responses": {
+          "200": {
+            "description": "The background job has completed successfully"
+          },
+          "202": {
+            "description": "The background job is pending or processing"
+          },
+          "422": {
+            "description": "One or more errors occurred running the background job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of background job result",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
     "/virtual_objects": {
       "post": {
         "tags": [
@@ -258,12 +301,22 @@
         "description": "Combines a parent object with child objects to create an object like an Atlas (composed of several images)",
         "operationId": "virtual_objects#create",
         "responses": {
-          "204": {
-            "description": "objects created"
+          "201": {
+            "description": "background job for creation of virtual object created",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string",
+                  "description": "URI at which the client can expect updates on the virtual object creation job",
+                  "format": "uri",
+                  "pattern": "^\\w+:(\\/?\\/?)[^\\s]+$"
+                }
+              }
+            }
           },
-          "422": {
-            "description": "unable to process request"
-          },
+          "400": {
+            "description": "virtual objects parameter is not valid"
+          }
         },
         "requestBody": {
           "content": {
@@ -903,10 +956,10 @@
       "VirtualObjectRequest": {
         "type": "object",
         "properties": {
-          "parent_druid": {
+          "parent_id": {
             "$ref": "#/components/schemas/Druid"
           },
-          "child_druids": {
+          "child_ids": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Druid"
