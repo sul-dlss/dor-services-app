@@ -20,7 +20,7 @@ jobs:
     - image: circleci/postgres:10
       environment:
         POSTGRES_USER: postgres
-        POSTGRES_DB: dor_services_test
+        POSTGRES_DB: dor_services
         POSTGRES_PASSWORD: ""
     steps:
     - checkout
@@ -79,6 +79,19 @@ jobs:
                             --out test_results/rspec.xml \
                             --format progress \
                             $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+
+    - run:
+        name: Validate API specification
+        command: |
+          npm install openapi-enforcer-cli
+          result=$(node_modules/.bin/openapi-enforcer validate openapi.json)
+          [[ $result == $'\nDocument is valid' ]] && {
+          exit 0
+          } || {
+          echo $result
+          exit 1
+          }
+
     # Save test results for timing analysis
     - store_test_results:
         path: test_results
