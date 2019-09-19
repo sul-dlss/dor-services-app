@@ -12,9 +12,19 @@ module Cocina
     end
 
     def build
-      Cocina::Models::DRO.new(externalIdentifier: item.pid,
-                              type: type,
-                              label: item.label)
+      props = {
+        externalIdentifier: item.pid,
+        type: type,
+        label: item.label
+      }
+
+      # Collections don't have embargoMetadata
+      if type == 'object' && item.embargoMetadata.release_date
+        props[:access] = {
+          embargoReleaseDate: item.embargoMetadata.release_date.iso8601
+        }
+      end
+      Cocina::Models::DRO.new(props)
     end
 
     private
