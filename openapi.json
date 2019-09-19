@@ -250,6 +250,59 @@
         ]
       }
     },
+    "/background_job_results/{id}": {
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "View results of a background job",
+        "description": "Used to allow the application run long-running processes out of the request/response cycle",
+        "operationId": "background_job_results#show",
+        "responses": {
+          "200": {
+            "description": "The background job has completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackgroundJobResultResponse"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The background job is pending or processing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackgroundJobResultResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "One or more errors occurred running the background job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackgroundJobResultResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of background job result",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
     "/virtual_objects": {
       "post": {
         "tags": [
@@ -264,7 +317,7 @@
           },
           "422": {
             "description": "unable to process request"
-          },
+          }
         },
         "requestBody": {
           "content": {
@@ -905,6 +958,21 @@
           },
         },
         "required": ["externalIdentifier", "label", "type", "version", "access", "administrative", "identification", "structural"]
+      },
+      "BackgroundJobResultResponse": {
+        "type": "object",
+        "properties": {
+          "output": {
+            "type": "object",
+            "description": "output from the job",
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          "status": {
+            "type": "string",
+            "description": "the status of the background job",
+            "enum": ["pending", "processing", "complete"]
+          }
+        }
       },
       "ErrorResponse": {
         "type": "object",
