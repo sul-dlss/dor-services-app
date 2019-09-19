@@ -37,7 +37,7 @@ gem 'sidekiq-statistic'
 gem 'uuidtools', '~> 2.1.4'
 
 # DLSS/domain-specific dependencies
-gem 'cocina-models', '~> 0.1.0'
+gem 'cocina-models', '~> 0.3.0'
 gem 'dor-services', '~> 8.0'
 gem 'marc'
 gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'

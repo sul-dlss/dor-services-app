@@ -87,7 +87,7 @@ GEM
     capistrano-sidekiq (1.0.3)
       capistrano (>= 3.9.0)
       sidekiq (>= 3.4, < 6.0)
-    cocina-models (0.1.2)
+    cocina-models (0.3.0)
       dry-struct (~> 1.0)
       dry-types (~> 1.1)
       zeitwerk (~> 2.1)
@@ -472,7 +472,7 @@ DEPENDENCIES
   capistrano-passenger
   capistrano-shared_configs
   capistrano-sidekiq
-  cocina-models (~> 0.1.0)
+  cocina-models (~> 0.3.0)
   config
   coveralls (~> 0.8)
   dlss-capistrano

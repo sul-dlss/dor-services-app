@@ -849,6 +849,17 @@
       "Druid": {
         "type": "string"
       },
+      "Access": {
+        "type": "object",
+        "properties": {
+          "embargoReleaseDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2029-06-22T07:00:00.000+00:00"
+          }
+        },
+        "required": ["externalIdentifier", "label", "type"]
+      },
       "DRO": {
         "type": "object",
         "properties": {
@@ -861,6 +872,9 @@
           },
           "label": {
             "type": "string"
+          },
+          "access": {
+            "$ref": "#/components/schemas/Access"
           }
         },
         "required": ["externalIdentifier", "label", "type"]
