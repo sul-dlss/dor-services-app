@@ -868,31 +868,6 @@
             }
           }
         ]
-      },
-      "patch": {
-        "tags": [
-          "objects"
-        ],
-        "summary": "Update the object metadata",
-        "description": "[DEPRECATED] Currently this handles the create virtual object use case. Use POST /virtual_objects instead",
-        "deprecated": true,
-        "operationId": "objects#update",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of object",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/Druid"
-            }
-          }
-        ]
       }
     }
   },
