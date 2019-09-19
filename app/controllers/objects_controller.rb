@@ -40,24 +40,6 @@ class ObjectsController < ApplicationController
     end
   end
 
-  # TODO: Remove this once Argo, in stage and prod, uses a version of dor-services-client that no longer hits this endpoint
-  # Handles updates to the record.
-  # Presently this only needs to handle the merge object use case.
-  # Do this by providing: constituent_ids => ['druid:123', 'druid:345']
-  def update
-    # validate that the constituent_ids parameter is an present, raises ActionController::ParameterMissing
-    params.require(:constituent_ids)
-    filtered_params = params.permit(constituent_ids: [])
-    raise ActionController::ParameterMissing, 'constituent_ids must be an array' unless filtered_params[:constituent_ids]
-
-    # Update the constituent relationship
-    errors = ConstituentService.new(parent_druid: params[:id]).add(child_druids: filtered_params[:constituent_ids])
-
-    return render json: { errors: errors }, status: :unprocessable_entity if errors
-
-    head :no_content
-  end
-
   def show
     render json: Cocina::Mapper.build(@item)
   end

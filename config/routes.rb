@@ -26,8 +26,7 @@ Rails.application.routes.draw do
 
     resources :background_job_results, only: [:show], defaults: { format: :json }
 
-    # TODO: Remove :update once Argo, in stage and prod, uses a version of dor-services-client that no longer hits this endpoint
-    resources :objects, only: [:create, :update, :show] do
+    resources :objects, only: [:create, :show] do
       member do
         post 'publish'
         post 'update_marc_record'
