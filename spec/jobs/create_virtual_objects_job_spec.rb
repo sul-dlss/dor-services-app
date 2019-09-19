@@ -66,8 +66,8 @@ RSpec.describe CreateVirtualObjectsJob, type: :job do
       expect(result.code).to eq(422)
     end
 
-    it 'has no output' do
-      expect(result.output).to eq('{"errors":[{"druid:mk420bs7601":["One thing was not combinable","And another"]}]}')
+    it 'has output with errors' do
+      expect(result.output[:errors].first[parent_id]).to match_array(['One thing was not combinable', 'And another'])
     end
   end
 end
