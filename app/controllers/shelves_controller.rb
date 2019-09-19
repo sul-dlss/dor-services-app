@@ -7,7 +7,7 @@ class ShelvesController < ApplicationController
   def create
     if @item.is_a?(Dor::Item)
       ShelvingService.shelve(@item)
-      head :created
+      head :no_content
     else
       render json: {
         errors: [

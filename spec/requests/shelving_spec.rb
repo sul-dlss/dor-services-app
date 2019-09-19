@@ -16,7 +16,7 @@ RSpec.describe 'Shelve object' do
 
     it 'returns a 422 error' do
       post '/v1/objects/druid:1234/shelve', headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response.status).to eq(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       json = JSON.parse(response.body)
       expect(json['errors'].first['detail']).to eq("A Dor::Item is required but you provided 'Dor::Collection'")
       expect(ShelvingService).not_to have_received(:shelve)
@@ -26,10 +26,10 @@ RSpec.describe 'Shelve object' do
   context 'when the request is successful' do
     let(:object) { Dor::Item.new(pid: 'druid:1234') }
 
-    it 'calls ShelvingService and returns 201' do
+    it 'calls ShelvingService and returns 204' do
       post '/v1/objects/druid:1234/shelve', headers: { 'Authorization' => "Bearer #{jwt}" }
 
-      expect(response.status).to eq(201)
+      expect(response).to have_http_status(:no_content)
       expect(ShelvingService).to have_received(:shelve)
     end
   end

@@ -304,11 +304,10 @@
           "201": {
             "description": "background job for creation of virtual object created",
             "headers": {
-              "Location": {
+              "location": {
                 "schema": {
                   "type": "string",
                   "description": "URI at which the client can expect updates on the virtual object creation job",
-                  "format": "uri",
                   "pattern": "^\\w+:(\\/?\\/?)[^\\s]+$"
                 }
               }
@@ -639,7 +638,7 @@
         "description": "",
         "operationId": "shelves#create",
         "responses": {
-          "201": {
+          "204": {
             "description": "The object was shelved"
           },
           "422": {
