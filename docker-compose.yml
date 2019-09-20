@@ -89,4 +89,6 @@ services:
     environment:
       - POSTGRES_PASSWORD=sekret
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
+volumes:
+  postgres-data:
