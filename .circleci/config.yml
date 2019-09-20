@@ -83,9 +83,9 @@ jobs:
     - run:
         name: Validate API specification
         command: |
-          npm install openapi-enforcer-cli
-          result=$(node_modules/.bin/openapi-enforcer validate openapi.json)
-          [[ $result == $'\nDocument is valid' ]] && {
+          sudo npm install -g openapi-enforcer-cli
+          result=$(openapi-enforcer validate openapi.json)
+          [[ $result =~ "Document is valid" ]] && {
           exit 0
           } || {
           echo $result
