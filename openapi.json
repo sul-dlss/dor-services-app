@@ -899,7 +899,17 @@
             "example": "2029-06-22T07:00:00.000+00:00"
           }
         },
-        "required": ["externalIdentifier", "label", "type"]
+      },
+      "Administrative": {
+        "type": "object",
+        "properties": {
+          "releaseTags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReleaseTag"
+            }
+          }
+        },
       },
       "DRO": {
         "type": "object",
@@ -914,11 +924,23 @@
           "label": {
             "type": "string"
           },
+          "version": {
+            "type": "integer"
+          },
           "access": {
             "$ref": "#/components/schemas/Access"
-          }
+          },
+          "administrative": {
+            "$ref": "#/components/schemas/Administrative"
+          },
+          "identification": {
+            "$ref": "#/components/schemas/Identification"
+          },
+          "structural": {
+            "$ref": "#/components/schemas/Structural"
+          },
         },
-        "required": ["externalIdentifier", "label", "type"]
+        "required": ["externalIdentifier", "label", "type", "version", "access", "administrative", "identification", "structural"]
       },
       "BackgroundJobResultResponse": {
         "type": "object",
@@ -969,6 +991,40 @@
             }
           }
         }
+      },
+      "Identification": {
+        "type": "object",
+        "properties": { },
+      },
+      "ReleaseTag": {
+        "type": "object",
+        "properties": {
+          "who": {
+            "type": "string",
+            "example": "petucket"
+          },
+          "what": {
+            "type": "string",
+            "enum": ["self", "collection"],
+            "example": "self"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "to": {
+            "type": "string",
+            "example": "Searchworks"
+          },
+          "release": {
+            "type": "boolean"
+          }
+
+        },
+      },
+      "Structural": {
+        "type": "object",
+        "properties": { },
       },
       "VirtualObjectRequest": {
         "type": "object",

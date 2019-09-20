@@ -3,22 +3,41 @@
 require 'rails_helper'
 
 RSpec.describe 'Get the object' do
+  before do
+    allow(Dor).to receive(:find).and_return(object)
+  end
+
   let(:object) { instance_double(Dor::Item, collections: [collection]) }
   let(:collection_id) { 'druid:999123' }
   let(:collection) do
     Dor::Collection.new(pid: collection_id, label: 'collection #1')
   end
 
-  before do
-    allow(Dor).to receive(:find).and_return(object)
+  let(:expected) do
+    {
+      collections: [
+        {
+          externalIdentifier: 'druid:999123',
+          type: 'collection',
+          label: 'collection #1',
+          version: 1,
+          access: {},
+          administrative: {
+            releaseTags: []
+          },
+          identification: {},
+          structural: {}
+        }
+      ]
+    }
   end
 
   describe 'as used by WAS crawl seed registration' do
-    it 'returns (at a minimum) the identifiers of the collections ' do
+    it 'returns (at a minimum) the identifiers of the collections' do
       get '/v1/objects/druid:mk420bs7601/query/collections',
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
-      expect(response.body).to eq '{"collections":[{"externalIdentifier":"druid:999123","type":"collection","label":"collection #1"}]}'
+      expect(response.body).to eq expected.to_json
     end
   end
 end

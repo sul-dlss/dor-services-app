@@ -13,7 +13,7 @@ class ReleaseTags
   # @raise [ArgumentError] Raised if attributes are improperly supplied
   #
   # @example
-  #  ReleaseTags.create(item, release: true, what: 'self', to: 'Searchworks', who: 'petucket'})
+  #  ReleaseTags.create(item, release: true, what: 'self', to: 'Searchworks', who: 'petucket')
   def self.create(work, attrs)
     release = attrs.delete(:release)
     attrs[:when] ||= Time.now.utc.iso8601 # add the timestamp
