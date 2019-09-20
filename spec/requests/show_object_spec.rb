@@ -15,11 +15,26 @@ RSpec.describe 'Get the object' do
       object.label = 'foo'
     end
 
+    let(:expected) do
+      {
+        externalIdentifier: 'druid:1234',
+        type: 'object',
+        label: 'foo',
+        version: 1,
+        access: {},
+        administrative: {
+          releaseTags: []
+        },
+        identification: {},
+        structural: {}
+      }
+    end
+
     it 'returns the object' do
       get '/v1/objects/druid:mk420bs7601',
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:ok)
-      expect(response.body).to eq '{"externalIdentifier":"druid:1234","type":"object","label":"foo"}'
+      expect(response.body).to eq expected.to_json
     end
   end
 
@@ -28,14 +43,43 @@ RSpec.describe 'Get the object' do
       object.descMetadata.title_info.main_title = 'Hello'
       object.label = 'foo'
       object.embargoMetadata.release_date = DateTime.parse '2019-09-26T07:00:00Z'
+      ReleaseTags.create(object, release: true,
+                                 what: 'self',
+                                 to: 'Searchworks',
+                                 who: 'petucket',
+                                 when: '2014-08-30T01:06:28Z')
+    end
+
+    let(:expected) do
+      {
+        externalIdentifier: 'druid:1234',
+        type: 'object',
+        label: 'foo',
+        version: 1,
+        access: {
+          embargoReleaseDate: '2019-09-26T07:00:00.000+00:00'
+        },
+        administrative: {
+          releaseTags: [
+            {
+              to: 'Searchworks',
+              what: 'self',
+              date: '2014-08-30T01:06:28.000+00:00',
+              who: 'petucket',
+              release: true
+            }
+          ]
+        },
+        identification: {},
+        structural: {}
+      }
     end
 
     it 'returns the object' do
       get '/v1/objects/druid:mk420bs7601',
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:ok)
-      expect(response.body).to eq '{"externalIdentifier":"druid:1234","type":"object","label":"foo",' \
-        '"access":{"embargoReleaseDate":"2019-09-26T07:00:00.000+00:00"}}'
+      expect(response.body).to eq expected.to_json
     end
   end
 end

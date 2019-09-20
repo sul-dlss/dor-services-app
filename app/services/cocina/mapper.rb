@@ -15,7 +15,8 @@ module Cocina
       props = {
         externalIdentifier: item.pid,
         type: type,
-        label: item.label
+        label: item.label,
+        version: item.current_version.to_i # TODO: remove to_i after upgrading cocina-models to 0.5.0
       }
 
       # Collections don't have embargoMetadata
@@ -24,12 +25,28 @@ module Cocina
           embargoReleaseDate: item.embargoMetadata.release_date.iso8601
         }
       end
+
+      props[:administrative] = build_administrative
       Cocina::Models::DRO.new(props)
     end
 
     private
 
     attr_reader :item
+
+    def build_administrative
+      {}.tap do |admin|
+        admin[:releaseTags] = item.identityMetadata.ng_xml.xpath('//release').map do |node|
+          {
+            to: node.attributes['to'].value,
+            what: node.attributes['what'].value,
+            date: node.attributes['when'].value,
+            who: node.attributes['who'].value,
+            release: node.text
+          }
+        end
+      end
+    end
 
     # @todo This should have more speicific type such as found in identityMetadata.objectType
     def type
