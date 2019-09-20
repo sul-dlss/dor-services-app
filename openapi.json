@@ -857,7 +857,7 @@
           "objects"
         ],
         "summary": "Retrieve the object COCINA metadata",
-        "description": "",
+        "description": "Returns a JSON representation (not yet complete) of an object, collection or admin policy.",
         "operationId": "objects#show",
         "responses": {
           "200": {
@@ -916,6 +916,7 @@
         "properties": {
           "type": {
             "type": "string",
+            "enum": ["item", "collection", "admin_policy"],
             "example": "item"
           },
           "externalIdentifier": {
