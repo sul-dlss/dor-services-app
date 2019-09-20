@@ -36,15 +36,19 @@ module Cocina
 
     def build_administrative
       {}.tap do |admin|
-        admin[:releaseTags] = item.identityMetadata.ng_xml.xpath('//release').map do |node|
-          {
-            to: node.attributes['to'].value,
-            what: node.attributes['what'].value,
-            date: node.attributes['when'].value,
-            who: node.attributes['who'].value,
-            release: node.text
-          }
-        end
+        admin[:releaseTags] = build_release_tags unless type == 'admin_policy'
+      end
+    end
+
+    def build_release_tags
+      item.identityMetadata.ng_xml.xpath('//release').map do |node|
+        {
+          to: node.attributes['to'].value,
+          what: node.attributes['what'].value,
+          date: node.attributes['when'].value,
+          who: node.attributes['who'].value,
+          release: node.text
+        }
       end
     end
 
@@ -55,6 +59,8 @@ module Cocina
         'object'
       when Dor::Collection
         'collection'
+      when Dor::AdminPolicyObject
+        'admin_policy'
       else
         raise "Unknown type for #{item.class}"
       end
