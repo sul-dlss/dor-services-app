@@ -109,7 +109,7 @@ class VersionService
   # Checks if current version has any incomplete wf steps and there is a versionWF
   # @return [Boolean] true if object is open for versioning
   def open_for_versioning?
-    return true if Dor::Config.workflow.client.lifecycle('dor', work.pid, 'opened', version: work.current_version)
+    return true if Dor::Config.workflow.client.active_lifecycle('dor', work.pid, 'opened')
 
     false
   end
@@ -117,7 +117,7 @@ class VersionService
   # Checks if the current version has any incomplete wf steps and there is an accessionWF.
   # @return [Boolean] true if object is currently being accessioned
   def accessioning?
-    return true if Dor::Config.workflow.client.lifecycle('dor', work.pid, 'submitted', version: work.current_version)
+    return true if Dor::Config.workflow.client.active_lifecycle('dor', work.pid, 'submitted')
 
     false
   end
