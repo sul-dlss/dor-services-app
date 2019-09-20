@@ -3,7 +3,7 @@
 require 'simplecov'
 require 'coveralls'
 Coveralls.wear!
-SimpleCov.start do
+SimpleCov.start :rails do
   add_filter '/spec/'
 end
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
