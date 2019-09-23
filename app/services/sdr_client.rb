@@ -2,6 +2,9 @@
 
 # A client for talking to sdr-services-app
 class SdrClient
+  extend Deprecation
+  self.deprecation_horizon = 'dor-services-app version 4.0'
+
   # @raises [Dor::Exception] if SDR doesn't know about the object (i.e. 404 response code)
   # @raises [StandardError] if the response from SDR can't be parsed
   def self.current_version(druid)
@@ -30,6 +33,7 @@ class SdrClient
   end
 
   def current_version(parsed: false)
+    Honeybadger.notify('dor-services-app deprecated method `SDRClient.current_version` called - use preservation-client current_version instead')
     path = "/objects/#{druid}/current_version"
     response = sdr_get(path)
     return response unless parsed
@@ -48,6 +52,7 @@ class SdrClient
       raise "Unable to parse XML from SDR current_version API call.\n\turl: #{sdr_uri(path)}\n\tstatus: #{response.status}\n\tbody: #{response.body}"
     end
   end
+  deprecation_deprecate current_version: 'use preservation-client current_version in caller instead'
 
   def file_content(version:, filename:)
     query_string = URI.encode_www_form(version: version.to_s)

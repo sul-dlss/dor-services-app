@@ -22,6 +22,7 @@ end
 
 # Ruby general dependencies
 gem 'config'
+gem 'deprecation'
 gem 'dry-struct'
 gem 'dry-types'
 gem 'faraday'
@@ -43,6 +44,7 @@ gem 'dor-services', '~> 8.0'
 gem 'dor-workflow-client', '~> 3.9'
 gem 'marc'
 gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'
+gem 'preservation-client'
 
 group :test, :development do
   gem 'coveralls', '~> 0.8', require: false

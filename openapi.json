@@ -101,8 +101,9 @@
         "tags": [
           "preservation"
         ],
-        "summary": "Get the current version of the object from SDR",
-        "description": "",
+        "summary": "DEPRECATED. Get the current version of the object from SDR",
+        "description": "DEPRECATED.  Use preservation-client gem instead.",
+        "deprecated": true,
         "operationId": "sdr#current_version",
         "responses": {
           "200": {

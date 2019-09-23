@@ -85,11 +85,10 @@ class VersionService
   end
 
   # Performs checks on whether a new version can be opened for an object
-  # @return [Integer] the version from sdr-services-app if a version can be opened
+  # @return [Integer] the version from Preservation (SDR) if a version can be opened
   # @param [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
-  # @raise [Dor::Exception] if the object hasn't been accessioned, if a version is already opened,
-  #                         or if SDR app returns 404 when queried.
-  #
+  # @raise [Dor::Exception, Preservation::Client::Error] if the object hasn't been accessioned,
+  #    if a version is already opened, or if Preservation returns 404 when queried.
   def try_to_get_current_version(assume_accessioned = false)
     # Raised when the object has never been accessioned.
     # The accessioned milestone is the last step of the accessionWF.
@@ -103,7 +102,10 @@ class VersionService
     # The submitted milestone is part of the accessionWF.
     raise Dor::Exception, 'Object currently being accessioned' if accessioning?
 
-    SdrClient.current_version work.pid
+    Preservation::Client.objects.current_version(work.pid)
+  rescue Preservation::Client::NotFoundError
+    raise Dor::Exception, 'Preservation (SDR) is not yet answering queries about this object. ' \
+      "When an object has just been transfered, Preservation isn't immediately ready to answer queries."
   end
 
   # Checks if current version has any incomplete wf steps and there is a versionWF

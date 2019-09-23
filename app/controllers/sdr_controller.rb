@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class SdrController < ApplicationController
+  extend Deprecation
+  self.deprecation_horizon = 'dor-services-app version 4.0'
+
   def cm_inv_diff
     unless %w(all shelve preserve publish).include?(params[:subset])
       render status: :bad_request, plain: "Invalid subset value: #{params[:subset]}"
@@ -25,8 +28,10 @@ class SdrController < ApplicationController
   end
 
   def current_version
+    Honeybadger.notify('dor-services-app deprecated API endpoint `sdr#current_version` called - use preservation-client current_version instead')
     proxy_faraday_response(sdr_client.current_version)
   end
+  deprecation_deprecate current_version: 'use preservation-client current_version in caller instead'
 
   def file_content
     sdr_response = sdr_client.file_content(version: params[:version], filename: params[:filename])

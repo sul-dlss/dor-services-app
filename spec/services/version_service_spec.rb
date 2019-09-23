@@ -36,7 +36,7 @@ RSpec.describe VersionService do
 
     context 'when on the expected path' do
       before do
-        allow(SdrClient).to receive(:current_version).and_return(1)
+        allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
         allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
         allow(obj).to receive(:new_record?).and_return(false)
         allow(vmd_ds).to receive(:save)
@@ -50,7 +50,7 @@ RSpec.describe VersionService do
       end
 
       it 'creates the versionMetadata datastream and starts a workflow' do
-        expect(SdrClient).to receive(:current_version).and_return(1)
+        expect(Preservation::Client.objects).to receive(:current_version).and_return(1)
         expect(obj).to receive(:new_record?).and_return(false)
         expect(vmd_ds).to receive(:save)
         expect(vmd_ds.ng_xml.to_xml).to match(/Initial Version/)
@@ -96,20 +96,20 @@ RSpec.describe VersionService do
       end
     end
 
-    context "when SDR's current version is greater than the current version" do
+    context "when Preservation's current version is greater than the current version" do
       it 'raises an exception' do
         expect(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(true)
         expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(nil)
         expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted', version: '1').and_return(nil)
-        expect(SdrClient).to receive(:current_version).and_return(3)
+        expect(Preservation::Client.objects).to receive(:current_version).and_return(3)
         expect { open }.to raise_error(Dor::Exception, 'Cannot sync to a version greater than current: 1, requested 3')
       end
     end
 
-    context "when sdr-services-app doesn't know about the object" do
+    context "when Preservation doesn't know about the object" do
       before do
         allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
-        allow(SdrClient).to receive(:current_version).and_raise(Dor::Exception, 'SDR is not yet answering queries about this object')
+        allow(Preservation::Client.objects).to receive(:current_version).and_raise(Preservation::Client::NotFoundError)
       end
 
       let(:workflow_client) do
@@ -119,7 +119,8 @@ RSpec.describe VersionService do
       end
 
       it 'raises an exception' do
-        expect { open }.to raise_error(Dor::Exception, /SDR is not yet answering queries about this object/)
+        errmsg = "Preservation (SDR) is not yet answering queries about this object. When an object has just been transfered, Preservation isn't immediately ready to answer queries."
+        expect { open }.to raise_error(Dor::Exception, errmsg)
       end
     end
   end
@@ -139,7 +140,7 @@ RSpec.describe VersionService do
 
     context 'when a new version can be opened' do
       before do
-        allow(SdrClient).to receive(:current_version).and_return(1)
+        allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
       end
 
       it 'returns true' do
@@ -183,9 +184,9 @@ RSpec.describe VersionService do
       end
     end
 
-    context "when sdr-services-app doesn't know about the object" do
+    context "when Preservation doesn't know about the object" do
       before do
-        allow(SdrClient).to receive(:current_version).and_raise(Dor::Exception)
+        allow(Preservation::Client.objects).to receive(:current_version).and_raise(Preservation::Client::NotFoundError)
       end
 
       it 'returns false' do
