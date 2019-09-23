@@ -34,6 +34,9 @@ solr:
 
 workflow_url: 'https://workflow.example.com/workflow'
 sdr_url: 'http://user:password@sdr-services.example.com/sdr'
+sdr:
+  local_export_home: /dor/export
+
 preservation_catalog:
   url: 'https://example.org/prescat'
 purl_services_url: ~
