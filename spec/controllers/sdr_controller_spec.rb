@@ -13,6 +13,7 @@ RSpec.describe SdrController do
     login
   end
 
+  # TODO: Remove this in 4.0.0
   describe 'current_version' do
     let(:mock_response) { '<currentVersion>1</currentVersion>' }
 

@@ -282,6 +282,10 @@ GEM
     parser (2.6.4.1)
       ast (~> 2.4.0)
     pg (1.1.4)
+    preservation-client (0.2.0)
+      activesupport (>= 4.2, < 7)
+      faraday (~> 0.15)
+      zeitwerk (~> 2.1)
     progressbar (1.10.1)
     pry (0.12.2)
       coderay (~> 1.1.0)
@@ -481,6 +485,7 @@ DEPENDENCIES
   cocina-models (~> 0.4.0)
   config
   coveralls (~> 0.8)
+  deprecation
   dlss-capistrano
   dor-services (~> 8.0)
   dor-workflow-client (~> 3.9)
@@ -498,6 +503,7 @@ DEPENDENCIES
   net-http-persistent (~> 2.9)
   okcomputer
   pg
+  preservation-client
   progressbar
   pry-byebug
   puma (~> 3.0)

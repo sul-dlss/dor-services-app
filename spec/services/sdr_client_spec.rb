@@ -3,6 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe SdrClient do
+  # TODO: Remove this in 4.0.0
   describe '.current_version' do
     subject(:current_version) { described_class.current_version('druid:ab123cd4567') }
 
