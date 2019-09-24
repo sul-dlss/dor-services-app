@@ -276,7 +276,7 @@ GEM
     parallel (1.17.0)
     parser (2.6.4.1)
       ast (~> 2.4.0)
-    preservation-client (0.2.0)
+    preservation-client (0.2.1)
       activesupport (>= 4.2, < 7)
       faraday (~> 0.15)
       zeitwerk (~> 2.1)
