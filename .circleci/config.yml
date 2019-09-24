@@ -15,11 +15,6 @@ jobs:
         BUNDLE_PATH: vendor/bundle
         RAILS_ENV: test
         NOKOGIRI_USE_SYSTEM_LIBRARIES: true
-    - image: circleci/postgres:10
-      environment:
-        POSTGRES_USER: postgres
-        POSTGRES_DB: dor_services
-        POSTGRES_PASSWORD: ""
     steps:
     - checkout
 
@@ -48,13 +43,6 @@ jobs:
         key: dor-services-app-bundle-v2-{{ checksum "Gemfile.lock" }}
         paths:
         - vendor/bundle
-
-    # Need `psql` command when you store the app schema as SQL instead of as Ruby
-    - run:
-        name: Install postgresql client
-        command: |
-          sudo apt update -y
-          sudo apt install -y postgresql-client || true
 
     - run:
         name: Check styles using rubocop
