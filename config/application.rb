@@ -27,8 +27,5 @@ module DorServices
     config.action_dispatch.rescue_responses.merge!(
       "ActiveFedora::ObjectNotFoundError" => :not_found
     )
-
-    # This makes sure our Postgres enums function are persisted to the schema
-    config.active_record.schema_format = :sql
   end
 end
