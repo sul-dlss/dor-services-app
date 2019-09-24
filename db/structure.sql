@@ -56,7 +56,7 @@ CREATE TABLE public.ar_internal_metadata (
 
 CREATE TABLE public.background_job_results (
     id bigint NOT NULL,
-    output json DEFAULT '{}'::json,
+    output text,
     code integer DEFAULT 202,
     status public.background_job_result_status DEFAULT 'pending'::public.background_job_result_status,
     created_at timestamp without time zone NOT NULL,

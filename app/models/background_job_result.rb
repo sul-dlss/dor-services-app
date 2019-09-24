@@ -7,9 +7,4 @@ class BackgroundJobResult < ApplicationRecord
     processing: 'processing',
     complete: 'complete'
   }
-
-  # Deserialize JSON output field as a Hash with indifferent access
-  def output
-    @output ||= super.with_indifferent_access
-  end
 end

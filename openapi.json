@@ -264,31 +264,17 @@
         "operationId": "background_job_results#show",
         "responses": {
           "200": {
-            "description": "The background job has completed successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BackgroundJobResultResponse"
-                }
-              }
-            }
+            "description": "The background job has completed successfully"
           },
           "202": {
-            "description": "The background job is pending or processing",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BackgroundJobResultResponse"
-                }
-              }
-            }
+            "description": "The background job is pending or processing"
           },
           "422": {
             "description": "One or more errors occurred running the background job",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BackgroundJobResultResponse"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -943,21 +929,6 @@
           },
         },
         "required": ["externalIdentifier", "label", "type", "version", "access", "administrative", "identification", "structural"]
-      },
-      "BackgroundJobResultResponse": {
-        "type": "object",
-        "properties": {
-          "output": {
-            "type": "object",
-            "description": "output from the job",
-            "$ref": "#/components/schemas/ErrorResponse"
-          },
-          "status": {
-            "type": "string",
-            "description": "the status of the background job",
-            "enum": ["pending", "processing", "complete"]
-          }
-        }
       },
       "ErrorResponse": {
         "type": "object",

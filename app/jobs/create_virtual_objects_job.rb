@@ -20,7 +20,7 @@ class CreateVirtualObjectsJob < ApplicationJob
     end
 
     if errors.any?
-      background_job_result.output = { errors: errors }
+      background_job_result.output = { errors: errors }.to_json
       background_job_result.code = 422
     else
       background_job_result.code = 200
