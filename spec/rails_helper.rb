@@ -10,7 +10,6 @@ require 'rspec/matchers'
 require 'equivalent-xml/rspec_matchers'
 require 'rspec/rails'
 require 'support/foxml_helper'
-require 'support/factory_bot'
 
 # Add additional requires below this line. Rails is not loaded until this point!
 

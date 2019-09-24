@@ -31,7 +31,6 @@ gem 'jbuilder'
 gem 'jwt'
 gem 'net-http-persistent', '~> 2.9' # Pin to avoid problem exhausting file handles under load
 gem 'okcomputer'
-gem 'pg'
 gem 'progressbar' # for the cleaner rake task
 gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq'
@@ -49,7 +48,6 @@ gem 'preservation-client'
 group :test, :development do
   gem 'coveralls', '~> 0.8', require: false
   gem 'equivalent-xml'
-  gem 'factory_bot_rails'
   gem 'rack-console'
   gem 'rails-controller-testing'
   gem 'rspec-rails'

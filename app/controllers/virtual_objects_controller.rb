@@ -6,10 +6,19 @@ class VirtualObjectsController < ApplicationController
 
   # Create one or more virtual objects represented by JSON (see `#schema` below):
   def create
-    result = BackgroundJobResult.create
-    CreateVirtualObjectsJob.perform_later(virtual_objects: create_params[:virtual_objects],
-                                          background_job_result: result)
-    head :created, location: result
+    errors = []
+
+    create_params[:virtual_objects].each do |virtual_object|
+      parent_id, child_ids = virtual_object.values_at(:parent_id, :child_ids)
+      # Update the constituent relationship between the parent and child druids
+      errors << ConstituentService.new(parent_druid: parent_id).add(child_druids: child_ids)
+    rescue ActiveFedora::ObjectNotFoundError, Rubydora::FedoraInvalidRequest, Dor::Exception => e
+      errors << { parent_id => [e.message] }
+    end
+
+    return render_error(errors: errors, status: :unprocessable_entity) if errors.any?
+
+    head :no_content
   end
 
   private
@@ -22,7 +31,11 @@ class VirtualObjectsController < ApplicationController
   # This gives us finer-grained validation.
   def validate_params!
     errors = schema.call(create_params).errors(full: true)
-    return render json: { errors: errors }, status: :bad_request if errors.any?
+    return render_error(errors: errors, status: :bad_request) if errors.any?
+  end
+
+  def render_error(errors:, status:)
+    render json: { errors: errors }, status: status
   end
 
   # {

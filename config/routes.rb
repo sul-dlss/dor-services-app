@@ -22,9 +22,7 @@ Rails.application.routes.draw do
       get 'catkey', to: 'marcxml#catkey'
     end
 
-    resources :virtual_objects, only: [:create], defaults: { format: :json }
-
-    resources :background_job_results, only: [:show], defaults: { format: :json }
+    resources :virtual_objects, only: [:create]
 
     resources :objects, only: [:create, :show] do
       member do
