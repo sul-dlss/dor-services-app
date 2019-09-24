@@ -276,6 +276,10 @@ GEM
     parallel (1.17.0)
     parser (2.6.4.1)
       ast (~> 2.4.0)
+    preservation-client (0.2.0)
+      activesupport (>= 4.2, < 7)
+      faraday (~> 0.15)
+      zeitwerk (~> 2.1)
     progressbar (1.10.1)
     pry (0.12.2)
       coderay (~> 1.1.0)
@@ -491,6 +495,7 @@ DEPENDENCIES
   moab-versioning (~> 4.0)
   net-http-persistent (~> 2.9)
   okcomputer
+  preservation-client
   progressbar
   pry-byebug
   puma (~> 3.0)
