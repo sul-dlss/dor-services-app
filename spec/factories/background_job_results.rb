@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :background_job_result do
-    output { {} }
+    output { '' }
     status { 'pending' }
     code { 202 }
   end

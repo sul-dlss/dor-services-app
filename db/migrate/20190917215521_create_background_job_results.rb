@@ -9,7 +9,7 @@ class CreateBackgroundJobResults < ActiveRecord::Migration[5.2]
     SQL
 
     create_table :background_job_results do |t|
-      t.json :output, default: {}
+      t.text :output
       t.integer :code, default: 202
       t.column :status, :background_job_result_status, default: 'pending'
 
