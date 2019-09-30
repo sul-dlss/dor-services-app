@@ -40,7 +40,7 @@ class SdrClient
 
     if response.status == 404
       raise Dor::Exception, 'SDR is not yet answering queries about this object. ' \
-      "We've seen that when an object has been transfered, SDR isn't immediately ready to answer queries"
+      "We've seen that when an object has been transferred, SDR isn't immediately ready to answer queries"
     end
 
     begin

@@ -23,7 +23,7 @@ class WorkspacesController < ApplicationController
     head :no_content
   end
 
-  # Once an object has been transfered to preservation clean up the workspace.
+  # Once an object has been transferred to preservation clean up the workspace.
   def reset
     druid_obj = Dor.find(params[:object_id])
     ResetWorkspaceService.reset(druid: params[:object_id], version: druid_obj.current_version)

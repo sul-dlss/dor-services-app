@@ -119,7 +119,7 @@ RSpec.describe VersionService do
       end
 
       it 'raises an exception' do
-        errmsg = "Preservation (SDR) is not yet answering queries about this object. When an object has just been transfered, Preservation isn't immediately ready to answer queries."
+        errmsg = "Preservation (SDR) is not yet answering queries about this object. When an object has just been transferred, Preservation isn't immediately ready to answer queries."
         expect { open }.to raise_error(Dor::Exception, errmsg)
       end
     end
