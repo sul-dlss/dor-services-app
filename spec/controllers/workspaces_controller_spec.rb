@@ -76,4 +76,21 @@ RSpec.describe WorkspacesController do
       expect(response).to be_no_content
     end
   end
+
+  describe '#reset' do
+    before do
+      login
+      allow(ResetWorkspaceService).to receive(:reset)
+      allow(Dor).to receive(:find).and_return(item)
+    end
+
+    let(:druid) { 'druid:aa222cc3333' }
+    let(:item) { instance_double(Dor::Item, current_version: 2) }
+
+    it 'is successful' do
+      post :reset, params: { object_id: druid }
+      expect(ResetWorkspaceService).to have_received(:reset).with(druid: druid, version: 2)
+      expect(response).to be_no_content
+    end
+  end
 end

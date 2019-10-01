@@ -42,7 +42,12 @@ Rails.application.routes.draw do
         end
       end
 
-      resource :workspace, only: [:create, :destroy]
+      resource :workspace, only: [:create, :destroy] do
+        collection do
+          post 'reset'
+        end
+      end
+
       resource :embargo, only: [:update]
       resource :shelve, only: [:create]
 

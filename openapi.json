@@ -502,7 +502,7 @@
         ]
       }
     },
-    "/objects/{id}/workspace": {
+    "/objects/{object_id}/workspace": {
       "delete": {
         "tags": [
           "workspaces"
@@ -517,7 +517,7 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "object_id",
             "in": "path",
             "description": "ID of object",
             "required": true,
@@ -541,7 +541,33 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "object_id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{object_id}/workspace/reset": {
+      "post": {
+        "tags": [
+          "workspaces"
+        ],
+        "summary": "Resets a workspace for an object",
+        "description": "After an object has been copied to preservation the workspace can be reset. This is called by the reset-workspace step of the accessionWF",
+        "operationId": "workspaces#reset",
+        "responses": {
+          "204": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "object_id",
             "in": "path",
             "description": "ID of object",
             "required": true,
