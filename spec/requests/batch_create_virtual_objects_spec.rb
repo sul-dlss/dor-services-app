@@ -3,55 +3,27 @@
 require 'rails_helper'
 
 RSpec.describe 'Batch creation of virtual objects' do
-  let(:parent_id) { 'druid:mk420bs7601' }
   let(:child1_id) { 'druid:child1' }
   let(:child2_id) { 'druid:child2' }
-
-  let(:object) { Dor::Item.new(pid: parent_id) }
-  let(:service) { instance_double(ConstituentService, add: nil) }
+  # We use `#with_indifferent_access` here to mimic how Rails parses JSON parameters
+  let(:body) { JSON.parse(response.body).with_indifferent_access }
+  let(:parent_id) { 'druid:mk420bs7601' }
+  let(:virtual_objects) { [{ parent_id: parent_id, child_ids: [child1_id, child2_id] }] }
 
   before do
-    allow(Dor).to receive(:find).and_return(object)
-    allow(ConstituentService).to receive(:new).with(parent_druid: parent_id).and_return(service)
+    # Do not actually kick off a job; that is tested elsewhere.
+    allow(CreateVirtualObjectsJob).to receive(:perform_later)
   end
 
   context 'when virtual_objects param is provided' do
-    it 'creates a virtual object out of the parent object and all child objects' do
+    it 'queues a background job to create a virtual object' do
       post '/v1/virtual_objects',
-           params: { virtual_objects: [{ parent_id: parent_id, child_ids: [child1_id, child2_id] }] },
+           params: { virtual_objects: virtual_objects },
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(service).to have_received(:add).with(child_druids: [child1_id, child2_id])
-      expect(response).to be_successful
-    end
-  end
-
-  context 'when virtual_objects contain objects that raise Dor::Exception' do
-    before do
-      allow(service).to receive(:add).and_raise(Dor::Exception, 'versioning is messed up')
-    end
-
-    it 'renders an error' do
-      post '/v1/virtual_objects',
-           params: { virtual_objects: [{ parent_id: parent_id, child_ids: [child1_id, child2_id] }] },
-           headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(service).to have_received(:add).with(child_druids: [child1_id, child2_id])
-      expect(response).to be_unprocessable
-      expect(response.body).to eq '{"errors":[{"druid:mk420bs7601":["versioning is messed up"]}]}'
-    end
-  end
-
-  context 'when virtual_objects contain objects that are not combinable' do
-    before do
-      allow(service).to receive(:add).and_return(parent_id => ["Item #{child2_id} is not open for modification"])
-    end
-
-    it 'renders an error' do
-      post '/v1/virtual_objects',
-           params: { virtual_objects: [{ parent_id: parent_id, child_ids: [child1_id, child2_id] }] },
-           headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(service).to have_received(:add).with(child_druids: [child1_id, child2_id])
-      expect(response).to be_unprocessable
-      expect(response.body).to eq '{"errors":[{"druid:mk420bs7601":["Item druid:child2 is not open for modification"]}]}'
+      expect(CreateVirtualObjectsJob).to have_received(:perform_later)
+        .with(virtual_objects: virtual_objects, background_job_result: instance_of(BackgroundJobResult)).once
+      expect(response).to have_http_status(:created)
+      expect(response.location).to match(%r{http://www.example.com/v1/background_job_results/\d+})
     end
   end
 
@@ -60,10 +32,9 @@ RSpec.describe 'Batch creation of virtual objects' do
       post '/v1/virtual_objects',
            params: { title: 'New name' },
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(service).not_to have_received(:add)
-      expect(response).to be_bad_request
-      json = JSON.parse(response.body)
-      expect(json['errors'][0]['text']).to eq 'virtual_objects is missing'
+      expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
+      expect(response).to have_http_status(:bad_request)
+      expect(body['errors'][0]['text']).to eq('virtual_objects is missing')
     end
   end
 
@@ -72,10 +43,9 @@ RSpec.describe 'Batch creation of virtual objects' do
       post '/v1/virtual_objects',
            params: { virtual_objects: child1_id },
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(service).not_to have_received(:add)
-      expect(response).to be_bad_request
-      json = JSON.parse(response.body)
-      expect(json['errors'][0]['text']).to eq 'virtual_objects must be an array'
+      expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
+      expect(response).to have_http_status(:bad_request)
+      expect(body['errors'][0]['text']).to eq('virtual_objects must be an array')
     end
   end
 
@@ -84,10 +54,9 @@ RSpec.describe 'Batch creation of virtual objects' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [] },
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(service).not_to have_received(:add)
-      expect(response).to be_bad_request
-      json = JSON.parse(response.body)
-      expect(json['errors'][0]['text']).to eq 'parent_id is missing'
+      expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
+      expect(response).to have_http_status(:bad_request)
+      expect(body['errors'][0]['text']).to eq('parent_id is missing')
     end
   end
 
@@ -96,10 +65,9 @@ RSpec.describe 'Batch creation of virtual objects' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ child_ids: ['foo'] }] },
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(service).not_to have_received(:add)
-      expect(response).to be_bad_request
-      json = JSON.parse(response.body)
-      expect(json['errors'][0]['text']).to eq 'parent_id is missing'
+      expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
+      expect(response).to have_http_status(:bad_request)
+      expect(body['errors'][0]['text']).to eq('parent_id is missing')
     end
   end
 
@@ -108,10 +76,9 @@ RSpec.describe 'Batch creation of virtual objects' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ parent_id: '' }] },
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(service).not_to have_received(:add)
-      expect(response).to be_bad_request
-      json = JSON.parse(response.body)
-      expect(json['errors'][0]['text']).to eq 'parent_id must be filled'
+      expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
+      expect(response).to have_http_status(:bad_request)
+      expect(body['errors'][0]['text']).to eq('parent_id must be filled')
     end
   end
 
@@ -120,10 +87,9 @@ RSpec.describe 'Batch creation of virtual objects' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ parent_id: 'foo' }] },
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(service).not_to have_received(:add)
-      expect(response).to be_bad_request
-      json = JSON.parse(response.body)
-      expect(json['errors'][0]['text']).to eq 'child_ids is missing'
+      expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
+      expect(response).to have_http_status(:bad_request)
+      expect(body['errors'][0]['text']).to eq('child_ids is missing')
     end
   end
 
@@ -132,10 +98,9 @@ RSpec.describe 'Batch creation of virtual objects' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ parent_id: 'foo', child_ids: '' }] },
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(service).not_to have_received(:add)
-      expect(response).to be_bad_request
-      json = JSON.parse(response.body)
-      expect(json['errors'][0]['text']).to eq 'child_ids must be an array'
+      expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
+      expect(response).to have_http_status(:bad_request)
+      expect(body['errors'][0]['text']).to eq('child_ids must be an array')
     end
   end
 
@@ -144,10 +109,9 @@ RSpec.describe 'Batch creation of virtual objects' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ parent_id: 'foo', child_ids: [] }] },
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(service).not_to have_received(:add)
-      expect(response).to be_bad_request
-      json = JSON.parse(response.body)
-      expect(json['errors'][0]['text']).to eq '0 must be filled'
+      expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
+      expect(response).to have_http_status(:bad_request)
+      expect(body['errors'][0]['text']).to eq('0 must be filled')
     end
   end
 
@@ -156,10 +120,9 @@ RSpec.describe 'Batch creation of virtual objects' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ parent_id: 'foo', child_ids: ['foo', 'bar', ''] }] },
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(service).not_to have_received(:add)
-      expect(response).to be_bad_request
-      json = JSON.parse(response.body)
-      expect(json['errors'][0]['text']).to eq '2 must be filled'
+      expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
+      expect(response).to have_http_status(:bad_request)
+      expect(body['errors'][0]['text']).to eq('2 must be filled')
     end
   end
 end

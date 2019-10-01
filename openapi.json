@@ -45,6 +45,10 @@
       "description": "Integrations with other Systems"
     },
     {
+      "name": "jobs",
+      "description": "Operations involving background jobs"
+    },
+    {
       "name": "versions",
       "description": "Operations about object versions"
     },
@@ -250,6 +254,59 @@
         ]
       }
     },
+    "/background_job_results/{id}": {
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "View results of a background job",
+        "description": "Used to allow the application run long-running processes out of the request/response cycle",
+        "operationId": "background_job_results#show",
+        "responses": {
+          "200": {
+            "description": "The background job has completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackgroundJobResultResponse"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The background job is pending or processing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackgroundJobResultResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The background job with the given id was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of background job result",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
     "/virtual_objects": {
       "post": {
         "tags": [
@@ -264,7 +321,7 @@
           },
           "422": {
             "description": "unable to process request"
-          },
+          }
         },
         "requestBody": {
           "content": {
@@ -861,7 +918,7 @@
             "format": "date-time",
             "example": "2029-06-22T07:00:00.000+00:00"
           }
-        },
+        }
       },
       "Administrative": {
         "type": "object",
@@ -872,7 +929,7 @@
               "$ref": "#/components/schemas/ReleaseTag"
             }
           }
-        },
+        }
       },
       "DRO": {
         "type": "object",
@@ -902,9 +959,24 @@
           },
           "structural": {
             "$ref": "#/components/schemas/Structural"
-          },
+          }
         },
         "required": ["externalIdentifier", "label", "type", "version", "access", "administrative", "identification", "structural"]
+      },
+      "BackgroundJobResultResponse": {
+        "type": "object",
+        "properties": {
+          "output": {
+            "type": "object",
+            "description": "output from the job",
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          "status": {
+            "type": "string",
+            "description": "the status of the background job",
+            "enum": ["pending", "processing", "complete"]
+          }
+        }
       },
       "ErrorResponse": {
         "type": "object",
@@ -943,7 +1015,7 @@
       },
       "Identification": {
         "type": "object",
-        "properties": { },
+        "properties": { }
       },
       "ReleaseTag": {
         "type": "object",
@@ -969,19 +1041,19 @@
             "type": "boolean"
           }
 
-        },
+        }
       },
       "Structural": {
         "type": "object",
-        "properties": { },
+        "properties": { }
       },
       "VirtualObjectRequest": {
         "type": "object",
         "properties": {
-          "parent_druid": {
+          "parent_id": {
             "$ref": "#/components/schemas/Druid"
           },
-          "child_druids": {
+          "child_ids": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Druid"

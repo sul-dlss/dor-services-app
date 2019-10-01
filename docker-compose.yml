@@ -13,9 +13,16 @@ services:
       - workflow
       - redis
       - workers
+      - db
     ports:
       - 3000:3000
     environment:
+      DATABASE_NAME: dor_services
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: sekret
+      DATABASE_HOSTNAME: db
+      DATABASE_PORT: 5432
+      RAILS_LOG_TO_STDOUT: 'true'
       REDIS_URL: redis://redis:6379/
       SOLR_URL: http://solr:8983/solr/dorservices
       SETTINGS__SSL__CERT_FILE: /app/spec/support/certs/spec.crt
@@ -69,14 +76,14 @@ services:
     ports:
       - 3001:3000
     environment:
-      - DATABASE_NAME=workflow-server
-      - DATABASE_USERNAME=postgres
-      - DATABASE_PASSWORD=sekret
-      - DATABASE_HOSTNAME=db
-      - DATABASE_PORT=5432
-      - SETTINGS__REDIS__HOSTNAME=redis
+      DATABASE_NAME: workflow-server
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: sekret
+      DATABASE_HOSTNAME: db
+      DATABASE_PORT: 5432
+      SETTINGS__REDIS__HOSTNAME: redis
   db:
-    image: postgres
+    image: postgres:10
     ports:
       - 5432:5432
     environment:

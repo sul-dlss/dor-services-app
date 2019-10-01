@@ -6,6 +6,7 @@ require "rails"
 # Pick the frameworks you want:
 require "action_controller/railtie"
 require 'active_job/railtie'
+require 'active_record/railtie'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -26,5 +27,8 @@ module DorServices
     config.action_dispatch.rescue_responses.merge!(
       "ActiveFedora::ObjectNotFoundError" => :not_found
     )
+
+    # This makes sure our Postgres enums function are persisted to the schema
+    config.active_record.schema_format = :sql
   end
 end
