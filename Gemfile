@@ -65,6 +65,7 @@ group :deployment do
   gem 'capistrano', '~> 3.6'
   gem 'capistrano-bundler'
   gem 'capistrano-passenger'
+  gem 'capistrano-rails'
   gem 'capistrano-shared_configs'
   gem 'capistrano-sidekiq'
   gem 'dlss-capistrano'
