@@ -44,6 +44,9 @@ set :sidekiq_processes, 1
 # stage rather than the Rails environment).
 set :sidekiq_env, 'production'
 
+# Run db migrations on app servers, not db server
+set :migration_role, :app
+
 # honeybadger_env otherwise defaults to rails_env
 set :honeybadger_env, fetch(:stage)
 
