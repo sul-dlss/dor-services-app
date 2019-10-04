@@ -34,7 +34,7 @@ set :log_level, :info
 # set :keep_releases, 5
 
 set :linked_dirs, %w(log tmp/pids tmp/cache tmp/sockets vendor/bundle config/certs config/settings)
-set :linked_files, %w(bin/write_marc_record config/secrets.yml config/honeybadger.yml config/newrelic.yml)
+set :linked_files, %w(bin/write_marc_record config/secrets.yml config/honeybadger.yml config/newrelic.yml config/database.yml)
 
 # Sidekiq configuration (run one process)
 # see sidekiq.yml for concurrency and queue settings
