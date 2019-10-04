@@ -43,6 +43,7 @@ set :sidekiq_processes, 1
 # capistrano will run sidekiq in the `stage` or `prod` env (from the capistrano
 # stage rather than the Rails environment).
 set :sidekiq_env, 'production'
+set :rails_env, 'production'
 
 # Run db migrations on app servers, not db server
 set :migration_role, :app
