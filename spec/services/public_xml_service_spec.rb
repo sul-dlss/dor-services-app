@@ -216,6 +216,36 @@ RSpec.describe PublicXmlService do
         expect(ng_xml.at_xpath('/publicObject/thumb').to_xml).to be_equivalent_to('<thumb>jw923xn5254/2542B.jp2</thumb>')
       end
 
+      context 'when the referenced object does not have the referenced resource' do
+        let(:cover_item) { instance_double(Dor::Item, pid: 'druid:cg767mn6478', contentMetadata: contentMetadata) }
+        let(:contentMetadata) { instance_double(Dor::ContentMetadataDS, ng_xml: Nokogiri::XML(cm_xml)) }
+        let(:cm_xml) do
+          <<-EOXML
+          <contentMetadata objectId="cg767mn6478" type="map">
+          </contentMetadata>
+          EOXML
+        end
+
+        before do
+          item.contentMetadata.content = <<-EOXML
+          <contentMetadata objectId="hj097bm8879" type="map">
+            <resource id="hj097bm8879_1" sequence="1" type="image">
+              <externalFile fileId="2542A.jp2" objectId="druid:cg767mn6478" resourceId="cg767mn6478_1" />
+              <relationship objectId="druid:cg767mn6478" type="alsoAvailableAs"/>
+            </resource>
+          </contentMetadata>
+          EOXML
+
+          allow(Dor).to receive(:find).with(cover_item.pid).and_return(cover_item)
+        end
+
+        it 'raises an error' do
+          expect { xml }.to raise_error(Dor::DataError, 'The contentMetadata of druid:ab123cd4567 has an exernalFile ' \
+            "reference to druid:cg767mn6478, cg767mn6478_1, but druid:cg767mn6478 doesn't have " \
+            "a matching resource node in it's contentMetadata")
+        end
+      end
+
       context 'when the referenced object does not have the referenced image' do
         let(:cover_item) { instance_double(Dor::Item, pid: 'druid:cg767mn6478', contentMetadata: contentMetadata) }
         let(:contentMetadata) { instance_double(Dor::ContentMetadataDS, ng_xml: Nokogiri::XML(cm_xml)) }
