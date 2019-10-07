@@ -353,6 +353,16 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "422": {
+            "description": "There is a problem with the data that makes is impossible to publish",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "parameters": [

@@ -44,7 +44,11 @@ class ObjectsController < ApplicationController
     begin
       PublishMetadataService.publish(@item)
     rescue Dor::DataError => e
-      return render status: :unprocessable_entity, plain: e.message
+      return render json: {
+        errors: [
+          { title: 'Data error', detail: e.message }
+        ]
+      }, status: :unprocessable_entity
     end
     head :created
   end

@@ -19,7 +19,8 @@ RSpec.describe 'Publish object' do
     it 'returns a 422 error with location header' do
       post '/v1/objects/druid:1234/publish', headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq(422)
-      expect(response.body).to eq(error_message)
+      json = JSON.parse(response.body)
+      expect(json.fetch('errors').first.fetch('detail')).to eq(error_message)
     end
   end
 
