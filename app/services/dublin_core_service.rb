@@ -3,7 +3,7 @@
 class DublinCoreService
   MODS_TO_DC_XSLT = Nokogiri::XSLT(File.new(File.expand_path(File.dirname(__FILE__) + '/mods2dc.xslt')))
   XMLNS_OAI_DC = 'http://www.openarchives.org/OAI/2.0/oai_dc/'
-  class CrosswalkError < RuntimeError; end
+  class CrosswalkError < Dor::DataError; end
 
   def initialize(work, include_collection_as_related_item: true)
     @work = work

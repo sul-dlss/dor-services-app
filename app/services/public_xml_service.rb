@@ -8,6 +8,7 @@ class PublicXmlService
     @object = object
   end
 
+  # @raises [Dor::DataError]
   def to_xml
     pub = Nokogiri::XML('<publicObject/>').root
     pub['id'] = object.pid
@@ -104,6 +105,13 @@ class PublicXmlService
     # locate and extract the resourceId/fileId elements
     doc = src_item.contentMetadata.ng_xml
     src_resource = doc.at_xpath("//resource[@id=\"#{src_resource_id}\"]")
+
+    unless src_resource
+      raise Dor::DataError, "The contentMetadata of #{object.pid} has an externalFile "\
+        "reference to #{src_druid}, #{src_resource_id}, but #{src_druid} doesn't have " \
+        'a matching resource node in its contentMetadata'
+    end
+
     src_file = src_resource.at_xpath("file[@id=\"#{src_file_id}\"]")
     raise Dor::DataError, "Unable to find a file node with id=\"#{src_file_id}\" (child of #{object.pid})" unless src_file
 

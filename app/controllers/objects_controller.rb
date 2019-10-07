@@ -15,10 +15,6 @@ class ObjectsController < ApplicationController
     render status: :conflict, plain: e.message, location: object_location(e.pid)
   end
 
-  rescue_from(DublinCoreService::CrosswalkError) do |e|
-    render status: :internal_server_error, plain: e.message
-  end
-
   rescue_from(SymphonyReader::ResponseError) do |e|
     render status: :internal_server_error, plain: e.message
   end
@@ -45,7 +41,15 @@ class ObjectsController < ApplicationController
   end
 
   def publish
-    PublishMetadataService.publish(@item)
+    begin
+      PublishMetadataService.publish(@item)
+    rescue Dor::DataError => e
+      return render json: {
+        errors: [
+          { title: 'Data error', detail: e.message }
+        ]
+      }, status: :unprocessable_entity
+    end
     head :created
   end
 
