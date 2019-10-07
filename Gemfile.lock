@@ -87,9 +87,9 @@ GEM
       capistrano (~> 3.1)
       capistrano-bundler (~> 1.1)
     capistrano-shared_configs (0.2.2)
-    capistrano-sidekiq (1.0.2)
+    capistrano-sidekiq (1.0.3)
       capistrano (>= 3.9.0)
-      sidekiq (>= 3.4)
+      sidekiq (>= 3.4, < 6.0)
     cocina-models (0.4.1)
       dry-struct (~> 1.0)
       dry-types (~> 1.1)
@@ -177,7 +177,7 @@ GEM
       dry-initializer (~> 3.0)
       dry-logic (~> 1.0)
       dry-types (~> 1.0)
-    dry-struct (1.0.0)
+    dry-struct (1.1.0)
       dry-core (~> 0.4, >= 0.4.3)
       dry-equalizer (~> 0.2)
       dry-types (~> 1.0)
@@ -370,7 +370,7 @@ GEM
       faraday (>= 0.9.0)
     rspec-core (3.8.2)
       rspec-support (~> 3.8.0)
-    rspec-expectations (3.8.5)
+    rspec-expectations (3.8.6)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.8.0)
     rspec-mocks (3.8.2)
@@ -412,11 +412,11 @@ GEM
       rest-client
     safe_yaml (1.0.5)
     scrub_rb (1.0.1)
-    sidekiq (6.0.1)
-      connection_pool (>= 2.2.2)
-      rack (>= 2.0.0)
-      rack-protection (>= 2.0.0)
-      redis (>= 4.1.0)
+    sidekiq (5.2.7)
+      connection_pool (~> 2.2, >= 2.2.2)
+      rack (>= 1.5.0)
+      rack-protection (>= 1.5.0)
+      redis (>= 3.3.5, < 5)
     sidekiq-statistic (1.4.0)
       sidekiq (>= 5.0)
       tilt (~> 2.0)
@@ -521,7 +521,7 @@ DEPENDENCIES
   rubocop-rails
   rubocop-rspec (~> 1.32.0)
   ruby-cache (~> 0.3.0)
-  sidekiq
+  sidekiq (~> 5.2)
   sidekiq-statistic
   simplecov
   spring

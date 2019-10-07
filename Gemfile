@@ -34,7 +34,7 @@ gem 'okcomputer'
 gem 'pg'
 gem 'progressbar' # for the cleaner rake task
 gem 'ruby-cache', '~> 0.3.0'
-gem 'sidekiq'
+gem 'sidekiq', '~> 5.2'
 gem 'sidekiq-statistic'
 gem 'uuidtools', '~> 2.1.4'
 
