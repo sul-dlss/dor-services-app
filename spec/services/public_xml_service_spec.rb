@@ -240,9 +240,9 @@ RSpec.describe PublicXmlService do
         end
 
         it 'raises an error' do
-          expect { xml }.to raise_error(Dor::DataError, 'The contentMetadata of druid:ab123cd4567 has an exernalFile ' \
+          expect { xml }.to raise_error(Dor::DataError, 'The contentMetadata of druid:ab123cd4567 has an externalFile ' \
             "reference to druid:cg767mn6478, cg767mn6478_1, but druid:cg767mn6478 doesn't have " \
-            "a matching resource node in it's contentMetadata")
+            'a matching resource node in its contentMetadata')
         end
       end
 

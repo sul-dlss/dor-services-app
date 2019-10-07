@@ -8,6 +8,7 @@ class PublicXmlService
     @object = object
   end
 
+  # @raises [Dor::DataError]
   def to_xml
     pub = Nokogiri::XML('<publicObject/>').root
     pub['id'] = object.pid
@@ -106,9 +107,9 @@ class PublicXmlService
     src_resource = doc.at_xpath("//resource[@id=\"#{src_resource_id}\"]")
 
     unless src_resource
-      raise Dor::DataError, "The contentMetadata of #{object.pid} has an exernalFile "\
+      raise Dor::DataError, "The contentMetadata of #{object.pid} has an externalFile "\
         "reference to #{src_druid}, #{src_resource_id}, but #{src_druid} doesn't have " \
-        "a matching resource node in it's contentMetadata"
+        'a matching resource node in its contentMetadata'
     end
 
     src_file = src_resource.at_xpath("file[@id=\"#{src_file_id}\"]")

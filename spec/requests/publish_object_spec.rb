@@ -13,12 +13,12 @@ RSpec.describe 'Publish object' do
     let(:error_message) { "DublinCoreService#ng_xml produced incorrect xml (no children):\n<xml/>" }
 
     before do
-      allow(PublishMetadataService).to receive(:publish).and_raise(DublinCoreService::CrosswalkError, error_message)
+      allow(PublishMetadataService).to receive(:publish).and_raise(Dor::DataError, error_message)
     end
 
-    it 'returns a 409 error with location header' do
+    it 'returns a 422 error with location header' do
       post '/v1/objects/druid:1234/publish', headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response.status).to eq(500)
+      expect(response.status).to eq(422)
       expect(response.body).to eq(error_message)
     end
   end
