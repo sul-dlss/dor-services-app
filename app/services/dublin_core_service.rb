@@ -5,9 +5,9 @@ class DublinCoreService
   XMLNS_OAI_DC = 'http://www.openarchives.org/OAI/2.0/oai_dc/'
   class CrosswalkError < Dor::DataError; end
 
-  def initialize(work, include_collection_as_related_item: true)
+  # @param [Dor::Item] work the item to generate the DublinCore for.
+  def initialize(work)
     @work = work
-    @include_collection = include_collection_as_related_item
   end
 
   # Generates Dublin Core from the MODS in the descMetadata datastream using the LoC mods2dc stylesheet
@@ -29,13 +29,8 @@ class DublinCoreService
   private
 
   def desc_md
-    return PublicDescMetadataService.new(work).ng_xml(include_access_conditions: false) if include_collection?
-
-    work.descMetadata.ng_xml
+    PublicDescMetadataService.new(work).ng_xml(include_access_conditions: false)
   end
 
-  def include_collection?
-    @include_collection
-  end
   attr_reader :work
 end
