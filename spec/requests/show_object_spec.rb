@@ -19,7 +19,7 @@ RSpec.describe 'Get the object' do
       let(:expected) do
         {
           externalIdentifier: 'druid:1234',
-          type: 'object',
+          type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
           label: 'foo',
           version: 1,
           access: {},
@@ -54,7 +54,7 @@ RSpec.describe 'Get the object' do
       let(:expected) do
         {
           externalIdentifier: 'druid:1234',
-          type: 'object',
+          type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
           label: 'foo',
           version: 1,
           access: {
@@ -97,7 +97,7 @@ RSpec.describe 'Get the object' do
       let(:expected) do
         {
           externalIdentifier: 'druid:1234',
-          type: 'admin_policy',
+          type: 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld',
           label: 'foo',
           version: 1,
           access: {},
