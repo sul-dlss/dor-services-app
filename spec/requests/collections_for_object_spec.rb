@@ -18,13 +18,11 @@ RSpec.describe 'Get the object' do
       collections: [
         {
           externalIdentifier: 'druid:999123',
-          type: 'collection',
+          type: 'http://cocina.sul.stanford.edu/models/collection.jsonld',
           label: 'collection #1',
           version: 1,
           access: {},
-          administrative: {
-            releaseTags: []
-          },
+          administrative: {},
           identification: {},
           structural: {}
         }

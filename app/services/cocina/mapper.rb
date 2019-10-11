@@ -3,6 +3,9 @@
 module Cocina
   # Maps Dor::Items to Cocina objects
   class Mapper
+    # Raised when called on something other than an item or collection
+    class UnsupportedObjectType < StandardError; end
+
     def self.build(item)
       new(item).build
     end
@@ -12,22 +15,53 @@ module Cocina
     end
 
     def build
-      props = {
+      klass = cocina_klass
+      props = if klass == Cocina::Models::DRO
+                dro_props
+              elsif klass == Cocina::Models::Collection
+                collection_props
+              elsif klass == Cocina::Models::AdminPolicy
+                apo_props
+              else
+                raise "unable to build '#{klass}'"
+              end
+      klass.new(props)
+    end
+
+    def dro_props
+      {
         externalIdentifier: item.pid,
-        type: type,
+        type: Cocina::Models::DRO::TYPES.first,
         label: item.label,
-        version: item.current_version.to_i # TODO: remove to_i after upgrading cocina-models to 0.5.0
-      }
-
-      # Collections don't have embargoMetadata
-      if type == 'object' && item.embargoMetadata.release_date
-        props[:access] = {
-          embargoReleaseDate: item.embargoMetadata.release_date.iso8601
-        }
+        version: item.current_version,
+        administrative: build_administrative
+      }.tap do |props|
+        if item.embargoMetadata.release_date
+          props[:access] = {
+            embargoReleaseDate: item.embargoMetadata.release_date.iso8601
+          }
+        end
       end
+    end
 
-      props[:administrative] = build_administrative
-      Cocina::Models::DRO.new(props)
+    def collection_props
+      {
+        externalIdentifier: item.pid,
+        type: Cocina::Models::Collection::TYPES.first,
+        label: item.label,
+        version: item.current_version,
+        administrative: build_administrative
+      }
+    end
+
+    def apo_props
+      {
+        externalIdentifier: item.pid,
+        type: Cocina::Models::AdminPolicy::TYPES.first,
+        label: item.label,
+        version: item.current_version,
+        administrative: build_administrative
+      }
     end
 
     private
@@ -36,7 +70,7 @@ module Cocina
 
     def build_administrative
       {}.tap do |admin|
-        admin[:releaseTags] = build_release_tags unless type == 'admin_policy'
+        admin[:releaseTags] = build_release_tags
       end
     end
 
@@ -53,16 +87,16 @@ module Cocina
     end
 
     # @todo This should have more speicific type such as found in identityMetadata.objectType
-    def type
+    def cocina_klass
       case item
       when Dor::Item
-        'object'
+        Cocina::Models::DRO
       when Dor::Collection
-        'collection'
+        Cocina::Models::Collection
       when Dor::AdminPolicyObject
-        'admin_policy'
+        Cocina::Models::AdminPolicy
       else
-        raise "Unknown type for #{item.class}"
+        raise UnsupportedObjectType, "Unknown type for #{item.class}"
       end
     end
   end
