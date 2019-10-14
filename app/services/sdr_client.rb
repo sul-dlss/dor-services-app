@@ -15,6 +15,7 @@ class SdrClient
     @druid = druid
   end
 
+  # @return [Faraday::Response] with body of cm-inv-diff as xml
   def content_diff(current_content:, subset:, version: nil)
     query_params = { subset: subset }
     query_params[:version] = version unless version.nil?
