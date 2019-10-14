@@ -56,10 +56,17 @@ RSpec.describe ShelvingService do
         allow(SdrClient).to receive(:new).with(druid).and_return(sdr_client)
       end
 
-      let(:sdr_client) { instance_double(SdrClient, content_diff: inventory_diff) }
-      # read in a FileInventoryDifference manifest from the fixtures area
+      let(:sdr_resp) { instance_double(Faraday::Response, body: file_inventory_diff) }
+      let(:sdr_client) { instance_double(SdrClient, content_diff: sdr_resp) }
       let(:xml_pathname) { Pathname('spec').join('fixtures', 'content_diff_reports', 'jq937jp0017-v1-v2.xml') }
-      let(:inventory_diff) { Moab::FileInventoryDifference.parse(xml_pathname.read) }
+      let(:content_inventory_diff) { xml_pathname.read }
+      let(:file_inventory_diff) do
+        <<-XML
+          <fileInventoryDifference objectId="druid:jq937jp0017" differenceCount="3" basis="v1-contentMetadata-shelve" other="new-contentMetadata-shelve" reportDatetime="2019-10-14T21:53:38Z">
+            #{content_inventory_diff.sub('<?xml version="1.0" encoding="UTF-8"?>', '')}
+          </fileInventoryDifference>
+        XML
+      end
 
       it 'retrieves the differences between the current contentMetadata and the previously ingested version' do
         expect(result.to_xml).to be_equivalent_to(<<-XML

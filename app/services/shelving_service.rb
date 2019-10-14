@@ -38,7 +38,8 @@ class ShelvingService
 
     client = SdrClient.new(work.pid)
     current_content = work.contentMetadata.content
-    inventory_diff = client.content_diff(current_content: current_content, subset: 'shelve')
+    sdr_resp = client.content_diff(current_content: current_content, subset: 'shelve')
+    inventory_diff = Moab::FileInventoryDifference.parse(sdr_resp.body)
     inventory_diff.group_difference('content')
   end
 
