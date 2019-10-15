@@ -16,7 +16,10 @@ class PublishMetadataService
   def publish
     return unpublish unless world_discoverable?
 
-    transfer_metadata
+    # Retrieve release tags from identityMetadata and all collections this item is a member of
+    release_tags = Dor::ReleaseTagService.for(item).released_for(skip_live_purl: true)
+
+    transfer_metadata(release_tags)
     publish_notify_on_success
   end
 
@@ -25,14 +28,12 @@ class PublishMetadataService
   attr_reader :item
 
   # @raises [Dor::DataError]
-  def transfer_metadata
+  def transfer_metadata(release_tags)
     transfer_to_document_store(DublinCoreService.new(item).ng_xml.to_xml(&:no_declaration), 'dc')
     %w[identityMetadata contentMetadata rightsMetadata].each do |stream|
       transfer_to_document_store(item.datastreams[stream].content.to_s, stream) if item.datastreams[stream]
     end
-    # Retrieve release tags from metadata and PURL
-    released_for = Dor::ReleaseTagService.for(item).released_for(skip_live_purl: false)
-    transfer_to_document_store(PublicXmlService.new(item, released_for: released_for).to_xml, 'public')
+    transfer_to_document_store(PublicXmlService.new(item, released_for: release_tags).to_xml, 'public')
     transfer_to_document_store(PublicDescMetadataService.new(item).to_xml, 'mods')
   end
 
