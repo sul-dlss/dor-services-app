@@ -131,7 +131,7 @@ RSpec.describe ShelvingService do
 
     context 'when the manifest files are not in the workspace' do
       it 'raises an error' do
-        expect { subject }.to raise_error(RuntimeError, /content dir not found/)
+        expect { subject }.to raise_error(ShelvingService::ContentDirNotFoundError, /content dir not found/)
       end
     end
 

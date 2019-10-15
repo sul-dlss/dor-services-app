@@ -31,11 +31,4 @@ module DorServices
     # This makes sure our Postgres enums function are persisted to the schema
     config.active_record.schema_format = :sql
   end
-
-  # see https://pdabrowski.com/blog/ruby-rescue-from-errors-with-grace
-  class ContentDirNotFoundError < RuntimeError
-    def self.===(exception)
-      exception.class == RuntimeError && exception.message.match(/content dir not found for /)
-    end
-  end
 end

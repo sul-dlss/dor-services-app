@@ -2,6 +2,8 @@
 
 # Push file changes for shelve-able files into stacks
 class ShelvingService
+  class ContentDirNotFoundError < RuntimeError; end
+
   def self.shelve(work)
     new(work).shelve
   end
@@ -52,7 +54,13 @@ class ShelvingService
     filelist = deltas[:modified] + deltas[:added] + deltas[:copyadded].collect { |_old, new| new }
     return nil if filelist.empty?
 
-    Pathname(workspace_druid.find_filelist_parent('content', filelist))
+    begin
+      Pathname(workspace_druid.find_filelist_parent('content', filelist))
+    rescue RuntimeError => e
+      raise e unless e.message.match(/content dir not found for /)
+
+      raise ContentDirNotFoundError, e
+    end
   end
 
   # get the stack location based on the contentMetadata stacks attribute
