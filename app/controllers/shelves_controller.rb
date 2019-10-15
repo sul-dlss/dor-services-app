@@ -4,11 +4,6 @@
 class ShelvesController < ApplicationController
   before_action :load_item, only: :create
 
-  # exception defined in application.rb;  see https://pdabrowski.com/blog/ruby-rescue-from-errors-with-grace
-  rescue_from(DorServices::ContentDirNotFoundError) do |e|
-    render status: :internal_server_error, plain: e.message
-  end
-
   def create
     if @item.is_a?(Dor::Item)
       ShelvingService.shelve(@item)
@@ -20,5 +15,11 @@ class ShelvesController < ApplicationController
         ]
       }, status: :unprocessable_entity
     end
+  rescue ShelvingService::ContentDirNotFoundError => e
+    render json: {
+      errors: [
+        { title: 'Content directory not found', detail: e.message }
+      ]
+    }, status: :unprocessable_entity
   end
 end
