@@ -3,7 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe PublicXmlService do
-  subject(:service) { described_class.new(item) }
+  subject(:service) { described_class.new(item, released_for: release_tags) }
+
+  let(:release_tags) { {} }
 
   let(:item) { instantiate_fixture('druid:ab123cd4567', Dor::Item) }
 
@@ -64,11 +66,7 @@ RSpec.describe PublicXmlService do
     let(:ng_xml) { Nokogiri::XML(xml) }
 
     context 'when there are no release tags' do
-      let(:release_service) { instance_double(Dor::ReleaseTagService, released_for: {}) }
-
-      before do
-        allow(Dor::ReleaseTagService).to receive(:for).and_return(release_service)
-      end
+      let(:release_tags) { {} }
 
       it 'does not include a releaseData element and any info in identityMetadata' do
         expect(ng_xml.at_xpath('/publicObject/releaseData')).to be_nil
@@ -171,22 +169,19 @@ RSpec.describe PublicXmlService do
         expect(ng_xml.at_xpath('/publicObject/thumb').to_xml).to be_equivalent_to('<thumb>ab123cd4567/ab123cd4567_05_0002.jp2</thumb>')
       end
 
-      it 'includes releaseData element from release tags' do
-        releases = ng_xml.xpath('/publicObject/releaseData/release')
-        expect(releases.map(&:inner_text)).to eq %w[true true]
-        expect(releases.map { |r| r['to'] }).to eq %w[Searchworks Some_special_place]
-      end
-
       context 'when there is content inside it' do
-        let(:release_service) { instance_double(Dor::ReleaseTagService, released_for: { '' => { 'release' => 'foo' } }) }
-
-        before do
-          allow(Dor::ReleaseTagService).to receive(:for).and_return(release_service)
+        let(:release_tags) do
+          { 'Searchworks' => { 'release' => true }, 'Some_special_place' => { 'release' => true } }
         end
 
-        it 'include a releaseData element, but does not include this release data in identityMetadata' do
-          expect(ng_xml.at_xpath('/publicObject/releaseData/release').inner_text).to eq 'foo'
+        it 'does not include this release data in identityMetadata' do
           expect(ng_xml.at_xpath('/publicObject/identityMetadata/release')).to be_nil
+        end
+
+        it 'includes releaseData element from release tags' do
+          releases = ng_xml.xpath('/publicObject/releaseData/release')
+          expect(releases.map(&:inner_text)).to eq %w[true true]
+          expect(releases.map { |r| r['to'] }).to eq %w[Searchworks Some_special_place]
         end
       end
     end

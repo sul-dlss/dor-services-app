@@ -30,7 +30,9 @@ class PublishMetadataService
     %w[identityMetadata contentMetadata rightsMetadata].each do |stream|
       transfer_to_document_store(item.datastreams[stream].content.to_s, stream) if item.datastreams[stream]
     end
-    transfer_to_document_store(PublicXmlService.new(item).to_xml, 'public')
+    # Retrieve release tags from metadata and PURL
+    released_for = Dor::ReleaseTagService.for(item).released_for(skip_live_purl: false)
+    transfer_to_document_store(PublicXmlService.new(item, released_for: released_for).to_xml, 'public')
     transfer_to_document_store(PublicDescMetadataService.new(item).to_xml, 'mods')
   end
 
