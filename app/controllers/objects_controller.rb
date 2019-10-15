@@ -41,16 +41,9 @@ class ObjectsController < ApplicationController
   end
 
   def publish
-    begin
-      PublishMetadataService.publish(@item)
-    rescue Dor::DataError => e
-      return render json: {
-        errors: [
-          { title: 'Data error', detail: e.message }
-        ]
-      }, status: :unprocessable_entity
-    end
-    head :created
+    result = BackgroundJobResult.create
+    PublishJob.perform_later(druid: params[:id], background_job_result: result)
+    head :created, location: result
   end
 
   def update_marc_record

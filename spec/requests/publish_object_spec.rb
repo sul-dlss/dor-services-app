@@ -7,33 +7,13 @@ RSpec.describe 'Publish object' do
 
   before do
     allow(Dor).to receive(:find).and_return(object)
+    allow(PublishJob).to receive(:perform_later)
   end
 
-  context 'with bad metadata' do
-    let(:error_message) { "DublinCoreService#ng_xml produced incorrect xml (no children):\n<xml/>" }
+  it 'calls PublishMetadataService and returns 201' do
+    post '/v1/objects/druid:1234/publish', headers: { 'Authorization' => "Bearer #{jwt}" }
 
-    before do
-      allow(PublishMetadataService).to receive(:publish).and_raise(Dor::DataError, error_message)
-    end
-
-    it 'returns a 422 error with location header' do
-      post '/v1/objects/druid:1234/publish', headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response.status).to eq(422)
-      json = JSON.parse(response.body)
-      expect(json.fetch('errors').first.fetch('detail')).to eq(error_message)
-    end
-  end
-
-  context 'when the request is successful' do
-    before do
-      allow(PublishMetadataService).to receive(:publish)
-    end
-
-    it 'calls PublishMetadataService and returns 201' do
-      post '/v1/objects/druid:1234/publish', headers: { 'Authorization' => "Bearer #{jwt}" }
-
-      expect(PublishMetadataService).to have_received(:publish)
-      expect(response.status).to eq(201)
-    end
+    expect(PublishJob).to have_received(:perform_later).with(druid: 'druid:1234', background_job_result: BackgroundJobResult)
+    expect(response.status).to eq(201)
   end
 end
