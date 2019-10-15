@@ -30,6 +30,8 @@ class ItemQueryService
   def self.find_combinable_item(druid)
     query_service = ItemQueryService.new(id: druid)
     query_service.item do |item|
+      workflow_errors = WorkflowErrorCheckingService.check(item: item, version: item.current_version)
+      raise UncombinableItemError, "Item #{item.pid} has workflow errors: #{workflow_errors.join('; ')}" if workflow_errors.any?
       raise UncombinableItemError, "Item #{item.pid} is not open or openable" unless VersionService.open?(item) || VersionService.can_open?(item)
       raise UncombinableItemError, "Item #{item.pid} is dark" if item.rightsMetadata.dra_object.dark?
       raise UncombinableItemError, "Item #{item.pid} is citation_only" if item.rightsMetadata.dra_object.citation_only?
