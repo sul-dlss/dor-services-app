@@ -105,11 +105,15 @@ RSpec.describe PublishMetadataService do
           expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(no_args)
         end
 
+        let(:release_tags) do
+          { 'Searchworks' => { 'release' => true }, 'Some_special_place' => { 'release' => true } }
+        end
+
         it 'identityMetadta, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
           item.rightsMetadata.content = "<rightsMetadata><access type='discover'><machine><world/></machine></access></rightsMetadata>"
           service.publish
           expect(DublinCoreService).to have_received(:new).with(item)
-          expect(PublicXmlService).to have_received(:new).with(item)
+          expect(PublicXmlService).to have_received(:new).with(item, released_for: release_tags)
           expect(PublicDescMetadataService).to have_received(:new).with(item)
         end
 

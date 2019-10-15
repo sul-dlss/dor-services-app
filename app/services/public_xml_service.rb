@@ -4,8 +4,11 @@
 class PublicXmlService
   attr_reader :object
 
-  def initialize(object)
+  # @param [Dor::Item] object
+  # @param [Hash{String => Boolean}] released_for keys are Project name strings, values are boolean
+  def initialize(object, released_for:)
     @object = object
+    @released_for = released_for
   end
 
   # @raises [Dor::DataError]
@@ -35,6 +38,8 @@ class PublicXmlService
 
   private
 
+  attr_reader :released_for
+
   # Generate XML structure for inclusion to Purl
   # @return [String] The XML release node as a string, with ReleaseDigest as the root document
   def release_xml
@@ -48,10 +53,6 @@ class PublicXmlService
       end
       Nokogiri::XML(builder.to_xml)
     end
-  end
-
-  def released_for
-    Dor::ReleaseTagService.for(object).released_for(skip_live_purl: false)
   end
 
   def public_relationships
