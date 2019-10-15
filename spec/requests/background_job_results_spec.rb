@@ -56,7 +56,7 @@ RSpec.describe 'background job result' do
   end
 
   context 'when it is complete' do
-    let(:background_job_result) { create(:background_job_result, code: code, output: output) }
+    let(:background_job_result) { create(:background_job_result, output: output) }
 
     before do
       background_job_result.complete!
@@ -65,7 +65,6 @@ RSpec.describe 'background job result' do
     end
 
     context 'without errors' do
-      let(:code) { 200 }
       let(:output) { { result: 'succeeded!' } }
 
       it 'renders an HTTP 200 status code' do
@@ -82,7 +81,6 @@ RSpec.describe 'background job result' do
     end
 
     context 'with errors' do
-      let(:code) { 200 }
       let(:output) { { errors: [{ detail: 'failed!' }] } }
 
       it 'renders an HTTP 200 status code' do

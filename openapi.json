@@ -316,12 +316,18 @@
         "description": "Combines a parent object with child objects to create an object like an Atlas (composed of several images)",
         "operationId": "virtual_objects#create",
         "responses": {
-          "204": {
-            "description": "objects created"
+          "201": {
+            "description": "Virtual merge action started",
+            "headers": {
+              "Location": {
+                "description": "the status of the action is found at this URI",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
           },
-          "422": {
-            "description": "unable to process request"
-          }
         },
         "requestBody": {
           "content": {
@@ -351,15 +357,14 @@
         "description": "",
         "operationId": "objects#publish",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "422": {
-            "description": "There is a problem with the data that makes is impossible to publish",
-            "content": {
-              "application/json": {
+          "201": {
+            "description": "Publishing action started",
+            "headers": {
+              "Location": {
+                "description": "the status of the action is found at this URI",
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "type": "string",
+                  "format": "uri"
                 }
               }
             }

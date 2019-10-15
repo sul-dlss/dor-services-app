@@ -20,7 +20,6 @@ class CreateVirtualObjectsJob < ApplicationJob
     end
 
     background_job_result.output = { errors: errors } if errors.any?
-    background_job_result.code = 200
 
     background_job_result.complete!
   end
