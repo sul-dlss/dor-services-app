@@ -23,6 +23,34 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
+
+
+--
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
+
+
+--
 -- Name: background_job_result_status; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -82,6 +110,18 @@ ALTER SEQUENCE public.background_job_results_id_seq OWNED BY public.background_j
 
 
 --
+-- Name: orm_resources; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.orm_resources (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -114,11 +154,26 @@ ALTER TABLE ONLY public.background_job_results
 
 
 --
+-- Name: orm_resources orm_resources_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.orm_resources
+    ADD CONSTRAINT orm_resources_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: index_orm_resources_on_metadata; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orm_resources_on_metadata ON public.orm_resources USING gin (metadata);
 
 
 --
@@ -129,6 +184,8 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20190917215521'),
-('20191015193638');
+('20191015193638'),
+('20191022214000'),
+('20191022215628');
 
 
