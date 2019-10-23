@@ -1,9 +1,3 @@
-# SSL
-ssl:
-  cert_file: "/etc/pki/tls/certs/<%= (`echo $HOSTNAME`).strip.gsub('.stanford.edu', '') %>-dor-prod.crt"
-  key_file: "/etc/pki/tls/private/<%= (`echo $HOSTNAME`).strip.gsub('.stanford.edu', '') %>-dor-prod.key"
-  key_pass: 'password'
-
 content:
   base_dir: '/dor/workspace'
 

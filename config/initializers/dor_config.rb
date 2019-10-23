@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 Dor.configure do
+  # rubocop:disable Style/MultilineIfModifier
   ssl do
     cert_file Settings.ssl.cert_file
     key_file Settings.ssl.key_file
     key_pass Settings.ssl.key_pass
-  end
+  end if Settings.ssl
+  # rubocop:enable Style/MultilineIfModifier
 
   fedora do
     url Settings.fedora_url
