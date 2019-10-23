@@ -1,1 +1,6 @@
 fedora_url: 'http://fedoraAdmin:fedoraAdmin@localhost:8983/fedora'
+
+workflow_url: 'http://localhost:3001/'
+
+solr:
+  url: 'http://localhost:8984/solr/dorservices'
