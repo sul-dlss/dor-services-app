@@ -585,6 +585,16 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "422": {
+            "description": "There was a problem removing the workspace.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "parameters": [

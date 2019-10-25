@@ -21,6 +21,8 @@ class WorkspacesController < ApplicationController
       CleanupService.cleanup_by_druid druid
     end
     head :no_content
+  rescue Errno::ENOENT => e
+    render build_error('Unable to remove directory', e)
   end
 
   # Once an object has been transferred to preservation clean up the workspace.
@@ -38,5 +40,22 @@ class WorkspacesController < ApplicationController
     full_druid_tree = DruidTools::Druid.new(druid, workspace_root)
     truncate_druid_tree = DruidTools::AccessDruid.new(druid, workspace_root)
     (!Dir.glob(truncate_druid_tree.path).empty? && !Dir.glob(full_druid_tree.path + '*').empty?)
+  end
+
+  # JSON-API error response
+  def build_error(msg, err)
+    {
+      json: {
+        errors: [
+          {
+            "status": '422',
+            "title": msg,
+            "detail": err.message
+          }
+        ]
+      },
+      content_type: 'application/vnd.api+json',
+      status: :unprocessable_entity
+    }
   end
 end

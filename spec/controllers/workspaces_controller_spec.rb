@@ -62,21 +62,6 @@ RSpec.describe WorkspacesController do
     end
   end
 
-  describe '#destroy' do
-    before do
-      login
-      allow(CleanupService).to receive(:cleanup_by_druid)
-    end
-
-    let(:druid) { 'druid:aa222cc3333' }
-
-    it 'is successful' do
-      delete :destroy, params: { object_id: druid }
-      expect(CleanupService).to have_received(:cleanup_by_druid).with(druid)
-      expect(response).to be_no_content
-    end
-  end
-
   describe '#reset' do
     before do
       login
