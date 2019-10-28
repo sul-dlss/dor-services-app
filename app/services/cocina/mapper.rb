@@ -41,6 +41,9 @@ module Cocina
             embargoReleaseDate: item.embargoMetadata.release_date.iso8601
           }
         end
+        props[:structural] = {
+          contains: item.contentMetadata.resource.id
+        }
       end
     end
 
