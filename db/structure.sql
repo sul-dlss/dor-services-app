@@ -117,7 +117,8 @@ CREATE TABLE public.orm_resources (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    resource_type character varying
 );
 
 

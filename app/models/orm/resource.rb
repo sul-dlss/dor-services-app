@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Orm
   # ActiveRecord class which the Postgres adapter uses for persisting data.
   # @!attribute id
@@ -11,7 +13,7 @@ module Orm
   # @!attribute internal_resource
   #   @return [String] Name of {Valkyrie::Resource} model - used for casting.
   #
-  class Resource < ActiveRecord::Base
+  class Resource < ApplicationRecord
     self.table_name = 'orm_resources'
   end
 end
