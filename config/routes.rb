@@ -13,7 +13,7 @@ Rails.application.routes.draw do
     scope '/sdr/objects/:druid' do
       post 'cm-inv-diff', to: 'sdr#cm_inv_diff'
       get 'current_version', to: 'sdr#current_version' # deprecated; caller should use preservation-client
-      get 'manifest/:dsname', to: 'sdr#ds_manifest', format: false, constraints: { dsname: /.+/ }
+      get 'manifest/:dsname', to: 'sdr#ds_manifest', format: false, constraints: { dsname: /.+/ } # deprecated
       get 'metadata/:dsname', to: 'sdr#ds_metadata', format: false, constraints: { dsname: /.+/ }
       get 'content/:filename', to: 'sdr#file_content', format: false, constraints: { filename: /.+/ }
     end
@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     resources :objects, only: [:create, :show] do
       member do
         post 'publish'
+        post 'preserve'
         post 'update_marc_record'
         post 'notify_goobi'
         post 'release_tags'

@@ -17,7 +17,9 @@ class SdrController < ApplicationController
     proxy_faraday_response(sdr_response)
   end
 
+  # Deprecated
   def ds_manifest
+    Honeybadger.notify('dor-services-app deprecated API endpoint `sdr#ds_manifest` called.')
     sdr_response = sdr_client.manifest(ds_name: params[:dsname])
     proxy_faraday_response(sdr_response)
   end
