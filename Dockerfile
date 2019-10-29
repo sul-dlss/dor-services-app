@@ -18,12 +18,14 @@ RUN apk --no-cache add \
 RUN mkdir /app
 WORKDIR /app
 
-COPY Gemfile Gemfile.lock ./
-
 RUN apk --no-cache add --virtual build-dependencies \
   build-base \
   && bundle install --without production \
   && apk del build-dependencies
+
+COPY Gemfile Gemfile.lock ./
+
+RUN bundle install
 
 COPY . .
 
