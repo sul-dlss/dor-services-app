@@ -18,11 +18,12 @@ RSpec.describe RegistrationService do
       allow(Dor::SuriService).to receive(:mint_id).and_return(@pid)
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
       allow(ActiveFedora::Base).to receive(:connection_for_pid).and_return(@mock_repo)
-      # allow_any_instance_of(Dor::Item).to receive(:save).and_return(true)
       allow_any_instance_of(Dor::Collection).to receive(:save).and_return(true)
       allow_any_instance_of(Dor::Item).to receive(:create).and_return(true)
+    end
 
-      @params = {
+    let(:params) do
+      {
         object_type: 'item',
         content_model: 'googleScannedBook',
         admin_policy: 'druid:fg890hi1234',
@@ -33,7 +34,7 @@ RSpec.describe RegistrationService do
       }
     end
 
-    let(:request) { RegistrationRequest.new(@params) }
+    let(:request) { RegistrationRequest.new(params) }
 
     let(:mock_collection) do
       coll = Dor::Collection.new
@@ -142,7 +143,7 @@ RSpec.describe RegistrationService do
 
     context 'exception should be raised for' do
       it 'registering a duplicate PID' do
-        @params[:pid] = @pid
+        params[:pid] = @pid
         expect(Dor::SearchService).to receive(:query_by_id).with('druid:ab123cd4567').and_return([@pid])
         expect { register }.to raise_error(Dor::DuplicateIdError)
       end
@@ -151,26 +152,24 @@ RSpec.describe RegistrationService do
         expect { register }.to raise_error(Dor::DuplicateIdError)
       end
       it 'missing a required parameter' do
-        @params.delete(:object_type)
+        params.delete(:object_type)
         expect { register }.to raise_error(Dor::ParameterError)
       end
 
       context 'when seed_datastream is present and something other than descMetadata' do
         it 'raises an error' do
-          @params[:seed_datastream] = ['invalid']
+          params[:seed_datastream] = ['invalid']
           expect { register }.to raise_error(Dor::ParameterError)
         end
       end
 
-      context 'empty label' do
+      context 'when the metadata_source is label and there is an empty label' do
         before do
-          @params[:label] = ''
+          params[:label] = ''
         end
 
-        it 'and metadata_source is label or none' do
-          @params[:metadata_source] = 'label'
-          expect { register }.to raise_error(Dor::ParameterError)
-          @params[:metadata_source] = 'none'
+        it 'raises an error' do
+          params[:metadata_source] = 'label'
           expect { register }.to raise_error(Dor::ParameterError)
         end
       end
@@ -179,9 +178,9 @@ RSpec.describe RegistrationService do
     RSpec.shared_examples 'common registration' do
       it 'produces a registered object' do
         expect(@obj.pid).to eq(@pid)
-        expect(@obj.label).to eq(@params[:label])
+        expect(@obj.label).to eq(params[:label])
         expect(@obj.identityMetadata.sourceId).to eq('barcode:9191919191')
-        expect(@obj.identityMetadata.otherId).to match_array(@params[:other_ids].collect { |*e| e.join(':') })
+        expect(@obj.identityMetadata.otherId).to match_array(params[:other_ids].collect { |*e| e.join(':') })
       end
     end
 
@@ -189,8 +188,8 @@ RSpec.describe RegistrationService do
       before do
         @coll = Dor::Collection.new(pid: @pid)
         expect(Dor::Collection).to receive(:new).with(pid: @pid).and_return(@coll)
-        @params[:rights] = 'stanford'
-        @params[:object_type] = 'collection'
+        params[:rights] = 'stanford'
+        params[:object_type] = 'collection'
         @obj = register
       end
 
@@ -202,7 +201,7 @@ RSpec.describe RegistrationService do
 
     context 'when seed_datastream is provided' do
       before do
-        @params[:seed_datastream] = ['descMetadata']
+        params[:seed_datastream] = ['descMetadata']
         allow(RefreshMetadataAction).to receive(:run)
       end
 
@@ -241,7 +240,7 @@ RSpec.describe RegistrationService do
 
       describe 'collection registration' do
         before do
-          @params[:collection] = 'druid:something'
+          params[:collection] = 'druid:something'
           expect(Dor::Collection).to receive(:find).with('druid:something').and_return(mock_collection)
           @obj = register
         end
@@ -268,7 +267,7 @@ RSpec.describe RegistrationService do
       context 'when passed rights=' do
         describe 'default' do
           before do
-            @params[:rights] = 'default'
+            params[:rights] = 'default'
             @obj = register
           end
 
@@ -280,7 +279,7 @@ RSpec.describe RegistrationService do
 
         describe 'world' do
           before do
-            @params[:rights] = 'world'
+            params[:rights] = 'world'
             @obj = register
           end
 
@@ -292,7 +291,7 @@ RSpec.describe RegistrationService do
 
         describe 'loc:music' do
           before do
-            @params[:rights] = 'loc:music'
+            params[:rights] = 'loc:music'
             @obj = register
           end
 
@@ -304,7 +303,7 @@ RSpec.describe RegistrationService do
 
         describe 'stanford no-download' do
           before do
-            @params[:rights] = 'stanford-nd'
+            params[:rights] = 'stanford-nd'
             @obj = register
           end
 
@@ -317,7 +316,7 @@ RSpec.describe RegistrationService do
 
       describe 'when passed metadata_source=label' do
         before do
-          @params[:metadata_source] = 'label'
+          params[:metadata_source] = 'label'
           @obj = register
         end
 
@@ -336,7 +335,7 @@ RSpec.describe RegistrationService do
 
       it 'truncates label if >= 255 chars' do
         # expect(Dor.logger).to receive(:warn).at_least(:once)
-        @params[:label] = 'a' * 256
+        params[:label] = 'a' * 256
         obj = register
         expect(obj.label).to eq('a' * 254)
       end
@@ -349,10 +348,11 @@ RSpec.describe RegistrationService do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
       allow(ActiveFedora::Base).to receive(:connection_for_pid).and_return(@mock_repo)
       allow_any_instance_of(Dor::Item).to receive(:save).and_return(true)
-      # allow_any_instance_of(Dor::Collection).to receive(:save).and_return(true)
       allow_any_instance_of(Dor::Item).to receive(:create).and_return(true)
+    end
 
-      @params = {
+    let(:params) do
+      {
         object_type: 'item',
         admin_policy: 'druid:fg890hi1234',
         label: 'web-archived-crawl for http://www.example.org',
@@ -361,25 +361,25 @@ RSpec.describe RegistrationService do
     end
 
     it 'source_id may have one or more colons' do
-      expect { described_class.create_from_request(@params) }.not_to raise_error
-      @params[:source_id] = 'sul:SOMETHING-http://www.example.org'
-      expect { described_class.create_from_request(@params) }.not_to raise_error
+      expect { described_class.create_from_request(params) }.not_to raise_error
+      params[:source_id] = 'sul:SOMETHING-http://www.example.org'
+      expect { described_class.create_from_request(params) }.not_to raise_error
     end
 
     it 'source_id must have at least one colon' do
       # Execution gets into IdentityMetadataDS code for specific error
-      @params[:source_id] = 'no-colon'
+      params[:source_id] = 'no-colon'
       exp_regex = /Source ID must follow the format 'namespace:value'/
-      expect { described_class.create_from_request(@params) }.to raise_error(ArgumentError, exp_regex)
+      expect { described_class.create_from_request(params) }.to raise_error(ArgumentError, exp_regex)
     end
 
     it 'other_id may have any number of colons' do
-      @params[:other_id] = 'no-colon'
-      expect { described_class.create_from_request(@params) }.not_to raise_error
-      @params[:other_id] = 'catkey:000'
-      expect { described_class.create_from_request(@params) }.not_to raise_error
-      @params[:other_id] = 'catkey:oop:sie'
-      expect { described_class.create_from_request(@params) }.not_to raise_error
+      params[:other_id] = 'no-colon'
+      expect { described_class.create_from_request(params) }.not_to raise_error
+      params[:other_id] = 'catkey:000'
+      expect { described_class.create_from_request(params) }.not_to raise_error
+      params[:other_id] = 'catkey:oop:sie'
+      expect { described_class.create_from_request(params) }.not_to raise_error
     end
   end # create_from_request
 end

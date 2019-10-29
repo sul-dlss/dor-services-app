@@ -25,7 +25,7 @@ class RegistrationRequest
     %i[object_type label admin_policy].each do |required_param|
       raise Dor::ParameterError, "#{required_param.inspect} must be specified in call to register_object" unless params[required_param]
     end
-    raise Dor::ParameterError, 'label cannot be empty to call register_object' if params[:label].empty? && %w[label none].include?(metadata_source)
+    raise Dor::ParameterError, 'label cannot be empty to call register_object' if params[:label].empty? && metadata_source == 'label'
 
     raise Dor::ParameterError, "Unknown item type: '#{object_type}'" if item_class.nil?
 
