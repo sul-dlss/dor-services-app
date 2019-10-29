@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jhove xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://hul.harvard.edu/ois/xml/ns/jhove" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/jhove http://hul.harvard.edu/ois/xml/xsd/jhove/1.6/jhove.xsd" name="Jhove" release="1.20.1" date="2018-03-29">
+  <repInfo uri="folder1PuSu/story5a.txt">
+  <reportingModule release="1.3" date="2006-09-05">ASCII-hul</reportingModule>
+  <lastModified>2019-09-24T10:57:49-05:00</lastModified>
+  <size>3614</size>
+  <format>ASCII</format>
+  <status>Well-Formed and valid</status>
+  <mimeType>text/plain; charset=US-ASCII</mimeType>
+  <properties>
+   <property>
+    <name>ASCIIMetadata</name>
+    <values arity="List" type="Property">
+    <property>
+     <name>LineEndings</name>
+     <values arity="List" type="String">
+      <value>LF</value>
+     </values>
+    </property>
+    </values>
+   </property>
+  </properties>
+ </repInfo>
+  <repInfo uri="folder2PdSa/storyAa.txt">
+  <reportingModule release="1.3" date="2006-09-05">ASCII-hul</reportingModule>
+  <lastModified>2019-09-24T10:57:49-05:00</lastModified>
+  <size>10717</size>
+  <format>ASCII</format>
+  <status>Well-Formed and valid</status>
+  <mimeType>text/plain; charset=US-ASCII</mimeType>
+  <properties>
+   <property>
+    <name>ASCIIMetadata</name>
+    <values arity="List" type="Property">
+    <property>
+     <name>LineEndings</name>
+     <values arity="List" type="String">
+      <value>LF</value>
+     </values>
+    </property>
+    </values>
+   </property>
+  </properties>
+ </repInfo>
+  <repInfo uri="folder3PaSd/storyFa.txt">
+  <reportingModule release="1.3" date="2006-09-05">ASCII-hul</reportingModule>
+  <lastModified>2019-09-24T10:57:49-05:00</lastModified>
+  <size>28726</size>
+  <format>ASCII</format>
+  <status>Well-Formed and valid</status>
+  <mimeType>text/plain; charset=US-ASCII</mimeType>
+  <properties>
+   <property>
+    <name>ASCIIMetadata</name>
+    <values arity="List" type="Property">
+    <property>
+     <name>LineEndings</name>
+     <values arity="List" type="String">
+      <value>LF</value>
+     </values>
+    </property>
+    </values>
+   </property>
+  </properties>
+ </repInfo>
+  <repInfo uri="folder1PuSu/story3m.txt">
+  <reportingModule release="1.3" date="2006-09-05">ASCII-hul</reportingModule>
+  <lastModified>2019-09-24T10:57:49-05:00</lastModified>
+  <size>5941</size>
+  <format>ASCII</format>
+  <status>Well-Formed and valid</status>
+  <mimeType>text/plain; charset=US-ASCII</mimeType>
+  <properties>
+   <property>
+    <name>ASCIIMetadata</name>
+    <values arity="List" type="Property">
+    <property>
+     <name>LineEndings</name>
+     <values arity="List" type="String">
+      <value>LF</value>
+     </values>
+    </property>
+    </values>
+   </property>
+  </properties>
+ </repInfo>
+  <repInfo uri="folder2PdSa/story8m.txt">
+  <reportingModule release="1.3" date="2006-09-05">ASCII-hul</reportingModule>
+  <lastModified>2019-09-24T10:57:49-05:00</lastModified>
+  <size>5645</size>
+  <format>ASCII</format>
+  <status>Well-Formed and valid</status>
+  <mimeType>text/plain; charset=US-ASCII</mimeType>
+  <properties>
+   <property>
+    <name>ASCIIMetadata</name>
+    <values arity="List" type="Property">
+    <property>
+     <name>LineEndings</name>
+     <values arity="List" type="String">
+      <value>LF</value>
+     </values>
+    </property>
+    </values>
+   </property>
+  </properties>
+ </repInfo>
+  <repInfo uri="folder3PaSd/storyDm.txt">
+  <reportingModule release="1.3" date="2006-09-05">ASCII-hul</reportingModule>
+  <lastModified>2019-09-24T10:57:49-05:00</lastModified>
+  <size>25336</size>
+  <format>ASCII</format>
+  <status>Well-Formed and valid</status>
+  <mimeType>text/plain; charset=US-ASCII</mimeType>
+  <properties>
+   <property>
+    <name>ASCIIMetadata</name>
+    <values arity="List" type="Property">
+    <property>
+     <name>LineEndings</name>
+     <values arity="List" type="String">
+      <value>LF</value>
+     </values>
+    </property>
+    </values>
+   </property>
+  </properties>
+ </repInfo>
+</jhove>

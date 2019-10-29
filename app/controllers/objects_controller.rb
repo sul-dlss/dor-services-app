@@ -46,6 +46,12 @@ class ObjectsController < ApplicationController
     head :created, location: result
   end
 
+  def preserve
+    result = BackgroundJobResult.create
+    PreserveJob.perform_later(druid: params[:id], background_job_result: result)
+    head :created, location: result
+  end
+
   def update_marc_record
     Dor::UpdateMarcRecordService.new(@item).update
     head :created
