@@ -17,7 +17,7 @@ jobs:
         PGUSER: circleci-demo-ruby
         RAILS_ENV: test
         NOKOGIRI_USE_SYSTEM_LIBRARIES: true
-    - image: circleci/postgres:10
+    - image: circleci/postgres:11
       environment:
         POSTGRES_USER: postgres
         POSTGRES_DB: dor_services_test
