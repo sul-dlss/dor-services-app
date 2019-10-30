@@ -6,8 +6,9 @@ class ShelvesController < ApplicationController
 
   def create
     if @item.is_a?(Dor::Item)
-      ShelvingService.shelve(@item)
-      head :no_content
+      result = BackgroundJobResult.create
+      ShelveJob.perform_later(druid: @item.pid, background_job_result: result)
+      head :created, location: result
     else
       render json: {
         errors: [
@@ -15,11 +16,5 @@ class ShelvesController < ApplicationController
         ]
       }, status: :unprocessable_entity
     end
-  rescue ShelvingService::ContentDirNotFoundError => e
-    render json: {
-      errors: [
-        { title: 'Content directory not found', detail: e.message }
-      ]
-    }, status: :unprocessable_entity
   end
 end

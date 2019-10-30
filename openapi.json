@@ -130,6 +130,7 @@
         ],
         "summary": "Get the manifest of the datastream from SDR",
         "description": "",
+        "deprecated": true,
         "operationId": "sdr#ds_manifest",
         "responses": {
           "200": {
@@ -730,8 +731,17 @@
         "description": "",
         "operationId": "shelves#create",
         "responses": {
-          "204": {
-            "description": "The object was shelved"
+          "201": {
+            "description": "Shelving action started",
+            "headers": {
+              "Location": {
+                "description": "the status of the action is found at this URI",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
           },
           "422": {
             "description": "The object you provided was not a Dor::Item and could not be shelved",
