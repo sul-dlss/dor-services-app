@@ -17,3 +17,4 @@ test:
 
 production:
   <<: *default
+  pool: 10 # same as sidekiq concurrency
