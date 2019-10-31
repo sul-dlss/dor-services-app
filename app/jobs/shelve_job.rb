@@ -17,6 +17,12 @@ class ShelveJob < ApplicationJob
       background_job_result.complete!
     end
 
-    background_job_result.complete!
+    # These two lines should be unnecessary, but we are getting:
+    #   "PG::ConnectionBad: PQconsumeInput() could not receive data from server: Connection timed out"
+    # and "PG::UnableToSend: server closed the connection unexpectedly This probably means the server terminated abnormally before or while processing the request"
+    ActiveRecord::Base.connection_pool.release_connection
+    ActiveRecord::Base.connection_pool.with_connection do
+      background_job_result.complete!
+    end
   end
 end
