@@ -17,6 +17,7 @@ RSpec.describe PublishJob, type: :job do
   context 'with no errors' do
     before do
       allow(PublishMetadataService).to receive(:publish)
+      allow(LogSuccessJob).to receive(:perform_later)
       perform
     end
 
@@ -29,11 +30,7 @@ RSpec.describe PublishJob, type: :job do
     end
 
     it 'marks the job as complete' do
-      expect(result).to be_complete
-    end
-
-    it 'has no output' do
-      expect(result.output).to be_blank
+      expect(LogSuccessJob).to have_received(:perform_later).with(druid: druid, background_job_result: result, workflow_process: 'publish-complete')
     end
   end
 
@@ -42,6 +39,7 @@ RSpec.describe PublishJob, type: :job do
 
     before do
       allow(PublishMetadataService).to receive(:publish).and_raise(Dor::DataError, error_message)
+      allow(LogFailureJob).to receive(:perform_later)
       perform
     end
 
@@ -54,11 +52,11 @@ RSpec.describe PublishJob, type: :job do
     end
 
     it 'marks the job as complete' do
-      expect(result).to be_complete
-    end
-
-    it 'has output with errors' do
-      expect(result.output[:errors]).to eq [{ 'detail' => error_message, 'title' => 'Data error' }]
+      expect(LogFailureJob).to have_received(:perform_later)
+        .with(druid: druid,
+              background_job_result: result,
+              workflow_process: 'publish',
+              output: { errors: [{ detail: error_message, title: 'Data error' }] })
     end
   end
 end

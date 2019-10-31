@@ -9,17 +9,18 @@ class PublishJob < ApplicationJob
   def perform(druid:, background_job_result:)
     background_job_result.processing!
 
-    errors = []
-
     begin
       item = Dor.find(druid)
       PublishMetadataService.publish(item)
     rescue Dor::DataError => e
-      errors << { title: 'Data error', detail: e.message }
+      return LogFailureJob.perform_later(druid: druid,
+                                         background_job_result: background_job_result,
+                                         workflow_process: 'publish',
+                                         output: { errors: [{ title: 'Data error', detail: e.message }] })
     end
 
-    background_job_result.output = { errors: errors } if errors.any?
-
-    background_job_result.complete!
+    LogSuccessJob.perform_later(druid: druid,
+                                background_job_result: background_job_result,
+                                workflow_process: 'publish-complete')
   end
 end

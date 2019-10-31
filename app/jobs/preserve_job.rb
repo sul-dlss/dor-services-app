@@ -13,11 +13,12 @@ class PreserveJob < ApplicationJob
       item = Dor.find(druid)
       SdrIngestService.transfer(item)
     rescue StandardError => e
-      background_job_result.output = { errors: [{ title: 'Preservation error', detail: e.message }] }
-      background_job_result.complete!
-      raise e
+      return LogFailureJob.perform_later(druid: druid,
+                                         background_job_result: background_job_result,
+                                         workflow_process: 'sdr-ingest-transfer',
+                                         output: { errors: [{ title: 'Preservation error', detail: e.message }] })
     end
 
-    background_job_result.complete!
+    StartPreservationWorkflowJob.perform_later(druid: druid, background_job_result: background_job_result)
   end
 end
