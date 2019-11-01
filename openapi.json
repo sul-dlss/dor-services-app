@@ -681,6 +681,16 @@
         "responses": {
           "204": {
             "description": "OK"
+          },
+          "422": {
+            "description": "The workspace was in a state where it could not be reset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "parameters": [

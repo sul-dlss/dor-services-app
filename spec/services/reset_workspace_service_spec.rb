@@ -45,7 +45,8 @@ RSpec.describe ResetWorkspaceService do
     end
 
     it 'throws an error if the directory is already archived' do
-      expect { described_class.reset_workspace_druid_tree(druid: archived_druid, version: '2', workspace_root: workspace_root) }.to raise_error(RuntimeError)
+      expect { described_class.reset_workspace_druid_tree(druid: archived_druid, version: '2', workspace_root: workspace_root) }
+        .to raise_error(ResetWorkspaceService::DirectoryAlreadyExists)
     end
 
     it "archiveds the current directory even if there is an older archived that hasn't been cleaned up" do
@@ -85,7 +86,8 @@ RSpec.describe ResetWorkspaceService do
       create_bag_dir(existent_id)
       bag_path = "#{export_root}/#{existent_id}"
       FileUtils.mv(bag_path, "#{bag_path}_v2") unless File.exist?(bag_path + '_v2')
-      expect { described_class.reset_export_bag(druid: existent_druid, version: '2', export_root: export_root) }.to raise_error(RuntimeError)
+      expect { described_class.reset_export_bag(druid: existent_druid, version: '2', export_root: export_root) }
+        .to raise_error(ResetWorkspaceService::BagAlreadyExists)
     end
   end
 
