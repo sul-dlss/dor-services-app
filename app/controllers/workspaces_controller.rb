@@ -2,13 +2,15 @@
 
 # Handles API routes for managing the DOR workspace
 class WorkspacesController < ApplicationController
+  before_action :load_item, only: [:create, :reset]
+
   rescue_from(DruidTools::SameContentExistsError, DruidTools::DifferentContentExistsError) do |e|
     render status: :conflict, plain: e.message
   end
 
   # POST /v1/objects/:druid/workspace
   def create
-    WorkspaceService.create(load_item, params[:source])
+    WorkspaceService.create(@item, params[:source])
     head :created
   end
 
@@ -25,11 +27,15 @@ class WorkspacesController < ApplicationController
     render build_error('Unable to remove directory', e)
   end
 
-  # Once an object has been transferred to preservation clean up the workspace.
+  # Once an object has been transferred to preservation, reset the workspace by
+  # renaming the druid-tree to a versioned directory
   def reset
-    druid_obj = Dor.find(params[:object_id])
-    ResetWorkspaceService.reset(druid: params[:object_id], version: druid_obj.current_version)
+    ResetWorkspaceService.reset(druid: params[:object_id], version: @item.current_version)
     head :no_content
+  rescue ResetWorkspaceService::DirectoryAlreadyExists => e
+    render build_error('Archive directory already exists', e)
+  rescue ResetWorkspaceService::BagAlreadyExists => e
+    render build_error('Archive bag already exists', e)
   end
 
   private
