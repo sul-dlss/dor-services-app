@@ -13,6 +13,7 @@ class CleanupService
   # @param [String] druid The identifier for the object whose data is to be removed
   # @param [String] base The base directory to delete from
   # @return [void] remove the object's data files from the workspace area
+  # @raises [Errno::ENOTEMPTY] if the directory is not empty
   def self.cleanup_workspace_content(druid, base)
     PruneService.new(druid: DruidTools::Druid.new(druid, base)).prune!
   end

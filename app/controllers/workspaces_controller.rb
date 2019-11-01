@@ -23,7 +23,7 @@ class WorkspacesController < ApplicationController
       CleanupService.cleanup_by_druid druid
     end
     head :no_content
-  rescue Errno::ENOENT => e
+  rescue Errno::ENOENT, Errno::ENOTEMPTY => e
     render build_error('Unable to remove directory', e)
   end
 

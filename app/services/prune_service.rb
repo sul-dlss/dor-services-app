@@ -7,6 +7,7 @@ class PruneService
     @druid = druid
   end
 
+  # @raises [Errno::ENOTEMPTY] if the directory is not empty
   def prune!
     this_path = druid.pathname
     parent = this_path.parent
