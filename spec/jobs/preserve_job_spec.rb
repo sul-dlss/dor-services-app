@@ -17,6 +17,7 @@ RSpec.describe PreserveJob, type: :job do
   context 'with no errors' do
     before do
       allow(SdrIngestService).to receive(:transfer)
+      allow(StartPreservationWorkflowJob).to receive(:perform_later)
       perform
     end
 
@@ -29,11 +30,7 @@ RSpec.describe PreserveJob, type: :job do
     end
 
     it 'marks the job as complete' do
-      expect(result).to be_complete
-    end
-
-    it 'has no output' do
-      expect(result.output).to be_blank
+      expect(StartPreservationWorkflowJob).to have_received(:perform_later)
     end
   end
 
@@ -42,14 +39,18 @@ RSpec.describe PreserveJob, type: :job do
 
     before do
       allow(SdrIngestService).to receive(:transfer).and_raise(error_message)
+      allow(LogFailureJob).to receive(:perform_later)
+      perform
     end
 
     it 'marks the job as errored' do
-      expect { perform }.to raise_error(error_message)
       expect(result).to have_received(:processing!).once
       expect(SdrIngestService).to have_received(:transfer).with(item).once
-      expect(result).to be_complete
-      expect(result.output[:errors]).to eq [{ 'detail' => error_message, 'title' => 'Preservation error' }]
+      expect(LogFailureJob).to have_received(:perform_later)
+        .with(druid: druid,
+              background_job_result: result,
+              workflow_process: 'sdr-ingest-transfer',
+              output: { errors: [{ detail: error_message, title: 'Preservation error' }] })
     end
   end
 end

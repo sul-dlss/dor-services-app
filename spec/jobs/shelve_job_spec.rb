@@ -17,6 +17,7 @@ RSpec.describe ShelveJob, type: :job do
   context 'with no errors' do
     before do
       allow(ShelvingService).to receive(:shelve)
+      allow(LogSuccessJob).to receive(:perform_later)
       perform
     end
 
@@ -29,11 +30,7 @@ RSpec.describe ShelveJob, type: :job do
     end
 
     it 'marks the job as complete' do
-      expect(result).to be_complete
-    end
-
-    it 'has no output' do
-      expect(result.output).to be_blank
+      expect(LogSuccessJob).to have_received(:perform_later).with(druid: druid, background_job_result: result, workflow_process: 'shelve-complete')
     end
   end
 
@@ -42,14 +39,18 @@ RSpec.describe ShelveJob, type: :job do
 
     before do
       allow(ShelvingService).to receive(:shelve).and_raise(ShelvingService::ContentDirNotFoundError, error_message)
+      allow(LogFailureJob).to receive(:perform_later)
     end
 
     it 'marks the job as errored' do
       perform
       expect(result).to have_received(:processing!).once
       expect(ShelvingService).to have_received(:shelve).with(item).once
-      expect(result).to be_complete
-      expect(result.output[:errors]).to eq [{ 'detail' => error_message, 'title' => 'Content directory not found' }]
+      expect(LogFailureJob).to have_received(:perform_later)
+        .with(druid: druid,
+              background_job_result: result,
+              workflow_process: 'shelve',
+              output: { errors: [{ detail: error_message, title: 'Content directory not found' }] })
     end
   end
 end

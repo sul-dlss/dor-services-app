@@ -61,7 +61,6 @@ RSpec.describe SdrIngestService do
 
   describe '.transfer' do
     let(:druid) { 'druid:dd116zh0343' }
-    let(:workflow_client) { instance_double(Dor::Workflow::Client, create_workflow_by_name: true) }
     let(:dor_item) { instance_double(Dor::Item, pid: druid) }
     let(:metadata_dir) { fixtures.join('workspace/dd/116/zh/0343/dd116zh0343/metadata') }
 
@@ -73,7 +72,6 @@ RSpec.describe SdrIngestService do
           }
         )
         .to_return(status: 200, body: File.open(fixtures.join('sdr_repo/dd116zh0343/v0001/manifests/signatureCatalog.xml')).read)
-      allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
       expect(described_class).to receive(:extract_datastreams).with(dor_item, an_instance_of(DruidTools::Druid)).and_return(metadata_dir)
     end
 
@@ -108,7 +106,6 @@ RSpec.describe SdrIngestService do
                                  'export/dd116zh0343/versionAdditions.xml',
                                  'export/dd116zh0343/versionInventory.xml'
                                ])
-      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'preservationIngestWF')
     end
 
     specify 'with no change in content' do
@@ -137,7 +134,6 @@ RSpec.describe SdrIngestService do
                                  'export/dd116zh0343/versionAdditions.xml',
                                  'export/dd116zh0343/versionInventory.xml'
                                ])
-      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'preservationIngestWF')
     end
   end
 

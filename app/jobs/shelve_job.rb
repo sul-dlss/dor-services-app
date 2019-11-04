@@ -13,16 +13,14 @@ class ShelveJob < ApplicationJob
       item = Dor.find(druid)
       ShelvingService.shelve(item)
     rescue ShelvingService::ContentDirNotFoundError => e
-      background_job_result.output = { errors: [{ title: 'Content directory not found', detail: e.message }] }
-      background_job_result.complete!
+      return LogFailureJob.perform_later(druid: druid,
+                                         background_job_result: background_job_result,
+                                         workflow_process: 'shelve',
+                                         output: { errors: [{ title: 'Content directory not found', detail: e.message }] })
     end
 
-    # These two lines should be unnecessary, but we are getting:
-    #   "PG::ConnectionBad: PQconsumeInput() could not receive data from server: Connection timed out"
-    # and "PG::UnableToSend: server closed the connection unexpectedly This probably means the server terminated abnormally before or while processing the request"
-    ActiveRecord::Base.connection_pool.release_connection
-    ActiveRecord::Base.connection_pool.with_connection do
-      background_job_result.complete!
-    end
+    LogSuccessJob.perform_later(druid: druid,
+                                background_job_result: background_job_result,
+                                workflow_process: 'shelve-complete')
   end
 end
