@@ -222,7 +222,7 @@ GEM
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     iso-639 (0.2.8)
-    jaro_winkler (1.5.3)
+    jaro_winkler (1.5.4)
     jbuilder (2.9.1)
       activesupport (>= 4.2.0)
     json (2.2.0)
@@ -248,7 +248,7 @@ GEM
     mimemagic (0.3.3)
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
-    minitest (5.12.2)
+    minitest (5.13.0)
     moab-versioning (4.2.2)
       confstruct
       druid-tools (>= 1.0.0)
@@ -267,7 +267,7 @@ GEM
     net-ssh (5.2.0)
     netrc (0.11.0)
     nio4r (2.5.2)
-    nokogiri (1.10.4)
+    nokogiri (1.10.5)
       mini_portile2 (~> 2.4.0)
     nokogiri-happymapper (0.8.1)
       nokogiri (~> 1.5)
@@ -457,7 +457,7 @@ GEM
     thor (0.20.3)
     thread_safe (0.3.6)
     tilt (2.0.10)
-    tins (1.21.1)
+    tins (1.22.0)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     uber (0.0.15)
@@ -474,7 +474,7 @@ GEM
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.4)
     xml-simple (1.1.5)
-    zeitwerk (2.2.0)
+    zeitwerk (2.2.1)
 
 PLATFORMS
   ruby
