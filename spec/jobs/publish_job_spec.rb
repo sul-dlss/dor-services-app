@@ -30,7 +30,8 @@ RSpec.describe PublishJob, type: :job do
     end
 
     it 'marks the job as complete' do
-      expect(LogSuccessJob).to have_received(:perform_later).with(druid: druid, background_job_result: result, workflow_process: 'publish-complete')
+      expect(LogSuccessJob).to have_received(:perform_later)
+        .with(druid: druid, background_job_result: result, workflow: 'accessionWF', workflow_process: 'publish-complete')
     end
   end
 

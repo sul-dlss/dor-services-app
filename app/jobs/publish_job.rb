@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
-# Create virtual objects in the background
+# Create virtual objects in the background.
+# Both accessionWF and releaseWF use this step.
 class PublishJob < ApplicationJob
   queue_as :default
 
   # @param [String] druid the identifier of the item to be published
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
-  def perform(druid:, background_job_result:)
+  # @param [String] workflow ('accessionWF') Which workflow should this be reported to?
+  def perform(druid:, background_job_result:, workflow: 'accessionWF')
     background_job_result.processing!
 
     begin
@@ -21,6 +23,7 @@ class PublishJob < ApplicationJob
 
     LogSuccessJob.perform_later(druid: druid,
                                 background_job_result: background_job_result,
+                                workflow: workflow,
                                 workflow_process: 'publish-complete')
   end
 end

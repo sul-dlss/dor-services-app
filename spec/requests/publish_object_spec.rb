@@ -11,9 +11,10 @@ RSpec.describe 'Publish object' do
   end
 
   it 'calls PublishMetadataService and returns 201' do
-    post '/v1/objects/druid:1234/publish', headers: { 'Authorization' => "Bearer #{jwt}" }
+    post '/v1/objects/druid:1234/publish?workflow=releaseWF', headers: { 'Authorization' => "Bearer #{jwt}" }
 
-    expect(PublishJob).to have_received(:perform_later).with(druid: 'druid:1234', background_job_result: BackgroundJobResult)
+    expect(PublishJob).to have_received(:perform_later)
+      .with(druid: 'druid:1234', background_job_result: BackgroundJobResult, workflow: 'releaseWF')
     expect(response.status).to eq(201)
   end
 end
