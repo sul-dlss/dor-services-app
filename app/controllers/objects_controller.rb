@@ -42,7 +42,10 @@ class ObjectsController < ApplicationController
 
   def publish
     result = BackgroundJobResult.create
-    PublishJob.perform_later(druid: params[:id], background_job_result: result)
+    workflow = params[:workflow] || 'accessionWF'
+    raise "invalid workflow #{workflow}" unless %w[accessionWF releaseWF].include?(workflow)
+
+    PublishJob.perform_later(druid: params[:id], background_job_result: result, workflow: workflow)
     head :created, location: result
   end
 

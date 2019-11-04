@@ -380,6 +380,16 @@
             "schema": {
               "$ref": "#/components/schemas/Druid"
             }
+          },
+          {
+            "name": "workflow",
+            "in": "query",
+            "description": "which workflow should this be reported to",
+            "schema": {
+              "type": "string",
+              "enum": ["accessionWF", "releaseWF"],
+              "example": "releaseWF"
+            },
           }
         ]
       }
