@@ -21,6 +21,7 @@ class ShelveJob < ApplicationJob
     end
 
     LogSuccessJob.perform_later(druid: druid,
+                                workflow: 'accessionWF',
                                 background_job_result: background_job_result,
                                 workflow_process: 'shelve-complete')
   end
