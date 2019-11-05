@@ -36,7 +36,7 @@ RSpec.describe LogSuccessJob, type: :job do
     it 'marks the job as complete' do
       perform
       expect(result).to have_received(:complete!).once
-      expect(Dor::Config.workflow.client).to have_received(:update_status)
+      expect(Dor::Config.workflow.client).not_to have_received(:update_status)
     end
   end
 end
