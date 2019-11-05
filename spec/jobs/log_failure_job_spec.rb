@@ -6,6 +6,7 @@ RSpec.describe LogFailureJob, type: :job do
   subject(:perform) do
     described_class.perform_now(druid: druid,
                                 background_job_result: result,
+                                workflow: workflow,
                                 workflow_process: workflow_process,
                                 output: output)
   end
@@ -21,10 +22,25 @@ RSpec.describe LogFailureJob, type: :job do
     allow(Dor::Config.workflow.client).to receive(:update_error_status)
   end
 
-  it 'marks the job as errored' do
-    perform
-    expect(result).to have_received(:complete!).once
-    expect(result.output).to eq output
-    expect(Dor::Config.workflow.client).to have_received(:update_error_status)
+  context 'when workflow is provided' do
+    let(:workflow) { 'accessionWF' }
+
+    it 'marks the job as errored' do
+      perform
+      expect(result).to have_received(:complete!).once
+      expect(result.output).to eq output
+      expect(Dor::Config.workflow.client).to have_received(:update_error_status)
+    end
+  end
+
+  context 'when workflow is not provided' do
+    let(:workflow) { nil }
+
+    it 'marks the job as errored' do
+      perform
+      expect(result).to have_received(:complete!).once
+      expect(result.output).to eq output
+      expect(Dor::Config.workflow.client).not_to have_received(:update_error_status)
+    end
   end
 end

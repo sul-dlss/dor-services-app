@@ -40,10 +40,13 @@ class ObjectsController < ApplicationController
     render json: Cocina::Mapper.build(@item)
   end
 
+  # called from Argo, the accessionWF and from the releaseWF.
+  # Takes an optional 'workflow' argument, which will call back to
+  # the 'publish-complete' step of that workflow if provided
   def publish
     result = BackgroundJobResult.create
-    workflow = params[:workflow] || 'accessionWF'
-    raise "invalid workflow #{workflow}" unless %w[accessionWF releaseWF].include?(workflow)
+    workflow = params[:workflow]
+    raise "invalid workflow #{workflow}" if workflow && !%w[accessionWF releaseWF].include?(workflow)
 
     PublishJob.perform_later(druid: params[:id], background_job_result: result, workflow: workflow)
     head :created, location: result

@@ -7,8 +7,8 @@ class PublishJob < ApplicationJob
 
   # @param [String] druid the identifier of the item to be published
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
-  # @param [String] workflow ('accessionWF') Which workflow should this be reported to?
-  def perform(druid:, background_job_result:, workflow: 'accessionWF')
+  # @param [String] workflow Which workflow should this be reported to?
+  def perform(druid:, background_job_result:, workflow:)
     background_job_result.processing!
 
     begin
@@ -17,7 +17,8 @@ class PublishJob < ApplicationJob
     rescue Dor::DataError => e
       return LogFailureJob.perform_later(druid: druid,
                                          background_job_result: background_job_result,
-                                         workflow_process: 'publish',
+                                         workflow: workflow,
+                                         workflow_process: workflow == 'accessionWF' ? 'publish' : 'release-publish',
                                          output: { errors: [{ title: 'Data error', detail: e.message }] })
     end
 
