@@ -49,6 +49,7 @@ RSpec.describe ShelveJob, type: :job do
       expect(LogFailureJob).to have_received(:perform_later)
         .with(druid: druid,
               background_job_result: result,
+              workflow: 'accessionWF',
               workflow_process: 'shelve',
               output: { errors: [{ detail: error_message, title: 'Content directory not found' }] })
     end

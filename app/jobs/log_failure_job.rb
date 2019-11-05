@@ -8,14 +8,16 @@ class LogFailureJob < ApplicationJob
 
   # @param [String] druid the identifier of the item to be published
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
+  # @param [String,NilClass] workflow if present, which workflow to report to
   # @param [String] workflow_process
   # @param [Hash] output
-  def perform(druid:, background_job_result:, workflow_process:, output:)
+  def perform(druid:, background_job_result:, workflow:, workflow_process:, output:)
     background_job_result.output = output
     background_job_result.complete!
+    return unless workflow
 
     Dor::Config.workflow.client.update_error_status(druid: druid,
-                                                    workflow: 'accessionWF',
+                                                    workflow: workflow,
                                                     process: workflow_process,
                                                     error_msg: "problem with #{workflow_process} (BackgroundJob: #{background_job_result.id})",
                                                     error_text: output.inspect)

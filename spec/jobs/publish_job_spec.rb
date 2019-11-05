@@ -3,11 +3,14 @@
 require 'rails_helper'
 
 RSpec.describe PublishJob, type: :job do
-  subject(:perform) { described_class.perform_now(druid: druid, background_job_result: result) }
+  subject(:perform) do
+    described_class.perform_now(druid: druid, background_job_result: result, workflow: workflow)
+  end
 
   let(:druid) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
   let(:item) { instance_double(Dor::Item) }
+  let(:workflow) { 'accessionWF' }
 
   before do
     allow(Dor).to receive(:find).with(druid).and_return(item)
@@ -56,6 +59,7 @@ RSpec.describe PublishJob, type: :job do
       expect(LogFailureJob).to have_received(:perform_later)
         .with(druid: druid,
               background_job_result: result,
+              workflow: 'accessionWF',
               workflow_process: 'publish',
               output: { errors: [{ detail: error_message, title: 'Data error' }] })
     end
