@@ -30,7 +30,11 @@ RSpec.describe ShelveJob, type: :job do
     end
 
     it 'marks the job as complete' do
-      expect(LogSuccessJob).to have_received(:perform_later).with(druid: druid, background_job_result: result, workflow_process: 'shelve-complete')
+      expect(LogSuccessJob).to have_received(:perform_later)
+        .with(druid: druid,
+              background_job_result: result,
+              workflow: 'accessionWF',
+              workflow_process: 'shelve-complete')
     end
   end
 
