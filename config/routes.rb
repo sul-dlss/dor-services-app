@@ -56,6 +56,7 @@ Rails.application.routes.draw do
 
       resources :metadata, only: [] do
         collection do
+          patch 'legacy', action: :update_legacy_metadata
           get 'dublin_core'
           get 'descriptive'
         end
