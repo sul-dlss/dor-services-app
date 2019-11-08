@@ -594,7 +594,7 @@
         ]
       }
     },
-    "/objects/{id}/query/collections": {
+    "/objects/{object_id}/query/collections": {
       "get": {
         "tags": [
           "objects"
@@ -609,7 +609,7 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "object_id",
             "in": "path",
             "description": "ID of object",
             "required": true,
@@ -716,7 +716,7 @@
         ]
       }
     },
-    "/objects/{id}/embargo": {
+    "/objects/{object_id}/embargo": {
       "patch": {
         "tags": [
           "embargoes"
@@ -731,7 +731,7 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "object_id",
             "in": "path",
             "description": "ID of object",
             "required": true,
@@ -787,7 +787,7 @@
         ]
       }
     },
-    "/objects/{id}/metadata/dublin_core": {
+    "/objects/{object_id}/metadata/dublin_core": {
       "get": {
         "tags": [
           "objects"
@@ -802,7 +802,7 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "object_id",
             "in": "path",
             "description": "ID of object",
             "required": true,
@@ -813,7 +813,7 @@
         ]
       }
     },
-    "/objects/{id}/metadata/descriptive": {
+    "/objects/{object_id}/metadata/descriptive": {
       "get": {
         "tags": [
           "objects"
@@ -828,7 +828,7 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "object_id",
             "in": "path",
             "description": "ID of object",
             "required": true,
@@ -839,7 +839,7 @@
         ]
       }
     },
-    "/objects/{id}/versions/openable": {
+    "/objects/{object_id}/versions/openable": {
       "get": {
         "tags": [
           "versions"
@@ -854,7 +854,7 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "object_id",
             "in": "path",
             "description": "ID of object",
             "required": true,
@@ -865,7 +865,7 @@
         ]
       }
     },
-    "/objects/{id}/versions/current": {
+    "/objects/{object_id}/versions/current": {
       "get": {
         "tags": [
           "versions"
@@ -880,7 +880,7 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "object_id",
             "in": "path",
             "description": "ID of object",
             "required": true,
@@ -891,7 +891,7 @@
         ]
       }
     },
-    "/objects/{id}/versions/current/close": {
+    "/objects/{object_id}/versions/current/close": {
       "post": {
         "tags": [
           "versions"
@@ -906,7 +906,7 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "object_id",
             "in": "path",
             "description": "ID of object",
             "required": true,
@@ -917,7 +917,7 @@
         ]
       }
     },
-    "/objects/{id}/versions": {
+    "/objects/{object_id}/versions": {
       "post": {
         "tags": [
           "versions"
@@ -932,7 +932,7 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "object_id",
             "in": "path",
             "description": "ID of object",
             "required": true,
