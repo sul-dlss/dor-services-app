@@ -787,6 +787,41 @@
         ]
       }
     },
+    "/objects/{object_id}/metadata/legacy": {
+      "post": {
+        "tags": [
+          "objects"
+        ],
+        "summary": "Update the legacy (datastream) metadata for the object",
+        "description": "",
+        "operationId": "metadata#update_legacy_metadata",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "object_id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          },
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLegacyMetadata"
+              }
+            }
+          }
+        }
+      }
+    },
     "/objects/{object_id}/metadata/dublin_core": {
       "get": {
         "tags": [
@@ -1242,6 +1277,39 @@
             "items": {
               "$ref": "#/components/schemas/Druid"
             }
+          }
+        }
+      },
+      "UpdateLegacyMetadata": {
+        "type": "object",
+        "properties": {
+          "descriptive": {
+            "$ref": "#/components/schemas/LegacyDatastream"
+          },
+          "rights": {
+            "$ref": "#/components/schemas/LegacyDatastream"
+          },
+          "content": {
+            "$ref": "#/components/schemas/LegacyDatastream"
+          },
+          "technical": {
+            "$ref": "#/components/schemas/LegacyDatastream"
+          },
+        }
+      },
+      "LegacyDatastream": {
+        "type": "object",
+        "properties": {
+          "updated": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date the xml was produced. This may be used to see if the server wants to accept this or if it already has a more recent version."
+
+          },
+          "content": {
+            "type": "string",
+            "description": "The XML datastream content",
+            "example": "<xmlDatastream>...</xmlDatastream>"
           }
         }
       }

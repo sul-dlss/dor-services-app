@@ -13,4 +13,23 @@ class MetadataController < ApplicationController
     service = PublicDescMetadataService.new(@item)
     render xml: service
   end
+
+  # This supports the Legacy Fedora 3 data model. This is used by the accessionWF.
+  def update_legacy_metadata
+    datastream_names = { descriptive: 'descMetadata',
+                         technical: 'technicalMetadata',
+                         content: 'contentMetadata',
+                         rights: 'rightsMetadata' }
+
+    datastream_names.each do |section, datastream_name|
+      values = params[section]
+      next unless values
+
+      LegacyMetadataService.update_datastream_if_newer(datastream: @item.datastreams[datastream_name],
+                                                       updated: Time.zone.parse(values[:updated]),
+                                                       content: values[:content])
+    end
+
+    @item.save!
+  end
 end
