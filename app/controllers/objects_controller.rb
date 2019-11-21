@@ -15,6 +15,10 @@ class ObjectsController < ApplicationController
     render status: :conflict, plain: e.message, location: object_location(e.pid)
   end
 
+  rescue_from(Dry::Struct::Error) do |e|
+    render status: :internal_server_error, plain: e.message
+  end
+
   rescue_from(SymphonyReader::ResponseError) do |e|
     render status: :internal_server_error, plain: e.message
   end
