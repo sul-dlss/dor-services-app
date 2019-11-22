@@ -8,7 +8,6 @@ class CreateVirtualObjectsJob < ApplicationJob
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
   def perform(virtual_objects:, background_job_result:)
     background_job_result.processing!
-
     errors = []
 
     virtual_objects.each do |virtual_object|
@@ -17,10 +16,11 @@ class CreateVirtualObjectsJob < ApplicationJob
       errors << ConstituentService.new(parent_druid: parent_id).add(child_druids: child_ids)
     rescue ActiveFedora::ObjectNotFoundError, Rubydora::FedoraInvalidRequest, Dor::Exception => e
       errors << { parent_id => [e.message] }
+    rescue StandardError => e
+      errors << { parent_id => [e.message] }
     end
-
+  ensure
     background_job_result.output = { errors: errors } if errors.any?
-
     background_job_result.complete!
   end
 end
