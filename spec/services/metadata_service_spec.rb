@@ -5,6 +5,20 @@ require 'rails_helper'
 RSpec.describe MetadataService do
   let(:mods) { File.read(File.join(fixture_dir, 'mods_record.xml')) }
 
+  describe 'resolvable' do
+    it 'returns only resolvable identifiers' do
+      expect(described_class.resolvable(['bogus:1234', 'catkey:5678'])).to eq(['catkey:5678'])
+    end
+
+    it 'returns only resolvable identifiers in preferred order when more one is resolvable' do
+      expect(described_class.resolvable(['barcode:1234', 'catkey:5678'])).to eq(['catkey:5678', 'barcode:1234'])
+    end
+
+    it 'returns an empty array when no resolvable identifiers are found' do
+      expect(described_class.resolvable(['bogus:1234', 'nada:5678'])).to eq([])
+    end
+  end
+
   describe '#fetch' do
     let(:resource) { instance_double(MarcxmlResource, mods: mods) }
 
