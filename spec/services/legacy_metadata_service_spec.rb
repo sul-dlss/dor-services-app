@@ -8,7 +8,14 @@ RSpec.describe LegacyMetadataService do
 
     let(:updated) { Time.zone.parse('2019-08-09T19:18:15Z') }
     let(:content) { '<descMetadata><foo/></descMetadata>' }
-    let(:datastream) { instance_double(Dor::DescMetadataDS, createDate: create_date, :content= => nil) }
+    let(:title) { ['One title'] }
+    let(:datastream) do
+      instance_double(Dor::DescMetadataDS, createDate: create_date,
+                                           dsid: 'descMetadata',
+                                           pid: 'druid:123',
+                                           :content= => nil,
+                                           mods_title: title)
+    end
 
     context 'with a new datastream' do
       let(:create_date) { nil }
@@ -25,6 +32,15 @@ RSpec.describe LegacyMetadataService do
       it 'updates the content' do
         update
         expect(datastream).to have_received(:content=).with(content)
+      end
+    end
+
+    context 'with an invalid datastream' do
+      let(:create_date) { Time.zone.parse('2019-07-09T19:18:15Z') }
+      let(:title) { [] }
+
+      it 'raises an error' do
+        expect { update }.to raise_error 'druid:123 descMetadata missing required fields (<title>)'
       end
     end
   end

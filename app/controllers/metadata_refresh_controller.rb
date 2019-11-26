@@ -10,6 +10,14 @@ class MetadataRefreshController < ApplicationController
 
   def refresh
     status = RefreshMetadataAction.run(@item)
-    @item.save if status
+    return render status: :internal_server_error, plain: "#{@item.pid} descMetadata missing required fields (<title>)" if missing_required_fields?
+
+    @item.save! if status
+  end
+
+  private
+
+  def missing_required_fields?
+    @item.descMetadata.mods_title.blank?
   end
 end

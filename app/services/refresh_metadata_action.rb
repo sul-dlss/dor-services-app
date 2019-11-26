@@ -12,6 +12,7 @@ class RefreshMetadataAction
   end
 
   # Returns nil if it didn't retrieve anything
+  # @param [DescMetadataDS] datastream the descriptive metadata
   def run(datastream)
     content = fetch_datastream
     return nil if content.nil?
