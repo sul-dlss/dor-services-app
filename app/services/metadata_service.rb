@@ -4,17 +4,10 @@ require 'cache'
 class MetadataError < RuntimeError; end
 
 class MetadataService
+  VALID_PREFIXES = %w[catkey barcode].freeze
+
   class << self
     @@cache = Cache.new(nil, nil, 250, 300)
-
-    def known_prefixes
-      handlers.keys
-    end
-
-    def can_resolve?(identifier)
-      (prefix, _identifier) = identifier.split(/:/, 2)
-      handlers.key?(prefix.to_sym)
-    end
 
     # TODO: Return a prioritized list
     def resolvable(identifiers)
@@ -24,37 +17,24 @@ class MetadataService
     def fetch(identifier)
       @@cache.fetch(identifier) do
         (prefix, identifier) = identifier.split(/:/, 2)
-        handler = handler_for(prefix)
-        handler.fetch(prefix, identifier)
+        raise MetadataError, "Unknown metadata prefix: #{prefix}" unless VALID_PREFIXES.include?(prefix)
+
+        marcxml = MarcxmlResource.find_by(prefix.to_sym => identifier)
+        marcxml.mods
       end
     end
 
     def label_for(identifier)
-      (prefix, identifier) = identifier.split(/:/, 2)
-      handler = handler_for(prefix)
-      handler.label(handler.fetch(prefix, identifier))
-    end
-
-    def handler_for(prefix)
-      handler = handlers[prefix.to_sym]
-      raise MetadataError, "Unknown metadata prefix: #{prefix}" if handler.nil?
-
-      handler
+      mods = Nokogiri::XML(fetch(identifier))
+      mods.root.add_namespace_definition('mods', 'http://www.loc.gov/mods/v3')
+      mods.xpath('/mods:mods/mods:titleInfo[1]').xpath('mods:title|mods:nonSort').collect(&:text).join(' ').strip
     end
 
     private
 
-    def handlers
-      @handlers ||= {}.tap do |md_handlers|
-        # There's only one. If additional handlers are added, will need to be registered here.
-        register(CatalogHandler.new, md_handlers)
-      end
-    end
-
-    def register(handler, md_handlers)
-      handler.prefixes.each do |prefix|
-        md_handlers[prefix.to_sym] = handler
-      end
+    def can_resolve?(identifier)
+      (prefix, _identifier) = identifier.split(/:/, 2)
+      VALID_PREFIXES.include?(prefix)
     end
   end
 end
