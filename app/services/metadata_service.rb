@@ -9,14 +9,10 @@ class MetadataService
   class << self
     @@cache = Cache.new(nil, nil, 250, 300)
 
-    def known_prefixes
-      handlers.keys
-    end
-
     # return the identifiers found in the same order of the known prefixes we specified
     def resolvable(identifiers)
       res_ids = identifiers.select { |identifier| can_resolve?(identifier) }
-      MetadataService.known_prefixes.map { |prefix| res_ids.find { |res_id| res_id.start_with?(prefix.to_s) } }.compact
+      VALID_PREFIXES.map { |prefix| res_ids.find { |res_id| res_id.start_with?(prefix.to_s) } }.compact
     end
 
     def fetch(identifier)

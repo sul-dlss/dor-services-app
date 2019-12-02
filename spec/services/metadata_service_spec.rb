@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe MetadataService do
   let(:mods) { File.read(File.join(fixture_dir, 'mods_record.xml')) }
 
-  describe 'resolvable' do
+  describe '#resolvable' do
     it 'returns only resolvable identifiers' do
       expect(described_class.resolvable(['bogus:1234', 'catkey:5678'])).to eq(['catkey:5678'])
     end
@@ -16,6 +16,20 @@ RSpec.describe MetadataService do
 
     it 'returns an empty array when no resolvable identifiers are found' do
       expect(described_class.resolvable(['bogus:1234', 'nada:5678'])).to eq([])
+    end
+  end
+
+  describe '#can_resolve?' do
+    it 'returns false for an unknown prefix' do
+      expect(described_class.send(:'can_resolve?', 'bogus:1234')).to be_falsey
+    end
+
+    it 'returns true for barcodes' do
+      expect(described_class.send(:'can_resolve?', 'barcode:1234')).to be_truthy
+    end
+
+    it 'returns true for catkeys' do
+      expect(described_class.send(:'can_resolve?', 'catkey:1234')).to be_truthy
     end
   end
 
