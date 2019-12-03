@@ -6,7 +6,11 @@ class WorkspaceService
   # @param [String, nil] source the path to create
   def self.create(work, source)
     druid = DruidTools::Druid.new(work.pid, Settings.stacks.local_workspace_root)
-    source ? mkdir_with_final_link(druid: druid, source: source) : druid.mkdir
+    return mkdir_with_final_link(druid: druid, source: source) if source
+
+    Honeybadger.notify('Source was not provided to WorkspaceService.create. ' \
+      "I'm pretty sure that source is always supplied and ought to be required")
+    druid.mkdir
   end
 
   def self.mkdir_with_final_link(druid:, source:)
