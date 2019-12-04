@@ -9,9 +9,12 @@ class MetadataService
   class << self
     @@cache = Cache.new(nil, nil, 250, 300)
 
-    # TODO: Return a prioritized list
+    # return the identifiers found in the same order of the known prefixes we specified
     def resolvable(identifiers)
-      identifiers.select { |identifier| can_resolve?(identifier) }
+      res_ids = identifiers.select { |identifier| can_resolve?(identifier) }
+      VALID_PREFIXES.map { |prefix| res_ids.find { |res_id| res_id.start_with?(prefix.to_s) } }.compact
+      # NOTE: the purpose of .map here is to ensure we return any resolvable identifiers in the
+      #       preferred order specified above in KNOWN_PREFIXES, so that the .first is the preferred one
     end
 
     def fetch(identifier)
