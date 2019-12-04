@@ -118,7 +118,7 @@ class SdrIngestService
   # @return [Integer] the versionId found in the last version element, or nil if missing
   def self.vmfile_version_id(pathname)
     verify_pathname(pathname)
-    doc = Nokogiri::XML(File.open(pathname.to_s))
+    doc = Nokogiri::XML(File.read(pathname.to_s))
     nodeset = doc.xpath('/versionMetadata/version')
     version_id = nodeset.last['versionId']
     version_id.nil? ? nil : version_id.to_i
