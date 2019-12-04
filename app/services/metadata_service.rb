@@ -13,6 +13,8 @@ class MetadataService
     def resolvable(identifiers)
       res_ids = identifiers.select { |identifier| can_resolve?(identifier) }
       VALID_PREFIXES.map { |prefix| res_ids.find { |res_id| res_id.start_with?(prefix.to_s) } }.compact
+      # NOTE: the purpose of .map here is to ensure we return any resolvable identifiers in the
+      #       preferred order specified above in KNOWN_PREFIXES, so that the .first is the preferred one
     end
 
     def fetch(identifier)
