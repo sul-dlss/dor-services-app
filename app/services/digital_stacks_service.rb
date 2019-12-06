@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# NOTE:  this class makes use of data structures from moab-versioning gem,
+#  but it does NOT access any preservation storage roots
 class DigitalStacksService
   # Delete files from stacks that have change type 'deleted', 'copydeleted', or 'modified'
   # @param [Pathname] stacks_object_pathname the stacks location of the digital object
