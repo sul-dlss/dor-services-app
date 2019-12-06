@@ -75,8 +75,8 @@
         "tags": [
           "preservation"
         ],
-        "summary": "DEPRECATED. Get the diff between content metadata provided and version in preservation",
-        "description": "DEPRECATED. Use preservation-client gem instead.",
+        "summary": "Get the diff between content metadata provided and version in preservation",
+        "description": "Use preservation-client gem instead.",
         "operationId": "sdr#cm_inv_diff",
         "responses": {
           "200": {
