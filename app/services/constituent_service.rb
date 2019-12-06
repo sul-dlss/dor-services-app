@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Adds a constituent relationship between a parent work and child works
-# by taking the followin actions:
+# by taking the following actions:
 #  1. altering the contentMD of the parent
 #  2. add isConstituentOf assertions to the RELS-EXT of the children
 #  3. saving the parent and the children

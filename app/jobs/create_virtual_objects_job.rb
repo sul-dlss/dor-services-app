@@ -13,7 +13,10 @@ class CreateVirtualObjectsJob < ApplicationJob
     virtual_objects.each do |virtual_object|
       parent_id, child_ids = virtual_object.values_at(:parent_id, :child_ids)
       # Update the constituent relationship between the parent and child druids
-      errors << ConstituentService.new(parent_druid: parent_id).add(child_druids: child_ids)
+      result = ConstituentService.new(parent_druid: parent_id).add(child_druids: child_ids)
+      # Do not add `nil`s to the errors array as they signify successful
+      # creation of the virtual object
+      errors << result if result.present?
     rescue ActiveFedora::ObjectNotFoundError, Rubydora::FedoraInvalidRequest, Dor::Exception => e
       errors << { parent_id => [e.message] }
     rescue StandardError => e
