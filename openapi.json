@@ -75,8 +75,8 @@
         "tags": [
           "preservation"
         ],
-        "summary": "Get the diff of the content metadata from DOR and SDR",
-        "description": "",
+        "summary": "DEPRECATED. Get the diff between content metadata provided and version in preservation",
+        "description": "DEPRECATED. Use preservation-client gem instead.",
         "operationId": "sdr#cm_inv_diff",
         "responses": {
           "200": {
@@ -101,8 +101,8 @@
         "tags": [
           "preservation"
         ],
-        "summary": "DEPRECATED. Get the current version of the object from SDR",
-        "description": "DEPRECATED.  Use preservation-client gem instead.",
+        "summary": "DEPRECATED. Get the current version of the object from preservation",
+        "description": "DEPRECATED. Use preservation-client gem instead.",
         "deprecated": true,
         "operationId": "sdr#current_version",
         "responses": {
@@ -128,8 +128,8 @@
         "tags": [
           "preservation"
         ],
-        "summary": "Get the manifest of the datastream from SDR",
-        "description": "",
+        "summary": "DEPRECATED. Get the manifest file from preservation",
+        "description": "DEPRECATED. Use preservation-client gem instead.",
         "deprecated": true,
         "operationId": "sdr#ds_manifest",
         "responses": {
@@ -164,7 +164,7 @@
         "tags": [
           "preservation"
         ],
-        "summary": "Get the metadata from the datastream from SDR",
+        "summary": "Get the metadata file from preservation",
         "description": "",
         "operationId": "sdr#ds_metadata",
         "responses": {
@@ -199,7 +199,7 @@
         "tags": [
           "preservation"
         ],
-        "summary": "Get the file content from SDR",
+        "summary": "Get the file content from preservation",
         "description": "",
         "operationId": "sdr#file_content",
         "responses": {

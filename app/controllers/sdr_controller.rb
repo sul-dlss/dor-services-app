@@ -19,10 +19,12 @@ class SdrController < ApplicationController
 
   # Deprecated
   def ds_manifest
-    Honeybadger.notify('dor-services-app deprecated API endpoint `sdr#ds_manifest` called.')
+    dep_msg = 'Use preservation-client manifest or signature_catalog in caller instead.'
+    Honeybadger.notify("dor-services-app deprecated API endpoint `sdr#ds_manifest` called. #{dep_msg}")
     sdr_response = sdr_client.manifest(ds_name: params[:dsname])
     proxy_faraday_response(sdr_response)
   end
+  deprecation_deprecate ds_manifest: 'Use preservation-client manifest or signature_catalog in caller instead.'
 
   def ds_metadata
     sdr_response = sdr_client.metadata(ds_name: params[:dsname])
@@ -30,10 +32,11 @@ class SdrController < ApplicationController
   end
 
   def current_version
-    Honeybadger.notify('dor-services-app deprecated API endpoint `sdr#current_version` called - use preservation-client current_version instead')
+    dep_msg = 'Use preservation-client current_version in caller instead.'
+    Honeybadger.notify("dor-services-app deprecated API endpoint `sdr#current_version` called. #{dep_msg}")
     proxy_faraday_response(sdr_client.current_version)
   end
-  deprecation_deprecate current_version: 'use preservation-client current_version in caller instead'
+  deprecation_deprecate current_version: 'Use preservation-client current_version in caller instead.'
 
   def file_content
     sdr_response = sdr_client.file_content(version: params[:version], filename: params[:filename])
