@@ -7,6 +7,7 @@ RSpec.describe SdrController do
 
   before do
     allow(Dor).to receive(:find).and_return(item)
+    allow(Deprecation).to receive(:warn)
   end
 
   before do
