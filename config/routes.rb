@@ -11,7 +11,7 @@ Rails.application.routes.draw do
     get '/about' => 'ok_computer/ok_computer#show', defaults: { check: 'version' }
 
     scope '/sdr/objects/:druid' do
-      post 'cm-inv-diff', to: 'sdr#cm_inv_diff'
+      post 'cm-inv-diff', to: 'sdr#cm_inv_diff' # deprecated; caller should use preservation-client
       get 'current_version', to: 'sdr#current_version' # deprecated; caller should use preservation-client
       get 'manifest/:dsname', to: 'sdr#ds_manifest', format: false, constraints: { dsname: /.+/ } # deprecated
       get 'metadata/:dsname', to: 'sdr#ds_metadata', format: false, constraints: { dsname: /.+/ }

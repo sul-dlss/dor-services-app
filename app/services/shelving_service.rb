@@ -13,19 +13,16 @@ class ShelvingService
   end
 
   def shelve
-    # retrieve the differences between the current contentMetadata and the previously ingested version
-    diff = shelve_diff
-    stacks_object_pathname = stacks_location
     # determine the location of the object's files in the stacks area
-    stacks_druid = DruidTools::StacksDruid.new work.id, stacks_object_pathname
+    stacks_druid = DruidTools::StacksDruid.new(work.id, stacks_location)
     stacks_object_pathname = Pathname(stacks_druid.path)
     # determine the location of the object's content files in the workspace area
     workspace_druid = DruidTools::Druid.new(work.id, Dor::Config.stacks.local_workspace_root)
-    workspace_content_pathname = workspace_content_dir(diff, workspace_druid)
+    workspace_content_pathname = workspace_content_dir(shelve_diff, workspace_druid)
     # delete, rename, or copy files to the stacks area
-    DigitalStacksService.remove_from_stacks(stacks_object_pathname, diff)
-    DigitalStacksService.rename_in_stacks(stacks_object_pathname, diff)
-    DigitalStacksService.shelve_to_stacks(workspace_content_pathname, stacks_object_pathname, diff)
+    DigitalStacksService.remove_from_stacks(stacks_object_pathname, shelve_diff)
+    DigitalStacksService.rename_in_stacks(stacks_object_pathname, shelve_diff)
+    DigitalStacksService.shelve_to_stacks(workspace_content_pathname, stacks_object_pathname, shelve_diff)
   end
 
   private
@@ -38,11 +35,10 @@ class ShelvingService
     raise Dor::ParameterError, 'Missing Dor::Config.stacks.local_workspace_root' if Dor::Config.stacks.local_workspace_root.nil?
     raise Dor::Exception, 'Missing contentMetadata datastream' if work.contentMetadata.nil?
 
-    client = SdrClient.new(work.pid)
-    current_content = work.contentMetadata.content
-    sdr_resp = client.content_diff(current_content: current_content, subset: 'shelve')
-    inventory_diff = Moab::FileInventoryDifference.parse(sdr_resp.body)
-    inventory_diff.group_difference('content')
+    @shelve_diff ||= begin
+      current_content = work.contentMetadata.content
+      Preservation::Client.objects.shelve_content_diff(druid: work.pid, content_metadata: current_content)
+    end
   end
 
   # Find the location of the object's content files in the workspace area

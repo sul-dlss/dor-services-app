@@ -10,6 +10,10 @@ RSpec.describe SdrClient do
     let(:url) { 'http://sdr-services.example.com/sdr/objects/druid:ab123cd4567/current_version' }
     let(:url_with_basic_auth) { url.sub('http://', 'http://user:password@') }
 
+    before do
+      allow(Deprecation).to receive(:warn)
+    end
+
     it 'returns the current of the object from SDR' do
       stub_request(:get, url)
         .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })

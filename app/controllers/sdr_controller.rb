@@ -6,8 +6,10 @@ class SdrController < ApplicationController
 
   MANIFEST_DEPRECATION_MESSAGE = 'Use preservation-client manifest or signature_catalog in caller instead.'
   CURRENT_VERSION_DEPRECATION_MESSAGE = 'Use preservation-client current_version in caller instead.'
+  CM_INV_DIFF_DEPRECATION_MESSAGE = 'Use preservation-client content_inventory_diff or shelve_content_diff in caller instead.'
 
   def cm_inv_diff
+    Honeybadger.notify("dor-services-app deprecated API endpoint `sdr#cm_inv_diff` called. #{CM_INV_DIFF_DEPRECATION_MESSAGE}")
     unless %w(all shelve preserve publish).include?(params[:subset])
       render status: :bad_request, plain: "Invalid subset value: #{params[:subset]}"
       return
@@ -19,6 +21,7 @@ class SdrController < ApplicationController
     sdr_response = sdr_client.content_diff(current_content: current_content, subset: params[:subset], version: params[:version])
     proxy_faraday_response(sdr_response)
   end
+  deprecation_deprecate cm_inv_diff: CM_INV_DIFF_DEPRECATION_MESSAGE
 
   # Deprecated
   def ds_manifest
