@@ -49,6 +49,7 @@ RSpec.describe PreserveJob, type: :job do
       expect(LogFailureJob).to have_received(:perform_later)
         .with(druid: druid,
               background_job_result: result,
+              workflow: 'accessionWF',
               workflow_process: 'sdr-ingest-transfer',
               output: { errors: [{ detail: error_message, title: 'Preservation error' }] })
     end
