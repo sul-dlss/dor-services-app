@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # A client for talking to sdr-services-app
+# Deprecated; remove in release 4.0
 class SdrClient
   extend Deprecation
   self.deprecation_horizon = 'dor-services-app version 4.0'
@@ -32,8 +33,10 @@ class SdrClient
   end
 
   def metadata(ds_name:)
+    Honeybadger.notify('dor-services-app deprecated method `SdrClient.metadata` called. Use preservation-client .metadata instead.')
     sdr_get("/objects/#{druid}/metadata/#{ds_name}")
   end
+  deprecation_deprecate metadata: 'Use preservation-client .metadata in caller instead.'
 
   def current_version(parsed: false)
     Honeybadger.notify('dor-services-app deprecated method `SdrClient.current_version` called. Use preservation-client .current_version instead.')

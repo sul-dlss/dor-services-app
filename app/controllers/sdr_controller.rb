@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
+# Deprecated; remove in release 4.0
 class SdrController < ApplicationController
   extend Deprecation
   self.deprecation_horizon = 'dor-services-app version 4.0'
 
   MANIFEST_DEPRECATION_MESSAGE = 'Use preservation-client .manifest or .signature_catalog in caller instead.'
+  METADATA_DEPRECATION_MESSAGE = 'Use preservation-client .metadata in caller instead.'
   CURRENT_VERSION_DEPRECATION_MESSAGE = 'Use preservation-client .current_version in caller instead.'
   CM_INV_DIFF_DEPRECATION_MESSAGE = 'Use preservation-client .content_inventory_diff or .shelve_content_diff in caller instead.'
   CONTENT_DEPRECATION_MESSAGE = 'Use preservation-client .content in caller instead.'
 
+  # Deprecated
   def cm_inv_diff
     Honeybadger.notify("dor-services-app deprecated API endpoint `sdr#cm_inv_diff` called. #{CM_INV_DIFF_DEPRECATION_MESSAGE}")
     unless %w(all shelve preserve publish).include?(params[:subset])
@@ -32,17 +35,22 @@ class SdrController < ApplicationController
   end
   deprecation_deprecate ds_manifest: MANIFEST_DEPRECATION_MESSAGE
 
+  # Deprecated
   def ds_metadata
+    Honeybadger.notify("dor-services-app deprecated API endpoint `sdr#ds_metadata` called. #{METADATA_DEPRECATION_MESSAGE}")
     sdr_response = sdr_client.metadata(ds_name: params[:dsname])
     proxy_faraday_response(sdr_response)
   end
+  deprecation_deprecate ds_manifest: METADATA_DEPRECATION_MESSAGE
 
+  # Deprecated
   def current_version
     Honeybadger.notify("dor-services-app deprecated API endpoint `sdr#current_version` called. #{CURRENT_VERSION_DEPRECATION_MESSAGE}")
     proxy_faraday_response(sdr_client.current_version)
   end
   deprecation_deprecate current_version: CURRENT_VERSION_DEPRECATION_MESSAGE
 
+  # Deprecated
   def file_content
     Honeybadger.notify("dor-services-app deprecated API endpoint `sdr#file_content` called. #{CONTENT_DEPRECATION_MESSAGE}")
     sdr_response = sdr_client.file_content(version: params[:version], filename: params[:filename])

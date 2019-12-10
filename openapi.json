@@ -165,8 +165,9 @@
         "tags": [
           "preservation"
         ],
-        "summary": "Get the metadata file from preservation",
-        "description": "",
+        "summary": "DEPRECATED. Get the metadata file from preservation",
+        "description": "DEPRECATED. Use preservation-client gem instead.",
+        "deprecated": true,
         "operationId": "sdr#ds_metadata",
         "responses": {
           "200": {
