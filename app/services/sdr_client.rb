@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # A client for talking to sdr-services-app
+# Deprecated; remove in release 4.0
 class SdrClient
   extend Deprecation
   self.deprecation_horizon = 'dor-services-app version 4.0'
@@ -17,7 +18,7 @@ class SdrClient
 
   # @return [Faraday::Response] with body of cm-inv-diff as xml
   def content_diff(current_content:, subset:, version: nil)
-    Honeybadger.notify('dor-services-app deprecated method `SdrClient.content_diff` called. Use preservation-client content_diff instead.')
+    Honeybadger.notify('dor-services-app deprecated method `SdrClient.content_diff` called. Use preservation-client .content_diff instead.')
     query_params = { subset: subset }
     query_params[:version] = version unless version.nil?
     query_string = URI.encode_www_form(query_params)
@@ -25,18 +26,20 @@ class SdrClient
     uri = sdr_uri(path)
     sdr_conn(uri).post("#{uri.path}?#{query_string}", current_content, 'Content-Type' => 'application/xml')
   end
-  deprecation_deprecate content_diff: 'Use preservation-client content_inventory_diff or shelve_content_diff in caller instead.'
+  deprecation_deprecate content_diff: 'Use preservation-client .content_inventory_diff or .shelve_content_diff in caller instead.'
 
   def manifest(ds_name:)
     sdr_get("/objects/#{druid}/manifest/#{ds_name}")
   end
 
   def metadata(ds_name:)
+    Honeybadger.notify('dor-services-app deprecated method `SdrClient.metadata` called. Use preservation-client .metadata instead.')
     sdr_get("/objects/#{druid}/metadata/#{ds_name}")
   end
+  deprecation_deprecate metadata: 'Use preservation-client .metadata in caller instead.'
 
   def current_version(parsed: false)
-    Honeybadger.notify('dor-services-app deprecated method `SdrClient.current_version` called. Use preservation-client current_version instead.')
+    Honeybadger.notify('dor-services-app deprecated method `SdrClient.current_version` called. Use preservation-client .current_version instead.')
     path = "/objects/#{druid}/current_version"
     response = sdr_get(path)
     return response unless parsed
@@ -55,13 +58,15 @@ class SdrClient
       raise "Unable to parse XML from SDR current_version API call.\n\turl: #{sdr_uri(path)}\n\tstatus: #{response.status}\n\tbody: #{response.body}"
     end
   end
-  deprecation_deprecate current_version: 'Use preservation-client current_version in caller instead.'
+  deprecation_deprecate current_version: 'Use preservation-client .current_version in caller instead.'
 
   def file_content(version:, filename:)
+    Honeybadger.notify('dor-services-app deprecated method `SdrClient.file_content` called. Use preservation-client .content instead.')
     query_string = URI.encode_www_form(version: version.to_s)
     encoded_filename = CGI.escape(filename)
     sdr_get("/objects/#{druid}/content/#{encoded_filename}?#{query_string}")
   end
+  deprecation_deprecate content_diff: 'Use preservation-client .content in caller instead.'
 
   private
 

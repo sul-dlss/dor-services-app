@@ -10,12 +10,13 @@ Rails.application.routes.draw do
   scope '/v1' do
     get '/about' => 'ok_computer/ok_computer#show', defaults: { check: 'version' }
 
+    # deprecated; caller should use preservation-client;  remove in release 4.0
     scope '/sdr/objects/:druid' do
       post 'cm-inv-diff', to: 'sdr#cm_inv_diff' # deprecated; caller should use preservation-client
       get 'current_version', to: 'sdr#current_version' # deprecated; caller should use preservation-client
       get 'manifest/:dsname', to: 'sdr#ds_manifest', format: false, constraints: { dsname: /.+/ } # deprecated
-      get 'metadata/:dsname', to: 'sdr#ds_metadata', format: false, constraints: { dsname: /.+/ }
-      get 'content/:filename', to: 'sdr#file_content', format: false, constraints: { filename: /.+/ }
+      get 'metadata/:dsname', to: 'sdr#ds_metadata', format: false, constraints: { dsname: /.+/ } # deprecated
+      get 'content/:filename', to: 'sdr#file_content', format: false, constraints: { filename: /.+/ } # deprecated
     end
 
     scope :catalog do
