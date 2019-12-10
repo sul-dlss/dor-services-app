@@ -329,7 +329,7 @@
                 }
               }
             }
-          },
+          }
         },
         "requestBody": {
           "content": {
@@ -390,7 +390,7 @@
               "type": "string",
               "enum": ["accessionWF", "releaseWF"],
               "example": "releaseWF"
-            },
+            }
           }
         ]
       }
@@ -810,7 +810,7 @@
             "schema": {
               "$ref": "#/components/schemas/Druid"
             }
-          },
+          }
         ],
         "requestBody": {
           "content": {
@@ -1010,9 +1010,9 @@
               "application/json": {
                 "schema": {
                   "oneOf": [
-                    "$ref": "#/components/schemas/DRO",
-                    "$ref": "#/components/schemas/Collection",
-                    "$ref": "#/components/schemas/AdminPolicy"
+                    { "$ref": "#/components/schemas/DRO" },
+                    { "$ref": "#/components/schemas/Collection" },
+                    { "$ref": "#/components/schemas/AdminPolicy" }
                   ]
                 }
               }
@@ -1295,7 +1295,7 @@
           },
           "technical": {
             "$ref": "#/components/schemas/LegacyDatastream"
-          },
+          }
         }
       },
       "LegacyDatastream": {
