@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/ota42y/openapi_parser.git
+  revision: 8bdfcf24c7d62cb6de8488c613a51080a8122a80
+  specs:
+    openapi_parser (0.6.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -95,6 +101,10 @@ GEM
       dry-types (~> 1.1)
       zeitwerk (~> 2.1)
     coderay (1.1.2)
+    committee (3.3.0)
+      json_schema (~> 0.14, >= 0.14.3)
+      openapi_parser (>= 0.6.1)
+      rack (>= 1.5)
     concurrent-ruby (1.1.5)
     config (2.0.0)
       activesupport (>= 4.2)
@@ -226,6 +236,7 @@ GEM
     jbuilder (2.9.1)
       activesupport (>= 4.2.0)
     json (2.3.0)
+    json_schema (0.20.8)
     jwt (2.2.1)
     link_header (0.0.8)
     listen (3.0.8)
@@ -489,14 +500,13 @@ DEPENDENCIES
   capistrano-shared_configs
   capistrano-sidekiq
   cocina-models (~> 0.6.0)
+  committee
   config
   coveralls (~> 0.8)
   deprecation
   dlss-capistrano
   dor-services (~> 8.0)
   dor-workflow-client (~> 3.9)
-  dry-struct
-  dry-types
   equivalent-xml
   factory_bot_rails
   faraday
@@ -508,6 +518,7 @@ DEPENDENCIES
   moab-versioning (~> 4.0)
   net-http-persistent (~> 2.9)
   okcomputer
+  openapi_parser!
   pg
   preservation-client (~> 2.0)
   progressbar

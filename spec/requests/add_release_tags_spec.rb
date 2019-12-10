@@ -3,7 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Add release tags' do
-  let(:object) { Dor::Item.new(pid: 'druid:1234') }
+  let(:druid) { 'druid:mx123qw2323' }
+  let(:object) { Dor::Item.new(pid: druid) }
 
   before do
     allow(Dor).to receive(:find).and_return(object)
@@ -13,7 +14,7 @@ RSpec.describe 'Add release tags' do
 
   context 'when release is false' do
     it 'adds a release tag' do
-      post '/v1/objects/druid:1234/release_tags',
+      post "/v1/objects/#{druid}/release_tags",
            params: %( {"to":"searchworks","who":"carrickr","what":"self","release":false} ),
            headers: { 'Authorization' => "Bearer #{jwt}" }
 
@@ -27,7 +28,7 @@ RSpec.describe 'Add release tags' do
 
   context 'when release is true' do
     it 'adds a release tag' do
-      post '/v1/objects/druid:1234/release_tags',
+      post "/v1/objects/#{druid}/release_tags",
            params: %( {"to":"searchworks","who":"carrickr","what":"self","release":true} ),
            headers: { 'Authorization' => "Bearer #{jwt}" }
 
@@ -40,7 +41,7 @@ RSpec.describe 'Add release tags' do
 
   context 'with an invalid release attribute' do
     it 'returns an error' do
-      post '/v1/objects/druid:1234/release_tags',
+      post "/v1/objects/#{druid}/release_tags",
            params: %( {"to":"searchworks","who":"carrickr","what":"self","release":"seven"} ),
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq(400)

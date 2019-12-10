@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem 'rails', '~> 5.2.0'
 
@@ -21,16 +22,16 @@ group :development do
 end
 
 # Ruby general dependencies
+gem 'committee' # validates Open API spec (OAS)
 gem 'config'
 gem 'deprecation'
-gem 'dry-struct'
-gem 'dry-types'
 gem 'faraday'
 gem 'honeybadger'
 gem 'jbuilder'
 gem 'jwt'
 gem 'net-http-persistent', '~> 2.9' # Pin to avoid problem exhausting file handles under load
 gem 'okcomputer'
+gem 'openapi_parser', github: 'ota42y/openapi_parser' # fixes https://github.com/ota42y/openapi_parser/issues/61
 gem 'pg'
 gem 'progressbar' # for the cleaner rake task
 gem 'ruby-cache', '~> 0.3.0'
