@@ -15,6 +15,7 @@ class PreserveJob < ApplicationJob
     rescue StandardError => e
       return LogFailureJob.perform_later(druid: druid,
                                          background_job_result: background_job_result,
+                                         workflow: 'accessionWF',
                                          workflow_process: 'sdr-ingest-transfer',
                                          output: { errors: [{ title: 'Preservation error', detail: e.message }] })
     end
