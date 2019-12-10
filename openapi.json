@@ -200,8 +200,9 @@
         "tags": [
           "preservation"
         ],
-        "summary": "Get the file content from preservation",
-        "description": "",
+        "summary": "DEPRECATED. Get the file content from preservation",
+        "description": "DEPRECATED. Use preservation-client gem instead.",
+        "deprecated": true,
         "operationId": "sdr#file_content",
         "responses": {
           "200": {

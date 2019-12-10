@@ -15,7 +15,7 @@ Rails.application.routes.draw do
       get 'current_version', to: 'sdr#current_version' # deprecated; caller should use preservation-client
       get 'manifest/:dsname', to: 'sdr#ds_manifest', format: false, constraints: { dsname: /.+/ } # deprecated
       get 'metadata/:dsname', to: 'sdr#ds_metadata', format: false, constraints: { dsname: /.+/ }
-      get 'content/:filename', to: 'sdr#file_content', format: false, constraints: { filename: /.+/ }
+      get 'content/:filename', to: 'sdr#file_content', format: false, constraints: { filename: /.+/ } # deprecated
     end
 
     scope :catalog do
