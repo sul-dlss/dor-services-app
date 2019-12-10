@@ -47,6 +47,10 @@
       "description": "Operations about object versions"
     },
     {
+      "name": "events",
+      "description": "Operations about events"
+    },
+    {
       "name": "files",
       "description": "Operations about files"
     },
@@ -843,6 +847,76 @@
         ]
       }
     },
+    "/v1/objects/{object_id}/events": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Return a list of events about this object",
+        "description": "",
+        "operationId": "events#index",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Event"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "object_id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Create an event about this object",
+        "description": "",
+        "operationId": "events#create",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "parameters": [
+          {
+            "name": "object_id",
+            "in": "path",
+            "description": "ID of object",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Druid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "event to add to the system",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Event"
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/objects/{object_id}/versions/openable": {
       "get": {
         "tags": [
@@ -1198,6 +1272,20 @@
                 "example": "/data/attributes/title"
               }
             }
+          }
+        }
+      },
+      "Event" : {
+        "type": "object",
+        "required": ["event_type", "data"],
+        "properties": {
+          "event_type": {
+            "description": "the type of event",
+            "type": "string"
+          },
+          "data": {
+            "description": "details about the event",
+            "type": "object"
           }
         }
       },

@@ -54,6 +54,8 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :events, only: [:create, :index], defaults: { format: :json }
+
       resources :versions, only: [:create] do
         collection do
           get 'openable'
