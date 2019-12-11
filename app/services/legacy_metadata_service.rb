@@ -10,7 +10,7 @@ class LegacyMetadataService
 
     return if !datastream.createDate || updated > datastream.createDate
 
-    Honeybadger.notify("Found #{datasteam.pid}/#{datastream.dsid} that had a create " \
+    Honeybadger.notify("Found #{datastream.pid}/#{datastream.dsid} that had a create " \
       "date (#{datastream.createDate}) after the file was modified (#{updated}). " \
       'Doing an experiment to see if this ever happens.')
   end
