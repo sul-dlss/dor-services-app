@@ -12,20 +12,15 @@ RSpec.describe StartPreservationWorkflowJob, type: :job do
   let(:result) { create(:background_job_result) }
 
   before do
-    allow(LogSuccessJob).to receive(:perform_later)
+    allow(result).to receive(:complete!)
+    allow(LogFailureJob).to receive(:perform_later)
     allow(Dor::Config.workflow.client).to receive(:create_workflow_by_name)
   end
 
-  it 'marks the job as success' do
+  it 'marks the job as errored' do
     perform
+    expect(result).to have_received(:complete!).once
     expect(Dor::Config.workflow.client).to have_received(:create_workflow_by_name)
       .with(druid, 'preservationIngestWF')
-    expect(LogSuccessJob).to have_received(:perform_later)
-      .with(
-        druid: druid,
-        background_job_result: result,
-        workflow: 'accessionWF',
-        workflow_process: 'preservation-ingest-initiated'
-      )
   end
 end
