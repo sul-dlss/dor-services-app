@@ -86,6 +86,14 @@ jobs:
           sudo npm install -g openapi-enforcer-cli
           result=$(openapi-enforcer validate openapi.json)
           [[ $result =~ "Document is valid" ]] && {
+          echo "Validation good"
+          } || {
+          echo $result
+          exit 1
+          }
+          result=$(jq '' openapi.json)
+          [[ $? == "0" ]] && {
+          echo "JSON good"
           exit 0
           } || {
           echo $result
