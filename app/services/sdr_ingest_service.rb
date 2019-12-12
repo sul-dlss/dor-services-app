@@ -2,24 +2,27 @@
 
 require 'moab/stanford'
 
-# Transfers files from the workspace to SDR
+# Transfers files from the workspace to Preservation (SDR)
+#
+# NOTE:  this class makes use of data structures from moab-versioning gem,
+#  but it does NOT access any preservation storage roots directly
 class SdrIngestService
   # @param [Dor::Item] dor_item The representation of the digital object
   # @return [void] Create the Moab/bag manifests for new version, export data to BagIt bag, kick off the SDR preservation workflow
   def self.transfer(dor_item)
     druid = dor_item.pid
     workspace = DruidTools::Druid.new(druid, Settings.sdr.local_workspace_root)
-    signature_catalog = get_signature_catalog(druid)
+    signature_catalog = signature_catalog_from_preservation(druid)
     new_version_id = signature_catalog.version_id + 1
     metadata_dir = extract_datastreams(dor_item, workspace)
     verify_version_metadata(metadata_dir, new_version_id)
     version_inventory = get_version_inventory(metadata_dir, druid, new_version_id)
-    version_addtions = signature_catalog.version_additions(version_inventory)
-    content_addtions = version_addtions.group('content')
-    if content_addtions.nil? || content_addtions.files.empty?
+    version_additions = signature_catalog.version_additions(version_inventory)
+    content_additions = version_additions.group('content')
+    if content_additions.nil? || content_additions.files.empty?
       content_dir = nil
     else
-      new_file_list = content_addtions.path_list
+      new_file_list = content_additions.path_list
       content_dir = workspace.find_filelist_parent('content', new_file_list)
     end
     content_group = version_inventory.group('content')
@@ -38,14 +41,12 @@ class SdrIngestService
   # Note: the following methods should probably all be private
 
   # @param [String] druid The object identifier
-  # @return [Moab::SignatureCatalog] the catalog of all files previously ingested
-  def self.get_signature_catalog(druid)
-    response = SdrClient.new(druid).manifest(ds_name: 'signatureCatalog.xml')
-    return Moab::SignatureCatalog.new(digital_object_id: druid, version_id: 0) if response.status == 404
-
-    raise "Problem retrieving signatureCatalog for #{druid} from SDR: #{response}" unless response.success?
-
-    Moab::SignatureCatalog.parse response.body
+  # @return [Moab::SignatureCatalog] the manifest of all files previously ingested,
+  #   or if there is none, a SignatureCatalog object for version 0.
+  def self.signature_catalog_from_preservation(druid)
+    Preservation::Client.objects.signature_catalog(druid)
+  rescue Preservation::Client::NotFoundError
+    Moab::SignatureCatalog.new(digital_object_id: druid, version_id: 0)
   end
 
   # @param [Dor::Item] dor_item The representation of the digital object

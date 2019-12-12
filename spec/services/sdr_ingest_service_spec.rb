@@ -6,6 +6,7 @@ require 'fileutils'
 RSpec.describe SdrIngestService do
   let(:fixtures) { Pathname(File.dirname(__FILE__)).join('../fixtures') }
   let(:export_dir) { Pathname(Settings.sdr.local_export_home) }
+  let(:fixture_sig_cat_obj) { Moab::SignatureCatalog.parse(File.open(fixtures.join('sdr_repo/dd116zh0343/v0001/manifests/signatureCatalog.xml')).read) }
 
   before do
     allow(Settings.sdr).to receive_messages(local_workspace_root: fixtures.join('workspace').to_s,
@@ -30,7 +31,7 @@ RSpec.describe SdrIngestService do
     expect(File).to be_directory(Settings.sdr.local_export_home)
   end
 
-  describe 'datastream_content' do
+  describe '.datastream_content' do
     let(:ds_name) { 'myMetadata' }
     let(:item) { instance_double(Dor::Item, pid: '123') }
     let(:datastream) { instance_double(Dor::ContentMetadataDS) }
@@ -65,13 +66,7 @@ RSpec.describe SdrIngestService do
     let(:metadata_dir) { fixtures.join('workspace/dd/116/zh/0343/dd116zh0343/metadata') }
 
     before do
-      stub_request(:get, 'http://sdr-services.example.com/sdr/objects/druid:dd116zh0343/manifest/signatureCatalog.xml')
-        .with(
-          headers: {
-            'Authorization' => 'Basic dXNlcjpwYXNzd29yZA=='
-          }
-        )
-        .to_return(status: 200, body: File.open(fixtures.join('sdr_repo/dd116zh0343/v0001/manifests/signatureCatalog.xml')).read)
+      allow(Preservation::Client.objects).to receive(:signature_catalog).and_return(fixture_sig_cat_obj)
       expect(described_class).to receive(:extract_datastreams).with(dor_item, an_instance_of(DruidTools::Druid)).and_return(metadata_dir)
     end
 
@@ -137,7 +132,40 @@ RSpec.describe SdrIngestService do
     end
   end
 
-  specify 'extract_datastreams' do
+  describe '.signature_catalog_from_preservation' do
+    let(:druid) { 'druid:dd116zh0343' }
+    let(:dor_item) { instance_double(Dor::Item, pid: druid) }
+
+    context 'when signature_catalog exists in preservation' do
+      before do
+        allow(Preservation::Client.objects).to receive(:signature_catalog).and_return(fixture_sig_cat_obj)
+      end
+
+      it 'retrieves it as a Moab::SignatureCatalog object' do
+        sig_cat = described_class.signature_catalog_from_preservation(dor_item.pid)
+        expect(sig_cat).to be_an_instance_of(Moab::SignatureCatalog)
+        expect(sig_cat.digital_object_id).to eq dor_item.pid
+        expect(sig_cat.version_id).to eq 1
+        expect(sig_cat.entries.size).to eq 19
+      end
+    end
+
+    context 'when signature_catalog does not exist in preservation' do
+      before do
+        allow(Preservation::Client.objects).to receive(:signature_catalog).and_raise(Preservation::Client::NotFoundError)
+      end
+
+      it 'returns a Moab::SignatureCatalog object for version 0' do
+        sig_cat = described_class.signature_catalog_from_preservation(dor_item.pid)
+        expect(sig_cat).to be_an_instance_of(Moab::SignatureCatalog)
+        expect(sig_cat.digital_object_id).to eq dor_item.pid
+        expect(sig_cat.version_id).to eq 0
+        expect(sig_cat.entries).to eq []
+      end
+    end
+  end
+
+  specify '.extract_datastreams' do
     dor_item = instance_double(Dor::Item)
     metadata_dir = instance_double(Pathname)
     workspace = instance_double(DruidTools::Druid)
@@ -168,7 +196,7 @@ RSpec.describe SdrIngestService do
     described_class.extract_datastreams(dor_item, workspace)
   end
 
-  specify 'get_version_inventory' do
+  specify '.get_version_inventory' do
     metadata_dir = instance_double(Pathname)
     druid = 'druid:ab123cd4567'
     version_id = 2
@@ -182,7 +210,7 @@ RSpec.describe SdrIngestService do
     expect(result.groups.size).to eq 2
   end
 
-  specify 'get_content_inventory' do
+  specify '.get_content_inventory' do
     metadata_dir = fixtures.join('workspace/ab/123/cd/4567/ab123cd4567/metadata')
     druid = 'druid:ab123cd4567'
     version_id = 2
@@ -202,7 +230,7 @@ RSpec.describe SdrIngestService do
     expect(version_inventory.groups.size).to eq 0
   end
 
-  specify 'get_content_metadata' do
+  specify '.get_content_metadata' do
     metadata_dir = fixtures.join('workspace/ab/123/cd/4567/ab123cd4567/metadata')
     content_metadata = described_class.get_content_metadata(metadata_dir)
     expect(content_metadata).to match(/<contentMetadata /)
@@ -213,7 +241,7 @@ RSpec.describe SdrIngestService do
     expect(content_metadata).to be_nil
   end
 
-  specify 'get_metadata_file_group' do
+  specify '.get_metadata_file_group' do
     metadata_dir = instance_double(Pathname)
     file_group = instance_double(Moab::FileGroup)
     expect(Moab::FileGroup).to receive(:new).with(group_id: 'metadata').and_return(file_group)
@@ -221,18 +249,18 @@ RSpec.describe SdrIngestService do
     described_class.get_metadata_file_group(metadata_dir)
   end
 
-  specify 'verify_version_id' do
+  specify '.verify_version_id' do
     expect(described_class.verify_version_id('/mypath/myfile', 2, 2)).to be_truthy
     expect { described_class.verify_version_id('/mypath/myfile', 1, 2) }.to raise_exception('Version mismatch in /mypath/myfile, expected 1, found 2')
   end
 
-  specify 'vmfile_version_id' do
+  specify '.vmfile_version_id' do
     metadata_dir = fixtures.join('workspace/dd/116/zh/0343/dd116zh0343/metadata')
     vmfile = metadata_dir.join('versionMetadata.xml')
     expect(described_class.vmfile_version_id(vmfile)).to eq 2
   end
 
-  specify 'verify_pathname' do
+  specify '.verify_pathname' do
     metadata_dir = fixtures.join('workspace/dd/116/zh/0343/dd116zh0343/metadata')
     expect(described_class.verify_pathname(metadata_dir)).to be_truthy
     vmfile = metadata_dir.join('versionMetadata.xml')

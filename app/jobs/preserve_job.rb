@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Move an object to SDR in the background
+# Move an object to Preservation (SDR) in the background
 class PreserveJob < ApplicationJob
   queue_as :default
 

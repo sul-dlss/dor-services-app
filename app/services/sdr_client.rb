@@ -9,6 +9,7 @@ class SdrClient
   # @raises [Dor::Exception] if SDR doesn't know about the object (i.e. 404 response code)
   # @raises [StandardError] if the response from SDR can't be parsed
   def self.current_version(druid)
+    Honeybadger.notify('dor-services-app deprecated class method `SdrClient.current_version` called. Use preservation-client .current_version instead.')
     new(druid).current_version(parsed: true)
   end
 
@@ -29,8 +30,10 @@ class SdrClient
   deprecation_deprecate content_diff: 'Use preservation-client .content_inventory_diff or .shelve_content_diff in caller instead.'
 
   def manifest(ds_name:)
+    Honeybadger.notify('dor-services-app deprecated method `SdrClient.manifest` called. Use preservation-client .manifest or .signature_catalog instead.')
     sdr_get("/objects/#{druid}/manifest/#{ds_name}")
   end
+  deprecation_deprecate manifest: 'Use preservation-client .manifest or .signature_catalog in caller instead.'
 
   def metadata(ds_name:)
     Honeybadger.notify('dor-services-app deprecated method `SdrClient.metadata` called. Use preservation-client .metadata instead.')
