@@ -7,8 +7,8 @@
 # DOR Services App
 
 This Ruby application provides a REST API for DOR Services.
-There is a (OAS 3.0 spec)[http://spec.openapis.org/oas/v3.0.2] that documents the
-API in [openapi.json].  If you clone this repo, you can view this by opening [docs/index.html].
+There is a [OAS 3.0 spec](http://spec.openapis.org/oas/v3.0.2) that documents the
+API in [openapi.json](openapi.json).  If you clone this repo, you can view this by opening [docs/index.html](docs/index.html).
 
 ## Authentication
 
