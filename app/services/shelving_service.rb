@@ -32,10 +32,10 @@ class ShelvingService
   # retrieve the differences between the current contentMetadata and the previously ingested version
   # (filtering to select only the files that should be shelved to stacks)
   def shelve_diff
-    raise Dor::ParameterError, 'Missing Dor::Config.stacks.local_workspace_root' if Dor::Config.stacks.local_workspace_root.nil?
-    raise Dor::Exception, 'Missing contentMetadata datastream' if work.contentMetadata.nil?
-
     @shelve_diff ||= begin
+      raise Dor::ParameterError, 'Missing Dor::Config.stacks.local_workspace_root' if Dor::Config.stacks.local_workspace_root.nil?
+      raise Dor::Exception, 'Missing contentMetadata datastream' if work.contentMetadata.nil?
+
       current_content = work.contentMetadata.content
       Preservation::Client.objects.shelve_content_diff(druid: work.pid, content_metadata: current_content)
     end
