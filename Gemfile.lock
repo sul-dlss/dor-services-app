@@ -285,7 +285,7 @@ GEM
     parser (2.6.5.0)
       ast (~> 2.4.0)
     pg (1.1.4)
-    preservation-client (1.0.0)
+    preservation-client (2.0.0)
       activesupport (>= 4.2, < 7)
       faraday (~> 0.15)
       moab-versioning (~> 4.3)
@@ -509,7 +509,7 @@ DEPENDENCIES
   net-http-persistent (~> 2.9)
   okcomputer
   pg
-  preservation-client
+  preservation-client (~> 2.0)
   progressbar
   pry-byebug
   puma (~> 3.0)
