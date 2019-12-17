@@ -521,6 +521,12 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "422": {
+            "description": "Unprocessable entity."
+          },
+          "500": {
+            "description": "Internal server error"
           }
         },
         "parameters": [
