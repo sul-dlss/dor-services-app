@@ -3,7 +3,7 @@
 # Look into identityMetadata for compliant ids and use them to fetch
 # descriptive metadata from Symphony.  Put the fetched value in the descMetadata
 class RefreshMetadataAction
-  # @return [NilClass,Object] returns nil if there was no resolvalble metadata id.
+  # @return [NilClass,Object] returns nil if there was no resolvable metadata id.
   def self.run(object)
     new(object).run(object.descMetadata)
   end
