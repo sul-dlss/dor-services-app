@@ -61,6 +61,10 @@
     {
       "name": "embargoes",
       "description": "Operations about embargoes"
+    },
+    {
+      "name": "sidekiq",
+      "description": "Queue monitoring"
     }
   ],
   "paths": {
@@ -77,6 +81,65 @@
     "/status/external-symphony": {
       "get": {
         "summary": "A healthcheck endpoint for the symphony connection",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/queues": {
+      "get": {
+        "summary": "Endpoint for sidekiq web monitoring",
+        "tags": [
+          "sidekiq"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/queues/{path}/{file}": {
+      "get": {
+        "summary": "Assets for sidekiq web monitoring",
+        "tags": [
+          "sidekiq"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "example": "javascripts",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "file",
+            "in": "path",
+            "required": true,
+            "example": "application.js",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/queues/stats": {
+      "get": {
+        "summary": "Stats for sidekiq web monitoring",
+        "tags": [
+          "sidekiq"
+        ],
         "responses": {
           "200": {
             "description": "OK"
