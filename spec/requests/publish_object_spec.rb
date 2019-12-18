@@ -3,7 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Publish object' do
-  let(:object) { Dor::Item.new(pid: 'druid:1234') }
+  let(:druid) { 'druid:mx123qw2323' }
+  let(:object) { Dor::Item.new(pid: druid) }
 
   before do
     allow(Dor).to receive(:find).and_return(object)
@@ -12,29 +13,31 @@ RSpec.describe 'Publish object' do
 
   context 'with a workflow provided' do
     it 'calls PublishMetadataService and returns 201' do
-      post '/v1/objects/druid:1234/publish?workflow=releaseWF', headers: { 'Authorization' => "Bearer #{jwt}" }
+      post "/v1/objects/#{druid}/publish?workflow=releaseWF", headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(PublishJob).to have_received(:perform_later)
-        .with(druid: 'druid:1234', background_job_result: BackgroundJobResult, workflow: 'releaseWF')
+        .with(druid: druid, background_job_result: BackgroundJobResult, workflow: 'releaseWF')
       expect(response.status).to eq(201)
     end
   end
 
   context 'with an invalid workflow provided' do
-    it 'calls PublishMetadataService and returns 201' do
-      expect do
-        post '/v1/objects/druid:1234/publish?workflow=badWF', headers: { 'Authorization' => "Bearer #{jwt}" }
-      end.to raise_error('invalid workflow badWF')
+    let(:error) { JSON.parse(response.body)['errors'][0]['detail'] }
+
+    it 'is a bad request' do
+      post "/v1/objects/#{druid}/publish?workflow=badWF", headers: { 'Authorization' => "Bearer #{jwt}" }
+      expect(response).to have_http_status(:bad_request)
+      expect(error).to eq("badWF isn't include enum in #/paths/~1v1~1objects~1{id}~1publish/post/parameters/1/schema")
     end
   end
 
   context 'without a workflow provided' do
     # This happens when Argo invokes the API
     it 'calls PublishMetadataService and returns 201' do
-      post '/v1/objects/druid:1234/publish', headers: { 'Authorization' => "Bearer #{jwt}" }
+      post "/v1/objects/#{druid}/publish", headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(PublishJob).to have_received(:perform_later)
-        .with(druid: 'druid:1234', background_job_result: BackgroundJobResult, workflow: nil)
+        .with(druid: druid, background_job_result: BackgroundJobResult, workflow: nil)
       expect(response.status).to eq(201)
     end
   end

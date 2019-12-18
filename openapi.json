@@ -11,26 +11,20 @@
   },
   "servers": [
     {
-      "url": "https://dor-services-{env}.stanford.edu/{version}",
+      "url": "https://dor-services-{env}.stanford.edu",
       "description": "Production service",
       "variables": {
         "env": {
           "default": "prod"
-        },
-        "version": {
-          "default": "v1"
         }
       }
     },
     {
-      "url": "https://dor-services-{env}.stanford.edu/{version}",
+      "url": "https://dor-services-{env}.stanford.edu",
       "description": "Staging service",
       "variables": {
         "env": {
           "default": "stage"
-        },
-        "version": {
-          "default": "v1"
         }
       }
     }
@@ -70,7 +64,17 @@
     }
   ],
   "paths": {
-    "/sdr/objects/{id}/cm-inv-diff": {
+    "/v1/about": {
+      "get": {
+        "summary": "A healthcheck endpoint",
+        "responses": {
+          "200": {
+            "description": "The status of the service"
+          }
+        }
+      }
+    },
+    "/v1/sdr/objects/{id}/cm-inv-diff": {
       "post": {
         "tags": [
           "preservation"
@@ -97,7 +101,7 @@
         ]
       }
     },
-    "/sdr/objects/{id}/current_version": {
+    "/v1/sdr/objects/{id}/current_version": {
       "get": {
         "tags": [
           "preservation"
@@ -124,7 +128,7 @@
         ]
       }
     },
-    "/sdr/objects/{id}/manifest/{datastream}": {
+    "/v1/sdr/objects/{id}/manifest/{datastream}": {
       "get": {
         "tags": [
           "preservation"
@@ -160,7 +164,7 @@
         ]
       }
     },
-    "/sdr/objects/{id}/metadata/{datastream}": {
+    "/v1/sdr/objects/{id}/metadata/{datastream}": {
       "get": {
         "tags": [
           "preservation"
@@ -196,7 +200,7 @@
         ]
       }
     },
-    "/sdr/objects/{id}/content/{filename}": {
+    "/v1/sdr/objects/{id}/content/{filename}": {
       "get": {
         "tags": [
           "preservation"
@@ -232,7 +236,7 @@
         ]
       }
     },
-    "/catalog/catkey": {
+    "/v1/catalog/catkey": {
       "get": {
         "tags": [
           "integrations"
@@ -258,7 +262,7 @@
         ]
       }
     },
-    "/background_job_results/{id}": {
+    "/v1/background_job_results/{id}": {
       "get": {
         "tags": [
           "jobs"
@@ -311,7 +315,7 @@
         ]
       }
     },
-    "/virtual_objects": {
+    "/v1/virtual_objects": {
       "post": {
         "tags": [
           "objects"
@@ -338,9 +342,11 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": ["virtual_objects"],
                 "properties": {
                   "virtual_objects": {
                     "type": "array",
+                    "minItems": 1,
                     "items": {
                       "$ref": "#/components/schemas/VirtualObjectRequest"
                     }
@@ -352,7 +358,7 @@
         }
       }
     },
-    "/objects/{id}/publish": {
+    "/v1/objects/{id}/publish": {
       "post": {
         "tags": [
           "objects"
@@ -397,7 +403,7 @@
         ]
       }
     },
-    "/objects/{id}/preserve": {
+    "/v1/objects/{id}/preserve": {
       "post": {
         "tags": [
           "objects"
@@ -432,7 +438,7 @@
         ]
       }
     },
-    "/objects/{id}/update_marc_record": {
+    "/v1/objects/{id}/update_marc_record": {
       "post": {
         "tags": [
           "integrations"
@@ -458,7 +464,7 @@
         ]
       }
     },
-    "/objects/{id}/notify_goobi": {
+    "/v1/objects/{id}/notify_goobi": {
       "post": {
         "tags": [
           "integrations"
@@ -484,7 +490,7 @@
         ]
       }
     },
-    "/objects/{id}/release_tags": {
+    "/v1/objects/{id}/release_tags": {
       "post": {
         "tags": [
           "objects"
@@ -510,7 +516,7 @@
         ]
       }
     },
-    "/objects/{id}/refresh_metadata": {
+    "/v1/objects/{id}/refresh_metadata": {
       "post": {
         "tags": [
           "integrations"
@@ -536,7 +542,7 @@
         ]
       }
     },
-    "/objects/{id}/contents": {
+    "/v1/objects/{id}/contents": {
       "get": {
         "tags": [
           "files"
@@ -562,7 +568,7 @@
         ]
       }
     },
-    "/objects/{id}/contents/{path}": {
+    "/v1/objects/{id}/contents/{path}": {
       "get": {
         "tags": [
           "files"
@@ -597,7 +603,7 @@
         ]
       }
     },
-    "/objects/{object_id}/query/collections": {
+    "/v1/objects/{object_id}/query/collections": {
       "get": {
         "tags": [
           "objects"
@@ -623,7 +629,7 @@
         ]
       }
     },
-    "/objects/{object_id}/workspace": {
+    "/v1/objects/{object_id}/workspace": {
       "delete": {
         "tags": [
           "workspaces"
@@ -683,7 +689,7 @@
         ]
       }
     },
-    "/objects/{object_id}/workspace/reset": {
+    "/v1/objects/{object_id}/workspace/reset": {
       "post": {
         "tags": [
           "workspaces"
@@ -719,7 +725,7 @@
         ]
       }
     },
-    "/objects/{object_id}/embargo": {
+    "/v1/objects/{object_id}/embargo": {
       "patch": {
         "tags": [
           "embargoes"
@@ -745,7 +751,7 @@
         ]
       }
     },
-    "/objects/{object_id}/shelve": {
+    "/v1/objects/{object_id}/shelve": {
       "post": {
         "tags": [
           "objects"
@@ -790,8 +796,8 @@
         ]
       }
     },
-    "/objects/{object_id}/metadata/legacy": {
-      "post": {
+    "/v1/objects/{object_id}/metadata/legacy": {
+      "patch": {
         "tags": [
           "objects"
         ],
@@ -825,7 +831,7 @@
         }
       }
     },
-    "/objects/{object_id}/metadata/dublin_core": {
+    "/v1/objects/{object_id}/metadata/dublin_core": {
       "get": {
         "tags": [
           "objects"
@@ -851,7 +857,7 @@
         ]
       }
     },
-    "/objects/{object_id}/metadata/descriptive": {
+    "/v1/objects/{object_id}/metadata/descriptive": {
       "get": {
         "tags": [
           "objects"
@@ -877,7 +883,7 @@
         ]
       }
     },
-    "/objects/{object_id}/versions/openable": {
+    "/v1/objects/{object_id}/versions/openable": {
       "get": {
         "tags": [
           "versions"
@@ -903,7 +909,7 @@
         ]
       }
     },
-    "/objects/{object_id}/versions/current": {
+    "/v1/objects/{object_id}/versions/current": {
       "get": {
         "tags": [
           "versions"
@@ -929,7 +935,7 @@
         ]
       }
     },
-    "/objects/{object_id}/versions/current/close": {
+    "/v1/objects/{object_id}/versions/current/close": {
       "post": {
         "tags": [
           "versions"
@@ -955,7 +961,7 @@
         ]
       }
     },
-    "/objects/{object_id}/versions": {
+    "/v1/objects/{object_id}/versions": {
       "post": {
         "tags": [
           "versions"
@@ -981,7 +987,7 @@
         ]
       }
     },
-    "/objects": {
+    "/v1/objects": {
       "post": {
         "tags": [
           "objects"
@@ -997,7 +1003,7 @@
         "parameters": []
       }
     },
-    "/objects/{id}": {
+    "/v1/objects/{id}": {
       "get": {
         "tags": [
           "objects"
@@ -1271,12 +1277,14 @@
       },
       "VirtualObjectRequest": {
         "type": "object",
+        "required": ["parent_id", "child_ids"],
         "properties": {
           "parent_id": {
             "$ref": "#/components/schemas/Druid"
           },
           "child_ids": {
             "type": "array",
+            "minItems": 1,
             "items": {
               "$ref": "#/components/schemas/Druid"
             }

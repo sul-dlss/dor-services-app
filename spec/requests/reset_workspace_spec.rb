@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Reset workspace' do
   let(:item) { instance_double(Dor::Item, current_version: 2) }
-  let(:druid) { 'druid:aa222cc3333' }
+  let(:druid) { 'druid:bb222cc3333' }
 
   before do
     allow(Dor).to receive(:find).and_return(item)
@@ -17,7 +17,6 @@ RSpec.describe 'Reset workspace' do
 
     it 'is successful' do
       post "/v1/objects/#{druid}/workspace/reset", headers: { 'Authorization' => "Bearer #{jwt}" }
-
       expect(ResetWorkspaceService).to have_received(:reset).with(druid: druid, version: 2)
       expect(response).to be_no_content
     end

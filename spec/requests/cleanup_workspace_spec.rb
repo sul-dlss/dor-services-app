@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Cleanup workspace' do
-  let(:object_id) { 'druid:aa222cc3333' }
+  let(:object_id) { 'druid:bb222cc3333' }
 
   context 'when successful' do
     before do

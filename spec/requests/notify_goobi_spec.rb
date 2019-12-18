@@ -3,7 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Notify Goobi' do
-  let(:object) { Dor::Item.new(pid: 'druid:1234') }
+  let(:druid) { 'druid:mx123qw2323' }
+  let(:object) { Dor::Item.new(pid: druid) }
   let(:fake_request) { "<stanfordCreationRequest><objectId>#{object.pid}</objectId></stanfordCreationRequest>" }
 
   before do
@@ -20,7 +21,7 @@ RSpec.describe 'Notify Goobi' do
     end
 
     it 'notifies goobi of a new registration by making a web service call' do
-      post '/v1/objects/druid:1234/notify_goobi', headers: { 'Authorization' => "Bearer #{jwt}" }
+      post "/v1/objects/#{druid}/notify_goobi", headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(response.status).to eq(201)
     end
@@ -34,7 +35,7 @@ RSpec.describe 'Notify Goobi' do
     end
 
     it 'returns the conflict code' do
-      post '/v1/objects/druid:1234/notify_goobi', headers: { 'Authorization' => "Bearer #{jwt}" }
+      post "/v1/objects/#{druid}/notify_goobi", headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq(409)
       expect(response.body).to eq('conflict')
     end

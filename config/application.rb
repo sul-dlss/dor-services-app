@@ -12,8 +12,30 @@ require 'active_record/railtie'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+class JSONAPIError < Committee::ValidationError
+  def error_body
+    {
+      errors: [
+        { status: id, detail: message }
+      ]
+    }
+  end
+
+  def render
+    [
+      status,
+      { "Content-Type" => "application/vnd.api+json" },
+      [JSON.generate(error_body)]
+    ]
+  end
+end
+
 module DorServices
   class Application < Rails::Application
+    config.middleware.use Committee::Middleware::RequestValidation, schema_path: 'openapi.json', strict: true, error_class: JSONAPIError
+    # TODO: we can uncomment this at a later date to ensure we are passing back valid responses
+    # config.middleware.use Committee::Middleware::ResponseValidation, schema: schema
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
