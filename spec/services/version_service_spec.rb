@@ -58,7 +58,7 @@ RSpec.describe VersionService do
         expect(workflow_client).to have_received(:lifecycle).with('dor', druid, 'accessioned')
         expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'opened', version: '1')
         expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'submitted', version: '1')
-        expect(workflow_client).to have_received(:create_workflow_by_name).with(obj.pid, 'versioningWF')
+        expect(workflow_client).to have_received(:create_workflow_by_name).with(obj.pid, 'versioningWF', version: '2')
       end
 
       it 'includes options' do

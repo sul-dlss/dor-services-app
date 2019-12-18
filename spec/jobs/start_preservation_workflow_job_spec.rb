@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe StartPreservationWorkflowJob, type: :job do
   subject(:perform) do
     described_class.perform_now(druid: druid,
+                                version: '7',
                                 background_job_result: result)
   end
 
@@ -19,7 +20,7 @@ RSpec.describe StartPreservationWorkflowJob, type: :job do
   it 'marks the job as success' do
     perform
     expect(Dor::Config.workflow.client).to have_received(:create_workflow_by_name)
-      .with(druid, 'preservationIngestWF')
+      .with(druid, 'preservationIngestWF', version: '7')
     expect(LogSuccessJob).to have_received(:perform_later)
       .with(
         druid: druid,

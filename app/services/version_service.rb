@@ -36,7 +36,7 @@ class VersionService
     vmd_ds.sync_then_increment_version sdr_version
     vmd_ds.save unless work.new_record?
 
-    Dor::Config.workflow.client.create_workflow_by_name(work.pid, 'versioningWF')
+    Dor::Config.workflow.client.create_workflow_by_name(work.pid, 'versioningWF', version: work.current_version)
 
     return if (opts.keys & open_options_requiring_work_save).empty?
 

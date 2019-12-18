@@ -7,7 +7,7 @@ RSpec.describe PreserveJob, type: :job do
 
   let(:druid) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
-  let(:item) { instance_double(Dor::Item) }
+  let(:item) { instance_double(Dor::Item, current_version: '7') }
 
   before do
     allow(Dor).to receive(:find).with(druid).and_return(item)

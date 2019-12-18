@@ -7,10 +7,11 @@ class StartPreservationWorkflowJob < ApplicationJob
   queue_as :default
 
   # @param [String] druid the identifier of the item to be published
+  # @param [String] version the current version of the item to be published
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
-  def perform(druid:, background_job_result:)
+  def perform(druid:, version:, background_job_result:)
     # start SDR preservation workflow
-    Dor::Config.workflow.client.create_workflow_by_name(druid, 'preservationIngestWF')
+    Dor::Config.workflow.client.create_workflow_by_name(druid, 'preservationIngestWF', version: version)
 
     LogSuccessJob.perform_later(druid: druid,
                                 workflow: 'accessionWF',
