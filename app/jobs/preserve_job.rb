@@ -20,6 +20,8 @@ class PreserveJob < ApplicationJob
                                          output: { errors: [{ title: 'Preservation error', detail: e.message }] })
     end
 
-    StartPreservationWorkflowJob.perform_later(druid: druid, background_job_result: background_job_result)
+    StartPreservationWorkflowJob.perform_later(druid: druid,
+                                               version: item.current_version,
+                                               background_job_result: background_job_result)
   end
 end
