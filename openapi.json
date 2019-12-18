@@ -64,6 +64,26 @@
     }
   ],
   "paths": {
+    "/status": {
+      "get": {
+        "summary": "A healthcheck endpoint for the application",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/status/external-symphony": {
+      "get": {
+        "summary": "A healthcheck endpoint for the symphony connection",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/v1/about": {
       "get": {
         "summary": "A healthcheck endpoint",
