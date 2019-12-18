@@ -4,17 +4,19 @@
 # descriptive metadata from Symphony.  Put the fetched value in the descMetadata
 class RefreshMetadataAction
   # @return [NilClass,Object] returns nil if there was no resolvable metadata id.
-  def self.run(object)
-    new(object).run(object.descMetadata)
+  def self.run(identifiers:, datastream:)
+    new(identifiers: identifiers, datastream: datastream).run
   end
 
-  def initialize(object)
-    @object = object
+  # @param [Array<String>] identifiers the set of identifiers that might be resolvable
+  # @param [DescMetadataDS] datastream the descriptive metadata
+  def initialize(identifiers:, datastream:)
+    @identifiers = identifiers
+    @datastream = datastream
   end
 
   # Returns nil if it didn't retrieve anything
-  # @param [DescMetadataDS] datastream the descriptive metadata
-  def run(datastream)
+  def run
     content = fetch_datastream
     return nil if content.nil?
 
@@ -26,9 +28,10 @@ class RefreshMetadataAction
 
   private
 
+  attr_reader :identifiers, :datastream
+
   def fetch_datastream
-    candidates = @object.identityMetadata.otherId.collect(&:to_s)
-    metadata_id = MetadataService.resolvable(candidates).first
+    metadata_id = MetadataService.resolvable(identifiers).first
     metadata_id.nil? ? nil : MetadataService.fetch(metadata_id.to_s)
   end
 end

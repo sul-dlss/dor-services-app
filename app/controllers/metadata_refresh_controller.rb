@@ -9,13 +9,19 @@ class MetadataRefreshController < ApplicationController
   end
 
   def refresh
-    status = RefreshMetadataAction.run(@item)
+    status = RefreshMetadataAction.run(identifiers: identifiers,
+                                       datastream: @item.descMetadata)
+    return render status: :unprocessable_entity, plain: "#{@item.pid} had no resolvable identifiers: #{identifiers.inspect}" unless status
     return render status: :internal_server_error, plain: "#{@item.pid} descMetadata missing required fields (<title>)" if missing_required_fields?
 
-    @item.save! if status
+    @item.save!
   end
 
   private
+
+  def identifiers
+    @identifiers ||= @item.identityMetadata.otherId.collect(&:to_s)
+  end
 
   def missing_required_fields?
     @item.descMetadata.mods_title.blank?
