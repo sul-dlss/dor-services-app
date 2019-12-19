@@ -134,7 +134,7 @@
         ]
       }
     },
-    "/queues/stats": {
+    "/queues/{queueName}": {
       "get": {
         "summary": "Stats for sidekiq web monitoring",
         "tags": [
@@ -144,7 +144,18 @@
           "200": {
             "description": "OK"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "queueName",
+            "in": "path",
+            "required": true,
+            "example": "retries",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
       }
     },
     "/v1/about": {
