@@ -13,6 +13,8 @@ class PreserveJob < ApplicationJob
       item = Dor.find(druid)
       SdrIngestService.transfer(item)
     rescue StandardError => e
+      Honeybadger.context(background_job_result_id: background_job_result.id)
+      Honeybadger.notify(e)
       return LogFailureJob.perform_later(druid: druid,
                                          background_job_result: background_job_result,
                                          workflow: 'accessionWF',
