@@ -106,6 +106,18 @@ RSpec.describe VersionsController do
         expect(response.status).to eq 422
       end
     end
+
+    context 'when preservation client call fails' do
+      before do
+        allow(VersionService).to receive(:open).and_raise(Preservation::Client::UnexpectedResponseError, 'Oops, a 500')
+      end
+
+      it 'returns an error' do
+        post :create, params: { object_id: item.pid }, as: :json
+        expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to open version due to preservation client error","detail":"Oops, a 500"}]}')
+        expect(response.status).to eq 500
+      end
+    end
   end
 
   describe '/versions/openable' do
@@ -130,6 +142,18 @@ RSpec.describe VersionsController do
         get :openable, params: { object_id: item.pid }
         expect(response.body).to eq('false')
         expect(response).to be_successful
+      end
+    end
+
+    context 'when preservation client call fails' do
+      before do
+        allow(VersionService).to receive(:can_open?).and_raise(Preservation::Client::UnexpectedResponseError, 'Oops, a 500')
+      end
+
+      it 'returns an error' do
+        get :openable, params: { object_id: item.pid }
+        expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to check if openable due to preservation client error","detail":"Oops, a 500"}]}')
+        expect(response.status).to eq 500
       end
     end
   end

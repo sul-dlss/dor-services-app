@@ -29,6 +29,7 @@ class VersionService
   # @option opts [String] :description set description of version change
   # @option opts [String] :opening_user_name add opening username to the events datastream
   # @raise [Dor::Exception] if the object hasn't been accessioned, or if a version is already opened
+  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   def open(opts = {})
     sdr_version = try_to_get_current_version(opts[:assume_accessioned])
 
@@ -51,6 +52,7 @@ class VersionService
   # @param [Hash] opts optional params
   # @option opts [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
   # @return [Boolean] true if a new version can be opened.
+  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   def can_open?(opts = {})
     try_to_get_current_version(opts[:assume_accessioned])
     true
@@ -87,8 +89,9 @@ class VersionService
   # Performs checks on whether a new version can be opened for an object
   # @return [Integer] the version from Preservation (SDR) if a version can be opened
   # @param [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
-  # @raise [Dor::Exception, Preservation::Client::Error] if the object hasn't been accessioned,
+  # @raise [Dor::Exception, Preservation::Client::NotFoundError] if the object hasn't been accessioned,
   #    if a version is already opened, or if Preservation returns 404 when queried.
+  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   def try_to_get_current_version(assume_accessioned = false)
     # Raised when the object has never been accessioned.
     # The accessioned milestone is the last step of the accessionWF.

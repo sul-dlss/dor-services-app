@@ -8,6 +8,8 @@ class VersionsController < ApplicationController
     render plain: @item.current_version
   rescue Dor::Exception => e
     render build_error('Unable to open version', e)
+  rescue Preservation::Client::Error => e
+    render build_error('Unable to open version due to preservation client error', e, status: :internal_server_error)
   end
 
   def current
@@ -23,24 +25,26 @@ class VersionsController < ApplicationController
 
   def openable
     render plain: VersionService.can_open?(@item, open_params).to_s
+  rescue Preservation::Client::Error => e
+    render build_error('Unable to check if openable due to preservation client error', e, status: :internal_server_error)
   end
 
   private
 
   # JSON-API error response
-  def build_error(msg, err)
+  def build_error(msg, err, status: :unprocessable_entity)
     {
       json: {
         errors: [
           {
-            "status": '422',
+            "status": Rack::Utils::SYMBOL_TO_STATUS_CODE[status].to_s,
             "title": msg,
             "detail": err.message
           }
         ]
       },
       content_type: 'application/vnd.api+json',
-      status: :unprocessable_entity
+      status: status
     }
   end
 
