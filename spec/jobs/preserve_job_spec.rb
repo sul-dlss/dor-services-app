@@ -12,6 +12,8 @@ RSpec.describe PreserveJob, type: :job do
   before do
     allow(Dor).to receive(:find).with(druid).and_return(item)
     allow(result).to receive(:processing!)
+    allow(Honeybadger).to receive(:notify)
+    allow(Honeybadger).to receive(:context)
   end
 
   context 'with no errors' do
@@ -52,6 +54,8 @@ RSpec.describe PreserveJob, type: :job do
               workflow: 'accessionWF',
               workflow_process: 'sdr-ingest-transfer',
               output: { errors: [{ detail: error_message, title: 'Preservation error' }] })
+      expect(Honeybadger).to have_received(:context).with(background_job_result_id: result.id)
+      expect(Honeybadger).to have_received(:notify).with(StandardError)
     end
   end
 end
