@@ -11,7 +11,7 @@ class PublicXmlService
     @released_for = released_for
   end
 
-  # @raises [Dor::DataError]
+  # @raise [Dor::DataError]
   def to_xml
     pub = Nokogiri::XML('<publicObject/>').root
     pub['id'] = object.pid

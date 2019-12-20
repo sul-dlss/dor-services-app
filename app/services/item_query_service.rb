@@ -26,7 +26,7 @@ class ItemQueryService
     errors
   end
 
-  # @raises [UncombinableItemError] if the item is dark, citation_only, or not modifiable
+  # @raise [UncombinableItemError] if the item is dark, citation_only, or not modifiable
   def self.find_combinable_item(druid)
     query_service = ItemQueryService.new(id: druid)
     query_service.item do |item|

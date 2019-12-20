@@ -7,7 +7,7 @@ class PruneService
     @druid = druid
   end
 
-  # @raises [Errno::ENOTEMPTY] if the directory is not empty
+  # @raise [Errno::ENOTEMPTY] if the directory is not empty
   def prune!
     this_path = druid.pathname
     parent = this_path.parent
@@ -17,7 +17,7 @@ class PruneService
 
   # @param [Pathname] outermost_branch The branch at which pruning begins
   # @return [void] Ascend the druid tree and prune empty branches
-  # @raises [Errno::ENOENT] if the directory does not exist
+  # @raise [Errno::ENOENT] if the directory does not exist
   def prune_ancestors(outermost_branch)
     while outermost_branch.exist? && outermost_branch.children.empty?
       outermost_branch.rmdir

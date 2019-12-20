@@ -6,7 +6,7 @@ require 'pathname'
 class CleanupResetService
   # @param [String] druid The identifier for the object whose reset data is to be removed
   # @return [void] remove copy of the reset data that was exported to preservation core
-  # @raises [Errno::ENOENT] if the directory does not exist
+  # @raise [Errno::ENOENT] if the directory does not exist
   def self.cleanup_by_reset_druid(druid)
     last_version = get_druid_last_version(druid)
     cleanup_reset_workspace_content(druid, last_version, Settings.cleanup.local_workspace_root)
@@ -27,7 +27,7 @@ class CleanupResetService
   # @param [String] base The base directory to delete from
   # @param [Integer] last_version The last version that the data should be removed until version 1
   # @return [void] remove all the object's reset data files from the workspace area equal to less than the last_version
-  # @raises [Errno::ENOENT] if the directory does not exist
+  # @raise [Errno::ENOENT] if the directory does not exist
   def self.cleanup_reset_workspace_content(druid, last_version, base)
     base_druid = DruidTools::Druid.new(druid, base)
     base_druid_tree = base_druid.pathname.to_s

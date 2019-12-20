@@ -19,7 +19,7 @@ class ConstituentService
   # Typically this is only called one time (with a list of all the pids) because
   # subsequent calls will erase the previous changes.
   # @param [Array<String>] child_druids the identifiers of the child objects
-  # @raises ActiveFedora::RecordInvalid if AF object validations fail on #save!
+  # @raise ActiveFedora::RecordInvalid if AF object validations fail on #save!
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   # @returns [NilClass, Hash] true if successful, hash of errors otherwise (if combinable validation fails)
   def add(child_druids:)
