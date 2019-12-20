@@ -31,6 +31,9 @@ class ShelvingService
 
   # retrieve the differences between the current contentMetadata and the previously ingested version
   # (filtering to select only the files that should be shelved to stacks)
+  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
+  # @raise [Dor::ParameterError] if missing local workspace root.
+  # @raise [Dor::Exception] if missing contentMetadata stream or something else went wrong.
   def shelve_diff
     @shelve_diff ||= begin
       raise Dor::ParameterError, 'Missing Dor::Config.stacks.local_workspace_root' if Dor::Config.stacks.local_workspace_root.nil?
@@ -39,6 +42,8 @@ class ShelvingService
       current_content = work.contentMetadata.content
       Preservation::Client.objects.shelve_content_diff(druid: work.pid, content_metadata: current_content)
     end
+  rescue Preservation::Client::Error => e
+    raise Dor::Exception, e
   end
 
   # Find the location of the object's content files in the workspace area

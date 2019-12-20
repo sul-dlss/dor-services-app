@@ -9,6 +9,7 @@ require 'moab/stanford'
 class SdrIngestService
   # @param [Dor::Item] dor_item The representation of the digital object
   # @return [void] Create the Moab/bag manifests for new version, export data to BagIt bag, kick off the SDR preservation workflow
+  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   def self.transfer(dor_item)
     druid = dor_item.pid
     workspace = DruidTools::Druid.new(druid, Settings.sdr.local_workspace_root)
@@ -43,6 +44,7 @@ class SdrIngestService
   # @param [String] druid The object identifier
   # @return [Moab::SignatureCatalog] the manifest of all files previously ingested,
   #   or if there is none, a SignatureCatalog object for version 0.
+  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   def self.signature_catalog_from_preservation(druid)
     Preservation::Client.objects.signature_catalog(druid)
   rescue Preservation::Client::NotFoundError
