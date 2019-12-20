@@ -101,6 +101,32 @@
         }
       }
     },
+    "/queues/retries": {
+      "post": {
+        "summary": "Endpoint for sidekiq web monitoring to retry a job",
+        "tags": [
+          "sidekiq"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/queues/retries/all/retry": {
+      "post": {
+        "summary": "Endpoint for sidekiq web monitoring to retry all jobs",
+        "tags": [
+          "sidekiq"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/queues/{path}/{file}": {
       "get": {
         "summary": "Assets for sidekiq web monitoring",
