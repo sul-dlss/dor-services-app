@@ -2,20 +2,18 @@
 
 require 'rails_helper'
 
-RSpec.describe VersionsController do
-  let(:item) { Dor::Item.new(pid: 'druid:aa123bb4567') }
+RSpec.describe 'Operations regarding object versions' do
+  let(:item) { Dor::Item.new(pid: 'druid:mx123qw2323') }
 
   before do
     allow(Dor).to receive(:find).and_return(item)
   end
 
-  before do
-    login
-  end
-
   describe '/versions/current' do
     it 'returns the latest version for an object' do
-      get :current, params: { object_id: item.pid }
+      get '/v1/objects/druid:mx123qw2323/versions/current',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
+
       expect(response.body).to eq('1')
     end
   end
@@ -27,13 +25,16 @@ RSpec.describe VersionsController do
       end
 
       it 'closes the current version when posted to' do
-        post :close_current, params: { object_id: item.pid }, as: :json
+        post '/v1/objects/druid:mx123qw2323/versions/current/close',
+             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(VersionService).to have_received(:close)
         expect(response.body).to match(/version 1 closed/)
       end
 
       it 'forwards optional params to the VersionService#close method' do
-        post :close_current, params: { object_id: item.pid }, body: %( {"description": "some text", "significance": "major"} ), as: :json
+        post '/v1/objects/druid:mx123qw2323/versions/current/close',
+             params: %( {"description": "some text", "significance": "major"} ),
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to match(/version 1 closed/)
         expect(VersionService).to have_received(:close).with(item, description: 'some text', significance: 'major')
       end
@@ -46,7 +47,8 @@ RSpec.describe VersionsController do
       end
 
       it 'returns an error' do
-        post :close_current, params: { object_id: item.pid }, as: :json
+        post '/v1/objects/druid:mx123qw2323/versions/current/close',
+             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq(
           '{"errors":[{"status":"422","title":"Unable to close version",' \
           '"detail":"Trying to close version on an object not opened for versioning"}]}'
@@ -81,13 +83,16 @@ RSpec.describe VersionsController do
       end
 
       it 'opens a new object version when posted to' do
-        post :create, params: { object_id: item.pid }, as: :json
+        post '/v1/objects/druid:mx123qw2323/versions',
+             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('2')
         expect(response).to be_successful
       end
 
       it 'forwards optional params to the VersionService#open method' do
-        post :create, params: { object_id: item.pid }, body: open_params.to_json, as: :json
+        post '/v1/objects/druid:mx123qw2323/versions',
+             params: open_params.to_json,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(VersionService).to have_received(:open).with(item, open_params)
         expect(response.body).to eq('2')
         expect(response).to be_successful
@@ -101,7 +106,8 @@ RSpec.describe VersionsController do
       end
 
       it 'returns an error' do
-        post :create, params: { object_id: item.pid }, as: :json
+        post '/v1/objects/druid:mx123qw2323/versions',
+             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('{"errors":[{"status":"422","title":"Unable to open version","detail":"Object net yet accessioned"}]}')
         expect(response.status).to eq 422
       end
@@ -113,7 +119,8 @@ RSpec.describe VersionsController do
       end
 
       it 'returns an error' do
-        post :create, params: { object_id: item.pid }, as: :json
+        post '/v1/objects/druid:mx123qw2323/versions',
+             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to open version due to preservation client error","detail":"Oops, a 500"}]}')
         expect(response.status).to eq 500
       end
@@ -127,7 +134,8 @@ RSpec.describe VersionsController do
       end
 
       it 'returns true' do
-        get :openable, params: { object_id: item.pid }
+        get '/v1/objects/druid:mx123qw2323/versions/openable',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('true')
         expect(response).to be_successful
       end
@@ -139,7 +147,8 @@ RSpec.describe VersionsController do
       end
 
       it 'returns true' do
-        get :openable, params: { object_id: item.pid }
+        get '/v1/objects/druid:mx123qw2323/versions/openable',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('false')
         expect(response).to be_successful
       end
@@ -151,7 +160,8 @@ RSpec.describe VersionsController do
       end
 
       it 'returns an error' do
-        get :openable, params: { object_id: item.pid }
+        get '/v1/objects/druid:mx123qw2323/versions/openable',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to check if openable due to preservation client error","detail":"Oops, a 500"}]}')
         expect(response.status).to eq 500
       end

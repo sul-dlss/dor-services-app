@@ -2,16 +2,12 @@
 
 require 'rails_helper'
 
-RSpec.describe SdrController do
-  let(:item) { Dor::Item.new(pid: 'druid:aa123bb4567') }
+RSpec.describe 'Deprecated requests to preservation (SDR)' do
+  let(:item) { Dor::Item.new(pid: 'druid:mx123qw2323') }
 
   before do
     allow(Dor).to receive(:find).and_return(item)
     allow(Deprecation).to receive(:warn)
-  end
-
-  before do
-    login
   end
 
   # TODO: Remove this in 4.0.0
@@ -23,7 +19,8 @@ RSpec.describe SdrController do
         .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
         .to_return(body: mock_response, headers: { 'Content-Type' => 'application/xml' })
 
-      get :current_version, params: { druid: item.pid }
+      get '/v1/sdr/objects/druid:mx123qw2323/current_version',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(response.status).to eq 200
       expect(response.body).to eq mock_response
@@ -35,7 +32,8 @@ RSpec.describe SdrController do
         .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
         .to_return(status: 404, body: '')
 
-      get :current_version, params: { druid: item.pid }
+      get '/v1/sdr/objects/druid:mx123qw2323/current_version',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(response.status).to eq 404
     end
@@ -43,7 +41,6 @@ RSpec.describe SdrController do
 
   describe 'preserved content' do
     let(:item_version) { 3 }
-    let(:content_file_name_txt) { 'content_file.txt' }
     let(:content_type_txt) { 'application/text' }
     let(:mock_response_txt) { 'some file content' }
 
@@ -56,14 +53,16 @@ RSpec.describe SdrController do
         .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
         .to_return(status: 500)
 
-      get :file_content, params: { druid: item.pid, filename: 'no_such_file', version: 2 }
+      get '/v1/sdr/objects/druid:mx123qw2323/content/no_such_file?version=2',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq 404
 
-      get :file_content, params: { druid: item.pid, filename: 'unexpected_error', version: 2 }
+      get '/v1/sdr/objects/druid:mx123qw2323/content/unexpected_error?version=2',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq 500
     end
 
-    context 'URI encoding' do
+    context 'when there is a space in the filename' do
       let(:filename_with_spaces) { 'filename with spaces' }
       let(:cgi_escaped_filename) { CGI.escape(filename_with_spaces) }
 
@@ -72,22 +71,24 @@ RSpec.describe SdrController do
           .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
           .to_return(body: mock_response_txt, headers: { 'Content-Type' => content_type_txt })
 
-        get :file_content, params: { druid: item.pid, filename: filename_with_spaces, version: item_version }
-
+        get '/v1/sdr/objects/druid:mx123qw2323/content/filename%20with%20spaces?version=3',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.status).to eq 200
         expect(response.body).to eq mock_response_txt
         expect(response.content_type).to eq content_type_txt
       end
     end
 
-    context 'text file type' do
+    context 'when the file is a text type' do
+      let(:content_file_name_txt) { 'content_file.txt' }
+
       it 'retrieves the content for a version of a text file from SDR' do
         stub_request(:get, "http://sdr-services.example.com/sdr/objects/#{item.pid}/content/#{content_file_name_txt}?version=#{item_version}")
           .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
           .to_return(body: mock_response_txt, headers: { 'Content-Type' => content_type_txt })
 
-        get :file_content, params: { druid: item.pid, filename: content_file_name_txt, version: item_version }
-
+        get '/v1/sdr/objects/druid:mx123qw2323/content/content_file.txt?version=3',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.status).to eq 200
         expect(response.body).to eq mock_response_txt
         expect(response.content_type).to eq content_type_txt
@@ -95,7 +96,7 @@ RSpec.describe SdrController do
     end
 
     # test with a small (but not tiny) chunk of binary content, fixture is just over 3 MB
-    context 'image file type' do
+    context 'when the file is an image type' do
       let(:img_fixture_filename) { 'spec/fixtures/simple_image_fixture.jpg' }
       let(:content_file_name_jpg) { 'old_img.jpg' }
       let(:content_type_jpg) { 'image/jpg' }
@@ -106,8 +107,8 @@ RSpec.describe SdrController do
           .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
           .to_return(body: mock_response_jpg, headers: { 'Content-Type' => content_type_jpg })
 
-        get :file_content, params: { druid: item.pid, filename: content_file_name_jpg, version: item_version }
-
+        get '/v1/sdr/objects/druid:mx123qw2323/content/old_img.jpg?version=3',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.status).to eq 200
         expect(response.body).to eq mock_response_jpg
         expect(response.content_type).to eq content_type_jpg
@@ -117,10 +118,12 @@ RSpec.describe SdrController do
 
   describe 'cm-inv-diff' do
     let(:mock_response) { 'cm-inv-diff' }
+
     context 'with an invalid subset value' do
       it 'fails as a bad request' do
-        post :cm_inv_diff, params: { druid: item.pid, subset: 'wrong' }
-
+        post '/v1/sdr/objects/druid:mx123qw2323/cm-inv-diff',
+             params: { subset: 'wrong' },
+             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.status).to eq 400
       end
     end
@@ -131,7 +134,9 @@ RSpec.describe SdrController do
           .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
           .to_return(body: mock_response, headers: { 'Content-Type' => 'application/xml' })
 
-        post :cm_inv_diff, params: { druid: item.pid, subset: 'all', version: 5 }
+        post '/v1/sdr/objects/druid:mx123qw2323/cm-inv-diff',
+             params: { subset: 'all', version: '5' },
+             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.status).to eq 200
         expect(response.body).to eq mock_response
         expect(response.content_type).to eq 'application/xml'
@@ -143,7 +148,9 @@ RSpec.describe SdrController do
         .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
         .to_return(body: mock_response, headers: { 'Content-Type' => 'application/xml' })
 
-      post :cm_inv_diff, params: { druid: item.pid, subset: 'all' }
+      post '/v1/sdr/objects/druid:mx123qw2323/cm-inv-diff',
+           params: { subset: 'all' },
+           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq 200
       expect(response.body).to eq mock_response
       expect(response.content_type).to eq 'application/xml'
@@ -156,8 +163,8 @@ RSpec.describe SdrController do
         .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
         .to_return(body: '<catalog />', headers: { 'Content-Type' => 'application/xml' })
 
-      get :ds_manifest, params: { druid: item.pid, dsname: 'signatureCatalog.xml' }
-
+      get '/v1/sdr/objects/druid:mx123qw2323/manifest/signatureCatalog.xml',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response.status).to eq 200
       expect(response.body).to eq '<catalog />'
       expect(response.content_type).to eq 'application/xml'
@@ -168,7 +175,8 @@ RSpec.describe SdrController do
         .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
         .to_return(status: 428)
 
-      get :ds_manifest, params: { druid: item.pid, dsname: 'signatureCatalog.xml' }
+      get '/v1/sdr/objects/druid:mx123qw2323/manifest/signatureCatalog.xml',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(response.status).to eq 428
     end
@@ -180,7 +188,8 @@ RSpec.describe SdrController do
         .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
         .to_return(body: 'content', headers: { 'Content-Type' => 'application/xml' })
 
-      get :ds_metadata, params: { druid: item.pid, dsname: 'whatever' }
+      get '/v1/sdr/objects/druid:mx123qw2323/metadata/whatever',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(response.status).to eq 200
       expect(response.body).to eq 'content'
@@ -192,7 +201,8 @@ RSpec.describe SdrController do
         .with(headers: { 'Authorization' => 'Basic dXNlcjpwYXNzd29yZA==' })
         .to_return(status: 428)
 
-      get :ds_metadata, params: { druid: item.pid, dsname: 'whatever' }
+      get '/v1/sdr/objects/druid:mx123qw2323/metadata/whatever',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(response.status).to eq 428
     end
