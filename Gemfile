@@ -52,7 +52,6 @@ group :test, :development do
   gem 'equivalent-xml'
   gem 'factory_bot_rails'
   gem 'rack-console'
-  gem 'rails-controller-testing'
   gem 'rspec-rails'
   gem 'rspec_junit_formatter'
   gem 'rubocop', '~> 0.74.0'
