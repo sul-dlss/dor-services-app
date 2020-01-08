@@ -95,6 +95,10 @@ class ObjectsController < ApplicationController
 
   private
 
+  def proxy_faraday_response(response)
+    render status: response.status, content_type: response.headers['Content-Type'], body: response.body
+  end
+
   def fedora_base
     URI.parse(Dor::Config.fedora.safeurl.sub(%r{/*$}, '/'))
   end

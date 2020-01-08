@@ -47,10 +47,6 @@ class ApplicationController < ActionController::API
     field.split(' ').last
   end
 
-  def proxy_faraday_response(response)
-    render status: response.status, content_type: response.headers['Content-Type'], body: response.body
-  end
-
   def load_item
     @item = Dor.find(params[:object_id] || params[:id])
   end
