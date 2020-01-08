@@ -199,26 +199,32 @@ RSpec.describe VersionService do
     subject(:close) { described_class.close(obj) }
 
     context 'when significance, description and user_name are passed in' do
+      subject(:close) do
+        described_class.close obj, description: 'closing text', significance: 'major', user_name: 'jcoyne'
+      end
+
       before do
+        allow(vmd_ds).to receive(:pid).and_return('druid:ab123cd4567')
+        # stub out calls for open_for_versioning?
+        allow(Dor::Config.workflow.client).to receive(:active_lifecycle).and_return(true, false)
+
+        allow(Dor::Config.workflow.client).to receive(:close_version)
+        allow(vmd_ds).to receive(:save)
+        allow(ev_ds).to receive(:add_event)
+        allow(obj).to receive(:save!)
+
+        vmd_ds.increment_version
       end
 
       it 'sets tag, description and an event' do
-        allow(vmd_ds).to receive(:pid).and_return('druid:ab123cd4567')
-        allow(Dor::Config.workflow.client).to receive(:active_lifecycle).and_return(true, false)
+        close
+        expect(vmd_ds).to have_received(:save)
 
-        # Stub out calls to update and archive workflow
-        allow(Dor::Config.workflow.client).to receive(:update_workflow_status)
+        expect(Dor::Config.workflow.client).to have_received(:close_version)
+          .with(repo: 'dor', druid: druid, version: '2', create_accession_wf: true)
 
-        expect(Dor::Config.workflow.client).to receive(:close_version).with('dor', druid, true)
-
-        allow(obj).to receive(:create_workflow)
-        vmd_ds.increment_version
-
-        expect(vmd_ds).to receive(:save)
-        expect(ev_ds).to receive(:add_event).with('close', 'jcoyne', 'Version 2 closed')
-        expect(obj).to receive(:save!)
-
-        described_class.close obj, description: 'closing text', significance: 'major', user_name: 'jcoyne'
+        expect(ev_ds).to have_received(:add_event).with('close', 'jcoyne', 'Version 2 closed')
+        expect(obj).to have_received(:save!)
 
         expect(vmd_ds.to_xml).to be_equivalent_to <<~XML
           <versionMetadata objectId="druid:ab123cd4567">

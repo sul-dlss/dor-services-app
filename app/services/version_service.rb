@@ -81,7 +81,12 @@ class VersionService
     raise Dor::Exception, "Trying to close version on #{work.pid} which is not opened for versioning" unless open_for_versioning?
     raise Dor::Exception, "accessionWF already created for versioned object #{work.pid}" if accessioning?
 
-    Dor::Config.workflow.client.close_version 'dor', work.pid, opts.fetch(:start_accession, true) # Default to creating accessionWF when calling close_version
+    # Default to creating accessionWF when calling close_version
+    create_accession_wf = opts.fetch(:start_accession, true)
+    Dor::Config.workflow.client.close_version(repo: 'dor',
+                                              druid: work.pid,
+                                              version: work.current_version,
+                                              create_accession_wf: create_accession_wf)
     work.events.add_event('close', opts[:user_name], "Version #{work.current_version} closed") if opts[:user_name]
     work.save!
   end

@@ -42,7 +42,7 @@ gem 'uuidtools', '~> 2.1.4'
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.6.0'
 gem 'dor-services', '~> 8.0'
-gem 'dor-workflow-client', '~> 3.9'
+gem 'dor-workflow-client', '~> 3.14'
 gem 'marc'
 gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'
 gem 'preservation-client', '~> 2.0'
