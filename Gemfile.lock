@@ -511,6 +511,7 @@ DEPENDENCIES
   dlss-capistrano
   dor-services (~> 8.0)
   dor-workflow-client (~> 3.14)
+  dry-schema (~> 1.4)
   equivalent-xml
   factory_bot_rails
   faraday

@@ -25,6 +25,7 @@ end
 gem 'committee' # validates Open API spec (OAS)
 gem 'config'
 gem 'deprecation'
+gem 'dry-schema', '~> 1.4'
 gem 'faraday'
 gem 'honeybadger'
 gem 'jbuilder'
