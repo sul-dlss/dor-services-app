@@ -15,6 +15,7 @@ ENV SETTINGS__SSL__KEY_PASS="${SETTINGS__SSL__KEY_PASS}"
 # postgresql-client is required for invoke.sh
 RUN apk add --update --no-cache  \
   build-base \
+  git \
   postgresql-dev \
   postgresql-client \
   tzdata
