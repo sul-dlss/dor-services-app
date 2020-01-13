@@ -155,6 +155,10 @@ jobs:
 workflows:
   version: 2
 
+  test:
+    jobs:
+    - test
+
   build:
     jobs:
     - build-image:
