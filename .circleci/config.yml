@@ -70,6 +70,13 @@ jobs:
         name: Check styles using rubocop
         command: bundle exec rubocop
 
+    - run:
+        name: Setup Code Climate test-reporter
+        command: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
+          ./cc-test-reporter before-build
+
     # Run rspec in parallel
     - run:
         name: Run rspec in parallel
@@ -79,6 +86,10 @@ jobs:
                             --out test_results/rspec.xml \
                             --format progress \
                             $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+
+    - run:
+        name: upload test coverage report to Code Climate
+        command: ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $?
 
     - run:
         name: Validate API specification

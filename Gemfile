@@ -49,7 +49,6 @@ gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'
 gem 'preservation-client', '~> 2.0'
 
 group :test, :development do
-  gem 'coveralls', '~> 0.8', require: false
   gem 'equivalent-xml'
   gem 'factory_bot_rails'
   gem 'rack-console'

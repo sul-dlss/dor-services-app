@@ -1,14 +1,9 @@
 # frozen_string_literal: true
 
 require 'simplecov'
-require 'coveralls'
 SimpleCov.start :rails do
   add_filter '/spec/'
 end
-SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
-                                                                 SimpleCov::Formatter::HTMLFormatter,
-                                                                 Coveralls::SimpleCov::Formatter
-                                                               ])
 
 FIXTURES_PATH = File.expand_path('fixtures', __dir__)
 
