@@ -157,10 +157,8 @@ workflows:
 
   test:
     jobs:
-    - test:
-        filters:
-          branches:
-            ignore: master
+    - test
+
   build:
     jobs:
     - build-image:
