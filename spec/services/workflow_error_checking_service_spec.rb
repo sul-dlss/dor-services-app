@@ -31,84 +31,28 @@ RSpec.describe WorkflowErrorCheckingService do
   end
 
   describe '#check' do
-    let(:workflow_client) { instance_double(Dor::Workflow::Client, all_workflows_xml: xml) }
+    subject { service.check }
+
+    let(:workflow_client) { instance_double(Dor::Workflow::Client, workflow_routes: workflow_routes) }
+    let(:workflow_routes) { instance_double(Dor::Workflow::Client::WorkflowRoutes, all_workflows: workflows_response) }
+    let(:workflows_response) do
+      instance_double(Dor::Workflow::Response::Workflows, errors_for: errors)
+    end
 
     before do
       allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
     end
 
     context 'when one or more workflows contain errors' do
-      let(:xml) do
-        <<~XML
-          <workflows objectId="#{item.id}">
-            <workflow id="accessionWF" objectId="#{item.id}" repository="dor">
-              <process name="foo1" version="2" status="completed"/>
-              <process name="foo2" version="2" status="completed"/>
-              <process name="foo3" version="2" status="completed"/>
-              <process name="foo4" version="2" status="completed"/>
-              <process name="foo5" version="2" status="completed"/>
-              <process name="foo1" version="1" status="error" errorMessage="the first error"/>
-              <process name="foo2" version="1" status="waiting"/>
-              <process name="foo3" version="1" status="waiting"/>
-              <process name="foo4" version="1" status="waiting"/>
-              <process name="foo5" version="1" status="waiting"/>
-            </workflow>
-            <workflow id="foobarWF" objectId="#{item.id}" repository="dor">
-              <process name="bar1" version="2" status="completed"/>
-              <process name="bar2" version="2" status="completed"/>
-              <process name="bar3" version="2" status="completed"/>
-              <process name="bar4" version="2" status="completed"/>
-              <process name="bar5" version="2" status="completed"/>
-              <process name="bar1" version="1" status="completed"/>
-              <process name="bar2" version="1" status="completed"/>
-              <process name="bar3" version="1" status="error" errorMessage="the second error"/>
-              <process name="bar4" version="1" status="waiting"/>
-              <process name="bar5" version="1" status="waiting"/>
-            </workflow>
-          </workflows>
-        XML
-      end
+      let(:errors) { ['the first error', 'the second error'] }
 
-      it 'returns an array of error strings' do
-        expect(service.check).to eq(['the first error', 'the second error'])
-      end
+      it { is_expected.to eq ['the first error', 'the second error'] }
     end
 
     context 'when no workflows contain errors' do
-      let(:xml) do
-        <<~XML
-          <workflows objectId="#{item.id}">
-            <workflow id="accessionWF" objectId="#{item.id}" repository="dor">
-              <process name="foo1" version="2" status="completed"/>
-              <process name="foo2" version="2" status="completed"/>
-              <process name="foo3" version="2" status="completed"/>
-              <process name="foo4" version="2" status="completed"/>
-              <process name="foo5" version="2" status="completed"/>
-              <process name="foo1" version="1" status="waiting"/>
-              <process name="foo2" version="1" status="waiting"/>
-              <process name="foo3" version="1" status="waiting"/>
-              <process name="foo4" version="1" status="waiting"/>
-              <process name="foo5" version="1" status="waiting"/>
-            </workflow>
-            <workflow id="foobarWF" objectId="#{item.id}" repository="dor">
-              <process name="bar1" version="2" status="completed"/>
-              <process name="bar2" version="2" status="completed"/>
-              <process name="bar3" version="2" status="completed"/>
-              <process name="bar4" version="2" status="completed"/>
-              <process name="bar5" version="2" status="completed"/>
-              <process name="bar1" version="1" status="completed"/>
-              <process name="bar2" version="1" status="completed"/>
-              <process name="bar3" version="1" status="completed"/>
-              <process name="bar4" version="1" status="waiting"/>
-              <process name="bar5" version="1" status="waiting"/>
-            </workflow>
-          </workflows>
-        XML
-      end
+      let(:errors) { [] }
 
-      it 'returns an empty array' do
-        expect(service.check).to eq([])
-      end
+      it { is_expected.to be_empty }
     end
   end
 end

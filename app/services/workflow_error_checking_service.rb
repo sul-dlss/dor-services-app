@@ -20,14 +20,6 @@ class WorkflowErrorCheckingService
 
   # @return [Array<String>] an array of error strings, or an empty array if no errors
   def check
-    Nokogiri::XML(all_workflows_xml)
-            .xpath("//workflow/process[@version='#{version}' and @status='error']/@errorMessage")
-            .map(&:text)
-  end
-
-  private
-
-  def all_workflows_xml
-    Dor::Config.workflow.client.all_workflows_xml(item.id)
+    Dor::Config.workflow.client.workflow_routes.all_workflows(pid: item.id).errors_for(version: version)
   end
 end
