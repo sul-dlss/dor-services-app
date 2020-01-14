@@ -30,13 +30,20 @@ class ItemQueryService
   def self.find_combinable_item(druid)
     query_service = ItemQueryService.new(id: druid)
     query_service.item do |item|
-      workflow_errors = WorkflowErrorCheckingService.check(item: item, version: item.current_version)
+      workflow_errors = errors_for(item.id, item.current_version)
       raise UncombinableItemError, "Item #{item.pid} has workflow errors: #{workflow_errors.join('; ')}" if workflow_errors.any?
       raise UncombinableItemError, "Item #{item.pid} is not open or openable" unless VersionService.open?(item) || VersionService.can_open?(item)
       raise UncombinableItemError, "Item #{item.pid} is dark" if item.rightsMetadata.dra_object.dark?
       raise UncombinableItemError, "Item #{item.pid} is citation_only" if item.rightsMetadata.dra_object.citation_only?
     end
   end
+
+  def self.errors_for(pid, version)
+    Dor::Config.workflow.client.workflow_routes
+               .all_workflows(pid: pid)
+               .errors_for(version: version)
+  end
+  private_class_method :errors_for
 
   def item(&block)
     @item ||= item_relation.find(id)
