@@ -41,10 +41,10 @@ class MetadataService
       VALID_PREFIXES.include?(prefix)
     end
 
-    def valid_catkey?(catkey)
-      return true if catkey.is_a? Numeric
+    CATKEY_REGEX = /^\d+(:\d+)*$/
 
-      return true if catkey =~ /[\d+:]+/
+    def valid_catkey?(catkey)
+      CATKEY_REGEX.match?(catkey.to_s)
     end
   end
 end
