@@ -21,6 +21,7 @@ class MetadataService
       @@cache.fetch(identifier) do
         (prefix, identifier) = identifier.split(/:/, 2)
         raise MetadataError, "Unknown metadata prefix: #{prefix}" unless VALID_PREFIXES.include?(prefix)
+        raise MetadataError, "Invalid catkey: #{identifier}" unless valid_catkey?(identifier)
 
         marcxml = MarcxmlResource.find_by(prefix.to_sym => identifier)
         marcxml.mods
@@ -38,6 +39,12 @@ class MetadataService
     def can_resolve?(identifier)
       (prefix, _identifier) = identifier.split(/:/, 2)
       VALID_PREFIXES.include?(prefix)
+    end
+
+    def valid_catkey?(catkey)
+      return true if catkey.is_a? Numeric
+
+      return true if catkey =~ /[\d+:]+/
     end
   end
 end
