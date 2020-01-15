@@ -44,6 +44,10 @@ RSpec.describe MetadataService do
       expect { described_class.fetch('foo:bar') }.to raise_exception(MetadataError)
     end
 
+    it 'raises an exception if an invalid catkey is provided' do
+      expect { described_class.fetch('catkey:from server') }.to raise_exception(MetadataError)
+    end
+
     it 'fetches a record based on barcode' do
       expect(described_class.fetch('barcode:12345')).to be_equivalent_to(mods)
       expect(MarcxmlResource).to have_received(:find_by).with(barcode: '12345')
@@ -63,5 +67,19 @@ RSpec.describe MetadataService do
     end
 
     it { is_expected.to eq 'The isomorphism and thermal properties of the feldspars' }
+  end
+
+  describe '#valid_catkey?' do
+    it 'receives a number identifier' do
+      expect(described_class.send(:valid_catkey?, '12345')).to be_truthy
+    end
+
+    it 'receives a colon delimited identifier' do
+      expect(described_class.send(:valid_catkey?, '12:34:56:78')).to be_truthy
+    end
+
+    it 'receives an invalid identifier' do
+      expect(described_class.send(:valid_catkey?, 'from server')).to be_falsey
+    end
   end
 end

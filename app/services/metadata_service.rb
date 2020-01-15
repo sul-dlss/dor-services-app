@@ -5,6 +5,7 @@ class MetadataError < RuntimeError; end
 
 class MetadataService
   VALID_PREFIXES = %w[catkey barcode].freeze
+  CATKEY_REGEX = /^\d+(:\d+)*$/.freeze
 
   class << self
     @@cache = Cache.new(nil, nil, 250, 300)
@@ -19,8 +20,8 @@ class MetadataService
 
     def fetch(identifier)
       @@cache.fetch(identifier) do
-        (prefix, identifier) = identifier.split(/:/, 2)
-        raise MetadataError, "Unknown metadata prefix: #{prefix}" unless VALID_PREFIXES.include?(prefix)
+        (prefix, identifier) = parse_identifier(identifier)
+        valid_identifier!(prefix, identifier)
 
         marcxml = MarcxmlResource.find_by(prefix.to_sym => identifier)
         marcxml.mods
@@ -36,7 +37,24 @@ class MetadataService
     private
 
     def can_resolve?(identifier)
-      (prefix, _identifier) = identifier.split(/:/, 2)
+      (prefix, _identifier) = parse_identifier(identifier)
+      valid_prefix?(prefix)
+    end
+
+    def parse_identifier(identifier)
+      identifier.split(/:/, 2)
+    end
+
+    def valid_catkey?(identifier)
+      CATKEY_REGEX.match?(identifier)
+    end
+
+    def valid_identifier!(prefix, identifier)
+      raise MetadataError, "Unknown metadata prefix: #{prefix}" unless valid_prefix?(prefix)
+      raise MetadataError, "Invalid catkey: #{identifier}" unless valid_catkey?(identifier)
+    end
+
+    def valid_prefix?(prefix)
       VALID_PREFIXES.include?(prefix)
     end
   end
