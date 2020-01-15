@@ -1,9 +1,3 @@
-GIT
-  remote: https://github.com/ota42y/openapi_parser.git
-  revision: 8bdfcf24c7d62cb6de8488c613a51080a8122a80
-  specs:
-    openapi_parser (0.6.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -292,6 +286,7 @@ GEM
       activesupport
       nokogiri (>= 1.4.2)
       solrizer (~> 3.3)
+    openapi_parser (0.7.0)
     parallel (1.19.1)
     parser (2.7.0.2)
       ast (~> 2.4.0)
@@ -511,7 +506,7 @@ DEPENDENCIES
   moab-versioning (~> 4.0)
   net-http-persistent (~> 2.9)
   okcomputer
-  openapi_parser!
+  openapi_parser
   pg
   preservation-client (~> 2.0)
   progressbar
