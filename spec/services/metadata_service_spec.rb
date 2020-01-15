@@ -71,15 +71,15 @@ RSpec.describe MetadataService do
 
   describe '#valid_catkey?' do
     it 'receives a number identifier' do
-      expect(described_class.send(:'valid_catkey?', 'catkey:12345')).to be_truthy
+      expect(described_class.send(:valid_catkey?, '12345')).to be_truthy
     end
 
     it 'receives a colon delimited identifier' do
-      expect(described_class.send(:'valid_catkey?', 'catkey:12:34:56:78')).to be_truthy
+      expect(described_class.send(:valid_catkey?, '12:34:56:78')).to be_truthy
     end
 
     it 'receives an invalid identifier' do
-      expect(described_class.send(:'valid_catkey?', 'catkey:from server')).to be_falsey
+      expect(described_class.send(:valid_catkey?, 'from server')).to be_falsey
     end
   end
 end
