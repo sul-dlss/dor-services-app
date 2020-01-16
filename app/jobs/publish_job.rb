@@ -18,7 +18,7 @@ class PublishJob < ApplicationJob
       return LogFailureJob.perform_later(druid: druid,
                                          background_job_result: background_job_result,
                                          workflow: workflow,
-                                         workflow_process: workflow == 'accessionWF' ? 'publish' : 'release-publish',
+                                         workflow_process: 'publish-complete',
                                          output: { errors: [{ title: 'Data error', detail: e.message }] })
     end
 

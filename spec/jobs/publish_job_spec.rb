@@ -60,7 +60,7 @@ RSpec.describe PublishJob, type: :job do
         .with(druid: druid,
               background_job_result: result,
               workflow: 'accessionWF',
-              workflow_process: 'publish',
+              workflow_process: 'publish-complete',
               output: { errors: [{ detail: error_message, title: 'Data error' }] })
     end
   end
