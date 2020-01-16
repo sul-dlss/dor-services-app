@@ -16,7 +16,7 @@ class ShelveJob < ApplicationJob
       return LogFailureJob.perform_later(druid: druid,
                                          background_job_result: background_job_result,
                                          workflow: 'accessionWF',
-                                         workflow_process: 'shelve',
+                                         workflow_process: 'shelve-complete',
                                          output: { errors: [{ title: 'Content directory not found', detail: e.message }] })
     end
 

@@ -54,7 +54,7 @@ RSpec.describe ShelveJob, type: :job do
         .with(druid: druid,
               background_job_result: result,
               workflow: 'accessionWF',
-              workflow_process: 'shelve',
+              workflow_process: 'shelve-complete',
               output: { errors: [{ detail: error_message, title: 'Content directory not found' }] })
     end
   end
