@@ -34,6 +34,7 @@ sdr:
 
 preservation_catalog:
   url: 'https://example.org/prescat'
+  token: 'mint-token-with-target-preservation-catalog-rake-generate-token'
 purl_services_url: ~
 
 cleanup:

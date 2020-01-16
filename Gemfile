@@ -46,7 +46,9 @@ gem 'dor-services', '~> 8.0'
 gem 'dor-workflow-client', '~> 3.14'
 gem 'marc'
 gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'
-gem 'preservation-client', '~> 2.0'
+# switch back to official release once available
+# gem 'preservation-client', '~> 2.0'
+gem 'preservation-client', git: 'https://github.com/sul-dlss/preservation-client.git', branch: 'pass-jwt-token'
 
 group :test, :development do
   gem 'equivalent-xml'
