@@ -46,9 +46,7 @@ gem 'dor-services', '~> 8.0'
 gem 'dor-workflow-client', '~> 3.14'
 gem 'marc'
 gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'
-# switch back to official release once available
-# gem 'preservation-client', '~> 2.0'
-gem 'preservation-client', git: 'https://github.com/sul-dlss/preservation-client.git', branch: 'pass-jwt-token'
+gem 'preservation-client', '>= 3.0' # 3.x or greater is needed for token auth
 
 group :test, :development do
   gem 'equivalent-xml'

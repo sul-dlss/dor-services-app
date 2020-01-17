@@ -1,14 +1,3 @@
-GIT
-  remote: https://github.com/sul-dlss/preservation-client.git
-  revision: 39de52282fa0b0e562d78fd4f8602ad841da1cc1
-  branch: pass-jwt-token
-  specs:
-    preservation-client (2.1.0)
-      activesupport (>= 4.2, < 7)
-      faraday (~> 0.15)
-      moab-versioning (~> 4.3)
-      zeitwerk (~> 2.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -302,6 +291,11 @@ GEM
     parser (2.7.0.2)
       ast (~> 2.4.0)
     pg (1.2.2)
+    preservation-client (3.0.0)
+      activesupport (>= 4.2, < 7)
+      faraday (>= 0.15, < 2.0)
+      moab-versioning (~> 4.3)
+      zeitwerk (~> 2.1)
     progressbar (1.10.1)
     pry (0.12.2)
       coderay (~> 1.1.0)
@@ -514,7 +508,7 @@ DEPENDENCIES
   okcomputer
   openapi_parser
   pg
-  preservation-client!
+  preservation-client (>= 3.0)
   progressbar
   pry-byebug
   puma (~> 3.0)
