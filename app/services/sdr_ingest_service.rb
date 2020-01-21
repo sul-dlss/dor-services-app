@@ -15,7 +15,7 @@ class SdrIngestService
     workspace = DruidTools::Druid.new(druid, Settings.sdr.local_workspace_root)
     signature_catalog = signature_catalog_from_preservation(druid)
     new_version_id = signature_catalog.version_id + 1
-    metadata_dir = extract_datastreams(dor_item, workspace)
+    metadata_dir = DatastreamExtractor.extract_datastreams(item: dor_item, workspace: workspace)
     verify_version_metadata(metadata_dir, new_version_id)
     version_inventory = get_version_inventory(metadata_dir, druid, new_version_id)
     version_additions = signature_catalog.version_additions(version_inventory)
@@ -49,55 +49,6 @@ class SdrIngestService
     Preservation::Client.objects.signature_catalog(druid)
   rescue Preservation::Client::NotFoundError
     Moab::SignatureCatalog.new(digital_object_id: druid, version_id: 0)
-  end
-
-  # @param [Dor::Item] dor_item The representation of the digital object
-  # @param [DruidTools::Druid] workspace The representation of the item's work area
-  # @return [Pathname] Pull all the datastreams specified in the configuration file
-  #   into the workspace's metadata directory, overwriting existing file if present
-  def self.extract_datastreams(dor_item, workspace)
-    metadata_dir = Pathname.new(workspace.path('metadata', true))
-    datastream_config.each do |ds_name, required|
-      metadata_file = metadata_dir.join("#{ds_name}.xml")
-      metadata_string = datastream_content(dor_item, ds_name, required)
-      metadata_file.open('w') { |f| f << metadata_string } if metadata_string
-    end
-    metadata_dir
-  end
-
-  # @return[Hash<Symbol,Boolean>] a hash of datastreams and whether they are required
-  def self.datastream_config
-    {
-      administrativeMetadata: false,
-      contentMetadata: false,
-      descMetadata: true,
-      defaultObjectRights: false,
-      events: false,
-      embargoMetadata: false,
-      identityMetadata: true,
-      provenanceMetadata: true,
-      relationshipMetadata: true,
-      rightsMetadata: false,
-      roleMetadata: false,
-      sourceMetadata: false,
-      technicalMetadata: false,
-      versionMetadata: true,
-      workflows: false,
-      geoMetadata: false
-    }
-  end
-  private_class_method :datastream_config
-
-  # @param [Dor::Item] dor_item The representation of the digital object
-  # @param [Symbol] ds_name The name of the desired Fedora datastream
-  # @param [Boolean] required is the datastream required
-  # @return [String] return the xml text of the specified datastream if it exists.
-  #   If not found, return nil unless it is a required datastream in which case raise exception
-  def self.datastream_content(dor_item, ds_name, required)
-    ds = (ds_name == :relationshipMetadata ? 'RELS-EXT' : ds_name.to_s)
-    return dor_item.datastreams[ds].content if dor_item.datastreams.key?(ds) && !dor_item.datastreams[ds].new?
-
-    raise "required datastream #{ds_name} for #{dor_item.pid} not found in DOR" if required
   end
 
   # @param [Pathname] metadata_dir the location of the metadata directory in the workspace
