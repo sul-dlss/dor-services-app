@@ -31,35 +31,6 @@ RSpec.describe SdrIngestService do
     expect(File).to be_directory(Settings.sdr.local_export_home)
   end
 
-  describe '.datastream_content' do
-    let(:ds_name) { 'myMetadata' }
-    let(:item) { instance_double(Dor::Item, pid: '123') }
-    let(:datastream) { instance_double(Dor::ContentMetadataDS) }
-
-    it 'retrieves content of a required datastream' do
-      metadata_string = '<metadata/>'
-      expect(datastream).to receive(:new?).and_return(false)
-      expect(datastream).to receive(:content).and_return(metadata_string)
-      expect(item).to receive(:datastreams).exactly(3).times.and_return(ds_name => datastream)
-      expect(described_class.datastream_content(item, ds_name, true)).to eq metadata_string
-    end
-
-    context 'when datastream is empty or missing' do
-      before do
-        expect(datastream).not_to receive(:content)
-        expect(item).to receive(:datastreams).and_return(ds_name => datastream)
-      end
-
-      it 'returns nil if datastream was optional' do
-        expect(described_class.datastream_content(item, 'dummy', false)).to be_nil
-      end
-
-      it 'raises exception if datastream was required' do
-        expect { described_class.datastream_content(item, 'dummy', true) }.to raise_exception(RuntimeError)
-      end
-    end
-  end
-
   describe '.transfer' do
     let(:druid) { 'druid:dd116zh0343' }
     let(:dor_item) { instance_double(Dor::Item, pid: druid) }
@@ -67,7 +38,7 @@ RSpec.describe SdrIngestService do
 
     before do
       allow(Preservation::Client.objects).to receive(:signature_catalog).and_return(fixture_sig_cat_obj)
-      expect(described_class).to receive(:extract_datastreams).with(dor_item, an_instance_of(DruidTools::Druid)).and_return(metadata_dir)
+      expect(DatastreamExtractor).to receive(:extract_datastreams).with(item: dor_item, workspace: an_instance_of(DruidTools::Druid)).and_return(metadata_dir)
     end
 
     specify 'with content changes' do
@@ -163,37 +134,6 @@ RSpec.describe SdrIngestService do
         expect(sig_cat.entries).to eq []
       end
     end
-  end
-
-  specify '.extract_datastreams' do
-    dor_item = instance_double(Dor::Item)
-    metadata_dir = instance_double(Pathname)
-    workspace = instance_double(DruidTools::Druid)
-    allow(workspace).to receive(:path).with('metadata', true).and_return('metadata_dir')
-    expect(Pathname).to receive(:new).with('metadata_dir').and_return(metadata_dir)
-    metadata_file = instance_double(Pathname, 'metadata path')
-    allow(metadata_file).to receive(:exist?).and_return(false)
-    expect(metadata_dir).to receive(:join).at_least(5).times.and_return(metadata_file)
-    expect(metadata_file).to receive(:open).at_least(5).times
-    # Dor::SdrIngestService.stub(:datastream_content).and_return('<metadata/>')
-    metadata_string = '<metadata/>'
-    expect(described_class).to receive(:datastream_content).with(dor_item, :administrativeMetadata, false).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :contentMetadata, false).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :defaultObjectRights, false).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :descMetadata, true).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :events, false).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :geoMetadata, false).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :embargoMetadata, false).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :identityMetadata, true).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :provenanceMetadata, true).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :relationshipMetadata, true).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :roleMetadata, false).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :technicalMetadata, false).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :sourceMetadata, false).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :rightsMetadata, false).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :versionMetadata, true).once.and_return(metadata_string)
-    expect(described_class).to receive(:datastream_content).with(dor_item, :workflows, false).once.and_return(metadata_string)
-    described_class.extract_datastreams(dor_item, workspace)
   end
 
   specify '.get_version_inventory' do
