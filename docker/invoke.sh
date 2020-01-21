@@ -15,12 +15,12 @@ echo "Postgres is up - Setting up database"
 set +e
 echo "Creating DB. OK to ignore errors about test db."
 # https://github.com/rails/rails/issues/27299
-rails db:create
+bin/rails db:create
 
 # Don't allow any following commands to fail
 set -e
 echo "Migrating db"
-rails db:migrate
+bin/rails db:migrate
 
 echo "Running server"
 exec puma -C config/puma.rb config.ru
