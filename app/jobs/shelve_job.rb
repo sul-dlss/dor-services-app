@@ -11,7 +11,7 @@ class ShelveJob < ApplicationJob
 
     begin
       item = Dor.find(druid)
-      ShelvingService.shelve(item)
+      ShelvingService.shelve(item, event_factory: EventFactory)
     rescue ShelvingService::ContentDirNotFoundError => e
       return LogFailureJob.perform_later(druid: druid,
                                          background_job_result: background_job_result,

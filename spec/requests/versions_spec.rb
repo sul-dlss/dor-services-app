@@ -36,7 +36,10 @@ RSpec.describe 'Operations regarding object versions' do
              params: %( {"description": "some text", "significance": "major"} ),
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to match(/version 1 closed/)
-        expect(VersionService).to have_received(:close).with(item, description: 'some text', significance: 'major')
+        expect(VersionService).to have_received(:close)
+          .with(item,
+                { description: 'some text', significance: 'major' },
+                event_factory: EventFactory)
       end
     end
 
@@ -93,7 +96,7 @@ RSpec.describe 'Operations regarding object versions' do
         post '/v1/objects/druid:mx123qw2323/versions',
              params: open_params.to_json,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(VersionService).to have_received(:open).with(item, open_params)
+        expect(VersionService).to have_received(:open).with(item, open_params, event_factory: EventFactory)
         expect(response.body).to eq('2')
         expect(response).to be_successful
       end

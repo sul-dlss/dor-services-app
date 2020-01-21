@@ -13,7 +13,7 @@ class PublishJob < ApplicationJob
 
     begin
       item = Dor.find(druid)
-      PublishMetadataService.publish(item)
+      PublishMetadataService.publish(item, event_factory: EventFactory)
     rescue Dor::DataError => e
       return LogFailureJob.perform_later(druid: druid,
                                          background_job_result: background_job_result,

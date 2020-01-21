@@ -27,7 +27,7 @@ class ObjectsController < ApplicationController
   def create
     Rails.logger.info(params.inspect)
     begin
-      reg_response = RegistrationService.create_from_request(create_params)
+      reg_response = RegistrationService.create_from_request(create_params, event_factory: EventFactory)
     rescue ArgumentError => e
       return render status: :unprocessable_entity, plain: e.message
     end
@@ -49,12 +49,16 @@ class ObjectsController < ApplicationController
   # the 'publish-complete' step of that workflow if provided
   def publish
     result = BackgroundJobResult.create
+    EventFactory.create(druid: params[:id], event_type: 'publish_request_received', data: { host: Socket.gethostname })
+
     PublishJob.perform_later(druid: params[:id], background_job_result: result, workflow: params[:workflow])
     head :created, location: result
   end
 
   def preserve
     result = BackgroundJobResult.create
+    EventFactory.create(druid: params[:id], event_type: 'preserve_request_received', data: { host: Socket.gethostname })
+
     PreserveJob.perform_later(druid: params[:id], background_job_result: result)
     head :created, location: result
   end

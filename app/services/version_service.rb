@@ -2,8 +2,8 @@
 
 # Open and close versions
 class VersionService
-  def self.open(work, opts = {})
-    new(work).open(opts)
+  def self.open(work, opts = {}, event_factory:)
+    new(work, event_factory: event_factory).open(opts)
   end
 
   def self.can_open?(work, opts = {})
@@ -14,12 +14,13 @@ class VersionService
     new(work).open_for_versioning?
   end
 
-  def self.close(work, opts = {})
-    new(work).close(opts)
+  def self.close(work, opts = {}, event_factory:)
+    new(work, event_factory: event_factory).close(opts)
   end
 
-  def initialize(work)
+  def initialize(work, event_factory: nil)
     @work = work
+    @event_factory = event_factory
   end
 
   # Increments the version number and initializes versioningWF for the object
@@ -46,6 +47,7 @@ class VersionService
     vmd_ds.update_current_version(description: opts[:description], significance: opts[:significance].to_sym) if opts[:description] && opts[:significance]
 
     work.save!
+    event_factory.create(druid: work.pid, event_type: 'version_open', data: { version: work.current_version })
   end
 
   # Determines whether a new version can be opened for an object.
@@ -89,6 +91,7 @@ class VersionService
                                               create_accession_wf: create_accession_wf)
     work.events.add_event('close', opts[:user_name], "Version #{work.current_version} closed") if opts[:user_name]
     work.save!
+    event_factory.create(druid: work.pid, event_type: 'version_close', data: { version: work.current_version })
   end
 
   # Performs checks on whether a new version can be opened for an object
@@ -132,7 +135,7 @@ class VersionService
     false
   end
 
-  attr_reader :work
+  attr_reader :work, :event_factory
 
   private
 

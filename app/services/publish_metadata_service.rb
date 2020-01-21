@@ -3,12 +3,13 @@
 # Merges contentMetadata from several objects into one and sends it to PURL
 class PublishMetadataService
   # @param [Dor::Item] item the object to be publshed
-  def self.publish(item)
-    new(item).publish
+  def self.publish(item, event_factory:)
+    new(item, event_factory: event_factory).publish
   end
 
-  def initialize(item)
+  def initialize(item, event_factory:)
     @item = item
+    @event_factory = event_factory
   end
 
   # Appends contentMetadata file resources from the source objects to this object
@@ -21,11 +22,12 @@ class PublishMetadataService
 
     transfer_metadata(release_tags)
     publish_notify_on_success
+    event_factory.create(druid: item.pid, event_type: 'publishing_complete', data: { host: Socket.gethostname })
   end
 
   private
 
-  attr_reader :item
+  attr_reader :item, :event_factory
 
   # @raises [Dor::DataError]
   def transfer_metadata(release_tags)

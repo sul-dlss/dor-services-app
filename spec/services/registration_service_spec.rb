@@ -9,6 +9,7 @@ RSpec.describe RegistrationService do
     @apo = instantiate_fixture('druid:fg890hi1234', Dor::AdminPolicyObject)
     allow(@apo).to receive(:new_record?).and_return false
     allow(Dor).to receive(:find).with('druid:fg890hi1234').and_return(@apo)
+    allow(EventFactory).to receive(:create)
   end
 
   context '#register_object' do
@@ -358,6 +359,11 @@ RSpec.describe RegistrationService do
         label: 'web-archived-crawl for http://www.example.org',
         source_id: 'sul:SOMETHING-www.example.org'
       }
+    end
+
+    it 'creates an event' do
+      described_class.create_from_request(params)
+      expect(EventFactory).to have_received(:create)
     end
 
     it 'source_id may have one or more colons' do
