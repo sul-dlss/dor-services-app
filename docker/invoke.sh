@@ -23,4 +23,4 @@ echo "Migrating db"
 bin/rails db:migrate
 
 echo "Running server"
-exec puma -C config/puma.rb config.ru
+exec bin/puma -C config/puma.rb config.ru
