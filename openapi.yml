@@ -1,0 +1,944 @@
+openapi: 3.0.0
+info:
+  description: Backend API for the Stanford digital repository
+  version: 1.0.0
+  title: DOR Services API
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'https://dor-services-{env}.stanford.edu'
+    description: Production service
+    variables:
+      env:
+        default: prod
+  - url: 'https://dor-services-{env}.stanford.edu'
+    description: Staging service
+    variables:
+      env:
+        default: stage
+tags:
+  - name: objects
+    description: Digital Repository Objects
+  - name: integrations
+    description: Integrations with other Systems
+  - name: jobs
+    description: Operations involving background jobs
+  - name: versions
+    description: Operations about object versions
+  - name: events
+    description: Operations about events
+  - name: files
+    description: Operations about files
+  - name: workspaces
+    description: Operations about workspaces
+  - name: embargoes
+    description: Operations about embargoes
+  - name: sidekiq
+    description: Queue monitoring
+paths:
+  /status:
+    get:
+      summary: A healthcheck endpoint for the application
+      responses:
+        '200':
+          description: OK
+  /status/external-symphony:
+    get:
+      summary: A healthcheck endpoint for the symphony connection
+      responses:
+        '200':
+          description: OK
+  /queues:
+    get:
+      summary: Endpoint for sidekiq web monitoring
+      tags:
+        - sidekiq
+      responses:
+        '200':
+          description: OK
+  /queues/retries:
+    post:
+      summary: Endpoint for sidekiq web monitoring to retry a job
+      tags:
+        - sidekiq
+      responses:
+        '200':
+          description: OK
+  /queues/retries/all/retry:
+    post:
+      summary: Endpoint for sidekiq web monitoring to retry all jobs
+      tags:
+        - sidekiq
+      responses:
+        '200':
+          description: OK
+  '/queues/{path}/{file}':
+    get:
+      summary: Assets for sidekiq web monitoring
+      tags:
+        - sidekiq
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: path
+          in: path
+          required: true
+          example: javascripts
+          schema:
+            type: string
+        - name: file
+          in: path
+          required: true
+          example: application.js
+          schema:
+            type: string
+  '/queues/{queueName}':
+    get:
+      summary: Stats for sidekiq web monitoring
+      tags:
+        - sidekiq
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: queueName
+          in: path
+          required: true
+          example: retries
+          schema:
+            type: string
+  /v1/about:
+    get:
+      summary: A healthcheck endpoint
+      responses:
+        '200':
+          description: The status of the service
+  /v1/catalog/catkey:
+    get:
+      tags:
+        - integrations
+      summary: Lookup the catkey for an item given the barcode
+      description: ''
+      operationId: 'marcxml#catkey'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: barcode
+          in: query
+          description: barcode of an item
+          required: false
+          schema:
+            type: string
+  '/v1/background_job_results/{id}':
+    get:
+      tags:
+        - jobs
+      summary: View results of a background job
+      description: Used to allow the application run long-running processes out of the request/response cycle
+      operationId: 'background_job_results#show'
+      responses:
+        '200':
+          description: The background job has completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackgroundJobResultResponse'
+        '202':
+          description: The background job is pending or processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackgroundJobResultResponse'
+        '404':
+          description: The background job with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          description: ID of background job result
+          required: true
+          schema:
+            type: integer
+  /v1/virtual_objects:
+    post:
+      tags:
+        - objects
+      summary: Create a virtual object.
+      description: Combines a parent object with child objects to create an object like an Atlas (composed of several images)
+      operationId: 'virtual_objects#create'
+      responses:
+        '201':
+          description: Virtual merge action started
+          headers:
+            Location:
+              description: the status of the action is found at this URI
+              schema:
+                type: string
+                format: uri
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - virtual_objects
+              properties:
+                virtual_objects:
+                  type: array
+                  minItems: 1
+                  items:
+                    $ref: '#/components/schemas/VirtualObjectRequest'
+  '/v1/objects/{id}/publish':
+    post:
+      tags:
+        - objects
+      summary: Publish object to Searchworks
+      description: ''
+      operationId: 'objects#publish'
+      responses:
+        '201':
+          description: Publishing action started
+          headers:
+            Location:
+              description: the status of the action is found at this URI
+              schema:
+                type: string
+                format: uri
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+        - name: workflow
+          in: query
+          description: which workflow should this be reported to
+          schema:
+            type: string
+            enum:
+              - accessionWF
+              - releaseWF
+            example: releaseWF
+  '/v1/objects/{id}/preserve':
+    post:
+      tags:
+        - objects
+      summary: Move an object to preservation
+      description: ''
+      operationId: 'objects#preserve'
+      responses:
+        '201':
+          description: Preservation action started
+          headers:
+            Location:
+              description: the status of the action is found at this URI
+              schema:
+                type: string
+                format: uri
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{id}/update_marc_record':
+    post:
+      tags:
+        - integrations
+      summary: Update Symphony with a new marc record from DOR
+      description: ''
+      operationId: 'objects#update_marc_record'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{id}/notify_goobi':
+    post:
+      tags:
+        - integrations
+      summary: Registers an object with the Goobi server
+      description: ''
+      operationId: 'objects#notify_goobi'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{id}/release_tags':
+    post:
+      tags:
+        - objects
+      summary: Assign the release tags
+      description: ''
+      operationId: 'objects#release_tags'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{id}/refresh_metadata':
+    post:
+      tags:
+        - integrations
+      summary: Update object metadata with marc from Symphony
+      description: ''
+      operationId: 'metadata_refresh#refresh_metadata'
+      responses:
+        '200':
+          description: OK
+        '422':
+          description: Unprocessable entity.
+        '500':
+          description: Internal server error
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{id}/contents':
+    get:
+      tags:
+        - files
+      summary: List the files for a particular object
+      description: ''
+      operationId: 'content#list'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{id}/contents/{path}':
+    get:
+      tags:
+        - files
+      summary: Retrieve file content from the DOR workspace
+      description: ''
+      operationId: 'content#read'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+        - name: path
+          in: path
+          description: Name of the file
+          required: true
+          schema:
+            type: string
+  '/v1/objects/{object_id}/query/collections':
+    get:
+      tags:
+        - objects
+      summary: List the collections that an object belongs to
+      description: ''
+      operationId: 'queries#collections'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/workspace':
+    delete:
+      tags:
+        - workspaces
+      summary: Remove an object's workspace
+      description: ''
+      operationId: 'workspaces#destroy'
+      responses:
+        '200':
+          description: OK
+        '422':
+          description: There was a problem removing the workspace.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+    post:
+      tags:
+        - workspaces
+      summary: Create a workspace for an object
+      description: ''
+      operationId: 'workspaces#create'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/workspace/reset':
+    post:
+      tags:
+        - workspaces
+      summary: Resets a workspace for an object
+      description: After an object has been copied to preservation the workspace can be reset. This is called by the reset-workspace step of the accessionWF
+      operationId: 'workspaces#reset'
+      responses:
+        '204':
+          description: OK
+        '422':
+          description: The workspace was in a state where it could not be reset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/embargo':
+    patch:
+      tags:
+        - embargoes
+      summary: Update the embargo for an object
+      description: ''
+      operationId: 'embargoes#update'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/shelve':
+    post:
+      tags:
+        - objects
+      summary: Push the item to stacks
+      description: ''
+      operationId: 'shelves#create'
+      responses:
+        '201':
+          description: Shelving action started
+          headers:
+            Location:
+              description: the status of the action is found at this URI
+              schema:
+                type: string
+                format: uri
+        '422':
+          description: 'The object you provided was not a Dor::Item and could not be shelved'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/metadata/legacy':
+    patch:
+      tags:
+        - objects
+      summary: Update the legacy (datastream) metadata for the object
+      description: ''
+      operationId: 'metadata#update_legacy_metadata'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLegacyMetadata'
+  '/v1/objects/{object_id}/metadata/dublin_core':
+    get:
+      tags:
+        - objects
+      summary: Retrieve the public Dublin Core metadata for the object
+      description: ''
+      operationId: 'metadata#dublin_core'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/metadata/descriptive':
+    get:
+      tags:
+        - objects
+      summary: Retrieve the public descriptive (MODS) metadata for the object
+      description: ''
+      operationId: 'metadata#descriptive'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/events':
+    get:
+      tags:
+        - events
+      summary: Return a list of events about this object
+      description: ''
+      operationId: 'events#index'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+    post:
+      tags:
+        - events
+      summary: Create an event about this object
+      description: ''
+      operationId: 'events#create'
+      responses:
+        '201':
+          description: Created
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+      requestBody:
+        description: event to add to the system
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+  '/v1/objects/{object_id}/versions/openable':
+    get:
+      tags:
+        - versions
+      summary: Query to determine whether a version can be opened for this object
+      description: ''
+      operationId: 'versions#openable'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/versions/current':
+    get:
+      tags:
+        - versions
+      summary: Return the current version number for this object
+      description: ''
+      operationId: 'versions#current'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/versions/current/close':
+    post:
+      tags:
+        - versions
+      summary: Close the currently open version for this object
+      description: ''
+      operationId: 'versions#close_current'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/versions':
+    post:
+      tags:
+        - versions
+      summary: Open a new version for this object
+      description: ''
+      operationId: 'versions#create'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  /v1/objects:
+    post:
+      tags:
+        - objects
+      summary: Register a new object
+      description: ''
+      operationId: 'objects#create'
+      responses:
+        '200':
+          description: OK
+      parameters: []
+  '/v1/objects/{id}':
+    get:
+      tags:
+        - objects
+      summary: Retrieve the object COCINA metadata
+      description: 'Returns a JSON representation (not yet complete) of an object, collection or admin policy.'
+      operationId: 'objects#show'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/DRO'
+                  - $ref: '#/components/schemas/Collection'
+                  - $ref: '#/components/schemas/AdminPolicy'
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+components:
+  schemas:
+    Druid:
+      type: string
+      pattern: '^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$'
+      example: 'druid:bc123df4567'
+    Access:
+      type: object
+      properties:
+        embargoReleaseDate:
+          type: string
+          format: date-time
+          example: '2029-06-22T07:00:00.000+00:00'
+    Administrative:
+      type: object
+      properties: {}
+    DROAdministrative:
+      type: object
+      properties:
+        releaseTags:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReleaseTag'
+    AdminPolicy:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
+          example: item
+        externalIdentifier:
+          $ref: '#/components/schemas/Druid'
+        label:
+          type: string
+        version:
+          type: integer
+        access:
+          $ref: '#/components/schemas/Access'
+        administrative:
+          $ref: '#/components/schemas/Administrative'
+        identification:
+          $ref: '#/components/schemas/Identification'
+        structural:
+          $ref: '#/components/schemas/Structural'
+      required:
+        - externalIdentifier
+        - label
+        - type
+        - version
+        - access
+        - administrative
+        - identification
+        - structural
+    Collection:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - 'http://cocina.sul.stanford.edu/models/collection.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/curated-collection.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/user-collection.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/exhibit.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/series.jsonld'
+          example: item
+        externalIdentifier:
+          $ref: '#/components/schemas/Druid'
+        label:
+          type: string
+        version:
+          type: integer
+        access:
+          $ref: '#/components/schemas/Access'
+        administrative:
+          $ref: '#/components/schemas/Administrative'
+        identification:
+          $ref: '#/components/schemas/Identification'
+        structural:
+          $ref: '#/components/schemas/Structural'
+      required:
+        - externalIdentifier
+        - label
+        - type
+        - version
+        - access
+        - administrative
+        - identification
+        - structural
+    DRO:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - 'http://cocina.sul.stanford.edu/models/object.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/3d.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/agreement.jsonl'
+            - 'http://cocina.sul.stanford.edu/models/book.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/document.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/geo.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/image.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/page.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/photograph.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/manuscript.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/map.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/media.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/track.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/webarchive-binary.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/webarchive-seed.jsonld'
+          example: item
+        externalIdentifier:
+          $ref: '#/components/schemas/Druid'
+        label:
+          type: string
+        version:
+          type: integer
+        access:
+          $ref: '#/components/schemas/Access'
+        administrative:
+          $ref: '#/components/schemas/DROAdministrative'
+        identification:
+          $ref: '#/components/schemas/Identification'
+        structural:
+          $ref: '#/components/schemas/Structural'
+      required:
+        - externalIdentifier
+        - label
+        - type
+        - version
+        - access
+        - administrative
+        - identification
+        - structural
+    BackgroundJobResultResponse:
+      type: object
+      properties:
+        output:
+          type: object
+          description: output from the job
+          $ref: '#/components/schemas/ErrorResponse'
+        status:
+          type: string
+          description: the status of the background job
+          enum:
+            - pending
+            - processing
+            - complete
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+    Error:
+      type: object
+      properties:
+        title:
+          type: string
+          description: 'a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem.'
+          example: Invalid Attribute
+        detail:
+          type: string
+          description: a human-readable explanation specific to this occurrence of the problem.
+          example: Title must contain at least three characters.
+        source:
+          type: object
+          properties:
+            pointer:
+              type: string
+              example: /data/attributes/title
+    Event:
+      type: object
+      required:
+        - event_type
+        - data
+      properties:
+        event_type:
+          description: the type of event
+          type: string
+        data:
+          description: details about the event
+          type: object
+    Identification:
+      type: object
+      properties: {}
+    ReleaseTag:
+      type: object
+      properties:
+        who:
+          type: string
+          example: petucket
+        what:
+          type: string
+          enum:
+            - self
+            - collection
+          example: self
+        date:
+          type: string
+          format: date-time
+        to:
+          type: string
+          example: Searchworks
+        release:
+          type: boolean
+    Structural:
+      type: object
+      properties: {}
+    VirtualObjectRequest:
+      type: object
+      required:
+        - parent_id
+        - child_ids
+      properties:
+        parent_id:
+          $ref: '#/components/schemas/Druid'
+        child_ids:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/Druid'
+    UpdateLegacyMetadata:
+      type: object
+      properties:
+        descriptive:
+          $ref: '#/components/schemas/LegacyDatastream'
+        rights:
+          $ref: '#/components/schemas/LegacyDatastream'
+        content:
+          $ref: '#/components/schemas/LegacyDatastream'
+        technical:
+          $ref: '#/components/schemas/LegacyDatastream'
+    LegacyDatastream:
+      type: object
+      properties:
+        updated:
+          type: string
+          format: date-time
+          description: The date the xml was produced. This may be used to see if the server wants to accept this or if it already has a more recent version.
+        content:
+          type: string
+          description: The XML datastream content
+          example: <xmlDatastream>...</xmlDatastream>
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []

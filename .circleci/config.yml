@@ -95,22 +95,14 @@ jobs:
         name: Validate API specification
         command: |
           sudo npm install -g openapi-enforcer-cli
-          result=$(openapi-enforcer validate openapi.json)
+          result=$(openapi-enforcer validate openapi.yml)
           [[ $result =~ "Document is valid" ]] && {
           echo "Validation good"
-          } || {
-          echo $result
-          exit 1
-          }
-          result=$(jq '' openapi.json)
-          [[ $? == "0" ]] && {
-          echo "JSON good"
           exit 0
           } || {
           echo $result
           exit 1
           }
-
     # Save test results for timing analysis
     - store_test_results:
         path: test_results
