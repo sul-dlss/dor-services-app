@@ -10,12 +10,19 @@ class StartPreservationWorkflowJob < ApplicationJob
   # @param [String] version the current version of the item to be published
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
   def perform(druid:, version:, background_job_result:)
+    lane_id = client.process(pid: druid, workflow_name: 'accessionWF', process: 'sdr-ingest-transfer').lane_id
     # start SDR preservation workflow
-    Dor::Config.workflow.client.create_workflow_by_name(druid, 'preservationIngestWF', version: version)
+    client.create_workflow_by_name(druid, 'preservationIngestWF', version: version, lane_id: lane_id)
 
     LogSuccessJob.perform_later(druid: druid,
                                 workflow: 'accessionWF',
                                 background_job_result: background_job_result,
                                 workflow_process: 'preservation-ingest-initiated')
+  end
+
+  private
+
+  def client
+    Dor::Config.workflow.client
   end
 end
