@@ -4,8 +4,8 @@
 class ShelvingService
   class ContentDirNotFoundError < RuntimeError; end
 
-  def self.shelve(work)
-    new(work).shelve
+  def self.shelve(work, event_factory:)
+    new(work, event_factory: event_factory).shelve
   end
 
   def initialize(work, event_factory:)

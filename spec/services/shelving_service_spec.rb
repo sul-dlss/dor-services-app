@@ -44,7 +44,7 @@ RSpec.describe ShelvingService do
       expect(DigitalStacksService).to receive(:remove_from_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to receive(:rename_in_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to receive(:shelve_to_stacks).with(mock_workspace_path, stacks_object_pathname, mock_diff)
-      described_class.shelve(work)
+      described_class.shelve(work, event_factory: EventFactory)
       expect(event_factory).to have_received(:create)
     end
   end
