@@ -49,12 +49,14 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
         .with(datastream: descMetadata,
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
-              content: '<descMetadata></descMetadata>')
+              content: '<descMetadata></descMetadata>',
+              event_factory: EventFactory)
 
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
         .with(datastream: rightsMetadata,
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
-              content: '<rightsMetadata></rightsMetadata>')
+              content: '<rightsMetadata></rightsMetadata>',
+              event_factory: EventFactory)
 
       expect(work).to have_received(:save!)
     end

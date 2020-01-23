@@ -7,7 +7,7 @@ class LegacyMetadataService
   def self.update_datastream_if_newer(datastream:, updated:, content:, event_factory:)
     if !datastream.createDate || updated > datastream.createDate
       datastream.content = content
-      event_factory.create(druid: datastream.pid, event_type: 'legacy_metadata_update', data: { datastream: datastream, host: Socket.gethostname })
+      event_factory.create(druid: datastream.pid, event_type: 'legacy_metadata_update', data: { datastream: datastream.dsid, host: Socket.gethostname })
     end
 
     validate_desc_metadata(datastream) if datastream.dsid == 'descMetadata'

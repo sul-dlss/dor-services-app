@@ -27,7 +27,8 @@ class MetadataController < ApplicationController
 
       LegacyMetadataService.update_datastream_if_newer(datastream: @item.datastreams[datastream_name],
                                                        updated: Time.zone.parse(values[:updated]),
-                                                       content: values[:content])
+                                                       content: values[:content],
+                                                       event_factory: EventFactory)
     end
 
     @item.save!
