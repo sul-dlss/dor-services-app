@@ -2,4 +2,4 @@
 
 
 
-## Was the API documentation (openapi.json) updated?
+## Was the API documentation (openapi.yml) updated?
