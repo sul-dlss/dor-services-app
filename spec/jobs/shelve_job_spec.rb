@@ -12,7 +12,6 @@ RSpec.describe ShelveJob, type: :job do
   before do
     allow(Dor).to receive(:find).with(druid).and_return(item)
     allow(result).to receive(:processing!)
-    allow(Dor::Config.workflow.client).to receive(:update_status)
   end
 
   context 'with no errors' do
@@ -24,15 +23,6 @@ RSpec.describe ShelveJob, type: :job do
 
     it 'marks the job as processing' do
       expect(result).to have_received(:processing!).once
-    end
-
-    it 'sets the workflow step status to started' do
-      expect(Dor::Config.workflow.client).to have_received(:update_status).with(druid: druid,
-                                                                                workflow: 'accessionWF',
-                                                                                process: 'shelve-complete',
-                                                                                status: 'started',
-                                                                                elapsed: 1,
-                                                                                note: Socket.gethostname)
     end
 
     it 'invokes the ShelvingService' do
