@@ -4,8 +4,14 @@ require 'rails_helper'
 
 RSpec.describe LegacyMetadataService do
   describe '.update_datastream_if_newer' do
-    subject(:update) { described_class.update_datastream_if_newer(datastream: datastream, updated: updated, content: content) }
+    subject(:update) do
+      described_class.update_datastream_if_newer(datastream: datastream,
+                                                 updated: updated,
+                                                 content: content,
+                                                 event_factory: event_factory)
+    end
 
+    let(:event_factory) { class_double(EventFactory, create: true) }
     let(:updated) { Time.zone.parse('2019-08-09T19:18:15Z') }
     let(:content) { '<descMetadata><foo/></descMetadata>' }
     let(:title) { ['One title'] }
@@ -23,6 +29,7 @@ RSpec.describe LegacyMetadataService do
       it 'updates the content' do
         update
         expect(datastream).to have_received(:content=).with(content)
+        expect(event_factory).to have_received(:create)
       end
     end
 
@@ -32,6 +39,7 @@ RSpec.describe LegacyMetadataService do
       it 'updates the content' do
         update
         expect(datastream).to have_received(:content=).with(content)
+        expect(event_factory).to have_received(:create)
       end
     end
 

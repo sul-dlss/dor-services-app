@@ -4,13 +4,15 @@
 class RegistrationService
   class << self
     # @param [Hash] params
+    # @param [EventFactory] event_factory
     # @see register_object similar but different
-    def create_from_request(params)
+    def create_from_request(params, event_factory: EventFactory)
       dor_params = registration_request_params(params)
 
       request = RegistrationRequest.new(dor_params)
       dor_obj = register_object(request)
       pid = dor_obj.pid
+      event_factory.create(druid: pid, event_type: 'registration', data: dor_params.merge(host: Socket.gethostname))
       location = URI.parse(Dor::Config.fedora.safeurl.sub(%r{/*$}, '/')).merge("objects/#{pid}").to_s
       dor_params.dup.merge(location: location, pid: pid)
     end

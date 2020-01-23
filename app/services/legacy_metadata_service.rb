@@ -4,8 +4,12 @@
 # This is used by the accessionWF
 class LegacyMetadataService
   # If the updated value is newer than then createDate of the datastream, then update it.
-  def self.update_datastream_if_newer(datastream:, updated:, content:)
-    datastream.content = content if !datastream.createDate || updated > datastream.createDate
+  def self.update_datastream_if_newer(datastream:, updated:, content:, event_factory:)
+    if !datastream.createDate || updated > datastream.createDate
+      datastream.content = content
+      event_factory.create(druid: datastream.pid, event_type: 'legacy_metadata_update', data: { datastream: datastream, host: Socket.gethostname })
+    end
+
     validate_desc_metadata(datastream) if datastream.dsid == 'descMetadata'
 
     return if !datastream.createDate || updated > datastream.createDate

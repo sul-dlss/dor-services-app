@@ -4,7 +4,7 @@
 class EventsController < ApplicationController
   def create
     params.require(:event_type)
-    Event.create!(druid: params[:object_id], event_type: params[:event_type], data: params[:data])
+    EventFactory.create(druid: params[:object_id], event_type: params[:event_type], data: params[:data])
     head :created
   end
 

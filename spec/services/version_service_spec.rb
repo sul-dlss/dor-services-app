@@ -11,6 +11,7 @@ RSpec.describe VersionService do
 
   let(:vmd_ds) { obj.datastreams['versionMetadata'] }
   let(:ev_ds) { obj.datastreams['events'] }
+  let(:event_factory) { class_double(EventFactory, create: true) }
 
   before do
     allow(obj).to receive(:pid).and_return(druid)
@@ -32,7 +33,7 @@ RSpec.describe VersionService do
   end
 
   describe '.open' do
-    subject(:open) { described_class.open(obj) }
+    subject(:open) { described_class.open(obj, event_factory: event_factory) }
 
     context 'when on the expected path' do
       before do
@@ -71,7 +72,7 @@ RSpec.describe VersionService do
         expect(vmd_ds).to receive(:update_current_version).with(description: options[:description], significance: options[:significance].to_sym)
         expect(obj).to receive(:save!)
 
-        described_class.open(obj, **options)
+        described_class.open(obj, options, event_factory: event_factory)
       end
 
       it "doesn't include options" do
@@ -196,11 +197,17 @@ RSpec.describe VersionService do
   end
 
   describe '.close' do
-    subject(:close) { described_class.close(obj) }
+    subject(:close) { described_class.close(obj, event_factory: event_factory) }
 
     context 'when significance, description and user_name are passed in' do
       subject(:close) do
-        described_class.close obj, description: 'closing text', significance: 'major', user_name: 'jcoyne'
+        described_class.close(obj,
+                              {
+                                description: 'closing text',
+                                significance: 'major',
+                                user_name: 'jcoyne'
+                              },
+                              event_factory: event_factory)
       end
 
       before do
@@ -219,6 +226,7 @@ RSpec.describe VersionService do
       it 'sets tag, description and an event' do
         close
         expect(vmd_ds).to have_received(:save)
+        expect(event_factory).to have_received(:create)
 
         expect(Dor::Config.workflow.client).to have_received(:close_version)
           .with(repo: 'dor', druid: druid, version: '2', create_accession_wf: true)

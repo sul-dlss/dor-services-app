@@ -8,8 +8,9 @@ class ShelvingService
     new(work).shelve
   end
 
-  def initialize(work)
+  def initialize(work, event_factory:)
     @work = work
+    @event_factory = event_factory
   end
 
   def shelve
@@ -23,11 +24,12 @@ class ShelvingService
     DigitalStacksService.remove_from_stacks(stacks_object_pathname, shelve_diff)
     DigitalStacksService.rename_in_stacks(stacks_object_pathname, shelve_diff)
     DigitalStacksService.shelve_to_stacks(workspace_content_pathname, stacks_object_pathname, shelve_diff)
+    event_factory.create(druid: work.id, event_type: 'shelving_complete', data: { host: Socket.gethostname })
   end
 
   private
 
-  attr_reader :work
+  attr_reader :work, :event_factory
 
   # retrieve the differences between the current contentMetadata and the previously ingested version
   # (filtering to select only the files that should be shelved to stacks)

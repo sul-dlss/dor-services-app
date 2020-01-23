@@ -4,7 +4,7 @@ class VersionsController < ApplicationController
   before_action :load_item
 
   def create
-    VersionService.open(@item, open_params)
+    VersionService.open(@item, open_params, event_factory: EventFactory)
     render plain: @item.current_version
   rescue Dor::Exception => e
     render build_error('Unable to open version', e)
@@ -17,7 +17,7 @@ class VersionsController < ApplicationController
   end
 
   def close_current
-    VersionService.close(@item, close_params)
+    VersionService.close(@item, close_params, event_factory: EventFactory)
     render plain: "version #{@item.current_version} closed"
   rescue Dor::Exception => e
     render build_error('Unable to close version', e)

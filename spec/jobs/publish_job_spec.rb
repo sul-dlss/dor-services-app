@@ -29,7 +29,7 @@ RSpec.describe PublishJob, type: :job do
     end
 
     it 'invokes the PublishMetadataService' do
-      expect(PublishMetadataService).to have_received(:publish).with(item).once
+      expect(PublishMetadataService).to have_received(:publish).with(item, event_factory: EventFactory).once
     end
 
     it 'marks the job as complete' do
@@ -52,7 +52,7 @@ RSpec.describe PublishJob, type: :job do
     end
 
     it 'invokes the PublishMetadataService' do
-      expect(PublishMetadataService).to have_received(:publish).with(item).once
+      expect(PublishMetadataService).to have_received(:publish).with(item, event_factory: EventFactory).once
     end
 
     it 'marks the job as complete' do

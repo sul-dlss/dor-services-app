@@ -26,7 +26,7 @@ RSpec.describe ShelveJob, type: :job do
     end
 
     it 'invokes the ShelvingService' do
-      expect(ShelvingService).to have_received(:shelve).with(item).once
+      expect(ShelvingService).to have_received(:shelve).with(item, event_factory: EventFactory).once
     end
 
     it 'marks the job as complete' do
@@ -49,7 +49,7 @@ RSpec.describe ShelveJob, type: :job do
     it 'marks the job as errored' do
       perform
       expect(result).to have_received(:processing!).once
-      expect(ShelvingService).to have_received(:shelve).with(item).once
+      expect(ShelvingService).to have_received(:shelve).with(item, event_factory: EventFactory).once
       expect(LogFailureJob).to have_received(:perform_later)
         .with(druid: druid,
               background_job_result: result,
