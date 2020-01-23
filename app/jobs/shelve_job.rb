@@ -9,6 +9,13 @@ class ShelveJob < ApplicationJob
   def perform(druid:, background_job_result:)
     background_job_result.processing!
 
+    Dor::Config.workflow.client.update_status(druid: druid,
+                                              workflow: 'accessionWF',
+                                              process: 'shelve-complete',
+                                              status: 'started',
+                                              elapsed: 1,
+                                              note: Socket.gethostname)
+
     begin
       item = Dor.find(druid)
       ShelvingService.shelve(item)
