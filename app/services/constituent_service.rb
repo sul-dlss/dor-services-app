@@ -10,8 +10,9 @@ class ConstituentService
   VERSION_CLOSE_SIGNIFICANCE = :major
 
   # @param [String] parent_druid the identifier of the parent object
-  def initialize(parent_druid:)
+  def initialize(parent_druid:, event_factory:)
     @parent_druid = parent_druid
+    @event_factory = event_factory
   end
 
   # This resets the contentMetadataDS of the parent and then adds the child resources.
@@ -27,7 +28,7 @@ class ConstituentService
     return errors if errors.any?
 
     # Make sure the parent is open before making modifications
-    VersionService.open(parent) unless VersionService.open?(parent)
+    VersionService.open(parent, event_factory: event_factory) unless VersionService.open?(parent)
 
     reset_metadata!
 
@@ -36,19 +37,24 @@ class ConstituentService
     end
 
     # NOTE: parent object is saved as part of closing the version
-    VersionService.close(parent, description: VERSION_CLOSE_DESCRIPTION, significance: VERSION_CLOSE_SIGNIFICANCE)
+    VersionService.close(parent,
+                         {
+                           description: VERSION_CLOSE_DESCRIPTION,
+                           significance: VERSION_CLOSE_SIGNIFICANCE
+                         },
+                         event_factory: event_factory)
 
     nil
   end
 
   private
 
-  attr_reader :parent_druid
+  attr_reader :parent_druid, :event_factory
 
   def add_constituent(child_druid:)
     child = ItemQueryService.find_combinable_item(child_druid)
     # Make sure the child is open before making modifications
-    VersionService.open(child) unless VersionService.open?(child)
+    VersionService.open(child, event_factory: event_factory) unless VersionService.open?(child)
 
     child.contentMetadata.ng_xml.search('//resource').each do |resource|
       parent.contentMetadata.add_virtual_resource(child.id, resource)
@@ -58,7 +64,12 @@ class ConstituentService
     child.add_relationship :is_constituent_of, parent
 
     # NOTE: child object is saved as part of closing the version
-    VersionService.close(child, description: VERSION_CLOSE_DESCRIPTION, significance: VERSION_CLOSE_SIGNIFICANCE)
+    VersionService.close(child,
+                         {
+                           description: VERSION_CLOSE_DESCRIPTION,
+                           significance: VERSION_CLOSE_SIGNIFICANCE
+                         },
+                         event_factory: event_factory)
   end
 
   def reset_metadata!

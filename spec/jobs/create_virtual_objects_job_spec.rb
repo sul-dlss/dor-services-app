@@ -11,7 +11,8 @@ RSpec.describe CreateVirtualObjectsJob, type: :job do
   let(:virtual_objects) { [{ parent_id: parent_id, child_ids: [child1_id, child2_id] }] }
 
   before do
-    allow(ConstituentService).to receive(:new).with(parent_druid: parent_id).and_return(service)
+    allow(ConstituentService).to receive(:new)
+      .with(parent_druid: parent_id, event_factory: EventFactory).and_return(service)
     allow(BackgroundJobResult).to receive(:find).and_return(result)
     allow(result).to receive(:processing!)
   end
@@ -75,7 +76,8 @@ RSpec.describe CreateVirtualObjectsJob, type: :job do
     end
 
     before do
-      allow(ConstituentService).to receive(:new).with(parent_druid: other_parent_id).and_return(service)
+      allow(ConstituentService).to receive(:new)
+        .with(parent_druid: other_parent_id, event_factory: EventFactory).and_return(service)
       allow(service).to receive(:add).and_return(nil, parent_id => ['One thing was not combinable', 'And another'])
       described_class.perform_now(virtual_objects: virtual_objects,
                                   background_job_result: result)
