@@ -49,8 +49,9 @@ RSpec.describe ConstituentService do
     subject(:add) { instance.add(child_druids: [child1.id, child2.id]) }
 
     let(:instance) do
-      described_class.new(parent_druid: parent.id)
+      described_class.new(parent_druid: parent.id, event_factory: event_factory)
     end
+    let(:event_factory) { class_double(EventFactory) }
     let(:namespaceless) { parent.id.sub('druid:', '') }
 
     before do
@@ -88,8 +89,11 @@ RSpec.describe ConstituentService do
         expect(VersionService).to have_received(:open?).exactly(3).times
         expect(VersionService).not_to have_received(:open)
         expect(VersionService).to have_received(:close).with(anything,
-                                                             description: described_class::VERSION_CLOSE_DESCRIPTION,
-                                                             significance: described_class::VERSION_CLOSE_SIGNIFICANCE).exactly(3).times
+                                                             {
+                                                               description: described_class::VERSION_CLOSE_DESCRIPTION,
+                                                               significance: described_class::VERSION_CLOSE_SIGNIFICANCE
+                                                             },
+                                                             event_factory: event_factory).exactly(3).times
       end
     end
 
