@@ -25,13 +25,11 @@ class ObjectsController < ApplicationController
 
   # Register new objects in DOR
   def create
-    Rails.logger.info(params.inspect)
     begin
       reg_response = RegistrationService.create_from_request(create_params, event_factory: EventFactory)
     rescue ArgumentError => e
       return render status: :unprocessable_entity, plain: e.message
     end
-    Rails.logger.info(reg_response)
     pid = reg_response[:pid]
 
     respond_to do |format|
