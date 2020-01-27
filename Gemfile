@@ -30,7 +30,6 @@ gem 'faraday'
 gem 'honeybadger'
 gem 'jbuilder'
 gem 'jwt'
-gem 'net-http-persistent', '~> 2.9' # Pin to avoid problem exhausting file handles under load
 gem 'okcomputer'
 gem 'openapi_parser'
 gem 'pg'
