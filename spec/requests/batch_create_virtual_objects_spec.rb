@@ -9,6 +9,7 @@ RSpec.describe 'Batch creation of virtual objects' do
   let(:body) { JSON.parse(response.body).with_indifferent_access }
   let(:parent_id) { 'druid:mk420bs7601' }
   let(:virtual_objects) { [{ parent_id: parent_id, child_ids: [child1_id, child2_id] }] }
+  let(:druid_pattern) { '^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$' }
 
   before do
     # Do not actually kick off a job; that is tested elsewhere.
@@ -79,7 +80,7 @@ RSpec.describe 'Batch creation of virtual objects' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq('#/components/schemas/Druid pattern ^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$ does not match value: ')
+      expect(body['errors'][0]['detail']).to eq("#/components/schemas/Druid pattern #{druid_pattern} does not match value: , example: druid:bc123df4567")
     end
   end
 
@@ -123,7 +124,7 @@ RSpec.describe 'Batch creation of virtual objects' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq('#/components/schemas/Druid pattern ^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$ does not match value: ')
+      expect(body['errors'][0]['detail']).to eq("#/components/schemas/Druid pattern #{druid_pattern} does not match value: , example: druid:bc123df4567")
     end
   end
 end
