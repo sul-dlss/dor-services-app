@@ -19,7 +19,8 @@ class MetadataController < ApplicationController
     datastream_names = { descriptive: 'descMetadata',
                          technical: 'technicalMetadata',
                          content: 'contentMetadata',
-                         rights: 'rightsMetadata' }
+                         rights: 'rightsMetadata',
+                         provenance: 'provenanceMetadata' }
 
     datastream_names.each do |section, datastream_name|
       values = params[section]

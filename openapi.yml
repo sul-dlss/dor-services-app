@@ -924,6 +924,8 @@ components:
           $ref: '#/components/schemas/LegacyDatastream'
         technical:
           $ref: '#/components/schemas/LegacyDatastream'
+        provenance:
+          $ref: '#/components/schemas/LegacyDatastream'
     LegacyDatastream:
       type: object
       properties:
