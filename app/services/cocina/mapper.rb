@@ -60,13 +60,21 @@ module Cocina
         type: Cocina::Models::AdminPolicy::TYPES.first,
         label: item.label,
         version: item.current_version,
-        administrative: build_administrative
+        administrative: build_apo_administrative
       }
     end
 
     private
 
     attr_reader :item
+
+    def build_apo_administrative
+      {}.tap do |admin|
+        registration_workflow = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/dissemination/workflow/@id').text
+        admin[:default_object_rights] = item.defaultObjectRights.content
+        admin[:registration_workflow] = registration_workflow.presence
+      end
+    end
 
     def build_administrative
       {}.tap do |admin|

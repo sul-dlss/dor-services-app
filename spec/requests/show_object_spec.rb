@@ -94,24 +94,52 @@ RSpec.describe 'Get the object' do
         object.label = 'foo'
       end
 
-      let(:expected) do
-        {
-          externalIdentifier: 'druid:1234',
-          type: 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld',
-          label: 'foo',
-          version: 1,
-          access: {},
-          administrative: {},
-          identification: {},
-          structural: {}
-        }
+      it 'returns the object' do
+        get '/v1/objects/druid:mk420bs7601',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+
+        expect(json['externalIdentifier']).to eq 'druid:1234'
+        expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
+        expect(json['label']).to eq 'foo'
+        expect(json['version']).to eq 1
+        expect(json['access']).to eq({})
+        expect(json['identification']).to eq({})
+        expect(json['structural']).to eq({})
+        expect(json['administrative']['default_object_rights']).to match '<rightsMetadata>'
+        expect(json['administrative']['registration_workflow']).to be_nil
+      end
+    end
+
+    context 'when the object exists with all metadata' do
+      before do
+        object.administrativeMetadata.content = <<~XML
+          <administrativeMetadata>
+            <dissemination>
+              <workflow id="wasCrawlPreassemblyWF"/>
+            </dissemination>
+          </administrativeMetadata>
+        XML
+        object.descMetadata.title_info.main_title = 'Hello'
+        object.label = 'foo'
       end
 
       it 'returns the object' do
         get '/v1/objects/druid:mk420bs7601',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:ok)
-        expect(response.body).to eq expected.to_json
+        json = JSON.parse(response.body)
+
+        expect(json['externalIdentifier']).to eq 'druid:1234'
+        expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
+        expect(json['label']).to eq 'foo'
+        expect(json['version']).to eq 1
+        expect(json['access']).to eq({})
+        expect(json['identification']).to eq({})
+        expect(json['structural']).to eq({})
+        expect(json['administrative']['default_object_rights']).to match '<rightsMetadata>'
+        expect(json['administrative']['registration_workflow']).to eq 'wasCrawlPreassemblyWF'
       end
     end
   end

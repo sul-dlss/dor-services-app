@@ -706,6 +706,15 @@ components:
     Administrative:
       type: object
       properties: {}
+    APOAdministrative:
+      type: object
+      required:
+        - default_object_rights
+      properties:
+        default_object_rights:
+          type: string
+        registration_workflow:
+          type: string
     DROAdministrative:
       type: object
       properties:
@@ -730,7 +739,7 @@ components:
         access:
           $ref: '#/components/schemas/Access'
         administrative:
-          $ref: '#/components/schemas/Administrative'
+          $ref: '#/components/schemas/APOAdministrative'
         identification:
           $ref: '#/components/schemas/Identification'
         structural:
