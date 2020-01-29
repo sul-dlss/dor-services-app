@@ -109,11 +109,8 @@ class RegistrationService
         new_item.add_relationship short_predicate, rel['rdf:resource']
       end
       new_item.add_collection(request.collection) if request.collection
-      if request.rights && %w(item collection).include?(request.object_type)
-        rights_xml = apo_object.defaultObjectRights.ng_xml
-        new_item.datastreams['rightsMetadata'].content = rights_xml.to_s
-        new_item.read_rights = request.rights unless request.rights == 'default' # already defaulted to default!
-      end
+      add_rights(item: new_item, pid: pid, request: request, apo: apo_object)
+
       # create basic mods from the label
       build_desc_metadata_from_label(new_item, request.label) if request.metadata_source == 'label'
       RefreshMetadataAction.run(new_item) if request.seed_desc_metadata
@@ -124,6 +121,16 @@ class RegistrationService
 
       new_item.save
       new_item
+    end
+
+    # add the default rights from the admin policy and any requested rights to the provided item
+    def add_rights(item:, pid:, request:, apo:)
+      Honeybadger.notify("When registering, rights was not specified for #{pid}. I don't think this should ever happen.  This is an experiment") unless request.rights
+      return unless request.rights && %w(item collection).include?(request.object_type)
+
+      rights_xml = apo.defaultObjectRights.ng_xml
+      item.datastreams['rightsMetadata'].content = rights_xml.to_s
+      item.read_rights = request.rights unless request.rights == 'default' # already defaulted to default!
     end
 
     def ids_to_hash(ids)
