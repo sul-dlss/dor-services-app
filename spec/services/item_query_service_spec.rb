@@ -7,18 +7,27 @@ RSpec.describe ItemQueryService do
 
   let(:druid) { 'ab123cd4567' }
   let(:item) { instantiate_fixture('druid:ab123cd4567', Dor::Item) }
+  let(:workflow_client) { instance_double(Dor::Workflow::Client, workflow_routes: workflow_routes) }
+  let(:workflow_routes) { instance_double(Dor::Workflow::Client::WorkflowRoutes, all_workflows: workflows_response) }
+  let(:workflows_response) do
+    instance_double(Dor::Workflow::Response::Workflows, errors_for: errors)
+  end
+  let(:errors) { [] }
 
   before do
     allow(Dor::Item).to receive(:find).and_return(item)
     allow(VersionService).to receive(:can_open?).with(item).and_return(true)
     allow(VersionService).to receive(:open?).with(item).and_return(true)
-    allow(WorkflowErrorCheckingService).to receive(:check).with(item: item, version: item.current_version).and_return([])
+    allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
   end
 
   describe '.find_combinable_item' do
-    it 'raises error if object has workflow errors' do
-      allow(WorkflowErrorCheckingService).to receive(:check).and_return(['Net::ReadTimeout', 'Gremlins'])
-      expect { service.find_combinable_item('ab123cd4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:ab123cd4567 has workflow errors: Net::ReadTimeout; Gremlins')
+    context 'when object has workflow errors' do
+      let(:errors) { ['Net::ReadTimeout', 'Gremlins'] }
+
+      it 'raises an error' do
+        expect { service.find_combinable_item('ab123cd4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:ab123cd4567 has workflow errors: Net::ReadTimeout; Gremlins')
+      end
     end
 
     it 'raises error if object is neither open nor openable' do
@@ -67,13 +76,16 @@ RSpec.describe ItemQueryService do
         allow(i).to receive(:rightsMetadata).and_return(permissive_rights_ds)
         allow(VersionService).to receive(:can_open?).with(i).and_return(true)
         allow(VersionService).to receive(:open?).with(i).and_return(true)
-        allow(WorkflowErrorCheckingService).to receive(:check).with(item: i, version: i.current_version).and_return([])
       end
     end
 
     context 'when any objects have workflow errors' do
+      let(:error_response) do
+        instance_double(Dor::Workflow::Response::Workflows, errors_for: ['Boom'])
+      end
+
       before do
-        allow(WorkflowErrorCheckingService).to receive(:check).with(item: item, version: item.current_version).and_return(['Boom'])
+        allow(workflow_routes).to receive(:all_workflows).with(pid: item.id).and_return(error_response)
       end
 
       it 'returns a single error' do
