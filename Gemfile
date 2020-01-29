@@ -44,7 +44,7 @@ gem 'whenever', require: false
 
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.22.2'
-gem 'dor-services', '~> 8.6'
+gem 'dor-services', '~> 9.0'
 gem 'dor-workflow-client', '~> 3.17'
 gem 'marc'
 gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'

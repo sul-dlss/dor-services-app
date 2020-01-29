@@ -38,7 +38,7 @@ class VersionService
     vmd_ds.sync_then_increment_version sdr_version
     vmd_ds.save unless work.new_record?
 
-    Dor::Config.workflow.client.create_workflow_by_name(work.pid, 'versioningWF', version: work.current_version)
+    WorkflowClientFactory.build.create_workflow_by_name(work.pid, 'versioningWF', version: work.current_version)
 
     return if (opts.keys & open_options_requiring_work_save).empty?
 
@@ -85,7 +85,7 @@ class VersionService
 
     # Default to creating accessionWF when calling close_version
     create_accession_wf = opts.fetch(:start_accession, true)
-    Dor::Config.workflow.client.close_version(repo: 'dor',
+    WorkflowClientFactory.build.close_version(repo: 'dor',
                                               druid: work.pid,
                                               version: work.current_version,
                                               create_accession_wf: create_accession_wf)
@@ -105,7 +105,7 @@ class VersionService
     # The accessioned milestone is the last step of the accessionWF.
     # During local development, we need a way to open a new version even if the object has not been accessioned.
     raise(Dor::Exception, 'Object net yet accessioned') unless
-        assume_accessioned || Dor::Config.workflow.client.lifecycle('dor', work.pid, 'accessioned')
+        assume_accessioned || WorkflowClientFactory.build.lifecycle('dor', work.pid, 'accessioned')
     # Raised when the current version has any incomplete wf steps and there is a versionWF.
     # The open milestone is part of the versioningWF.
     raise Dor::VersionAlreadyOpenError, 'Object already opened for versioning' if open_for_versioning?
@@ -122,7 +122,7 @@ class VersionService
   # Checks if current version has any incomplete wf steps and there is a versionWF
   # @return [Boolean] true if object is open for versioning
   def open_for_versioning?
-    return true if Dor::Config.workflow.client.active_lifecycle('dor', work.pid, 'opened', version: work.current_version)
+    return true if WorkflowClientFactory.build.active_lifecycle('dor', work.pid, 'opened', version: work.current_version)
 
     false
   end
@@ -130,7 +130,7 @@ class VersionService
   # Checks if the current version has any incomplete wf steps and there is an accessionWF.
   # @return [Boolean] true if object is currently being accessioned
   def accessioning?
-    return true if Dor::Config.workflow.client.active_lifecycle('dor', work.pid, 'submitted', version: work.current_version)
+    return true if WorkflowClientFactory.build.active_lifecycle('dor', work.pid, 'submitted', version: work.current_version)
 
     false
   end

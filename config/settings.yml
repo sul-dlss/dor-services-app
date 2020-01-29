@@ -20,6 +20,7 @@ suri:
 workflow:
   logfile: 'log/workflow_service.log'
   shift_age: 'weekly'
+  timeout: 60
 
 # URLs
 fedora_url: 'https://user:password@fedora.example.com:1000/fedora'

@@ -17,12 +17,6 @@ Dor.configure do
     url Settings.solr.url
   end
 
-  workflow do
-    url Settings.workflow_url
-    logfile Settings.workflow.logfile
-    shift_age Settings.workflow.shift_age
-  end
-
   suri do
     mint_ids     Settings.suri.mint_ids
     id_namespace Settings.suri.id_namespace
@@ -32,7 +26,6 @@ Dor.configure do
   end
 
   stacks do
-    document_cache_host         Settings.stacks.document_cache_host
     local_workspace_root        Settings.stacks.local_workspace_root
     local_stacks_root           Settings.stacks.local_stacks_root
   end

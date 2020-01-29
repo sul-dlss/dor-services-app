@@ -38,7 +38,7 @@ RSpec.describe VersionService do
     context 'when on the expected path' do
       before do
         allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
-        allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
+        allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
         allow(obj).to receive(:new_record?).and_return(false)
         allow(vmd_ds).to receive(:save)
       end
@@ -102,10 +102,18 @@ RSpec.describe VersionService do
     end
 
     context "when Preservation's current version is greater than the current version" do
+      before do
+        allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+      end
+
+      let(:workflow_client) do
+        instance_double(Dor::Workflow::Client)
+      end
+
       it 'raises an exception' do
-        expect(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(true)
-        expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(nil)
-        expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted', version: '1').and_return(nil)
+        expect(workflow_client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(true)
+        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(nil)
+        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'submitted', version: '1').and_return(nil)
         expect(Preservation::Client.objects).to receive(:current_version).and_return(3)
         expect { open }.to raise_error(Dor::Exception, 'Cannot sync to a version greater than current: 1, requested 3')
       end
@@ -113,7 +121,7 @@ RSpec.describe VersionService do
 
     context "when Preservation doesn't know about the object" do
       before do
-        allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
+        allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
         allow(Preservation::Client.objects).to receive(:current_version).and_raise(Preservation::Client::NotFoundError)
       end
 
@@ -134,7 +142,7 @@ RSpec.describe VersionService do
     subject(:can_open?) { described_class.can_open?(obj) }
 
     before do
-      allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
+      allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
     end
 
     let(:workflow_client) do
@@ -203,6 +211,14 @@ RSpec.describe VersionService do
   describe '.close' do
     subject(:close) { described_class.close(obj, event_factory: event_factory) }
 
+    let(:workflow_client) do
+      instance_double(Dor::Workflow::Client)
+    end
+
+    before do
+      allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+    end
+
     context 'when significance, description and user_name are passed in' do
       subject(:close) do
         described_class.close(obj,
@@ -214,12 +230,15 @@ RSpec.describe VersionService do
                               event_factory: event_factory)
       end
 
+      let(:workflow_client) do
+        instance_double(Dor::Workflow::Client, close_version: true)
+      end
+
       before do
         allow(vmd_ds).to receive(:pid).and_return('druid:ab123cd4567')
         # stub out calls for open_for_versioning?
-        allow(Dor::Config.workflow.client).to receive(:active_lifecycle).and_return(true, false)
+        allow(workflow_client).to receive(:active_lifecycle).and_return(true, false)
 
-        allow(Dor::Config.workflow.client).to receive(:close_version)
         allow(vmd_ds).to receive(:save)
         allow(ev_ds).to receive(:add_event)
         allow(obj).to receive(:save!)
@@ -234,7 +253,7 @@ RSpec.describe VersionService do
                                                              druid: 'druid:ab12cd3456',
                                                              event_type: 'version_close')
 
-        expect(Dor::Config.workflow.client).to have_received(:close_version)
+        expect(workflow_client).to have_received(:close_version)
           .with(repo: 'dor', druid: druid, version: '2', create_accession_wf: true)
 
         expect(ev_ds).to have_received(:add_event).with('close', 'jcoyne', 'Version 2 closed')
@@ -255,15 +274,15 @@ RSpec.describe VersionService do
 
     context 'when the object has not been opened for versioning' do
       it 'raises an exception' do
-        expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(nil)
+        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(nil)
         expect { close }.to raise_error(Dor::Exception, 'Trying to close version on druid:ab12cd3456 which is not opened for versioning')
       end
     end
 
     context 'when the object already has an active instance of accesssionWF' do
       it 'raises an exception' do
-        expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(Time.new)
-        expect(Dor::Config.workflow.client).to receive(:active_lifecycle).with('dor', druid, 'submitted', version: '1').and_return(true)
+        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(Time.new)
+        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'submitted', version: '1').and_return(true)
         expect { close }.to raise_error(Dor::Exception, 'accessionWF already created for versioned object druid:ab12cd3456')
       end
     end

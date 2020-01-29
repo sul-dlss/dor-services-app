@@ -63,9 +63,10 @@ RSpec.describe DatastreamExtractor do
 
     context 'when datastream is workflows' do
       let(:ds_name) { :workflows }
+      let(:client) { instance_double(Dor::Workflow::Client, all_workflows_xml: '<workflows />') }
 
       before do
-        allow(Dor::Config.workflow.client).to receive(:all_workflows_xml).and_return('<workflows />')
+        allow(WorkflowClientFactory).to receive(:build).and_return(client)
       end
 
       it { is_expected.to eq '<workflows />' }

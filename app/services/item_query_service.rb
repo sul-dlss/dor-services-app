@@ -39,9 +39,9 @@ class ItemQueryService
   end
 
   def self.errors_for(pid, version)
-    Dor::Config.workflow.client.workflow_routes
-               .all_workflows(pid: pid)
-               .errors_for(version: version)
+    WorkflowClientFactory.build.workflow_routes
+                         .all_workflows(pid: pid)
+                         .errors_for(version: version)
   end
   private_class_method :errors_for
 

@@ -15,7 +15,7 @@ class LogSuccessJob < ApplicationJob
 
     return unless workflow
 
-    Dor::Config.workflow.client.update_status(druid: druid,
+    WorkflowClientFactory.build.update_status(druid: druid,
                                               workflow: workflow,
                                               process: workflow_process,
                                               status: 'completed',

@@ -43,7 +43,7 @@ class DeleteService
   end
 
   def remove_active_workflows
-    Dor::Config.workflow.client.delete_all_workflows(pid: druid)
+    WorkflowClientFactory.build.delete_all_workflows(pid: druid)
   end
 
   # Delete an object from DOR.
