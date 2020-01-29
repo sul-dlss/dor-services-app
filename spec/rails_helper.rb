@@ -75,8 +75,7 @@ def setup_test_objects(druid, identityMetadata, rightsMetadata = '<xml/>')
   allow(@dor_item).to receive_messages(
     id: druid,
     datastreams: { 'identityMetadata' => @identityMetadataXML, 'rightsMetadata' => @rightsMetadataXML },
-    identityMetadata: @identityMetadataXML, rightsMetadata: @rightsMetadataXML,
-    remove_druid_prefix: druid.gsub('druid:', '')
+    identityMetadata: @identityMetadataXML, rightsMetadata: @rightsMetadataXML
   )
   @dor_item
 end

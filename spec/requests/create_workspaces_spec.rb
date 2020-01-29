@@ -12,8 +12,7 @@ RSpec.describe 'Creating a workspace' do
     allow(item).to receive_messages(
       id: 'druid:mx123qw2323',
       datastreams: { 'rightsMetadata' => rights_metadata_xml },
-      rightsMetadata: rights_metadata_xml,
-      remove_druid_prefix: 'mx123qw2323'
+      rightsMetadata: rights_metadata_xml
     )
     allow(rights_metadata_xml).to receive(:dra_object).and_return(Dor::RightsAuth.parse(Nokogiri::XML('<xml/>'), true))
     clean_workspace
