@@ -40,7 +40,7 @@ gem 'sidekiq-statistic'
 gem 'uuidtools', '~> 2.1.4'
 
 # DLSS/domain-specific dependencies
-gem 'cocina-models', '~> 0.6.0'
+gem 'cocina-models', '~> 0.10.0'
 gem 'dor-services', '~> 8.0'
 gem 'dor-workflow-client', '~> 3.17'
 gem 'marc'
