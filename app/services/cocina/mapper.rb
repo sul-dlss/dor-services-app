@@ -41,13 +41,18 @@ module Cocina
             embargoReleaseDate: item.embargoMetadata.release_date.iso8601
           }
         end
+        unless item.contentMetadata.new?
+          props[:structural] = {
+            contains: build_filesets(item.contentMetadata, version: item.current_version, id: item.pid)
+          }
+        end
       end
     end
 
     def collection_props
       {
         externalIdentifier: item.pid,
-        type: Cocina::Models::Collection::TYPES.first,
+        type: Cocina::Models::Vocab.collection,
         label: item.label,
         version: item.current_version,
         administrative: build_administrative
@@ -57,7 +62,7 @@ module Cocina
     def apo_props
       {
         externalIdentifier: item.pid,
-        type: Cocina::Models::AdminPolicy::TYPES.first,
+        type: Cocina::Models::Vocab.admin_policy,
         label: item.label,
         version: item.current_version,
         administrative: build_apo_administrative
@@ -67,6 +72,31 @@ module Cocina
     private
 
     attr_reader :item
+    def build_filesets(content_metadata_ds, version:, id:)
+      content_metadata_ds.ng_xml.xpath('//resource').map do |resource_node|
+        files = build_files(resource_node.xpath('file'), version: version, parent_id: id)
+        structural = {}
+        structural[:contains] = files if files.present?
+        Cocina::Models::FileSet.new(
+          externalIdentifier: resource_node['id'],
+          type: Cocina::Models::Vocab.fileset,
+          label: resource_node.xpath('label').text,
+          version: version,
+          structural: structural
+        )
+      end
+    end
+
+    def build_files(file_nodes, version:, parent_id:)
+      file_nodes.map do |node|
+        Cocina::Models::File.new(
+          externalIdentifier: "#{parent_id}/#{node['id']}",
+          type: Cocina::Models::Vocab.file,
+          label: node['id'],
+          version: version
+        )
+      end
+    end
 
     def build_apo_administrative
       {}.tap do |admin|
