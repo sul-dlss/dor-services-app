@@ -9,8 +9,7 @@ RSpec.describe PublishMetadataService do
       i.rels_ext.content = rels
     end
   end
-  let(:service) { described_class.new(item, event_factory: event_factory) }
-  let(:event_factory) { class_double(EventFactory, create: true) }
+  let(:service) { described_class.new(item) }
 
   let(:rels) do
     <<-EOXML

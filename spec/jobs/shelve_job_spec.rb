@@ -12,6 +12,7 @@ RSpec.describe ShelveJob, type: :job do
   before do
     allow(Dor).to receive(:find).with(druid).and_return(item)
     allow(result).to receive(:processing!)
+    allow(EventFactory).to receive(:create)
   end
 
   context 'with no errors' do
@@ -26,10 +27,11 @@ RSpec.describe ShelveJob, type: :job do
     end
 
     it 'invokes the ShelvingService' do
-      expect(ShelvingService).to have_received(:shelve).with(item, event_factory: EventFactory).once
+      expect(ShelvingService).to have_received(:shelve).with(item).once
     end
 
     it 'marks the job as complete' do
+      expect(EventFactory).to have_received(:create)
       expect(LogSuccessJob).to have_received(:perform_later)
         .with(druid: druid,
               background_job_result: result,
@@ -49,7 +51,7 @@ RSpec.describe ShelveJob, type: :job do
     it 'marks the job as errored' do
       perform
       expect(result).to have_received(:processing!).once
-      expect(ShelvingService).to have_received(:shelve).with(item, event_factory: EventFactory).once
+      expect(ShelvingService).to have_received(:shelve).with(item).once
       expect(LogFailureJob).to have_received(:perform_later)
         .with(druid: druid,
               background_job_result: result,

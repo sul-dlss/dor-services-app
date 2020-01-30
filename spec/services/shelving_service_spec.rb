@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe ShelvingService do
-  let(:service) { described_class.new(work, event_factory: event_factory) }
+  let(:service) { described_class.new(work) }
 
   let(:shelvable_item) do
     Dor::Item
@@ -11,7 +11,6 @@ RSpec.describe ShelvingService do
 
   let!(:stacks_root) { Dir.mktmpdir }
   let!(:workspace_root) { Dir.mktmpdir }
-  let(:event_factory) { class_double(EventFactory, create: true) }
 
   before do
     allow(Dor::Config.stacks).to receive_messages(local_stacks_root: stacks_root, local_workspace_root: workspace_root)
@@ -44,8 +43,7 @@ RSpec.describe ShelvingService do
       expect(DigitalStacksService).to receive(:remove_from_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to receive(:rename_in_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to receive(:shelve_to_stacks).with(mock_workspace_path, stacks_object_pathname, mock_diff)
-      described_class.shelve(work, event_factory: EventFactory)
-      expect(event_factory).to have_received(:create)
+      described_class.shelve(work)
     end
   end
 
