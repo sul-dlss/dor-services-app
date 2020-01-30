@@ -109,6 +109,7 @@ module Cocina
     def build_administrative
       {}.tap do |admin|
         admin[:releaseTags] = build_release_tags
+        admin[:hasAdminPolicy] = item.admin_policy_object_id
       end
     end
 
