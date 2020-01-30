@@ -47,7 +47,7 @@ class ObjectsController < ApplicationController
   # the 'publish-complete' step of that workflow if provided
   def publish
     result = BackgroundJobResult.create
-    EventFactory.create(druid: params[:id], event_type: 'publish_request_received', data: { host: Socket.gethostname })
+    EventFactory.create(druid: params[:id], event_type: 'publish_request_received', data: { background_job_result_id: result.id })
 
     PublishJob.perform_later(druid: params[:id], background_job_result: result, workflow: params[:workflow])
     head :created, location: result
@@ -55,7 +55,7 @@ class ObjectsController < ApplicationController
 
   def preserve
     result = BackgroundJobResult.create
-    EventFactory.create(druid: params[:id], event_type: 'preserve_request_received', data: { host: Socket.gethostname })
+    EventFactory.create(druid: params[:id], event_type: 'preserve_request_received', data: { background_job_result_id: result.id })
 
     PreserveJob.perform_later(druid: params[:id], background_job_result: result)
     head :created, location: result

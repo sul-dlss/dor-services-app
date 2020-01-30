@@ -15,6 +15,7 @@ RSpec.describe PublishJob, type: :job do
   before do
     allow(Dor).to receive(:find).with(druid).and_return(item)
     allow(result).to receive(:processing!)
+    allow(EventFactory).to receive(:create)
   end
 
   context 'with no errors' do
@@ -29,10 +30,12 @@ RSpec.describe PublishJob, type: :job do
     end
 
     it 'invokes the PublishMetadataService' do
-      expect(PublishMetadataService).to have_received(:publish).with(item, event_factory: EventFactory).once
+      expect(PublishMetadataService).to have_received(:publish).with(item).once
     end
 
     it 'marks the job as complete' do
+      expect(EventFactory).to have_received(:create)
+
       expect(LogSuccessJob).to have_received(:perform_later)
         .with(druid: druid, background_job_result: result, workflow: 'accessionWF', workflow_process: 'publish-complete')
     end
@@ -52,7 +55,7 @@ RSpec.describe PublishJob, type: :job do
     end
 
     it 'invokes the PublishMetadataService' do
-      expect(PublishMetadataService).to have_received(:publish).with(item, event_factory: EventFactory).once
+      expect(PublishMetadataService).to have_received(:publish).with(item).once
     end
 
     it 'marks the job as complete' do

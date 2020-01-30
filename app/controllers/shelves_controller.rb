@@ -7,7 +7,7 @@ class ShelvesController < ApplicationController
   def create
     if @item.is_a?(Dor::Item)
       result = BackgroundJobResult.create
-      EventFactory.create(druid: @item.pid, event_type: 'shelve_request_received', data: { host: Socket.gethostname })
+      EventFactory.create(druid: @item.pid, event_type: 'shelve_request_received', data: { background_job_result_id: result.id })
 
       ShelveJob.perform_later(druid: @item.pid, background_job_result: result)
       head :created, location: result
