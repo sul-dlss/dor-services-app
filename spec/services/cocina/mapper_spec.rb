@@ -70,10 +70,43 @@ RSpec.describe Cocina::Mapper do
 
   context 'when item is a Dor::Collection' do
     let(:item) { Dor::Collection.new(pid: 'druid:fh138mm2023', label: 'test object', admin_policy_object_id: 'druid:sc012gz0974') }
+    let(:identity_metadata_ds) { instance_double(Dor::IdentityMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml)) }
+    let(:xml) do
+      <<~XML
+        <?xml version="1.0"?>
+        <identityMetadata>
+          <objectId>druid:fh138mm2023</objectId>
+          <objectCreator>DOR</objectCreator>
+          <objectLabel>Stanford University map collection, 1853-1997</objectLabel>
+          <objectType>collection</objectType>
+          <otherId name="catkey">4366577</otherId>
+          <otherId name="uuid">3a69d380-d615-11e3-96be-0050569b3c3c</otherId>
+          <tag>Remediated By : 5.8.2</tag>
+          <release to="Searchworks" what="self" when="2016-11-16T22:45:36Z" who="blalbrit">true</release>
+          <release to="Searchworks" what="self" when="2016-11-24T01:16:00Z" who="blalbrit">false</release>
+          <release to="Searchworks" what="self" when="2017-07-11T20:28:47Z" who="arcadia">false</release>
+          <release to="Searchworks" what="collection" when="2017-07-21T16:38:24Z" who="dhartwig">true</release>
+          <release to="Searchworks" what="collection" when="2017-08-23T22:24:27Z" who="dhartwig">true</release>
+          <release to="Searchworks" what="collection" when="2018-02-08T21:57:15Z" who="jschne">true</release>
+          <release to="Searchworks" what="collection" when="2018-02-16T17:15:54Z" who="jschne">false</release>
+          <release to="Searchworks" what="collection" when="2018-02-16T17:20:02Z" who="jschne">true</release>
+          <release to="Searchworks" what="collection" when="2018-02-22T17:50:25Z" who="jschne">false</release>
+          <release to="Searchworks" what="collection" when="2018-02-22T17:51:12Z" who="jschne">true</release>
+          <release to="Searchworks" what="collection" when="2018-02-26T21:12:19Z" who="jschne">true</release>
+          <release to="Searchworks" what="self" when="2018-03-01T23:05:01Z" who="jschne">true</release>
+          <release to="Earthworks" what="collection" when="2019-10-21T22:06:53Z" who="kdurante">true</release>
+        </identityMetadata>
+      XML
+    end
 
-    it 'builds the collection' do
+    before do
+      allow(item).to receive(:identityMetadata).and_return(identity_metadata_ds)
+    end
+
+    it 'builds the collection with releaseTags' do
       expect(cocina_model).to be_kind_of Cocina::Models::Collection
       expect(cocina_model.administrative.hasAdminPolicy).to eq 'druid:sc012gz0974'
+      expect(cocina_model.administrative.releaseTags.size).to eq 13
     end
   end
 end
