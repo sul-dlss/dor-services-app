@@ -22,7 +22,10 @@ RSpec.describe 'Get the object' do
           label: 'collection #1',
           version: 1,
           access: {},
-          administrative: {},
+          administrative: {
+            releaseTags: [],
+            hasAdminPolicy: nil
+          },
           identification: {},
           structural: {}
         }

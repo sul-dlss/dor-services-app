@@ -703,7 +703,7 @@ components:
           type: string
           format: date-time
           example: '2029-06-22T07:00:00.000+00:00'
-    Administrative:
+    EmptyAdministrative:
       type: object
       properties: {}
     APOAdministrative:
@@ -715,9 +715,11 @@ components:
           type: string
         registration_workflow:
           type: string
-    DROAdministrative:
+    Administrative:
       type: object
       properties:
+        hasAdminPolicy:
+          $ref: '#/components/schemas/Druid'
         releaseTags:
           type: array
           items:
@@ -819,7 +821,7 @@ components:
         access:
           $ref: '#/components/schemas/Access'
         administrative:
-          $ref: '#/components/schemas/DROAdministrative'
+          $ref: '#/components/schemas/Administrative'
         identification:
           $ref: '#/components/schemas/Identification'
         structural:
@@ -849,7 +851,7 @@ components:
         access:
           $ref: '#/components/schemas/Access'
         administrative:
-          $ref: '#/components/schemas/Administrative'
+          $ref: '#/components/schemas/EmptyAdministrative'
         identification:
           $ref: '#/components/schemas/Identification'
         structural:
@@ -879,7 +881,7 @@ components:
         access:
           $ref: '#/components/schemas/Access'
         administrative:
-          $ref: '#/components/schemas/Administrative'
+          $ref: '#/components/schemas/EmptyAdministrative'
         identification:
           $ref: '#/components/schemas/Identification'
         structural:

@@ -6,7 +6,7 @@ RSpec.describe Cocina::Mapper do
   subject(:cocina_model) { described_class.build(item) }
 
   context 'when item is a Dor::Item' do
-    let(:item) { Dor::Item.new(pid: 'druid:mx000xm0000', label: 'test object') }
+    let(:item) { Dor::Item.new(pid: 'druid:mx000xm0000', label: 'test object', admin_policy_object_id: 'druid:sc012gz0974') }
     let(:content_metadata_ds) { instance_double(Dor::ContentMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml)) }
     let(:xml) do
       <<~XML
@@ -58,10 +58,22 @@ RSpec.describe Cocina::Mapper do
 
     it 'builds the object with filesets' do
       expect(cocina_model).to be_kind_of Cocina::Models::DRO
+
+      expect(cocina_model.administrative.hasAdminPolicy).to eq 'druid:sc012gz0974'
+
       expect(cocina_model.structural.contains.size).to eq 2
       folder1 = cocina_model.structural.contains.first
       expect(folder1.label).to eq 'Folder 1'
       expect(folder1.structural.contains.first.label).to eq 'folder1PuSu/story1u.txt'
+    end
+  end
+
+  context 'when item is a Dor::Collection' do
+    let(:item) { Dor::Collection.new(pid: 'druid:fh138mm2023', label: 'test object', admin_policy_object_id: 'druid:sc012gz0974') }
+
+    it 'builds the collection' do
+      expect(cocina_model).to be_kind_of Cocina::Models::Collection
+      expect(cocina_model.administrative.hasAdminPolicy).to eq 'druid:sc012gz0974'
     end
   end
 end
