@@ -823,7 +823,67 @@ components:
         identification:
           $ref: '#/components/schemas/Identification'
         structural:
-          $ref: '#/components/schemas/Structural'
+          $ref: '#/components/schemas/DROStructural'
+      required:
+        - externalIdentifier
+        - label
+        - type
+        - version
+        - access
+        - administrative
+        - identification
+        - structural
+    FileSet:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - 'http://cocina.sul.stanford.edu/models/fileset.jsonld'
+        externalIdentifier:
+          type: string
+        label:
+          type: string
+        version:
+          type: integer
+        access:
+          $ref: '#/components/schemas/Access'
+        administrative:
+          $ref: '#/components/schemas/Administrative'
+        identification:
+          $ref: '#/components/schemas/Identification'
+        structural:
+          $ref: '#/components/schemas/FileSetStructural'
+      required:
+        - externalIdentifier
+        - label
+        - type
+        - version
+        - access
+        - administrative
+        - identification
+        - structural
+    File:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - 'http://cocina.sul.stanford.edu/models/file.jsonld'
+        externalIdentifier:
+          type: string
+        label:
+          type: string
+        version:
+          type: integer
+        access:
+          $ref: '#/components/schemas/Access'
+        administrative:
+          $ref: '#/components/schemas/Administrative'
+        identification:
+          $ref: '#/components/schemas/Identification'
+        structural:
+          $ref: '#/components/schemas/FileStructural'
       required:
         - externalIdentifier
         - label
@@ -906,6 +966,23 @@ components:
           example: Searchworks
         release:
           type: boolean
+    DROStructural:
+      type: object
+      properties:
+        contains:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileSet'
+    FileSetStructural:
+      type: object
+      properties:
+        contains:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+    FileStructural:
+      type: object
+      properties: {}
     Structural:
       type: object
       properties: {}

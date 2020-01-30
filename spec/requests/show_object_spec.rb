@@ -24,7 +24,8 @@ RSpec.describe 'Get the object' do
           version: 1,
           access: {},
           administrative: {
-            releaseTags: []
+            releaseTags: [],
+            hasAdminPolicy: nil
           },
           identification: {},
           structural: {}
@@ -69,7 +70,8 @@ RSpec.describe 'Get the object' do
                 who: 'petucket',
                 release: true
               }
-            ]
+            ],
+            hasAdminPolicy: nil
           },
           identification: {},
           structural: {}
