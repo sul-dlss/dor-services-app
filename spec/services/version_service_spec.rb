@@ -73,6 +73,10 @@ RSpec.describe VersionService do
         expect(obj).to receive(:save!)
 
         described_class.open(obj, options, event_factory: event_factory)
+
+        expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
+                                                             druid: 'druid:ab12cd3456',
+                                                             event_type: 'version_open')
       end
 
       it "doesn't include options" do
@@ -226,7 +230,9 @@ RSpec.describe VersionService do
       it 'sets tag, description and an event' do
         close
         expect(vmd_ds).to have_received(:save)
-        expect(event_factory).to have_received(:create)
+        expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'jcoyne' },
+                                                             druid: 'druid:ab12cd3456',
+                                                             event_type: 'version_close')
 
         expect(Dor::Config.workflow.client).to have_received(:close_version)
           .with(repo: 'dor', druid: druid, version: '2', create_accession_wf: true)

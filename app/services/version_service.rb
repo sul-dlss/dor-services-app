@@ -47,7 +47,7 @@ class VersionService
     vmd_ds.update_current_version(description: opts[:description], significance: opts[:significance].to_sym) if opts[:description] && opts[:significance]
 
     work.save!
-    event_factory.create(druid: work.pid, event_type: 'version_open', data: { version: work.current_version })
+    event_factory.create(druid: work.pid, event_type: 'version_open', data: { who: opts[:opening_user_name], version: work.current_version })
   end
 
   # Determines whether a new version can be opened for an object.
@@ -91,7 +91,7 @@ class VersionService
                                               create_accession_wf: create_accession_wf)
     work.events.add_event('close', opts[:user_name], "Version #{work.current_version} closed") if opts[:user_name]
     work.save!
-    event_factory.create(druid: work.pid, event_type: 'version_close', data: { version: work.current_version })
+    event_factory.create(druid: work.pid, event_type: 'version_close', data: { who: opts[:user_name], version: work.current_version })
   end
 
   # Performs checks on whether a new version can be opened for an object
