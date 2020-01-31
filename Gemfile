@@ -38,6 +38,7 @@ gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq', '~> 5.2'
 gem 'sidekiq-statistic'
 gem 'uuidtools', '~> 2.1.4'
+gem 'whenever', require: false
 
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.14.0'
