@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'whenever/capistrano'
-
 set :application, 'dor_services'
 set :repo_url, 'https://github.com/sul-dlss/dor-services-app.git'
 
