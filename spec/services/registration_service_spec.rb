@@ -3,12 +3,13 @@
 require 'rails_helper'
 
 RSpec.describe RegistrationService do
+  let(:pid) { 'druid:ab123cd4567' }
+  let(:mock_repo) { instance_double(Rubydora::Repository) }
+  let(:apo) { instantiate_fixture('druid:fg890hi1234', Dor::AdminPolicyObject) }
+
   before do
-    @pid = 'druid:ab123cd4567'
-    @mock_repo = instance_double(Rubydora::Repository)
-    @apo = instantiate_fixture('druid:fg890hi1234', Dor::AdminPolicyObject)
-    allow(@apo).to receive(:new_record?).and_return false
-    allow(Dor).to receive(:find).with('druid:fg890hi1234').and_return(@apo)
+    allow(apo).to receive(:new_record?).and_return false
+    allow(Dor).to receive(:find).with('druid:fg890hi1234').and_return(apo)
     allow(EventFactory).to receive(:create)
   end
 
@@ -16,9 +17,9 @@ RSpec.describe RegistrationService do
     subject(:register) { described_class.send(:register_object, request) }
 
     before do
-      allow(Dor::SuriService).to receive(:mint_id).and_return(@pid)
+      allow(Dor::SuriService).to receive(:mint_id).and_return(pid)
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
-      allow(ActiveFedora::Base).to receive(:connection_for_pid).and_return(@mock_repo)
+      allow(ActiveFedora::Base).to receive(:connection_for_pid).and_return(mock_repo)
       allow_any_instance_of(Dor::Collection).to receive(:save).and_return(true)
       allow_any_instance_of(Dor::Item).to receive(:create).and_return(true)
     end
@@ -144,12 +145,12 @@ RSpec.describe RegistrationService do
 
     context 'exception should be raised for' do
       it 'registering a duplicate PID' do
-        params[:pid] = @pid
-        expect(Dor::SearchService).to receive(:query_by_id).with('druid:ab123cd4567').and_return([@pid])
+        params[:pid] = pid
+        expect(Dor::SearchService).to receive(:query_by_id).with('druid:ab123cd4567').and_return([pid])
         expect { register }.to raise_error(Dor::DuplicateIdError)
       end
       it 'registering a duplicate source ID' do
-        expect(Dor::SearchService).to receive(:query_by_id).with('barcode:9191919191').and_return([@pid])
+        expect(Dor::SearchService).to receive(:query_by_id).with('barcode:9191919191').and_return([pid])
         expect { register }.to raise_error(Dor::DuplicateIdError)
       end
       it 'missing a required parameter' do
@@ -178,7 +179,7 @@ RSpec.describe RegistrationService do
 
     RSpec.shared_examples 'common registration' do
       it 'produces a registered object' do
-        expect(@obj.pid).to eq(@pid)
+        expect(@obj.pid).to eq(pid)
         expect(@obj.label).to eq(params[:label])
         expect(@obj.identityMetadata.sourceId).to eq('barcode:9191919191')
         expect(@obj.identityMetadata.otherId).to match_array(params[:other_ids].collect { |*e| e.join(':') })
@@ -187,8 +188,8 @@ RSpec.describe RegistrationService do
 
     describe 'should set rightsMetadata based on the APO default (but replace read rights) even if it is a collection' do
       before do
-        @coll = Dor::Collection.new(pid: @pid)
-        expect(Dor::Collection).to receive(:new).with(pid: @pid).and_return(@coll)
+        @coll = Dor::Collection.new(pid: pid)
+        expect(Dor::Collection).to receive(:new).with(pid: pid).and_return(@coll)
         params[:rights] = 'stanford'
         params[:object_type] = 'collection'
         @obj = register
@@ -345,9 +346,9 @@ RSpec.describe RegistrationService do
 
   context '#create_from_request' do
     before do
-      allow(Dor::SuriService).to receive(:mint_id).and_return(@pid)
+      allow(Dor::SuriService).to receive(:mint_id).and_return(pid)
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
-      allow(ActiveFedora::Base).to receive(:connection_for_pid).and_return(@mock_repo)
+      allow(ActiveFedora::Base).to receive(:connection_for_pid).and_return(mock_repo)
       allow_any_instance_of(Dor::Item).to receive(:save).and_return(true)
       allow_any_instance_of(Dor::Item).to receive(:create).and_return(true)
     end
