@@ -660,12 +660,59 @@ paths:
       tags:
         - objects
       summary: Register a new object
-      description: ''
+      description: |-
+        If 'pid' is provided, this value will be used as the object
+        id, otherwise a new identifier will be minted.
+
+        If 'collection' is provided, the object will be a member of the provided
+        collection.
       operationId: 'objects#create'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pid:
+                  $ref: '#/components/schemas/Druid'
+                collection:
+                  $ref: '#/components/schemas/Druid'
+                tags:
+                  type: array
+                  items:
+                    type: string
+                    example: "Registered by : jcoyne85"
+                label:
+                  type: string
+                  example: 15th century manuscript
+                other_id:
+                  type: string
+                  example: 'symphony:1164561'
+                source_id:
+                  type: string
+                  example: 'external:77777'
+                object_type:
+                  type: string
+                  example: item
+                admin_policy:
+                  $ref: '#/components/schemas/Druid'
+                metadata_source:
+                  type: string
+                  example: label
+                rights:
+                  type: string
+                  example: default
+                seed_datastream:
+                  type: string
+                  description: If 'descMetadata' is provided, then record is seeded from symphony
+                  example: 'descMetadata'
+              required:
+                - admin_policy
+                - source_id
       responses:
         '200':
           description: OK
-      parameters: []
   '/v1/objects/{id}':
     get:
       tags:

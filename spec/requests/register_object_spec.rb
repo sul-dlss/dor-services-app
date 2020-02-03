@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Register object' do
   let(:object) { Dor::Item.new(pid: 'druid:1234') }
+  let(:data) { '{"admin_policy":"druid:mk420bs7601","source_id":"ns:ident"}' }
 
   before do
     allow(Dor).to receive(:find).and_return(object)
@@ -15,7 +16,9 @@ RSpec.describe 'Register object' do
     end
 
     it 'returns a 409 error with location header' do
-      post '/v1/objects', headers: { 'Authorization' => "Bearer #{jwt}" }
+      post '/v1/objects',
+           params: data,
+           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(409)
       expect(response.headers['Location']).to match(%r{/fedora/objects/druid:existing123obj})
     end
@@ -29,7 +32,9 @@ RSpec.describe 'Register object' do
     end
 
     it 'returns a 422 error' do
-      post '/v1/objects', headers: { 'Authorization' => "Bearer #{jwt}" }
+      post '/v1/objects',
+           params: data,
+           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(422)
       expect(response.body).to eq(errmsg)
     end
@@ -43,7 +48,9 @@ RSpec.describe 'Register object' do
     end
 
     it 'returns a 500 error' do
-      post '/v1/objects', headers: { 'Authorization' => "Bearer #{jwt}" }
+      post '/v1/objects',
+           params: data,
+           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(500)
       expect(response.body).to eq(errmsg)
     end
@@ -57,7 +64,9 @@ RSpec.describe 'Register object' do
     end
 
     it 'returns a 404 error' do
-      post '/v1/objects', headers: { 'Authorization' => "Bearer #{jwt}" }
+      post '/v1/objects',
+           params: data,
+           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(404)
       expect(response.body).to eq(errmsg)
     end
@@ -69,8 +78,9 @@ RSpec.describe 'Register object' do
     end
 
     it 'registers the object with the registration service' do
-      post '/v1/objects', headers: { 'Authorization' => "Bearer #{jwt}" }
-
+      post '/v1/objects',
+           params: data,
+           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.body).to eq 'druid:xyz'
       expect(RegistrationService).to have_received(:create_from_request)
       expect(response.status).to eq(201)
