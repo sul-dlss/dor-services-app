@@ -419,10 +419,11 @@ GEM
     sidekiq-statistic (1.4.0)
       sidekiq (>= 5.0)
       tilt (~> 2.0)
-    simplecov (0.18.1)
+    simplecov (0.17.1)
       docile (~> 1.1)
-      simplecov-html (~> 0.11.0)
-    simplecov-html (0.11.0)
+      json (>= 1.8, < 3)
+      simplecov-html (~> 0.10.0)
+    simplecov-html (0.10.2)
     solrizer (3.4.1)
       activesupport
       daemons
@@ -518,7 +519,7 @@ DEPENDENCIES
   ruby-cache (~> 0.3.0)
   sidekiq (~> 5.2)
   sidekiq-statistic
-  simplecov
+  simplecov (~> 0.17.1)
   spring
   spring-watcher-listen (~> 2.0.0)
   uuidtools (~> 2.1.4)
