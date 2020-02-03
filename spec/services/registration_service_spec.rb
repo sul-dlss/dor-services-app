@@ -208,8 +208,9 @@ RSpec.describe RegistrationService do
       end
 
       it 'creates the datastream' do
-        @obj = register
+        register
         expect(RefreshMetadataAction).to have_received(:run)
+          .with(identifiers: ['catkey:000', 'uuid:111'], datastream: Dor::DescMetadataDS)
       end
     end
 
