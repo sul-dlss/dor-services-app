@@ -704,9 +704,13 @@ paths:
                   type: string
                   example: default
                 seed_datastream:
-                  type: string
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - descMetadata
                   description: If 'descMetadata' is provided, then record is seeded from symphony
-                  example: 'descMetadata'
+                  example: ['descMetadata']
               required:
                 - admin_policy
                 - source_id
