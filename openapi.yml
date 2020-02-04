@@ -666,6 +666,9 @@ paths:
 
         If 'collection' is provided, the object will be a member of the provided
         collection.
+        
+        Note that the 'source_id' property is required for items but not for 
+        collections.
       operationId: 'objects#create'
       requestBody:
         required: true
@@ -713,7 +716,6 @@ paths:
                   example: ['descMetadata']
               required:
                 - admin_policy
-                - source_id
       responses:
         '200':
           description: OK
