@@ -113,14 +113,20 @@ class RegistrationService
 
       # create basic mods from the label
       build_desc_metadata_from_label(new_item, request.label) if request.metadata_source == 'label'
-      RefreshMetadataAction.run(new_item) if request.seed_desc_metadata
+      refresh_metadata(item: new_item, request: request) if request.seed_desc_metadata
 
       new_item.class.ancestors.select { |x| x.respond_to?(:to_class_uri) && x != ActiveFedora::Base }.each do |parent_class|
         new_item.add_relationship(:has_model, parent_class.to_class_uri)
       end
 
-      new_item.save
+      new_item.save!
       new_item
+    end
+
+    def refresh_metadata(item:, request:)
+      # This will give us our namespaced identifiers like "catkey:00012032"
+      identifiers = request.other_ids.map { |k, v| "#{k}:#{v}" }
+      RefreshMetadataAction.run(identifiers: identifiers, datastream: item.descMetadata)
     end
 
     # add the default rights from the admin policy and any requested rights to the provided item
