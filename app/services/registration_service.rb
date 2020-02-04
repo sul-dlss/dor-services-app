@@ -6,6 +6,7 @@ class RegistrationService
     # @param [Hash] params
     # @param [EventFactory] event_factory
     # @see register_object similar but different
+    # @return [Dor::RegistrationResponse]
     def create_from_request(params, event_factory: EventFactory)
       dor_params = registration_request_params(params)
 
@@ -14,7 +15,8 @@ class RegistrationService
       pid = dor_obj.pid
       event_factory.create(druid: pid, event_type: 'registration', data: params)
       location = URI.parse(Dor::Config.fedora.safeurl.sub(%r{/*$}, '/')).merge("objects/#{pid}").to_s
-      dor_params.dup.merge(location: location, pid: pid)
+
+      Dor::RegistrationResponse.new(dor_params.merge(location: location, pid: pid))
     end
 
     private
@@ -123,6 +125,7 @@ class RegistrationService
       new_item
     end
 
+    # NOTE: This could fail if Symphony has problems
     def refresh_metadata(item:, request:)
       # This will give us our namespaced identifiers like "catkey:00012032"
       identifiers = request.other_ids.map { |k, v| "#{k}:#{v}" }

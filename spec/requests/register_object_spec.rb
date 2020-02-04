@@ -15,12 +15,11 @@ RSpec.describe 'Register object' do
       allow(RegistrationService).to receive(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
     end
 
-    it 'returns a 409 error with location header' do
+    it 'returns a 409 error' do
       post '/v1/objects',
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(409)
-      expect(response.headers['Location']).to match(%r{/fedora/objects/druid:existing123obj})
     end
   end
 
@@ -74,7 +73,12 @@ RSpec.describe 'Register object' do
 
   context 'when the request is successful' do
     before do
-      allow(RegistrationService).to receive(:create_from_request).and_return(pid: 'druid:xyz')
+      allow(RegistrationService).to receive(:create_from_request).and_return(reg_response)
+    end
+
+    let(:reg_response) do
+      instance_double(Dor::RegistrationResponse, to_txt: 'druid:xyz',
+                                                 location: 'https://fedora.example.com:3333/fedora/objects/druid:xyz')
     end
 
     it 'registers the object with the registration service' do

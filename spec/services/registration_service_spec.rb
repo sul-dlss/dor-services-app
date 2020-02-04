@@ -13,7 +13,7 @@ RSpec.describe RegistrationService do
     allow(EventFactory).to receive(:create)
   end
 
-  context '#register_object' do
+  describe '#register_object' do
     subject(:register) { described_class.send(:register_object, request) }
 
     before do
@@ -345,7 +345,9 @@ RSpec.describe RegistrationService do
     end # context common cases
   end
 
-  context '#create_from_request' do
+  describe '#create_from_request' do
+    subject(:create) { described_class.create_from_request(params) }
+
     before do
       allow(Dor::SuriService).to receive(:mint_id).and_return(pid)
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
@@ -359,35 +361,75 @@ RSpec.describe RegistrationService do
         object_type: 'item',
         admin_policy: 'druid:fg890hi1234',
         label: 'web-archived-crawl for http://www.example.org',
-        source_id: 'sul:SOMETHING-www.example.org'
+        source_id: source_id
       }
     end
 
-    it 'creates an event' do
-      described_class.create_from_request(params)
+    let(:source_id) { 'sul:SOMETHING-www.example.org' }
+
+    it 'is successful' do
+      expect(create).to be_kind_of Dor::RegistrationResponse
       expect(EventFactory).to have_received(:create)
     end
 
-    it 'source_id may have one or more colons' do
-      expect { described_class.create_from_request(params) }.not_to raise_error
-      params[:source_id] = 'sul:SOMETHING-http://www.example.org'
-      expect { described_class.create_from_request(params) }.not_to raise_error
+    context 'when source_id has one colon' do
+      it 'is successful' do
+        expect { create }.not_to raise_error
+      end
     end
 
-    it 'source_id must have at least one colon' do
-      # Execution gets into IdentityMetadataDS code for specific error
-      params[:source_id] = 'no-colon'
-      exp_regex = /Source ID must follow the format 'namespace:value'/
-      expect { described_class.create_from_request(params) }.to raise_error(ArgumentError, exp_regex)
+    context 'when source_id has more than one colon' do
+      let(:source_id) { 'sul:SOMETHING-http://www.example.org' }
+
+      it 'is successful' do
+        expect { create }.not_to raise_error
+      end
     end
 
-    it 'other_id may have any number of colons' do
-      params[:other_id] = 'no-colon'
-      expect { described_class.create_from_request(params) }.not_to raise_error
-      params[:other_id] = 'catkey:000'
-      expect { described_class.create_from_request(params) }.not_to raise_error
-      params[:other_id] = 'catkey:oop:sie'
-      expect { described_class.create_from_request(params) }.not_to raise_error
+    context 'when source_id has no colon' do
+      let(:source_id) { 'no-colon' }
+
+      it 'is raises an exception' do
+        # Execution gets into IdentityMetadataDS code for specific error
+        exp_regex = /Source ID must follow the format 'namespace:value'/
+        expect { create }.to raise_error(ArgumentError, exp_regex)
+      end
     end
-  end # create_from_request
+
+    context 'when other_id is provided' do
+      let(:params) do
+        {
+          object_type: 'item',
+          admin_policy: 'druid:fg890hi1234',
+          label: 'web-archived-crawl for http://www.example.org',
+          source_id: source_id,
+          other_id: other_id
+        }
+      end
+
+      context 'when other_id has no colon' do
+        let(:other_id) { 'no-colon' }
+
+        it 'is successful' do
+          expect { create }.not_to raise_error
+        end
+      end
+
+      context 'when other_id has one colon' do
+        let(:other_id) { 'catkey:000' }
+
+        it 'is successful' do
+          expect { create }.not_to raise_error
+        end
+      end
+
+      context 'when other_id has many colons' do
+        let(:other_id) { 'catkey:oop:sie' }
+
+        it 'is successful' do
+          expect { create }.not_to raise_error
+        end
+      end
+    end
+  end
 end

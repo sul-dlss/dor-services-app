@@ -12,5 +12,9 @@ module Dor
     def to_txt
       @params[:pid]
     end
+
+    def location
+      @params[:location]
+    end
   end
 end
