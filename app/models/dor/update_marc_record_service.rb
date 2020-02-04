@@ -170,7 +170,7 @@ module Dor
 
     def released_to_searchworks?
       rel = released_for.transform_keys { |key| key.to_s.upcase } # upcase all release tags to make the check case insensitive
-      rel.blank? || rel['SEARCHWORKS'].blank? || rel['SEARCHWORKS']['release'].blank? ? false : rel['SEARCHWORKS']['release']
+      rel.dig('SEARCHWORKS', 'release').presence || false
     end
 
     private
