@@ -15,12 +15,11 @@ RSpec.describe 'Register object' do
       allow(RegistrationService).to receive(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
     end
 
-    it 'returns a 409 error with location header' do
+    it 'returns a 409 error' do
       post '/v1/objects',
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(409)
-      expect(response.headers['Location']).to match(%r{/fedora/objects/druid:existing123obj})
     end
   end
 
