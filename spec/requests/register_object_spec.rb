@@ -74,7 +74,12 @@ RSpec.describe 'Register object' do
 
   context 'when the request is successful' do
     before do
-      allow(RegistrationService).to receive(:create_from_request).and_return(pid: 'druid:xyz')
+      allow(RegistrationService).to receive(:create_from_request).and_return(reg_response)
+    end
+
+    let(:reg_response) do
+      instance_double(Dor::RegistrationResponse, to_txt: 'druid:xyz',
+                                                 location: 'https://fedora.example.com:3333/fedora/objects/druid:xyz')
     end
 
     it 'registers the object with the registration service' do

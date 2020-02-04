@@ -12,7 +12,7 @@ class ObjectsController < ApplicationController
   end
 
   rescue_from(Dor::DuplicateIdError) do |e|
-    render status: :conflict, plain: e.message, location: object_location(e.pid)
+    render status: :conflict, plain: e.message
   end
 
   rescue_from(Dry::Struct::Error) do |e|
@@ -30,11 +30,10 @@ class ObjectsController < ApplicationController
     rescue ArgumentError => e
       return render status: :unprocessable_entity, plain: e.message
     end
-    pid = reg_response[:pid]
 
     respond_to do |format|
-      format.all { render status: :created, location: object_location(pid), plain: Dor::RegistrationResponse.new(reg_response).to_txt }
-      format.json { render status: :created, location: object_location(pid), json: Dor::RegistrationResponse.new(reg_response) }
+      format.all { render status: :created, location: reg_response.location, plain: reg_response.to_txt }
+      format.json { render status: :created, location: reg_response.location, json: reg_response }
     end
   end
 
@@ -99,14 +98,6 @@ class ObjectsController < ApplicationController
 
   def proxy_faraday_response(response)
     render status: response.status, content_type: response.headers['Content-Type'], body: response.body
-  end
-
-  def fedora_base
-    URI.parse(Dor::Config.fedora.safeurl.sub(%r{/*$}, '/'))
-  end
-
-  def object_location(pid)
-    fedora_base.merge("objects/#{pid}").to_s
   end
 
   def create_params

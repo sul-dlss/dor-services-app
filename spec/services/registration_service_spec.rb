@@ -367,8 +367,8 @@ RSpec.describe RegistrationService do
 
     let(:source_id) { 'sul:SOMETHING-www.example.org' }
 
-    it 'creates an event' do
-      create
+    it 'is successful' do
+      expect(create).to be_kind_of Dor::RegistrationResponse
       expect(EventFactory).to have_received(:create)
     end
 
