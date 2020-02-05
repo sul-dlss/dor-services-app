@@ -94,6 +94,7 @@ RSpec.describe 'Get the object' do
       before do
         object.descMetadata.title_info.main_title = 'Hello'
         object.label = 'foo'
+        allow(object).to receive(:admin_policy_object_id).and_return('druid:ab123cd4567')
       end
 
       it 'returns the object' do
@@ -111,6 +112,7 @@ RSpec.describe 'Get the object' do
         expect(json['structural']).to eq({})
         expect(json['administrative']['default_object_rights']).to match '<rightsMetadata>'
         expect(json['administrative']['registration_workflow']).to be_nil
+        expect(json['administrative']['hasAdminPolicy']).to eq 'druid:ab123cd4567'
       end
     end
 
