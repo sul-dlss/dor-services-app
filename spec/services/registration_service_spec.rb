@@ -188,8 +188,8 @@ RSpec.describe RegistrationService do
 
     describe 'should set rightsMetadata based on the APO default (but replace read rights) even if it is a collection' do
       before do
-        @coll = Dor::Collection.new(pid: pid)
-        expect(Dor::Collection).to receive(:new).with(pid: pid).and_return(@coll)
+        coll = Dor::Collection.new(pid: pid)
+        expect(Dor::Collection).to receive(:new).with(pid: pid, admin_policy_object_id: apo.id).and_return(coll)
         params[:rights] = 'stanford'
         params[:object_type] = 'collection'
         @obj = register
@@ -348,87 +348,113 @@ RSpec.describe RegistrationService do
   describe '#create_from_request' do
     subject(:create) { described_class.create_from_request(params) }
 
+    let(:item) { klass.new }
+
     before do
       allow(Dor::SuriService).to receive(:mint_id).and_return(pid)
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
       allow(ActiveFedora::Base).to receive(:connection_for_pid).and_return(mock_repo)
-      allow_any_instance_of(Dor::Item).to receive(:save).and_return(true)
-      allow_any_instance_of(Dor::Item).to receive(:create).and_return(true)
+      allow(item).to receive(:save).and_return(true)
+      allow(item).to receive(:create).and_return(true)
+      allow(klass).to receive(:new).and_return(item)
     end
 
-    let(:params) do
-      {
-        object_type: 'item',
-        admin_policy: 'druid:fg890hi1234',
-        label: 'web-archived-crawl for http://www.example.org',
-        source_id: source_id
-      }
-    end
-
-    let(:source_id) { 'sul:SOMETHING-www.example.org' }
-
-    it 'is successful' do
-      expect(create).to be_kind_of Dor::RegistrationResponse
-      expect(EventFactory).to have_received(:create)
-    end
-
-    context 'when source_id has one colon' do
-      it 'is successful' do
-        expect { create }.not_to raise_error
-      end
-    end
-
-    context 'when source_id has more than one colon' do
-      let(:source_id) { 'sul:SOMETHING-http://www.example.org' }
-
-      it 'is successful' do
-        expect { create }.not_to raise_error
-      end
-    end
-
-    context 'when source_id has no colon' do
-      let(:source_id) { 'no-colon' }
-
-      it 'is raises an exception' do
-        # Execution gets into IdentityMetadataDS code for specific error
-        exp_regex = /Source ID must follow the format 'namespace:value'/
-        expect { create }.to raise_error(ArgumentError, exp_regex)
-      end
-    end
-
-    context 'when other_id is provided' do
+    context 'for an item' do
+      let(:source_id) { 'sul:SOMETHING-www.example.org' }
+      let(:klass) { Dor::Item }
       let(:params) do
         {
           object_type: 'item',
           admin_policy: 'druid:fg890hi1234',
           label: 'web-archived-crawl for http://www.example.org',
-          source_id: source_id,
-          other_id: other_id
+          source_id: source_id
         }
       end
 
-      context 'when other_id has no colon' do
-        let(:other_id) { 'no-colon' }
+      it 'is successful' do
+        expect(create).to be_kind_of Dor::RegistrationResponse
+        expect(klass).to have_received(:new).with(hash_including(admin_policy_object_id: apo.id))
+        expect(item.rightsMetadata.content).to be_equivalent_to apo.defaultObjectRights.content
+        expect(EventFactory).to have_received(:create)
+      end
+
+      context 'when source_id has one colon' do
+        it 'is successful' do
+          expect { create }.not_to raise_error
+        end
+      end
+
+      context 'when source_id has more than one colon' do
+        let(:source_id) { 'sul:SOMETHING-http://www.example.org' }
 
         it 'is successful' do
           expect { create }.not_to raise_error
         end
       end
 
-      context 'when other_id has one colon' do
-        let(:other_id) { 'catkey:000' }
+      context 'when source_id has no colon' do
+        let(:source_id) { 'no-colon' }
 
-        it 'is successful' do
-          expect { create }.not_to raise_error
+        it 'is raises an exception' do
+          # Execution gets into IdentityMetadataDS code for specific error
+          exp_regex = /Source ID must follow the format 'namespace:value'/
+          expect { create }.to raise_error(ArgumentError, exp_regex)
         end
       end
 
-      context 'when other_id has many colons' do
-        let(:other_id) { 'catkey:oop:sie' }
-
-        it 'is successful' do
-          expect { create }.not_to raise_error
+      context 'when other_id is provided' do
+        let(:params) do
+          {
+            object_type: 'item',
+            admin_policy: 'druid:fg890hi1234',
+            label: 'web-archived-crawl for http://www.example.org',
+            source_id: source_id,
+            other_id: other_id
+          }
         end
+
+        context 'when other_id has no colon' do
+          let(:other_id) { 'no-colon' }
+
+          it 'is successful' do
+            expect { create }.not_to raise_error
+          end
+        end
+
+        context 'when other_id has one colon' do
+          let(:other_id) { 'catkey:000' }
+
+          it 'is successful' do
+            expect { create }.not_to raise_error
+          end
+        end
+
+        context 'when other_id has many colons' do
+          let(:other_id) { 'catkey:oop:sie' }
+
+          it 'is successful' do
+            expect { create }.not_to raise_error
+          end
+        end
+      end
+    end
+
+    context 'for an APO' do
+      let(:klass) { Dor::AdminPolicyObject }
+
+      let(:params) do
+        {
+          object_type: 'adminPolicy',
+          admin_policy: 'druid:fg890hi1234',
+          label: 'Testing apo'
+        }
+      end
+
+      it 'is successful' do
+        expect(create).to be_kind_of Dor::RegistrationResponse
+        expect(klass).to have_received(:new).with(hash_including(admin_policy_object_id: apo.id))
+        expect(item.rightsMetadata.content).to be_equivalent_to apo.defaultObjectRights.content
+        expect(EventFactory).to have_received(:create)
       end
     end
   end

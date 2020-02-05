@@ -81,15 +81,15 @@ class RegistrationService
     end
 
     # @param [RegistrationRequest] RegistrationRequest
+    # rubocop:disable Metrics/AbcSize
     def register_object(request)
       request.validate!
 
       # Check for sourceId conflict *before* potentially minting PID
       source_id_string = check_source_id [request.source_id.keys.first, request.source_id[request.source_id.keys.first]].compact.join(':')
       pid = unduplicated_pid(request.pid)
-
       apo_object = Dor.find(request.admin_policy)
-      new_item = request.item_class.new(pid: pid)
+      new_item = request.item_class.new(pid: pid, admin_policy_object_id: apo_object.id)
       new_item.label = request.label.length > 254 ? request.label[0, 254] : request.label
       idmd = new_item.identityMetadata
       idmd.sourceId = source_id_string
@@ -99,7 +99,6 @@ class RegistrationService
       idmd.add_value(:objectType, request.object_type)
       request.other_ids.each_pair { |name, value| idmd.add_otherId("#{name}:#{value}") }
       request.tags.each { |tag| idmd.add_value(:tag, tag) }
-      new_item.admin_policy_object = apo_object
 
       apo_object.administrativeMetadata.ng_xml.xpath('/administrativeMetadata/relationships/*').each do |rel|
         short_predicate = ActiveFedora::RelsExtDatastream.short_predicate rel.namespace.href + rel.name
@@ -124,6 +123,7 @@ class RegistrationService
       new_item.save!
       new_item
     end
+    # rubocop:enable Metrics/AbcSize
 
     # NOTE: This could fail if Symphony has problems
     def refresh_metadata(item:, request:)
@@ -134,11 +134,12 @@ class RegistrationService
 
     # add the default rights from the admin policy and any requested rights to the provided item
     def add_rights(item:, pid:, request:, apo:)
-      Honeybadger.notify("When registering, rights was not specified for #{pid}. I don't think this should ever happen.  This is an experiment") unless request.rights
+      rights_xml = apo.defaultObjectRights.ng_xml
+      item.rightsMetadata.content = rights_xml.to_s
+
+      # Rights is not provided for APOs.
       return unless request.rights && %w(item collection).include?(request.object_type)
 
-      rights_xml = apo.defaultObjectRights.ng_xml
-      item.datastreams['rightsMetadata'].content = rights_xml.to_s
       item.read_rights = request.rights unless request.rights == 'default' # already defaulted to default!
     end
 
