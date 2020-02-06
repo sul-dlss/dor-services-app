@@ -90,15 +90,15 @@ class RegistrationService
       apo_object = Dor.find(request.admin_policy)
       new_item = request.item_class.new(pid: pid,
                                         admin_policy_object_id: apo_object.id,
+                                        source_id: source_id_string,
                                         label: request.label)
       idmd = new_item.identityMetadata
-      idmd.sourceId = source_id_string
-      idmd.add_value(:objectId, pid)
-      idmd.add_value(:objectCreator, 'DOR')
-      idmd.add_value(:objectLabel, request.label)
-      idmd.add_value(:objectType, request.object_type)
+      idmd.objectId = pid
+      idmd.objectCreator = 'DOR'
+      idmd.objectLabel = request.label
+      idmd.objectType = request.object_type
+      idmd.tag = request.tags
       request.other_ids.each_pair { |name, value| idmd.add_otherId("#{name}:#{value}") }
-      request.tags.each { |tag| idmd.add_value(:tag, tag) }
 
       apo_object.administrativeMetadata.ng_xml.xpath('/administrativeMetadata/relationships/*').each do |rel|
         short_predicate = ActiveFedora::RelsExtDatastream.short_predicate rel.namespace.href + rel.name

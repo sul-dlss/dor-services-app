@@ -179,7 +179,6 @@ RSpec.describe RegistrationService do
 
     RSpec.shared_examples 'common registration' do
       it 'produces a registered object' do
-        expect(@obj.identityMetadata.sourceId).to eq('barcode:9191919191')
         expect(@obj.identityMetadata.otherId).to match_array(params[:other_ids].collect { |*e| e.join(':') })
       end
     end
@@ -358,49 +357,26 @@ RSpec.describe RegistrationService do
     end
 
     context 'for an item' do
-      let(:source_id) { 'sul:SOMETHING-www.example.org' }
       let(:klass) { Dor::Item }
       let(:params) do
         {
           object_type: 'item',
           admin_policy: 'druid:fg890hi1234',
           label: 'web-archived-crawl for http://www.example.org',
-          source_id: source_id
+          source_id: 'sul:SOMETHING-www.example.org'
         }
       end
 
       it 'is successful' do
         expect(create).to be_kind_of Dor::RegistrationResponse
-        expect(klass).to have_received(:new).with(
-          hash_including(admin_policy_object_id: apo.id,
-                         label: 'web-archived-crawl for http://www.example.org')
-        )
+        expect(klass).to have_received(:new)
+          .with(
+            hash_including(admin_policy_object_id: apo.id,
+                           label: 'web-archived-crawl for http://www.example.org',
+                           source_id: 'sul:SOMETHING-www.example.org')
+          )
         expect(item.rightsMetadata.content).to be_equivalent_to apo.defaultObjectRights.content
         expect(EventFactory).to have_received(:create)
-      end
-
-      context 'when source_id has one colon' do
-        it 'is successful' do
-          expect { create }.not_to raise_error
-        end
-      end
-
-      context 'when source_id has more than one colon' do
-        let(:source_id) { 'sul:SOMETHING-http://www.example.org' }
-
-        it 'is successful' do
-          expect { create }.not_to raise_error
-        end
-      end
-
-      context 'when source_id has no colon' do
-        let(:source_id) { 'no-colon' }
-
-        it 'is raises an exception' do
-          # Execution gets into IdentityMetadataDS code for specific error
-          exp_regex = /Source ID must follow the format 'namespace:value'/
-          expect { create }.to raise_error(ArgumentError, exp_regex)
-        end
       end
 
       context 'when other_id is provided' do
@@ -409,7 +385,7 @@ RSpec.describe RegistrationService do
             object_type: 'item',
             admin_policy: 'druid:fg890hi1234',
             label: 'web-archived-crawl for http://www.example.org',
-            source_id: source_id,
+            source_id: 'sul:SOMETHING-www.example.org',
             other_id: other_id
           }
         end
