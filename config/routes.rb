@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     get '/about' => 'ok_computer/ok_computer#show', defaults: { check: 'version' }
 
     scope :catalog do
+      get 'marcxml', to: 'marcxml#marcxml'
       get 'catkey', to: 'marcxml#catkey'
     end
 
