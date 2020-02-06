@@ -34,6 +34,7 @@ gem 'okcomputer'
 gem 'openapi_parser'
 gem 'pg'
 gem 'progressbar' # for the cleaner rake task
+gem 'retries' # for ReleaseTags::PurlClient and Goobi
 gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq', '~> 5.2'
 gem 'sidekiq-statistic'

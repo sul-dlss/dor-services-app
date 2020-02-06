@@ -511,6 +511,7 @@ DEPENDENCIES
   puma (~> 3.0)
   rack-console
   rails (~> 5.2.0)
+  retries
   rspec-rails
   rspec_junit_formatter
   rubocop (~> 0.74.0)

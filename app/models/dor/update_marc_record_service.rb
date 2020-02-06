@@ -176,7 +176,7 @@ module Dor
     private
 
     def released_for
-      Dor::ReleaseTagService.for(@druid_obj).released_for(skip_live_purl: false)
+      ::ReleaseTagService.for(@druid_obj).released_for(skip_live_purl: false)
     end
 
     def dor_items_for_constituents
