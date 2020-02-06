@@ -81,7 +81,6 @@ class RegistrationService
     end
 
     # @param [RegistrationRequest] RegistrationRequest
-    # rubocop:disable Metrics/AbcSize
     def register_object(request)
       request.validate!
 
@@ -89,8 +88,9 @@ class RegistrationService
       source_id_string = check_source_id [request.source_id.keys.first, request.source_id[request.source_id.keys.first]].compact.join(':')
       pid = unduplicated_pid(request.pid)
       apo_object = Dor.find(request.admin_policy)
-      new_item = request.item_class.new(pid: pid, admin_policy_object_id: apo_object.id)
-      new_item.label = request.label.length > 254 ? request.label[0, 254] : request.label
+      new_item = request.item_class.new(pid: pid,
+                                        admin_policy_object_id: apo_object.id,
+                                        label: request.label)
       idmd = new_item.identityMetadata
       idmd.sourceId = source_id_string
       idmd.add_value(:objectId, pid)
@@ -123,7 +123,6 @@ class RegistrationService
       new_item.save!
       new_item
     end
-    # rubocop:enable Metrics/AbcSize
 
     # NOTE: This could fail if Symphony has problems
     def refresh_metadata(item:, request:)

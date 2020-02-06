@@ -179,8 +179,6 @@ RSpec.describe RegistrationService do
 
     RSpec.shared_examples 'common registration' do
       it 'produces a registered object' do
-        expect(@obj.pid).to eq(pid)
-        expect(@obj.label).to eq(params[:label])
         expect(@obj.identityMetadata.sourceId).to eq('barcode:9191919191')
         expect(@obj.identityMetadata.otherId).to match_array(params[:other_ids].collect { |*e| e.join(':') })
       end
@@ -189,7 +187,7 @@ RSpec.describe RegistrationService do
     describe 'should set rightsMetadata based on the APO default (but replace read rights) even if it is a collection' do
       before do
         coll = Dor::Collection.new(pid: pid)
-        expect(Dor::Collection).to receive(:new).with(pid: pid, admin_policy_object_id: apo.id).and_return(coll)
+        allow(Dor::Collection).to receive(:new).and_return(coll)
         params[:rights] = 'stanford'
         params[:object_type] = 'collection'
         @obj = register
@@ -373,7 +371,10 @@ RSpec.describe RegistrationService do
 
       it 'is successful' do
         expect(create).to be_kind_of Dor::RegistrationResponse
-        expect(klass).to have_received(:new).with(hash_including(admin_policy_object_id: apo.id))
+        expect(klass).to have_received(:new).with(
+          hash_including(admin_policy_object_id: apo.id,
+                         label: 'web-archived-crawl for http://www.example.org')
+        )
         expect(item.rightsMetadata.content).to be_equivalent_to apo.defaultObjectRights.content
         expect(EventFactory).to have_received(:create)
       end
@@ -452,7 +453,10 @@ RSpec.describe RegistrationService do
 
       it 'is successful' do
         expect(create).to be_kind_of Dor::RegistrationResponse
-        expect(klass).to have_received(:new).with(hash_including(admin_policy_object_id: apo.id))
+        expect(klass).to have_received(:new).with(
+          hash_including(admin_policy_object_id: apo.id,
+                         label: 'Testing apo')
+        )
         expect(item.rightsMetadata.content).to be_equivalent_to apo.defaultObjectRights.content
         expect(EventFactory).to have_received(:create)
       end
