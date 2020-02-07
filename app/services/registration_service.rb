@@ -103,9 +103,7 @@ class RegistrationService
       new_item.add_collection(request.collection) if request.collection
       add_rights(item: new_item, pid: pid, request: request, apo: apo_object)
 
-      # create basic mods from the label
-      build_desc_metadata_from_label(new_item, request.label) if request.metadata_source == 'label'
-      refresh_metadata(item: new_item, request: request) if request.seed_desc_metadata
+      create_descriptive_metadata(new_item, request)
 
       new_item.class.ancestors.select { |x| x.respond_to?(:to_class_uri) && x != ActiveFedora::Base }.each do |parent_class|
         new_item.add_relationship(:has_model, parent_class.to_class_uri)
@@ -113,6 +111,14 @@ class RegistrationService
 
       new_item.save!
       new_item
+    end
+
+    def create_descriptive_metadata(new_item, request)
+      return build_desc_metadata_from_label(new_item, request.label) if request.metadata_source == 'label'
+
+      return refresh_metadata(item: new_item, request: request) if request.seed_desc_metadata
+
+      raise "unable to create descriptive metadata because metadata_source = '#{request.metadata_source}'; seed_desc_metadata = '#{request.seed_desc_metadata}'"
     end
 
     # NOTE: This could fail if Symphony has problems
@@ -139,6 +145,7 @@ class RegistrationService
       Hash[Array(ids).map { |id| id.split(':', 2) }]
     end
 
+    # create basic mods from the label
     def build_desc_metadata_from_label(new_item, label)
       builder = Nokogiri::XML::Builder.new do |xml|
         xml.mods(Dor::DescMetadataDS::MODS_HEADER_CONFIG) do
