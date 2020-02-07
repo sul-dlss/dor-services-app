@@ -101,7 +101,7 @@ class ObjectsController < ApplicationController
   end
 
   def create_params
-    params.to_unsafe_h.merge(body_params)
+    params.except(:action, :controller).to_unsafe_h.merge(body_params)
   end
 
   def body_params

@@ -87,6 +87,8 @@ RSpec.describe 'Register object' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.body).to eq 'druid:xyz'
       expect(RegistrationService).to have_received(:create_from_request)
+        .with({ 'admin_policy' => 'druid:mk420bs7601', 'source_id' => 'ns:ident' },
+              event_factory: EventFactory)
       expect(response.status).to eq(201)
       expect(response.location).to end_with '/fedora/objects/druid:xyz'
     end
