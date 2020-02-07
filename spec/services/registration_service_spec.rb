@@ -29,6 +29,7 @@ RSpec.describe RegistrationService do
         object_type: 'item',
         content_model: 'googleScannedBook',
         admin_policy: 'druid:fg890hi1234',
+        metadata_source: 'label',
         label: 'Google : Scanned Book 12345',
         source_id: { barcode: 9_191_919_191 },
         other_ids: { catkey: '000', uuid: '111' },
@@ -201,6 +202,7 @@ RSpec.describe RegistrationService do
     context 'when seed_datastream is provided' do
       before do
         params[:seed_datastream] = ['descMetadata']
+        params[:metadata_source] = nil
         allow(RefreshMetadataAction).to receive(:run)
       end
 
@@ -359,6 +361,7 @@ RSpec.describe RegistrationService do
           object_type: 'item',
           admin_policy: 'druid:fg890hi1234',
           label: 'web-archived-crawl for http://www.example.org',
+          metadata_source: 'label',
           source_id: 'sul:SOMETHING-www.example.org'
         }
       end
@@ -382,6 +385,7 @@ RSpec.describe RegistrationService do
             admin_policy: 'druid:fg890hi1234',
             label: 'web-archived-crawl for http://www.example.org',
             source_id: 'sul:SOMETHING-www.example.org',
+            metadata_source: 'label',
             other_id: other_id
           }
         end
@@ -419,6 +423,7 @@ RSpec.describe RegistrationService do
         {
           object_type: 'adminPolicy',
           admin_policy: 'druid:fg890hi1234',
+          metadata_source: 'label',
           label: 'Testing apo'
         }
       end
