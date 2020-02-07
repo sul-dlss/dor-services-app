@@ -17,8 +17,7 @@ class PublishMetadataService
     return unpublish unless world_discoverable?
 
     # Retrieve release tags from identityMetadata and all collections this item is a member of
-    # TODO: we can use Dor::ReleaseTags::IdentityMetadata here instead
-    release_tags = ReleaseTagService.for(item).released_for(skip_live_purl: true)
+    release_tags = Dor::ReleaseTags::IdentityMetadata.for(item).released_for({})
 
     transfer_metadata(release_tags)
     publish_notify_on_success
