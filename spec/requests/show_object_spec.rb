@@ -27,6 +27,12 @@ RSpec.describe 'Get the object' do
             releaseTags: [],
             hasAdminPolicy: nil
           },
+          description: {
+            title: [
+              { primary: true,
+                titleFull: 'Hello' }
+            ]
+          },
           identification: {},
           structural: {}
         }
@@ -72,6 +78,12 @@ RSpec.describe 'Get the object' do
               }
             ],
             hasAdminPolicy: nil
+          },
+          description: {
+            title: [
+              { primary: true,
+                titleFull: 'Hello' }
+            ]
           },
           identification: {},
           structural: {}
