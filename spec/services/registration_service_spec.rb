@@ -222,7 +222,7 @@ RSpec.describe RegistrationService do
         end
 
         it_behaves_like 'common registration'
-        it 'produces correct rels_ext' do
+        it 'produces isGovernedBy and hasModel assertions' do
           expect(@obj.rels_ext.to_rels_ext).to be_equivalent_to <<-XML
             <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#"
               xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:hydra="http://projecthydra.org/ns/relations#">
@@ -230,8 +230,6 @@ RSpec.describe RegistrationService do
                 <hydra:isGovernedBy rdf:resource="info:fedora/druid:fg890hi1234"/>
                 <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_Item"/>
                 <fedora-model:hasModel rdf:resource='info:fedora/afmodel:Dor_Abstract' />
-                <fedora:isMemberOf rdf:resource="info:fedora/druid:zb871zd0767"/>
-                <fedora:isMemberOfCollection rdf:resource="info:fedora/druid:zb871zd0767"/>
               </rdf:Description>
             </rdf:RDF>
           XML
@@ -255,9 +253,7 @@ RSpec.describe RegistrationService do
                 <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_Item"/>
                 <fedora-model:hasModel rdf:resource='info:fedora/afmodel:Dor_Abstract' />
                 <fedora:isMemberOf rdf:resource="info:fedora/druid:something"/>
-                <fedora:isMemberOf rdf:resource="info:fedora/druid:zb871zd0767"/>
                 <fedora:isMemberOfCollection rdf:resource="info:fedora/druid:something"/>
-                <fedora:isMemberOfCollection rdf:resource="info:fedora/druid:zb871zd0767"/>
               </rdf:Description>
             </rdf:RDF>
           XML
