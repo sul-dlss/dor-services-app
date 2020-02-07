@@ -116,9 +116,9 @@ class RegistrationService
     def create_descriptive_metadata(new_item, request)
       return build_desc_metadata_from_label(new_item, request.label) if request.metadata_source == 'label'
 
-      return refresh_metadata(item: new_item, request: request) if request.seed_desc_metadata
+      refresh_metadata(item: new_item, request: request) if request.seed_desc_metadata
 
-      raise "unable to create descriptive metadata because metadata_source = '#{request.metadata_source}'; seed_desc_metadata = '#{request.seed_desc_metadata}'"
+      # Neither of the above scenarios are true for APOs, which rely on Argo to create the descriptive metadata.
     end
 
     # NOTE: This could fail if Symphony has problems
