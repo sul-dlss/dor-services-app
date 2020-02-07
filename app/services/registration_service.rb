@@ -100,15 +100,6 @@ class RegistrationService
       idmd.tag = request.tags
       request.other_ids.each_pair { |name, value| idmd.add_otherId("#{name}:#{value}") }
 
-      apo_object.administrativeMetadata.ng_xml.xpath('/administrativeMetadata/relationships/*').each do |rel|
-        short_predicate = ActiveFedora::RelsExtDatastream.short_predicate rel.namespace.href + rel.name
-        if short_predicate.nil?
-          ix = 0
-          ix += 1 while ActiveFedora::Predicates.predicate_mappings[rel.namespace.href].key?(short_predicate = :"extra_predicate_#{ix}")
-          ActiveFedora::Predicates.predicate_mappings[rel.namespace.href][short_predicate] = rel.name
-        end
-        new_item.add_relationship short_predicate, rel['rdf:resource']
-      end
       new_item.add_collection(request.collection) if request.collection
       add_rights(item: new_item, pid: pid, request: request, apo: apo_object)
 
