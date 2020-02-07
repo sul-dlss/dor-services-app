@@ -6,7 +6,11 @@ RSpec.describe Cocina::Mapper do
   subject(:cocina_model) { described_class.build(item) }
 
   context 'when item is a Dor::Item' do
-    let(:item) { Dor::Item.new(pid: 'druid:mx000xm0000', label: 'test object', admin_policy_object_id: 'druid:sc012gz0974') }
+    let(:item) do
+      Dor::Item.new(pid: 'druid:mx000xm0000',
+                    label: 'test object', admin_policy_object_id: 'druid:sc012gz0974')
+    end
+
     let(:content_metadata_ds) { instance_double(Dor::ContentMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml)) }
     let(:xml) do
       <<~XML
@@ -53,6 +57,7 @@ RSpec.describe Cocina::Mapper do
     end
 
     before do
+      item.descMetadata.title_info.main_title = 'Hello'
       allow(item).to receive(:contentMetadata).and_return(content_metadata_ds)
     end
 
@@ -100,6 +105,7 @@ RSpec.describe Cocina::Mapper do
     end
 
     before do
+      item.descMetadata.title_info.main_title = 'Hello'
       allow(item).to receive(:identityMetadata).and_return(identity_metadata_ds)
     end
 

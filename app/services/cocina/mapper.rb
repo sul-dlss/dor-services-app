@@ -2,6 +2,7 @@
 
 module Cocina
   # Maps Dor::Items to Cocina objects
+  # rubocop:disable Metrics/ClassLength
   class Mapper
     # Raised when called on something other than an item or collection
     class UnsupportedObjectType < StandardError; end
@@ -34,7 +35,8 @@ module Cocina
         type: Cocina::Models::DRO::TYPES.first,
         label: item.label,
         version: item.current_version,
-        administrative: build_administrative
+        administrative: build_administrative,
+        description: build_descriptive
       }.tap do |props|
         if item.embargoMetadata.release_date
           props[:access] = {
@@ -55,7 +57,8 @@ module Cocina
         type: Cocina::Models::Vocab.collection,
         label: item.label,
         version: item.current_version,
-        administrative: build_administrative
+        administrative: build_administrative,
+        description: build_descriptive
       }
     end
 
@@ -65,13 +68,19 @@ module Cocina
         type: Cocina::Models::Vocab.admin_policy,
         label: item.label,
         version: item.current_version,
-        administrative: build_apo_administrative
+        administrative: build_apo_administrative,
+        description: build_descriptive
       }
     end
 
     private
 
     attr_reader :item
+
+    def build_descriptive
+      { title: [{ primary: true, titleFull: item.full_title }] }
+    end
+
     def build_filesets(content_metadata_ds, version:, id:)
       content_metadata_ds.ng_xml.xpath('//resource').map do |resource_node|
         files = build_files(resource_node.xpath('file'), version: version, parent_id: id)
@@ -140,4 +149,5 @@ module Cocina
       end
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
