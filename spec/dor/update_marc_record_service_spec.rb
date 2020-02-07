@@ -6,10 +6,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
   subject(:umrs) { Dor::UpdateMarcRecordService.new dor_item }
 
   let(:dor_item) { @dor_item }
-  let(:release_service) { instance_double(ReleaseTagService, released_for: {}) }
+  let(:release_service) { instance_double(Dor::ReleaseTags::IdentityMetadata, released_for: release_data) }
+  let(:release_data) { {} }
 
   before do
-    allow(ReleaseTagService).to receive(:for).and_return(release_service)
+    allow(Dor::ReleaseTags::IdentityMetadata).to receive(:for).and_return(release_service)
     Settings.release.write_marc_script = 'bin/write_marc_record_test'
     Settings.release.symphony_path = './spec/fixtures/sdr-purl'
     Settings.release.purl_base_url = 'http://purl.stanford.edu'
@@ -76,7 +77,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
     let(:desc_metadata_xml) { instance_double(Dor::DescMetadataDS) }
     let(:rights_metadata_xml) { instance_double(Dor::RightsMetadataDS) }
     let(:release_data) { { 'Searchworks' => { 'release' => true } } }
-    let(:release_service) { instance_double(ReleaseTagService, released_for: release_data) }
 
     it 'generates an empty array for a druid object without catkey or previous catkeys' do
       rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
@@ -640,8 +640,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   describe 'Released to Searchworks' do
-    let(:release_service) { instance_double(ReleaseTagService, released_for: release_data) }
-
     context 'when release_data tag has release to=Searchworks and value is true' do
       let(:release_data) { { 'Searchworks' => { 'release' => true } } }
 
