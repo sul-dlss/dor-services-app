@@ -33,5 +33,8 @@ class MetadataController < ApplicationController
     end
 
     @item.save!
+  rescue Rubydora::FedoraInvalidRequest
+    render json: { error: 'Invalid Fedora request possibly due to concurrent requests' },
+           status: :service_unavailable
   end
 end
