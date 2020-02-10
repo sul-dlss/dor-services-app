@@ -691,8 +691,8 @@ paths:
 
         If 'collection' is provided, the object will be a member of the provided
         collection.
-        
-        Note that the 'source_id' property is required for items but not for 
+
+        Note that the 'source_id' property is required for items but not for
         collections.
       operationId: 'objects#create'
       requestBody:
@@ -714,6 +714,9 @@ paths:
                 label:
                   type: string
                   example: 15th century manuscript
+                abstract:
+                  type: string
+                  example: I am a description of a 15th century manuscript
                 other_id:
                   type: string
                   example: 'symphony:1164561'

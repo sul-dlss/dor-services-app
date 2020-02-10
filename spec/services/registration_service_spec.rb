@@ -150,10 +150,12 @@ RSpec.describe RegistrationService do
         expect(Dor::SearchService).to receive(:query_by_id).with('druid:ab123cd4567').and_return([pid])
         expect { register }.to raise_error(Dor::DuplicateIdError)
       end
+
       it 'registering a duplicate source ID' do
         expect(Dor::SearchService).to receive(:query_by_id).with('barcode:9191919191').and_return([pid])
         expect { register }.to raise_error(Dor::DuplicateIdError)
       end
+
       it 'missing a required parameter' do
         params.delete(:object_type)
         expect { register }.to raise_error(Dor::ParameterError)
@@ -312,13 +314,15 @@ RSpec.describe RegistrationService do
         end
       end
 
-      describe 'when passed metadata_source=label' do
+      context 'when passed metadata_source=label' do
         before do
           params[:metadata_source] = 'label'
+          params[:abstract] = 'A very fine description indeed.'
           @obj = register
         end
 
         it_behaves_like 'common registration'
+
         it 'sets the descriptive metadata to basic mods using the label as title' do
           expect(@obj.datastreams['descMetadata'].ng_xml).to be_equivalent_to <<-XML
             <?xml version="1.0"?>
@@ -326,6 +330,7 @@ RSpec.describe RegistrationService do
                <titleInfo>
                   <title>Google : Scanned Book 12345</title>
                </titleInfo>
+               <abstract>A very fine description indeed.</abstract>
             </mods>
           XML
         end
