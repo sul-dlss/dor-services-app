@@ -73,6 +73,24 @@ RSpec.describe Cocina::Mapper do
     end
   end
 
+  context 'when item is a Dor::Etd' do
+    let(:item) do
+      Dor::Etd.new(pid: 'druid:mx000xm0000',
+                   admin_policy_object_id: 'druid:sc012gz0974',
+                   label: 'test object')
+    end
+
+    before do
+      item.properties.title = 'Test ETD'
+    end
+
+    it 'builds the object' do
+      expect(cocina_model).to be_kind_of Cocina::Models::DRO
+
+      expect(cocina_model.administrative.hasAdminPolicy).to eq 'druid:sc012gz0974'
+    end
+  end
+
   context 'when item is a Dor::Collection' do
     let(:item) { Dor::Collection.new(pid: 'druid:fh138mm2023', label: 'test object', admin_policy_object_id: 'druid:sc012gz0974') }
     let(:identity_metadata_ds) { instance_double(Dor::IdentityMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml)) }

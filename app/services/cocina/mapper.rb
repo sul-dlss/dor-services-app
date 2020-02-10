@@ -29,6 +29,7 @@ module Cocina
       klass.new(props)
     end
 
+    # This handles Dor::Item and Dor::Etd models
     def dro_props
       {
         externalIdentifier: item.pid,
@@ -43,7 +44,7 @@ module Cocina
             embargoReleaseDate: item.embargoMetadata.release_date.iso8601
           }
         end
-        unless item.contentMetadata.new?
+        unless item.is_a?(Dor::Etd) || item.contentMetadata.new?
           props[:structural] = {
             contains: build_filesets(item.contentMetadata, version: item.current_version, id: item.pid)
           }
@@ -78,7 +79,12 @@ module Cocina
     attr_reader :item
 
     def build_descriptive
-      { title: [{ primary: true, titleFull: item.full_title }] }
+      case item
+      when Dor::Etd
+        { title: [{ primary: true, titleFull: item.properties.title.first }] }
+      else
+        { title: [{ primary: true, titleFull: item.full_title }] }
+      end
     end
 
     def build_filesets(content_metadata_ds, version:, id:)
@@ -138,7 +144,7 @@ module Cocina
     # @todo This should have more speicific type such as found in identityMetadata.objectType
     def cocina_klass
       case item
-      when Dor::Item
+      when Dor::Item, Dor::Etd
         Cocina::Models::DRO
       when Dor::Collection
         Cocina::Models::Collection
