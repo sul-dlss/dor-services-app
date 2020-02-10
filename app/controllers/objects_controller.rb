@@ -17,6 +17,7 @@ class ObjectsController < ApplicationController
 
   rescue_from(Dry::Struct::Error) do |e|
     render status: :internal_server_error, plain: e.message
+    raise e
   end
 
   rescue_from(SymphonyReader::ResponseError) do |e|
