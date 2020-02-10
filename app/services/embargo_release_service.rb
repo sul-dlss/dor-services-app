@@ -5,9 +5,6 @@
 #
 # Should run once a day from cron
 class EmbargoReleaseService
-  # Turn off active_fedora updates of solr
-  ENABLE_SOLR_UPDATES = false
-
   # Finds druids from solr based on the passed in query
   # It will then load each item from Dor, and call the block with the item
   # @param [String] query used to locate druids of items to release from solr
