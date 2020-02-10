@@ -21,31 +21,31 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
     }
   end
 
-  context 'when update is successful' do
-    before do
-      allow(Dor).to receive(:find).and_return(work)
-      allow(LegacyMetadataService).to receive(:update_datastream_if_newer)
-    end
-
-    let(:data) do
-      <<~JSON
-        {
-          "descriptive": {
-            "updated": "2019-11-08T15:15:43Z",
-            "content": "<descMetadata></descMetadata>"
-          },
-          "rights": {
-            "updated": "2019-11-08T15:15:43Z",
-            "content": "<rightsMetadata></rightsMetadata>"
-          },
-          "provenance": {
-            "updated": "2019-11-08T15:15:43Z",
-            "content": "<provMetadata></provMetadata>"
-          }
+  let(:data) do
+    <<~JSON
+      {
+        "descriptive": {
+          "updated": "2019-11-08T15:15:43Z",
+          "content": "<descMetadata></descMetadata>"
+        },
+        "rights": {
+          "updated": "2019-11-08T15:15:43Z",
+          "content": "<rightsMetadata></rightsMetadata>"
+        },
+        "provenance": {
+          "updated": "2019-11-08T15:15:43Z",
+          "content": "<provMetadata></provMetadata>"
         }
-      JSON
-    end
+      }
+    JSON
+  end
 
+  before do
+    allow(Dor).to receive(:find).and_return(work)
+    allow(LegacyMetadataService).to receive(:update_datastream_if_newer)
+  end
+
+  context 'when update is successful' do
     it 'updates the object datastreams' do
       patch "/v1/objects/#{work.pid}/metadata/legacy",
             params: data,
@@ -71,6 +71,20 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
               event_factory: EventFactory)
 
       expect(work).to have_received(:save!)
+    end
+  end
+
+  context 'when update is not successful' do
+    before do
+      allow(work).to receive(:save!).and_raise(Rubydora::FedoraInvalidRequest)
+    end
+
+    it 'updates the object datastreams' do
+      patch "/v1/objects/#{work.pid}/metadata/legacy",
+            params: data,
+            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
+      expect(response).to have_http_status(:service_unavailable)
+      expect(response.body).to match(/Invalid Fedora request/)
     end
   end
 end

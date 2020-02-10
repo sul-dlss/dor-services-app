@@ -519,6 +519,8 @@ paths:
       responses:
         '200':
           description: OK
+        '503':
+          description: Service unavailable when an error occurs saving to Fedora
       parameters:
         - name: object_id
           in: path
