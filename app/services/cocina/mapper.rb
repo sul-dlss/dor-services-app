@@ -33,7 +33,7 @@ module Cocina
     def dro_props
       {
         externalIdentifier: item.pid,
-        type: Cocina::Models::DRO::TYPES.first,
+        type: dro_type,
         label: item.label,
         version: item.current_version,
         administrative: build_administrative,
@@ -77,6 +77,25 @@ module Cocina
     private
 
     attr_reader :item
+
+    def dro_type
+      case item.content_type_tag
+      when 'Image'
+        Cocina::Models::Vocab.image
+      when '3D'
+        Cocina::Models::Vocab.three_dimensional
+      when 'Map'
+        Cocina::Models::Vocab.map
+      when 'Media'
+        Cocina::Models::Vocab.media
+      when /^Manuscript/
+        Cocina::Models::Vocab.manuscript
+      when /^Book/
+        Cocina::Models::Vocab.book
+      else
+        Cocina::Models::Vocab.object
+      end
+    end
 
     def build_descriptive
       case item
