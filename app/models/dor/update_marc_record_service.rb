@@ -176,7 +176,7 @@ module Dor
     private
 
     def released_for
-      Dor::ReleaseTags::IdentityMetadata.for(@druid_obj).released_for({})
+      ::ReleaseTags.for(item: @druid_obj)
     end
 
     def dor_items_for_constituents
