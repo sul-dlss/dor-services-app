@@ -11,6 +11,7 @@ class RegistrationRequest
   # @option params [String] :metadata_source
   # @option params [String] :rights
   # @option params [String] :collection
+  # @option params [String] :abstract
   # @option params [Hash{String => String}] :source_id Primary ID from another system, max one key/value pair!
   # @option params [Hash] :other_ids including :uuid if known
   # @option params [String] :pid Fully qualified PID if you don't want one generated for you
@@ -67,6 +68,10 @@ class RegistrationRequest
 
   def label
     params[:label].length > 254 ? params[:label][0, 254] : params[:label]
+  end
+
+  def abstract
+    params[:abstract]
   end
 
   def source_id

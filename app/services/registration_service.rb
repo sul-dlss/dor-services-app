@@ -25,8 +25,7 @@ class RegistrationService
     def registration_request_params(params)
       other_ids = namespace_identifiers(Array(params[:other_id]))
       handle_auto_label(params, other_ids)
-
-      params.slice(:pid, :admin_policy, :label, :object_type, :parent, :seed_datastream, :rights, :metadata_source, :collection)
+      params.slice(:pid, :admin_policy, :label, :object_type, :parent, :seed_datastream, :rights, :metadata_source, :collection, :abstract)
             .merge(
               content_model: params[:model],
               other_ids: ids_to_hash(other_ids),
@@ -114,7 +113,7 @@ class RegistrationService
     end
 
     def create_descriptive_metadata(new_item, request)
-      return build_desc_metadata_from_label(new_item, request.label) if request.metadata_source == 'label'
+      return build_desc_metadata_from_request(new_item, request) if request.metadata_source == 'label'
 
       refresh_metadata(item: new_item, request: request) if request.seed_desc_metadata
 
@@ -145,13 +144,14 @@ class RegistrationService
       Hash[Array(ids).map { |id| id.split(':', 2) }]
     end
 
-    # create basic mods from the label
-    def build_desc_metadata_from_label(new_item, label)
+    # create basic mods from the request
+    def build_desc_metadata_from_request(new_item, request)
       builder = Nokogiri::XML::Builder.new do |xml|
         xml.mods(Dor::DescMetadataDS::MODS_HEADER_CONFIG) do
           xml.titleInfo do
-            xml.title label
+            xml.title request.label
           end
+          xml.abstract request.abstract if request.abstract.present?
         end
       end
       new_item.descMetadata.content = builder.to_xml
