@@ -700,50 +700,11 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                pid:
-                  $ref: '#/components/schemas/Druid'
-                collection:
-                  $ref: '#/components/schemas/Druid'
-                tags:
-                  type: array
-                  items:
-                    type: string
-                    example: "Registered by : jcoyne85"
-                label:
-                  type: string
-                  example: 15th century manuscript
-                abstract:
-                  type: string
-                  example: I am a description of a 15th century manuscript
-                other_id:
-                  type: string
-                  example: 'symphony:1164561'
-                source_id:
-                  type: string
-                  example: 'external:77777'
-                object_type:
-                  type: string
-                  example: item
-                admin_policy:
-                  $ref: '#/components/schemas/Druid'
-                metadata_source:
-                  type: string
-                  example: label
-                rights:
-                  type: string
-                  example: default
-                seed_datastream:
-                  type: array
-                  items:
-                    type: string
-                    enum:
-                      - descMetadata
-                  description: If 'descMetadata' is provided, then record is seeded from symphony
-                  example: ['descMetadata']
-              required:
-                - admin_policy
+              oneOf:
+                - $ref: '#/components/schemas/LegacyRegister'
+                - $ref: '#/components/schemas/DRO'
+                - $ref: '#/components/schemas/Collection'
+                - $ref: '#/components/schemas/AdminPolicy'
       responses:
         '200':
           description: OK
@@ -871,6 +832,8 @@ components:
         - administrative
         - identification
         - structural
+    Description:
+      type: object
     DRO:
       type: object
       properties:
@@ -903,6 +866,8 @@ components:
           $ref: '#/components/schemas/Access'
         administrative:
           $ref: '#/components/schemas/Administrative'
+        description:
+          $ref: '#/components/schemas/Description'
         identification:
           $ref: '#/components/schemas/Identification'
         structural:
@@ -1106,6 +1071,51 @@ components:
           type: string
           description: The XML datastream content
           example: <xmlDatastream>...</xmlDatastream>
+    LegacyRegister:
+      type: object
+      properties:
+        pid:
+          $ref: '#/components/schemas/Druid'
+        collection:
+          $ref: '#/components/schemas/Druid'
+        tags:
+          type: array
+          items:
+            type: string
+            example: "Registered by : jcoyne85"
+        label:
+          type: string
+          example: 15th century manuscript
+        abstract:
+          type: string
+          example: I am a description of a 15th century manuscript
+        other_id:
+          type: string
+          example: 'symphony:1164561'
+        source_id:
+          type: string
+          example: 'external:77777'
+        object_type:
+          type: string
+          example: item
+        admin_policy:
+          $ref: '#/components/schemas/Druid'
+        metadata_source:
+          type: string
+          example: label
+        rights:
+          type: string
+          example: default
+        seed_datastream:
+          type: array
+          items:
+            type: string
+            enum:
+              - descMetadata
+          description: If 'descMetadata' is provided, then record is seeded from symphony
+          example: ['descMetadata']
+      required:
+        - admin_policy
   securitySchemes:
     bearerAuth:
       type: http
