@@ -17,6 +17,7 @@ class RegistrationRequest
   # @option params [String] :pid Fully qualified PID if you don't want one generated for you
   # @option params [Array<String>] :seed_datastream datastream_names (only 'descMetadata' is a permitted value)
   # @option params [Array] :tags
+  # @option params [Hash] :embargo release_date and access for item
   def initialize(params)
     @params = params
   end
@@ -92,7 +93,25 @@ class RegistrationRequest
     params[:collection]
   end
 
+  def embargo_access
+    embargo.fetch(:access, 'world')
+  end
+
+  # rubocop:disable Rails/Date
+  # This rubocop is a false positive given the string being parsed.
+  def embargo_release_date
+    release_date = embargo[:release_date]
+    return nil if release_date.nil?
+
+    release_date.to_time
+  end
+  # rubocop:enable Rails/Date
+
   private
 
   attr_reader :params
+
+  def embargo
+    params.fetch(:embargo, {})
+  end
 end

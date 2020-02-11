@@ -336,6 +336,60 @@ RSpec.describe RegistrationService do
         end
       end
 
+      context 'when embargoing' do
+        before do
+          params[:embargo] = { release_date: '2045-01-01T00:00:00+00:00', access: 'stanford' }
+          @obj = register
+        end
+
+        it_behaves_like 'common registration'
+
+        it 'sets rightsMetadata to deny read' do
+          expect(@obj.datastreams['rightsMetadata'].ng_xml).to be_equivalent_to <<-XML
+            <?xml version="1.0"?>
+            <rightsMetadata>
+              <copyright>
+                <human type=\"copyright\">This work is in the Public Domain.</human>
+              </copyright>
+              <access type="discover">
+                <machine>
+                  <world/>
+                </machine>
+              </access>
+              <access type="read">
+                <machine><none/></machine>
+              </access>
+              <use>
+                <human type="creativecommons">Attribution Share Alike license</human>
+                <machine type="creativecommons">by-sa</machine>
+              </use>
+            </rightsMetadata>
+          XML
+        end
+
+        it 'sets embargoMetadata to embargoed' do
+          expect(@obj.datastreams['embargoMetadata'].ng_xml).to be_equivalent_to <<-XML
+            <?xml version="1.0"?>
+            <embargoMetadata>
+              <status>embargoed</status>
+              <releaseDate>2045-01-01T00:00:00Z</releaseDate>
+              <twentyPctVisibilityStatus/>
+              <twentyPctVisibilityReleaseDate/>
+              <releaseAccess>
+                <access type="discover">
+                  <machine><world/></machine>
+                </access>
+                <access type="read">
+                  <machine>
+                    <group>stanford</group>
+                    </machine>
+                </access>
+              </releaseAccess>
+            </embargoMetadata>\n"
+          XML
+        end
+      end
+
       it 'truncates label if >= 255 chars' do
         # expect(Dor.logger).to receive(:warn).at_least(:once)
         params[:label] = 'a' * 256

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Registers an object. Creates a skeleton object in Fedora with a Druid.
+# rubocop:disable Metrics/ClassLength
 class RegistrationService
   class << self
     # @param [Hash] params
@@ -108,6 +109,8 @@ class RegistrationService
         new_item.add_relationship(:has_model, parent_class.to_class_uri)
       end
 
+      add_embargo(item: new_item, release_date: request.embargo_release_date, access: request.embargo_access)
+
       new_item.save!
       new_item
     end
@@ -138,6 +141,46 @@ class RegistrationService
       item.read_rights = request.rights unless request.rights == 'default' # already defaulted to default!
     end
 
+    def add_embargo(item:, release_date:, access:)
+      return unless release_date
+
+      # Based on https://github.com/sul-dlss/hydrus/blob/master/app/models/hydrus/item.rb#L451
+      # Except Hydrus has a slightly different model than DOR, so, not setting rightsMetadata.rmd_embargo_release_date
+      # item.rightsMetadata.rmd_embargo_release_date = release_date.utc.strftime('%FT%TZ')
+      item.embargoMetadata.release_date = release_date
+      item.embargoMetadata.status = 'embargoed'
+
+      item.embargoMetadata.release_access_node = Nokogiri::XML(generic_access_xml(access))
+      deny_read_access(item.rightsMetadata.ng_xml)
+    end
+
+    def deny_read_access(rights_xml)
+      rights_xml.search('//rightsMetadata/access[@type=\'read\']').each do |node|
+        node.children.remove
+        machine_node = Nokogiri::XML::Node.new('machine', rights_xml)
+        node.add_child(machine_node)
+        machine_node.add_child Nokogiri::XML::Node.new('none', rights_xml)
+      end
+    end
+
+    def generic_access_xml(access)
+      access_xml = access == 'world' ? '<world />' : "<group>#{access}</group>"
+      <<-XML
+      <releaseAccess>
+        <access type="discover">
+          <machine>
+            <world/>
+          </machine>
+        </access>
+        <access type="read">
+          <machine>
+            #{access_xml}
+          </machine>
+        </access>
+      </embargoAccess>
+      XML
+    end
+
     def ids_to_hash(ids)
       return nil if ids.nil?
 
@@ -158,3 +201,4 @@ class RegistrationService
     end
   end
 end
+# rubocop:enable Metrics/ClassLength
