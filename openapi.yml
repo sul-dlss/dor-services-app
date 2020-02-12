@@ -310,7 +310,7 @@ paths:
     get:
       tags:
         - objects
-      summary: Show release tags for an object
+      summary: Show release tags for an object and for all the collections that it belongs to.
       description: ''
       operationId: 'release_tags#show'
       responses:
