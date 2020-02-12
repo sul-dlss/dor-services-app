@@ -3,11 +3,6 @@
 module Cocina
   # Given a Cocina model, create an ActiveFedora model.
   class ObjectCreator
-    # We don't persist this druid, but it passes the validation for constructing a model.
-    # This allows us to validate the model before minting a pid
-    DUMMY_DRUID = 'druid:ab123cd4567'
-
-    # TODO: We shouldn't need to provide a bogus externalIdentifier
     def self.create(params)
       new.create(params)
     end
@@ -36,19 +31,19 @@ module Cocina
     private
 
     def build_dro(params)
-      Cocina::Models::DRO.from_dynamic(params.merge(externalIdentifier: DUMMY_DRUID))
+      Cocina::Models::RequestDRO.from_dynamic(params)
     end
 
     def build_collection(params)
-      Cocina::Models::Collection.from_dynamic(params.merge(externalIdentifier: DUMMY_DRUID))
+      Cocina::Models::RequestCollection.from_dynamic(params)
     end
 
     def build_apo(params)
-      Cocina::Models::AdminPolicy.from_dynamic(params.merge(externalIdentifier: DUMMY_DRUID))
+      Cocina::Models::RequestAdminPolicy.from_dynamic(params.merge(externalIdentifier: 'druid:ab123cd4567'))
     end
 
     def validate(obj)
-      if obj.dro? && Dor::SearchService.query_by_id(obj.identification.sourceId).first
+      if obj.is_a?(Cocina::Models::RequestDRO) && Dor::SearchService.query_by_id(obj.identification.sourceId).first
         raise Dor::DuplicateIdError.new(obj.identification.sourceId), "An object with the source ID '#{obj.identification.sourceId}' has already been registered."
       end
 
@@ -56,12 +51,15 @@ module Cocina
       Dor.find(obj.administrative.hasAdminPolicy)
     end
 
+    # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj
+    # @return [Dor::Abstract] a persisted ActiveFedora model
     def create_from_model(obj)
-      af_object = if obj.admin_policy?
+      af_object = case obj
+                  when Cocina::Models::RequestAdminPolicy
                     create_apo(obj)
-                  elsif obj.dro?
+                  when Cocina::Models::RequestDRO
                     create_dro(obj)
-                  elsif obj.collection?
+                  when Cocina::Models::RequestCollection
                     create_collection(obj)
                   else
                     raise "unsupported type #{obj.type}"
@@ -74,6 +72,8 @@ module Cocina
       af_object
     end
 
+    # @param [Cocina::Models::RequestAdminPolicy] obj
+    # @return [Dor::AdminPolicyObject] a persisted APO model
     def create_apo(obj)
       Dor::AdminPolicyObject.new(pid: Dor::SuriService.mint_id,
                                  admin_policy_object_id: obj.administrative.hasAdminPolicy,
@@ -87,6 +87,8 @@ module Cocina
       end
     end
 
+    # @param [Cocina::Models::RequestDRO] obj
+    # @return [Dor::Item] a persisted Item model
     def create_dro(obj)
       Dor::Item.new(pid: Dor::SuriService.mint_id,
                     admin_policy_object_id: obj.administrative.hasAdminPolicy,
@@ -98,6 +100,8 @@ module Cocina
       end
     end
 
+    # @param [Cocina::Models::RequestCollection] obj
+    # @return [Dor::Collection] a persisted Collection model
     def create_collection(obj)
       Dor::Collection.new(pid: Dor::SuriService.mint_id,
                           admin_policy_object_id: obj.administrative.hasAdminPolicy,
