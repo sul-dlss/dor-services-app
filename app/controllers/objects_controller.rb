@@ -24,8 +24,16 @@ class ObjectsController < ApplicationController
     render status: :internal_server_error, plain: e.message
   end
 
-  # Register new objects in DOR
   def create
+    return legacy_register if params[:admin_policy] # This is a required parameter for the legacy registration
+
+    cocina_object = Cocina::ObjectCreator.create(params)
+
+    render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
+  end
+
+  # Register new objects in DOR
+  def legacy_register
     begin
       reg_response = RegistrationService.create_from_request(create_params, event_factory: EventFactory)
     rescue ArgumentError => e

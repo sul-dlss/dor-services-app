@@ -37,13 +37,16 @@ module Cocina
         label: item.label,
         version: item.current_version,
         administrative: build_administrative,
-        description: build_descriptive
+        description: build_descriptive,
+        identification: build_identification
       }.tap do |props|
         if item.embargoMetadata.release_date
           props[:access] = {
             embargoReleaseDate: item.embargoMetadata.release_date.iso8601
           }
         end
+        props[:identification][:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
+
         unless item.is_a?(Dor::Etd) || item.contentMetadata.new?
           props[:structural] = {
             contains: build_filesets(item.contentMetadata, version: item.current_version, id: item.pid)
@@ -59,8 +62,11 @@ module Cocina
         label: item.label,
         version: item.current_version,
         administrative: build_administrative,
-        description: build_descriptive
-      }
+        description: build_descriptive,
+        identification: {}
+      }.tap do |props|
+        props[:identification][:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
+      end
     end
 
     def apo_props
@@ -94,6 +100,16 @@ module Cocina
         Cocina::Models::Vocab.book
       else
         Cocina::Models::Vocab.object
+      end
+    end
+
+    def build_identification
+      case item
+      when Dor::Etd
+        # ETDs don't have source_id, but we can use the dissertationid (in otherId) for this purpose
+        { sourceId: item.otherId.find { |id| id.start_with?('dissertationid:') } }
+      else
+        { sourceId: item.source_id }
       end
     end
 
