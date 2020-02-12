@@ -3,6 +3,10 @@
 module Cocina
   # Given a Cocina model, create an ActiveFedora model.
   class ObjectCreator
+    # We don't persist this druid, but it passes the validation for constructing a model.
+    # This allows us to validate the model before minting a pid
+    DUMMY_DRUID = 'druid:ab123cd4567'
+
     # TODO: We shouldn't need to provide a bogus externalIdentifier
     def self.create(params)
       new.create(params)
@@ -32,15 +36,15 @@ module Cocina
     private
 
     def build_dro(params)
-      Cocina::Models::DRO.from_dynamic(params)
+      Cocina::Models::DRO.from_dynamic(params.merge(externalIdentifier: DUMMY_DRUID))
     end
 
     def build_collection(params)
-      Cocina::Models::Collection.from_dynamic(params)
+      Cocina::Models::Collection.from_dynamic(params.merge(externalIdentifier: DUMMY_DRUID))
     end
 
     def build_apo(params)
-      Cocina::Models::AdminPolicy.from_dynamic(params)
+      Cocina::Models::AdminPolicy.from_dynamic(params.merge(externalIdentifier: DUMMY_DRUID))
     end
 
     def validate(obj)

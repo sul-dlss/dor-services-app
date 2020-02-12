@@ -702,9 +702,9 @@ paths:
             schema:
               oneOf:
                 - $ref: '#/components/schemas/LegacyRegister'
-                - $ref: '#/components/schemas/DRO'
-                - $ref: '#/components/schemas/Collection'
-                - $ref: '#/components/schemas/AdminPolicy'
+                - $ref: '#/components/schemas/RequestDRO'
+                - $ref: '#/components/schemas/RequestCollection'
+                - $ref: '#/components/schemas/RequestAdminPolicy'
       responses:
         '200':
           description: OK
@@ -1014,6 +1014,113 @@ components:
           example: Searchworks
         release:
           type: boolean
+    RequestAdminPolicy:
+      description: Same as an AdminPolicy, but doesn't have an externalIdentifier as one will be created
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
+          example: item
+        label:
+          type: string
+        version:
+          type: integer
+        access:
+          $ref: '#/components/schemas/Access'
+        administrative:
+          $ref: '#/components/schemas/APOAdministrative'
+        identification:
+          $ref: '#/components/schemas/Identification'
+        structural:
+          $ref: '#/components/schemas/Structural'
+      required:
+        - label
+        - type
+        - version
+        - access
+        - administrative
+        - identification
+        - structural
+    RequestCollection:
+      description: Same as a Collection, but doesn't have an externalIdentifier as one will be created
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - 'http://cocina.sul.stanford.edu/models/collection.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/curated-collection.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/user-collection.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/exhibit.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/series.jsonld'
+          example: item
+        label:
+          type: string
+        version:
+          type: integer
+        access:
+          $ref: '#/components/schemas/Access'
+        administrative:
+          $ref: '#/components/schemas/Administrative'
+        identification:
+          $ref: '#/components/schemas/Identification'
+        structural:
+          $ref: '#/components/schemas/Structural'
+      required:
+        - label
+        - type
+        - version
+        - access
+        - administrative
+        - identification
+        - structural
+    RequestDRO:
+      description: Same as a DRO, but doesn't have an externalIdentifier as one will be created
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - 'http://cocina.sul.stanford.edu/models/object.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/3d.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/agreement.jsonl'
+            - 'http://cocina.sul.stanford.edu/models/book.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/document.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/geo.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/image.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/page.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/photograph.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/manuscript.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/map.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/media.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/track.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/webarchive-binary.jsonld'
+            - 'http://cocina.sul.stanford.edu/models/webarchive-seed.jsonld'
+          example: item
+        label:
+          type: string
+        version:
+          type: integer
+        access:
+          $ref: '#/components/schemas/Access'
+        administrative:
+          $ref: '#/components/schemas/Administrative'
+        description:
+          $ref: '#/components/schemas/Description'
+        identification:
+          $ref: '#/components/schemas/Identification'
+        structural:
+          $ref: '#/components/schemas/DROStructural'
+      required:
+        - label
+        - type
+        - version
+        - access
+        - administrative
+        - identification
+        - structural
     DROStructural:
       type: object
       properties:

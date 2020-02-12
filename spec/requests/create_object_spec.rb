@@ -12,7 +12,7 @@ RSpec.describe 'Create object' do
   end
 
   context 'when an item is provided' do
-    let(:item) do
+    let(:expected) do
       Cocina::Models::DRO.new(type: Cocina::Models::Vocab.image,
                               label: 'This is my label',
                               version: 1,
@@ -23,7 +23,17 @@ RSpec.describe 'Create object' do
                                 hasAdminPolicy: 'druid:dd999df4567'
                               },
                               identification: identification,
-                              externalIdentifier: 'druid:bc123df4567') # TODO: can we get rid of this?
+                              externalIdentifier: 'druid:gg777gg7777')
+    end
+    let(:data) do
+      <<~JSON
+        { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
+          "label":"This is my label","version":1,"access":{},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "description":{"title":[{"primary":true,"titleFull":"This is my title"}]},
+          "identification":#{identification.to_json},
+          "structural":{}}
+      JSON
     end
     let(:identification) do
       { sourceId: 'googlebooks:999999' }
@@ -66,7 +76,7 @@ RSpec.describe 'Create object' do
           post '/v1/objects',
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(response.body).to eq Cocina::Models::DRO.new(item.attributes.merge(externalIdentifier: 'druid:gg777gg7777')).to_json
+          expect(response.body).to eq expected.to_json
 
           expect(response.status).to eq(201)
           expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
@@ -88,7 +98,7 @@ RSpec.describe 'Create object' do
           post '/v1/objects',
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(response.body).to eq Cocina::Models::DRO.new(item.attributes.merge(externalIdentifier: 'druid:gg777gg7777')).to_json
+          expect(response.body).to eq expected.to_json
 
           expect(response.status).to eq(201)
           expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
@@ -98,7 +108,7 @@ RSpec.describe 'Create object' do
   end
 
   context 'when a collection is provided' do
-    let(:item) do
+    let(:expected) do
       Cocina::Models::Collection.new(type: Cocina::Models::Vocab.collection,
                                      label: 'This is my label',
                                      version: 1,
@@ -109,10 +119,19 @@ RSpec.describe 'Create object' do
                                        hasAdminPolicy: 'druid:dd999df4567'
                                      },
                                      identification: identification,
-                                     externalIdentifier: 'druid:bc123df4567') # TODO: can we get rid of this?
+                                     externalIdentifier: 'druid:gg777gg7777')
     end
     let(:identification) { {} }
-
+    let(:data) do
+      <<~JSON
+        {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
+          "label":"This is my label","version":1,"access":{},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "description":{"title":[{"primary":true,"titleFull":"This is my title"}]},
+          "identification":#{identification.to_json},
+          "structural":{}}
+      JSON
+    end
 
     context 'when the catkey is provided and save is successful' do
       let(:identification) do
@@ -132,7 +151,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq Cocina::Models::Collection.new(item.attributes.merge(externalIdentifier: 'druid:gg777gg7777')).to_json
+        expect(response.body).to eq expected.to_json
 
         expect(response.status).to eq(201)
         expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
@@ -150,7 +169,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq Cocina::Models::Collection.new(item.attributes.merge(externalIdentifier: 'druid:gg777gg7777')).to_json
+        expect(response.body).to eq expected.to_json
 
         expect(response.status).to eq(201)
         expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
@@ -159,7 +178,7 @@ RSpec.describe 'Create object' do
   end
 
   context 'when an APO is provided' do
-    let(:item) do
+    let(:expected) do
       Cocina::Models::AdminPolicy.new(type: Cocina::Models::Vocab.admin_policy,
                                       label: 'This is my label',
                                       version: 1,
@@ -170,7 +189,22 @@ RSpec.describe 'Create object' do
                                         hasAdminPolicy: 'druid:dd999df4567',
                                         registration_workflow: 'assemblyWF'
                                       },
-                                      externalIdentifier: 'druid:bc123df4567') # TODO: can we get rid of this?
+                                      externalIdentifier: 'druid:gg777gg7777')
+    end
+
+    let(:default_object_rights) { Dor::DefaultObjectRightsDS.new.content.to_json }
+
+    let(:data) do
+      <<~JSON
+        {"type":"http://cocina.sul.stanford.edu/models/admin_policy.jsonld",
+          "label":"This is my label","version":1,"access":{},
+          "administrative":{
+            "default_object_rights":#{default_object_rights},
+          "registration_workflow":"assemblyWF",
+          "hasAdminPolicy":"druid:dd999df4567"},
+          "description":{"title":[{"primary":true,"titleFull":"This is my title"}]},
+          "identification":{},"structural":{}}
+      JSON
     end
 
     context 'when the request is successful' do
@@ -184,7 +218,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq Cocina::Models::AdminPolicy.new(item.attributes.merge(externalIdentifier: 'druid:gg777gg7777')).to_json
+        expect(response.body).to eq expected.to_json
 
         expect(response.status).to eq(201)
         expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
