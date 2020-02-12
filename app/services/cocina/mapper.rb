@@ -37,7 +37,8 @@ module Cocina
         label: item.label,
         version: item.current_version,
         administrative: build_administrative,
-        description: build_descriptive
+        description: build_descriptive,
+        identification: { sourceId: item.source_id }
       }.tap do |props|
         if item.embargoMetadata.release_date
           props[:access] = {

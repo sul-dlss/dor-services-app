@@ -485,11 +485,7 @@ DEPENDENCIES
   capistrano-rails
   capistrano-shared_configs
   capistrano-sidekiq
-<<<<<<< HEAD
-  cocina-models (~> 0.16.0)
-=======
   cocina-models (~> 0.17.0)
->>>>>>> ac5fd89... fix
   committee
   config
   deprecation

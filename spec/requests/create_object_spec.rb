@@ -22,13 +22,18 @@ RSpec.describe 'Create object' do
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
                               },
+                              identification: {
+                                sourceId: 'googlebooks:999999'
+                              },
                               externalIdentifier: 'druid:bc123df4567') # TODO: can we get rid of this?
     end
 
-    context 'when an object already exists', skip: 'until we support sourceId' do
-      before do
-        # allow(RegistrationService).to receive(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
-      end
+    before do
+      allow(Dor::SearchService).to receive(:query_by_id).and_return(search_result)
+    end
+
+    context 'when an object already exists' do
+      let(:search_result) { ['item'] }
 
       it 'returns a 409 error' do
         post '/v1/objects',
@@ -38,7 +43,9 @@ RSpec.describe 'Create object' do
       end
     end
 
-    context 'when the request is successful' do
+    context 'when no object with the source id exists and the request is successful' do
+      let(:search_result) { [] }
+
       before do
         allow_any_instance_of(Dor::Item).to receive(:save!)
       end
@@ -69,18 +76,6 @@ RSpec.describe 'Create object' do
                                      externalIdentifier: 'druid:bc123df4567') # TODO: can we get rid of this?
     end
 
-    context 'when an object already exists', skip: 'until we support sourceId' do
-      before do
-        # allow(RegistrationService).to receive(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
-      end
-
-      it 'returns a 409 error' do
-        post '/v1/objects',
-             params: data,
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.status).to eq(409)
-      end
-    end
 
     context 'when the request is successful' do
       before do
@@ -112,19 +107,6 @@ RSpec.describe 'Create object' do
                                         registration_workflow: 'assemblyWF'
                                       },
                                       externalIdentifier: 'druid:bc123df4567') # TODO: can we get rid of this?
-    end
-
-    context 'when an object already exists', skip: 'until we support sourceId' do
-      before do
-        # allow(RegistrationService).to receive(:register_object).and_raise(Dor::DuplicateIdError.new('druid:existing123obj'))
-      end
-
-      it 'returns a 409 error' do
-        post '/v1/objects',
-             params: data,
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.status).to eq(409)
-      end
     end
 
     context 'when the request is successful' do

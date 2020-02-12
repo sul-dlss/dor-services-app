@@ -44,8 +44,9 @@ module Cocina
     end
 
     def validate(obj)
-      # TODO: Check for sourceId conflict
-      # check_source_id obj.identification.sourceId
+      if obj.dro? && Dor::SearchService.query_by_id(obj.identification.sourceId).first
+        raise Dor::DuplicateIdError.new(obj.identification.sourceId), "An object with the source ID '#{obj.identification.sourceId}' has already been registered."
+      end
 
       # Validate APO exists (this raises an error if it doesn't)
       Dor.find(obj.administrative.hasAdminPolicy)
@@ -85,7 +86,7 @@ module Cocina
     def create_dro(obj)
       Dor::Item.new(pid: Dor::SuriService.mint_id,
                     admin_policy_object_id: obj.administrative.hasAdminPolicy,
-                    # source_id: obj.identification.sourceId,
+                    source_id: obj.identification.sourceId,
                     label: obj.label).tap do |item|
         item.descMetadata.mods_title = obj.description.title.first.titleFull
         item.identityMetadata.tag = content_type_tag(obj.type)
@@ -95,7 +96,6 @@ module Cocina
     def create_collection(obj)
       Dor::Collection.new(pid: Dor::SuriService.mint_id,
                           admin_policy_object_id: obj.administrative.hasAdminPolicy,
-                          # source_id: obj.identification.sourceId,
                           label: obj.label).tap do |item|
         item.descMetadata.mods_title = obj.description.title.first.titleFull
       end
