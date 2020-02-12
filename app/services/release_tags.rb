@@ -1,7 +1,15 @@
 # frozen_string_literal: true
 
-# Creates workspaces.  This replaces https://github.com/sul-dlss/dor-services/blob/master/lib/dor/models/concerns/assembleable.rb
+# Shows and creates release tags. This replaces parts of https://github.com/sul-dlss/dor-services/blob/master/lib/dor/models/concerns/releaseable.rb
 class ReleaseTags
+  # Display release tags for an item
+  #
+  # @param item [Dor::Item] the item to list release tags for
+  # @return [Hash] (see Dor::ReleaseTags::IdentityMetadata.released_for)
+  def self.for(item:)
+    Dor::ReleaseTags::IdentityMetadata.for(item).released_for({})
+  end
+
   # Add a release node for the item
   # Will use the current time if timestamp not supplied. You can supply a timestap for correcting history, etc if desired
   # Timestamp will be calculated by the function

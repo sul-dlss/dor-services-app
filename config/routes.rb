@@ -20,12 +20,13 @@ Rails.application.routes.draw do
     resources :background_job_results, only: [:show], defaults: { format: :json }
 
     resources :objects, only: [:create, :show] do
+      resource :release_tags, only: [:create, :show]
+
       member do
         post 'publish'
         post 'preserve'
         post 'update_marc_record'
         post 'notify_goobi'
-        post 'release_tags'
         post 'refresh_metadata', to: 'metadata_refresh#refresh'
 
         get 'contents', to: 'content#list'

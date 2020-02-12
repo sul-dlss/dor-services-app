@@ -76,25 +76,6 @@ class ObjectsController < ApplicationController
     proxy_faraday_response(response)
   end
 
-  # You can post a release tag as JSON in the body to add a release tag to an item.
-  # If successful it will return a 201 code, otherwise the error that occurred will bubble to the top
-  #
-  # 201
-  def release_tags
-    request.body.rewind
-    body = request.body.read
-    raw_params = JSON.parse body # This should produce a hash in valid release tag form=
-    raw_params.symbolize_keys!
-
-    if raw_params.key?(:release) && (raw_params[:release] == true || raw_params[:release] == false)
-      ReleaseTags.create(@item, raw_params.slice(:release, :what, :to, :who, :when))
-      @item.save
-      head :created
-    else
-      render status: :bad_request, plain: "A release attribute is required in the JSON, and its value must be either 'true' or 'false'. You sent '#{raw_params[:release]}'"
-    end
-  end
-
   private
 
   def proxy_faraday_response(response)

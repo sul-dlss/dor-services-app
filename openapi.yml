@@ -306,23 +306,49 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
-  '/v1/objects/{id}/release_tags':
-    post:
+  '/v1/objects/{object_id}/release_tags':
+    get:
       tags:
         - objects
-      summary: Assign the release tags
+      summary: Show release tags for an object
       description: ''
-      operationId: 'objects#release_tags'
+      operationId: 'release_tags#show'
       responses:
         '200':
           description: OK
+        '404':
+          description: Object not found
       parameters:
-        - name: id
+        - name: object_id
           in: path
           description: ID of object
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+    post:
+      tags:
+        - objects
+      summary: Assign the release tags
+      description: ''
+      operationId: 'release_tags#create'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad request
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+      requestBody:
+        description: a release tag for an object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReleaseTag'
   '/v1/objects/{id}/refresh_metadata':
     post:
       tags:
@@ -1031,6 +1057,8 @@ components:
       properties: {}
     ReleaseTag:
       type: object
+      required:
+        - release
       properties:
         who:
           type: string
