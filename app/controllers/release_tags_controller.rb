@@ -8,6 +8,7 @@ class ReleaseTagsController < ApplicationController
     render status: :not_found, plain: e.message
   end
 
+  # Show release tags for an object and for all the collections that it belongs to
   def show
     render json: ReleaseTags.for(item: @item)
   end

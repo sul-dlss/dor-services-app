@@ -2,7 +2,7 @@
 
 # Shows and creates release tags. This replaces parts of https://github.com/sul-dlss/dor-services/blob/master/lib/dor/models/concerns/releaseable.rb
 class ReleaseTags
-  # Display release tags for an item
+  # Retrieve the release tags for an item and all the collections that it is a part of
   #
   # @param item [Dor::Item] the item to list release tags for
   # @return [Hash] (see Dor::ReleaseTags::IdentityMetadata.released_for)
