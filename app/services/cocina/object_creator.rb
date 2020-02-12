@@ -63,8 +63,8 @@ module Cocina
                     raise "unsupported type #{obj.type}"
                   end
 
-      # TODO: Synch from symphony if a catkey is present
-      # RefreshMetadataAction.run(identifiers: identifiers, datastream: af_object.descMetadata)
+      # Synch from symphony if a catkey is present
+      RefreshMetadataAction.run(identifiers: ["catkey:#{af_object.catkey}"], datastream: af_object.descMetadata) if af_object.catkey
 
       af_object.save!
       af_object
@@ -87,6 +87,7 @@ module Cocina
       Dor::Item.new(pid: Dor::SuriService.mint_id,
                     admin_policy_object_id: obj.administrative.hasAdminPolicy,
                     source_id: obj.identification.sourceId,
+                    catkey: catkey_for(obj),
                     label: obj.label).tap do |item|
         item.descMetadata.mods_title = obj.description.title.first.titleFull
         item.identityMetadata.tag = content_type_tag(obj.type)
@@ -96,9 +97,14 @@ module Cocina
     def create_collection(obj)
       Dor::Collection.new(pid: Dor::SuriService.mint_id,
                           admin_policy_object_id: obj.administrative.hasAdminPolicy,
+                          catkey: catkey_for(obj),
                           label: obj.label).tap do |item|
         item.descMetadata.mods_title = obj.description.title.first.titleFull
       end
+    end
+
+    def catkey_for(obj)
+      obj.identification.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
     end
 
     def content_type_tag(type)

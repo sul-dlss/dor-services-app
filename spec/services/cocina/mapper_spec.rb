@@ -8,6 +8,7 @@ RSpec.describe Cocina::Mapper do
   context 'when item is a Dor::Item' do
     let(:item) do
       Dor::Item.new(pid: 'druid:mx000xm0000',
+                    source_id: 'whaever:8888',
                     label: 'test object', admin_policy_object_id: 'druid:sc012gz0974')
     end
 
@@ -111,8 +112,10 @@ RSpec.describe Cocina::Mapper do
 
   context 'when item is a Dor::Etd' do
     let(:item) do
+      # ETDs do not have sourceId set, but they do have dissertation in the other_ids
       Dor::Etd.new(pid: 'druid:mx000xm0000',
                    admin_policy_object_id: 'druid:sc012gz0974',
+                   other_ids: ['dissertationid:0000005037', 'catkey:11849337', 'uuid:b035c260-9079-11e6-906b-0050569b52d5'],
                    label: 'test object')
     end
 
@@ -125,12 +128,13 @@ RSpec.describe Cocina::Mapper do
       expect(cocina_model.type).to eq Cocina::Models::Vocab.object
 
       expect(cocina_model.administrative.hasAdminPolicy).to eq 'druid:sc012gz0974'
+      expect(cocina_model.identification.sourceId).to eq 'dissertationid:0000005037'
     end
   end
 
   context 'when item is a Dor::Collection' do
     let(:item) { Dor::Collection.new(pid: 'druid:fh138mm2023', label: 'test object', admin_policy_object_id: 'druid:sc012gz0974') }
-    let(:identity_metadata_ds) { instance_double(Dor::IdentityMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml)) }
+    let(:identity_metadata_ds) { instance_double(Dor::IdentityMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml), catkey: '777777') }
     let(:xml) do
       <<~XML
         <?xml version="1.0"?>

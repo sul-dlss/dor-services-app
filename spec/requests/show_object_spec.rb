@@ -8,12 +8,11 @@ RSpec.describe 'Get the object' do
   end
 
   context 'when the requested object is an item' do
-    let(:object) { Dor::Item.new(pid: 'druid:1234') }
+    let(:object) { Dor::Item.new(pid: 'druid:1234', source_id: 'src:99999', label: 'foo') }
 
     context 'when the object exists with minimal metadata' do
       before do
         object.descMetadata.title_info.main_title = 'Hello'
-        object.label = 'foo'
       end
 
       let(:expected) do
@@ -33,7 +32,9 @@ RSpec.describe 'Get the object' do
                 titleFull: 'Hello' }
             ]
           },
-          identification: {},
+          identification: {
+            sourceId: 'src:99999'
+          },
           structural: {}
         }
       end
@@ -49,7 +50,6 @@ RSpec.describe 'Get the object' do
     context 'when the object exists with full metadata' do
       before do
         object.descMetadata.title_info.main_title = 'Hello'
-        object.label = 'foo'
         object.embargoMetadata.release_date = DateTime.parse '2019-09-26T07:00:00Z'
         ReleaseTags.create(object, release: true,
                                    what: 'self',
@@ -85,7 +85,9 @@ RSpec.describe 'Get the object' do
                 titleFull: 'Hello' }
             ]
           },
-          identification: {},
+          identification: {
+            sourceId: 'src:99999'
+          },
           structural: {}
         }
       end
