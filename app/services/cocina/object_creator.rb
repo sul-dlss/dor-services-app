@@ -31,15 +31,15 @@ module Cocina
     private
 
     def build_dro(params)
-      Cocina::Models::RequestDRO.from_dynamic(params)
+      Cocina::Models::RequestDRO.new(params)
     end
 
     def build_collection(params)
-      Cocina::Models::RequestCollection.from_dynamic(params)
+      Cocina::Models::RequestCollection.new(params)
     end
 
     def build_apo(params)
-      Cocina::Models::RequestAdminPolicy.from_dynamic(params.merge(externalIdentifier: 'druid:ab123cd4567'))
+      Cocina::Models::RequestAdminPolicy.new(params)
     end
 
     def validate(obj)
