@@ -1,3 +1,4 @@
+
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
@@ -42,7 +43,7 @@ gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
 
 # DLSS/domain-specific dependencies
-gem 'cocina-models', '~> 0.20.0'
+gem 'cocina-models', '~> 0.21.0'
 gem 'dor-services', '~> 8.6'
 gem 'dor-workflow-client', '~> 3.17'
 gem 'marc'
