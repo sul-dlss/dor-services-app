@@ -6,11 +6,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
   subject(:umrs) { Dor::UpdateMarcRecordService.new dor_item }
 
   let(:dor_item) { @dor_item }
-  let(:release_service) { instance_double(Dor::ReleaseTags::IdentityMetadata, released_for: release_data) }
+  let(:release_service) { instance_double(ReleaseTags::IdentityMetadata, released_for: release_data) }
   let(:release_data) { {} }
 
   before do
-    allow(Dor::ReleaseTags::IdentityMetadata).to receive(:for).and_return(release_service)
+    allow(ReleaseTags::IdentityMetadata).to receive(:for).and_return(release_service)
     Settings.release.write_marc_script = 'bin/write_marc_record_test'
     Settings.release.symphony_path = './spec/fixtures/sdr-purl'
     Settings.release.purl_base_url = 'http://purl.stanford.edu'

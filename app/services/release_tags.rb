@@ -7,7 +7,7 @@ class ReleaseTags
   # @param item [Dor::Item] the item to list release tags for
   # @return [Hash] (see Dor::ReleaseTags::IdentityMetadata.released_for)
   def self.for(item:)
-    Dor::ReleaseTags::IdentityMetadata.for(item).released_for({})
+    IdentityMetadata.for(item).released_for({})
   end
 
   # Add a release node for the item
