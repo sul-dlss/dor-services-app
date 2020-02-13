@@ -8,16 +8,8 @@ module Cocina
     end
 
     def create(params)
-      obj = case params[:type]
-            when *Cocina::Models::DRO::TYPES
-              build_dro(params)
-            when *Cocina::Models::Collection::TYPES
-              build_collection(params)
-            when *Cocina::Models::AdminPolicy::TYPES
-              build_apo(params)
-            else
-              raise "Unknown type #{params[:type]}"
-            end
+      obj = Cocina::Models.build_request(params)
+
       if validate(obj)
         af_model = create_from_model(obj)
 
@@ -29,18 +21,6 @@ module Cocina
     end
 
     private
-
-    def build_dro(params)
-      Cocina::Models::RequestDRO.new(params)
-    end
-
-    def build_collection(params)
-      Cocina::Models::RequestCollection.new(params)
-    end
-
-    def build_apo(params)
-      Cocina::Models::RequestAdminPolicy.new(params)
-    end
 
     def validate(obj)
       if obj.is_a?(Cocina::Models::RequestDRO) && Dor::SearchService.query_by_id(obj.identification.sourceId).first
