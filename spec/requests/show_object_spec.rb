@@ -8,7 +8,12 @@ RSpec.describe 'Get the object' do
   end
 
   context 'when the requested object is an item' do
-    let(:object) { Dor::Item.new(pid: 'druid:1234', source_id: 'src:99999', label: 'foo') }
+    let(:object) do
+      Dor::Item.new(pid: 'druid:1234',
+                    source_id: 'src:99999',
+                    label: 'foo',
+                    read_rights: 'world')
+    end
 
     context 'when the object exists with minimal metadata' do
       before do
@@ -21,7 +26,9 @@ RSpec.describe 'Get the object' do
           type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
           label: 'foo',
           version: 1,
-          access: {},
+          access: {
+            access: 'world'
+          },
           administrative: {
             releaseTags: [],
             hasAdminPolicy: nil
@@ -39,11 +46,13 @@ RSpec.describe 'Get the object' do
         }
       end
 
+      let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
+
       it 'returns the object' do
         get '/v1/objects/druid:mk420bs7601',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:ok)
-        expect(response.body).to eq expected.to_json
+        expect(response_model).to eq expected
       end
     end
 
@@ -65,7 +74,11 @@ RSpec.describe 'Get the object' do
           label: 'foo',
           version: 1,
           access: {
-            embargoReleaseDate: '2019-09-26T07:00:00.000+00:00'
+            access: 'world',
+            embargo: {
+              access: 'dark',
+              releaseDate: '2019-09-26T07:00:00.000+00:00'
+            }
           },
           administrative: {
             releaseTags: [
@@ -92,12 +105,59 @@ RSpec.describe 'Get the object' do
         }
       end
 
+      let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
+
       it 'returns the object' do
         get '/v1/objects/druid:mk420bs7601',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:ok)
-        expect(response.body).to eq expected.to_json
+        expect(response_model).to eq expected
       end
+    end
+  end
+
+  context 'when the requested object is an collection' do
+    before do
+      object.descMetadata.title_info.main_title = 'Hello'
+    end
+
+    let(:object) do
+      Dor::Collection.new(pid: 'druid:1234',
+                          label: 'foo',
+                          read_rights: 'world')
+    end
+
+    let(:expected) do
+      {
+        externalIdentifier: 'druid:1234',
+        type: 'http://cocina.sul.stanford.edu/models/collection.jsonld',
+        label: 'foo',
+        version: 1,
+        access: {
+          access: 'world'
+        },
+        administrative: {
+          releaseTags: [],
+          hasAdminPolicy: nil
+        },
+        description: {
+          title: [
+            { primary: true,
+              titleFull: 'Hello' }
+          ]
+        },
+        identification: {},
+        structural: {}
+      }
+    end
+
+    let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
+
+    it 'returns the object' do
+      get '/v1/objects/druid:mk420bs7601',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
+      expect(response).to have_http_status(:ok)
+      expect(response_model).to eq expected
     end
   end
 

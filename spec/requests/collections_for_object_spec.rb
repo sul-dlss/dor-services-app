@@ -23,7 +23,9 @@ RSpec.describe 'Get the object' do
           type: 'http://cocina.sul.stanford.edu/models/collection.jsonld',
           label: 'collection #1',
           version: 1,
-          access: {},
+          access: {
+            access: 'dark'
+          },
           administrative: {
             releaseTags: [],
             hasAdminPolicy: nil
@@ -41,12 +43,14 @@ RSpec.describe 'Get the object' do
     }
   end
 
+  let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
+
   describe 'as used by WAS crawl seed registration' do
     it 'returns (at a minimum) the identifiers of the collections' do
       get '/v1/objects/druid:mk420bs7601/query/collections',
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
-      expect(response.body).to eq expected.to_json
+      expect(response_model).to eq expected
     end
   end
 end

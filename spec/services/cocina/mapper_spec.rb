@@ -134,7 +134,9 @@ RSpec.describe Cocina::Mapper do
 
   context 'when item is a Dor::Collection' do
     let(:item) { Dor::Collection.new(pid: 'druid:fh138mm2023', label: 'test object', admin_policy_object_id: 'druid:sc012gz0974') }
-    let(:identity_metadata_ds) { instance_double(Dor::IdentityMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml), catkey: '777777') }
+    let(:identity_metadata_ds) do
+      instance_double(Dor::IdentityMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml), catkey: '777777', source_id: nil)
+    end
     let(:xml) do
       <<~XML
         <?xml version="1.0"?>

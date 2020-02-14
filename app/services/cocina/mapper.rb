@@ -38,13 +38,10 @@ module Cocina
         version: item.current_version,
         administrative: build_administrative,
         description: build_descriptive,
-        identification: build_identification
+        identification: build_identification,
+        access: build_access
       }.tap do |props|
-        if item.embargoMetadata.release_date
-          props[:access] = {
-            embargoReleaseDate: item.embargoMetadata.release_date.iso8601
-          }
-        end
+        props[:access][:embargo] = { releaseDate: item.embargoMetadata.release_date.iso8601 } if item.embargoMetadata.release_date
         props[:identification][:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
 
         unless item.is_a?(Dor::Etd) || item.contentMetadata.new?
@@ -63,7 +60,8 @@ module Cocina
         version: item.current_version,
         administrative: build_administrative,
         description: build_descriptive,
-        identification: {}
+        identification: build_identification,
+        access: build_access
       }.tap do |props|
         props[:identification][:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
       end
@@ -101,6 +99,13 @@ module Cocina
       else
         Cocina::Models::Vocab.object
       end
+    end
+
+    # Map values from dor-services
+    # https://github.com/sul-dlss/dor-services/blob/b9b4768eac560ef99b4a8d03475ea31fe4ae2367/lib/dor/datastreams/rights_metadata_ds.rb#L221-L228
+    # to https://github.com/sul-dlss/cocina-models/blob/master/docs/maps/DRO.json#L102
+    def access_rights
+      item.rights.sub('None', 'citation-only').downcase
     end
 
     def build_identification
@@ -174,6 +179,10 @@ module Cocina
           release: node.text
         }
       end
+    end
+
+    def build_access
+      { access: access_rights }
     end
 
     # @todo This should have more speicific type such as found in identityMetadata.objectType
