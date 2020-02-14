@@ -98,7 +98,7 @@ GEM
       capistrano (>= 3.9.0)
       sidekiq (>= 3.4, < 6.0)
     chronic (0.10.2)
-    cocina-models (0.21.0)
+    cocina-models (0.22.2)
       dry-struct (~> 1.0)
       dry-types (~> 1.1)
       zeitwerk (~> 2.1)
@@ -490,7 +490,7 @@ DEPENDENCIES
   capistrano-rails
   capistrano-shared_configs
   capistrano-sidekiq
-  cocina-models (~> 0.21.0)
+  cocina-models (~> 0.22.2)
   committee
   config
   deprecation
