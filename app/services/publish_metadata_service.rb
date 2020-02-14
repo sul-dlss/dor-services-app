@@ -12,7 +12,7 @@ class PublishMetadataService
   end
 
   # Appends contentMetadata file resources from the source objects to this object
-  # @raises [Dor::DataError]
+  # @raise [Dor::DataError]
   def publish
     return unpublish unless world_discoverable?
 
@@ -27,7 +27,7 @@ class PublishMetadataService
 
   attr_reader :item
 
-  # @raises [Dor::DataError]
+  # @raise [Dor::DataError]
   def transfer_metadata(release_tags)
     transfer_to_document_store(DublinCoreService.new(item).ng_xml.to_xml(&:no_declaration), 'dc')
     %w[identityMetadata contentMetadata rightsMetadata].each do |stream|
