@@ -59,7 +59,7 @@ RSpec.describe 'Get the object' do
     context 'when the object exists with full metadata' do
       before do
         object.descMetadata.title_info.main_title = 'Hello'
-        object.embargoMetadata.release_date = DateTime.parse '2019-09-26T07:00:00Z'
+        EmbargoService.embargo(item: object, release_date: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world')
         ReleaseTags.create(object, release: true,
                                    what: 'self',
                                    to: 'Searchworks',
@@ -74,10 +74,10 @@ RSpec.describe 'Get the object' do
           label: 'foo',
           version: 1,
           access: {
-            access: 'world',
+            access: 'citation-only',
             embargo: {
-              access: 'dark',
-              releaseDate: '2019-09-26T07:00:00.000+00:00'
+              releaseDate: '2019-09-26T07:00:00.000+00:00',
+              access: 'world'
             }
           },
           administrative: {

@@ -777,21 +777,6 @@ components:
             - 'dark'
         embargo:
           $ref: '#/components/schemas/Embargo'
-    Embargo:
-      type: object
-      properties:
-        access:
-          type: string
-          enum:
-            - 'world'
-            - 'stanford'
-            - 'location-based'
-            - 'citation-only'
-            - 'dark'
-        releaseDate:
-          type: string
-          format: date-time
-          example: '2029-06-22T07:00:00.000+00:00'
     EmptyAdministrative:
       type: object
       properties: {}
@@ -928,6 +913,24 @@ components:
         - administrative
         - identification
         - structural
+    Embargo:
+      type: object
+      properties:
+        releaseDate:
+          type: string
+          format: date-time
+          example: '2029-06-22T07:00:00.000+00:00'
+        access:
+          type: string
+          enum:
+            - world
+            - stanford
+            - location-based
+            - citation-only
+            - dark
+      required:
+        - releaseDate
+        - access
     FileSet:
       type: object
       properties:

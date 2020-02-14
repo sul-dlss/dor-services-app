@@ -59,7 +59,7 @@ module Cocina
                                  admin_policy_object_id: obj.administrative.hasAdminPolicy,
                                  # source_id: obj.identification.sourceId,
                                  label: obj.label).tap do |item|
-        item.descMetadata.mods_title = obj.description.title.first.titleFull
+        item.descMetadata.mods_title = obj.description.title.first.titleFull if obj.description
 
         admin_node = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata').first
         admin_node.add_child "<dissemination><workflow id=\"#{obj.administrative.registration_workflow}\"></dissemination>"
@@ -75,8 +75,13 @@ module Cocina
                     source_id: obj.identification.sourceId,
                     catkey: catkey_for(obj),
                     label: obj.label).tap do |item|
-        item.descMetadata.mods_title = obj.description.title.first.titleFull
+        item.descMetadata.mods_title = obj.description.title.first.titleFull if obj.description
         item.identityMetadata.tag = content_type_tag(obj.type)
+        if obj.access.embargo
+          EmbargoService.embargo(item: item,
+                                 release_date: obj.access.embargo.releaseDate,
+                                 access: obj.access.embargo.access)
+        end
       end
     end
 
@@ -87,7 +92,7 @@ module Cocina
                           admin_policy_object_id: obj.administrative.hasAdminPolicy,
                           catkey: catkey_for(obj),
                           label: obj.label).tap do |item|
-        item.descMetadata.mods_title = obj.description.title.first.titleFull
+        item.descMetadata.mods_title = obj.description.title.first.titleFull if obj.description
       end
     end
 

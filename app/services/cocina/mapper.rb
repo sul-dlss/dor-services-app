@@ -37,11 +37,9 @@ module Cocina
         label: item.label,
         version: item.current_version,
         administrative: build_administrative,
-        description: build_descriptive,
         identification: build_identification,
         access: build_access
       }.tap do |props|
-        props[:access][:embargo] = { releaseDate: item.embargoMetadata.release_date.iso8601 } if item.embargoMetadata.release_date
         props[:identification][:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
 
         unless item.is_a?(Dor::Etd) || item.contentMetadata.new?
@@ -49,6 +47,9 @@ module Cocina
             contains: build_filesets(item.contentMetadata, version: item.current_version, id: item.pid)
           }
         end
+
+        description = build_descriptive
+        props[:description] = description unless description.nil?
       end
     end
 
@@ -64,6 +65,8 @@ module Cocina
         access: build_access
       }.tap do |props|
         props[:identification][:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
+        description = build_descriptive
+        props[:description] = description unless description.nil?
       end
     end
 
@@ -73,9 +76,11 @@ module Cocina
         type: Cocina::Models::Vocab.admin_policy,
         label: item.label,
         version: item.current_version,
-        administrative: build_apo_administrative,
-        description: build_descriptive
-      }
+        administrative: build_apo_administrative
+      }.tap do |props|
+        description = build_descriptive
+        props[:description] = description unless description.nil?
+      end
     end
 
     private
@@ -163,10 +168,10 @@ module Cocina
     end
 
     def build_administrative
-      {}.tap do |admin|
-        admin[:releaseTags] = build_release_tags
-        admin[:hasAdminPolicy] = item.admin_policy_object_id
-      end
+      {
+        releaseTags: build_release_tags,
+        hasAdminPolicy: item.admin_policy_object_id
+      }
     end
 
     def build_release_tags
@@ -182,7 +187,28 @@ module Cocina
     end
 
     def build_access
-      { access: access_rights }
+      { access: access_rights }.tap do |access|
+        embargo = build_embargo
+        access[:embargo] = embargo unless embargo.empty?
+      end
+    end
+
+    def build_embargo
+      return {} unless item.respond_to?(:embargoMetadata) && item.embargoMetadata.release_date
+
+      {
+        releaseDate: item.embargoMetadata.release_date.iso8601,
+        access: build_embargo_access
+      }
+    end
+
+    def build_embargo_access
+      access_node = item.embargoMetadata.release_access_node.xpath('//access[@type="read"]/machine/*[1]').first
+      return 'dark' if access_node.nil?
+      return 'world' if access_node.name == 'world'
+      return access_node.content if access_node.name == 'group'
+
+      'dark'
     end
 
     # @todo This should have more speicific type such as found in identityMetadata.objectType
