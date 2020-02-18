@@ -15,13 +15,14 @@ jobs:
         BUNDLE_PATH: vendor/bundle
         PGHOST: 127.0.0.1
         PGUSER: circleci-demo-ruby
+        PGPASSWORD: sekret
         RAILS_ENV: test
         NOKOGIRI_USE_SYSTEM_LIBRARIES: true
     - image: circleci/postgres:11
       environment:
         POSTGRES_USER: postgres
         POSTGRES_DB: dor_services_test
-        POSTGRES_PASSWORD: ""
+        POSTGRES_PASSWORD: sekret
     steps:
     - checkout
 
