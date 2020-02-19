@@ -3,15 +3,17 @@
 module Cocina
   # Given a Cocina model, create an ActiveFedora model.
   class ObjectCreator
-    def self.create(params)
-      new.create(params)
+    def self.create(params, event_factory: EventFactory)
+      new.create(params, event_factory: event_factory)
     end
 
-    def create(params)
+    def create(params, event_factory:)
       obj = Cocina::Models.build_request(params)
 
       if validate(obj)
         af_model = create_from_model(obj)
+
+        event_factory.create(druid: af_model.pid, event_type: 'registration', data: params)
 
         # This will rebuild the cocina model from fedora, which shows we are only returning persisted data
         return Mapper.build(af_model)

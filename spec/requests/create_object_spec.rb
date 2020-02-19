@@ -74,10 +74,11 @@ RSpec.describe 'Create object' do
         end
 
         it 'registers the object with the registration service' do
-          post '/v1/objects',
-               params: data,
-               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-
+          expect do
+            post '/v1/objects',
+                 params: data,
+                 headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+          end.to change(Event, :count).by(1)
           expect(response.body).to eq expected.to_json
           expect(response.status).to eq(201)
           expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
