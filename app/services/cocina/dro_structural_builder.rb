@@ -14,9 +14,9 @@ module Cocina
     def build
       {}.tap do |structural|
         case item.content_type_tag
-        when 'Image (ltr)'
+        when 'Book (ltr)'
           structural[:hasMemberOrders] = [{ viewingDirection: 'left-to-right' }]
-        when 'Image (rtl)'
+        when 'Book (rtl)'
           structural[:hasMemberOrders] = [{ viewingDirection: 'right-to-left' }]
         end
 
