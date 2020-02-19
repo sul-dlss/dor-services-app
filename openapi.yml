@@ -427,6 +427,41 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/members':
+    get:
+      tags:
+        - objects
+      summary: List the members of this collection
+      description: ''
+      operationId: 'members#index'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  members:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        externalIdentifier:
+                          $ref: '#/components/schemas/Druid'
+                        type:
+
+                          type: string
+                          enum:
+                            - 'item'
+                            - 'collection'
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
   '/v1/objects/{object_id}/workspace':
     delete:
       tags:
