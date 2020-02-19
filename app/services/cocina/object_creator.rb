@@ -76,7 +76,7 @@ module Cocina
                     catkey: catkey_for(obj),
                     label: obj.label).tap do |item|
         item.descMetadata.mods_title = obj.description.title.first.titleFull if obj.description
-        item.identityMetadata.tag = content_type_tag(obj.type)
+        item.identityMetadata.tag = content_type_tag(obj.type, obj.structural.hasMemberOrders&.first&.viewingDirection)
         if obj.access.embargo
           EmbargoService.embargo(item: item,
                                  release_date: obj.access.embargo.releaseDate,
@@ -100,10 +100,11 @@ module Cocina
       obj.identification.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
     end
 
-    def content_type_tag(type)
+    def content_type_tag(type, direction)
       tag = case type
             when Cocina::Models::Vocab.image
-              'Image'
+              short_dir = direction == 'right-to-left' ? 'rtl' : 'ltr'
+              "Image (#{short_dir})"
             when Cocina::Models::Vocab.three_dimensional
               '3D'
             when Cocina::Models::Vocab.map

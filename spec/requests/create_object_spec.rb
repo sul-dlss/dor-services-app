@@ -23,7 +23,12 @@ RSpec.describe 'Create object' do
                                 hasAdminPolicy: 'druid:dd999df4567'
                               },
                               identification: identification,
-                              externalIdentifier: 'druid:gg777gg7777')
+                              externalIdentifier: 'druid:gg777gg7777',
+                              structural: {
+                                hasMemberOrders: [
+                                  { viewingDirection: 'right-to-left' }
+                                ]
+                              })
     end
     let(:data) do
       <<~JSON
@@ -32,9 +37,10 @@ RSpec.describe 'Create object' do
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"primary":true,"titleFull":"This is my title"}]},
           "identification":#{identification.to_json},
-          "structural":{}}
+          "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
     end
+
     let(:identification) do
       { sourceId: 'googlebooks:999999' }
     end
@@ -76,8 +82,8 @@ RSpec.describe 'Create object' do
           post '/v1/objects',
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(response.body).to eq expected.to_json
 
+          expect(response.body).to eq expected.to_json
           expect(response.status).to eq(201)
           expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
           expect(RefreshMetadataAction).to have_received(:run)
@@ -98,8 +104,8 @@ RSpec.describe 'Create object' do
           post '/v1/objects',
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(response.body).to eq expected.to_json
 
+          expect(response.body).to eq expected.to_json
           expect(response.status).to eq(201)
           expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
         end
