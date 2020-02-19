@@ -32,6 +32,7 @@ Rails.application.routes.draw do
         get 'contents', to: 'content#list'
         get 'contents/*path', to: 'content#read', format: false, as: :read_content
       end
+      resources :members, only: [:index], defaults: { format: :json }
 
       resource :query, only: [], defaults: { format: :json } do
         collection do
