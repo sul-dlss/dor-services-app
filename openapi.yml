@@ -1040,6 +1040,18 @@ components:
             - pending
             - processing
             - complete
+    CatalogLink:
+      type: object
+      required:
+        - catalog
+        - catalogRecordId
+      properties:
+        catalog:
+          type: string
+          example: symphony
+        catalogRecordId:
+          type: string
+          example: 11403803
     ErrorResponse:
       type: object
       properties:
@@ -1078,7 +1090,14 @@ components:
           type: object
     Identification:
       type: object
-      properties: {}
+      properties:
+        sourceId:
+          type: string
+          example: 'sul:PC0170_s3_Fiesta_Bowl_2012-01-02_210609_2026'
+        catalogLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatalogLink'
     ReleaseTag:
       type: object
       required:
