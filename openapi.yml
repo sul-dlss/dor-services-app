@@ -1215,6 +1215,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FileSet'
+        hasMemberOrders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sequence'
     FileSetStructural:
       type: object
       properties:
@@ -1225,6 +1229,14 @@ components:
     FileStructural:
       type: object
       properties: {}
+    Sequence:
+      type: object
+      properties:
+        viewingDirection:
+          type: string
+          enum:
+            - right-to-left
+            - left-to-right
     Structural:
       type: object
       properties: {}
