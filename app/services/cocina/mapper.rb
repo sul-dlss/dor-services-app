@@ -87,7 +87,7 @@ module Cocina
 
     def dro_type
       case item.content_type_tag
-      when 'Image (ltr)', 'Image (rtl)'
+      when 'Image'
         Cocina::Models::Vocab.image
       when '3D'
         Cocina::Models::Vocab.three_dimensional
@@ -97,7 +97,7 @@ module Cocina
         Cocina::Models::Vocab.media
       when /^Manuscript/
         Cocina::Models::Vocab.manuscript
-      when /^Book/
+      when 'Book (ltr)', 'Book (rtl)'
         Cocina::Models::Vocab.book
       else
         Cocina::Models::Vocab.object
