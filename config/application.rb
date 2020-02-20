@@ -32,7 +32,10 @@ end
 
 module DorServices
   class Application < Rails::Application
-    config.middleware.use Committee::Middleware::RequestValidation, schema_path: 'openapi.yml', strict: true, error_class: JSONAPIError
+    accept_proc = proc { |request| request.path.start_with?('/v1') }
+    config.middleware.use Committee::Middleware::RequestValidation, schema_path: 'openapi.yml', strict: true,
+                                                                    error_class: JSONAPIError, accept_request_filter: accept_proc
+
     # TODO: we can uncomment this at a later date to ensure we are passing back valid responses
     # config.middleware.use Committee::Middleware::ResponseValidation, schema: schema
 
