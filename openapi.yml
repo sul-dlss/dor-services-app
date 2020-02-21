@@ -935,6 +935,10 @@ components:
           type: string
         version:
           type: integer
+        hasMessageDigests:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageDigest'
         access:
           $ref: '#/components/schemas/Access'
         administrative:
@@ -1174,6 +1178,22 @@ components:
     FileStructural:
       type: object
       properties: {}
+    MessageDigest:
+      description: The output of the message digest algorithm.
+      type: object
+      properties:
+        type:
+          description: The algorithm that was used
+          type: string
+          enum:
+            - md5
+            - sha1
+        digest:
+          description: The digest value Base64 encoded
+          type: string
+      required:
+        - type
+        - digest
     Sequence:
       type: object
       properties:

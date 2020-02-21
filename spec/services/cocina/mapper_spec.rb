@@ -69,7 +69,7 @@ RSpec.describe Cocina::Mapper do
         allow(item).to receive(:contentMetadata).and_return(content_metadata_ds)
       end
 
-      it 'builds the object with filesets' do
+      it 'builds the object with filesets and files' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
         expect(cocina_model.type).to eq Cocina::Models::Vocab.three_dimensional
 
@@ -79,6 +79,11 @@ RSpec.describe Cocina::Mapper do
         folder1 = cocina_model.structural.contains.first
         expect(folder1.label).to eq 'Folder 1'
         expect(folder1.structural.contains.first.label).to eq 'folder1PuSu/story1u.txt'
+        file1 = folder1.structural.contains.first
+        expect(file1.label).to eq 'folder1PuSu/story1u.txt'
+        expect(file1.hasMessageDigests.first.digest).to eq '61dfac472b7904e1413e0cbf4de432bda2a97627'
+        expect(file1.hasMessageDigests.first.type).to eq 'sha1'
+        true
       end
     end
 
