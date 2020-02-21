@@ -20,6 +20,7 @@ class MetadataController < ApplicationController
                          technical: 'technicalMetadata',
                          content: 'contentMetadata',
                          rights: 'rightsMetadata',
+                         identity: 'identityMetadata',
                          provenance: 'provenanceMetadata' }
 
     datastream_names.each do |section, datastream_name|

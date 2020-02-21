@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Operations on the legacy Fedora 3 metadata.
-# This is used by the accessionWF
+# This is used by the accessionWF and the etdSubmitWF
 class LegacyMetadataService
   # If the updated value is newer than then createDate of the datastream, then update it.
   def self.update_datastream_if_newer(datastream:, updated:, content:, event_factory:)
