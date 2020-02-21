@@ -45,8 +45,9 @@ module Cocina
 
     def build_files(file_nodes, version:, parent_id:)
       file_nodes.map do |node|
-        md5 = node.xpath('checksum[@type="MD5"]').text
-        sha1 = node.xpath('checksum[@type="SHA-1"]').text
+        # The old google books use these upcased versions. See https://argo.stanford.edu/view/druid:dd116zh0343
+        md5 = node.xpath('checksum[@type="md5"]').text.presence || node.xpath('checksum[@type="MD5"]').text
+        sha1 = node.xpath('checksum[@type="sha1"]').text.presence || node.xpath('checksum[@type="SHA-1"]').text
         Cocina::Models::File.new(
           {
             externalIdentifier: "#{parent_id}/#{node['id']}",
