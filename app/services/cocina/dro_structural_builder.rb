@@ -45,11 +45,19 @@ module Cocina
 
     def build_files(file_nodes, version:, parent_id:)
       file_nodes.map do |node|
+        md5 = node.xpath('checksum[@type="MD5"]').text
+        sha1 = node.xpath('checksum[@type="SHA-1"]').text
         Cocina::Models::File.new(
-          externalIdentifier: "#{parent_id}/#{node['id']}",
-          type: Cocina::Models::Vocab.file,
-          label: node['id'],
-          version: version
+          {
+            externalIdentifier: "#{parent_id}/#{node['id']}",
+            type: Cocina::Models::Vocab.file,
+            label: node['id'],
+            version: version,
+            hasMessageDigests: []
+          }.tap do |attrs|
+            attrs[:hasMessageDigests] << { type: 'sha1', digest: sha1 } if sha1
+            attrs[:hasMessageDigests] << { type: 'md5', digest: md5 } if md5
+          end
         )
       end
     end
