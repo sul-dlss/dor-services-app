@@ -164,6 +164,7 @@ RSpec.describe EmbargoReleaseService do
         </embargoMetadata>
         EOXML
       end
+      let(:client) { instance_double(Dor::Workflow::Client) }
 
       before do
         allow(Dor).to receive(:find).and_return(item)
@@ -172,11 +173,12 @@ RSpec.describe EmbargoReleaseService do
         allow(VersionService).to receive(:close)
         allow(item).to receive(:save!)
         allow(Honeybadger).to receive(:notify)
-        allow(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', 'druid:999', 'accessioned').and_return(Time.zone.now - 1.day)
+        allow(WorkflowClientFactory).to receive(:build).and_return(client)
+        allow(client).to receive(:lifecycle).with('dor', 'druid:999', 'accessioned').and_return(Time.zone.now - 1.day)
       end
 
       it 'skips release if not accessioned' do
-        allow(Dor::Config.workflow.client).to receive(:lifecycle).with('dor', 'druid:999', 'accessioned').and_return(nil)
+        allow(client).to receive(:lifecycle).with('dor', 'druid:999', 'accessioned').and_return(nil)
         release_items
         expect(VersionService).not_to have_received(:can_open?)
       end

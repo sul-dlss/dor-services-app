@@ -23,6 +23,6 @@ class StartPreservationWorkflowJob < ApplicationJob
   private
 
   def client
-    Dor::Config.workflow.client
+    WorkflowClientFactory.build
   end
 end

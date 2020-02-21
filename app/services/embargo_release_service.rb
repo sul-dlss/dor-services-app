@@ -34,7 +34,7 @@ class EmbargoReleaseService
 
   def self.release_item(druid, embargo_msg, &release_block)
     ei = Dor.find(druid)
-    unless Dor::Config.workflow.client.lifecycle('dor', druid, 'accessioned')
+    unless WorkflowClientFactory.build.lifecycle('dor', druid, 'accessioned')
       Rails.logger.warn("Skipping #{druid} - not yet accessioned")
       return
     end

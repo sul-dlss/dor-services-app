@@ -10,7 +10,7 @@ RSpec.describe DeleteService do
     let(:client) { instance_double(Dor::Workflow::Client, delete_all_workflows: nil) }
 
     before do
-      allow(Dor::Config.workflow).to receive(:client).and_return(client)
+      allow(WorkflowClientFactory).to receive(:build).and_return(client)
     end
 
     it 'calls the workflow client' do

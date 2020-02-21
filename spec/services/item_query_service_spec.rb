@@ -18,7 +18,7 @@ RSpec.describe ItemQueryService do
     allow(Dor::Item).to receive(:find).and_return(item)
     allow(VersionService).to receive(:can_open?).with(item).and_return(true)
     allow(VersionService).to receive(:open?).with(item).and_return(true)
-    allow(Dor::Config.workflow).to receive(:client).and_return(workflow_client)
+    allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
   end
 
   describe '.find_combinable_item' do

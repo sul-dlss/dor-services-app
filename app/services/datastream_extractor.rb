@@ -69,6 +69,6 @@ class DatastreamExtractor
 
   # Get the workflow xml representation from the workflow service
   def workflow_xml
-    Dor::Config.workflow.client.all_workflows_xml(item.pid)
+    WorkflowClientFactory.build.all_workflows_xml(item.pid)
   end
 end
