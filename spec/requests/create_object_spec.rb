@@ -12,12 +12,15 @@ RSpec.describe 'Create object' do
   end
 
   context 'when an image is provided' do
+    let(:label) { 'This is my label' }
+    let(:title) { 'This is my title' }
+    let(:expected_label) { label }
     let(:expected) do
       Cocina::Models::DRO.new(type: Cocina::Models::Vocab.image,
-                              label: 'This is my label',
+                              label: expected_label,
                               version: 1,
                               description: {
-                                title: [{ titleFull: 'This is my title', primary: true }]
+                                title: [{ titleFull: title, primary: true }]
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -29,9 +32,9 @@ RSpec.describe 'Create object' do
     let(:data) do
       <<~JSON
         { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
-          "label":"This is my label","version":1,"access":{},
+          "label":"#{label}","version":1,"access":{},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"primary":true,"titleFull":"This is my title"}]},
+          "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
           "identification":#{identification.to_json},"structural":{}}
       JSON
     end
@@ -56,6 +59,8 @@ RSpec.describe 'Create object' do
     end
 
     context 'when catkey is provided' do
+      let(:expected_label) { title } # label derived from catalog data
+
       let(:identification) do
         {
           sourceId: 'googlebooks:999999',
@@ -110,12 +115,15 @@ RSpec.describe 'Create object' do
   end
 
   context 'when a book is provided' do
+    let(:label) { 'This is my label' }
+    let(:title) { 'This is my title' }
+    let(:expected_label) { label }
     let(:expected) do
       Cocina::Models::DRO.new(type: Cocina::Models::Vocab.book,
-                              label: 'This is my label',
+                              label: expected_label,
                               version: 1,
                               description: {
-                                title: [{ titleFull: 'This is my title', primary: true }]
+                                title: [{ titleFull: title, primary: true }]
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -131,9 +139,9 @@ RSpec.describe 'Create object' do
     let(:data) do
       <<~JSON
         { "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
-          "label":"This is my label","version":1,"access":{},
+          "label":"#{label}","version":1,"access":{},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"primary":true,"titleFull":"This is my title"}]},
+          "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
@@ -156,12 +164,15 @@ RSpec.describe 'Create object' do
   end
 
   context 'when a collection is provided' do
+    let(:label) { 'This is my label' }
+    let(:title) { 'This is my title' }
+    let(:expected_label) { label }
     let(:expected) do
       Cocina::Models::Collection.new(type: Cocina::Models::Vocab.collection,
-                                     label: 'This is my label',
+                                     label: expected_label,
                                      version: 1,
                                      description: {
-                                       title: [{ titleFull: 'This is my title', primary: true }]
+                                       title: [{ titleFull: title, primary: true }]
                                      },
                                      administrative: {
                                        hasAdminPolicy: 'druid:dd999df4567'
@@ -173,15 +184,16 @@ RSpec.describe 'Create object' do
     let(:data) do
       <<~JSON
         {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
-          "label":"This is my label","version":1,"access":{},
+          "label":"#{label}","version":1,"access":{},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"primary":true,"titleFull":"This is my title"}]},
+          "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
           "identification":#{identification.to_json},
           "structural":{}}
       JSON
     end
 
     context 'when the catkey is provided and save is successful' do
+      let(:expected_label) { title } # label derived from catalog data
       let(:identification) do
         {
           catalogLinks: [

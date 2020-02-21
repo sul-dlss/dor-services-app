@@ -48,7 +48,10 @@ module Cocina
                   end
 
       # Synch from symphony if a catkey is present
-      RefreshMetadataAction.run(identifiers: ["catkey:#{af_object.catkey}"], datastream: af_object.descMetadata) if af_object.catkey
+      if af_object.catkey
+        RefreshMetadataAction.run(identifiers: ["catkey:#{af_object.catkey}"], datastream: af_object.descMetadata)
+        af_object.label = MetadataService.label_from_mods(af_object.descMetadata.ng_xml)
+      end
 
       af_object.save!
       af_object
