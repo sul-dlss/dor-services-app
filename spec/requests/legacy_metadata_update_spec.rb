@@ -10,6 +10,7 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
   let(:technicalMetadata) { instance_double(Dor::TechnicalMetadataDS, createDate: create_date) }
   let(:contentMetadata) { instance_double(Dor::ContentMetadataDS, createDate: create_date) }
   let(:provenanceMetadata) { instance_double(Dor::ProvenanceMetadataDS, createDate: create_date) }
+  let(:identityMetadata) { instance_double(Dor::IdentityMetadataDS, createDate: create_date) }
 
   let(:datastreams) do
     {
@@ -17,7 +18,8 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
       'rightsMetadata' => rightsMetadata,
       'technicalMetadata' => technicalMetadata,
       'contentMetadata' => contentMetadata,
-      'provenanceMetadata' => provenanceMetadata
+      'provenanceMetadata' => provenanceMetadata,
+      'identityMetadata' => identityMetadata
     }
   end
 
@@ -31,6 +33,10 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
         "rights": {
           "updated": "2019-11-08T15:15:43Z",
           "content": "<rightsMetadata></rightsMetadata>"
+        },
+        "identity": {
+          "updated": "2019-11-08T15:15:43Z",
+          "content": "<identityMetadata></identityMetadata>"
         },
         "provenance": {
           "updated": "2019-11-08T15:15:43Z",
@@ -62,6 +68,12 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
         .with(datastream: rightsMetadata,
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
               content: '<rightsMetadata></rightsMetadata>',
+              event_factory: EventFactory)
+
+      expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
+        .with(datastream: identityMetadata,
+              updated: Time.zone.parse('2019-11-08T15:15:43Z'),
+              content: '<identityMetadata></identityMetadata>',
               event_factory: EventFactory)
 
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
