@@ -28,10 +28,15 @@ class MetadataService
       end
     end
 
-    def label_for(identifier)
-      mods = Nokogiri::XML(fetch(identifier))
+    def label_from_mods(mods)
       mods.root.add_namespace_definition('mods', 'http://www.loc.gov/mods/v3')
-      mods.xpath('/mods:mods/mods:titleInfo[1]').xpath('mods:title|mods:nonSort').collect(&:text).join(' ').strip
+      mods.xpath('/mods:mods/mods:titleInfo[1]')
+          .xpath('mods:title|mods:nonSort')
+          .collect(&:text).join(' ').strip
+    end
+
+    def label_for(identifier)
+      label_from_mods(Nokogiri::XML(fetch(identifier)))
     end
 
     private
