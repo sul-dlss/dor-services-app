@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/lostisland/faraday_middleware.git
-  revision: 57f09201bc1adfe914e864cf8957e9f8d3c1daed
+  revision: 5d97b780fc32ba4c6e055606d51771ca5cae127c
   specs:
     faraday_middleware (1.0.0)
       faraday (~> 1.0)
@@ -155,7 +155,7 @@ GEM
       zeitwerk (~> 2.1)
     druid-tools (2.1.0)
       deprecation
-    dry-configurable (0.11.0)
+    dry-configurable (0.11.3)
       concurrent-ruby (~> 1.0)
       dry-core (~> 0.4, >= 0.4.7)
       dry-equalizer (~> 0.2)
