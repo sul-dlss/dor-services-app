@@ -53,6 +53,7 @@ module Cocina
             externalIdentifier: "#{parent_id}/#{node['id']}",
             type: Cocina::Models::Vocab.file,
             label: node['id'],
+            size: node['size'],
             version: version,
             hasMessageDigests: []
           }.tap do |attrs|
