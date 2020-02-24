@@ -933,6 +933,8 @@ components:
           type: string
         label:
           type: string
+        size:
+          type: integer
         version:
           type: integer
         hasMessageDigests:
