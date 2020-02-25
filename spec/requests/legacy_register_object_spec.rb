@@ -46,11 +46,11 @@ RSpec.describe 'Register object' do
       allow(RegistrationService).to receive(:register_object).and_raise(SymphonyReader::ResponseError.new(errmsg))
     end
 
-    it 'returns a 500 error' do
+    it 'returns a 502 error' do
       post '/v1/objects',
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.status).to eq(500)
+      expect(response.status).to eq(502)
       expect(response.body).to eq(errmsg)
     end
   end
