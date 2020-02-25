@@ -695,6 +695,16 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: Invalid DOR parameter
+        '404':
+          description: Object not found in DOR
+        '409':
+          description: Object with that sourceId already exists
+        '500':
+          description: Server error
+        '502':
+          description: Error connecting to Symphony
   '/v1/objects/{id}':
     get:
       tags:

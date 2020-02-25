@@ -21,7 +21,7 @@ class ObjectsController < ApplicationController
   end
 
   rescue_from(SymphonyReader::ResponseError) do |e|
-    render status: :internal_server_error, plain: e.message
+    render status: :bad_gateway, plain: e.message
   end
 
   def create

@@ -52,7 +52,6 @@ class SymphonyReader
       errmsg = "Record not found in Symphony: #{@catkey}"
     else
       errmsg = "Got HTTP Status-Code #{resp.status} retrieving #{@catkey} from Symphony: #{resp.body}"
-      Honeybadger.notify(errmsg)
     end
 
     raise ResponseError, errmsg

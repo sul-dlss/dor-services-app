@@ -110,11 +110,9 @@ RSpec.describe SymphonyReader do
           stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: catkey)).to_return(status: 403, body: err_body.to_json)
         end
 
-        it 'raises ResponseError and notifies Honeybadger' do
+        it 'raises ResponseError' do
           msg_regex = /^Got HTTP Status-Code 403 retrieving catkey from Symphony:.*Something somewhere went wrong./
-          allow(Honeybadger).to receive(:notify)
           expect { reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
-          expect(Honeybadger).to have_received(:notify).with(msg_regex)
         end
       end
 
