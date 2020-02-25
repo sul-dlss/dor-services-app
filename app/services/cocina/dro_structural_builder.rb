@@ -54,6 +54,7 @@ module Cocina
             type: Cocina::Models::Vocab.file,
             label: node['id'],
             size: node['size'],
+            hasMimeType: node['mimetype'],
             version: version,
             hasMessageDigests: []
           }.tap do |attrs|

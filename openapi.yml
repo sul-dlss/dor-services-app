@@ -937,6 +937,8 @@ components:
           type: integer
         version:
           type: integer
+        hasMimeType:
+          type: string
         hasMessageDigests:
           type: array
           items:
