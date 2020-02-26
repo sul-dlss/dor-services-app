@@ -50,6 +50,28 @@ class ObjectsController < ApplicationController
     render json: Cocina::Mapper.build(@item)
   end
 
+  # Initialize specified workflow (assemblyWF by default), and also version if needed
+  # called by pre-assembly, goobi and lybservices-scripts to kick off accessioning for a new or existing object
+  # params can optionally include the information needed to open a new version as well as the workflow to start (which defaults to assemblyWF)
+  # @option opts [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
+  # @option opts [String] :significance set significance (major/minor/patch) of version change
+  # @option opts [String] :description set description of version change
+  # @option opts [String] :opening_user_name add opening username to the events datastream
+  # @option opts [String] :workflow the workflow to start (defaults to 'assemblyWF')
+  def start_accession
+    params[:workflow] ||= default_start_accession_workflow # default if not specified
+
+    # if this is an existing versionable object, open and close it without starting accessioning
+    if VersionService.can_open?(@item, params)
+      VersionService.open(params)
+      VersionService.close(params.merge(start_accession: false))
+    end
+
+    # initialize workflow
+    workflow_client.create_workflow_by_name(@item.pid, params[:workflow], version: @item.current_version)
+    head :created
+  end
+
   # called from Argo, the accessionWF and from the releaseWF.
   # Takes an optional 'workflow' argument, which will call back to
   # the 'publish-complete' step of that workflow if provided
@@ -86,12 +108,20 @@ class ObjectsController < ApplicationController
 
   private
 
+  def workflow_client
+    WorkflowClientFactory.build
+  end
+
   def proxy_faraday_response(response)
     render status: response.status, content_type: response.headers['Content-Type'], body: response.body
   end
 
   def create_params
     params.except(:action, :controller).to_unsafe_h.merge(body_params)
+  end
+
+  def default_start_accession_workflow
+    'assemblyWF'
   end
 
   def body_params

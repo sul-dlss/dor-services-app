@@ -27,6 +27,7 @@ Rails.application.routes.draw do
         post 'preserve'
         post 'update_marc_record'
         post 'notify_goobi'
+        post 'start_accession'
         post 'refresh_metadata', to: 'metadata_refresh#refresh'
 
         get 'contents', to: 'content#list'
