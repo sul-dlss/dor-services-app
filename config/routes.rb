@@ -21,6 +21,7 @@ Rails.application.routes.draw do
 
     resources :objects, only: [:create, :show] do
       resource :release_tags, only: [:create, :show]
+      resource :administrative_tags, only: [:create, :show]
 
       member do
         post 'publish'

@@ -275,6 +275,63 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ReleaseTag'
+  '/v1/objects/{object_id}/administrative_tags':
+    get:
+      tags:
+        - objects
+      summary: Show administrative tags for an object
+      description: ''
+      operationId: 'administrative_tags#show'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '404':
+          description: Object not found
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+    post:
+      tags:
+        - objects
+      summary: Create one or more administrative tags
+      description: ''
+      operationId: 'administrative_tags#create'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad request
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+      requestBody:
+        description: one or more administrative tags for an object
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - administrative_tags
+              properties:
+                administrative_tags:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
   '/v1/objects/{id}/refresh_metadata':
     post:
       tags:
