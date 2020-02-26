@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/lostisland/faraday_middleware.git
-  revision: 5d97b780fc32ba4c6e055606d51771ca5cae127c
+  revision: 13e29232f0fb083173e12f8a26b278c5e7869e10
   specs:
     faraday_middleware (1.0.0)
       faraday (~> 1.0)
@@ -98,7 +98,7 @@ GEM
       capistrano (>= 3.9.0)
       sidekiq (>= 3.4, < 6.0)
     chronic (0.10.2)
-    cocina-models (0.24.0)
+    cocina-models (0.25.0)
       dry-struct (~> 1.0)
       dry-types (~> 1.1)
       zeitwerk (~> 2.1)
@@ -489,7 +489,7 @@ DEPENDENCIES
   capistrano-rails
   capistrano-shared_configs
   capistrano-sidekiq
-  cocina-models (~> 0.24.0)
+  cocina-models (~> 0.25.0)
   committee
   config
   deprecation

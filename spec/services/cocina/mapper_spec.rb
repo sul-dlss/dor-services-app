@@ -9,13 +9,16 @@ RSpec.describe Cocina::Mapper do
     let(:item) do
       Dor::Item.new(pid: 'druid:mx000xm0000',
                     source_id: 'whaever:8888',
-                    label: 'test object', admin_policy_object_id: 'druid:sc012gz0974')
+                    label: 'test object',
+                    admin_policy_object_id: 'druid:sc012gz0974')
     end
 
     let(:type) { 'Process : Content Type : 3D' }
+    let(:agreement) { 'druid:666' }
 
     before do
       item.identityMetadata.tag = [type]
+      item.identityMetadata.agreementId = [agreement]
       item.descMetadata.title_info.main_title = 'Hello'
     end
 
@@ -74,6 +77,8 @@ RSpec.describe Cocina::Mapper do
         expect(cocina_model.type).to eq Cocina::Models::Vocab.three_dimensional
 
         expect(cocina_model.administrative.hasAdminPolicy).to eq 'druid:sc012gz0974'
+
+        expect(cocina_model.structural.hasAgreement).to eq 'druid:666'
 
         expect(cocina_model.structural.contains.size).to eq 2
         folder1 = cocina_model.structural.contains.first
