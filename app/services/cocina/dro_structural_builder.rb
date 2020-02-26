@@ -21,6 +21,7 @@ module Cocina
         end
 
         structural[:contains] = build_filesets(item.contentMetadata, version: item.current_version, id: item.pid) unless item.is_a?(Dor::Etd) || item.contentMetadata.new?
+        structural[:hasAgreement] = item.identityMetadata.agreementId.first unless item.identityMetadata.agreementId.empty?
       end
     end
 
