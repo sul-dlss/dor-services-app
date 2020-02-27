@@ -8,6 +8,9 @@ begin
     task.fail_on_error = true
   end
 
-  task default: [:spec, :rubocop]
+  # Clear the default task injected by rspec
+  task(:default).clear
+
+  task default: [:rubocop, :spec]
 rescue LoadError
 end
