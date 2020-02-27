@@ -80,12 +80,12 @@ module Cocina
                     label: obj.label).tap do |item|
         item.descMetadata.mods_title = obj.description.title.first.titleFull if obj.description
         item.identityMetadata.tag = content_type_tag(obj.type, obj.structural.hasMemberOrders&.first&.viewingDirection)
+        change_access(item, obj.access.access)
         if obj.access.embargo
           EmbargoService.embargo(item: item,
                                  release_date: obj.access.embargo.releaseDate,
                                  access: obj.access.embargo.access)
         end
-        change_access(item, obj.access.access)
       end
     end
 
