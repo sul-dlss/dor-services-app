@@ -134,12 +134,13 @@ RSpec.describe 'Create object' do
                                 hasMemberOrders: [
                                   { viewingDirection: 'right-to-left' }
                                 ]
-                              })
+                              },
+                              access: { access: 'world' })
     end
     let(:data) do
       <<~JSON
         { "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
-          "label":"#{label}","version":1,"access":{},
+          "label":"#{label}","version":1,"access":{"access":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
           "identification":{"sourceId":"googlebooks:999999"},
