@@ -101,7 +101,6 @@ class RegistrationService
       idmd.objectCreator = 'DOR'
       idmd.objectLabel = request.label
       idmd.objectType = request.object_type
-      idmd.tag = request.tags
       request.other_ids.each_pair { |name, value| idmd.add_otherId("#{name}:#{value}") }
 
       new_item.add_collection(request.collection) if request.collection
@@ -114,6 +113,7 @@ class RegistrationService
       end
 
       new_item.save!
+      AdministrativeTags.create(item: new_item, tags: request.tags)
       new_item
     end
 

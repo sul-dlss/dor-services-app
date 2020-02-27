@@ -118,9 +118,9 @@ module Cocina
     end
 
     def add_tags(item, obj)
-      Dor::TagService.add(item, content_type_tag(obj.type, obj.structural.hasMemberOrders&.first&.viewingDirection))
-      Dor::TagService.add(item, "Project: #{obj.administrative.partOfProject}") if obj.administrative.partOfProject
-      item.identityMetadata.ng_xml_will_change!
+      tags = [content_type_tag(obj.type, obj.structural.hasMemberOrders&.first&.viewingDirection)]
+      tags << "Project : #{obj.administrative.partOfProject}" if obj.administrative.partOfProject
+      AdministrativeTags.create(item: item, tags: tags)
     end
 
     def content_type_tag(type, direction)

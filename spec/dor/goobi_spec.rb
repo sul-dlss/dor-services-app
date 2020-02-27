@@ -15,7 +15,6 @@ RSpec.describe Dor::Goobi do
     allow(Dor::Item).to receive(:find).and_return(item)
     allow(item).to receive(:source_id).and_return('some_source_id')
     allow(item).to receive(:label).and_return('Object Title & A Special character')
-    allow(item).to receive(:content_type_tag).and_return('book')
     allow(goobi).to receive(:project_name).and_return('Project Name')
     allow(goobi).to receive(:object_type).and_return('item')
     allow(goobi).to receive(:ckey).and_return('ckey_12345')
@@ -23,6 +22,7 @@ RSpec.describe Dor::Goobi do
     allow(goobi).to receive(:barcode).and_return('barcode_12345')
     allow(goobi).to receive(:collection_id).and_return('druid:oo000oo0001')
     allow(goobi).to receive(:collection_name).and_return('collection name')
+    allow(AdministrativeTags).to receive(:content_type).with(item: item).and_return(['book'])
   end
   # rubocop:enable RSpec/SubjectStub
 
@@ -47,7 +47,7 @@ RSpec.describe Dor::Goobi do
   end
 
   it 'creates the correct xml request without ocr tag present' do
-    allow(item).to receive(:tags).and_return(['DPG : Workflow : book_workflow & stuff', 'Process : Content Type : Book', 'LAB : MAPS'])
+    allow(AdministrativeTags).to receive(:for).and_return(['DPG : Workflow : book_workflow & stuff', 'Process : Content Type : Book', 'LAB : MAPS'])
     expect(goobi.goobi_xml_tags).to eq('<tag name="DPG" value="Workflow : book_workflow &amp; stuff"/><tag name="Process" value="Content Type : Book"/><tag name="LAB" value="MAPS"/>')
     expect(goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>
@@ -74,7 +74,7 @@ RSpec.describe Dor::Goobi do
   end
 
   it 'creates the correct xml request with ocr tag present' do
-    allow(item).to receive(:tags).and_return(['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'])
+    allow(AdministrativeTags).to receive(:for).with(item: item).and_return(['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'])
     expect(goobi.goobi_xml_tags).to eq('<tag name="DPG" value="Workflow : book_workflow"/><tag name="DPG" value="OCR : TRUE"/>')
     expect(goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>

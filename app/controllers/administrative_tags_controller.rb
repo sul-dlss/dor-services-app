@@ -14,7 +14,32 @@ class AdministrativeTagsController < ApplicationController
   end
 
   def create
-    AdministrativeTags.create(item: @item, tags: params.require(:administrative_tags))
+    AdministrativeTags.create(item: @item,
+                              tags: params.require(:administrative_tags),
+                              replace: params[:replace])
+  rescue ActiveRecord::RecordInvalid => e
+    render status: :conflict, plain: e.message
+  else
     head :created
+  end
+
+  def update
+    AdministrativeTags.update(item: @item,
+                              current: CGI.unescape(params[:id]),
+                              new: params.require(:administrative_tag))
+  rescue ActiveRecord::RecordNotFound => e
+    render status: :not_found, plain: e.message
+  rescue ActiveRecord::RecordInvalid => e
+    render status: :conflict, plain: e.message
+  else
+    head :no_content
+  end
+
+  def destroy
+    AdministrativeTags.destroy(item: @item, tag: CGI.unescape(params[:id]))
+  rescue ActiveRecord::RecordNotFound => e
+    render status: :not_found, plain: e.message
+  else
+    head :no_content
   end
 end

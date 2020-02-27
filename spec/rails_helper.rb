@@ -6,8 +6,9 @@ require File.expand_path('../../config/environment', __FILE__)
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'spec_helper'
-require 'rspec/matchers'
+
 require 'equivalent-xml/rspec_matchers'
+require 'rspec/matchers'
 require 'rspec/rails'
 require 'support/foxml_helper'
 require 'support/factory_bot'
@@ -54,6 +55,7 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   config.include AuthHelper
+  config.use_transactional_fixtures = true
 
   config.before :suite do
     WebMock.disable_net_connect!(allow_localhost: true)
