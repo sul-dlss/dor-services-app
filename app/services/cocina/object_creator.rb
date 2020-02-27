@@ -10,16 +10,14 @@ module Cocina
     def create(params, event_factory:)
       obj = Cocina::Models.build_request(params)
 
-      if validate(obj)
-        af_model = create_from_model(obj)
+      # Validate will raise an error if not valid.
+      validate(obj)
+      af_model = create_from_model(obj)
 
-        event_factory.create(druid: af_model.pid, event_type: 'registration', data: params)
+      event_factory.create(druid: af_model.pid, event_type: 'registration', data: params)
 
-        # This will rebuild the cocina model from fedora, which shows we are only returning persisted data
-        return Mapper.build(af_model)
-      end
-
-      raise 'not valid'
+      # This will rebuild the cocina model from fedora, which shows we are only returning persisted data
+      Mapper.build(af_model)
     end
 
     private
@@ -87,6 +85,7 @@ module Cocina
                                  release_date: obj.access.embargo.releaseDate,
                                  access: obj.access.embargo.access)
         end
+        change_access(item, obj.access.access)
       end
     end
 
@@ -124,6 +123,17 @@ module Cocina
               Cocina::Models::Vocab.object
             end
       "Process : Content Type : #{tag}"
+    end
+
+    def change_access(item, access)
+      # 'world', 'stanford', 'location-based', 'citation-only', 'dark'
+      raise 'location-based access not implemented' if access == 'location-based'
+
+      # See https://github.com/sul-dlss/dor-services/blob/master/lib/dor/datastreams/rights_metadata_ds.rb
+      rights_type = access == 'citation-only' ? 'none' : access
+      Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, rights_type)
+
+      item.rightsMetadata.ng_xml_will_change!
     end
   end
 end
