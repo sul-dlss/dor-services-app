@@ -65,19 +65,6 @@ class ContentMetadataGenerator
     end
   end
 
-  def common_path
-    @common_path ||= Assembly::ContentMetadata.send(:find_common_path, object_files.values)
-  end
-
-  # @return [Array] A array of tuples of cocina fileset and assembly fileset
-  def assembly_filesets
-    filesets.map do |fs|
-      resource_files = fs.fetch('structural').fetch('contains')
-                         .map { |file| object_files.fetch(file.fetch('filename')) }
-      [fs, Assembly::ContentMetadata::FileSet.new(resource_files: resource_files, style: :simple_book)]
-    end
-  end
-
   def resource_type_counters
     @resource_type_counters ||= Hash.new(0)
   end

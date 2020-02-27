@@ -73,7 +73,8 @@ module Cocina
     # @param [Cocina::Models::RequestDRO] obj
     # @return [Dor::Item] a persisted Item model
     def create_dro(obj)
-      Dor::Item.new(pid: Dor::SuriService.mint_id,
+      pid = Dor::SuriService.mint_id
+      Dor::Item.new(pid: pid,
                     admin_policy_object_id: obj.administrative.hasAdminPolicy,
                     source_id: obj.identification.sourceId,
                     catkey: catkey_for(obj),
@@ -81,6 +82,7 @@ module Cocina
         item.descMetadata.mods_title = obj.description.title.first.titleFull if obj.description
         item.identityMetadata.tag = content_type_tag(obj.type, obj.structural.hasMemberOrders&.first&.viewingDirection)
         change_access(item, obj.access.access)
+        item.contentMetadata.content = ContentMetadataGenerator.generate(druid: pid, object: obj)
         if obj.access.embargo
           EmbargoService.embargo(item: item,
                                  release_date: obj.access.embargo.releaseDate,
