@@ -989,6 +989,33 @@ components:
         - administrative
         - identification
         - structural
+    RequestFileSet:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - 'http://cocina.sul.stanford.edu/models/fileset.jsonld'
+        label:
+          type: string
+        version:
+          type: integer
+        access:
+          $ref: '#/components/schemas/Access'
+        administrative:
+          $ref: '#/components/schemas/EmptyAdministrative'
+        identification:
+          $ref: '#/components/schemas/Identification'
+        structural:
+          $ref: '#/components/schemas/RequestFileSetStructural'
+      required:
+        - label
+        - type
+        - version
+        - access
+        - administrative
+        - identification
+        - structural
     File:
       type: object
       properties:
@@ -1020,6 +1047,41 @@ components:
           $ref: '#/components/schemas/FileStructural'
       required:
         - externalIdentifier
+        - label
+        - type
+        - version
+        - access
+        - administrative
+        - identification
+        - structural
+    RequestFile:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - 'http://cocina.sul.stanford.edu/models/file.jsonld'
+        label:
+          type: string
+        size:
+          type: integer
+        version:
+          type: integer
+        hasMimeType:
+          type: string
+        hasMessageDigests:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageDigest'
+        access:
+          $ref: '#/components/schemas/Access'
+        administrative:
+          $ref: '#/components/schemas/EmptyAdministrative'
+        identification:
+          $ref: '#/components/schemas/Identification'
+        structural:
+          $ref: '#/components/schemas/FileStructural'
+      required:
         - label
         - type
         - version
@@ -1219,7 +1281,7 @@ components:
         identification:
           $ref: '#/components/schemas/Identification'
         structural:
-          $ref: '#/components/schemas/DROStructural'
+          $ref: '#/components/schemas/RequestDROStructural'
       required:
         - label
         - type
@@ -1239,6 +1301,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Sequence'
+    RequestDROStructural:
+      type: object
+      properties:
+        contains:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestFileSet'
+        hasMemberOrders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sequence'
     FileSetStructural:
       type: object
       properties:
@@ -1246,6 +1319,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/File'
+    RequestFileSetStructural:
+      type: object
+      properties:
+        contains:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestFile'
     FileStructural:
       type: object
       properties: {}
