@@ -342,7 +342,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
+                  $ref: '#/components/schemas/AdministrativeTag'
         '404':
           description: Object not found
       parameters:
@@ -383,7 +383,7 @@ paths:
                   type: array
                   minItems: 1
                   items:
-                    type: string
+                    $ref: '#/components/schemas/AdministrativeTag'
   '/v1/objects/{id}/refresh_metadata':
     post:
       tags:
@@ -844,6 +844,10 @@ components:
       type: string
       pattern: '^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$'
       example: 'druid:bc123df4567'
+    AdministrativeTag:
+      type: string
+      pattern: '^.+( : .+)+$'
+      example: 'Foo : Bar : Baz'
     Access:
       type: object
       properties:

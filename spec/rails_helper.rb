@@ -6,8 +6,10 @@ require File.expand_path('../../config/environment', __FILE__)
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'spec_helper'
-require 'rspec/matchers'
+
+require 'database_cleaner/active_record'
 require 'equivalent-xml/rspec_matchers'
+require 'rspec/matchers'
 require 'rspec/rails'
 require 'support/foxml_helper'
 require 'support/factory_bot'
@@ -56,7 +58,15 @@ RSpec.configure do |config|
   config.include AuthHelper
 
   config.before :suite do
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
     WebMock.disable_net_connect!(allow_localhost: true)
+  end
+
+  config.around do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
   end
 end
 
