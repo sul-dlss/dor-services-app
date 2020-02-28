@@ -69,7 +69,7 @@ class VersionService
   #  :major, :minor, :admin (see Dor::VersionTag#increment)
   # @option opts [String] :version_num version number to archive rows with. Otherwise, current version is used
   # @option opts [String] :user_name add username to the events datastream
-  # @option opts [Boolean] :start_accesion set to true if you want accessioning to start (default), false otherwise
+  # @option opts [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
   # @raise [Dor::Exception] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a tag or description
   def close(opts = {})

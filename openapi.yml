@@ -147,7 +147,7 @@ paths:
     post:
       tags:
         - objects
-      summary: Publish object to Searchworks
+      summary: Publish object to PURL
       description: ''
       operationId: 'objects#publish'
       responses:
@@ -175,6 +175,58 @@ paths:
               - accessionWF
               - releaseWF
             example: releaseWF
+  '/v1/objects/{id}/accession':
+    post:
+      tags:
+        - objects
+      summary: Start accessioning or re-accession an object to DOR
+      description: ''
+      operationId: 'objects#accession'
+      responses:
+        '201':
+          description: Accessiong/re-accessioning started
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+        - name: workflow
+          in: query
+          description: which workflow should be started
+          required: false
+          schema:
+            type: string
+            default: assemblyWF
+            enum:
+              - accessionWF
+              - assemblyWF
+            example: assemblyWF
+        - name: significance
+          in: query
+          description: the significance of the version change (if versioning is needed)
+          required: false
+          schema:
+            type: string
+            enum:
+              - Minor
+              - Major
+              - Admin
+            example: Admin
+        - name: description
+          in: query
+          description: the description of the version change (if versioning is needed)
+          required: false
+          schema:
+            type: string
+            example: 'Re-accessioning this object'
+        - name: opening_user_name
+          in: query
+          description: the username of the person creating the version (if versioning is needed)
+          schema:
+            type: string
+            example: 'some_sunetid'
   '/v1/objects/{id}/preserve':
     post:
       tags:
