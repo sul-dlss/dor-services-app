@@ -1064,9 +1064,6 @@ components:
         - label
         - type
         - version
-        - access
-        - administrative
-        - identification
         - structural
     File:
       type: object
@@ -1078,6 +1075,8 @@ components:
         externalIdentifier:
           type: string
         label:
+          type: string
+        filename:
           type: string
         size:
           type: integer
@@ -1115,6 +1114,8 @@ components:
             - 'http://cocina.sul.stanford.edu/models/file.jsonld'
         label:
           type: string
+        filename:
+          type: string
         size:
           type: integer
         version:
@@ -1137,10 +1138,9 @@ components:
         - label
         - type
         - version
+        - filename
         - access
         - administrative
-        - identification
-        - structural
     BackgroundJobResultResponse:
       type: object
       properties:

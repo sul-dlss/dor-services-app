@@ -5,9 +5,10 @@ require 'rails_helper'
 RSpec.describe 'Create object' do
   let(:object) { Dor::AdminPolicyObject.new(pid: 'druid:dd999df4567') }
   let(:data) { item.to_json }
+  let(:druid) { 'druid:gg777gg7777' }
 
   before do
-    allow(Dor::SuriService).to receive(:mint_id).and_return('druid:gg777gg7777')
+    allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
     allow(Dor).to receive(:find).and_return(object)
   end
 
@@ -26,7 +27,7 @@ RSpec.describe 'Create object' do
                                 hasAdminPolicy: 'druid:dd999df4567'
                               },
                               identification: identification,
-                              externalIdentifier: 'druid:gg777gg7777',
+                              externalIdentifier: druid,
                               structural: {})
     end
     let(:data) do
@@ -86,7 +87,7 @@ RSpec.describe 'Create object' do
           end.to change(Event, :count).by(1)
           expect(response.body).to eq expected.to_json
           expect(response.status).to eq(201)
-          expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+          expect(response.location).to eq "/v1/objects/#{druid}"
           expect(RefreshMetadataAction).to have_received(:run)
             .with(identifiers: ['catkey:8888'], datastream: Dor::DescMetadataDS)
         end
@@ -108,8 +109,150 @@ RSpec.describe 'Create object' do
 
           expect(response.body).to eq expected.to_json
           expect(response.status).to eq(201)
-          expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+          expect(response.location).to eq "/v1/objects/#{druid}"
         end
+      end
+    end
+
+    context 'when files are provided' do
+      let(:search_result) { [] }
+      let(:file1) do
+        {
+          'version' => 1,
+          'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+          'filename' => '00001.html',
+          'label' => '00001.html',
+          'hasMimeType' => 'text/html',
+          'use' => 'transcription',
+          'administrative' => {
+            'sdrPreserve' => true,
+            'shelve' => false
+          },
+          'access' => {
+            'access' => 'dark'
+          },
+          'hasMessageDigests' => [
+            {
+              'type' => 'sha1',
+              'digest' => 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'
+            },
+            {
+              'type' => 'md5',
+              'digest' => 'e6d52da47a5ade91ae31227b978fb023'
+            }
+
+          ]
+        }
+      end
+
+      let(:file2) do
+        {
+          'version' => 1,
+          'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+          'filename' => '00001.jp2',
+          'label' => '00001.jp2',
+          'hasMimeType' => 'image/jp2',
+          'administrative' => {
+            'sdrPreserve' => true,
+            'shelve' => true
+          },
+          'access' => {
+            'access' => 'stanford'
+          }
+        }
+      end
+
+      let(:file3) do
+        {
+          'version' => 1,
+          'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+          'filename' => '00002.html',
+          'label' => '00002.html',
+          'hasMimeType' => 'text/html',
+          'administrative' => {
+            'sdrPreserve' => true,
+            'shelve' => false
+          },
+          'access' => {
+            'access' => 'world'
+          }
+        }
+      end
+
+      let(:file4) do
+        {
+          'version' => 1,
+          'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+          'filename' => '00002.jp2',
+          'label' => '00002.jp2',
+          'hasMimeType' => 'image/jp2',
+          'administrative' => {
+            'sdrPreserve' => true,
+            'shelve' => true
+          },
+          'access' => {
+            'access' => 'world'
+          }
+        }
+      end
+
+      let(:filesets) do
+        [
+          {
+            'version' => 1,
+            'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+            'label' => 'Page 1',
+            'structural' => { 'contains' => [file1, file2] }
+          },
+          {
+            'version' => 1,
+            'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+            'label' => 'Page 2',
+            'structural' => { 'contains' => [file3, file4] }
+          }
+        ]
+      end
+
+      let(:fs1) do
+        {
+          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld'
+        }
+      end
+      let(:data) do
+        <<~JSON
+          { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
+            "label":"#{label}","version":1,"access":{},
+            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+            "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
+            "identification":#{identification.to_json},"structural":{"contains":#{filesets.to_json}}}
+        JSON
+      end
+
+      let(:item) do
+        Dor::Item.new(pid: druid,
+                      admin_policy_object_id: 'druid:dd999df4567',
+                      source_id: 'googlebooks:999999',
+                      label: 'This is my label')
+      end
+
+      before do
+        allow(Dor::Item).to receive(:new).and_return(item)
+        allow(item).to receive(:save!)
+      end
+
+      it 'creates contentMetadata' do
+        post '/v1/objects',
+             params: data,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(Dor::Item).to have_received(:new)
+          .with(pid: druid,
+                admin_policy_object_id: 'druid:dd999df4567',
+                source_id: 'googlebooks:999999',
+                catkey: nil, label: 'This is my label')
+        expect(response.body).to eq expected.to_json
+        expect(response.status).to eq(201)
+        expect(item.contentMetadata.resource.file.count).to eq 4
+        expect(response.location).to eq "/v1/objects/#{druid}"
       end
     end
   end
@@ -129,7 +272,7 @@ RSpec.describe 'Create object' do
                                 hasAdminPolicy: 'druid:dd999df4567'
                               },
                               identification: { sourceId: 'googlebooks:999999' },
-                              externalIdentifier: 'druid:gg777gg7777',
+                              externalIdentifier: druid,
                               structural: {
                                 hasMemberOrders: [
                                   { viewingDirection: 'right-to-left' }
@@ -160,7 +303,7 @@ RSpec.describe 'Create object' do
 
       expect(response.body).to eq expected.to_json
       expect(response.status).to eq(201)
-      expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+      expect(response.location).to eq "/v1/objects/#{druid}"
     end
   end
 
@@ -179,7 +322,7 @@ RSpec.describe 'Create object' do
                                        hasAdminPolicy: 'druid:dd999df4567'
                                      },
                                      identification: identification,
-                                     externalIdentifier: 'druid:gg777gg7777')
+                                     externalIdentifier: druid)
     end
     let(:identification) { {} }
     let(:data) do
@@ -215,7 +358,7 @@ RSpec.describe 'Create object' do
         expect(response.body).to eq expected.to_json
 
         expect(response.status).to eq(201)
-        expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+        expect(response.location).to eq "/v1/objects/#{druid}"
         expect(RefreshMetadataAction).to have_received(:run)
           .with(identifiers: ['catkey:8888'], datastream: Dor::DescMetadataDS)
       end
@@ -233,7 +376,7 @@ RSpec.describe 'Create object' do
         expect(response.body).to eq expected.to_json
 
         expect(response.status).to eq(201)
-        expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+        expect(response.location).to eq "/v1/objects/#{druid}"
       end
     end
   end
@@ -250,7 +393,7 @@ RSpec.describe 'Create object' do
                                         hasAdminPolicy: 'druid:dd999df4567',
                                         registration_workflow: 'assemblyWF'
                                       },
-                                      externalIdentifier: 'druid:gg777gg7777')
+                                      externalIdentifier: druid)
     end
 
     let(:default_object_rights) { Dor::DefaultObjectRightsDS.new.content.to_json }
@@ -282,7 +425,7 @@ RSpec.describe 'Create object' do
         expect(response.body).to eq expected.to_json
 
         expect(response.status).to eq(201)
-        expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+        expect(response.location).to eq "/v1/objects/#{druid}"
       end
     end
   end
