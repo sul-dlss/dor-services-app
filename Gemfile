@@ -27,7 +27,7 @@ gem 'config'
 gem 'deprecation'
 gem 'dry-schema', '~> 1.4'
 gem 'faraday', '~> 1.0'
-gem 'faraday_middleware', github: 'lostisland/faraday_middleware' # dependency of dor-workflow-client. remove when release > 0.14.0
+gem 'faraday_middleware', '~> 1.0.0.rc1' # dependency of dor-workflow-client. remove when release > 0.14.0
 gem 'honeybadger'
 gem 'jbuilder'
 gem 'jwt'
