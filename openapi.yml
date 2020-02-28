@@ -184,7 +184,7 @@ paths:
       operationId: 'objects#accession'
       responses:
         '201':
-          description: Accessiong/re-accessioning started
+          description: Accessioning/re-accessioning started
       parameters:
         - name: id
           in: path
