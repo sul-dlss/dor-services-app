@@ -52,14 +52,16 @@ class ObjectsController < ApplicationController
 
   # Initialize specified workflow (assemblyWF by default), and also version if needed
   # called by pre-assembly, goobi and lybservices-scripts to kick off accessioning for a new or existing object
-  # params can optionally include the information needed to open a new version as well as the workflow to start (which defaults to assemblyWF)
-  # @option opts [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
+  #
+  # You can specify params when POSTing to this method to include when opening a version (if that is required to accession).
+  # The optional versioning params are included below for reference.  You can also optionally include a workflow to initialize
+  #   (which defaults to assemblyWF)
   # @option opts [String] :significance set significance (major/minor/patch) of version change
   # @option opts [String] :description set description of version change
   # @option opts [String] :opening_user_name add opening username to the events datastream
   # @option opts [String] :workflow the workflow to start (defaults to 'assemblyWF')
-  def start_accession
-    params[:workflow] ||= default_start_accession_workflow # default if not specified
+  def accession
+    workflow = params[:workflow] || default_start_accession_workflow
 
     # if this is an existing versionable object, open and close it without starting accessioning
     if VersionService.can_open?(@item, params)
@@ -68,7 +70,7 @@ class ObjectsController < ApplicationController
     end
 
     # initialize workflow
-    workflow_client.create_workflow_by_name(@item.pid, params[:workflow], version: @item.current_version)
+    workflow_client.create_workflow_by_name(@item.pid, workflow, version: @item.current_version)
     head :created
   end
 

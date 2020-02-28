@@ -61,7 +61,7 @@ class VersionsController < ApplicationController
     params.permit(
       :description,
       :significance,
-      :start_accession,
+      :accession,
       :user_name,
       :version_num
     ).to_h.symbolize_keys
