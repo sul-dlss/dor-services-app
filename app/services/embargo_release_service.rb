@@ -46,10 +46,10 @@ class EmbargoReleaseService
 
     Rails.logger.info("Releasing #{embargo_msg} for #{druid}")
 
-    VersionService.open(ei)
+    VersionService.open(ei, event_factory: EventFactory)
     release_block.call(ei)
     ei.save!
-    VersionService.close(ei, description: "#{embargo_msg} released", significance: 'admin')
+    VersionService.close(ei, { description: "#{embargo_msg} released", significance: 'admin' }, event_factory: EventFactory)
   rescue StandardError => e
     Rails.logger.error("!!! Unable to release embargo for: #{druid}\n#{e.inspect}\n#{e.backtrace.join("\n")}")
     Honeybadger.notify "Unable to release embargo for: #{druid}", backtrace: e.backtrace

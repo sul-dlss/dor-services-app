@@ -65,8 +65,8 @@ class ObjectsController < ApplicationController
 
     # if this is an existing versionable object, open and close it without starting accessioning
     if VersionService.can_open?(@item, params)
-      VersionService.open(params)
-      VersionService.close(params.merge(start_accession: false))
+      VersionService.open(@item, params, event_factory: EventFactory)
+      VersionService.close(@item, params.merge(start_accession: false), event_factory: EventFactory)
     end
 
     # initialize workflow
