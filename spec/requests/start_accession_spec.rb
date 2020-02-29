@@ -7,6 +7,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
   let(:object) { Dor::Item.new(pid: druid) }
   let(:workflow_client) { instance_double(Dor::Workflow::Client, create_workflow_by_name: true) }
   let(:default_start_accession_workflow) { ObjectsController.new.send(:default_start_accession_workflow) }
+  let(:event_factory) { { event_factory: EventFactory } }
 
   before do
     allow(Dor).to receive(:find).and_return(object)
@@ -52,8 +53,8 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
       post "/v1/objects/#{druid}/accession",
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(workflow_client).to have_received(:create_workflow_by_name).with(object.pid, default_start_accession_workflow, version: '1')
-      expect(VersionService).to have_received(:open).with(base_params)
-      expect(VersionService).to have_received(:close).with(base_params.merge('start_accession' => false))
+      expect(VersionService).to have_received(:open).with(object, base_params, event_factory)
+      expect(VersionService).to have_received(:close).with(object, base_params.merge('start_accession' => false), event_factory)
     end
 
     it 'can override the default workflow' do
@@ -62,8 +63,8 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
            params: params,
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(workflow_client).to have_received(:create_workflow_by_name).with(object.pid, 'accessionWF', version: '1')
-      expect(VersionService).to have_received(:open).with(base_params.merge(params))
-      expect(VersionService).to have_received(:close).with(base_params.merge(params).merge('start_accession' => false))
+      expect(VersionService).to have_received(:open).with(object, base_params.merge(params), event_factory)
+      expect(VersionService).to have_received(:close).with(object, base_params.merge(params).merge('start_accession' => false), event_factory)
     end
   end
 end

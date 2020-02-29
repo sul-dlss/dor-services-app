@@ -165,12 +165,14 @@ RSpec.describe EmbargoReleaseService do
         EOXML
       end
       let(:client) { instance_double(Dor::Workflow::Client) }
+      let(:event_factory) { { event_factory: EventFactory } }
+      let(:close_params) { { description: 'embargo released', significance: 'admin' } }
 
       before do
         allow(Dor).to receive(:find).and_return(item)
         allow(VersionService).to receive(:can_open?).and_return(true)
-        allow(VersionService).to receive(:open).with(item)
-        allow(VersionService).to receive(:close)
+        allow(VersionService).to receive(:open).with(item, event_factory)
+        allow(VersionService).to receive(:close).with(item, close_params, event_factory)
         allow(item).to receive(:save!)
         allow(Honeybadger).to receive(:notify)
         allow(WorkflowClientFactory).to receive(:build).and_return(client)
@@ -199,9 +201,9 @@ RSpec.describe EmbargoReleaseService do
         it 'is successful' do
           release_items
           expect(VersionService).to have_received(:can_open?).with(item)
-          expect(VersionService).to have_received(:open).with(item)
+          expect(VersionService).to have_received(:open).with(item, event_factory)
           expect(item).to have_received(:save!)
-          expect(VersionService).to have_received(:close).with(item, description: 'embargo released', significance: 'admin')
+          expect(VersionService).to have_received(:close).with(item, close_params, event_factory)
         end
       end
 
