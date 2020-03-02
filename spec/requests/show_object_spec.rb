@@ -12,7 +12,10 @@ RSpec.describe 'Get the object' do
       Dor::Item.new(pid: 'druid:1234',
                     source_id: 'src:99999',
                     label: 'foo',
-                    read_rights: 'world')
+                    read_rights: 'world').tap do |i|
+        i.rightsMetadata.copyright = 'All rights reserved unless otherwise indicated.'
+        i.rightsMetadata.use_statement = 'Property rights reside with the repository...'
+      end
     end
 
     context 'when the object exists with minimal metadata' do
@@ -27,7 +30,9 @@ RSpec.describe 'Get the object' do
           label: 'foo',
           version: 1,
           access: {
-            access: 'world'
+            access: 'world',
+            copyright: 'All rights reserved unless otherwise indicated.',
+            useAndReproductionStatement: 'Property rights reside with the repository...'
           },
           administrative: {
             releaseTags: [],
@@ -75,6 +80,8 @@ RSpec.describe 'Get the object' do
           version: 1,
           access: {
             access: 'citation-only',
+            copyright: 'All rights reserved unless otherwise indicated.',
+            useAndReproductionStatement: 'Property rights reside with the repository...',
             embargo: {
               releaseDate: '2019-09-26T07:00:00.000+00:00',
               access: 'world'
