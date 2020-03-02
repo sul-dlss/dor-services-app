@@ -83,7 +83,6 @@ RSpec.describe Cocina::Mapper do
         expect(cocina_model.structural.contains.size).to eq 2
         folder1 = cocina_model.structural.contains.first
         expect(folder1.label).to eq 'Folder 1'
-        expect(folder1.structural.contains.first.label).to eq 'folder1PuSu/story1u.txt'
 
         file1 = folder1.structural.contains.first
         expect(file1.label).to eq 'folder1PuSu/story1u.txt'
@@ -91,14 +90,13 @@ RSpec.describe Cocina::Mapper do
         expect(file1.hasMimeType).to eq 'text/plain'
         expect(file1.hasMessageDigests.first.digest).to eq '61dfac472b7904e1413e0cbf4de432bda2a97627'
         expect(file1.hasMessageDigests.first.type).to eq 'sha1'
-        true
       end
     end
 
     context 'when item has a manuscript tag' do
       let(:type) { 'Process : Content Type : Manuscript (ltr)' }
 
-      it 'builds the object' do
+      it 'builds the object with type manuscript' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
         expect(cocina_model.type).to eq Cocina::Models::Vocab.manuscript
       end
@@ -107,7 +105,7 @@ RSpec.describe Cocina::Mapper do
     context 'when item has a book tag' do
       let(:type) { 'Process : Content Type : Book (rtl)' }
 
-      it 'builds the object' do
+      it 'builds the object with type book' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
         expect(cocina_model.type).to eq Cocina::Models::Vocab.book
       end
@@ -116,9 +114,53 @@ RSpec.describe Cocina::Mapper do
     context 'when item has a d3 tag' do
       let(:type) { 'Process : Content Type : 3D' }
 
-      it 'builds the object' do
+      it 'builds the object with type three_dimensional' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
         expect(cocina_model.type).to eq Cocina::Models::Vocab.three_dimensional
+      end
+    end
+
+    context 'when item has an image tag' do
+      let(:type) { 'Process : Content Type : Image' }
+      let(:content_metadata_ds) { instance_double(Dor::ContentMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml)) }
+      let(:xml) do
+        <<~XML
+          <contentMetadata objectId="bb000zn0114" type="image">
+            <resource id="bb000zn0114_1" sequence="1" type="image">
+              <label>Image 1</label>
+              <file id="PC0062_2008-194_Q03_02_007.jpg" preserve="yes" publish="no" shelve="no" mimetype="image/jpeg" size="1480110">
+                <checksum type="md5">8e656c63ea1ad476e515518a46824fac</checksum>
+                <checksum type="sha1">0cd3613c7dda558433ad955f0cf4f2730e3ec958</checksum>
+                <imageData width="2548" height="1696"/>
+              </file>
+              <file id="PC0062_2008-194_Q03_02_007.jp2" mimetype="image/jp2" size="819813" preserve="no" publish="yes" shelve="yes">
+                <checksum type="md5">1f8d562f4f1fd87946a437176bb8e564</checksum>
+                <checksum type="sha1">3206db5137c0820ede261488e08f4d4815d16078</checksum>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+      let(:fileSet1) { cocina_model.structural.contains.first }
+
+      before do
+        allow(item).to receive(:contentMetadata).and_return(content_metadata_ds)
+      end
+
+      it 'builds the object with type image' do
+        expect(cocina_model).to be_kind_of Cocina::Models::DRO
+        expect(cocina_model.type).to eq Cocina::Models::Vocab.image
+        expect(cocina_model.structural.contains.first).to be_file_set
+        expect(fileSet1.label).to eq 'Image 1'
+      end
+      it 'files with imageData have presentation attribute with height and width' do
+        file1 = fileSet1.structural.contains.first
+        expect(file1.presentation.height).to eq 1696
+        expect(file1.presentation.width).to eq 2548
+      end
+      it 'files without imageData have empty presentation attribute' do
+        file2 = fileSet1.structural.contains.second
+        expect(file2.presentation).to eq nil
       end
     end
   end
@@ -136,7 +178,7 @@ RSpec.describe Cocina::Mapper do
       item.properties.title = 'Test ETD'
     end
 
-    it 'builds the object' do
+    it 'builds the object with type object, a sourceId, and correct admin policy' do
       expect(cocina_model).to be_kind_of Cocina::Models::DRO
       expect(cocina_model.type).to eq Cocina::Models::Vocab.object
 

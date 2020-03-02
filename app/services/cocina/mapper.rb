@@ -4,7 +4,7 @@ module Cocina
   # Maps Dor::Items to Cocina objects
   # rubocop:disable Metrics/ClassLength
   class Mapper
-    # Raised when called on something other than an item or collection
+    # Raised when called on something other than an item (DRO), etd, collection, or adminPolicy (APO)
     class UnsupportedObjectType < StandardError; end
     # @param [Dor::Abstract] item the Fedora object to convert to a cocina object
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]

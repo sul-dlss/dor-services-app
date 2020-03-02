@@ -49,6 +49,9 @@ module Cocina
         # The old google books use these upcased versions. See https://argo.stanford.edu/view/druid:dd116zh0343
         md5 = node.xpath('checksum[@type="md5"]').text.presence || node.xpath('checksum[@type="MD5"]').text
         sha1 = node.xpath('checksum[@type="sha1"]').text.presence || node.xpath('checksum[@type="SHA-1"]').text
+        height = node.xpath('imageData/@height').text.presence
+        width = node.xpath('imageData/@width').text.presence
+
         Cocina::Models::File.new(
           {
             externalIdentifier: "#{parent_id}/#{node['id']}",
@@ -59,6 +62,7 @@ module Cocina
             version: version,
             hasMessageDigests: []
           }.tap do |attrs|
+            attrs[:presentation] = { height: height, width: width } if height && width
             attrs[:hasMessageDigests] << { type: 'sha1', digest: sha1 } if sha1
             attrs[:hasMessageDigests] << { type: 'md5', digest: md5 } if md5
           end
