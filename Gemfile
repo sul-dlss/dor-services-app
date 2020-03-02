@@ -29,6 +29,8 @@ gem 'dry-schema', '~> 1.4'
 gem 'faraday', '~> 1.0'
 gem 'faraday_middleware', '~> 1.0.0.rc1' # dependency of dor-workflow-client. remove when release > 0.14.0
 gem 'honeybadger'
+# iso-639 0.3.0 isn't compatible with ruby 2.5.  This declaration can be dropped when we upgrade to 2.6
+gem 'iso-639', '~> 0.2.8'
 gem 'jbuilder'
 gem 'jwt'
 gem 'okcomputer'
