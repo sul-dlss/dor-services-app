@@ -15,6 +15,8 @@ module Cocina
       { access: access_rights }.tap do |access|
         embargo = build_embargo
         access[:embargo] = embargo unless embargo.empty?
+        access[:useAndReproductionStatement] = item.rightsMetadata.use_statement.first if item.rightsMetadata.use_statement.first.present?
+        access[:copyright] = item.rightsMetadata.copyright.first if item.rightsMetadata.copyright.first.present?
       end
     end
 

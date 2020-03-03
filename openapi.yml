@@ -855,6 +855,12 @@ components:
             - 'location-based'
             - 'citation-only'
             - 'dark'
+        copyright:
+          description: The human readable copyright statement that applies
+          type: string
+        useAndReproductionStatement:
+          description: The human readable use and reproduction statement that applies
+          type: string
         embargo:
           $ref: '#/components/schemas/Embargo'
     EmptyAdministrative:

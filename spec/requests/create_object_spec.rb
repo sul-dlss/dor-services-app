@@ -20,6 +20,10 @@ RSpec.describe 'Create object' do
       Cocina::Models::DRO.new(type: Cocina::Models::Vocab.image,
                               label: expected_label,
                               version: 1,
+                              access: {
+                                copyright: 'All rights reserved unless otherwise indicated.',
+                                useAndReproductionStatement: 'Property rights reside with the repository...'
+                              },
                               description: {
                                 title: [{ titleFull: title, primary: true }]
                               },
@@ -33,7 +37,11 @@ RSpec.describe 'Create object' do
     let(:data) do
       <<~JSON
         { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
-          "label":"#{label}","version":1,"access":{},
+          "label":"#{label}","version":1,
+          "access":{
+            "copyright":"All rights reserved unless otherwise indicated.",
+            "useAndReproductionStatement":"Property rights reside with the repository..."
+          },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
           "identification":#{identification.to_json},"structural":{}}
@@ -232,7 +240,10 @@ RSpec.describe 'Create object' do
         Dor::Item.new(pid: druid,
                       admin_policy_object_id: 'druid:dd999df4567',
                       source_id: 'googlebooks:999999',
-                      label: 'This is my label')
+                      label: 'This is my label').tap do |i|
+          i.rightsMetadata.copyright = 'All rights reserved unless otherwise indicated.'
+          i.rightsMetadata.use_statement = 'Property rights reside with the repository...'
+        end
       end
 
       before do
@@ -300,7 +311,6 @@ RSpec.describe 'Create object' do
       post '/v1/objects',
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-
       expect(response.body).to eq expected.to_json
       expect(response.status).to eq(201)
       expect(response.location).to eq "/v1/objects/#{druid}"

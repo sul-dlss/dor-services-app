@@ -82,6 +82,9 @@ module Cocina
         item.descMetadata.mods_title = obj.description.title.first.titleFull if obj.description
         item.identityMetadata.tag = content_type_tag(obj.type, obj.structural.hasMemberOrders&.first&.viewingDirection)
         change_access(item, obj.access.access)
+        item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
+        item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
+
         item.contentMetadata.content = ContentMetadataGenerator.generate(druid: pid, object: obj)
         if obj.access.embargo
           EmbargoService.embargo(item: item,
@@ -128,13 +131,11 @@ module Cocina
     end
 
     def change_access(item, access)
-      # 'world', 'stanford', 'location-based', 'citation-only', 'dark'
       raise 'location-based access not implemented' if access == 'location-based'
 
       # See https://github.com/sul-dlss/dor-services/blob/master/lib/dor/datastreams/rights_metadata_ds.rb
       rights_type = access == 'citation-only' ? 'none' : access
       Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, rights_type)
-
       item.rightsMetadata.ng_xml_will_change!
     end
   end
