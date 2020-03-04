@@ -210,9 +210,9 @@ paths:
           schema:
             type: string
             enum:
-              - Minor
-              - Major
-              - Admin
+              - minor
+              - major
+              - admin
             example: Admin
         - name: description
           in: query
