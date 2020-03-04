@@ -228,4 +228,30 @@ RSpec.describe 'Get the object' do
       end
     end
   end
+
+  context 'when the requested object is an ETD' do
+    let(:object) { Etd.new(pid: 'druid:1234') }
+
+    before do
+      object.properties.title = 'Test ETD'
+      object.identityMetadata.other_ids = ['dissertationid:00000123']
+      object.label = 'foo'
+      allow(object).to receive(:admin_policy_object_id).and_return('druid:ab123cd4567')
+    end
+
+    it 'returns the object' do
+      get '/v1/objects/druid:mk420bs7601',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+
+      expect(json['externalIdentifier']).to eq 'druid:1234'
+      expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/object.jsonld'
+      expect(json['label']).to eq 'foo'
+      expect(json['version']).to eq 1
+      expect(json['access']).to eq('access' => 'dark')
+      expect(json['identification']).to eq('sourceId' => 'dissertationid:00000123')
+      expect(json['structural']).to eq({})
+    end
+  end
 end

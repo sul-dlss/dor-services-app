@@ -47,6 +47,10 @@ class ObjectsController < ApplicationController
   end
 
   def show
+    # Etds are not mapping to Etd by default (see adapt_to_cmodel in Dor::Abstract)
+    # This hack overrides that behavior and ensures Etds can be mapped to Cocina.
+    models = ActiveFedora::ContentModel.models_asserted_by(@item)
+    @item = @item.adapt_to(Etd) if models.include?('info:fedora/afmodel:Etd')
     render json: Cocina::Mapper.build(@item)
   end
 
