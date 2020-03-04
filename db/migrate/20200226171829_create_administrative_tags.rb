@@ -9,5 +9,6 @@ class CreateAdministrativeTags < ActiveRecord::Migration[5.2]
 
     add_index :administrative_tags, :druid
     add_index :administrative_tags, :tag
+    add_index :administrative_tags, [:druid, :tag], unique: true
   end
 end

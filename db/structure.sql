@@ -210,6 +210,13 @@ CREATE INDEX index_administrative_tags_on_druid ON public.administrative_tags US
 
 
 --
+-- Name: index_administrative_tags_on_druid_and_tag; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_administrative_tags_on_druid_and_tag ON public.administrative_tags USING btree (druid, tag);
+
+
+--
 -- Name: index_administrative_tags_on_tag; Type: INDEX; Schema: public; Owner: -
 --
 
