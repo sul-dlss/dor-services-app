@@ -109,10 +109,6 @@ GEM
       safe_yaml (~> 1.0.0)
     crass (1.0.6)
     daemons (1.3.1)
-    database_cleaner (1.8.3)
-    database_cleaner-active_record (1.8.0)
-      activerecord
-      database_cleaner (~> 1.8.0)
     deep_merge (1.2.1)
     deprecation (0.99.0)
       activesupport
@@ -491,7 +487,6 @@ DEPENDENCIES
   cocina-models (~> 0.26.0)
   committee
   config
-  database_cleaner-active_record
   deprecation
   dlss-capistrano
   dor-services (~> 9.0)

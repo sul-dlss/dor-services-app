@@ -7,7 +7,6 @@ require File.expand_path('../../config/environment', __FILE__)
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'spec_helper'
 
-require 'database_cleaner/active_record'
 require 'equivalent-xml/rspec_matchers'
 require 'rspec/matchers'
 require 'rspec/rails'
@@ -56,17 +55,10 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   config.include AuthHelper
+  config.use_transactional_fixtures = true
 
   config.before :suite do
-    DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.clean_with(:truncation)
     WebMock.disable_net_connect!(allow_localhost: true)
-  end
-
-  config.around do |example|
-    DatabaseCleaner.cleaning do
-      example.run
-    end
   end
 end
 
