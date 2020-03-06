@@ -8,13 +8,14 @@ RSpec.describe Cocina::Mapper do
   context 'when item is a Dor::Item' do
     let(:item) do
       Dor::Item.new(pid: 'druid:mx000xm0000',
-                    source_id: 'whaever:8888',
+                    source_id: source_id,
                     label: 'test object',
                     admin_policy_object_id: 'druid:sc012gz0974')
     end
 
     let(:type) { 'Process : Content Type : 3D' }
     let(:agreement) { 'druid:666' }
+    let(:source_id) { 'whaever:8888' }
 
     before do
       item.identityMetadata.tag = [type]
@@ -161,6 +162,14 @@ RSpec.describe Cocina::Mapper do
       it 'files without imageData have empty presentation attribute' do
         file2 = fileSet1.structural.contains.second
         expect(file2.presentation).to eq nil
+      end
+    end
+
+    context 'when item has null sourceId' do
+      let(:source_id) { nil }
+
+      it 'raises' do
+        expect { cocina_model }.to raise_error(/has a null sourceId/)
       end
     end
   end
