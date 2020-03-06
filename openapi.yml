@@ -1,3 +1,4 @@
+
 openapi: 3.0.0
 info:
   description: Backend API for the Stanford digital repository
@@ -1366,6 +1367,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Sequence'
+        isMemberOf:
+          description: Collection that this DRO is a member of
+          $ref: '#/components/schemas/Druid'
     RequestDROStructural:
       type: object
       properties:
@@ -1377,6 +1381,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Sequence'
+        isMemberOf:
+          $ref: '#/components/schemas/Druid'
     FileSetStructural:
       type: object
       properties:

@@ -17,6 +17,7 @@ RSpec.describe Cocina::Mapper do
     let(:agreement) { 'druid:666' }
 
     before do
+      allow(item).to receive(:collection_ids).and_return([])
       item.identityMetadata.tag = [type]
       item.identityMetadata.agreementId = [agreement]
       item.descMetadata.title_info.main_title = 'Hello'
@@ -176,6 +177,7 @@ RSpec.describe Cocina::Mapper do
 
     before do
       item.properties.title = 'Test ETD'
+      allow(item).to receive(:collection_ids).and_return([])
     end
 
     it 'builds the object with type object, a sourceId, and correct admin policy' do

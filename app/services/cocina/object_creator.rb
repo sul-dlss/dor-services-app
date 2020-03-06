@@ -77,6 +77,7 @@ module Cocina
       Dor::Item.new(pid: pid,
                     admin_policy_object_id: obj.administrative.hasAdminPolicy,
                     source_id: obj.identification.sourceId,
+                    collection_ids: [obj.structural.isMemberOf].compact,
                     catkey: catkey_for(obj),
                     label: obj.label).tap do |item|
         item.descMetadata.mods_title = obj.description.title.first.titleFull if obj.description
