@@ -272,6 +272,39 @@ RSpec.describe VersionService do
       end
     end
 
+    context 'when start_accession is false' do
+      subject(:close) do
+        described_class.close(obj,
+                              {
+                                description: 'closing text',
+                                significance: 'major',
+                                user_name: 'jcoyne',
+                                start_accession: false
+                              },
+                              event_factory: event_factory)
+      end
+
+      let(:workflow_client) do
+        instance_double(Dor::Workflow::Client, close_version: true)
+      end
+
+      before do
+        allow(vmd_ds).to receive(:pid).and_return('druid:ab123cd4567')
+        # stub out calls for open_for_versioning?
+        allow(workflow_client).to receive(:active_lifecycle).and_return(true, false)
+        allow(vmd_ds).to receive(:save)
+        allow(ev_ds).to receive(:add_event)
+        allow(obj).to receive(:save!)
+        vmd_ds.increment_version
+      end
+
+      it 'passes the correct value of create_accession_wf' do
+        close
+        expect(workflow_client).to have_received(:close_version)
+          .with(repo: 'dor', druid: druid, version: '2', create_accession_wf: false)
+      end
+    end
+
     context 'when the object has not been opened for versioning' do
       it 'raises an exception' do
         expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(nil)

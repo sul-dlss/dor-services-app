@@ -759,6 +759,13 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+        - name: start_accession
+          in: query
+          schema:
+            type: boolean
+            default: true
+          required: false
+          description: Indicates if accessionWF should be started after closing the version
   '/v1/objects/{object_id}/versions':
     post:
       tags:
