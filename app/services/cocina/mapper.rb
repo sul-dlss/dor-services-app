@@ -29,6 +29,7 @@ module Cocina
               else
                 raise "unable to build '#{klass}'"
               end
+      check_source_id(props) if klass == Cocina::Models::DRO
       klass.new(props)
     end
 
@@ -151,7 +152,7 @@ module Cocina
       end
     end
 
-    # @todo This should have more speicific type such as found in identityMetadata.objectType
+    # @todo This should have more specific type such as found in identityMetadata.objectType
     def cocina_klass
       case item
       when Dor::Item, Dor::Etd
@@ -163,6 +164,10 @@ module Cocina
       else
         raise UnsupportedObjectType, "Unknown type for #{item.class}"
       end
+    end
+
+    def check_source_id(props)
+      raise "Item #{props[:externalIdentifier]} has a null sourceId. This item requires remediation." if props[:identification][:sourceId].nil?
     end
   end
   # rubocop:enable Metrics/ClassLength
