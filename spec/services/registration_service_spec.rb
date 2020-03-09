@@ -11,6 +11,7 @@ RSpec.describe RegistrationService do
     allow(apo).to receive(:new_record?).and_return false
     allow(Dor).to receive(:find).with('druid:fg890hi1234').and_return(apo)
     allow(EventFactory).to receive(:create)
+    stub_request(:post, 'https://dor-indexing-app.server/reindex/druid:ab123cd4567')
   end
 
   describe '#register_object' do
@@ -348,7 +349,7 @@ RSpec.describe RegistrationService do
   describe '#create_from_request' do
     subject(:create) { described_class.create_from_request(params) }
 
-    let(:item) { klass.new }
+    let(:item) { klass.new(pid: pid) }
 
     before do
       allow(Dor::SuriService).to receive(:mint_id).and_return(pid)
@@ -371,7 +372,7 @@ RSpec.describe RegistrationService do
         }
       end
 
-      it 'is successful' do
+      it 'creates a new object, indexes it immediately and creates and event' do
         expect(create).to be_kind_of Dor::RegistrationResponse
         expect(klass).to have_received(:new)
           .with(
@@ -380,6 +381,7 @@ RSpec.describe RegistrationService do
                            source_id: 'sul:SOMETHING-www.example.org')
           )
         expect(item.rightsMetadata.content).to be_equivalent_to apo.defaultObjectRights.content
+        expect(a_request(:post, 'https://dor-indexing-app.server/reindex/druid:ab123cd4567')).to have_been_made
         expect(EventFactory).to have_received(:create)
       end
 

@@ -14,6 +14,10 @@ module Cocina
       validate(obj)
       af_model = create_from_model(obj)
 
+      # Fedora 3 has no unique constrains, so
+      # index right away to reduce the likelyhood of duplicate sourceIds
+      SynchronousIndexer.reindex_remotely(af_model.pid)
+
       event_factory.create(druid: af_model.pid, event_type: 'registration', data: params)
 
       # This will rebuild the cocina model from fedora, which shows we are only returning persisted data

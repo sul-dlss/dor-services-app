@@ -13,6 +13,11 @@ class RegistrationService
       request = RegistrationRequest.new(dor_params)
       dor_obj = register_object(request)
       pid = dor_obj.pid
+
+      # Fedora 3 has no unique constrains, so
+      # Index right away to reduce the likelyhood of duplicate sourceIds
+      SynchronousIndexer.reindex_remotely(pid)
+
       event_factory.create(druid: pid, event_type: 'legacy-registration', data: params)
       location = URI.parse(Dor::Config.fedora.safeurl.sub(%r{/*$}, '/')).merge("objects/#{pid}").to_s
 

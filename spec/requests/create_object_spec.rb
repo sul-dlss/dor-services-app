@@ -10,6 +10,7 @@ RSpec.describe 'Create object' do
   before do
     allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
     allow(Dor).to receive(:find).and_return(object)
+    stub_request(:post, 'https://dor-indexing-app.server/reindex/druid:gg777gg7777')
   end
 
   context 'when an image is provided' do
@@ -88,12 +89,13 @@ RSpec.describe 'Create object' do
           allow(RefreshMetadataAction).to receive(:run)
         end
 
-        it 'registers the object with the registration service' do
+        it 'registers the object with the registration service and immediately indexes' do
           expect do
             post '/v1/objects',
                  params: data,
                  headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           end.to change(Event, :count).by(1)
+          expect(a_request(:post, 'https://dor-indexing-app.server/reindex/druid:gg777gg7777')).to have_been_made
           expect(response.body).to eq expected.to_json
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
@@ -111,11 +113,11 @@ RSpec.describe 'Create object' do
           allow_any_instance_of(Dor::Item).to receive(:save!)
         end
 
-        it 'registers the object with the registration service' do
+        it 'registers the object with the registration service and immediately indexes' do
           post '/v1/objects',
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-
+          expect(a_request(:post, 'https://dor-indexing-app.server/reindex/druid:gg777gg7777')).to have_been_made
           expect(response.body).to eq expected.to_json
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
