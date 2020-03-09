@@ -20,6 +20,7 @@ RSpec.describe 'Get the object' do
 
     context 'when the object exists with minimal metadata' do
       before do
+        allow(object).to receive(:collection_ids).and_return([])
         object.descMetadata.title_info.main_title = 'Hello'
       end
 
@@ -63,6 +64,8 @@ RSpec.describe 'Get the object' do
 
     context 'when the object exists with full metadata' do
       before do
+        allow(object).to receive(:collection_ids).and_return(['druid:xx888xx7777'])
+
         object.descMetadata.title_info.main_title = 'Hello'
         EmbargoService.embargo(item: object, release_date: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world')
         ReleaseTags.create(object, release: true,
@@ -108,7 +111,9 @@ RSpec.describe 'Get the object' do
           identification: {
             sourceId: 'src:99999'
           },
-          structural: {}
+          structural: {
+            isMemberOf: 'druid:xx888xx7777'
+          }
         }
       end
 
@@ -236,6 +241,7 @@ RSpec.describe 'Get the object' do
       object.properties.title = 'Test ETD'
       object.identityMetadata.other_ids = ['dissertationid:00000123']
       object.label = 'foo'
+      allow(object).to receive(:collection_ids).and_return([])
       allow(object).to receive(:admin_policy_object_id).and_return('druid:ab123cd4567')
     end
 

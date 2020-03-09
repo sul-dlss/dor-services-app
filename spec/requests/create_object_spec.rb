@@ -16,6 +16,7 @@ RSpec.describe 'Create object' do
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected_label) { label }
+    let(:structural) { {} }
     let(:expected) do
       Cocina::Models::DRO.new(type: Cocina::Models::Vocab.image,
                               label: expected_label,
@@ -32,7 +33,7 @@ RSpec.describe 'Create object' do
                               },
                               identification: identification,
                               externalIdentifier: druid,
-                              structural: {})
+                              structural: structural)
     end
     let(:data) do
       <<~JSON
@@ -248,6 +249,7 @@ RSpec.describe 'Create object' do
 
       before do
         allow(Dor::Item).to receive(:new).and_return(item)
+        allow(item).to receive(:collection_ids).and_return([])
         allow(item).to receive(:save!)
       end
 
@@ -259,10 +261,57 @@ RSpec.describe 'Create object' do
           .with(pid: druid,
                 admin_policy_object_id: 'druid:dd999df4567',
                 source_id: 'googlebooks:999999',
+                collection_ids: [],
                 catkey: nil, label: 'This is my label')
         expect(response.body).to eq expected.to_json
         expect(response.status).to eq(201)
         expect(item.contentMetadata.resource.file.count).to eq 4
+        expect(response.location).to eq "/v1/objects/#{druid}"
+      end
+    end
+
+    context 'when collection is provided' do
+      let(:search_result) { [] }
+      let(:structural) { { isMemberOf: 'druid:xx888xx7777' } }
+
+      let(:data) do
+        <<~JSON
+          { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
+            "label":"#{label}","version":1,"access":{},
+            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+            "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
+            "identification":#{identification.to_json},"structural":{"isMemberOf":"druid:xx888xx7777"}}
+        JSON
+      end
+
+      let(:item) do
+        Dor::Item.new(pid: druid,
+                      admin_policy_object_id: 'druid:dd999df4567',
+                      source_id: 'googlebooks:999999',
+                      label: 'This is my label').tap do |i|
+          i.rightsMetadata.copyright = 'All rights reserved unless otherwise indicated.'
+          i.rightsMetadata.use_statement = 'Property rights reside with the repository...'
+        end
+      end
+
+      before do
+        allow(Dor::Item).to receive(:new).and_return(item)
+        allow(item).to receive(:collection_ids).and_return(['druid:xx888xx7777'])
+        allow(item).to receive(:save!)
+      end
+
+      it 'creates collection relationship' do
+        post '/v1/objects',
+             params: data,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(Dor::Item).to have_received(:new)
+          .with(pid: druid,
+                admin_policy_object_id: 'druid:dd999df4567',
+                source_id: 'googlebooks:999999',
+                collection_ids: ['druid:xx888xx7777'],
+                catkey: nil, label: 'This is my label')
+        expect(response.body).to eq expected.to_json
+        expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
       end
     end
