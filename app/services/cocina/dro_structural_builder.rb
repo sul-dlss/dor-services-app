@@ -20,7 +20,7 @@ module Cocina
           structural[:hasMemberOrders] = [{ viewingDirection: 'right-to-left' }]
         end
 
-        structural[:contains] = build_filesets(item.contentMetadata, version: item.current_version, id: item.pid) unless item.is_a?(Dor::Etd) || item.contentMetadata.new?
+        structural[:contains] = build_filesets(item.contentMetadata, version: item.current_version, id: item.pid) unless item.contentMetadata.new?
         structural[:hasAgreement] = item.identityMetadata.agreementId.first unless item.identityMetadata.agreementId.empty?
         structural[:isMemberOf] = item.collection_ids.first if item.collection_ids.present?
       end
