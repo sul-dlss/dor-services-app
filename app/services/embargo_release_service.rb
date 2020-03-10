@@ -57,12 +57,12 @@ class EmbargoReleaseService
 
   def self.release
     release_items('embargo_status_ssim:"embargoed" AND embargo_release_dtsim:[* TO NOW]') do |item|
-      item.release_embargo('application:accessionWF:embargo-release')
+      Dor::EmbargoService.new(item).release_embargo('application:accessionWF:embargo-release')
     end
 
     release_items('twenty_pct_status_ssim:"embargoed" AND twenty_pct_visibility_release_dtsim:[* TO NOW]',
                   '20% visibility embargo') do |item|
-      item.release_20_pct_vis_embargo('application:accessionWF:embargo-release')
+      Dor::EmbargoService.new(item).release_20_pct_vis_embargo('application:accessionWF:embargo-release')
     end
   end
 end
