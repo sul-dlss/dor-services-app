@@ -3,6 +3,6 @@
 namespace :dsa do
   desc 'Embargo release'
   task embargo_release: :environment do
-    EmbargoReleaseService.release
+    EmbargoReleaseService.release_all
   end
 end

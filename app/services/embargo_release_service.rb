@@ -55,14 +55,81 @@ class EmbargoReleaseService
     Honeybadger.notify "Unable to release embargo for: #{druid}", backtrace: e.backtrace
   end
 
-  def self.release
+  def release_all
     release_items('embargo_status_ssim:"embargoed" AND embargo_release_dtsim:[* TO NOW]') do |item|
-      Dor::EmbargoService.new(item).release_embargo('application:accessionWF:embargo-release')
+      new(item).release('application:accessionWF:embargo-release')
     end
 
     release_items('twenty_pct_status_ssim:"embargoed" AND twenty_pct_visibility_release_dtsim:[* TO NOW]',
                   '20% visibility embargo') do |item|
-      Dor::EmbargoService.new(item).release_20_pct_vis_embargo('application:accessionWF:embargo-release')
+      new(item).release_20_pct_vis_embargo('application:accessionWF:embargo-release')
     end
+  end
+
+  # @param [Dor::Item] item
+  def initialize(item)
+    @item = item
+  end
+
+  # Lift the embargo from the object
+  # Sets embargo status to released in embargoMetadata
+  # Modifies rightsMetadata to remove embargoReleaseDate and updates/adds access from embargoMetadata/releaseAccess
+  # @param [String] release_agent name of the person, application or thing that released embargo
+  # @note The caller should save the object to fedora to commit the changes
+  def release(release_agent)
+    # Set status to released
+    embargoMetadata.status = 'released'
+
+    # Remove all read acces nodes
+    rights_xml = rightsMetadata.ng_xml
+    rightsMetadata.ng_xml_will_change!
+    rights_xml.xpath("//rightsMetadata/access[@type='read']").each(&:remove)
+
+    # Replace rights <access> nodes with those from embargoMetadta
+    release_access = embargoMetadata.release_access_node
+    release_access.xpath('//releaseAccess/access').each do |new_access|
+      access_sibling = rights_xml.at_xpath('//rightsMetadata/access[last()]')
+      if access_sibling
+        access_sibling.add_next_sibling(new_access.clone)
+      else
+        rights_xml.root.add_child(new_access.clone)
+      end
+    end
+
+    events.add_event('embargo', release_agent, 'Embargo released')
+  end
+
+  def release_20_pct_vis(release_agent)
+    # Set status to released
+    embargoMetadata.twenty_pct_status = 'released'
+
+    # Remove all read acces nodes
+    rights_xml = rightsMetadata.ng_xml
+    rightsMetadata.ng_xml_will_change!
+    rights_xml.xpath("//rightsMetadata/access[@type='read']").each(&:remove)
+
+    # Replace rights <access> nodes with 1 machine/world node
+    access_sibling = rights_xml.at_xpath('//rightsMetadata/access[last()]')
+    if access_sibling
+      access_sibling.add_next_sibling(world_doc.root.clone)
+    else
+      rights_xml.root.add_child(world_doc.root.clone)
+    end
+
+    events.add_event('embargo', release_agent, '20% Visibility Embargo released')
+  end
+
+  private
+
+  attr_reader :item
+
+  delegate :rightsMetadata, :embargoMetadata, :events, to: :item
+
+  def world_doc
+    Nokogiri::XML::Builder.new do |xml|
+      xml.access(type: 'read') do
+        xml.machine { xml.world }
+      end
+    end.doc
   end
 end

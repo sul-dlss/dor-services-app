@@ -3,8 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe EmbargoReleaseService do
+  let(:service) { described_class.new(item) }
   let(:embargo_release_date) { Time.now.utc - 100_000 }
-
   let(:release_access) do
     <<-EOXML
     <releaseAccess>
@@ -41,78 +41,166 @@ RSpec.describe EmbargoReleaseService do
   end
 
   describe '#release_embargo' do
-    let(:embargo_xml) do
-      <<-EOXML
-      <embargoMetadata>
-        <status>embargoed</status>
-        <releaseDate>#{embargo_release_date.iso8601}</releaseDate>
-        <twentyPctVisibilityStatus/>
-        <twentyPctVisibilityReleaseDate/>
-        #{release_access}
-      </embargoMetadata>
-      EOXML
+    subject(:release) do
+      service.release('application:embargo-release')
+    end
+
+    let(:embargo_ds) do
+      eds = Dor::EmbargoMetadataDS.new
+      eds.status = 'embargoed'
+      eds.release_date = embargo_release_date
+      eds.release_access_node = Nokogiri::XML(release_access) { |config| config.default_xml.noblanks }
+      eds
     end
     let(:item) do
-      i = Dor::Item.new
+      embargo_item = Dor::Item.new
+      embargo_item.datastreams['embargoMetadata'] = embargo_ds
       rds = Dor::RightsMetadataDS.new
       rds.content = Nokogiri::XML(rights_xml) { |config| config.default_xml.noblanks }.to_s
-      i.datastreams['rightsMetadata'] = rds
-      eds = Dor::EmbargoMetadataDS.new
-      eds.content = Nokogiri::XML(embargo_xml) { |config| config.default_xml.noblanks }.to_s
-      i.datastreams['embargoMetadata'] = eds
-      i
+      embargo_item.datastreams['rightsMetadata'] = rds
+      embargo_item
     end
 
     it 'rights metadata has no embargo after Dor::Item.release_embargo' do
       expect(item.rightsMetadata.ng_xml.at_xpath('//embargoReleaseDate')).not_to be_nil
       expect(item.rightsMetadata.content).to match('embargoReleaseDate')
-      item.release_embargo('ignored')
+      release
       expect(item.rightsMetadata.ng_xml.at_xpath('//embargoReleaseDate')).to be_nil
       expect(item.rightsMetadata.content).not_to match('embargoReleaseDate')
     end
 
     it 'embargo metadata changes to status released after Dor::Item.release_embargo' do
       expect(item.embargoMetadata.ng_xml.at_xpath('//status').text).to eql 'embargoed'
-      item.release_embargo('ignored')
+      release
       expect(item.embargoMetadata.ng_xml.at_xpath('//status').text).to eql 'released'
+    end
+
+    it 'sets the embargo status to released and indicates it is not embargoed' do
+      release
+      expect(embargo_ds.status).to eq('released')
+      expect(item).not_to be_embargoed
+    end
+
+    context 'with rightsMetadata modifications' do
+      it 'deletes embargoReleaseDate' do
+        release
+        rights = item.datastreams['rightsMetadata'].ng_xml
+        expect(rights.at_xpath('//embargoReleaseDate')).to be_nil
+      end
+
+      context "when there is more than one <access type='read'> node in <releaseAccess>" do
+        let(:release_access) do
+          <<-EOXML
+          <releaseAccess>
+            <access type="read">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <file id="restricted.doc"/>
+              <machine>
+                <group>stanford</group>
+              </machine>
+            </access>
+          </releaseAccess>
+          EOXML
+        end
+
+        it 'handles it' do
+          release
+          rights = item.datastreams['rightsMetadata'].ng_xml
+          expect(rights.xpath("//rightsMetadata/access[@type='read']/file").size).to eq(1)
+        end
+
+        it 'replaces/adds access nodes with nodes from embargoMetadata/releaseAccess' do
+          release
+          rights = item.datastreams['rightsMetadata'].ng_xml
+          expect(rights.xpath("//rightsMetadata/access[@type='read']").size).to eq(2)
+          expect(rights.xpath("//rightsMetadata/access[@type='discover']").size).to eq(1)
+          expect(rights.xpath("//rightsMetadata/access[@type='read']/machine/world").size).to eq(1)
+          expect(rights.at_xpath("//rightsMetadata/access[@type='read' and not(file)]/machine/group")).to be_nil
+        end
+      end
+
+      it 'marks the datastream as changed' do
+        release
+        expect(item.datastreams['rightsMetadata']).to be_changed
+      end
+    end
+
+    it "writes 'embargo released' to event history" do
+      release
+      events = item.datastreams['events']
+      events.find_events_by_type('embargo') do |who, _timestamp, message|
+        expect(who).to eq 'application:embargo-release'
+        expect(message).to eq 'Embargo released'
+      end
     end
   end
 
-  context 'when release_20_pct_vis_embargo' do
-    let(:embargo_twenty_pct_xml) do
-      <<-EOXML
-      <embargoMetadata>
-        <status>embargoed</status>
-        <releaseDate>#{embargo_release_date.iso8601}</releaseDate>
-        <twentyPctVisibilityStatus>anything</twentyPctVisibilityStatus>
-        <twentyPctVisibilityReleaseDate>#{embargo_release_date.iso8601}</twentyPctVisibilityReleaseDate>
-        #{release_access}
-      </embargoMetadata>
-      EOXML
+  describe '#release_20_pct_vis' do
+    subject(:release_20_pct_vis) do
+      service.release_20_pct_vis('application:embargo-release')
     end
-    let(:item) do
-      i = Dor::Item.new
-      rds = Dor::RightsMetadataDS.new
-      rds.content = Nokogiri::XML(rights_xml) { |config| config.default_xml.noblanks }.to_s
-      i.datastreams['rightsMetadata'] = rds
+
+    let(:embargo_ds) do
       eds = Dor::EmbargoMetadataDS.new
-      eds.content = Nokogiri::XML(embargo_twenty_pct_xml) { |config| config.default_xml.noblanks }.to_s
-      i.datastreams['embargoMetadata'] = eds
-      i
+      eds.status = 'embargoed'
+      eds.twenty_pct_status = 'anything'
+      eds.release_date = embargo_release_date
+      eds.release_access_node = Nokogiri::XML(release_access) { |config| config.default_xml.noblanks }
+      eds
+    end
+
+    let(:item) do
+      embargo_item = Dor::Item.new
+      embargo_item.datastreams['embargoMetadata'] = embargo_ds
+      embargo_item.datastreams['rightsMetadata'].ng_xml = Nokogiri::XML(rights_xml) { |config| config.default_xml.noblanks }
+      embargo_item
     end
 
     it 'rights metadata has no embargo after Dor::Item.release_20_pct_vis_embargo' do
       expect(item.rightsMetadata.ng_xml.at_xpath('//embargoReleaseDate')).not_to be_nil
       expect(item.rightsMetadata.content).to match('embargoReleaseDate')
-      item.release_20_pct_vis_embargo('ignored')
+      release_20_pct_vis
       expect(item.rightsMetadata.ng_xml.at_xpath('//embargoReleaseDate')).to be_nil
       expect(item.rightsMetadata.content).not_to match('embargoReleaseDate')
     end
 
     it 'embargo metadata changes to twenty_pct_status released after Dor::Item.release_20_pct_vis_embargo' do
       expect(item.embargoMetadata.twenty_pct_status).to eql 'anything'
-      item.release_20_pct_vis_embargo('ignored')
+      release_20_pct_vis
       expect(item.embargoMetadata.twenty_pct_status).to eql 'released'
+    end
+
+    it 'sets the embargo status to released' do
+      release_20_pct_vis
+      expect(embargo_ds.twenty_pct_status).to eq 'released'
+    end
+
+    context 'with rightsMetadata modifications' do
+      it 'replaces stanford group read access to world read access' do
+        release_20_pct_vis
+        rights = item.datastreams['rightsMetadata'].ng_xml
+        expect(rights.xpath("//rightsMetadata/access[@type='read']").size).to eq 1
+        expect(rights.xpath("//rightsMetadata/access[@type='discover']").size).to eq 1
+        expect(rights.xpath("//rightsMetadata/access[@type='read']/machine/world").size).to eq 1
+      end
+
+      it 'marks the datastream as content changed' do
+        release_20_pct_vis
+        expect(item.datastreams['rightsMetadata']).to be_content_changed
+      end
+    end
+
+    it "writes 'embargo released' to event history" do
+      release_20_pct_vis
+      events = item.datastreams['events']
+      events.find_events_by_type('embargo') do |who, _timestamp, message|
+        expect(who).to eq('application:embargo-release')
+        expect(message).to eq('20% Visibility Embargo released')
+      end
     end
   end
 
