@@ -2,14 +2,18 @@
 
 # Sets an embargo for an item.
 class EmbargoService
-  def self.embargo(item:, release_date:, access:)
-    new(item: item, release_date: release_date, access: access).embargo
+  def self.embargo(item:, release_date:, access:, use_and_reproduction_statement: nil)
+    new(item: item,
+        release_date: release_date,
+        access: access,
+        use_and_reproduction_statement: use_and_reproduction_statement).embargo
   end
 
-  def initialize(item:, release_date:, access:)
+  def initialize(item:, release_date:, access:, use_and_reproduction_statement:)
     @item = item
     @release_date = release_date
     @access = access
+    @use_and_reproduction_statement = use_and_reproduction_statement
   end
 
   def embargo
@@ -22,12 +26,13 @@ class EmbargoService
     item.embargoMetadata.status = 'embargoed'
 
     item.embargoMetadata.release_access_node = Nokogiri::XML(generic_access_xml)
+    item.embargoMetadata.use_and_reproduction_statement = use_and_reproduction_statement if use_and_reproduction_statement
     deny_read_access
   end
 
   private
 
-  attr_reader :item, :release_date, :access
+  attr_reader :item, :release_date, :access, :use_and_reproduction_statement
 
   def deny_read_access
     rights_xml = item.rightsMetadata.ng_xml
