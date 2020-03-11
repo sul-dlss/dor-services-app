@@ -97,6 +97,24 @@ RSpec.describe ContentMetadataGenerator do
     }
   end
 
+  let(:file5) do
+    {
+      'version' => 1,
+      'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+      'filename' => 'checksum.txt',
+      'label' => 'checksum.txt',
+      'hasMimeType' => 'text/plain',
+      'size' => 11468,
+      'administrative' => {
+        'sdrPreserve' => true,
+        'shelve' => true
+      },
+      'access' => {
+        'access' => 'world'
+      }
+    }
+  end
+
   let(:filesets) do
     [
       {
@@ -127,6 +145,30 @@ RSpec.describe ContentMetadataGenerator do
   context 'with a book' do
     let(:object_type) { Cocina::Models::Vocab.book }
 
+    let(:filesets) do
+      [
+        {
+          'version' => 1,
+          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+          'label' => 'Page 1',
+          'structural' => { 'contains' => [file1, file2] }
+        },
+        {
+          'version' => 1,
+          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+          'label' => 'Page 2',
+          'structural' => { 'contains' => [file3, file4] }
+        },
+        {
+          'version' => 1,
+          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+          'label' => 'Object 1',
+          'structural' => { 'contains' => [file5] }
+        }
+
+      ]
+    end
+
     it 'generates contentMetadata.xml' do
       expect(generate).to be_equivalent_to '<?xml version="1.0"?>
          <contentMetadata objectId="druid:bc123de5678" type="book">
@@ -142,6 +184,10 @@ RSpec.describe ContentMetadataGenerator do
              <label>Page 2</label>
              <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
              <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
+           </resource>
+           <resource id="bc123de5678_3" sequence="3" type="object">
+             <label>Object 1</label>
+             <file id="checksum.txt" mimetype="text/plain" size="11468" preserve="yes" publish="yes" shelve="yes"/>
            </resource>
          </contentMetadata>'
     end
