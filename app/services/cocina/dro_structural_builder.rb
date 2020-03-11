@@ -20,7 +20,7 @@ module Cocina
           structural[:hasMemberOrders] = [{ viewingDirection: 'right-to-left' }]
         end
 
-        structural[:contains] = build_filesets(item.contentMetadata, version: item.current_version, id: item.pid) unless item.contentMetadata.new?
+        structural[:contains] = build_filesets(item.contentMetadata, version: item.current_version.to_i, id: item.pid) unless item.contentMetadata.new?
         structural[:hasAgreement] = item.identityMetadata.agreementId.first unless item.identityMetadata.agreementId.empty?
         structural[:isMemberOf] = item.collection_ids.first if item.collection_ids.present?
       end
@@ -50,15 +50,15 @@ module Cocina
         # The old google books use these upcased versions. See https://argo.stanford.edu/view/druid:dd116zh0343
         md5 = node.xpath('checksum[@type="md5"]').text.presence || node.xpath('checksum[@type="MD5"]').text
         sha1 = node.xpath('checksum[@type="sha1"]').text.presence || node.xpath('checksum[@type="SHA-1"]').text
-        height = node.xpath('imageData/@height').text.presence
-        width = node.xpath('imageData/@width').text.presence
+        height = node.xpath('imageData/@height').text.presence&.to_i
+        width = node.xpath('imageData/@width').text.presence&.to_i
 
         Cocina::Models::File.new(
           {
             externalIdentifier: "#{parent_id}/#{node['id']}",
             type: Cocina::Models::Vocab.file,
             label: node['id'],
-            size: node['size'],
+            size: node['size'].to_i,
             hasMimeType: node['mimetype'],
             version: version,
             hasMessageDigests: []
