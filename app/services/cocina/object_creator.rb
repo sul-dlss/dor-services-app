@@ -96,10 +96,10 @@ module Cocina
     end
 
     def create_embargo(item, embargo)
-      EmbargoService.embargo(item: item,
-                             release_date: embargo.releaseDate,
-                             access: embargo.access,
-                             use_and_reproduction_statement: embargo.useAndReproductionStatement)
+      EmbargoService.create(item: item,
+                            release_date: embargo.releaseDate,
+                            access: embargo.access,
+                            use_and_reproduction_statement: embargo.useAndReproductionStatement)
     end
 
     # @param [Cocina::Models::RequestCollection] obj

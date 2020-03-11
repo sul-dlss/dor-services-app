@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe EmbargoService do
   subject(:embargo) do
-    described_class.embargo(item: item, release_date: release_date, access: access)
+    described_class.create(item: item, release_date: release_date, access: access)
   end
 
   let(:item) do
@@ -15,7 +15,7 @@ RSpec.describe EmbargoService do
     end
   end
 
-  let(:release_date) { Time.gm(2045) }
+  let(:release_date) { DateTime.parse('2045-01-01') }
 
   let(:rights_xml) do
     <<-XML
@@ -47,7 +47,10 @@ RSpec.describe EmbargoService do
                 </machine>
               </access>
               <access type="read">
-                <machine><none/></machine>
+                <machine>
+                  <embargoReleaseDate>2045-01-01T00:00:00Z</embargoReleaseDate>
+                  <none/>
+                </machine>
               </access>
             </rightsMetadata>
       XML
@@ -113,10 +116,10 @@ RSpec.describe EmbargoService do
 
     context 'when use_and_reproduction_statement is provided' do
       before do
-        described_class.embargo(item: item,
-                                release_date: release_date,
-                                access: access,
-                                use_and_reproduction_statement: 'in public domain')
+        described_class.create(item: item,
+                               release_date: release_date,
+                               access: access,
+                               use_and_reproduction_statement: 'in public domain')
       end
 
       it 'sets use_and_reproduction_statement' do

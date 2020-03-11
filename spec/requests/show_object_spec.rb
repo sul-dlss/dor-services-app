@@ -67,7 +67,7 @@ RSpec.describe 'Get the object' do
         allow(object).to receive(:collection_ids).and_return(['druid:xx888xx7777'])
 
         object.descMetadata.title_info.main_title = 'Hello'
-        EmbargoService.embargo(item: object, release_date: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world')
+        EmbargoService.create(item: object, release_date: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world')
         ReleaseTags.create(object, release: true,
                                    what: 'self',
                                    to: 'Searchworks',
