@@ -37,7 +37,9 @@ module Cocina
       {
         releaseDate: item.embargoMetadata.release_date.iso8601,
         access: build_embargo_access
-      }
+      }.tap do |embargo|
+        embargo[:useAndReproductionStatement] = item.embargoMetadata.use_and_reproduction_statement.first if item.embargoMetadata.use_and_reproduction_statement.present?
+      end
     end
 
     def build_embargo_access

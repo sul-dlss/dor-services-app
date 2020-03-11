@@ -91,12 +91,15 @@ module Cocina
         item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
 
         item.contentMetadata.content = ContentMetadataGenerator.generate(druid: pid, object: obj)
-        if obj.access.embargo
-          EmbargoService.embargo(item: item,
-                                 release_date: obj.access.embargo.releaseDate,
-                                 access: obj.access.embargo.access)
-        end
+        create_embargo(item, obj.access.embargo) if obj.access.embargo
       end
+    end
+
+    def create_embargo(item, embargo)
+      EmbargoService.embargo(item: item,
+                             release_date: embargo.releaseDate,
+                             access: embargo.access,
+                             use_and_reproduction_statement: embargo.useAndReproductionStatement)
     end
 
     # @param [Cocina::Models::RequestCollection] obj
