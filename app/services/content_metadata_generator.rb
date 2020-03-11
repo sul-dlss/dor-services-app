@@ -54,8 +54,8 @@ class ContentMetadataGenerator
     when Cocina::Models::Vocab.image, Cocina::Models::Vocab.map
       'image'
     when Cocina::Models::Vocab.book
-      resource_has_non_images = file_set.structural.contains.all? { |file| file.hasMimeType.start_with?('image/') }
-      resource_has_non_images ? 'object' : 'page'
+      resource_has_images = file_set.structural.contains.any? { |file| file.hasMimeType.start_with?('image/') }
+      resource_has_images ? 'page' : 'object'
     when Cocina::Models::Vocab.three_dimensional
       # if this resource contains no known 3D file extensions, the resource type is file
       resource_has_3d_type = file_set.structural.contains.any? { |file| VALID_THREE_DIMENSION_EXTENTIONS.include?(::File.extname(file.filename)) }
