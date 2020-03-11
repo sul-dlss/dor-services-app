@@ -39,7 +39,7 @@ module Cocina
         externalIdentifier: item.pid,
         type: dro_type,
         label: item.label,
-        version: item.current_version,
+        version: item.current_version.to_i,
         administrative: build_administrative,
         identification: build_identification,
         access: AccessBuilder.build(item),
@@ -57,7 +57,7 @@ module Cocina
         externalIdentifier: item.pid,
         type: Cocina::Models::Vocab.collection,
         label: item.label,
-        version: item.current_version,
+        version: item.current_version.to_i,
         administrative: build_administrative,
         description: build_descriptive,
         identification: build_identification,
@@ -74,7 +74,7 @@ module Cocina
         externalIdentifier: item.pid,
         type: Cocina::Models::Vocab.admin_policy,
         label: item.label,
-        version: item.current_version,
+        version: item.current_version.to_i,
         administrative: build_apo_administrative
       }.tap do |props|
         description = build_descriptive
@@ -147,7 +147,7 @@ module Cocina
           what: node.attributes['what'].value,
           date: node.attributes['when'].value,
           who: node.attributes['who'].value,
-          release: node.text
+          release: node.text == 'true'
         }
       end
     end
