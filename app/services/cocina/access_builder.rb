@@ -32,10 +32,10 @@ module Cocina
     end
 
     def build_embargo
-      return {} unless item.respond_to?(:embargoMetadata) && item.embargoMetadata.release_date
+      return {} unless item.respond_to?(:embargoMetadata) && item.embargoMetadata.release_date.any?
 
       {
-        releaseDate: item.embargoMetadata.release_date.iso8601,
+        releaseDate: item.embargoMetadata.release_date.first.utc.iso8601,
         access: build_embargo_access
       }.tap do |embargo|
         embargo[:useAndReproductionStatement] = item.embargoMetadata.use_and_reproduction_statement.first if item.embargoMetadata.use_and_reproduction_statement.present?

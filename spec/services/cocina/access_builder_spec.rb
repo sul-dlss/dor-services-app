@@ -112,11 +112,10 @@ RSpec.describe Cocina::AccessBuilder do
 
   context 'with an embargo' do
     before do
-      # access":"world","releaseDate":"2020-02-29
-      EmbargoService.embargo(item: item,
-                             release_date: DateTime.parse('2029-02-28'),
-                             access: 'world',
-                             use_and_reproduction_statement: 'in public domain')
+      EmbargoService.create(item: item,
+                            release_date: DateTime.parse('2029-02-28'),
+                            access: 'world',
+                            use_and_reproduction_statement: 'in public domain')
     end
     # from https://argo.stanford.edu/view/druid:bb003dn0409
 
