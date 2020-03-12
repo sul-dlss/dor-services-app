@@ -893,6 +893,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ReleaseTag'
+        partOfProject:
+          description: Administrative or Internal project this resource is a part of
+          example: Google Books
+          type: string
     AdminPolicy:
       type: object
       properties:

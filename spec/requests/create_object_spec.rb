@@ -30,7 +30,8 @@ RSpec.describe 'Create object' do
                                 title: [{ titleFull: title, primary: true }]
                               },
                               administrative: {
-                                hasAdminPolicy: 'druid:dd999df4567'
+                                hasAdminPolicy: 'druid:dd999df4567',
+                                partOfProject: 'Google Books'
                               },
                               identification: identification,
                               externalIdentifier: druid,
@@ -44,7 +45,7 @@ RSpec.describe 'Create object' do
             "copyright":"All rights reserved unless otherwise indicated.",
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
           "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
           "identification":#{identification.to_json},"structural":{}}
       JSON
@@ -233,7 +234,7 @@ RSpec.describe 'Create object' do
         <<~JSON
           { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
             "label":"#{label}","version":1,"access":{},
-            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
             "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
             "identification":#{identification.to_json},"structural":{"contains":#{filesets.to_json}}}
         JSON
@@ -280,7 +281,7 @@ RSpec.describe 'Create object' do
         <<~JSON
           { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
             "label":"#{label}","version":1,"access":{},
-            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
             "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
             "identification":#{identification.to_json},"structural":{"isMemberOf":"druid:xx888xx7777"}}
         JSON

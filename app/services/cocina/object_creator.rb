@@ -85,7 +85,7 @@ module Cocina
                     catkey: catkey_for(obj),
                     label: obj.label).tap do |item|
         item.descMetadata.mods_title = obj.description.title.first.titleFull if obj.description
-        item.identityMetadata.tag = content_type_tag(obj.type, obj.structural.hasMemberOrders&.first&.viewingDirection)
+        add_tags(item, obj)
         change_access(item, obj.access.access)
         item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
         item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
@@ -115,6 +115,12 @@ module Cocina
 
     def catkey_for(obj)
       obj.identification.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
+    end
+
+    def add_tags(item, obj)
+      Dor::TagService.add(item, content_type_tag(obj.type, obj.structural.hasMemberOrders&.first&.viewingDirection))
+      Dor::TagService.add(item, "Project: #{obj.administrative.partOfProject}") if obj.administrative.partOfProject
+      item.identityMetadata.ng_xml_will_change!
     end
 
     def content_type_tag(type, direction)

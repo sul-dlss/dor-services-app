@@ -40,7 +40,7 @@ module Cocina
         type: dro_type,
         label: item.label,
         version: item.current_version.to_i,
-        administrative: build_administrative,
+        administrative: build_dro_administrative,
         identification: build_identification,
         access: AccessBuilder.build(item),
         structural: DroStructuralBuilder.build(item)
@@ -140,6 +140,13 @@ module Cocina
       }
     end
 
+    def build_dro_administrative
+      build_administrative.tap do |admin|
+        project = project_for(item)
+        admin[:partOfProject] = project if project
+      end
+    end
+
     def build_release_tags
       item.identityMetadata.ng_xml.xpath('//release').map do |node|
         {
@@ -168,6 +175,14 @@ module Cocina
 
     def check_source_id(props)
       raise "Item #{props[:externalIdentifier]} has a null sourceId. This item requires remediation." if props[:identification][:sourceId].nil?
+    end
+
+    def project_for(item)
+      item.tags.each do |tag|
+        split_tag = tag.split(':').map(&:strip)
+        return split_tag[1, split_tag.size - 1].join(' : ') if split_tag[0] == 'Project'
+      end
+      nil
     end
   end
   # rubocop:enable Metrics/ClassLength
