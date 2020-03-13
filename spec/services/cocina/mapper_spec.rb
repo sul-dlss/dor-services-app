@@ -19,7 +19,7 @@ RSpec.describe Cocina::Mapper do
 
     before do
       allow(item).to receive(:collection_ids).and_return([])
-      item.identityMetadata.tag = [type]
+      item.identityMetadata.tag = [type, 'Project : Google Books']
       item.identityMetadata.agreementId = [agreement]
       item.descMetadata.title_info.main_title = 'Hello'
     end
@@ -92,6 +92,10 @@ RSpec.describe Cocina::Mapper do
         expect(file1.hasMimeType).to eq 'text/plain'
         expect(file1.hasMessageDigests.first.digest).to eq '61dfac472b7904e1413e0cbf4de432bda2a97627'
         expect(file1.hasMessageDigests.first.type).to eq 'sha1'
+      end
+
+      it 'builds with object with partOfProject' do
+        expect(cocina_model.administrative.partOfProject).to eq('Google Books')
       end
     end
 
