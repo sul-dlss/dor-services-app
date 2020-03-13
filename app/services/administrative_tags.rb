@@ -17,5 +17,6 @@ class AdministrativeTags
   # @return [Array<Nokogiri::XML::Node>]
   def self.create(item:, tags:)
     tags.map { |tag| Dor::TagService.add(item, tag) }
+    item.save!
   end
 end

@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe AdministrativeTags do
   before do
+    allow(item).to receive(:save!)
     described_class.create(item: item, tags: tags)
   end
 
@@ -24,6 +25,7 @@ RSpec.describe AdministrativeTags do
           <tag>Bar : Baz : Quux</tag>
         </identityMetadata>
       XML
+      expect(item).to have_received(:save!)
     end
   end
 end
