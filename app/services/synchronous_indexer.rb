@@ -4,7 +4,7 @@
 # When we can't have latency in the indexing, we can use this class to directly call dor-indexing-app
 class SynchronousIndexer
   def self.reindex_remotely(pid)
-    connection.post("/reindex/#{pid}")
+    connection.post("reindex/#{pid}")
   end
 
   def self.connection
