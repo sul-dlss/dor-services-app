@@ -57,7 +57,8 @@ RSpec.describe ContentMetadataGenerator do
       },
       'access' => {
         'access' => 'stanford'
-      }
+      },
+      'hasMessageDigests' => []
     }
   end
 
@@ -75,7 +76,8 @@ RSpec.describe ContentMetadataGenerator do
       },
       'access' => {
         'access' => 'world'
-      }
+      },
+      'hasMessageDigests' => []
     }
   end
 
@@ -93,7 +95,8 @@ RSpec.describe ContentMetadataGenerator do
       },
       'access' => {
         'access' => 'world'
-      }
+      },
+      'hasMessageDigests' => []
     }
   end
 
@@ -111,7 +114,8 @@ RSpec.describe ContentMetadataGenerator do
       },
       'access' => {
         'access' => 'world'
-      }
+      },
+      'hasMessageDigests' => []
     }
   end
 
@@ -137,7 +141,7 @@ RSpec.describe ContentMetadataGenerator do
       { "type":"#{object_type}",
         "label":"The object label","version":1,"access":{},
         "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-        "description":{"title":[{"primary":true,"titleFull":"the object title"}]},
+        "description":{"title":[{"status":"primary","value":"the object title"}]},
         "identification":{},"structural":{"contains":#{filesets.to_json}}}
     JSON
   end

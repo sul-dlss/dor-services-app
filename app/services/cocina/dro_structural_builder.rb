@@ -35,13 +35,13 @@ module Cocina
         files = build_files(resource_node.xpath('file'), version: version, parent_id: id)
         structural = {}
         structural[:contains] = files if files.present?
-        Cocina::Models::FileSet.new(
+        {
           externalIdentifier: resource_node['id'],
           type: Cocina::Models::Vocab.fileset,
           label: resource_node.xpath('label').text,
           version: version,
           structural: structural
-        )
+        }
       end
     end
 
@@ -53,22 +53,24 @@ module Cocina
         height = node.xpath('imageData/@height').text.presence&.to_i
         width = node.xpath('imageData/@width').text.presence&.to_i
 
-        Cocina::Models::File.new(
-          {
-            externalIdentifier: "#{parent_id}/#{node['id']}",
-            type: Cocina::Models::Vocab.file,
-            label: node['id'],
-            filename: node['id'],
-            size: node['size'].to_i,
-            hasMimeType: node['mimetype'],
-            version: version,
-            hasMessageDigests: []
-          }.tap do |attrs|
-            attrs[:presentation] = { height: height, width: width } if height && width
-            attrs[:hasMessageDigests] << { type: 'sha1', digest: sha1 } if sha1
-            attrs[:hasMessageDigests] << { type: 'md5', digest: md5 } if md5
-          end
-        )
+        # TODO: Populate access and administrative - https://github.com/sul-dlss/dor-services-app/issues/749
+
+        {
+          externalIdentifier: "#{parent_id}/#{node['id']}",
+          type: Cocina::Models::Vocab.file,
+          label: node['id'],
+          filename: node['id'],
+          size: node['size'].to_i,
+          hasMimeType: node['mimetype'],
+          version: version,
+          hasMessageDigests: [],
+          access: {},
+          administrative: { sdrPreserve: false, shelve: false }
+        }.tap do |attrs|
+          attrs[:presentation] = { height: height, width: width } if height && width
+          attrs[:hasMessageDigests] << { type: 'sha1', digest: sha1 } if sha1
+          attrs[:hasMessageDigests] << { type: 'md5', digest: md5 } if md5
+        end
       end
     end
   end

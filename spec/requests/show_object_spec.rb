@@ -9,7 +9,7 @@ RSpec.describe 'Get the object' do
 
   context 'when the requested object is an item' do
     let(:object) do
-      Dor::Item.new(pid: 'druid:1234',
+      Dor::Item.new(pid: 'druid:bc123df4567',
                     source_id: 'src:99999',
                     label: 'foo',
                     read_rights: 'world').tap do |i|
@@ -26,7 +26,7 @@ RSpec.describe 'Get the object' do
 
       let(:expected) do
         {
-          externalIdentifier: 'druid:1234',
+          externalIdentifier: 'druid:bc123df4567',
           type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
           label: 'foo',
           version: 1,
@@ -35,14 +35,11 @@ RSpec.describe 'Get the object' do
             copyright: 'All rights reserved unless otherwise indicated.',
             useAndReproductionStatement: 'Property rights reside with the repository...'
           },
-          administrative: {
-            releaseTags: [],
-            hasAdminPolicy: nil
-          },
+          administrative: {},
           description: {
             title: [
-              { primary: true,
-                titleFull: 'Hello' }
+              { status: 'primary',
+                value: 'Hello' }
             ]
           },
           identification: {
@@ -77,7 +74,7 @@ RSpec.describe 'Get the object' do
 
       let(:expected) do
         {
-          externalIdentifier: 'druid:1234',
+          externalIdentifier: 'druid:bc123df4567',
           type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
           label: 'foo',
           version: 1,
@@ -99,13 +96,12 @@ RSpec.describe 'Get the object' do
                 who: 'petucket',
                 release: true
               }
-            ],
-            hasAdminPolicy: nil
+            ]
           },
           description: {
             title: [
-              { primary: true,
-                titleFull: 'Hello' }
+              { status: 'primary',
+                value: 'Hello' }
             ]
           },
           identification: {
@@ -134,32 +130,27 @@ RSpec.describe 'Get the object' do
     end
 
     let(:object) do
-      Dor::Collection.new(pid: 'druid:1234',
+      Dor::Collection.new(pid: 'druid:bc123df4567',
                           label: 'foo',
                           read_rights: 'world')
     end
 
     let(:expected) do
       {
-        externalIdentifier: 'druid:1234',
+        externalIdentifier: 'druid:bc123df4567',
         type: 'http://cocina.sul.stanford.edu/models/collection.jsonld',
         label: 'foo',
         version: 1,
         access: {
           access: 'world'
         },
-        administrative: {
-          releaseTags: [],
-          hasAdminPolicy: nil
-        },
+        administrative: {},
         description: {
           title: [
-            { primary: true,
-              titleFull: 'Hello' }
+            { status: 'primary',
+              value: 'Hello' }
           ]
-        },
-        identification: {},
-        structural: {}
+        }
       }
     end
 
@@ -174,13 +165,13 @@ RSpec.describe 'Get the object' do
   end
 
   context 'when the requested object is an APO' do
-    let(:object) { Dor::AdminPolicyObject.new(pid: 'druid:1234') }
+    let(:object) { Dor::AdminPolicyObject.new(pid: 'druid:bc123df4567') }
 
     context 'when the object exists with minimal metadata' do
       before do
         object.descMetadata.title_info.main_title = 'Hello'
         object.label = 'foo'
-        allow(object).to receive(:admin_policy_object_id).and_return('druid:ab123cd4567')
+        allow(object).to receive(:admin_policy_object_id).and_return('druid:df123cd4567')
       end
 
       it 'returns the object' do
@@ -189,16 +180,13 @@ RSpec.describe 'Get the object' do
         expect(response).to have_http_status(:ok)
         json = JSON.parse(response.body)
 
-        expect(json['externalIdentifier']).to eq 'druid:1234'
+        expect(json['externalIdentifier']).to eq 'druid:bc123df4567'
         expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
         expect(json['label']).to eq 'foo'
         expect(json['version']).to eq 1
-        expect(json['access']).to eq({})
-        expect(json['identification']).to eq({})
-        expect(json['structural']).to eq({})
-        expect(json['administrative']['default_object_rights']).to match '<rightsMetadata>'
-        expect(json['administrative']['registration_workflow']).to be_nil
-        expect(json['administrative']['hasAdminPolicy']).to eq 'druid:ab123cd4567'
+        expect(json['administrative']['defaultObjectRights']).to match '<rightsMetadata>'
+        expect(json['administrative']['registrationWorkflow']).to be_nil
+        expect(json['administrative']['hasAdminPolicy']).to eq 'druid:df123cd4567'
       end
     end
 
@@ -221,28 +209,25 @@ RSpec.describe 'Get the object' do
         expect(response).to have_http_status(:ok)
         json = JSON.parse(response.body)
 
-        expect(json['externalIdentifier']).to eq 'druid:1234'
+        expect(json['externalIdentifier']).to eq 'druid:bc123df4567'
         expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
         expect(json['label']).to eq 'foo'
         expect(json['version']).to eq 1
-        expect(json['access']).to eq({})
-        expect(json['identification']).to eq({})
-        expect(json['structural']).to eq({})
-        expect(json['administrative']['default_object_rights']).to match '<rightsMetadata>'
-        expect(json['administrative']['registration_workflow']).to eq 'wasCrawlPreassemblyWF'
+        expect(json['administrative']['defaultObjectRights']).to match '<rightsMetadata>'
+        expect(json['administrative']['registrationWorkflow']).to eq 'wasCrawlPreassemblyWF'
       end
     end
   end
 
   context 'when the requested object is an ETD' do
-    let(:object) { Etd.new(pid: 'druid:1234') }
+    let(:object) { Etd.new(pid: 'druid:bc123df4567') }
 
     before do
       object.properties.title = 'Test ETD'
       object.identityMetadata.other_ids = ['dissertationid:00000123']
       object.label = 'foo'
       allow(object).to receive(:collection_ids).and_return([])
-      allow(object).to receive(:admin_policy_object_id).and_return('druid:ab123cd4567')
+      allow(object).to receive(:admin_policy_object_id).and_return('druid:df123cd4567')
     end
 
     it 'returns the object' do
@@ -251,7 +236,7 @@ RSpec.describe 'Get the object' do
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
 
-      expect(json['externalIdentifier']).to eq 'druid:1234'
+      expect(json['externalIdentifier']).to eq 'druid:bc123df4567'
       expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/object.jsonld'
       expect(json['label']).to eq 'foo'
       expect(json['version']).to eq 1

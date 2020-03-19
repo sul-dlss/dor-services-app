@@ -27,7 +27,7 @@ class ObjectsController < ApplicationController
   def create
     return legacy_register if params[:admin_policy] # This is a required parameter for the legacy registration
 
-    cocina_object = Cocina::ObjectCreator.create(params.to_unsafe_h)
+    cocina_object = Cocina::ObjectCreator.create(params.except(:action, :controller).to_unsafe_h)
 
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
   end
