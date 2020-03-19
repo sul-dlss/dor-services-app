@@ -58,6 +58,7 @@ module Cocina
             externalIdentifier: "#{parent_id}/#{node['id']}",
             type: Cocina::Models::Vocab.file,
             label: node['id'],
+            filename: node['id'],
             size: node['size'].to_i,
             hasMimeType: node['mimetype'],
             version: version,
