@@ -27,7 +27,7 @@ RSpec.describe 'Create object' do
                                 useAndReproductionStatement: 'Property rights reside with the repository...'
                               },
                               description: {
-                                title: [{ titleFull: title, primary: true }]
+                                title: [{ value: title, status: 'primary' }]
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567',
@@ -46,7 +46,7 @@ RSpec.describe 'Create object' do
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-          "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
+          "description":{"title":[{"status":"primary","value":"#{title}"}]},
           "identification":#{identification.to_json},"structural":{}}
       JSON
     end
@@ -170,7 +170,8 @@ RSpec.describe 'Create object' do
           },
           'access' => {
             'access' => 'stanford'
-          }
+          },
+          'hasMessageDigests' => []
         }
       end
 
@@ -187,7 +188,8 @@ RSpec.describe 'Create object' do
           },
           'access' => {
             'access' => 'world'
-          }
+          },
+          'hasMessageDigests' => []
         }
       end
 
@@ -204,7 +206,8 @@ RSpec.describe 'Create object' do
           },
           'access' => {
             'access' => 'world'
-          }
+          },
+          'hasMessageDigests' => []
         }
       end
 
@@ -235,7 +238,7 @@ RSpec.describe 'Create object' do
           { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
             "label":"#{label}","version":1,"access":{},
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-            "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
+            "description":{"title":[{"status":"primary","value":"#{title}"}]},
             "identification":#{identification.to_json},"structural":{"contains":#{filesets.to_json}}}
         JSON
       end
@@ -282,7 +285,7 @@ RSpec.describe 'Create object' do
           { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
             "label":"#{label}","version":1,"access":{},
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-            "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
+            "description":{"title":[{"status":"primary","value":"#{title}"}]},
             "identification":#{identification.to_json},"structural":{"isMemberOf":"druid:xx888xx7777"}}
         JSON
       end
@@ -329,7 +332,7 @@ RSpec.describe 'Create object' do
                               label: expected_label,
                               version: 1,
                               description: {
-                                title: [{ titleFull: title, primary: true }]
+                                title: [{ value: title, status: 'primary' }]
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -348,7 +351,7 @@ RSpec.describe 'Create object' do
         { "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
           "label":"#{label}","version":1,"access":{"access":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
+          "description":{"title":[{"status":"primary","value":"#{title}"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
@@ -378,28 +381,50 @@ RSpec.describe 'Create object' do
                                      label: expected_label,
                                      version: 1,
                                      description: {
-                                       title: [{ titleFull: title, primary: true }]
+                                       title: [{ value: title, status: 'primary' }]
                                      },
                                      administrative: {
                                        hasAdminPolicy: 'druid:dd999df4567'
                                      },
-                                     identification: identification,
-                                     externalIdentifier: druid)
+                                     externalIdentifier: druid,
+                                     access: {})
     end
-    let(:identification) { {} }
     let(:data) do
       <<~JSON
         {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
           "label":"#{label}","version":1,"access":{},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"primary":true,"titleFull":"#{title}"}]},
-          "identification":#{identification.to_json},
-          "structural":{}}
+          "description":{"title":[{"status":"primary","value":"#{title}"}]}}
       JSON
     end
 
     context 'when the catkey is provided and save is successful' do
       let(:expected_label) { title } # label derived from catalog data
+      let(:data) do
+        <<~JSON
+          {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
+            "label":"#{label}","version":1,"access":{},
+            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+            "description":{"title":[{"status":"primary","value":"#{title}"}]},
+            "identification":#{identification.to_json}}
+        JSON
+      end
+
+      let(:expected) do
+        Cocina::Models::Collection.new(type: Cocina::Models::Vocab.collection,
+                                       label: expected_label,
+                                       version: 1,
+                                       description: {
+                                         title: [{ value: title, status: 'primary' }]
+                                       },
+                                       administrative: {
+                                         hasAdminPolicy: 'druid:dd999df4567'
+                                       },
+                                       identification: identification,
+                                       externalIdentifier: druid,
+                                       access: {})
+      end
+
       let(:identification) do
         {
           catalogLinks: [
@@ -449,27 +474,27 @@ RSpec.describe 'Create object' do
                                       label: 'This is my label',
                                       version: 1,
                                       description: {
-                                        title: [{ titleFull: 'This is my title', primary: true }]
+                                        title: [{ value: 'This is my title', status: 'primary' }]
                                       },
                                       administrative: {
+                                        defaultObjectRights: default_object_rights,
                                         hasAdminPolicy: 'druid:dd999df4567',
-                                        registration_workflow: 'assemblyWF'
+                                        registrationWorkflow: 'assemblyWF'
                                       },
                                       externalIdentifier: druid)
     end
 
-    let(:default_object_rights) { Dor::DefaultObjectRightsDS.new.content.to_json }
+    let(:default_object_rights) { Dor::DefaultObjectRightsDS.new.content }
 
     let(:data) do
       <<~JSON
         {"type":"http://cocina.sul.stanford.edu/models/admin_policy.jsonld",
-          "label":"This is my label","version":1,"access":{},
+          "label":"This is my label","version":1,
           "administrative":{
-            "default_object_rights":#{default_object_rights},
-          "registration_workflow":"assemblyWF",
-          "hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"primary":true,"titleFull":"This is my title"}]},
-          "identification":{},"structural":{}}
+            "defaultObjectRights":#{default_object_rights.to_json},
+            "registrationWorkflow":"assemblyWF",
+            "hasAdminPolicy":"druid:dd999df4567"},
+          "description":{"title":[{"status":"primary","value":"This is my title"}]}}
       JSON
     end
 
@@ -498,7 +523,7 @@ RSpec.describe 'Create object' do
                               label: 'This is my label',
                               version: 1,
                               description: {
-                                title: [{ titleFull: 'This is my title', primary: true }]
+                                title: [{ value: 'This is my title', status: 'primary' }]
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -518,7 +543,7 @@ RSpec.describe 'Create object' do
           "label":"This is my label","version":1,"access":{"access":"world",
           "embargo":{"access":"world","releaseDate":"2020-02-29"}},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"primary":true,"titleFull":"This is my title"}]},
+          "description":{"title":[{"status":"primary","value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON

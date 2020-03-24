@@ -66,10 +66,10 @@ module Cocina
                                  admin_policy_object_id: obj.administrative.hasAdminPolicy,
                                  # source_id: obj.identification.sourceId,
                                  label: obj.label).tap do |item|
-        item.descMetadata.mods_title = obj.description.title.first.titleFull if obj.description
+        item.descMetadata.mods_title = obj.description.title.first.value if obj.description
 
         admin_node = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata').first
-        admin_node.add_child "<dissemination><workflow id=\"#{obj.administrative.registration_workflow}\"></dissemination>"
+        admin_node.add_child "<dissemination><workflow id=\"#{obj.administrative.registrationWorkflow}\"></dissemination>"
         item.administrativeMetadata.ng_xml_will_change!
       end
     end
@@ -84,7 +84,7 @@ module Cocina
                     collection_ids: [obj.structural.isMemberOf].compact,
                     catkey: catkey_for(obj),
                     label: obj.label).tap do |item|
-        item.descMetadata.mods_title = obj.description.title.first.titleFull if obj.description
+        item.descMetadata.mods_title = obj.description.title.first.value if obj.description
         add_tags(item, obj)
         change_access(item, obj.access.access)
         item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
@@ -109,12 +109,12 @@ module Cocina
                           admin_policy_object_id: obj.administrative.hasAdminPolicy,
                           catkey: catkey_for(obj),
                           label: obj.label).tap do |item|
-        item.descMetadata.mods_title = obj.description.title.first.titleFull if obj.description
+        item.descMetadata.mods_title = obj.description.title.first.value if obj.description
       end
     end
 
     def catkey_for(obj)
-      obj.identification.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
+      obj.identification&.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
     end
 
     def add_tags(item, obj)

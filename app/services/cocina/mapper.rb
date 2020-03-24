@@ -41,14 +41,15 @@ module Cocina
         label: item.label,
         version: item.current_version.to_i,
         administrative: build_dro_administrative,
-        identification: build_identification,
         access: AccessBuilder.build(item),
         structural: DroStructuralBuilder.build(item)
       }.tap do |props|
-        props[:identification][:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
-
         description = build_descriptive
         props[:description] = description unless description.nil?
+
+        identification = build_identification
+        identification[:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
+        props[:identification] = identification unless identification.empty?
       end
     end
 
@@ -60,10 +61,12 @@ module Cocina
         version: item.current_version.to_i,
         administrative: build_administrative,
         description: build_descriptive,
-        identification: build_identification,
         access: AccessBuilder.build(item)
       }.tap do |props|
-        props[:identification][:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
+        identification = build_identification
+        identification[:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
+        props[:identification] = identification unless identification.empty?
+
         description = build_descriptive
         props[:description] = description unless description.nil?
       end
@@ -110,6 +113,8 @@ module Cocina
       when Dor::Etd
         # ETDs don't have source_id, but we can use the dissertationid (in otherId) for this purpose
         { sourceId: item.otherId.find { |id| id.start_with?('dissertationid:') } }
+      when Dor::Collection
+        {}
       else
         { sourceId: item.source_id }
       end
@@ -118,26 +123,27 @@ module Cocina
     def build_descriptive
       case item
       when Dor::Etd
-        { title: [{ primary: true, titleFull: item.properties.title.first }] }
+        { title: [{ status: 'primary', value: item.properties.title.first }] }
       else
-        { title: [{ primary: true, titleFull: item.full_title }] }
+        { title: [{ status: 'primary', value: item.full_title }] }
       end
     end
 
     def build_apo_administrative
       {}.tap do |admin|
         registration_workflow = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/dissemination/workflow/@id').text
-        admin[:default_object_rights] = item.defaultObjectRights.content
-        admin[:registration_workflow] = registration_workflow.presence
-        admin[:hasAdminPolicy] = item.admin_policy_object_id
+        admin[:defaultObjectRights] = item.defaultObjectRights.content
+        admin[:registrationWorkflow] = registration_workflow if registration_workflow.present?
+        admin[:hasAdminPolicy] = item.admin_policy_object_id if item.admin_policy_object_id
       end
     end
 
     def build_administrative
-      {
-        releaseTags: build_release_tags,
-        hasAdminPolicy: item.admin_policy_object_id
-      }
+      {}.tap do |admin|
+        admin[:hasAdminPolicy] = item.admin_policy_object_id if item.admin_policy_object_id
+        release_tags = build_release_tags
+        admin[:releaseTags] = release_tags unless release_tags.empty?
+      end
     end
 
     def build_dro_administrative

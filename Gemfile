@@ -47,7 +47,7 @@ gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
 
 # DLSS/domain-specific dependencies
-gem 'cocina-models', '~> 0.29.0'
+gem 'cocina-models', '~> 0.31.0'
 gem 'dor-services', '~> 9.2'
 gem 'dor-workflow-client', '~> 3.17'
 gem 'marc'
