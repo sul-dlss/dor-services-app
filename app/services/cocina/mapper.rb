@@ -41,7 +41,7 @@ module Cocina
         label: item.label,
         version: item.current_version.to_i,
         administrative: build_dro_administrative,
-        access: AccessBuilder.build(item),
+        access: DROAccessBuilder.build(item),
         structural: DroStructuralBuilder.build(item)
       }.tap do |props|
         description = build_descriptive
