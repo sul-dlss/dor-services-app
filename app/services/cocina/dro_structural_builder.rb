@@ -53,8 +53,6 @@ module Cocina
         height = node.xpath('imageData/@height').text.presence&.to_i
         width = node.xpath('imageData/@width').text.presence&.to_i
 
-        # TODO: Populate access and administrative - https://github.com/sul-dlss/dor-services-app/issues/749
-
         {
           externalIdentifier: "#{parent_id}/#{node['id']}",
           type: Cocina::Models::Vocab.file,
@@ -63,8 +61,11 @@ module Cocina
           size: node['size'].to_i,
           version: version,
           hasMessageDigests: [],
-          access: {},
-          administrative: { sdrPreserve: false, shelve: false }
+          access: { access: node['publish'] == 'yes' ? 'world' : 'dark' },
+          administrative: {
+            sdrPreserve: node['shelve'] == 'yes',
+            shelve: node['preserve'] == 'yes'
+          }
         }.tap do |attrs|
           # Files from Goobi and Hydrus don't have mimetype until they hit exif-collect in the assemblyWF
           attrs[:hasMimeType] = node['mimetype'] if node['mimetype']
