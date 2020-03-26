@@ -28,7 +28,7 @@ class ReleaseTags
       # Get all release tags on the item and strip out the what = self ones, we've already processed all the self tags on this item.
       # This will be where we store all tags that apply, regardless of their timestamp:
       potential_applicable_release_tags = tags_for_what_value(release_tags_for_item_and_all_governing_sets, 'collection')
-      administrative_tags = item.tags # Get admin tags once here and pass them down
+      administrative_tags = AdministrativeTags.for(item: item) # Get admin tags once here and pass them down
 
       # We now have the keys for all potential releases, we need to check the tags: the most recent timestamp with an explicit true or false wins.
       # In a nil case, the lack of an explicit false tag we do nothing.
@@ -117,7 +117,10 @@ class ReleaseTags
       # Is the tag global or restricted
       return true if release_tag['tag'].nil? # no specific tag specificied means this tag is global to all members of the collection
 
-      admin_tags ||= item.tags # We use false instead of [], since an item can have no admin_tags at which point we'd be passing this var as [] and would not attempt to retrieve it
+      # We use false instead of [], since an item can have no admin_tags at
+      # which point we'd be passing this var as [] and would not attempt to
+      # retrieve it
+      admin_tags ||= AdministrativeTags.for(item: item)
       admin_tags.include?(release_tag['tag'])
     end
 

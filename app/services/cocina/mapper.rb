@@ -90,7 +90,7 @@ module Cocina
     attr_reader :item
 
     def dro_type
-      case item.content_type_tag
+      case AdministrativeTags.content_type(item: item).first
       when 'Image'
         Cocina::Models::Vocab.image
       when '3D'
@@ -184,7 +184,7 @@ module Cocina
     end
 
     def project_for(item)
-      item.tags.each do |tag|
+      AdministrativeTags.for(item: item).each do |tag|
         split_tag = tag.split(':').map(&:strip)
         return split_tag[1, split_tag.size - 1].join(' : ') if split_tag[0] == 'Project'
       end

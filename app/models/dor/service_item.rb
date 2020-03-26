@@ -75,15 +75,15 @@ module Dor
       @collection_name ||= @druid_obj.collections.empty? ? '' : @druid_obj.collections.first.label
     end
 
-    # returns the value of the content_type_tag from dor services if it exists, else returns the value from contentMetadata object type
-    # note, the content_type_tag comes from value of the tag called "Process : Content Type"
+    # returns the value of the content_type tag from admin tags service if it exists, else returns the value from contentMetadata object type
+    # note, the content_type tag comes from value of the tag called "Process : Content Type"
     # @return [String] first collection name the item is in (blank if none)
     def content_type
-      @content_type ||= if @druid_obj.content_type_tag.empty?
+      @content_type ||= if AdministrativeTags.content_type(item: @druid_obj).empty?
                           node = @druid_obj.datastreams['contentMetadata'].ng_xml.at_xpath('//contentMetadata/@type')
                           node.blank? ? '' : node.content
                         else
-                          @druid_obj.content_type_tag
+                          AdministrativeTags.content_type(item: @druid_obj).first
                         end
     end
 
@@ -92,7 +92,7 @@ module Dor
     def project_name
       @project_name ||= begin
         project_tag_id = 'Project : '
-        content_tag = @druid_obj.tags.select { |tag| tag.include?(project_tag_id) }
+        content_tag = AdministrativeTags.for(item: @druid_obj).select { |tag| tag.include?(project_tag_id) }
         content_tag.empty? ? '' : content_tag[0].gsub(project_tag_id, '').strip
       end
     end
@@ -102,7 +102,7 @@ module Dor
     def goobi_workflow_name
       @goobi_workflow_name ||= begin
         dpg_workflow_tag_id = 'DPG : Workflow : '
-        content_tag = @druid_obj.tags.select { |tag| tag.include?(dpg_workflow_tag_id) }
+        content_tag = AdministrativeTags.for(item: @druid_obj).select { |tag| tag.include?(dpg_workflow_tag_id) }
         content_tag.empty? ? Settings.goobi.default_goobi_workflow_name : content_tag[0].split(':').last.strip
       end
     end
@@ -112,7 +112,7 @@ module Dor
     def goobi_ocr_tag_present?
       @goobi_ocr_tag_present ||= begin
         dpg_goobi_ocr_tag = 'DPG : OCR : TRUE'
-        @druid_obj.tags.any? { |tag| tag.casecmp(dpg_goobi_ocr_tag).zero? } # case insensitive compare
+        AdministrativeTags.for(item: @druid_obj).any? { |tag| tag.casecmp(dpg_goobi_ocr_tag).zero? } # case insensitive compare
       end
     end
 
@@ -120,7 +120,7 @@ module Dor
     # the name of the tag is the first namespace part of the tag (before first colon), value of the tag is everything after this
     # @return [Array] of GoobiTag objects
     def goobi_tag_list
-      @druid_obj.tags.map do |tag|
+      AdministrativeTags.for(item: @druid_obj).map do |tag|
         tag_split = tag.split(':', 2).map(&:strip) # only split on the first colon
         GoobiTag.new(name: tag_split[0], value: tag_split[1])
       end

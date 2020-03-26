@@ -25,6 +25,38 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: administrative_tags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.administrative_tags (
+    id bigint NOT NULL,
+    druid character varying NOT NULL,
+    tag character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: administrative_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.administrative_tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: administrative_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.administrative_tags_id_seq OWNED BY public.administrative_tags.id;
+
+
+--
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -110,6 +142,13 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: administrative_tags id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.administrative_tags ALTER COLUMN id SET DEFAULT nextval('public.administrative_tags_id_seq'::regclass);
+
+
+--
 -- Name: background_job_results id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -121,6 +160,14 @@ ALTER TABLE ONLY public.background_job_results ALTER COLUMN id SET DEFAULT nextv
 --
 
 ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.events_id_seq'::regclass);
+
+
+--
+-- Name: administrative_tags administrative_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.administrative_tags
+    ADD CONSTRAINT administrative_tags_pkey PRIMARY KEY (id);
 
 
 --
@@ -156,6 +203,27 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: index_administrative_tags_on_druid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_administrative_tags_on_druid ON public.administrative_tags USING btree (druid);
+
+
+--
+-- Name: index_administrative_tags_on_druid_and_tag; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_administrative_tags_on_druid_and_tag ON public.administrative_tags USING btree (druid, tag);
+
+
+--
+-- Name: index_administrative_tags_on_tag; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_administrative_tags_on_tag ON public.administrative_tags USING btree (tag);
+
+
+--
 -- Name: index_events_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -185,6 +253,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('20190917215521'),
 ('20191015193638'),
-('20191209192646');
+('20191209192646'),
+('20200226171829');
 
 
