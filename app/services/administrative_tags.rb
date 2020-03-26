@@ -126,8 +126,11 @@ class AdministrativeTags
     return if AdministrativeTag.where(druid: item.pid).any?
 
     ActiveRecord::Base.transaction do
-      legacy_tags.each do |tag|
-        AdministrativeTag.create!(druid: item.pid, tag: tag)
+      legacy_tags.each do |tag_string|
+        # There are a bunch of tags in production WITHOUT the padding spaces.
+        # Fix that here unless already valid.
+        tag_string.gsub!(':', ' : ') unless AdministrativeTag::VALID_TAG_PATTERN.match?(tag_string)
+        AdministrativeTag.create!(druid: item.pid, tag: tag_string)
       end
     end
   end
