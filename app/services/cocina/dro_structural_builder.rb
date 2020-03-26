@@ -61,12 +61,13 @@ module Cocina
           label: node['id'],
           filename: node['id'],
           size: node['size'].to_i,
-          hasMimeType: node['mimetype'],
           version: version,
           hasMessageDigests: [],
           access: {},
           administrative: { sdrPreserve: false, shelve: false }
         }.tap do |attrs|
+          # Files from Goobi and Hydrus don't have mimetype until they hit exif-collect in the assemblyWF
+          attrs[:hasMimeType] = node['mimetype'] if node['mimetype']
           attrs[:presentation] = { height: height, width: width } if height && width
           attrs[:hasMessageDigests] << { type: 'sha1', digest: sha1 } if sha1
           attrs[:hasMessageDigests] << { type: 'md5', digest: md5 } if md5

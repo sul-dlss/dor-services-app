@@ -24,7 +24,7 @@ RSpec.describe Cocina::Mapper do
       item.descMetadata.title_info.main_title = 'Hello'
     end
 
-    context 'with files' do
+    context 'with files that have exif data' do
       let(:content_metadata_ds) { instance_double(Dor::ContentMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml)) }
       let(:xml) do
         <<~XML
@@ -97,6 +97,30 @@ RSpec.describe Cocina::Mapper do
 
       it 'builds with object with partOfProject' do
         expect(cocina_model.administrative.partOfProject).to eq('Google Books')
+      end
+    end
+
+    context "with files that don't have exif data" do
+      let(:content_metadata_ds) { instance_double(Dor::ContentMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml)) }
+      let(:xml) do
+        <<~XML
+          <contentMetadata objectId="ck831vq4558" type="file">
+            <resource id="ck831vq4558_1" sequence="1" type="file">
+              <file id="sul-logo.png" publish="yes" preserve="yes" shelve="yes"/>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+
+      before do
+        allow(item).to receive(:contentMetadata).and_return(content_metadata_ds)
+      end
+
+      it 'builds the object with filesets and files' do
+        expect(cocina_model.structural.contains.size).to eq 1
+        resource1 = cocina_model.structural.contains.first
+        file1 = resource1.structural.contains.first
+        expect(file1.filename).to eq 'sul-logo.png'
       end
     end
 
