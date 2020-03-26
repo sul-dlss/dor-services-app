@@ -86,10 +86,11 @@ RSpec.describe AdministrativeTags do
     context 'without matching rows in the database' do
       before do
         Dor::TagService.add(item_without_db_tags, 'One : Two : Three')
+        Dor::TagService.add(item_without_db_tags, 'Two:Three:Four') # test weirdo tags
       end
 
       it 'returns administrative tags from identity metadata XML' do
-        expect(described_class.for(item: item_without_db_tags)).to eq(['One : Two : Three'])
+        expect(described_class.for(item: item_without_db_tags)).to eq(['One : Two : Three', 'Two : Three : Four'])
       end
     end
   end
