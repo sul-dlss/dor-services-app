@@ -35,7 +35,7 @@ RSpec.describe Cocina::Mapper do
                 <checksum type="md5">e2837b9f02e0b0b76f526eeb81c7aa7b</checksum>
                 <checksum type="sha1">61dfac472b7904e1413e0cbf4de432bda2a97627</checksum>
               </file>
-              <file mimetype="text/plain" shelve="yes" publish="yes" size="5983" preserve="yes" datetime="2012-06-15T22:58:56Z" id="folder1PuSu/story2r.txt">
+              <file mimetype="text/plain" shelve="no" publish="no" size="5983" preserve="no" datetime="2012-06-15T22:58:56Z" id="folder1PuSu/story2r.txt">
                 <checksum type="md5">dc2be64ae43f1c1db4a068603465955d</checksum>
                 <checksum type="sha1">b8a672c1848fc3d13b5f380e15835690e24600e0</checksum>
               </file>
@@ -93,6 +93,14 @@ RSpec.describe Cocina::Mapper do
         expect(file1.hasMimeType).to eq 'text/plain'
         expect(file1.hasMessageDigests.first.digest).to eq '61dfac472b7904e1413e0cbf4de432bda2a97627'
         expect(file1.hasMessageDigests.first.type).to eq 'sha1'
+        expect(file1.administrative.shelve).to eq true
+        expect(file1.administrative.sdrPreserve).to eq true
+        expect(file1.access.access).to eq('world')
+
+        file2 = folder1.structural.contains[1]
+        expect(file2.administrative.shelve).to eq false
+        expect(file2.administrative.sdrPreserve).to eq false
+        expect(file2.access.access).to eq('dark')
       end
 
       it 'builds with object with partOfProject' do
