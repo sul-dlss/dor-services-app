@@ -130,7 +130,11 @@ class AdministrativeTags
         # There are a bunch of tags in production WITHOUT the padding spaces.
         # Fix that here unless already valid.
         tag_string.gsub!(':', ' : ') unless AdministrativeTag::VALID_TAG_PATTERN.match?(tag_string)
-        AdministrativeTag.create!(druid: item.pid, tag: tag_string)
+        begin
+          AdministrativeTag.create!(druid: item.pid, tag: tag_string)
+        rescue ActiveRecord::RecordInvalid
+          nil # ignore dupes when migrating new records
+        end
       end
     end
   end
