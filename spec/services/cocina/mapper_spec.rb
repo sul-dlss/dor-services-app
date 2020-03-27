@@ -222,8 +222,8 @@ RSpec.describe Cocina::Mapper do
     end
 
     before do
-      item.properties.title = 'Test ETD'
       allow(item).to receive(:collection_ids).and_return([])
+      allow(Cocina::EtdDescriptionBuilder).to receive(:build).and_return(title: [{ status: 'primary', value: 'Test ETD' }])
     end
 
     it 'builds the object with type object, a sourceId, and correct admin policy' do

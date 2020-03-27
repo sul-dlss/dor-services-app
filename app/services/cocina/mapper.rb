@@ -123,7 +123,7 @@ module Cocina
     def build_descriptive
       case item
       when Dor::Etd
-        { title: [{ status: 'primary', value: item.properties.title.first }] }
+        Cocina::EtdDescriptionBuilder.build(item)
       else
         { title: [{ status: 'primary', value: item.full_title }] }
       end

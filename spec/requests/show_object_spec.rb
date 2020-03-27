@@ -223,11 +223,11 @@ RSpec.describe 'Get the object' do
     let(:object) { Etd.new(pid: 'druid:bc123df4567') }
 
     before do
-      object.properties.title = 'Test ETD'
       object.identityMetadata.other_ids = ['dissertationid:00000123']
       object.label = 'foo'
       allow(object).to receive(:collection_ids).and_return([])
       allow(object).to receive(:admin_policy_object_id).and_return('druid:df123cd4567')
+      allow(Cocina::EtdDescriptionBuilder).to receive(:build).and_return(title: [{ status: 'primary', value: 'Test ETD' }])
     end
 
     it 'returns the object' do
