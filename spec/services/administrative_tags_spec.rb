@@ -85,8 +85,8 @@ RSpec.describe AdministrativeTags do
 
     context 'without matching rows in the database' do
       before do
-        Dor::TagService.add(item_without_db_tags, 'One : Two : Three')
-        Dor::TagService.add(item_without_db_tags, 'Two:Three:Four') # test weirdo tags
+        LegacyTagService.add(item_without_db_tags, 'One : Two : Three')
+        LegacyTagService.add(item_without_db_tags, 'Two:Three:Four') # test weirdo tags
       end
 
       it 'returns administrative tags from identity metadata XML' do
@@ -129,7 +129,7 @@ RSpec.describe AdministrativeTags do
 
     context 'without matching rows in the database' do
       before do
-        Dor::TagService.add(item_without_db_tags, 'Process : Content Type : Media')
+        LegacyTagService.add(item_without_db_tags, 'Process : Content Type : Media')
       end
 
       it 'returns administrative tags from identity metadata XML' do
@@ -175,8 +175,8 @@ RSpec.describe AdministrativeTags do
 
     context 'when no tags for druid exist but legacy tags do exist' do
       before do
-        Dor::TagService.add(item_without_db_tags, 'One : Two : Three')
-        Dor::TagService.add(item_without_db_tags, 'One : Two : Three : Four')
+        LegacyTagService.add(item_without_db_tags, 'One : Two : Three')
+        LegacyTagService.add(item_without_db_tags, 'One : Two : Three : Four')
       end
 
       it 'adds tags from Fedora to the database' do
@@ -211,8 +211,8 @@ RSpec.describe AdministrativeTags do
 
     context 'when no tags for druid exist but legacy tags do exist' do
       before do
-        Dor::TagService.add(item_without_db_tags, current_tag)
-        Dor::TagService.add(item_without_db_tags, 'One : Two : Three : Four')
+        LegacyTagService.add(item_without_db_tags, current_tag)
+        LegacyTagService.add(item_without_db_tags, 'One : Two : Three : Four')
         # Don't actually manipulate the database
         allow(AdministrativeTag).to receive(:create!)
       end
@@ -251,8 +251,8 @@ RSpec.describe AdministrativeTags do
 
     context 'when no tags for druid exist but legacy tags do exist' do
       before do
-        Dor::TagService.add(item_without_db_tags, tag)
-        Dor::TagService.add(item_without_db_tags, 'One : Two : Three : Four')
+        LegacyTagService.add(item_without_db_tags, tag)
+        LegacyTagService.add(item_without_db_tags, 'One : Two : Three : Four')
         # Don't actually manipulate the database
         allow(AdministrativeTag).to receive(:create!)
       end
