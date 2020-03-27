@@ -122,6 +122,7 @@ class AdministrativeTags
     item.identityMetadata.ng_xml.search('//tag').map(&:content)
   end
 
+  # rubocop:disable Lint/HandleExceptions
   def populate_database_tags_from_datastream!
     return if AdministrativeTag.where(druid: item.pid).any?
 
@@ -132,12 +133,13 @@ class AdministrativeTags
         tag_string.gsub!(':', ' : ') unless AdministrativeTag::VALID_TAG_PATTERN.match?(tag_string)
         begin
           AdministrativeTag.create!(druid: item.pid, tag: tag_string)
-        rescue ActiveRecord::RecordInvalid
-          nil # ignore dupes when migrating new records
+        rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+          # silently eat errors from duplicate rows when migrating tags
         end
       end
     end
   end
+  # rubocop:enable Lint/HandleExceptions
 
   def tags_relation
     AdministrativeTag.arel_table[:tag]
