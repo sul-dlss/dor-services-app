@@ -87,10 +87,11 @@ RSpec.describe AdministrativeTags do
       before do
         LegacyTagService.add(item_without_db_tags, 'One : Two : Three')
         LegacyTagService.add(item_without_db_tags, 'Two:Three:Four') # test weirdo tags
+        LegacyTagService.add(item_without_db_tags, ' Three:Four:Five') # test weirdo tags
       end
 
       it 'returns administrative tags from identity metadata XML' do
-        expect(described_class.for(item: item_without_db_tags)).to eq(['One : Two : Three', 'Two : Three : Four'])
+        expect(described_class.for(item: item_without_db_tags)).to eq(['One : Two : Three', 'Two : Three : Four', 'Three : Four : Five'])
       end
     end
   end
