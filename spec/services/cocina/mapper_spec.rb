@@ -31,11 +31,11 @@ RSpec.describe Cocina::Mapper do
           <contentMetadata type="sample" objectId="druid:dd116zh0343">
             <resource sequence="1" type="folder" id="folder1PuSu">
               <label>Folder 1</label>
-              <file mimetype="text/plain" shelve="yes" publish="yes" size="7888" preserve="yes" datetime="2012-06-15T22:57:43Z" id="folder1PuSu/story1u.txt">
+              <file mimetype="text/plain" shelve="yes" publish="yes" size="7888" preserve="no" datetime="2012-06-15T22:57:43Z" id="folder1PuSu/story1u.txt">
                 <checksum type="md5">e2837b9f02e0b0b76f526eeb81c7aa7b</checksum>
                 <checksum type="sha1">61dfac472b7904e1413e0cbf4de432bda2a97627</checksum>
               </file>
-              <file mimetype="text/plain" shelve="no" publish="no" size="5983" preserve="no" datetime="2012-06-15T22:58:56Z" id="folder1PuSu/story2r.txt">
+              <file mimetype="text/plain" shelve="no" publish="no" size="5983" preserve="yes" datetime="2012-06-15T22:58:56Z" id="folder1PuSu/story2r.txt">
                 <checksum type="md5">dc2be64ae43f1c1db4a068603465955d</checksum>
                 <checksum type="sha1">b8a672c1848fc3d13b5f380e15835690e24600e0</checksum>
               </file>
@@ -94,12 +94,12 @@ RSpec.describe Cocina::Mapper do
         expect(file1.hasMessageDigests.first.digest).to eq '61dfac472b7904e1413e0cbf4de432bda2a97627'
         expect(file1.hasMessageDigests.first.type).to eq 'sha1'
         expect(file1.administrative.shelve).to eq true
-        expect(file1.administrative.sdrPreserve).to eq true
+        expect(file1.administrative.sdrPreserve).to eq false
         expect(file1.access.access).to eq('world')
 
         file2 = folder1.structural.contains[1]
         expect(file2.administrative.shelve).to eq false
-        expect(file2.administrative.sdrPreserve).to eq false
+        expect(file2.administrative.sdrPreserve).to eq true
         expect(file2.access.access).to eq('dark')
       end
 
