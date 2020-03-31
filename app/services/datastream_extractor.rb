@@ -49,7 +49,6 @@ class DatastreamExtractor
       rightsMetadata: false,
       roleMetadata: false,
       sourceMetadata: false,
-      technicalMetadata: false,
       versionMetadata: true,
       workflows: false,
       geoMetadata: false
