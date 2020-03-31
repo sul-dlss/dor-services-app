@@ -35,7 +35,6 @@ RSpec.describe DatastreamExtractor do
       expect(instance).to have_received(:datastream_content).with(:provenanceMetadata, true)
       expect(instance).to have_received(:datastream_content).with(:relationshipMetadata, true)
       expect(instance).to have_received(:datastream_content).with(:roleMetadata, false)
-      expect(instance).to have_received(:datastream_content).with(:technicalMetadata, false)
       expect(instance).to have_received(:datastream_content).with(:sourceMetadata, false)
       expect(instance).to have_received(:datastream_content).with(:rightsMetadata, false)
       expect(instance).to have_received(:datastream_content).with(:versionMetadata, true)
