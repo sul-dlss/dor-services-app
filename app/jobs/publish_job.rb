@@ -13,6 +13,17 @@ class PublishJob < ApplicationJob
 
     begin
       item = Dor.find(druid)
+
+      validator = validator_for?(item)
+      unless validator.valid?
+        return LogFailureJob.perform_later(druid: druid,
+                                           background_job_result: background_job_result,
+                                           workflow: workflow,
+                                           workflow_process: 'publish-complete',
+                                           output: { errors: [{ title: 'Access mismatch',
+                                                                detail: "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" }] })
+      end
+
       PublishMetadataService.publish(item)
       EventFactory.create(druid: druid, event_type: 'publishing_complete', data: { background_job_result_id: background_job_result.id })
     rescue Dor::DataError => e
@@ -27,5 +38,10 @@ class PublishJob < ApplicationJob
                                 background_job_result: background_job_result,
                                 workflow: workflow,
                                 workflow_process: 'publish-complete')
+  end
+
+  def validator_for?(item)
+    model = Cocina::Mapper.build(item)
+    ValidateDarkService.new(model)
   end
 end

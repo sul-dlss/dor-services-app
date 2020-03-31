@@ -11,6 +11,17 @@ class ShelveJob < ApplicationJob
 
     begin
       item = Dor.find(druid)
+
+      validator = validator_for?(item)
+      unless validator.valid?
+        return LogFailureJob.perform_later(druid: druid,
+                                           background_job_result: background_job_result,
+                                           workflow: 'accessionWF',
+                                           workflow_process: 'shelve-complete',
+                                           output: { errors: [{ title: 'Access mismatch',
+                                                                detail: "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" }] })
+      end
+
       ShelvingService.shelve(item)
       EventFactory.create(druid: druid, event_type: 'shelving_complete', data: { background_job_result_id: background_job_result.id })
     rescue ShelvingService::ContentDirNotFoundError => e
@@ -25,5 +36,10 @@ class ShelveJob < ApplicationJob
                                 workflow: 'accessionWF',
                                 background_job_result: background_job_result,
                                 workflow_process: 'shelve-complete')
+  end
+
+  def validator_for?(item)
+    model = Cocina::Mapper.build(item)
+    ValidateDarkService.new(model)
   end
 end
