@@ -63,8 +63,8 @@ module Cocina
           hasMessageDigests: [],
           access: { access: node['publish'] == 'yes' ? 'world' : 'dark' },
           administrative: {
-            sdrPreserve: node['shelve'] == 'yes',
-            shelve: node['preserve'] == 'yes'
+            sdrPreserve: node['preserve'] == 'yes',
+            shelve: node['shelve'] == 'yes'
           }
         }.tap do |attrs|
           # Files from Goobi and Hydrus don't have mimetype until they hit exif-collect in the assemblyWF
