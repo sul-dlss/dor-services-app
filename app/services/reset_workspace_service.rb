@@ -10,7 +10,7 @@ class ResetWorkspaceService
   # @raise [Errno::ENOENT] if the directory doesn't exist
   def self.reset(druid:, version:)
     reset_workspace_druid_tree(druid: druid, version: version, workspace_root: Dor::Config.stacks.local_workspace_root)
-    reset_export_bag(druid: druid, version: version, export_root: Settings.sdr.local_export_home)
+    remove_export_bag(druid: druid, export_root: Settings.sdr.local_export_home)
   end
 
   # @raises [Errno::ENOENT] if the directory doesn't exist
@@ -25,14 +25,13 @@ class ResetWorkspaceService
     FileUtils.mv(druid_tree_path, "#{druid_tree_path}_v#{version}")
   end
 
-  def self.reset_export_bag(druid:, version:, export_root:)
+  # Removes the export directory. This should be called after the bag has been transfered to preservation
+  def self.remove_export_bag(druid:, export_root:)
     id = druid.split(':').last
     bag_dir = File.join(export_root, id)
 
-    raise BagAlreadyExists, "The archived bag #{bag_dir}_v#{version} already existed." if File.exist?("#{bag_dir}_v#{version}")
+    FileUtils.rm_r(bag_dir) if File.exist?(bag_dir)
 
-    FileUtils.mv(bag_dir, "#{bag_dir}_v#{version}") if File.exist?(bag_dir)
-
-    FileUtils.mv("#{bag_dir}.tar", "#{bag_dir}_v#{version}.tar") if File.exist?("#{bag_dir}.tar")
+    FileUtils.rm("#{bag_dir}.tar") if File.exist?("#{bag_dir}.tar")
   end
 end

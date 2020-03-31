@@ -57,7 +57,7 @@ RSpec.describe ResetWorkspaceService do
     end
   end
 
-  describe 'reset_export_bag' do
+  describe '.remove_export_bag' do
     let(:druid) { "druid:#{id}" }
     let(:id) { 'zb871zd0767' }
     let(:bag_path) { "#{export_root}/#{id}" }
@@ -67,27 +67,10 @@ RSpec.describe ResetWorkspaceService do
       create_bag_tar(id)
     end
 
-    after do
-      FileUtils.mv("#{bag_path}_v2", bag_path) if File.exist?(bag_path + '_v2')
-      FileUtils.mv("#{bag_path}_v2.tar", bag_path + '.tar') if File.exist?(bag_path + '_v2.tar')
-    end
-
-    it 'renames the export bags directory and tar files' do
-      described_class.reset_export_bag(druid: druid, version: '2', export_root: export_root)
-      expect(File).to exist("#{bag_path}_v2")
-      expect(File).to exist("#{bag_path}_v2.tar")
-      expect(File).not_to exist(bag_path.to_s)
-      expect(File).not_to exist("#{bag_path}.tar")
-    end
-
-    it 'throws an error if the renamed bag is already existent' do
-      existent_id = 'az871zd0000'
-      existent_druid = "druid:#{existent_id}"
-      create_bag_dir(existent_id)
-      bag_path = "#{export_root}/#{existent_id}"
-      FileUtils.mv(bag_path, "#{bag_path}_v2") unless File.exist?(bag_path + '_v2')
-      expect { described_class.reset_export_bag(druid: existent_druid, version: '2', export_root: export_root) }
-        .to raise_error(ResetWorkspaceService::BagAlreadyExists)
+    it 'removes the export bags directory and tar files' do
+      expect do
+        described_class.remove_export_bag(druid: druid, export_root: export_root)
+      end.to change { File.exist?(bag_path.to_s) }.from(true).to(false).and change { File.exist?("#{bag_path}.tar") }.from(true).to(false)
     end
   end
 
