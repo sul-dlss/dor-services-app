@@ -31,11 +31,11 @@ class WorkspacesController < ApplicationController
   end
 
   # Once an object has been transferred to preservation, reset the workspace by
-  # renaming the druid-tree to a versioned directory.
+  # renaming the druid-tree to a versioned directory and removing the export directory
   def reset
     ResetWorkspaceService.reset(druid: params[:object_id], version: @cocina_object.version)
     head :no_content
-  rescue ResetWorkspaceService::DirectoryAlreadyExists, ResetWorkspaceService::BagAlreadyExists
+  rescue ResetWorkspaceService::DirectoryAlreadyExists
     # We're trapping errors and doing nothing, because the belief is that these indicate
     # this API has already been called and completed.
     head :no_content

@@ -33,16 +33,4 @@ RSpec.describe 'Reset workspace' do
       expect(response).to be_no_content
     end
   end
-
-  context 'when an archive bag exists' do
-    before do
-      allow(ResetWorkspaceService).to receive(:reset)
-        .and_raise(ResetWorkspaceService::BagAlreadyExists.new('bag already exists'))
-    end
-
-    it 'returns a 422 error' do
-      post "/v1/objects/#{druid}/workspace/reset", headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response).to be_no_content
-    end
-  end
 end
