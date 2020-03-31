@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foxml:digitalObject VERSION="1.1" PID="druid:qc410yz8746"
+xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+<foxml:objectProperties>
+<foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="integration-testing"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="dor-services-stage.stanford.edu"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2020-03-30T19:46:18.792Z"/>
+<foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2020-03-30T19:46:28.267Z"/>
+</foxml:objectProperties>
+<foxml:datastream ID="AUDIT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
+<foxml:datastreamVersion ID="AUDIT.0" LABEL="Audit Trail for this object" CREATED="2020-03-30T19:46:18.792Z" MIMETYPE="text/xml" FORMAT_URI="info:fedora/fedora-system:format/xml.fedora.audit">
+<foxml:xmlContent>
+<audit:auditTrail xmlns:audit="info:fedora/fedora-system:def/audit#">
+<audit:record ID="AUDREC1">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>RELS-EXT</audit:componentID>
+<audit:responsibility>dor-services-stage.stanford.edu</audit:responsibility>
+<audit:date>2020-03-30T19:46:18.862Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC2">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>rightsMetadata</audit:componentID>
+<audit:responsibility>dor-services-stage.stanford.edu</audit:responsibility>
+<audit:date>2020-03-30T19:46:18.890Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC3">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>versionMetadata</audit:componentID>
+<audit:responsibility>dor-services-stage.stanford.edu</audit:responsibility>
+<audit:date>2020-03-30T19:46:18.932Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC4">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>identityMetadata</audit:componentID>
+<audit:responsibility>dor-services-stage.stanford.edu</audit:responsibility>
+<audit:date>2020-03-30T19:46:18.957Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC5">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByValue</audit:action>
+<audit:componentID>RELS-EXT</audit:componentID>
+<audit:responsibility>argo-stage-b.stanford.edu</audit:responsibility>
+<audit:date>2020-03-30T19:46:23.582Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC6">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>descMetadata</audit:componentID>
+<audit:responsibility>argo-stage-b.stanford.edu</audit:responsibility>
+<audit:date>2020-03-30T19:46:23.605Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC7">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>administrativeMetadata</audit:componentID>
+<audit:responsibility>argo-stage-b.stanford.edu</audit:responsibility>
+<audit:date>2020-03-30T19:46:23.664Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC8">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>roleMetadata</audit:componentID>
+<audit:responsibility>argo-stage-b.stanford.edu</audit:responsibility>
+<audit:date>2020-03-30T19:46:23.708Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC9">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>defaultObjectRights</audit:componentID>
+<audit:responsibility>argo-stage-b.stanford.edu</audit:responsibility>
+<audit:date>2020-03-30T19:46:23.734Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC10">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>provenanceMetadata</audit:componentID>
+<audit:responsibility>dor-services-stage.stanford.edu</audit:responsibility>
+<audit:date>2020-03-30T19:46:28.267Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+</audit:auditTrail>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="DC" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+<foxml:datastreamVersion ID="DC1.0" LABEL="Dublin Core Record for this object" CREATED="2020-03-30T19:46:18.792Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="389">
+<foxml:xmlContent>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+  <dc:title>integration-testing</dc:title>
+  <dc:identifier>druid:qc410yz8746</dc:identifier>
+</oai_dc:dc>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="RELS-EXT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+<foxml:datastreamVersion ID="RELS-EXT.0" LABEL="Fedora Object-to-Object Relationship Metadata" CREATED="2020-03-30T19:46:18.862Z" MIMETYPE="application/rdf+xml" SIZE="571">
+<foxml:xmlContent>
+<rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:hydra="http://projecthydra.org/ns/relations#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="info:fedora/druid:qc410yz8746">
+    <hydra:isGovernedBy rdf:resource="info:fedora/druid:hv992ry2431"></hydra:isGovernedBy>
+    <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_AdminPolicyObject"></fedora-model:hasModel>
+    <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_Abstract"></fedora-model:hasModel>
+  </rdf:Description>
+</rdf:RDF>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="RELS-EXT.1" LABEL="Fedora Object-to-Object Relationship Metadata" CREATED="2020-03-30T19:46:23.582Z" MIMETYPE="application/rdf+xml" SIZE="676">
+<foxml:xmlContent>
+<rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:hydra="http://projecthydra.org/ns/relations#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="info:fedora/druid:qc410yz8746">
+    <hydra:isGovernedBy rdf:resource="info:fedora/druid:hv992ry2431"></hydra:isGovernedBy>
+    <hydra:referencesAgreement rdf:resource="info:fedora/druid:dd327qr3670"></hydra:referencesAgreement>
+    <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_AdminPolicyObject"></fedora-model:hasModel>
+    <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_Abstract"></fedora-model:hasModel>
+  </rdf:Description>
+</rdf:RDF>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="rightsMetadata" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+<foxml:datastreamVersion ID="rightsMetadata.0" LABEL="Rights metadata" CREATED="2020-03-30T19:46:18.890Z" MIMETYPE="text/xml" SIZE="285">
+<foxml:binaryContent>
+              PHJpZ2h0c01ldGFkYXRhPgogIDxhY2Nlc3MgdHlwZT0iZGlzY292ZXIiPgogICAgPG1hY2hpbmU+CiAg
+              ICAgIDxub25lLz4KICAgIDwvbWFjaGluZT4KICA8L2FjY2Vzcz4KICA8YWNjZXNzIHR5cGU9InJlYWQi
+              PgogICAgPG1hY2hpbmU+CiAgICAgIDxub25lLz4KICAgIDwvbWFjaGluZT4KICA8L2FjY2Vzcz4KICA8
+              dXNlPgogICAgPGh1bWFuIHR5cGU9ImNyZWF0aXZlQ29tbW9ucyIvPgogICAgPG1hY2hpbmUgdHlwZT0i
+              Y3JlYXRpdmVDb21tb25zIi8+CiAgPC91c2U+CjwvcmlnaHRzTWV0YWRhdGE+
+</foxml:binaryContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="versionMetadata" STATE="A" CONTROL_GROUP="M" VERSIONABLE="false">
+<foxml:datastreamVersion ID="versionMetadata.0" LABEL="Version Metadata" CREATED="2020-03-30T19:46:18.932Z" MIMETYPE="text/xml" SIZE="134">
+<foxml:binaryContent>
+              PHZlcnNpb25NZXRhZGF0YT4KICA8dmVyc2lvbiB2ZXJzaW9uSWQ9IjEiIHRhZz0iMS4wLjAiPgogICAg
+              PGRlc2NyaXB0aW9uPkluaXRpYWwgVmVyc2lvbjwvZGVzY3JpcHRpb24+CiAgPC92ZXJzaW9uPgo8L3Zl
+              cnNpb25NZXRhZGF0YT4=
+</foxml:binaryContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="identityMetadata" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+<foxml:datastreamVersion ID="identityMetadata.0" LABEL="Identity Metadata" CREATED="2020-03-30T19:46:18.957Z" MIMETYPE="text/xml" SIZE="274">
+<foxml:binaryContent>
+              PGlkZW50aXR5TWV0YWRhdGE+CiAgPG9iamVjdElkPmRydWlkOnFjNDEweXo4NzQ2PC9vYmplY3RJZD4K
+              ICA8b2JqZWN0Q3JlYXRvcj5ET1I8L29iamVjdENyZWF0b3I+CiAgPG9iamVjdExhYmVsPmludGVncmF0
+              aW9uLXRlc3Rpbmc8L29iamVjdExhYmVsPgogIDxvYmplY3RUeXBlPmFkbWluUG9saWN5PC9vYmplY3RU
+              eXBlPgogIDxvdGhlcklkIG5hbWU9InV1aWQiPjFmYTE5NzNlLTcyYmYtMTFlYS05ODFiLTAwNTA1NmE3
+              MDQxZDwvb3RoZXJJZD4KPC9pZGVudGl0eU1ldGFkYXRhPg==
+</foxml:binaryContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="descMetadata" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+<foxml:datastreamVersion ID="descMetadata.0" LABEL="Descriptive Metadata" CREATED="2020-03-30T19:46:23.605Z" MIMETYPE="text/xml" SIZE="283">
+<foxml:binaryContent>
+              PG1vZHMgeG1sbnM9Imh0dHA6Ly93d3cubG9jLmdvdi9tb2RzL3YzIiB4bWxuczp4c2k9Imh0dHA6Ly93
+              d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB2ZXJzaW9uPSIzLjYiIHhzaTpzY2hlbWFM
+              b2NhdGlvbj0iaHR0cDovL3d3dy5sb2MuZ292L21vZHMvdjMgaHR0cDovL3d3dy5sb2MuZ292L3N0YW5k
+              YXJkcy9tb2RzL3YzL21vZHMtMy02LnhzZCI+CiAgPHRpdGxlSW5mbz4KICAgIDx0aXRsZT5pbnRlZ3Jh
+              dGlvbi10ZXN0aW5nPC90aXRsZT4KICA8L3RpdGxlSW5mbz4KPC9tb2RzPg==
+</foxml:binaryContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="administrativeMetadata" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+<foxml:datastreamVersion ID="administrativeMetadata.0" LABEL="Administrative Metadata" CREATED="2020-03-30T19:46:23.664Z" MIMETYPE="text/xml" SIZE="248">
+<foxml:binaryContent>
+              PGFkbWluaXN0cmF0aXZlTWV0YWRhdGE+CiAgPGRlc2NNZXRhZGF0YT4KICAgIDxmb3JtYXQ+TU9EUzwv
+              Zm9ybWF0PgogICAgPHNvdXJjZT5ET1I8L3NvdXJjZT4KICA8L2Rlc2NNZXRhZGF0YT4KICA8cmVnaXN0
+              cmF0aW9uPgogICAgPHdvcmtmbG93IGlkPSJyZWdpc3RyYXRpb25XRiIvPgogICAgPGNvbGxlY3Rpb24g
+              aWQ9ImRydWlkOmJjNzc4cG05ODY2Ii8+CiAgPC9yZWdpc3RyYXRpb24+CjwvYWRtaW5pc3RyYXRpdmVN
+              ZXRhZGF0YT4=
+</foxml:binaryContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="roleMetadata" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+<foxml:datastreamVersion ID="roleMetadata.0" LABEL="Role Metadata" CREATED="2020-03-30T19:46:23.708Z" MIMETYPE="text/xml" SIZE="344">
+<foxml:binaryContent>
+              PHJvbGVNZXRhZGF0YT4KICA8cm9sZSB0eXBlPSJkb3ItYXBvLW1hbmFnZXIiPgogICAgPGdyb3VwPgog
+              ICAgICA8aWRlbnRpZmllciB0eXBlPSJ3b3JrZ3JvdXAiPnNkcjpkZXZlbG9wZXI8L2lkZW50aWZpZXI+
+              CiAgICA8L2dyb3VwPgogICAgPGdyb3VwPgogICAgICA8aWRlbnRpZmllciB0eXBlPSJ3b3JrZ3JvdXAi
+              PnNkcjpzZXJ2aWNlLW1hbmFnZXI8L2lkZW50aWZpZXI+CiAgICA8L2dyb3VwPgogICAgPGdyb3VwPgog
+              ICAgICA8aWRlbnRpZmllciB0eXBlPSJ3b3JrZ3JvdXAiPnNkcjptZXRhZGF0YS1zdGFmZjwvaWRlbnRp
+              Zmllcj4KICAgIDwvZ3JvdXA+CiAgPC9yb2xlPgo8L3JvbGVNZXRhZGF0YT4=
+</foxml:binaryContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="defaultObjectRights" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+<foxml:datastreamVersion ID="defaultObjectRights.0" LABEL="Default Object Rights" CREATED="2020-03-30T19:46:23.734Z" MIMETYPE="text/xml" SIZE="255">
+<foxml:binaryContent>
+              PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KCjxyaWdodHNNZXRhZGF0YT4KICAg
+              PGFjY2VzcyB0eXBlPSJkaXNjb3ZlciI+CiAgICAgIDxtYWNoaW5lPgogICAgICAgICA8d29ybGQvPgog
+              ICAgICA8L21hY2hpbmU+CiAgIDwvYWNjZXNzPgogICA8YWNjZXNzIHR5cGU9InJlYWQiPgogICAgICA8
+              bWFjaGluZT4KICAgICAgICAgPHdvcmxkLz4KICAgICAgPC9tYWNoaW5lPgogICA8L2FjY2Vzcz4KPC9y
+              aWdodHNNZXRhZGF0YT4K
+</foxml:binaryContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="provenanceMetadata" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+<foxml:datastreamVersion ID="provenanceMetadata.0" LABEL="Provenance Metadata" CREATED="2020-03-30T19:46:28.267Z" MIMETYPE="text/xml" SIZE="263">
+<foxml:binaryContent>
+              PHByb3ZlbmFuY2VNZXRhZGF0YSBvYmplY3RJZD0iZHJ1aWQ6cWM0MTB5ejg3NDYiPgogIDxhZ2VudCBu
+              YW1lPSJET1IiPgogICAgPHdoYXQgb2JqZWN0PSJkcnVpZDpxYzQxMHl6ODc0NiI+CiAgICAgIDxldmVu
+              dCB3aG89IkRPUi1hY2Nlc3Npb25XRiIgd2hlbj0iMjAyMC0wMy0zMFQxMjo0NjoyOC0wNzowMCI+RE9S
+              IENvbW1vbiBBY2Nlc3Npb25pbmcgY29tcGxldGVkPC9ldmVudD4KICAgIDwvd2hhdD4KICA8L2FnZW50
+              Pgo8L3Byb3ZlbmFuY2VNZXRhZGF0YT4=
+</foxml:binaryContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+</foxml:digitalObject>
