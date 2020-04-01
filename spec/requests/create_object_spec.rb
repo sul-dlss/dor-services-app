@@ -25,6 +25,7 @@ RSpec.describe 'Create object' do
                               version: 1,
                               access: {
                                 access: access,
+                                download: 'none',
                                 copyright: 'All rights reserved unless otherwise indicated.',
                                 useAndReproductionStatement: 'Property rights reside with the repository...'
                               },
@@ -438,7 +439,7 @@ RSpec.describe 'Create object' do
     let(:data) do
       <<~JSON
         { "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
-          "label":"#{label}","version":1,"access":{"access":"world"},
+          "label":"#{label}","version":1,"access":{"access":"world","download":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"status":"primary","value":"#{title}"}]},
           "identification":{"sourceId":"googlebooks:999999"},
@@ -668,6 +669,108 @@ RSpec.describe 'Create object' do
     end
   end
 
+  context 'when location access is specified' do
+    let(:expected) do
+      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.book,
+                              label: 'This is my label',
+                              version: 1,
+                              description: {
+                                title: [{ value: 'This is my title', status: 'primary' }]
+                              },
+                              administrative: {
+                                hasAdminPolicy: 'druid:dd999df4567'
+                              },
+                              identification: { sourceId: 'googlebooks:999999' },
+                              externalIdentifier: 'druid:gg777gg7777',
+                              structural: {
+                                hasMemberOrders: [
+                                  { viewingDirection: 'right-to-left' }
+                                ]
+                              },
+                              access: {
+                                access: 'location-based',
+                                download: 'location-based',
+                                readLocation: 'm&m'
+                              })
+    end
+    let(:data) do
+      <<~JSON
+        { "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
+          "label":"This is my label","version":1,
+          "access":{"access":"location-based","readLocation":"m&m"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "description":{"title":[{"status":"primary","value":"This is my title"}]},
+          "identification":{"sourceId":"googlebooks:999999"},
+          "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
+      JSON
+    end
+
+    before do
+      allow(Dor::SearchService).to receive(:query_by_id).and_return([])
+      allow_any_instance_of(Dor::Item).to receive(:save!)
+    end
+
+    it 'registers the book and sets the rights' do
+      post '/v1/objects',
+           params: data,
+           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+      expect(response.body).to eq expected.to_json
+      expect(response.status).to eq(201)
+      expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+    end
+  end
+
+  context 'when no-download access is specified' do
+    let(:expected) do
+      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.book,
+                              label: 'This is my label',
+                              version: 1,
+                              description: {
+                                title: [{ value: 'This is my title', status: 'primary' }]
+                              },
+                              administrative: {
+                                hasAdminPolicy: 'druid:dd999df4567'
+                              },
+                              identification: { sourceId: 'googlebooks:999999' },
+                              externalIdentifier: 'druid:gg777gg7777',
+                              structural: {
+                                hasMemberOrders: [
+                                  { viewingDirection: 'right-to-left' }
+                                ]
+                              },
+                              access: {
+                                access: 'world',
+                                download: 'none'
+                              })
+    end
+    let(:data) do
+      <<~JSON
+        { "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
+          "label":"This is my label","version":1,
+          "access":{"access":"world","download":"none"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "description":{"title":[{"status":"primary","value":"This is my title"}]},
+          "identification":{"sourceId":"googlebooks:999999"},
+          "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
+      JSON
+    end
+
+    before do
+      allow(Dor::SearchService).to receive(:query_by_id).and_return([])
+      allow_any_instance_of(Dor::Item).to receive(:save!)
+    end
+
+    it 'registers the book and sets the rights' do
+      post '/v1/objects',
+           params: data,
+           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+
+      expect(response.body).to eq expected.to_json
+      expect(response.status).to eq(201)
+      expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+    end
+  end
+
   context 'when no description is provided (registration use case)' do
     before do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
@@ -742,7 +845,7 @@ RSpec.describe 'Create object' do
         Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
                                 label: 'This is my label',
                                 version: 1,
-                                access: { access: 'world' },
+                                access: { access: 'world', download: 'world' },
                                 administrative: { hasAdminPolicy: 'druid:dd999df4567' },
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
