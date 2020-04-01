@@ -33,6 +33,7 @@ RSpec.describe 'Get the object' do
           access: {
             access: 'world',
             copyright: 'All rights reserved unless otherwise indicated.',
+            download: 'none',
             useAndReproductionStatement: 'Property rights reside with the repository...'
           },
           administrative: {},
@@ -81,11 +82,12 @@ RSpec.describe 'Get the object' do
           access: {
             access: 'citation-only',
             copyright: 'All rights reserved unless otherwise indicated.',
-            useAndReproductionStatement: 'Property rights reside with the repository...',
+            download: 'none',
             embargo: {
               releaseDate: '2019-09-26T07:00:00.000+00:00',
               access: 'world'
-            }
+            },
+            useAndReproductionStatement: 'Property rights reside with the repository...'
           },
           administrative: {
             releaseTags: [
@@ -142,7 +144,8 @@ RSpec.describe 'Get the object' do
         label: 'foo',
         version: 1,
         access: {
-          access: 'world'
+          access: 'world',
+          download: 'none'
         },
         administrative: {},
         description: {
@@ -240,7 +243,7 @@ RSpec.describe 'Get the object' do
       expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/object.jsonld'
       expect(json['label']).to eq 'foo'
       expect(json['version']).to eq 1
-      expect(json['access']).to eq('access' => 'dark')
+      expect(json['access']).to eq('access' => 'dark', 'download' => 'none')
       expect(json['identification']).to eq('sourceId' => 'dissertationid:00000123')
       expect(json['structural']).to eq({})
     end
