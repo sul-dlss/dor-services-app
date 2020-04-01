@@ -33,7 +33,7 @@ RSpec.describe 'Get the object' do
           access: {
             access: 'world',
             copyright: 'All rights reserved unless otherwise indicated.',
-            download: 'none',
+            download: 'world',
             useAndReproductionStatement: 'Property rights reside with the repository...'
           },
           administrative: {},
@@ -145,7 +145,7 @@ RSpec.describe 'Get the object' do
         version: 1,
         access: {
           access: 'world',
-          download: 'none'
+          download: 'world'
         },
         administrative: {},
         description: {

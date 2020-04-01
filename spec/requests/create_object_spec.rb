@@ -430,7 +430,10 @@ RSpec.describe 'Create object' do
                                   { viewingDirection: 'right-to-left' }
                                 ]
                               },
-                              access: { access: 'world' })
+                              access: {
+                                access: 'world',
+                                download: 'world'
+                              })
     end
     let(:data) do
       <<~JSON
@@ -631,7 +634,11 @@ RSpec.describe 'Create object' do
                                   { viewingDirection: 'right-to-left' }
                                 ]
                               },
-                              access: { access: 'citation-only', embargo: { access: 'world', releaseDate: '2020-02-29' } })
+                              access: {
+                                access: 'citation-only',
+                                download: 'none',
+                                embargo: { access: 'world', releaseDate: '2020-02-29' }
+                              })
     end
     let(:data) do
       <<~JSON

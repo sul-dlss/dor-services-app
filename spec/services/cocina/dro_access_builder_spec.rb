@@ -39,6 +39,7 @@ RSpec.describe Cocina::DROAccessBuilder do
 
     it 'builds the hash' do
       expect(access).to eq(access: 'world',
+                           download: 'world',
                            useAndReproductionStatement: 'Property rights reside with the repository. '\
                            'Literary rights reside with the creators of the documents or their heirs. ' \
                            'To obtain permission to publish or reproduce, please contact the Public ' \
@@ -77,6 +78,7 @@ RSpec.describe Cocina::DROAccessBuilder do
 
     it 'builds the hash' do
       expect(access).to eq(access: 'world',
+                           download: 'world',
                            copyright: 'Copyright © World Trade Organization',
                            useAndReproductionStatement: 'Official WTO documents are free for public use.')
     end
@@ -106,6 +108,7 @@ RSpec.describe Cocina::DROAccessBuilder do
 
     it 'builds the hash' do
       expect(access).to eq(access: 'world',
+                           download: 'world',
                            copyright: 'Copyright © DLSS')
     end
   end
