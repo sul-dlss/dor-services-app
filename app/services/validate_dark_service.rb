@@ -14,7 +14,7 @@ class ValidateDarkService
   def invalid_files
     @invalid_files ||= begin
       [].tap do |invalid_files|
-        next unless item.access.access == 'dark'
+        next unless item.access&.access == 'dark'
 
         files.each do |file|
           invalid_files << file if file.administrative.shelve || file.access.access != 'dark'
