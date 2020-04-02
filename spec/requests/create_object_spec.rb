@@ -87,10 +87,22 @@ RSpec.describe 'Create object' do
 
       context 'when no object with the source id exists and the save is successful' do
         let(:search_result) { [] }
+        let(:mods_from_symphony) do
+          <<~XML
+            <mods xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns="http://www.loc.gov/mods/v3" version="3.3"
+                  xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+              <titleInfo>
+                <title>#{title}</title>
+              </titleInfo>
+            </mods>
+          XML
+        end
 
         before do
           allow_any_instance_of(Dor::Item).to receive(:save!)
-          allow(RefreshMetadataAction).to receive(:run)
+          allow(MetadataService).to receive(:fetch).and_return(mods_from_symphony)
         end
 
         it 'registers the object with the registration service and immediately indexes' do
@@ -103,8 +115,7 @@ RSpec.describe 'Create object' do
           expect(response.body).to eq expected.to_json
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
-          expect(RefreshMetadataAction).to have_received(:run)
-            .with(identifiers: ['catkey:8888'], datastream: Dor::DescMetadataDS)
+          expect(MetadataService).to have_received(:fetch).with('catkey:8888')
         end
       end
     end
@@ -449,10 +460,22 @@ RSpec.describe 'Create object' do
           ]
         }
       end
+      let(:mods_from_symphony) do
+        <<~XML
+          <mods xmlns:xlink="http://www.w3.org/1999/xlink"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns="http://www.loc.gov/mods/v3" version="3.3"
+                xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+            <titleInfo>
+              <title>#{title}</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
 
       before do
         allow_any_instance_of(Dor::Collection).to receive(:save!)
-        allow(RefreshMetadataAction).to receive(:run)
+        allow(MetadataService).to receive(:fetch).and_return(mods_from_symphony)
       end
 
       it 'creates the collection' do
@@ -460,11 +483,9 @@ RSpec.describe 'Create object' do
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to eq expected.to_json
-
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
-        expect(RefreshMetadataAction).to have_received(:run)
-          .with(identifiers: ['catkey:8888'], datastream: Dor::DescMetadataDS)
+        expect(MetadataService).to have_received(:fetch).with('catkey:8888')
       end
     end
 
@@ -594,6 +615,7 @@ RSpec.describe 'Create object' do
                                 label: 'This is my label',
                                 version: 1,
                                 administrative: { hasAdminPolicy: 'druid:dd999df4567' },
+                                description: { title: [{ value: 'This is my label', status: 'primary' }] },
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
                                 structural: {},
@@ -625,6 +647,7 @@ RSpec.describe 'Create object' do
                                 label: 'This is my label',
                                 version: 1,
                                 administrative: { hasAdminPolicy: 'druid:dd999df4567' },
+                                description: { title: [{ value: 'This is my label', status: 'primary' }] },
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
                                 structural: {},

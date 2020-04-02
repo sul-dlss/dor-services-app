@@ -60,9 +60,10 @@ module Cocina
         label: item.label,
         version: item.current_version.to_i,
         administrative: build_administrative,
-        description: build_descriptive,
         access: AccessBuilder.build(item)
       }.tap do |props|
+        description = build_descriptive
+        props[:description] = description unless description.nil?
         identification = build_identification
         identification[:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
         props[:identification] = identification unless identification.empty?
@@ -120,19 +121,14 @@ module Cocina
       end
     end
 
-    # rubocop:disable Style/EmptyElse
     def build_descriptive
       if item.is_a? Dor::Etd
         # This is for etds that haven't yet gone through the other-metadata workflow step
         { title: [{ status: 'primary', value: item.properties.title.first }] }
-      elsif item.full_title
-        { title: [{ status: 'primary', value: item.full_title }] }
       else
-        # Items that are registered but haven't gone through assemblyWF don't have descriptive metadata
-        nil
+        { title: [{ status: 'primary', value: item.full_title }] }
       end
     end
-    # rubocop:enable Style/EmptyElse
 
     def build_apo_administrative
       {}.tap do |admin|
