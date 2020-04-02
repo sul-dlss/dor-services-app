@@ -86,7 +86,7 @@ module Cocina
       Dor::Item.new(pid: pid,
                     admin_policy_object_id: obj.administrative.hasAdminPolicy,
                     source_id: obj.identification.sourceId,
-                    collection_ids: [obj.structural.isMemberOf].compact,
+                    collection_ids: [obj.structural&.isMemberOf].compact,
                     catkey: catkey_for(obj),
                     label: obj.label).tap do |item|
         item.descMetadata.mods_title = obj.description.title.first.value if obj.description
@@ -95,7 +95,7 @@ module Cocina
         item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
         item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
 
-        item.contentMetadata.content = ContentMetadataGenerator.generate(druid: pid, object: obj)
+        item.contentMetadata.content = ContentMetadataGenerator.generate(druid: pid, object: obj) if obj&.structural&.contains
         create_embargo(item, obj.access.embargo) if obj.access.embargo
       end
     end
@@ -123,7 +123,7 @@ module Cocina
     end
 
     def add_tags(item, obj)
-      tags = [content_type_tag(obj.type, obj.structural.hasMemberOrders&.first&.viewingDirection)]
+      tags = [content_type_tag(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection)]
       tags << "Project : #{obj.administrative.partOfProject}" if obj.administrative.partOfProject
       AdministrativeTags.create(item: item, tags: tags)
     end

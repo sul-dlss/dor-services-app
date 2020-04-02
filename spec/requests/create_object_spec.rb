@@ -583,38 +583,70 @@ RSpec.describe 'Create object' do
   end
 
   context 'when no description is provided (registration use case)' do
-    let(:expected) do
-      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
-                              label: 'This is my label',
-                              version: 1,
-                              administrative: { hasAdminPolicy: 'druid:dd999df4567' },
-                              identification: { sourceId: 'googlebooks:999999' },
-                              externalIdentifier: 'druid:gg777gg7777',
-                              structural: {},
-                              access: { access: 'world' })
-    end
-    let(:data) do
-      <<~JSON
-        { "type":"http://cocina.sul.stanford.edu/models/object.jsonld",
-          "label":"This is my label","version":1,"access":{"access":"world"},
-          "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
-          "identification":{"sourceId":"googlebooks:999999"},
-          "structural":{}}
-      JSON
-    end
-
     before do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
       allow_any_instance_of(Dor::Item).to receive(:save!)
     end
 
-    it 'registers the book and sets the rights' do
-      post '/v1/objects',
-           params: data,
-           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.body).to eq expected.to_json
-      expect(response.status).to eq(201)
-      expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+    context 'when structural is provided' do
+      let(:expected) do
+        Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
+                                label: 'This is my label',
+                                version: 1,
+                                administrative: { hasAdminPolicy: 'druid:dd999df4567' },
+                                identification: { sourceId: 'googlebooks:999999' },
+                                externalIdentifier: 'druid:gg777gg7777',
+                                structural: {},
+                                access: { access: 'world' })
+      end
+      let(:data) do
+        <<~JSON
+          { "type":"http://cocina.sul.stanford.edu/models/object.jsonld",
+            "label":"This is my label","version":1,"access":{"access":"world"},
+            "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
+            "identification":{"sourceId":"googlebooks:999999"},
+            "structural":{}}
+        JSON
+      end
+
+      it 'registers the object' do
+        post '/v1/objects',
+             params: data,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response.body).to eq expected.to_json
+        expect(response.status).to eq(201)
+        expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+      end
+    end
+
+    context 'when structural is not provided' do
+      let(:expected) do
+        Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
+                                label: 'This is my label',
+                                version: 1,
+                                administrative: { hasAdminPolicy: 'druid:dd999df4567' },
+                                identification: { sourceId: 'googlebooks:999999' },
+                                externalIdentifier: 'druid:gg777gg7777',
+                                structural: {},
+                                access: { access: 'world' })
+      end
+      let(:data) do
+        <<~JSON
+          { "type":"http://cocina.sul.stanford.edu/models/object.jsonld",
+            "label":"This is my label","version":1,"access":{"access":"world"},
+            "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
+            "identification":{"sourceId":"googlebooks:999999"}}
+        JSON
+      end
+
+      it 'registers the object' do
+        post '/v1/objects',
+             params: data,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response.body).to eq expected.to_json
+        expect(response.status).to eq(201)
+        expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+      end
     end
   end
 end
