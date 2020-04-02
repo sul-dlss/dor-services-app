@@ -3,13 +3,13 @@
 require 'rails_helper'
 
 RSpec.describe 'Create object' do
-  let(:object) { Dor::AdminPolicyObject.new(pid: 'druid:dd999df4567') }
+  let(:apo) { Dor::AdminPolicyObject.new(pid: 'druid:dd999df4567') }
   let(:data) { item.to_json }
   let(:druid) { 'druid:gg777gg7777' }
 
   before do
     allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
-    allow(Dor).to receive(:find).and_return(object)
+    allow(Dor).to receive(:find).and_return(apo)
     stub_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')
   end
 
@@ -640,6 +640,38 @@ RSpec.describe 'Create object' do
       end
 
       it 'registers the object' do
+        post '/v1/objects',
+             params: data,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response.body).to eq expected.to_json
+        expect(response.status).to eq(201)
+        expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+      end
+    end
+
+    context 'when access is not provided' do
+      let(:expected) do
+        Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
+                                label: 'This is my label',
+                                version: 1,
+                                access: { access: 'world' },
+                                administrative: { hasAdminPolicy: 'druid:dd999df4567' },
+                                identification: { sourceId: 'googlebooks:999999' },
+                                externalIdentifier: 'druid:gg777gg7777',
+                                structural: {})
+      end
+
+      let(:data) do
+        <<~JSON
+          { "type":"http://cocina.sul.stanford.edu/models/object.jsonld",
+            "label":"This is my label","version":1,
+            "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
+            "identification":{"sourceId":"googlebooks:999999"},
+            "structural":{}}
+        JSON
+      end
+
+      it 'inherits access from the admin policy' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }

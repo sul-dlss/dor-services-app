@@ -91,12 +91,17 @@ module Cocina
                     label: obj.label).tap do |item|
         item.descMetadata.mods_title = obj.description.title.first.value if obj.description
         add_tags(item, obj)
-        change_access(item, obj.access.access)
-        item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
-        item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
+
+        if obj.access
+          change_access(item, obj.access.access)
+          item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
+          item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
+          create_embargo(item, obj.access.embargo) if obj.access.embargo
+        else
+          apply_default_access(item)
+        end
 
         item.contentMetadata.content = ContentMetadataGenerator.generate(druid: pid, object: obj) if obj&.structural&.contains
-        create_embargo(item, obj.access.embargo) if obj.access.embargo
       end
     end
 
@@ -156,6 +161,13 @@ module Cocina
       rights_type = access == 'citation-only' ? 'none' : access
       Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, rights_type)
       item.rightsMetadata.ng_xml_will_change!
+    end
+
+    # add the default rights from the admin policy to the provided item
+    def apply_default_access(item)
+      apo = Dor.find(item.admin_policy_object_id)
+      rights_xml = apo.defaultObjectRights.ng_xml
+      item.rightsMetadata.content = rights_xml.to_s
     end
   end
 end
