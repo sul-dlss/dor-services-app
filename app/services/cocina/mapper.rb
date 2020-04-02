@@ -120,14 +120,19 @@ module Cocina
       end
     end
 
+    # rubocop:disable Style/EmptyElse
     def build_descriptive
-      case item
-      when Dor::Etd
+      if item.is_a? Dor::Etd
+        # This is for etds that haven't yet gone through the other-metadata workflow step
         { title: [{ status: 'primary', value: item.properties.title.first }] }
-      else
+      elsif item.full_title
         { title: [{ status: 'primary', value: item.full_title }] }
+      else
+        # Items that are registered but haven't gone through assemblyWF don't have descriptive metadata
+        nil
       end
     end
+    # rubocop:enable Style/EmptyElse
 
     def build_apo_administrative
       {}.tap do |admin|
