@@ -18,11 +18,13 @@ RSpec.describe 'Create object' do
     let(:title) { 'This is my title' }
     let(:expected_label) { label }
     let(:structural) { {} }
+    let(:access) { 'world' }
     let(:expected) do
       Cocina::Models::DRO.new(type: Cocina::Models::Vocab.image,
                               label: expected_label,
                               version: 1,
                               access: {
+                                access: access,
                                 copyright: 'All rights reserved unless otherwise indicated.',
                                 useAndReproductionStatement: 'Property rights reside with the repository...'
                               },
@@ -42,6 +44,7 @@ RSpec.describe 'Create object' do
         { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
           "label":"#{label}","version":1,
           "access":{
+            "access":"#{access}",
             "copyright":"All rights reserved unless otherwise indicated.",
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
@@ -236,7 +239,7 @@ RSpec.describe 'Create object' do
       let(:data) do
         <<~JSON
           { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
-            "label":"#{label}","version":1,"access":{},
+            "label":"#{label}","version":1,"access":{"access":"#{access}"},
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
             "description":{"title":[{"status":"primary","value":"#{title}"}]},
             "identification":#{identification.to_json},"structural":{"contains":#{filesets.to_json}}}
@@ -259,20 +262,34 @@ RSpec.describe 'Create object' do
         allow(item).to receive(:save!)
       end
 
-      it 'creates contentMetadata' do
-        post '/v1/objects',
-             params: data,
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(Dor::Item).to have_received(:new)
-          .with(pid: druid,
-                admin_policy_object_id: 'druid:dd999df4567',
-                source_id: 'googlebooks:999999',
-                collection_ids: [],
-                catkey: nil, label: 'This is my label')
-        expect(response.body).to eq expected.to_json
-        expect(response.status).to eq(201)
-        expect(item.contentMetadata.resource.file.count).to eq 4
-        expect(response.location).to eq "/v1/objects/#{druid}"
+      context 'when access match' do
+        it 'creates contentMetadata' do
+          post '/v1/objects',
+               params: data,
+               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+          expect(Dor::Item).to have_received(:new)
+            .with(pid: druid,
+                  admin_policy_object_id: 'druid:dd999df4567',
+                  source_id: 'googlebooks:999999',
+                  collection_ids: [],
+                  catkey: nil, label: 'This is my label')
+          expect(response.body).to eq expected.to_json
+          expect(response.status).to eq(201)
+          expect(item.contentMetadata.resource.file.count).to eq 4
+          expect(response.location).to eq "/v1/objects/#{druid}"
+        end
+      end
+
+      context 'when access mismatch' do
+        let(:access) { 'dark' }
+
+        it 'returns 400' do
+          post '/v1/objects',
+               params: data,
+               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+          expect(response.status).to eq(400)
+          expect(response.body).to eq('Not all files have dark access and/or are unshelved when item access is dark: ["00001.jp2", "00002.html", "00002.jp2"]')
+        end
       end
     end
 
@@ -283,7 +300,7 @@ RSpec.describe 'Create object' do
       let(:data) do
         <<~JSON
           { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
-            "label":"#{label}","version":1,"access":{},
+            "label":"#{label}","version":1,"access":{"access":"world"},
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
             "description":{"title":[{"status":"primary","value":"#{title}"}]},
             "identification":#{identification.to_json},"structural":{"isMemberOf":"druid:xx888xx7777"}}

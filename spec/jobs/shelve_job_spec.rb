@@ -8,11 +8,16 @@ RSpec.describe ShelveJob, type: :job do
   let(:druid) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
   let(:item) { instance_double(Dor::Item) }
+  let(:validator) { instance_double(ValidateDarkService, valid?: valid, invalid_filenames: invalid_filenames) }
+  let(:valid) { true }
+  let(:invalid_filenames) { [] }
 
   before do
     allow(Dor).to receive(:find).with(druid).and_return(item)
     allow(result).to receive(:processing!)
     allow(EventFactory).to receive(:create)
+    allow(Cocina::Mapper).to receive(:build)
+    allow(ValidateDarkService).to receive(:new).and_return(validator)
   end
 
   context 'with no errors' do
@@ -58,6 +63,26 @@ RSpec.describe ShelveJob, type: :job do
               workflow: 'accessionWF',
               workflow_process: 'shelve-complete',
               output: { errors: [{ detail: error_message, title: 'Content directory not found' }] })
+    end
+  end
+
+  context 'when fails dark validation' do
+    let(:valid) { false }
+    let(:invalid_filenames) { ['foo.txt', 'bar.txt'] }
+
+    before do
+      allow(LogFailureJob).to receive(:perform_later)
+    end
+
+    it 'marks the job as errored' do
+      perform
+      expect(result).to have_received(:processing!).once
+      expect(LogFailureJob).to have_received(:perform_later)
+        .with(druid: druid,
+              background_job_result: result,
+              workflow: 'accessionWF',
+              workflow_process: 'shelve-complete',
+              output: { errors: [{ detail: 'Not all files have dark access and/or are unshelved when item access is dark: ["foo.txt", "bar.txt"]', title: 'Access mismatch' }] })
     end
   end
 end
