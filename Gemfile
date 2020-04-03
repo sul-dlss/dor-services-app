@@ -46,6 +46,9 @@ gem 'sidekiq-statistic'
 gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
 
+# Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
+gem 'rack-cors' # Provides access to sidekiq data to argo dashboard
+
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.31.0'
 gem 'dor-services', '~> 9.2'
