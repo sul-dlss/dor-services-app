@@ -16,12 +16,13 @@ class PublishJob < ApplicationJob
 
       validator = validator_for?(item)
       unless validator.valid?
-        return LogFailureJob.perform_later(druid: druid,
-                                           background_job_result: background_job_result,
-                                           workflow: workflow,
-                                           workflow_process: 'publish-complete',
-                                           output: { errors: [{ title: 'Access mismatch',
-                                                                detail: "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" }] })
+        Honeybadger.notify("Not all files for '#{druid}' have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}")
+        # return LogFailureJob.perform_later(druid: druid,
+        #                                    background_job_result: background_job_result,
+        #                                    workflow: workflow,
+        #                                    workflow_process: 'publish-complete',
+        #                                    output: { errors: [{ title: 'Access mismatch',
+        #                                                         detail: "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" }] })
       end
 
       PublishMetadataService.publish(item)
