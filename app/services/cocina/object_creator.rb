@@ -53,13 +53,6 @@ module Cocina
                   else
                     raise "unsupported type #{obj.type}"
                   end
-
-      # Synch from symphony if a catkey is present
-      if af_object.catkey
-        RefreshMetadataAction.run(identifiers: ["catkey:#{af_object.catkey}"], datastream: af_object.descMetadata)
-        af_object.label = MetadataService.label_from_mods(af_object.descMetadata.ng_xml)
-      end
-
       af_object.save!
       af_object
     end
@@ -71,7 +64,7 @@ module Cocina
                                  admin_policy_object_id: obj.administrative.hasAdminPolicy,
                                  # source_id: obj.identification.sourceId,
                                  label: obj.label).tap do |item|
-        item.descMetadata.mods_title = obj.description.title.first.value if obj.description
+        add_description(item, obj)
 
         admin_node = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata').first
         admin_node.add_child "<dissemination><workflow id=\"#{obj.administrative.registrationWorkflow}\"></dissemination>"
@@ -89,7 +82,7 @@ module Cocina
                     collection_ids: [obj.structural&.isMemberOf].compact,
                     catkey: catkey_for(obj),
                     label: obj.label).tap do |item|
-        item.descMetadata.mods_title = obj.description.title.first.value if obj.description
+        add_description(item, obj)
         add_tags(item, obj)
 
         if obj.access
@@ -119,12 +112,24 @@ module Cocina
                           admin_policy_object_id: obj.administrative.hasAdminPolicy,
                           catkey: catkey_for(obj),
                           label: obj.label).tap do |item|
-        item.descMetadata.mods_title = obj.description.title.first.value if obj.description
+        add_description(item, obj)
       end
     end
 
     def catkey_for(obj)
       obj.identification&.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
+    end
+
+    def add_description(item, obj)
+      # Synch from symphony if a catkey is present
+      if item.catkey
+        RefreshMetadataAction.run(identifiers: ["catkey:#{item.catkey}"], datastream: item.descMetadata)
+        item.label = MetadataService.label_from_mods(item.descMetadata.ng_xml)
+      elsif obj.description
+        item.descMetadata.mods_title = obj.description.title.first.value
+      else
+        item.descMetadata.mods_title = obj.label
+      end
     end
 
     def add_tags(item, obj)
