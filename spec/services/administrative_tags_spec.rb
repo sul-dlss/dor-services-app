@@ -93,7 +93,12 @@ RSpec.describe AdministrativeTags do
 
       it 'returns administrative tags from identity metadata XML' do
         expect(described_class.for(item: item_without_db_tags)).to eq(
-          ['One : Two : Three', 'Two : Three : Four', 'Three : Four : Five', 'Four : Five : Six']
+          [
+            'One : Two : Three',
+            'Two : Three : Four',
+            'Three : Four : Five',
+            'Four : Five : Six'
+          ]
         )
       end
     end
