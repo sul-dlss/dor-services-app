@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe PreserveJob, type: :job do
-  subject(:perform) { described_class.perform_now(druid: druid, background_job_result: result) }
+  include ActiveJob::TestHelper
 
   let(:druid) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
@@ -17,6 +17,8 @@ RSpec.describe PreserveJob, type: :job do
   end
 
   context 'with no errors' do
+    subject(:perform) { described_class.perform_now(druid: druid, background_job_result: result) }
+
     before do
       allow(SdrIngestService).to receive(:transfer)
       allow(StartPreservationWorkflowJob).to receive(:perform_later)
@@ -42,12 +44,14 @@ RSpec.describe PreserveJob, type: :job do
     before do
       allow(SdrIngestService).to receive(:transfer).and_raise(error_message)
       allow(LogFailureJob).to receive(:perform_later)
-      perform
     end
 
     it 'marks the job as errored' do
+      perform_enqueued_jobs do
+        described_class.perform_now(druid: druid, background_job_result: result)
+      end
       expect(result).to have_received(:processing!).once
-      expect(SdrIngestService).to have_received(:transfer).with(item).once
+      expect(SdrIngestService).to have_received(:transfer).with(item).exactly(5).times
       expect(LogFailureJob).to have_received(:perform_later)
         .with(druid: druid,
               background_job_result: result,
@@ -55,7 +59,6 @@ RSpec.describe PreserveJob, type: :job do
               workflow_process: 'preservation-ingest-initiated',
               output: { errors: [{ detail: error_message, title: 'Preservation error' }] })
       expect(Honeybadger).to have_received(:context).with(background_job_result_id: result.id)
-      expect(Honeybadger).to have_received(:notify).with(StandardError)
     end
   end
 end
