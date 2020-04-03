@@ -210,6 +210,16 @@ RSpec.describe Cocina::Mapper do
         expect { cocina_model }.to raise_error(/has a null sourceId/)
       end
     end
+
+    context 'when item has identityMetadata objectLabel' do
+      before do
+        item.identityMetadata.objectLabel = 'Use me'
+      end
+
+      it 'prefers objectLabel' do
+        expect(cocina_model.label).to eq('Use me')
+      end
+    end
   end
 
   context 'when item is an Etd' do
