@@ -122,10 +122,19 @@ RSpec.describe 'Create object' do
 
     context 'when catkey is not provided' do
       context 'when no object with the source id exists and the save is successful' do
+        let(:item) do
+          Dor::Item.new(pid: druid,
+                        admin_policy_object_id: 'druid:dd999df4567',
+                        source_id: 'googlebooks:999999',
+                        label: 'This is my label')
+        end
+
         let(:search_result) { [] }
 
         before do
-          allow_any_instance_of(Dor::Item).to receive(:save!)
+          allow(Dor::Item).to receive(:new).and_return(item)
+          allow(item).to receive(:collection_ids).and_return([])
+          allow(item).to receive(:save!)
         end
 
         it 'registers the object with the registration service and immediately indexes' do
@@ -136,8 +145,57 @@ RSpec.describe 'Create object' do
           expect(response.body).to eq expected.to_json
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
+
+          # Identity metadata set correctly.
+          expect(item.objectId).to eq(druid)
+          expect(item.objectCreator.first).to eq('DOR')
+          expect(item.objectLabel.first).to eq(expected_label)
+          expect(item.objectType.first).to eq('item')
         end
       end
+
+      # rubocop:disable Metrics/LineLength
+      context 'when a really long title' do
+        let(:item) do
+          Dor::Item.new(pid: druid,
+                        admin_policy_object_id: 'druid:dd999df4567',
+                        source_id: 'googlebooks:999999',
+                        label: truncated_label)
+        end
+
+        let(:search_result) { [] }
+
+        let(:label) { 'Hearings before the Subcommittee on Elementary, Secondary, and Vocational Education of the Committee on Education and Labor, House of Representatives, Ninety-fifth Congress, first session, on H.R. 15, to extend for five years certain elementary, secondary, and other education programs ....' }
+        let(:truncated_label) { 'Hearings before the Subcommittee on Elementary, Secondary, and Vocational Education of the Committee on Education and Labor, House of Representatives, Ninety-fifth Congress, first session, on H.R. 15, to extend for five years certain elementary, secondar' }
+
+        before do
+          allow(Dor::Item).to receive(:new).and_return(item)
+          allow(item).to receive(:collection_ids).and_return([])
+          allow(item).to receive(:save!)
+        end
+
+        it 'truncates the title' do
+          post '/v1/objects',
+               params: data,
+               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+          expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
+          expect(response.body).to eq expected.to_json
+          expect(response.status).to eq(201)
+          expect(response.location).to eq "/v1/objects/#{druid}"
+
+          expect(Dor::Item).to have_received(:new).with(pid: druid,
+                                                        admin_policy_object_id: 'druid:dd999df4567',
+                                                        source_id: 'googlebooks:999999',
+                                                        collection_ids: [],
+                                                        catkey: nil,
+                                                        label: truncated_label)
+
+          # Identity metadata set correctly.
+          expect(item.objectLabel.first).to eq(expected_label)
+          expect(item.objectType.first).to eq('item')
+        end
+      end
+      # rubocop:enable Metrics/LineLength
     end
 
     context 'when files are provided' do
@@ -681,7 +739,8 @@ RSpec.describe 'Create object' do
                                 administrative: { hasAdminPolicy: 'druid:dd999df4567' },
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
-                                structural: {})
+                                structural: {},
+                                description: { "title": [{ "value": 'This is my label', "status": 'primary' }] })
       end
 
       let(:data) do

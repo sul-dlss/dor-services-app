@@ -2,6 +2,7 @@
 
 module Cocina
   # Given a Cocina model, create an ActiveFedora model.
+  # rubocop:disable Metrics/ClassLength
   class ObjectCreator
     def self.create(params, event_factory: EventFactory)
       new.create(params, event_factory: event_factory)
@@ -53,6 +54,7 @@ module Cocina
                   else
                     raise "unsupported type #{obj.type}"
                   end
+
       af_object.save!
       af_object
     end
@@ -60,7 +62,8 @@ module Cocina
     # @param [Cocina::Models::RequestAdminPolicy] obj
     # @return [Dor::AdminPolicyObject] a persisted APO model
     def create_apo(obj)
-      Dor::AdminPolicyObject.new(pid: Dor::SuriService.mint_id,
+      pid = Dor::SuriService.mint_id
+      Dor::AdminPolicyObject.new(pid: pid,
                                  admin_policy_object_id: obj.administrative.hasAdminPolicy,
                                  # source_id: obj.identification.sourceId,
                                  label: obj.label).tap do |item|
@@ -69,6 +72,8 @@ module Cocina
         admin_node = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata').first
         admin_node.add_child "<dissemination><workflow id=\"#{obj.administrative.registrationWorkflow}\"></dissemination>"
         item.administrativeMetadata.ng_xml_will_change!
+
+        add_identity_metadata(obj, item, pid, 'adminPolicy')
       end
     end
 
@@ -81,7 +86,7 @@ module Cocina
                     source_id: obj.identification.sourceId,
                     collection_ids: [obj.structural&.isMemberOf].compact,
                     catkey: catkey_for(obj),
-                    label: obj.label).tap do |item|
+                    label: truncate_label(obj.label)).tap do |item|
         add_description(item, obj)
         add_tags(item, obj)
 
@@ -95,6 +100,8 @@ module Cocina
         end
 
         item.contentMetadata.content = ContentMetadataGenerator.generate(druid: pid, object: obj) if obj&.structural&.contains
+
+        add_identity_metadata(obj, item, pid, 'item')
       end
     end
 
@@ -108,11 +115,13 @@ module Cocina
     # @param [Cocina::Models::RequestCollection] obj
     # @return [Dor::Collection] a persisted Collection model
     def create_collection(obj)
-      Dor::Collection.new(pid: Dor::SuriService.mint_id,
+      pid = Dor::SuriService.mint_id
+      Dor::Collection.new(pid: pid,
                           admin_policy_object_id: obj.administrative.hasAdminPolicy,
                           catkey: catkey_for(obj),
-                          label: obj.label).tap do |item|
+                          label: truncate_label(obj.label)).tap do |item|
         add_description(item, obj)
+        add_identity_metadata(obj, item, pid, 'collection')
       end
     end
 
@@ -124,7 +133,9 @@ module Cocina
       # Synch from symphony if a catkey is present
       if item.catkey
         RefreshMetadataAction.run(identifiers: ["catkey:#{item.catkey}"], datastream: item.descMetadata)
-        item.label = MetadataService.label_from_mods(item.descMetadata.ng_xml)
+        label = MetadataService.label_from_mods(item.descMetadata.ng_xml)
+        item.label = truncate_label(label)
+        item.objectLabel = label
       elsif obj.description
         item.descMetadata.mods_title = obj.description.title.first.value
       else
@@ -174,5 +185,19 @@ module Cocina
       rights_xml = apo.defaultObjectRights.ng_xml
       item.rightsMetadata.content = rights_xml.to_s
     end
+
+    def add_identity_metadata(obj, item, pid, object_type)
+      item.objectId = pid
+      item.objectCreator = 'DOR'
+      # May have already been set when setting descriptive metadata.
+      item.objectLabel = obj.label if item.objectLabel.empty?
+      item.objectType = object_type
+      # Not currently mapping other ids.
+    end
+
+    def truncate_label(label)
+      label.length > 254 ? label[0, 254] : label
+    end
   end
+  # rubocop:enable Metrics/ClassLength
 end

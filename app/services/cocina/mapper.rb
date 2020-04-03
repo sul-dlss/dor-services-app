@@ -38,7 +38,8 @@ module Cocina
       {
         externalIdentifier: item.pid,
         type: dro_type,
-        label: item.label,
+        # Label may have been truncated, so prefer objectLabel.
+        label: item.objectLabel.first || item.label,
         version: item.current_version.to_i,
         administrative: build_dro_administrative,
         access: DROAccessBuilder.build(item),
