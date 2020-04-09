@@ -125,7 +125,7 @@ paths:
         '201':
           description: Virtual merge action started
           headers:
-            Location:
+            location:
               description: the status of the action is found at this URI
               schema:
                 type: string
@@ -154,7 +154,7 @@ paths:
         '201':
           description: Publishing action started
           headers:
-            Location:
+            location:
               description: the status of the action is found at this URI
               schema:
                 type: string
@@ -238,7 +238,7 @@ paths:
         '201':
           description: Preservation action started
           headers:
-            Location:
+            location:
               description: the status of the action is found at this URI
               schema:
                 type: string
@@ -699,7 +699,7 @@ paths:
         '201':
           description: Shelving action started
           headers:
-            Location:
+            location:
               description: the status of the action is found at this URI
               schema:
                 type: string
