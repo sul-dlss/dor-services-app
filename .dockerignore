@@ -1,0 +1,9 @@
+.git
+.dockerignore
+.byebug_history
+log
+tmp
+coverage
+solr_conf
+# Required for puma to have a place to put the pid file
+!tmp/pids/.keep
