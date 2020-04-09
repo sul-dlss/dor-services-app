@@ -69,6 +69,14 @@ services:
     image: suldlss/suri-rails:latest
     ports:
       - 3002:3000
+    depends_on:
+      - db
+    environment:
+      DATABASE_NAME: suri
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: sekret
+      DATABASE_HOSTNAME: db
+      DATABASE_PORT: 5432
   workflow:
     image: suldlss/workflow-server:latest
     depends_on:
