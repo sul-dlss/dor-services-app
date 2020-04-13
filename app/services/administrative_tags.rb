@@ -126,6 +126,13 @@ class AdministrativeTags
   def populate_database_tags_from_datastream!
     return if AdministrativeTag.where(druid: item.pid).any?
 
+    if legacy_tags.any?
+      Honeybadger.notify('[SURPRISE] Tags for object were not already migrated', context: {
+                           object: item.pid,
+                           tags: legacy_tags
+                         })
+    end
+
     ActiveRecord::Base.transaction do
       legacy_tags.each do |tag_string|
         # There are a bunch of tags in production WITHOUT the padding spaces.
