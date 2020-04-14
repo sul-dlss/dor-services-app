@@ -41,7 +41,7 @@ gem 'pg'
 gem 'progressbar' # for the cleaner rake task
 gem 'retries' # for ReleaseTags::PurlClient and Goobi
 gem 'ruby-cache', '~> 0.3.0'
-gem 'sidekiq', '~> 5.2'
+gem 'sidekiq', '~> 6.0'
 gem 'sidekiq-statistic'
 gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
@@ -73,6 +73,5 @@ group :deployment do
   gem 'capistrano-passenger'
   gem 'capistrano-rails'
   gem 'capistrano-shared_configs'
-  gem 'capistrano-sidekiq'
   gem 'dlss-capistrano'
 end
