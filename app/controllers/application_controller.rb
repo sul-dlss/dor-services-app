@@ -13,9 +13,6 @@ class ApplicationController < ActionController::API
 
   before_action :check_auth_token
 
-  # Since Basic auth was already using the Authorization header, we used something
-  # non-standard:
-  OLD_TOKEN_HEADER = 'X-Auth'
   TOKEN_HEADER = 'Authorization'
 
   private
@@ -26,9 +23,6 @@ class ApplicationController < ActionController::API
     return render json: { error: 'Not Authorized' }, status: :unauthorized unless token
 
     Honeybadger.context(invoked_by: token[:sub])
-    return unless request.headers[OLD_TOKEN_HEADER]
-
-    Honeybadger.notify("Warning: Deprecated authorization header '#{OLD_TOKEN_HEADER}' was provided, but '#{TOKEN_HEADER}' is expected")
   end
 
   def decoded_auth_token
@@ -41,10 +35,9 @@ class ApplicationController < ActionController::API
   end
 
   def http_auth_header
-    return if request.headers[OLD_TOKEN_HEADER].blank? && request.headers[TOKEN_HEADER].blank?
+    return if request.headers[TOKEN_HEADER].blank?
 
-    field = request.headers[TOKEN_HEADER] || request.headers[OLD_TOKEN_HEADER]
-    field.split(' ').last
+    request.headers[TOKEN_HEADER].split(' ').last
   end
 
   def load_item
