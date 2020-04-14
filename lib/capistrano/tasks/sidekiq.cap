@@ -1,0 +1,10 @@
+# frozen_string_literal: true
+
+namespace :sidekiq do
+  desc 'Restart Sidekiq using systemd'
+  task :restart do
+    on roles(:worker) do
+      sudo :systemctl, 'restart', 'sidekiq-*', raise_on_non_zero_exit: false
+    end
+  end
+end

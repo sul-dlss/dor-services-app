@@ -25,7 +25,6 @@ require 'capistrano/bundler'
 require 'capistrano/honeybadger'
 require 'capistrano/passenger'
 require 'capistrano/rails/migrations'
-require 'capistrano/sidekiq'
 require 'dlss/capistrano'
 require 'whenever/capistrano'
 
