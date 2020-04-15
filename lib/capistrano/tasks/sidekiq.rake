@@ -18,7 +18,7 @@ namespace :sidekiq do
   desc 'Start Sidekiq'
   task :start do
     on roles(:worker) do
-      sudo :systemctl, 'start', 'sidekiq-*'
+      sudo :systemctl, 'start', 'sidekiq-*', '--all'
     end
   end
 
