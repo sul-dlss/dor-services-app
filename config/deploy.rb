@@ -36,14 +36,6 @@ set :log_level, :info
 set :linked_dirs, %w(log tmp/pids tmp/cache tmp/sockets vendor/bundle config/certs config/settings)
 set :linked_files, %w(bin/write_marc_record config/secrets.yml config/honeybadger.yml config/newrelic.yml config/database.yml)
 
-# Sidekiq configuration (run three processes)
-# see sidekiq.yml for concurrency and queue settings
-set :sidekiq_processes, 3
-# All of our deployed environments use RAILS_ENV=production. Without this line,
-# capistrano will run sidekiq in the `stage` or `prod` env (from the capistrano
-# stage rather than the Rails environment).
-set :sidekiq_env, 'production'
-set :sidekiq_roles, :worker
 set :passenger_roles, :web
 set :rails_env, 'production'
 
@@ -55,3 +47,8 @@ set :honeybadger_env, fetch(:stage)
 
 # update shared_configs before restarting app
 before 'deploy:restart', 'shared_configs:update'
+# These hooks are from capistrano-sidekiq but the sidekiq tasks themselves are defined in dor-services-app
+after 'deploy:starting',  'sidekiq:quiet'
+after 'deploy:updated',   'sidekiq:stop'
+after 'deploy:published', 'sidekiq:start'
+after 'deploy:failed', 'sidekiq:restart'
