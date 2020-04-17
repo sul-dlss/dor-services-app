@@ -32,6 +32,19 @@ RSpec.describe AdministrativeTags do
     end
   end
 
+  describe '.project' do
+    let(:instance) { instance_double(described_class, project: nil) }
+
+    before do
+      allow(described_class).to receive(:new).and_return(instance)
+    end
+
+    it 'calls #project on a new instance' do
+      described_class.project(item: item_with_db_tags)
+      expect(instance).to have_received(:project).once
+    end
+  end
+
   describe '.create' do
     let(:instance) { instance_double(described_class, create: nil) }
 
@@ -111,6 +124,39 @@ RSpec.describe AdministrativeTags do
 
       it 'returns an empty array' do
         expect(described_class.content_type(item: item_with_db_tags)).to eq([])
+      end
+    end
+  end
+
+  describe '#project' do
+    context 'with a matching row in the database' do
+      before do
+        create(:administrative_tag, druid: item_with_db_tags.pid, tag: 'Project : Google Books')
+      end
+
+      it 'parses and returns the project' do
+        expect(described_class.project(item: item_with_db_tags)).to eq(['Google Books'])
+      end
+    end
+
+    context 'with more than one matching row in the database' do
+      before do
+        create(:administrative_tag, druid: item_with_db_tags.pid, tag: 'Project : Google Books')
+        create(:administrative_tag, druid: item_with_db_tags.pid, tag: 'Project : Fraggle Rock Collection')
+      end
+
+      it 'parses and returns the first content type' do
+        expect(described_class.project(item: item_with_db_tags)).to eq(['Google Books'])
+      end
+    end
+
+    context 'with no project' do
+      before do
+        create(:administrative_tag, druid: item_with_db_tags.pid, tag: 'Foo : Bar')
+      end
+
+      it 'returns an empty array' do
+        expect(described_class.project(item: item_with_db_tags)).to eq([])
       end
     end
   end

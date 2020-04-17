@@ -123,15 +123,7 @@ module Cocina
     end
 
     def build_descriptive
-      if item.is_a? Dor::Etd
-        # This is for etds that haven't yet gone through the other-metadata workflow step
-        { title: [{ status: 'primary', value: item.properties.title.first }] }
-      elsif item.label == 'Hydrus'
-        # Some hydrus items don't have titles, so using label. See https://github.com/sul-dlss/hydrus/issues/421
-        { title: [{ status: 'primary', value: item.label }] }
-      else
-        { title: [{ status: 'primary', value: item.full_title }] }
-      end
+      { title: [{ status: 'primary', value: TitleMapper.build(item) }] }
     end
 
     def build_apo_administrative
@@ -148,8 +140,8 @@ module Cocina
         admin[:hasAdminPolicy] = item.admin_policy_object_id if item.admin_policy_object_id
         release_tags = build_release_tags
         admin[:releaseTags] = release_tags unless release_tags.empty?
-        project = project_for(item)
-        admin[:partOfProject] = project if project
+        projects = AdministrativeTags.project(item: item)
+        admin[:partOfProject] = projects.first if projects.any?
       end
     end
 
@@ -181,14 +173,6 @@ module Cocina
 
     def check_source_id(props)
       raise "Item #{props[:externalIdentifier]} has a null sourceId. This item requires remediation." if props[:identification][:sourceId].nil?
-    end
-
-    def project_for(item)
-      AdministrativeTags.for(item: item).each do |tag|
-        split_tag = tag.split(':').map(&:strip)
-        return split_tag[1, split_tag.size - 1].join(' : ') if split_tag[0] == 'Project'
-      end
-      nil
     end
   end
   # rubocop:enable Metrics/ClassLength

@@ -956,6 +956,44 @@ paths:
         '502':
           description: Error connecting to Symphony
   '/v1/objects/{id}':
+    patch:
+      tags:
+        - objects
+      summary: Update object metadata
+      description: |-
+        Replace the object metadata with the provided metadata.
+
+        Since we don't presently have a full mapping between cocina JSON and MODS,
+        only the title can be updated in the descriptive metadata.
+      operationId: 'objects#update'
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            # Note that additionalProperties needs to be set to true to allow id parameter.
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/DRO'
+                - $ref: '#/components/schemas/Collection'
+                - $ref: '#/components/schemas/AdminPolicy'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid DOR parameter
+        '404':
+          description: Object not found in DOR
+        '409':
+          description: Object with that sourceId already exists
+        '500':
+          description: Server error
     get:
       tags:
         - objects
@@ -1032,7 +1070,7 @@ components:
           type: string
     AdminPolicy:
       type: object
-      additionalProperties: false
+      additionalProperties: true
       properties:
         type:
           type: string
@@ -1094,7 +1132,7 @@ components:
     Collection:
       description: A group of Digital Repository Objects that indicate some type of conceptual grouping within the domain that is worth reusing across the system.
       type: object
-      additionalProperties: false
+      additionalProperties: true
       properties:
         type:
           description: The content type of the Collection. Selected from an established set of values.
@@ -1306,7 +1344,7 @@ components:
     DRO:
       description: Domain-defined abstraction of a 'work'. Digital Repository Objects' abstraction is describable for our domain’s purposes, i.e. for management needs within our system.
       type: object
-      additionalProperties: false
+      additionalProperties: true
       properties:
         type:
           description: The content type of the DRO. Selected from an established set of values.
