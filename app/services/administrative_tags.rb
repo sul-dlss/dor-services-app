@@ -129,7 +129,7 @@ class AdministrativeTags
     if legacy_tags.any?
       Honeybadger.notify('[SURPRISE] Tags for object were not already migrated', context: {
                            object: item.pid,
-                           tags: legacy_tags
+                           admin_tags: legacy_tags
                          })
     end
 
