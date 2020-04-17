@@ -22,8 +22,6 @@ CREATE TYPE public.background_job_result_status AS ENUM (
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
-
 --
 -- Name: administrative_tags; Type: TABLE; Schema: public; Owner: -
 --

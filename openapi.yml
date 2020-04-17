@@ -934,6 +934,43 @@ paths:
         '502':
           description: Error connecting to Symphony
   '/v1/objects/{id}':
+    patch:
+      tags:
+        - objects
+      summary: Update object metadata
+      description: |-
+        Replace the object metadata with the provided metadata.
+
+        Since we don't presently have a full mapping between cocina JSON and MODS,
+        only the title can be updated in the descriptive metadata.
+      operationId: 'objects#update'
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/DRO'
+                - $ref: '#/components/schemas/Collection'
+                - $ref: '#/components/schemas/AdminPolicy'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid DOR parameter
+        '404':
+          description: Object not found in DOR
+        '409':
+          description: Object with that sourceId already exists
+        '500':
+          description: Server error
     get:
       tags:
         - objects

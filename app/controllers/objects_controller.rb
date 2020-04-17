@@ -32,6 +32,13 @@ class ObjectsController < ApplicationController
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
   end
 
+  def update
+    obj = Dor.find(params[:id])
+    cocina_object = Cocina::ObjectUpdater.run(obj, params.except(:action, :controller, :id).to_unsafe_h)
+
+    render json: cocina_object
+  end
+
   # Register new objects in DOR
   def legacy_register
     begin

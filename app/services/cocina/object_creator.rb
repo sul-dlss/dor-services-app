@@ -73,7 +73,7 @@ module Cocina
         admin_node.add_child "<dissemination><workflow id=\"#{obj.administrative.registrationWorkflow}\"></dissemination>"
         item.administrativeMetadata.ng_xml_will_change!
 
-        add_identity_metadata(obj, item, pid, 'adminPolicy')
+        add_identity_metadata(obj, item, 'adminPolicy')
       end
     end
 
@@ -101,7 +101,7 @@ module Cocina
 
         item.contentMetadata.content = ContentMetadataGenerator.generate(druid: pid, object: obj) if obj&.structural&.contains
 
-        add_identity_metadata(obj, item, pid, 'item')
+        add_identity_metadata(obj, item, 'item')
       end
     end
 
@@ -121,7 +121,7 @@ module Cocina
                           catkey: catkey_for(obj),
                           label: truncate_label(obj.label)).tap do |item|
         add_description(item, obj)
-        add_identity_metadata(obj, item, pid, 'collection')
+        add_identity_metadata(obj, item, 'collection')
       end
     end
 
@@ -186,8 +186,8 @@ module Cocina
       item.rightsMetadata.content = rights_xml.to_s
     end
 
-    def add_identity_metadata(obj, item, pid, object_type)
-      item.objectId = pid
+    def add_identity_metadata(obj, item, object_type)
+      item.objectId = item.pid
       item.objectCreator = 'DOR'
       # May have already been set when setting descriptive metadata.
       item.objectLabel = obj.label if item.objectLabel.empty?
