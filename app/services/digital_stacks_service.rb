@@ -101,8 +101,13 @@ class DigitalStacksService
   def self.copy_file(workspace_pathname, stacks_pathname, moab_signature)
     if stacks_pathname.exist?
       file_signature = Moab::FileSignature.new.signature_from_file(stacks_pathname)
-      Rails.logger.debug("[Shelve] Signature mismatch; deleting #{stacks_pathname}")
-      stacks_pathname.delete if file_signature != moab_signature
+
+      if file_signature != moab_signature
+        Rails.logger.debug("[Shelve] Found existing file with different signature at #{stacks_pathname}")
+        stacks_pathname.delete
+      else
+        Rails.logger.debug("[Shelve] Found existing file with the same signature at #{stacks_pathname}")
+      end
     end
     unless stacks_pathname.exist?
       stacks_pathname.parent.mkpath
