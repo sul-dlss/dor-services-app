@@ -39,6 +39,11 @@ set :linked_files, %w(bin/write_marc_record config/secrets.yml config/honeybadge
 set :passenger_roles, :web
 set :rails_env, 'production'
 
+set :sidekiq_systemd_role, :worker
+set :sidekiq_systemd_use_hooks, true
+
+set :bundler2_config_use_hook, true
+
 # Run db migrations on app servers, not db server
 set :migration_role, :app
 
@@ -47,8 +52,3 @@ set :honeybadger_env, fetch(:stage)
 
 # update shared_configs before restarting app
 before 'deploy:restart', 'shared_configs:update'
-# These hooks are from capistrano-sidekiq but the sidekiq tasks themselves are defined in dor-services-app
-after 'deploy:starting',  'sidekiq:quiet'
-after 'deploy:updated',   'sidekiq:stop'
-after 'deploy:published', 'sidekiq:start'
-after 'deploy:failed', 'sidekiq:restart'
