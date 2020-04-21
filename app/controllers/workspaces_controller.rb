@@ -28,14 +28,14 @@ class WorkspacesController < ApplicationController
   end
 
   # Once an object has been transferred to preservation, reset the workspace by
-  # renaming the druid-tree to a versioned directory
+  # renaming the druid-tree to a versioned directory.
   def reset
     ResetWorkspaceService.reset(druid: params[:object_id], version: @item.current_version)
     head :no_content
-  rescue ResetWorkspaceService::DirectoryAlreadyExists => e
-    render build_error('Archive directory already exists', e)
-  rescue ResetWorkspaceService::BagAlreadyExists => e
-    render build_error('Archive bag already exists', e)
+  rescue ResetWorkspaceService::DirectoryAlreadyExists, ResetWorkspaceService::BagAlreadyExists
+    # We're trapping errors and doing nothing, because the belief is that these indicate
+    # this API has already been called and completed.
+    head :no_content
   end
 
   private
