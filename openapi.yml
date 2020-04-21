@@ -175,6 +175,15 @@ paths:
               - accessionWF
               - releaseWF
             example: releaseWF
+        - name: lane-id
+          in: query
+          description: Lane for prioritizing the work
+          schema:
+            type: string
+            enum:
+              - 'default'
+              - 'low'
+            default: 'default'
   '/v1/objects/{id}/accession':
     post:
       tags:
@@ -250,6 +259,15 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+        - name: lane-id
+          in: query
+          description: Lane for prioritizing the work
+          schema:
+            type: string
+            enum:
+              - 'default'
+              - 'low'
+            default: 'default'
   '/v1/objects/{id}/update_marc_record':
     post:
       tags:
@@ -717,6 +735,15 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+        - name: lane-id
+          in: query
+          description: Lane for prioritizing the work
+          schema:
+            type: string
+            enum:
+              - 'default'
+              - 'low'
+            default: 'default'
   '/v1/objects/{object_id}/metadata/legacy':
     patch:
       tags:

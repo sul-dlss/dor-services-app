@@ -5,17 +5,19 @@ require 'rails_helper'
 RSpec.describe 'Publish object' do
   let(:druid) { 'druid:mx123qw2323' }
   let(:object) { Dor::Item.new(pid: druid) }
+  let(:job) { class_double(PublishJob, perform_later: nil) }
 
   before do
     allow(Dor).to receive(:find).and_return(object)
-    allow(PublishJob).to receive(:perform_later)
+    allow(PublishJob).to receive(:set).and_return(job)
   end
 
   context 'with a workflow provided' do
     it 'calls PublishMetadataService and returns 201' do
-      post "/v1/objects/#{druid}/publish?workflow=releaseWF", headers: { 'Authorization' => "Bearer #{jwt}" }
+      post "/v1/objects/#{druid}/publish?workflow=releaseWF&lane-id=low", headers: { 'Authorization' => "Bearer #{jwt}" }
 
-      expect(PublishJob).to have_received(:perform_later)
+      expect(PublishJob).to have_received(:set).with(queue: :low)
+      expect(job).to have_received(:perform_later)
         .with(druid: druid, background_job_result: BackgroundJobResult, workflow: 'releaseWF')
       expect(response.status).to eq(201)
     end
@@ -36,7 +38,7 @@ RSpec.describe 'Publish object' do
     it 'calls PublishMetadataService and returns 201' do
       post "/v1/objects/#{druid}/publish", headers: { 'Authorization' => "Bearer #{jwt}" }
 
-      expect(PublishJob).to have_received(:perform_later)
+      expect(job).to have_received(:perform_later)
         .with(druid: druid, background_job_result: BackgroundJobResult, workflow: nil)
       expect(response.status).to eq(201)
     end
