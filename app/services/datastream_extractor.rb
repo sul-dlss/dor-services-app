@@ -50,7 +50,6 @@ class DatastreamExtractor
       roleMetadata: false,
       sourceMetadata: false,
       versionMetadata: true,
-      workflows: false,
       geoMetadata: false
     }.freeze
 
