@@ -67,10 +67,42 @@ RSpec.describe PublishMetadataService do
         druid1 = DruidTools::Druid.new item.pid, purl_root
         druid1.mkdir
         File.open(File.join(druid1.path, 'tmpfile'), 'w') { |f| f.write 'junk' }
+        expect(service).to receive(:unbookkeep_collections)
+
         service.publish
         expect(File).not_to exist(druid1.path) # it should now be gone
         expect(WebMock).to have_requested(:delete, 'example.com/purl/purls/ab123cd4567')
       end
+    end
+
+    let(:release_tags) do
+      { 'Searchworks' => { 'release' => true }, 'Some_special_place' => { 'release' => true } }
+    end
+
+    # the individual steps are tested below
+    context 'a public item' do
+      before do
+        allow(ReleaseTags).to receive(:for).and_return(release_tags)
+        item.rightsMetadata.content = "<rightsMetadata><access type='discover'><machine><world/></machine></access></rightsMetadata>"
+      end
+
+      it 'calls the appropriate subfunctions' do
+        allow(service).to receive(:transfer_metadata)
+        allow(service).to receive(:bookkeep_collections)
+        allow(service).to receive(:publish_notify_on_success)
+
+        service.publish
+
+        expect(service).to have_received(:transfer_metadata).with(release_tags)
+        expect(service).to have_received(:bookkeep_collections)
+        expect(service).to have_received(:publish_notify_on_success)
+      end
+    end
+  end
+
+  describe '#transfer_metadata' do
+    before do
+      allow(OpenURI).to receive(:open_uri).with('https://purl-test.stanford.edu/ab123cd4567.xml').and_return('<xml/>')
     end
 
     context 'copies to the document cache' do
@@ -102,7 +134,6 @@ RSpec.describe PublishMetadataService do
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<oai_dc:dc/, 'dc')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<mods:mods/, 'mods')
-          expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(no_args)
         end
 
         let(:release_tags) do
@@ -111,7 +142,7 @@ RSpec.describe PublishMetadataService do
 
         it 'identityMetadta, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
           item.rightsMetadata.content = "<rightsMetadata><access type='discover'><machine><world/></machine></access></rightsMetadata>"
-          service.publish
+          service.send(:transfer_metadata, release_tags)
           expect(DublinCoreService).to have_received(:new).with(item)
           expect(PublicXmlService).to have_received(:new).with(item, released_for: release_tags)
           expect(PublicDescMetadataService).to have_received(:new).with(item)
@@ -120,7 +151,7 @@ RSpec.describe PublishMetadataService do
         it 'even when rightsMetadata uses xml namespaces' do
           item.rightsMetadata.content = %q(<rightsMetadata xmlns="http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1">
             <access type='discover'><machine><world/></machine></access></rightsMetadata>)
-          service.publish
+          service.send(:transfer_metadata, release_tags)
         end
       end
 
@@ -140,13 +171,31 @@ RSpec.describe PublishMetadataService do
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<oai_dc:dc/, 'dc')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<mods:mods/, 'mods')
-          expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(no_args)
         end
 
         it 'ignores missing data' do
-          service.publish
+          service.send(:transfer_metadata, {})
         end
       end
+    end
+  end
+
+  describe '#bookkeep_collections' do
+    it 'adds a link from the item to the collection' do
+    end
+
+    it 'adds a link from the collection to the item' do
+    end
+
+    it 'cleans up links that are not expressed in the item' do
+    end
+  end
+
+  describe '#unbookkeep_collections' do
+    it 'cleans up links from collections to this item' do
+    end
+
+    it 'cleans up links from items to this collection' do
     end
   end
 
