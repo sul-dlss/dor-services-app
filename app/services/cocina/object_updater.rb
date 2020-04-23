@@ -119,7 +119,7 @@ module Cocina
     def add_tags(item, obj)
       tags = [content_type_tag(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection)]
       tags << "Project : #{obj.administrative.partOfProject}" if obj.administrative.partOfProject
-      AdministrativeTags.create(item: item, tags: tags)
+      AdministrativeTags.create(item: item, tags: tags, replace: true)
     end
 
     # TODO: duplicate from ObjectCreator
