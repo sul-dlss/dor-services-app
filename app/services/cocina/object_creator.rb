@@ -91,7 +91,7 @@ module Cocina
         add_tags(item, obj)
 
         if obj.access
-          change_access(item, obj.access.access)
+          change_access(item, obj.access)
           item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
           item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
           create_embargo(item, obj.access.embargo) if obj.access.embargo
@@ -171,10 +171,16 @@ module Cocina
     end
 
     def change_access(item, access)
-      raise 'location-based access not implemented' if access == 'location-based'
+      rights_type = case access.access
+                    when 'location-based'
+                      "loc:#{access.readLocation}"
+                    when 'citation-only'
+                      'none'
+                    else
+                      access.download == 'none' ? "#{access.access}-nd" : access.access
+                    end
 
       # See https://github.com/sul-dlss/dor-services/blob/master/lib/dor/datastreams/rights_metadata_ds.rb
-      rights_type = access == 'citation-only' ? 'none' : access
       Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, rights_type)
       item.rightsMetadata.ng_xml_will_change!
     end

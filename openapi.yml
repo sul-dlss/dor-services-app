@@ -983,6 +983,7 @@ components:
     Access:
       description: Access metadata
       type: object
+      additionalProperties: false
       properties:
         access:
           description: Access level
@@ -994,6 +995,25 @@ components:
             - 'citation-only'
             - 'dark'
           default: 'dark'
+        download:
+          description: Download access level for a file
+          type: string
+          enum:
+            - 'world'
+            - 'stanford'
+            - 'location-based'
+            - 'none'
+          default: 'none'
+        readLocation:
+          description: If access is "location-based", which location should have access.
+          type: string
+          enum:
+            - 'spec'
+            - 'music'
+            - 'ars'
+            - 'art'
+            - 'hoover'
+            - 'm&m'
     Administrative:
       type: object
       properties:
@@ -1330,6 +1350,7 @@ components:
         - access
     DROAccess:
       type: object
+      additionalProperties: false
       properties:
         access:
           type: string
@@ -1344,12 +1365,39 @@ components:
           description: The human readable copyright statement that applies
           example: Copyright World Trade Organization
           type: string
+        embargo:
+          $ref: '#/components/schemas/Embargo'
+        download:
+          description: >
+            Download access level. This is used in the transition from Fedora as
+            a way to set a default download level at registration that is copied
+            down to all the files.
+
+          type: string
+          enum:
+            - 'world'
+            - 'stanford'
+            - 'location-based'
+            - 'none'
+          default: 'none'
+        readLocation:
+          description: >
+            If access is "location-based", which location should have access.
+            This is used in the transition from Fedora as a way to set a default
+            readLocation at registration that is copied down to all the files.
+
+          type: string
+          enum:
+            - 'spec'
+            - 'music'
+            - 'ars'
+            - 'art'
+            - 'hoover'
+            - 'm&m'
         useAndReproductionStatement:
           description: The human readable use and reproduction statement that applies
           example: Property rights reside with the repository. Literary rights reside with the creators of the documents or their heirs. To obtain permission to publish or reproduce, please contact the Public Services Librarian of the Dept. of Special Collections (http://library.stanford.edu/spc).
           type: string
-        embargo:
-          $ref: '#/components/schemas/Embargo'
     DROStructural:
       description: Structural metadata
       type: object

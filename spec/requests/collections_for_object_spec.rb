@@ -24,7 +24,8 @@ RSpec.describe 'Get the object' do
           label: 'collection #1',
           version: 1,
           access: {
-            access: 'dark'
+            access: 'dark',
+            download: 'none'
           },
           administrative: {},
           description: {
