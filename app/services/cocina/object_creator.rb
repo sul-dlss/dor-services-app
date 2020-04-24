@@ -131,6 +131,9 @@ module Cocina
     end
 
     def add_description(item, obj)
+      # Hydrus doesn't set description. See https://github.com/sul-dlss/hydrus/issues/421
+      return if obj.label == 'Hydrus'
+
       # Synch from symphony if a catkey is present
       if item.catkey
         RefreshMetadataAction.run(identifiers: ["catkey:#{item.catkey}"], datastream: item.descMetadata)

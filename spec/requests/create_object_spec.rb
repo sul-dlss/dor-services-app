@@ -199,6 +199,57 @@ RSpec.describe 'Create object' do
       # rubocop:enable Metrics/LineLength
     end
 
+    context 'when hydrus' do
+      # Hydrus has special handling of descriptive metadata
+      let(:label) { 'Hydrus' }
+      let(:title) { label }
+
+      let(:item) do
+        Dor::Item.new(pid: druid,
+                      admin_policy_object_id: 'druid:dd999df4567',
+                      source_id: 'googlebooks:999999',
+                      label: 'Hydrus')
+      end
+
+      let(:expected_desc_md) do
+        <<~XML
+          <?xml version="1.0"?>
+          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title/>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      let(:search_result) { [] }
+
+      before do
+        allow(Dor::Item).to receive(:new).and_return(item)
+        allow(item).to receive(:collection_ids).and_return([])
+        allow(item).to receive(:save!)
+      end
+
+      it 'registers the object with the registration service and immediately indexes' do
+        post '/v1/objects',
+             params: data,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
+        expect(response.body).to eq expected.to_json
+        expect(response.status).to eq(201)
+        expect(response.location).to eq "/v1/objects/#{druid}"
+
+        # Identity metadata set correctly.
+        expect(item.objectId).to eq(druid)
+        expect(item.objectCreator.first).to eq('DOR')
+        expect(item.objectLabel.first).to eq(expected_label)
+        expect(item.objectType.first).to eq('item')
+
+        # Descriptive metadata set correctly.
+        expect(item.descMetadata.ng_xml.to_xml).to be_equivalent_to(expected_desc_md)
+      end
+    end
+
     context 'when files are provided' do
       let(:search_result) { [] }
       let(:file1) do
