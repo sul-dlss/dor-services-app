@@ -474,7 +474,8 @@ RSpec.describe 'Create object' do
                                        title: [{ value: title, status: 'primary' }]
                                      },
                                      administrative: {
-                                       hasAdminPolicy: 'druid:dd999df4567'
+                                       hasAdminPolicy: 'druid:dd999df4567',
+                                       partOfProject: 'Hydrus'
                                      },
                                      externalIdentifier: druid,
                                      access: {})
@@ -483,7 +484,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
           "label":"#{label}","version":1,"access":{},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
           "description":{"title":[{"status":"primary","value":"#{title}"}]}}
       JSON
     end

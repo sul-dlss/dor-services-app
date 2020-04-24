@@ -41,7 +41,7 @@ module Cocina
         # Label may have been truncated, so prefer objectLabel.
         label: item.objectLabel.first || item.label,
         version: item.current_version.to_i,
-        administrative: build_dro_administrative,
+        administrative: build_administrative,
         access: DROAccessBuilder.build(item),
         structural: DroStructuralBuilder.build(item)
       }.tap do |props|
@@ -145,11 +145,6 @@ module Cocina
         admin[:hasAdminPolicy] = item.admin_policy_object_id if item.admin_policy_object_id
         release_tags = build_release_tags
         admin[:releaseTags] = release_tags unless release_tags.empty?
-      end
-    end
-
-    def build_dro_administrative
-      build_administrative.tap do |admin|
         project = project_for(item)
         admin[:partOfProject] = project if project
       end
