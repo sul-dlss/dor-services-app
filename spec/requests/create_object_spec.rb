@@ -553,6 +553,8 @@ RSpec.describe 'Create object' do
     end
 
     context 'when the catkey is not provided and save is successful' do
+      let(:title) { label }
+
       before do
         allow_any_instance_of(Dor::Collection).to receive(:save!)
       end

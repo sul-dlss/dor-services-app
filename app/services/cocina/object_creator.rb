@@ -120,7 +120,7 @@ module Cocina
                           admin_policy_object_id: obj.administrative.hasAdminPolicy,
                           catkey: catkey_for(obj),
                           label: truncate_label(obj.label)).tap do |item|
-        add_description(item, obj)
+        add_collection_description(item)
         add_collection_tags(item, obj)
         add_identity_metadata(obj, item, pid, 'collection')
       end
@@ -133,15 +133,27 @@ module Cocina
     def add_description(item, obj)
       # Synch from symphony if a catkey is present
       if item.catkey
-        RefreshMetadataAction.run(identifiers: ["catkey:#{item.catkey}"], datastream: item.descMetadata)
-        label = MetadataService.label_from_mods(item.descMetadata.ng_xml)
-        item.label = truncate_label(label)
-        item.objectLabel = label
+        add_description_from_catkey(item)
       elsif obj.description
         item.descMetadata.mods_title = obj.description.title.first.value
       else
         item.descMetadata.mods_title = obj.label
       end
+    end
+
+    def add_collection_description(item)
+      # Hydrus created collections don't expect a description.
+      # Existing RegistrationService only creates under certain circumstances: https://github.com/sul-dlss/dor-services-app/blob/master/app/services/registration_service.rb#L120
+
+      # Synch from symphony if a catkey is present
+      add_description_from_catkey(item) if item.catkey
+    end
+
+    def add_description_from_catkey(item)
+      RefreshMetadataAction.run(identifiers: ["catkey:#{item.catkey}"], datastream: item.descMetadata)
+      label = MetadataService.label_from_mods(item.descMetadata.ng_xml)
+      item.label = truncate_label(label)
+      item.objectLabel = label
     end
 
     def add_dro_tags(item, obj)

@@ -127,7 +127,7 @@ module Cocina
         # This is for etds that haven't yet gone through the other-metadata workflow step
         { title: [{ status: 'primary', value: item.properties.title.first }] }
       else
-        { title: [{ status: 'primary', value: item.full_title }] }
+        { title: [{ status: 'primary', value: item.full_title || item.label }] }
       end
     end
 
