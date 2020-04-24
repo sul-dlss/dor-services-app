@@ -344,6 +344,7 @@ paths:
         content:
           application/json:
             schema:
+              # Note that additionalProperties needs to be set to true to allow object_id parameter.
               $ref: '#/components/schemas/ReleaseTag'
   '/v1/objects/{object_id}/administrative_tags':
     get:
@@ -840,7 +841,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Event'
+              $ref: '#/components/schemas/ObjectEvent'
   '/v1/objects/{object_id}/versions/openable':
     get:
       tags:
@@ -1016,6 +1017,7 @@ components:
             - 'm&m'
     Administrative:
       type: object
+      additionalProperties: false
       properties:
         hasAdminPolicy:
           $ref: '#/components/schemas/Druid'
@@ -1028,18 +1030,9 @@ components:
           description: Administrative or Internal project this resource is a part of
           example: Google Books
           type: string
-    AdministrativeTag:
-      type: string
-      pattern: '^.+( : .+)+$'
-      example: 'Foo : Bar : Baz'
-    AdministrativeTagEscaped:
-      type: string
-      # allow CGI-escaped and bare colons to allow for differences between local
-      # environments and deployed environments that use Apache & Passenger
-      pattern: '^.+(\+(?:%3A|:)\+.+)+$'
-      example: 'Foo+%3A+Bar+%3A+Baz'
     AdminPolicy:
       type: object
+      additionalProperties: false
       properties:
         type:
           type: string
@@ -1064,6 +1057,7 @@ components:
         - administrative
     AdminPolicyAdministrative:
       type: object
+      additionalProperties: false
       properties:
         defaultObjectRights:
           type: string
@@ -1076,6 +1070,7 @@ components:
       description: Property model for indicating the parts, aspects, or versions of the resource to which a
         descriptive element is applicable.
       type: object
+      additionalProperties: false
       properties:
         appliesTo:
           type: array
@@ -1083,6 +1078,7 @@ components:
             $ref: "#/components/schemas/DescriptiveBasicValue"
     CatalogLink:
       type: object
+      additionalProperties: false
       required:
         - catalog
         - catalogRecordId
@@ -1098,6 +1094,7 @@ components:
     Collection:
       description: A group of Digital Repository Objects that indicate some type of conceptual grouping within the domain that is worth reusing across the system.
       type: object
+      additionalProperties: false
       properties:
         type:
           description: The content type of the Collection. Selected from an established set of values.
@@ -1133,6 +1130,7 @@ components:
         - access
     CollectionIdentification:
       type: object
+      additionalProperties: false
       properties:
         catalogLinks:
           type: array
@@ -1142,6 +1140,7 @@ components:
       description: Property model for describing agents contributing in some way to
         the creation and history of the resource
       type: object
+      additionalProperties: false
       properties:
         name:
           description: Names associated with a contributor.
@@ -1163,6 +1162,7 @@ components:
     DescriptiveAdminMetadata:
       description: Information about this description of the resource.
       type: object
+      additionalProperties: false
       properties:
         contributor:
           type: array
@@ -1183,6 +1183,7 @@ components:
     DescriptiveBasicValue:
       description: Value model for descriptive elements without recursive properties.
       type: object
+      additionalProperties: false
       properties:
         value:
           description: String value of the descriptive element.
@@ -1216,6 +1217,7 @@ components:
     DescriptiveStructuredValue:
       description: Value model for descriptive elements structured as typed values.
       type: object
+      additionalProperties: false
       properties:
         structuredValue:
           type: array
@@ -1224,12 +1226,14 @@ components:
     DescriptiveValue:
       description: Default value model for descriptive elements.
       type: object
+      additionalProperties: false
       allOf:
         - $ref: "#/components/schemas/DescriptiveBasicValue"
         - $ref: "#/components/schemas/DescriptiveStructuredValue"
         - $ref: "#/components/schemas/AppliesTo"
     DescriptiveValueRequired:
       type: object
+      additionalProperties: false
       allOf:
         - $ref: "#/components/schemas/DescriptiveValue"
         - anyOf:
@@ -1241,6 +1245,7 @@ components:
                 - structuredValue
     Description:
       type: object
+      additionalProperties: false
       properties:
         title:
           description: Titles of the resource.
@@ -1301,6 +1306,7 @@ components:
     DRO:
       description: Domain-defined abstraction of a 'work'. Digital Repository Objects' abstraction is describable for our domain’s purposes, i.e. for management needs within our system.
       type: object
+      additionalProperties: false
       properties:
         type:
           description: The content type of the DRO. Selected from an established set of values.
@@ -1401,6 +1407,7 @@ components:
     DROStructural:
       description: Structural metadata
       type: object
+      additionalProperties: false
       properties:
         contains:
           description: Filesets that contain the digital representations (Files)
@@ -1423,6 +1430,7 @@ components:
       example: 'druid:bc123df4567'
     Embargo:
       type: object
+      additionalProperties: false
       properties:
         releaseDate:
           description: Date when the Collection is released from an embargo.
@@ -1448,35 +1456,40 @@ components:
     Event:
       description: Property model for describing events in the history of the resource.
       type: object
-      properties:
-        type:
-          description: Description of the event (creation, publication, etc.).
-          type: string
-        date:
-          description: Dates associated with the event.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        contributor:
-          description: Contributors associated with the event.
-          type: array
-          items:
-            $ref: "#/components/schemas/Contributor"
-        location:
-          description: Locations associated with the event.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        note:
-          description: Other information about the event.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
+      additionalProperties: false
       allOf:
         - $ref: "#/components/schemas/DescriptiveStructuredValue"
+        - type: object
+          additionalProperties: false
+          properties:
+            type:
+              description: Description of the event (creation, publication, etc.).
+              type: string
+            date:
+              description: Dates associated with the event.
+              type: array
+              items:
+                $ref: "#/components/schemas/DescriptiveValue"
+            contributor:
+              description: Contributors associated with the event.
+              type: array
+              items:
+                $ref: "#/components/schemas/Contributor"
+            location:
+              description: Locations associated with the event.
+              type: array
+              items:
+                $ref: "#/components/schemas/DescriptiveValue"
+            note:
+              description: Other information about the event.
+              type: array
+              items:
+                $ref: "#/components/schemas/DescriptiveValue"
+
     File:
       description: Binaries that are the basis of what our domain manages. Binaries here do not include metadata files generated for the domain's own management purposes.
       type: object
+      additionalProperties: false
       properties:
         type:
           description: The content type of the File.
@@ -1524,6 +1537,7 @@ components:
         - hasMessageDigests
     FileAdministrative:
       type: object
+      additionalProperties: false
       properties:
         sdrPreserve:
           type: boolean
@@ -1537,6 +1551,7 @@ components:
     FileSet:
       description: Relevant groupings of Files. Also called a File Grouping.
       type: object
+      additionalProperties: false
       properties:
         type:
           description: The content type of the Fileset.
@@ -1561,6 +1576,7 @@ components:
     FileSetStructural:
       description: Structural metadata
       type: object
+      additionalProperties: false
       properties:
         contains:
           type: array
@@ -1569,6 +1585,7 @@ components:
     Geographic:
       description: Geographic metadata
       type: object
+      additionalProperties: false
       properties:
         iso19139:
           description: Geographic ISO 19139 XML metadata
@@ -1577,6 +1594,7 @@ components:
         - iso19139
     Identification:
       type: object
+      additionalProperties: false
       properties:
         sourceId:
           type: string
@@ -1588,6 +1606,7 @@ components:
     MessageDigest:
       description: The output of the message digest algorithm.
       type: object
+      additionalProperties: false
       properties:
         type:
           description: The algorithm that was used
@@ -1604,6 +1623,7 @@ components:
     Presentation:
       description: Presentation data for the File.
       type: object
+      additionalProperties: false
       properties:
         height:
           description: Height in pixels
@@ -1614,6 +1634,7 @@ components:
     ReleaseTag:
       description: A tag that indicates the item or collection should be released.
       type: object
+      additionalProperties: true
       required:
         - release
       properties:
@@ -1641,6 +1662,7 @@ components:
     RequestAdminPolicy:
       description: Same as an AdminPolicy, but doesn't have an externalIdentifier as one will be created
       type: object
+      additionalProperties: false
       properties:
         type:
           type: string
@@ -1663,6 +1685,7 @@ components:
     RequestCollection:
       description: Same as a Collection, but doesn't have an externalIdentifier as one will be created
       type: object
+      additionalProperties: false
       properties:
         type:
           type: string
@@ -1693,6 +1716,7 @@ components:
     RequestDRO:
       description: A request to create a DRO.  This has the same general structure as a DRO but doesn't have externalIdentifier and doesn't require the access subschema. If no access subschema is provided, these values will be inherited from the AdminPolicy.
       type: object
+      additionalProperties: false
       properties:
         type:
           type: string
@@ -1736,6 +1760,7 @@ components:
     RequestDROStructural:
       description: Structural metadata
       type: object
+      additionalProperties: false
       properties:
         contains:
           type: array
@@ -1751,6 +1776,7 @@ components:
           type: string
     RequestFile:
       type: object
+      additionalProperties: false
       properties:
         type:
           type: string
@@ -1790,6 +1816,7 @@ components:
         - hasMessageDigests
     RequestFileSet:
       type: object
+      additionalProperties: false
       properties:
         type:
           type: string
@@ -1809,6 +1836,7 @@ components:
     RequestFileSetStructural:
       description: Structural metadata
       type: object
+      additionalProperties: false
       properties:
         contains:
           type: array
@@ -1817,6 +1845,7 @@ components:
     Sequence:
       description: A sequence or ordering of resources within a Collection or Object.
       type: object
+      additionalProperties: false
       properties:
         viewingDirection:
           description: The direction that a sequence of canvases should be displayed to the user
@@ -1828,6 +1857,7 @@ components:
       description: Property model for indicating the vocabulary, authority, or other
         origin for a term, code, or identifier.
       type: object
+      additionalProperties: false
       properties:
         code:
           description: Code representing the value source.
@@ -1839,6 +1869,16 @@ components:
         value:
           description: String describing the value source.
           type: string
+    AdministrativeTag:
+      type: string
+      pattern: '^.+( : .+)+$'
+      example: 'Foo : Bar : Baz'
+    AdministrativeTagEscaped:
+      type: string
+      # allow CGI-escaped and bare colons to allow for differences between local
+      # environments and deployed environments that use Apache & Passenger
+      pattern: '^.+(\+(?:%3A|:)\+.+)+$'
+      example: 'Foo+%3A+Bar+%3A+Baz'
     BackgroundJobResultResponse:
       type: object
       properties:
