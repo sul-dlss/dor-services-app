@@ -126,6 +126,9 @@ module Cocina
       if item.is_a? Dor::Etd
         # This is for etds that haven't yet gone through the other-metadata workflow step
         { title: [{ status: 'primary', value: item.properties.title.first }] }
+      elsif item.label == 'Hydrus'
+        # Some hydrus items don't have titles, so using label. See https://github.com/sul-dlss/hydrus/issues/421
+        { title: [{ status: 'primary', value: item.label }] }
       else
         { title: [{ status: 'primary', value: item.full_title }] }
       end
