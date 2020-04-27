@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'open3'
+require 'shellwords'
 
 module Dor
   class UpdateMarcRecordService < ServiceItem
