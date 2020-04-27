@@ -48,7 +48,7 @@ gem 'whenever', require: false
 
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.32.0'
-gem 'dor-services', '~> 9.2.0' # Tightly pinned until we remove tags from XML
+gem 'dor-services', '~> 9.2'
 gem 'dor-workflow-client', '~> 3.17'
 gem 'marc'
 gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'

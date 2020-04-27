@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Shows and creates administrative tags. This wraps https://github.com/sul-dlss/dor-services/blob/master/lib/dor/services/tag_service.rb
+# Shows and creates administrative tags.
 class AdministrativeTags
   # Retrieve the administrative tags for an item
   #
@@ -56,15 +56,11 @@ class AdministrativeTags
 
   # @return [Array<String>] an array of tags (strings), possibly empty
   def for
-    populate_database_tags_from_datastream!
-
     AdministrativeTag.where(druid: item.pid).pluck(:tag)
   end
 
   # @return [Array<String>] an array of tags (strings), possibly empty
   def content_type
-    populate_database_tags_from_datastream!
-
     AdministrativeTag
       .where(druid: item.pid)
       .where(tags_relation.matches('Process : Content Type : %'))
@@ -78,8 +74,6 @@ class AdministrativeTags
   # @return [Array<AdministrativeTag>]
   # @raise [ActiveRecord::RecordInvalid] if any druid/tag rows are duplicates
   def create(tags:, replace: false)
-    populate_database_tags_from_datastream!
-
     ActiveRecord::Base.transaction do
       AdministrativeTag.where(druid: item.pid).destroy_all if replace
 
@@ -97,8 +91,6 @@ class AdministrativeTags
   # @raise [ActiveRecord::RecordNotFound] if row not found for druid/tag combination
   # @raise [ActiveRecord::RecordInvalid] if any druid/tag rows are duplicates
   def update(current:, new:)
-    populate_database_tags_from_datastream!
-
     AdministrativeTag.find_by!(druid: item.pid, tag: current).update!(tag: new)
   end
 
@@ -109,45 +101,12 @@ class AdministrativeTags
   # @return [AdministrativeTag] the tag instance
   # @raise [ActiveRecord::RecordNotFound] if row not found for druid/tag combination
   def destroy(tag:)
-    populate_database_tags_from_datastream!
-
     AdministrativeTag.find_by!(druid: item.pid, tag: tag).destroy!
   end
 
   private
 
   attr_reader :item
-
-  def legacy_tags
-    item.identityMetadata.ng_xml.search('//tag').map(&:content)
-  end
-
-  # rubocop:disable Lint/HandleExceptions
-  def populate_database_tags_from_datastream!
-    return if AdministrativeTag.where(druid: item.pid).any?
-
-    if legacy_tags.any?
-      Honeybadger.notify('[SURPRISE] Tags for object were not already migrated', context: {
-                           object: item.pid,
-                           admin_tags: legacy_tags
-                         })
-    end
-
-    ActiveRecord::Base.transaction do
-      legacy_tags.each do |tag_string|
-        # There are a bunch of tags in production WITHOUT the padding spaces.
-        # Fix that here unless already valid.
-        tag_string.gsub!(':', ' : ') unless AdministrativeTag::VALID_TAG_PATTERN.match?(tag_string)
-        tag_string.squish! # remove leading and trailing whitespace and remove double/triple/etc. spaces throughout
-        begin
-          AdministrativeTag.create!(druid: item.pid, tag: tag_string)
-        rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
-          # silently eat errors from duplicate rows when migrating tags
-        end
-      end
-    end
-  end
-  # rubocop:enable Lint/HandleExceptions
 
   def tags_relation
     AdministrativeTag.arel_table[:tag]

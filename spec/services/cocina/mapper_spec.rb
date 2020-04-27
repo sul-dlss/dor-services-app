@@ -19,9 +19,11 @@ RSpec.describe Cocina::Mapper do
 
     before do
       allow(item).to receive(:collection_ids).and_return([])
-      item.identityMetadata.tag = [type, 'Project : Google Books']
       item.identityMetadata.agreementId = [agreement]
       item.descMetadata.title_info.main_title = 'Hello'
+
+      create(:administrative_tag, druid: item.pid, tag: 'Project : Google Books')
+      create(:administrative_tag, druid: item.pid, tag: type)
     end
 
     context 'with files that have exif data' do
