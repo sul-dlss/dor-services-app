@@ -10,6 +10,14 @@ RSpec.describe ReleaseTags::IdentityMetadata do
     ['2015-01-06 23:33:47Z', '2015-01-07 23:33:47Z', '2015-01-08 23:33:47Z', '2015-01-09 23:33:47Z'].map { |x| Time.parse(x).iso8601 }
   end
 
+  before do
+    # Create expected tags (see item fixture above) in the database
+    create(:administrative_tag, druid: item.pid, tag: 'Project : Revs')
+    create(:administrative_tag, druid: item.pid, tag: 'Remediated By : 3.25.0')
+    create(:administrative_tag, druid: item.pid, tag: 'tag : test1')
+    create(:administrative_tag, druid: item.pid, tag: 'old : tag')
+  end
+
   describe 'Tag sorting, combining, and comparision functions' do
     let(:dummy_tags) do
       [

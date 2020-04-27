@@ -77,30 +77,8 @@ RSpec.describe AdministrativeTags do
       create(:administrative_tag, druid: item_with_db_tags.pid, tag: 'Bar : Baz : Quux')
     end
 
-    context 'with matching rows in the database' do
-      it 'returns administrative tags from the database' do
-        expect(described_class.for(item: item_with_db_tags)).to eq(['Foo : Bar', 'Bar : Baz : Quux'])
-      end
-    end
-
-    context 'without matching rows in the database' do
-      before do
-        LegacyTagService.add(item_without_db_tags, 'One : Two : Three')
-        LegacyTagService.add(item_without_db_tags, 'Two:Three:Four') # test weirdo tags
-        LegacyTagService.add(item_without_db_tags, ' Three:Four:Five') # test weirdo tags
-        LegacyTagService.add(item_without_db_tags, 'Four :  Five :  Six') # test weirdo tags
-      end
-
-      it 'returns administrative tags from identity metadata XML' do
-        expect(described_class.for(item: item_without_db_tags)).to eq(
-          [
-            'One : Two : Three',
-            'Two : Three : Four',
-            'Three : Four : Five',
-            'Four : Five : Six'
-          ]
-        )
-      end
+    it 'returns administrative tags from the database' do
+      expect(described_class.for(item: item_with_db_tags)).to eq(['Foo : Bar', 'Bar : Baz : Quux'])
     end
   end
 
@@ -133,16 +111,6 @@ RSpec.describe AdministrativeTags do
 
       it 'returns an empty array' do
         expect(described_class.content_type(item: item_with_db_tags)).to eq([])
-      end
-    end
-
-    context 'without matching rows in the database' do
-      before do
-        LegacyTagService.add(item_without_db_tags, 'Process : Content Type : Media')
-      end
-
-      it 'returns administrative tags from identity metadata XML' do
-        expect(described_class.content_type(item: item_without_db_tags)).to eq(['Media'])
       end
     end
   end
@@ -181,22 +149,6 @@ RSpec.describe AdministrativeTags do
           .with(druid: item_with_db_tags.pid, tag: 'A : B : C').once
       end
     end
-
-    context 'when no tags for druid exist but legacy tags do exist' do
-      before do
-        LegacyTagService.add(item_without_db_tags, 'One : Two : Three')
-        LegacyTagService.add(item_without_db_tags, 'One : Two : Three : Four')
-      end
-
-      it 'adds tags from Fedora to the database' do
-        described_class.create(item: item_without_db_tags, tags: new_tags)
-
-        expect(AdministrativeTag).to have_received(:create!)
-          .with(druid: item_without_db_tags.pid, tag: 'One : Two : Three').once
-        expect(AdministrativeTag).to have_received(:create!)
-          .with(druid: item_without_db_tags.pid, tag: 'One : Two : Three : Four').once
-      end
-    end
   end
 
   describe '#update' do
@@ -217,28 +169,6 @@ RSpec.describe AdministrativeTags do
       expect(fake_record).to have_received(:update!)
         .with(tag: new_tag).once
     end
-
-    context 'when no tags for druid exist but legacy tags do exist' do
-      before do
-        LegacyTagService.add(item_without_db_tags, current_tag)
-        LegacyTagService.add(item_without_db_tags, 'One : Two : Three : Four')
-        # Don't actually manipulate the database
-        allow(AdministrativeTag).to receive(:create!)
-      end
-
-      it 'adds tags from Fedora to the database then updates one' do
-        described_class.update(item: item_without_db_tags, current: current_tag, new: new_tag)
-
-        expect(AdministrativeTag).to have_received(:create!)
-          .with(druid: item_without_db_tags.pid, tag: current_tag).once
-        expect(AdministrativeTag).to have_received(:create!)
-          .with(druid: item_without_db_tags.pid, tag: 'One : Two : Three : Four').once
-        expect(AdministrativeTag).to have_received(:find_by!)
-          .with(druid: item_without_db_tags.pid, tag: current_tag).once
-        expect(fake_record).to have_received(:update!)
-          .with(tag: new_tag).once
-      end
-    end
   end
 
   describe '#destroy' do
@@ -256,27 +186,6 @@ RSpec.describe AdministrativeTags do
       expect(AdministrativeTag).to have_received(:find_by!)
         .with(druid: item_with_db_tags.pid, tag: tag).once
       expect(fake_record).to have_received(:destroy!).once
-    end
-
-    context 'when no tags for druid exist but legacy tags do exist' do
-      before do
-        LegacyTagService.add(item_without_db_tags, tag)
-        LegacyTagService.add(item_without_db_tags, 'One : Two : Three : Four')
-        # Don't actually manipulate the database
-        allow(AdministrativeTag).to receive(:create!)
-      end
-
-      it 'adds tags from Fedora to the database then destroys one' do
-        described_class.destroy(item: item_without_db_tags, tag: tag)
-
-        expect(AdministrativeTag).to have_received(:create!)
-          .with(druid: item_without_db_tags.pid, tag: tag).once
-        expect(AdministrativeTag).to have_received(:create!)
-          .with(druid: item_without_db_tags.pid, tag: 'One : Two : Three : Four').once
-        expect(AdministrativeTag).to have_received(:find_by!)
-          .with(druid: item_without_db_tags.pid, tag: tag).once
-        expect(fake_record).to have_received(:destroy!).once
-      end
     end
   end
 end
