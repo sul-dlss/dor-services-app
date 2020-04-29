@@ -19,7 +19,7 @@ Rails.application.routes.draw do
 
     resources :background_job_results, only: [:show], defaults: { format: :json }
 
-    resources :objects, only: [:create, :show] do
+    resources :objects, only: [:create, :update, :show] do
       resource :release_tags, only: [:create, :show]
       resource :administrative_tags, only: [:create, :show]
       resources :administrative_tags, only: [:update, :destroy]

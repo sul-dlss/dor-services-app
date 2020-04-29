@@ -3,6 +3,10 @@
 class ObjectsController < ApplicationController
   before_action :load_item, except: [:create]
 
+  rescue_from(Cocina::ObjectUpdater::NotImplemented) do |e|
+    render status: :unprocessable_entity, plain: e.message
+  end
+
   rescue_from(ActiveFedora::ObjectNotFoundError) do |e|
     render status: :not_found, plain: e.message
   end
@@ -30,6 +34,13 @@ class ObjectsController < ApplicationController
     cocina_object = Cocina::ObjectCreator.create(params.except(:action, :controller).to_unsafe_h)
 
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
+  end
+
+  def update
+    obj = Dor.find(params[:id])
+    cocina_object = Cocina::ObjectUpdater.run(obj, params.except(:action, :controller, :id).to_unsafe_h)
+
+    render json: cocina_object
   end
 
   # Register new objects in DOR

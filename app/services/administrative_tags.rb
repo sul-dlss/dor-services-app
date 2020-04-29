@@ -18,6 +18,14 @@ class AdministrativeTags
     new(item: item).content_type
   end
 
+  # Retrieve the project tag for an item
+  #
+  # @param item [Dor::Item] the item to get the project of
+  # @return [Array<String>] an array of tag strings (possibly empty)
+  def self.project(item:)
+    new(item: item).project
+  end
+
   # Add one or more administrative tags for an item
   #
   # @param item [Dor::Item]  the item to create administrative tag(s) for
@@ -67,6 +75,16 @@ class AdministrativeTags
       .limit(1) # "THERE CAN BE ONLY ONE!"
       .pluck(:tag)
       .map { |tag| tag.split(' : ').last }
+  end
+
+  # @return [Array<String>] an array of tags (strings), possibly empty
+  def project
+    AdministrativeTag
+      .where(druid: item.pid)
+      .where(tags_relation.matches('Project : %'))
+      .limit(1) # "THERE CAN BE ONLY ONE!"
+      .pluck(:tag)
+      .map { |tag| tag.split(' : ', 2).last }
   end
 
   # @param tags [Array<String>] a non-empty array of tags (strings)
