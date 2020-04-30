@@ -38,21 +38,20 @@ module Cocina
         {
           externalIdentifier: resource_node['id'] || "#{id}_#{index}",
           type: Cocina::Models::Vocab.fileset,
-          label: resource_node.xpath('label').text,
           version: version,
           structural: structural
-        }
+        }.tap do |attrs|
+          label = resource_node.xpath('label').text
+          # Use external identifier if label blank (which it is at least for some WAS Crawls).
+          attrs[:label] = label.presence || attrs[:externalIdentifier]
+        end
       end
     end
 
     def build_files(file_nodes, version:, parent_id:)
       file_nodes.map do |node|
-        # The old google books use these upcased versions. See https://argo.stanford.edu/view/druid:dd116zh0343
-        md5 = node.xpath('checksum[@type="md5"]').text.presence || node.xpath('checksum[@type="MD5"]').text
-        sha1 = node.xpath('checksum[@type="sha1"]').text.presence || node.xpath('checksum[@type="SHA-1"]').text
         height = node.xpath('imageData/@height').text.presence&.to_i
         width = node.xpath('imageData/@width').text.presence&.to_i
-
         {
           externalIdentifier: "#{parent_id}/#{node['id']}",
           type: Cocina::Models::Vocab.file,
@@ -70,7 +69,11 @@ module Cocina
           # Files from Goobi and Hydrus don't have mimetype until they hit exif-collect in the assemblyWF
           attrs[:hasMimeType] = node['mimetype'] if node['mimetype']
           attrs[:presentation] = { height: height, width: width } if height && width
+          # The old google books use upcased versions. See https://argo.stanford.edu/view/druid:dd116zh0343
+          # Web archive crawls use SHA1
+          sha1 = node.xpath('checksum[@type="sha1" or @type="SHA1" or @type="SHA-1"]').text.presence
           attrs[:hasMessageDigests] << { type: 'sha1', digest: sha1 } if sha1
+          md5 = node.xpath('checksum[@type="md5" or @type="MD5"]').text.presence
           attrs[:hasMessageDigests] << { type: 'md5', digest: md5 } if md5
         end
       end
