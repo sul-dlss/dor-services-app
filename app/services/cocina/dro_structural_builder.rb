@@ -31,12 +31,12 @@ module Cocina
     attr_reader :item
 
     def build_filesets(content_metadata_ds, version:, id:)
-      content_metadata_ds.ng_xml.xpath('//resource').map.with_index(1) do |resource_node, index|
+      content_metadata_ds.ng_xml.xpath('//resource').map do |resource_node|
         files = build_files(resource_node.xpath('file'), version: version, parent_id: id)
         structural = {}
         structural[:contains] = files if files.present?
         {
-          externalIdentifier: resource_node['id'] || "#{id}_#{index}",
+          externalIdentifier: resource_node['id'],
           type: Cocina::Models::Vocab.fileset,
           label: resource_node.xpath('label').text,
           version: version,
