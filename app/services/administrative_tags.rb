@@ -96,7 +96,7 @@ class AdministrativeTags
       AdministrativeTag.where(druid: item.pid).destroy_all if replace
 
       tags.map do |tag|
-        AdministrativeTag.create!(druid: item.pid, tag: tag)
+        AdministrativeTag.find_or_create_by!(druid: item.pid, tag: tag)
       end
     end
   end
