@@ -123,17 +123,6 @@ RSpec.describe 'Administrative tags' do
                                     '/properties/administrative_tags [] contains fewer than min items"}]}')
       end
     end
-
-    context 'when a tag already exists, it does not create again but does not error out' do
-      it 'adds no new administrative tags' do
-        post "/v1/objects/#{druid}/administrative_tags",
-             params: %( {"administrative_tags":#{tags.to_json}} ),
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(AdministrativeTags).to have_received(:create)
-          .with(item: item, tags: tags, replace: nil)
-        expect(response.status).to eq(201)
-      end
-    end
   end
 
   describe '#update' do
