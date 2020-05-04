@@ -62,7 +62,7 @@ RSpec.describe 'Get the object' do
 
     context 'when the object exists with full metadata' do
       before do
-        allow(object).to receive(:collection_ids).and_return(['druid:xx888xx7777'])
+        allow(object).to receive(:collections).and_return([collection])
 
         object.descMetadata.title_info.main_title = 'Hello'
         EmbargoService.create(item: object, release_date: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world')
@@ -72,6 +72,8 @@ RSpec.describe 'Get the object' do
                                    who: 'petucket',
                                    when: '2014-08-30T01:06:28Z')
       end
+
+      let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
 
       let(:expected) do
         {

@@ -22,7 +22,8 @@ module Cocina
 
         structural[:contains] = build_filesets(item.contentMetadata, version: item.current_version.to_i, id: item.pid) unless item.contentMetadata.new?
         structural[:hasAgreement] = item.identityMetadata.agreementId.first unless item.identityMetadata.agreementId.empty?
-        structural[:isMemberOf] = item.collection_ids.first if item.collection_ids.present?
+        # Note that there is a bug with item.collection_ids that returns [] until item.collections is called. Below side-steps this.
+        structural[:isMemberOf] = item.collections.first.id if item.collections.present?
       end
     end
 
