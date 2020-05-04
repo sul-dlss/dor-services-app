@@ -12,13 +12,14 @@ RSpec.describe 'Update object' do
     # Stub out AF for ObjectUpdater
     allow(item.association(:collections)).to receive(:ids_writer).and_return(true)
     # Stub out AF for ObjectMapper
-    allow(item).to receive(:collection_ids).and_return ['druid:xx888xx7777']
+    allow(item).to receive(:collections).and_return [collection]
     allow(AdministrativeTags).to receive(:create)
     allow(AdministrativeTags).to receive(:project).and_return(['Google Books'])
     allow(AdministrativeTags).to receive(:content_type).and_return(['Book (rtl)'])
     allow(AdministrativeTags).to receive(:for).and_return([])
   end
 
+  let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
   let(:apo) { Dor::AdminPolicyObject.new(pid: apo_druid) }
   let(:item) do
     Dor::Item.new(pid: druid).tap do |item|

@@ -134,7 +134,7 @@ RSpec.describe 'Create object' do
 
         before do
           allow(Dor::Item).to receive(:new).and_return(item)
-          allow(item).to receive(:collection_ids).and_return([])
+          allow(item).to receive(:collections).and_return([])
           allow(item).to receive(:save!)
         end
 
@@ -171,7 +171,7 @@ RSpec.describe 'Create object' do
 
         before do
           allow(Dor::Item).to receive(:new).and_return(item)
-          allow(item).to receive(:collection_ids).and_return([])
+          allow(item).to receive(:collections).and_return([])
           allow(item).to receive(:save!)
         end
 
@@ -226,7 +226,7 @@ RSpec.describe 'Create object' do
 
       before do
         allow(Dor::Item).to receive(:new).and_return(item)
-        allow(item).to receive(:collection_ids).and_return([])
+        allow(item).to receive(:collections).and_return([])
         allow(item).to receive(:save!)
       end
 
@@ -379,7 +379,7 @@ RSpec.describe 'Create object' do
 
       before do
         allow(Dor::Item).to receive(:new).and_return(item)
-        allow(item).to receive(:collection_ids).and_return([])
+        allow(item).to receive(:collections).and_return([])
         allow(item).to receive(:save!)
       end
 
@@ -438,9 +438,11 @@ RSpec.describe 'Create object' do
         end
       end
 
+      let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
+
       before do
         allow(Dor::Item).to receive(:new).and_return(item)
-        allow(item).to receive(:collection_ids).and_return(['druid:xx888xx7777'])
+        allow(item).to receive(:collections).and_return([collection])
         allow(item).to receive(:save!)
       end
 
