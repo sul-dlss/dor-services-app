@@ -90,13 +90,12 @@ class AdministrativeTags
   # @param tags [Array<String>] a non-empty array of tags (strings)
   # @param replace [Boolean] replace current tags? default: false
   # @return [Array<AdministrativeTag>]
-  # @raise [ActiveRecord::RecordInvalid] if any druid/tag rows are duplicates
   def create(tags:, replace: false)
     ActiveRecord::Base.transaction do
       AdministrativeTag.where(druid: item.pid).destroy_all if replace
 
       tags.map do |tag|
-        AdministrativeTag.create!(druid: item.pid, tag: tag)
+        AdministrativeTag.find_or_create_by!(druid: item.pid, tag: tag)
       end
     end
   end

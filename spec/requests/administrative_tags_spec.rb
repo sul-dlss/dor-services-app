@@ -123,42 +123,6 @@ RSpec.describe 'Administrative tags' do
                                     '/properties/administrative_tags [] contains fewer than min items"}]}')
       end
     end
-
-    context 'when one or more tags already exist' do
-      # NOTE: Yep, this is pretty gross. Faking ActiveModel::Errors here. Why is it gross?
-      #       First, you can't raise ActiveRecord::RecordInvalid with a string. An instance must be supplied
-      #       that responds to `#errors`, and what is returned by `#errors` must itself respond to `#full_messages`.
-      #       A fun added complication is that the class of what is returned at the top level must respond
-      #       to `#i18n_scope` (at the class level, not the instance level). We get that here by virtue of
-      #       subclassing `AdministrativeTag` in the anonymous class. (FWIW, the return value of that method
-      #       in this context? `:activerecord`.)
-      let(:fake_invalid_record) do
-        Class.new(AdministrativeTag) do
-          def errors
-            Class.new do
-              def full_messages
-                [
-                  'Tag has already been assigned to the given druid (no duplicate tags for a druid)'
-                ]
-              end
-            end.new
-          end
-        end.new
-      end
-
-      before do
-        allow(AdministrativeTags).to receive(:create)
-          .and_raise(ActiveRecord::RecordInvalid.new(fake_invalid_record))
-      end
-
-      it 'adds no new administrative tags' do
-        post "/v1/objects/#{druid}/administrative_tags",
-             params: %( {"administrative_tags":#{tags.to_json}} ),
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.status).to eq(409)
-        expect(response.body).to eq('Validation failed: Tag has already been assigned to the given druid (no duplicate tags for a druid)')
-      end
-    end
   end
 
   describe '#update' do
