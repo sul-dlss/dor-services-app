@@ -19,7 +19,7 @@ class ShelveJob < ApplicationJob
       # return LogFailureJob.perform_later(druid: druid,
       #                                    background_job_result: background_job_result,
       #                                    workflow: 'accessionWF',
-      #                                    workflow_process: 'shelve-complete',
+      #                                    workflow_process: 'shelve',
       #                                    output: { errors: [{ title: 'Access mismatch',
       #                                                         detail: "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" }] })
       # end
@@ -30,14 +30,14 @@ class ShelveJob < ApplicationJob
       return LogFailureJob.perform_later(druid: druid,
                                          background_job_result: background_job_result,
                                          workflow: 'accessionWF',
-                                         workflow_process: 'shelve-complete',
+                                         workflow_process: 'shelve',
                                          output: { errors: [{ title: 'Content directory not found', detail: e.message }] })
     end
 
     LogSuccessJob.perform_later(druid: druid,
                                 workflow: 'accessionWF',
                                 background_job_result: background_job_result,
-                                workflow_process: 'shelve-complete')
+                                workflow_process: 'shelve')
   end
 
   def validator_for?(item)

@@ -41,7 +41,7 @@ RSpec.describe ShelveJob, type: :job do
         .with(druid: druid,
               background_job_result: result,
               workflow: 'accessionWF',
-              workflow_process: 'shelve-complete')
+              workflow_process: 'shelve')
     end
   end
 
@@ -61,7 +61,7 @@ RSpec.describe ShelveJob, type: :job do
         .with(druid: druid,
               background_job_result: result,
               workflow: 'accessionWF',
-              workflow_process: 'shelve-complete',
+              workflow_process: 'shelve',
               output: { errors: [{ detail: error_message, title: 'Content directory not found' }] })
     end
   end
@@ -81,7 +81,7 @@ RSpec.describe ShelveJob, type: :job do
         .with(druid: druid,
               background_job_result: result,
               workflow: 'accessionWF',
-              workflow_process: 'shelve-complete',
+              workflow_process: 'shelve',
               output: { errors: [{ detail: 'Not all files have dark access and/or are unshelved when item access is dark: ["foo.txt", "bar.txt"]', title: 'Access mismatch' }] })
     end
   end

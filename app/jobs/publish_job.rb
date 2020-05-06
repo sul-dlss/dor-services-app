@@ -21,7 +21,7 @@ class PublishJob < ApplicationJob
       # return LogFailureJob.perform_later(druid: druid,
       #                                    background_job_result: background_job_result,
       #                                    workflow: workflow,
-      #                                    workflow_process: 'publish-complete',
+      #                                    workflow_process: 'publish',
       #                                    output: { errors: [{ title: 'Access mismatch',
       #                                                         detail: "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" }] })
       # end
@@ -32,14 +32,14 @@ class PublishJob < ApplicationJob
       return LogFailureJob.perform_later(druid: druid,
                                          background_job_result: background_job_result,
                                          workflow: workflow,
-                                         workflow_process: 'publish-complete',
+                                         workflow_process: 'publish',
                                          output: { errors: [{ title: 'Data error', detail: e.message }] })
     end
 
     LogSuccessJob.perform_later(druid: druid,
                                 background_job_result: background_job_result,
                                 workflow: workflow,
-                                workflow_process: 'publish-complete')
+                                workflow_process: 'publish')
   end
 
   def validator_for?(item)
