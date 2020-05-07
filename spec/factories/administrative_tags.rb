@@ -3,6 +3,6 @@
 FactoryBot.define do
   factory :administrative_tag do
     druid { 'druid:xz456jk0987' }
-    tag { 'My : Object : Rules' }
+    tag_label
   end
 end

@@ -29,10 +29,9 @@ SET default_tablespace = '';
 CREATE TABLE public.administrative_tags (
     id bigint NOT NULL,
     druid character varying NOT NULL,
-    tag character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    tag_label_id bigint
+    tag_label_id bigint NOT NULL
 );
 
 
@@ -255,20 +254,6 @@ CREATE INDEX index_administrative_tags_on_druid ON public.administrative_tags US
 
 
 --
--- Name: index_administrative_tags_on_druid_and_tag; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_administrative_tags_on_druid_and_tag ON public.administrative_tags USING btree (druid, tag);
-
-
---
--- Name: index_administrative_tags_on_tag; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_administrative_tags_on_tag ON public.administrative_tags USING btree (tag);
-
-
---
 -- Name: index_administrative_tags_on_tag_label_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -304,6 +289,14 @@ CREATE UNIQUE INDEX index_tag_labels_on_tag ON public.tag_labels USING btree (ta
 
 
 --
+-- Name: administrative_tags fk_rails_98c2c99c80; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.administrative_tags
+    ADD CONSTRAINT fk_rails_98c2c99c80 FOREIGN KEY (tag_label_id) REFERENCES public.tag_labels(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -315,6 +308,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191209192646'),
 ('20200226171829'),
 ('20200507202909'),
-('20200507202950');
+('20200507202950'),
+('20200507224637');
 
 
