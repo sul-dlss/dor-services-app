@@ -31,7 +31,8 @@ CREATE TABLE public.administrative_tags (
     druid character varying NOT NULL,
     tag character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    tag_label_id bigint
 );
 
 
@@ -268,6 +269,13 @@ CREATE INDEX index_administrative_tags_on_tag ON public.administrative_tags USIN
 
 
 --
+-- Name: index_administrative_tags_on_tag_label_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_administrative_tags_on_tag_label_id ON public.administrative_tags USING btree (tag_label_id);
+
+
+--
 -- Name: index_events_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -306,6 +314,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191015193638'),
 ('20191209192646'),
 ('20200226171829'),
-('20200507202909');
+('20200507202909'),
+('20200507202950');
 
 
