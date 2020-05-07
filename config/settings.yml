@@ -31,7 +31,6 @@ dor_indexing:
 redis_url: 'redis://localhost:6379/'
 
 workflow_url: 'https://workflow.example.com/workflow'
-sdr_url: 'http://user:password@sdr-services.example.com/sdr'
 sdr:
   local_workspace_root: /dor/workspace
   local_export_home: /dor/export
