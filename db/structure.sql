@@ -22,8 +22,6 @@ CREATE TYPE public.background_job_result_status AS ENUM (
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
-
 --
 -- Name: administrative_tags; Type: TABLE; Schema: public; Owner: -
 --
@@ -142,6 +140,37 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: tag_labels; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tag_labels (
+    id bigint NOT NULL,
+    tag character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: tag_labels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.tag_labels_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tag_labels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.tag_labels_id_seq OWNED BY public.tag_labels.id;
+
+
+--
 -- Name: administrative_tags id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -160,6 +189,13 @@ ALTER TABLE ONLY public.background_job_results ALTER COLUMN id SET DEFAULT nextv
 --
 
 ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.events_id_seq'::regclass);
+
+
+--
+-- Name: tag_labels id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tag_labels ALTER COLUMN id SET DEFAULT nextval('public.tag_labels_id_seq'::regclass);
 
 
 --
@@ -200,6 +236,14 @@ ALTER TABLE ONLY public.events
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: tag_labels tag_labels_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tag_labels
+    ADD CONSTRAINT tag_labels_pkey PRIMARY KEY (id);
 
 
 --
@@ -245,6 +289,13 @@ CREATE INDEX index_events_on_event_type ON public.events USING btree (event_type
 
 
 --
+-- Name: index_tag_labels_on_tag; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_tag_labels_on_tag ON public.tag_labels USING btree (tag);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -254,6 +305,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190917215521'),
 ('20191015193638'),
 ('20191209192646'),
-('20200226171829');
+('20200226171829'),
+('20200507202909');
 
 
