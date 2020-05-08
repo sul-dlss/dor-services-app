@@ -9,7 +9,7 @@ class AdministrativeTagsController < ApplicationController
   end
 
   # Show administrative tags for an object
-  def show
+  def index
     render json: AdministrativeTags.for(item: @item)
   end
 
