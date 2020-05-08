@@ -19,6 +19,12 @@ Rails.application.routes.draw do
 
     resources :background_job_results, only: [:show], defaults: { format: :json }
 
+    resources :administrative_tags, only: [] do
+      collection do
+        get 'search'
+      end
+    end
+
     resources :objects, only: [:create, :update, :show] do
       resource :release_tags, only: [:create, :show]
       resources :administrative_tags, only: %i[create update destroy index]
