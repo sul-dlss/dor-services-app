@@ -29,8 +29,6 @@ class ObjectsController < ApplicationController
   end
 
   def create
-    return legacy_register if params[:admin_policy] # This is a required parameter for the legacy registration
-
     cocina_object = Cocina::ObjectCreator.create(params.except(:action, :controller).to_unsafe_h)
 
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
@@ -41,20 +39,6 @@ class ObjectsController < ApplicationController
     cocina_object = Cocina::ObjectUpdater.run(obj, params.except(:action, :controller, :id).to_unsafe_h)
 
     render json: cocina_object
-  end
-
-  # Register new objects in DOR
-  def legacy_register
-    begin
-      reg_response = RegistrationService.create_from_request(create_params, event_factory: EventFactory)
-    rescue ArgumentError => e
-      return render status: :unprocessable_entity, plain: e.message
-    end
-
-    respond_to do |format|
-      format.all { render status: :created, location: reg_response.location, plain: reg_response.to_txt }
-      format.json { render status: :created, location: reg_response.location, json: reg_response }
-    end
   end
 
   def show
