@@ -6,10 +6,7 @@ class AdministrativeTag < ApplicationRecord
 
   belongs_to :tag_label
 
-  validates :tag, format: {
-    with: VALID_TAG_PATTERN,
-    message: 'must be a series of 2 or more strings delimited with space-padded colons, e.g., "Registered By : mjgiarlo : now"'
-  }, uniqueness: {
+  validates :tag_label_id, uniqueness: {
     scope: :druid,
     message: 'has already been assigned to the given druid (no duplicate tags for a druid)'
   }

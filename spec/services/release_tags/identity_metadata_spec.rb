@@ -12,10 +12,10 @@ RSpec.describe ReleaseTags::IdentityMetadata do
 
   before do
     # Create expected tags (see item fixture above) in the database
-    create(:administrative_tag, druid: item.pid, tag: 'Project : Revs')
-    create(:administrative_tag, druid: item.pid, tag: 'Remediated By : 3.25.0')
-    create(:administrative_tag, druid: item.pid, tag: 'tag : test1')
-    create(:administrative_tag, druid: item.pid, tag: 'old : tag')
+    create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Project : Revs'))
+    create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Remediated By : 3.25.0'))
+    create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'tag : test1'))
+    create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'old : tag'))
   end
 
   describe 'Tag sorting, combining, and comparision functions' do

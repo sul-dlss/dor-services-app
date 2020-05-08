@@ -85,8 +85,8 @@ RSpec.describe AdministrativeTags do
 
   describe '#for' do
     before do
-      create(:administrative_tag, druid: item.pid, tag: 'Foo : Bar')
-      create(:administrative_tag, druid: item.pid, tag: 'Bar : Baz : Quux')
+      create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Foo : Bar'))
+      create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Bar : Baz : Quux'))
     end
 
     it 'returns administrative tags from the database' do
@@ -97,7 +97,7 @@ RSpec.describe AdministrativeTags do
   describe '#content_type' do
     context 'with a matching row in the database' do
       before do
-        create(:administrative_tag, druid: item.pid, tag: 'Process : Content Type : Map')
+        create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Process : Content Type : Map'))
       end
 
       it 'parses and returns the content type' do
@@ -107,8 +107,8 @@ RSpec.describe AdministrativeTags do
 
     context 'with more than one matching row in the database' do
       before do
-        create(:administrative_tag, druid: item.pid, tag: 'Process : Content Type : Map')
-        create(:administrative_tag, druid: item.pid, tag: 'Process : Content Type : Media')
+        create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Process : Content Type : Map'))
+        create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Process : Content Type : Media'))
       end
 
       it 'parses and returns the first content type' do
@@ -118,7 +118,7 @@ RSpec.describe AdministrativeTags do
 
     context 'with no content types' do
       before do
-        create(:administrative_tag, druid: item.pid, tag: 'Foo : Bar')
+        create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Foo : Bar'))
       end
 
       it 'returns an empty array' do
@@ -130,7 +130,7 @@ RSpec.describe AdministrativeTags do
   describe '#project' do
     context 'with a matching row in the database' do
       before do
-        create(:administrative_tag, druid: item.pid, tag: 'Project : Google Books')
+        create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Project : Google Books'))
       end
 
       it 'parses and returns the project' do
@@ -140,8 +140,8 @@ RSpec.describe AdministrativeTags do
 
     context 'with more than one matching row in the database' do
       before do
-        create(:administrative_tag, druid: item.pid, tag: 'Project : Google Books')
-        create(:administrative_tag, druid: item.pid, tag: 'Project : Fraggle Rock Collection')
+        create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Project : Google Books'))
+        create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Project : Fraggle Rock Collection'))
       end
 
       it 'parses and returns the first content type' do
@@ -151,7 +151,7 @@ RSpec.describe AdministrativeTags do
 
     context 'with no project' do
       before do
-        create(:administrative_tag, druid: item.pid, tag: 'Foo : Bar')
+        create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Foo : Bar'))
       end
 
       it 'returns an empty array' do
@@ -171,7 +171,7 @@ RSpec.describe AdministrativeTags do
 
     context 'when one or more tags already exist' do
       before do
-        create(:administrative_tag, druid: item.pid, tag: new_tags.first)
+        create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: new_tags.first))
       end
 
       it 'creates new administrative tags and returns existing ones' do
@@ -183,9 +183,9 @@ RSpec.describe AdministrativeTags do
 
     context 'when replacing tags' do
       before do
-        create(:administrative_tag, druid: item.pid, tag: 'Test : One')
-        create(:administrative_tag, druid: item.pid, tag: 'Test : Two')
-        create(:administrative_tag, druid: item.pid, tag: 'Test : Three')
+        create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Test : One'))
+        create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Test : Two'))
+        create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Test : Three'))
       end
 
       it 'destroys and creates new administrative tags' do
@@ -198,7 +198,7 @@ RSpec.describe AdministrativeTags do
 
   describe '#update' do
     before do
-      create(:administrative_tag, druid: item.pid, tag: current_tag)
+      create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: current_tag))
     end
 
     let(:current_tag) { 'One : Two' }
@@ -214,7 +214,7 @@ RSpec.describe AdministrativeTags do
 
   describe '#destroy' do
     before do
-      create(:administrative_tag, druid: item.pid, tag: tag)
+      create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: tag))
     end
 
     let(:tag) { 'One : Two' }

@@ -22,8 +22,8 @@ RSpec.describe Cocina::Mapper do
       item.identityMetadata.agreementId = [agreement]
       item.descMetadata.title_info.main_title = 'Hello'
 
-      create(:administrative_tag, druid: item.pid, tag: 'Project : Google Books')
-      create(:administrative_tag, druid: item.pid, tag: type)
+      create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Project : Google Books'))
+      create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: type))
     end
 
     context 'when item has a manuscript tag' do

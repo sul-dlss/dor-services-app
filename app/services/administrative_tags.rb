@@ -64,27 +64,25 @@ class AdministrativeTags
 
   # @return [Array<String>] an array of tags (strings), possibly empty
   def for
-    AdministrativeTag.where(druid: item.pid).pluck(:tag)
+    AdministrativeTag.includes(:tag_label).where(druid: item.pid).pluck(:tag)
   end
 
   # @return [Array<String>] an array of tags (strings), possibly empty
   def content_type
-    AdministrativeTag
-      .where(druid: item.pid)
-      .where(tags_relation.matches('Process : Content Type : %'))
-      .limit(1) # "THERE CAN BE ONLY ONE!"
-      .pluck(:tag)
-      .map { |tag| tag.split(' : ').last }
+    AdministrativeTag.includes(:tag_label)
+                     .where(druid: item.pid, tag_label: TagLabel.content_type)
+                     .limit(1) # "THERE CAN BE ONLY ONE!"
+                     .pluck(:tag)
+                     .map { |tag| tag.split(' : ').last }
   end
 
   # @return [Array<String>] an array of tags (strings), possibly empty
   def project
-    AdministrativeTag
-      .where(druid: item.pid)
-      .where(tags_relation.matches('Project : %'))
-      .limit(1) # "THERE CAN BE ONLY ONE!"
-      .pluck(:tag)
-      .map { |tag| tag.split(' : ', 2).last }
+    AdministrativeTag.includes(:tag_label)
+                     .where(druid: item.pid, tag_label: TagLabel.project)
+                     .limit(1) # "THERE CAN BE ONLY ONE!"
+                     .pluck(:tag)
+                     .map { |tag| tag.split(' : ', 2).last }
   end
 
   # @param tags [Array<String>] a non-empty array of tags (strings)
@@ -95,7 +93,7 @@ class AdministrativeTags
       AdministrativeTag.where(druid: item.pid).destroy_all if replace
 
       tags.map do |tag|
-        AdministrativeTag.find_or_create_by!(druid: item.pid, tag: tag)
+        AdministrativeTag.find_or_create_by!(druid: item.pid, tag_label: TagLabel.find_or_create_by!(tag: tag))
       end
     end
   end
@@ -108,7 +106,12 @@ class AdministrativeTags
   # @raise [ActiveRecord::RecordNotFound] if row not found for druid/tag combination
   # @raise [ActiveRecord::RecordInvalid] if any druid/tag rows are duplicates
   def update(current:, new:)
-    AdministrativeTag.find_by!(druid: item.pid, tag: current).update!(tag: new)
+    ActiveRecord::Base.transaction do
+      old_label = TagLabel.find_by!(tag: current)
+      AdministrativeTag.find_by!(druid: item.pid, tag_label: old_label)
+                       .update!(tag_label: TagLabel.find_or_create_by!(tag: new))
+      old_label.destroy! if old_label.administrative_tags.count.zero?
+    end
   end
 
   # Destroy an administrative tag for an item
@@ -118,7 +121,11 @@ class AdministrativeTags
   # @return [AdministrativeTag] the tag instance
   # @raise [ActiveRecord::RecordNotFound] if row not found for druid/tag combination
   def destroy(tag:)
-    AdministrativeTag.find_by!(druid: item.pid, tag: tag).destroy!
+    ActiveRecord::Base.transaction do
+      old_label = TagLabel.find_by!(tag: tag)
+      AdministrativeTag.find_by!(druid: item.pid, tag_label: old_label).destroy!
+      old_label.destroy! if old_label.administrative_tags.count.zero?
+    end
   end
 
   private
