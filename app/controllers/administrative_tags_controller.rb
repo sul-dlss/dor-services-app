@@ -2,7 +2,7 @@
 
 # Administrative tags controller (nested resource under objects)
 class AdministrativeTagsController < ApplicationController
-  before_action :load_item
+  before_action :load_item, only: %i[create index update destroy]
 
   rescue_from(ActiveFedora::ObjectNotFoundError) do |e|
     render status: :not_found, plain: e.message
@@ -11,6 +11,11 @@ class AdministrativeTagsController < ApplicationController
   # Show administrative tags for an object
   def index
     render json: AdministrativeTags.for(item: @item)
+  end
+
+  def search
+    results = TagLabel.where('tag like ?', "#{params[:q]}%").limit(10).pluck(:tag)
+    render json: results
   end
 
   def create

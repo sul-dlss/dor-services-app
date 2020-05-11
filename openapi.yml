@@ -412,6 +412,29 @@ paths:
                   minItems: 1
                   items:
                     $ref: '#/components/schemas/AdministrativeTag'
+  '/v1/administrative_tags/search':
+    get:
+      tags:
+        - tags
+      summary: Search for existing tags
+      description: 'This is useful for doing autocomplete of tags in Argo'
+      operationId: 'administrative_tags#search'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      parameters:
+        - name: q
+          in: query
+          description: The pattern to query for
+          required: true
+          schema:
+            type: string
   '/v1/objects/{object_id}/administrative_tags/{id}':
     delete:
       tags:
