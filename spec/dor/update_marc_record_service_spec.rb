@@ -11,7 +11,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
   before do
     allow(ReleaseTags::IdentityMetadata).to receive(:for).and_return(release_service)
-    Settings.release.write_marc_script = 'bin/write_marc_record_test'
     Settings.release.symphony_path = './spec/fixtures/sdr-purl'
     Settings.release.purl_base_url = 'http://purl.stanford.edu'
     @fixtures = './spec/fixtures'
@@ -294,7 +293,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
     before do
       Settings.release.symphony_path = "#{@fixtures}/sdr_purl"
-      Settings.release.write_marc_script = 'bin/write_marc_record_test'
       @output_file = "#{@fixtures}/sdr_purl/sdr-purl-856s"
       setup_test_objects('druid:aa111aa1111', '')
       @updater = Dor::UpdateMarcRecordService.new(@dor_item)

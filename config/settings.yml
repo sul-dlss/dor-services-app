@@ -50,7 +50,7 @@ dor:
 
 release:
   symphony_path: './'
-  write_marc_script: 'bin/write_marc_record_test'
+  write_marc_script: 'bin/write_marc_record'
   purl_base_url: 'http://purl.stanford.edu'
 
 goobi:
