@@ -1,3 +1,0 @@
-#Do kerberos authentication here if it is required by the server
-echo "${1}" >> $2
-
