@@ -10,7 +10,7 @@ class PublishJob < ApplicationJob
   # @param [String] workflow Which workflow should this be reported to?
   def perform(druid:, background_job_result:, workflow:)
     background_job_result.processing!
-
+    workflow_process = workflow == 'releaseWF' ? 'release-publish' : 'publish'
     begin
       item = Dor.find(druid)
 
@@ -21,7 +21,7 @@ class PublishJob < ApplicationJob
       # return LogFailureJob.perform_later(druid: druid,
       #                                    background_job_result: background_job_result,
       #                                    workflow: workflow,
-      #                                    workflow_process: 'publish',
+      #                                    workflow_process: workflow_process,
       #                                    output: { errors: [{ title: 'Access mismatch',
       #                                                         detail: "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" }] })
       # end
@@ -32,14 +32,14 @@ class PublishJob < ApplicationJob
       return LogFailureJob.perform_later(druid: druid,
                                          background_job_result: background_job_result,
                                          workflow: workflow,
-                                         workflow_process: 'publish',
+                                         workflow_process: workflow_process,
                                          output: { errors: [{ title: 'Data error', detail: e.message }] })
     end
 
     LogSuccessJob.perform_later(druid: druid,
                                 background_job_result: background_job_result,
                                 workflow: workflow,
-                                workflow_process: 'publish')
+                                workflow_process: workflow_process)
   end
 
   def validator_for?(item)
