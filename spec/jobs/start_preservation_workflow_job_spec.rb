@@ -28,7 +28,7 @@ RSpec.describe StartPreservationWorkflowJob, type: :job do
         druid: druid,
         background_job_result: result,
         workflow: 'accessionWF',
-        workflow_process: 'preservation-ingest-initiated'
+        workflow_process: 'sdr-ingest-transfer'
       )
   end
 end

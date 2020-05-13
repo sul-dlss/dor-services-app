@@ -17,7 +17,7 @@ class StartPreservationWorkflowJob < ApplicationJob
     LogSuccessJob.perform_later(druid: druid,
                                 workflow: 'accessionWF',
                                 background_job_result: background_job_result,
-                                workflow_process: 'preservation-ingest-initiated')
+                                workflow_process: 'sdr-ingest-transfer')
   end
 
   private
