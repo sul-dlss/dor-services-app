@@ -92,7 +92,7 @@ module Cocina
     attr_reader :item
 
     def dro_type
-      case AdministrativeTags.content_type(item: item).first
+      case AdministrativeTags.content_type(pid: item.pid).first
       when 'Image'
         Cocina::Models::Vocab.image
       when '3D'
@@ -140,7 +140,7 @@ module Cocina
         admin[:hasAdminPolicy] = item.admin_policy_object_id if item.admin_policy_object_id
         release_tags = build_release_tags
         admin[:releaseTags] = release_tags unless release_tags.empty?
-        projects = AdministrativeTags.project(item: item)
+        projects = AdministrativeTags.project(pid: item.id)
         admin[:partOfProject] = projects.first if projects.any?
       end
     end

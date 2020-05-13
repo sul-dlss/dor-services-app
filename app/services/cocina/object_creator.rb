@@ -88,7 +88,7 @@ module Cocina
                     catkey: catkey_for(obj),
                     label: truncate_label(obj.label)).tap do |item|
         add_description(item, obj)
-        add_dro_tags(item, obj)
+        add_dro_tags(pid, obj)
 
         if obj.access
           change_access(item, obj.access)
@@ -121,7 +121,7 @@ module Cocina
                           catkey: catkey_for(obj),
                           label: truncate_label(obj.label)).tap do |item|
         add_description(item, obj)
-        add_collection_tags(item, obj)
+        add_collection_tags(pid, obj)
         add_identity_metadata(obj, item, 'collection')
       end
     end
@@ -147,16 +147,16 @@ module Cocina
       end
     end
 
-    def add_dro_tags(item, obj)
+    def add_dro_tags(pid, obj)
       tags = [content_type_tag(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection)]
       tags << "Project : #{obj.administrative.partOfProject}" if obj.administrative.partOfProject
-      AdministrativeTags.create(item: item, tags: tags)
+      AdministrativeTags.create(pid: pid, tags: tags)
     end
 
-    def add_collection_tags(item, obj)
+    def add_collection_tags(pid, obj)
       return unless obj.administrative.partOfProject
 
-      AdministrativeTags.create(item: item, tags: ["Project : #{obj.administrative.partOfProject}"])
+      AdministrativeTags.create(pid: pid, tags: ["Project : #{obj.administrative.partOfProject}"])
     end
 
     def content_type_tag(type, direction)

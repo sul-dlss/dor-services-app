@@ -74,7 +74,7 @@ module Cocina
       item.catkey = catkey_for(obj)
       item.label = truncate_label(obj.label)
 
-      add_tags(item, obj)
+      add_tags(item.id, obj)
       change_access(item, obj.access.access)
       item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
       item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
@@ -114,22 +114,22 @@ module Cocina
                             use_and_reproduction_statement: embargo.useAndReproductionStatement)
     end
 
-    def add_tags(item, obj)
-      add_tag(item, content_type_tag(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection), 'Process : Content Type')
-      add_tag(item, "Project : #{obj.administrative.partOfProject}", 'Project') if obj.administrative.partOfProject
+    def add_tags(pid, obj)
+      add_tag(pid, content_type_tag(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection), 'Process : Content Type')
+      add_tag(pid, "Project : #{obj.administrative.partOfProject}", 'Project') if obj.administrative.partOfProject
     end
 
-    def add_tag(item, new_tag, prefix)
-      existing_tag = tag_starting_with(item, prefix)
+    def add_tag(pid, new_tag, prefix)
+      existing_tag = tag_starting_with(pid, prefix)
       if existing_tag.nil?
-        AdministrativeTags.create(item: item, tags: [new_tag])
+        AdministrativeTags.create(pid: pid, tags: [new_tag])
       elsif existing_tag != new_tag
-        AdministrativeTags.update(item: item, current: existing_tag, new: new_tag)
+        AdministrativeTags.update(pid: pid, current: existing_tag, new: new_tag)
       end
     end
 
-    def tag_starting_with(item, prefix)
-      AdministrativeTags.for(item: item).each do |tag|
+    def tag_starting_with(pid, prefix)
+      AdministrativeTags.for(pid: pid).each do |tag|
         return tag if tag.start_with?(prefix)
       end
       nil

@@ -13,7 +13,7 @@ module Cocina
 
     def build
       {}.tap do |structural|
-        case AdministrativeTags.content_type(item: item).first
+        case AdministrativeTags.content_type(pid: item.id).first
         when 'Book (ltr)'
           structural[:hasMemberOrders] = [{ viewingDirection: 'left-to-right' }]
         when 'Book (rtl)'

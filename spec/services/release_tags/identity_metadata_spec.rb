@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe ReleaseTags::IdentityMetadata do
   let(:item) { instantiate_fixture('druid:bb004bn8654', Dor::Item) }
   let(:releases) { described_class.for(item) }
-  let(:bryar_trans_am_admin_tags) { AdministrativeTags.for(item: item) }
+  let(:bryar_trans_am_admin_tags) { AdministrativeTags.for(pid: item.id) }
   let(:array_of_times) do
     ['2015-01-06 23:33:47Z', '2015-01-07 23:33:47Z', '2015-01-08 23:33:47Z', '2015-01-09 23:33:47Z'].map { |x| Time.parse(x).iso8601 }
   end

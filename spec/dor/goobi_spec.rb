@@ -22,7 +22,7 @@ RSpec.describe Dor::Goobi do
     allow(goobi).to receive(:barcode).and_return('barcode_12345')
     allow(goobi).to receive(:collection_id).and_return('druid:oo000oo0001')
     allow(goobi).to receive(:collection_name).and_return('collection name')
-    allow(AdministrativeTags).to receive(:content_type).with(item: item).and_return(['book'])
+    allow(AdministrativeTags).to receive(:content_type).with(pid: pid).and_return(['book'])
   end
   # rubocop:enable RSpec/SubjectStub
 
@@ -74,7 +74,7 @@ RSpec.describe Dor::Goobi do
   end
 
   it 'creates the correct xml request with ocr tag present' do
-    allow(AdministrativeTags).to receive(:for).with(item: item).and_return(['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'])
+    allow(AdministrativeTags).to receive(:for).with(pid: pid).and_return(['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'])
     expect(goobi.goobi_xml_tags).to eq('<tag name="DPG" value="Workflow : book_workflow"/><tag name="DPG" value="OCR : TRUE"/>')
     expect(goobi.xml_request).to be_equivalent_to <<-END
       <stanfordCreationRequest>

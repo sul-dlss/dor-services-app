@@ -99,8 +99,8 @@ RSpec.describe 'Update object' do
     expect(response.body).to eq expected.to_json
 
     # Tags are created.
-    expect(AdministrativeTags).to have_received(:create).with(item: item, tags: ['Process : Content Type : Book (rtl)'])
-    expect(AdministrativeTags).to have_received(:create).with(item: item, tags: ['Project : Google Books'])
+    expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Process : Content Type : Book (rtl)'])
+    expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
   end
 
   context 'when tags change' do
@@ -119,8 +119,8 @@ RSpec.describe 'Update object' do
 
       # Tags are updated.
       expect(AdministrativeTags).not_to have_received(:create)
-      expect(AdministrativeTags).to have_received(:update).with(item: item, current: 'Process : Content Type : Book (ltr)', new: 'Process : Content Type : Book (rtl)')
-      expect(AdministrativeTags).to have_received(:update).with(item: item, current: 'Project : Tom Swift', new: 'Project : Google Books')
+      expect(AdministrativeTags).to have_received(:update).with(pid: druid, current: 'Process : Content Type : Book (ltr)', new: 'Process : Content Type : Book (rtl)')
+      expect(AdministrativeTags).to have_received(:update).with(pid: druid, current: 'Project : Tom Swift', new: 'Project : Google Books')
     end
   end
 
