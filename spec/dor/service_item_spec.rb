@@ -33,19 +33,19 @@ RSpec.describe Dor::ServiceItem do
     end
 
     it 'returns goobi_workflow_name from a valid identityMetadata' do
-      allow(AdministrativeTags).to receive(:for).with(item: @dor_item).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
+      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
       expect(si.goobi_workflow_name).to eq('book_workflow')
     end
 
     it 'returns first goobi_workflow_name if multiple are in the tags' do
       allow(AdministrativeTags).to receive(:for)
-        .with(item: @dor_item)
+        .with(pid: @dor_item.id)
         .and_return(['DPG : Workflow : book_workflow', 'DPG : Workflow : another_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
       expect(si.goobi_workflow_name).to eq('book_workflow')
     end
 
     it 'returns blank for goobi_workflow_name if none are found' do
-      allow(AdministrativeTags).to receive(:for).with(item: @dor_item).and_return(['Process : Content Type : Book (flipbook, ltr)'])
+      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['Process : Content Type : Book (flipbook, ltr)'])
       expect(si.goobi_workflow_name).to eq(Settings.goobi.default_goobi_workflow_name)
     end
   end
@@ -56,7 +56,7 @@ RSpec.describe Dor::ServiceItem do
     end
 
     it 'returns an array of arrays with the tags from the object in the key:value format expected to be passed to goobi' do
-      allow(AdministrativeTags).to receive(:for).with(item: @dor_item).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)', 'LAB : Map Work'])
+      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)', 'LAB : Map Work'])
       expect(si.goobi_tag_list.length).to eq 3
       si.goobi_tag_list.each { |goobi_tag| expect(goobi_tag.class).to eq Dor::GoobiTag }
       expect(si.goobi_tag_list[0]).to have_attributes(name: 'DPG', value: 'Workflow : book_workflow')
@@ -65,12 +65,12 @@ RSpec.describe Dor::ServiceItem do
     end
 
     it 'returns an empty array when there are no tags' do
-      allow(AdministrativeTags).to receive(:for).with(item: @dor_item).and_return([])
+      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return([])
       expect(si.goobi_tag_list).to eq([])
     end
 
     it 'works with singleton tags (no colon, so no value, just a name)' do
-      allow(AdministrativeTags).to receive(:for).with(item: @dor_item).and_return(['Name : Some Value', 'JustName'])
+      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['Name : Some Value', 'JustName'])
       expect(si.goobi_tag_list.length).to eq 2
       expect(si.goobi_tag_list[0].class).to eq Dor::GoobiTag
       expect(si.goobi_tag_list[0]).to have_attributes(name: 'Name', value: 'Some Value')
@@ -84,17 +84,17 @@ RSpec.describe Dor::ServiceItem do
     end
 
     it 'returns false if the goobi ocr tag is not present' do
-      allow(AdministrativeTags).to receive(:for).with(item: @dor_item).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
+      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
       expect(si.goobi_ocr_tag_present?).to be false
     end
 
     it 'returns true if the goobi ocr tag is present' do
-      allow(AdministrativeTags).to receive(:for).with(item: @dor_item).and_return(['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'])
+      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'])
       expect(si.goobi_ocr_tag_present?).to be true
     end
 
     it 'returns true if the goobi ocr tag is present even if the case is mixed' do
-      allow(AdministrativeTags).to receive(:for).with(item: @dor_item).and_return(['DPG : Workflow : book_workflow', 'DPG : ocr : true'])
+      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['DPG : Workflow : book_workflow', 'DPG : ocr : true'])
       expect(si.goobi_ocr_tag_present?).to be true
     end
   end
@@ -117,12 +117,12 @@ RSpec.describe Dor::ServiceItem do
     end
 
     it 'returns project name from a valid identityMetadata' do
-      allow(AdministrativeTags).to receive(:for).with(item: @dor_item).and_return(['Project : Batchelor Maps : Batch 1', 'Process : Content Type : Book (flipbook, ltr)'])
+      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['Project : Batchelor Maps : Batch 1', 'Process : Content Type : Book (flipbook, ltr)'])
       expect(si.project_name).to eq('Batchelor Maps : Batch 1')
     end
 
     it 'returns blank for project name if not in tag' do
-      allow(AdministrativeTags).to receive(:for).with(item: @dor_item).and_return(['Process : Content Type : Book (flipbook, ltr)'])
+      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['Process : Content Type : Book (flipbook, ltr)'])
       expect(si.project_name).to eq('')
     end
   end

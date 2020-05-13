@@ -2,6 +2,7 @@
 
 # Administrative tags controller (nested resource under objects)
 class AdministrativeTagsController < ApplicationController
+  # This just validates that this is an existing object
   before_action :load_item, only: %i[create index update destroy]
 
   rescue_from(ActiveFedora::ObjectNotFoundError) do |e|
@@ -10,7 +11,7 @@ class AdministrativeTagsController < ApplicationController
 
   # Show administrative tags for an object
   def index
-    render json: AdministrativeTags.for(item: @item)
+    render json: AdministrativeTags.for(pid: params[:object_id])
   end
 
   def search
@@ -19,7 +20,7 @@ class AdministrativeTagsController < ApplicationController
   end
 
   def create
-    AdministrativeTags.create(item: @item,
+    AdministrativeTags.create(pid: params[:object_id],
                               tags: params.require(:administrative_tags),
                               replace: params[:replace])
   rescue ActiveRecord::RecordInvalid => e
@@ -29,7 +30,7 @@ class AdministrativeTagsController < ApplicationController
   end
 
   def update
-    AdministrativeTags.update(item: @item,
+    AdministrativeTags.update(pid: params[:object_id],
                               current: CGI.unescape(params[:id]),
                               new: params.require(:administrative_tag))
   rescue ActiveRecord::RecordNotFound => e
@@ -41,7 +42,7 @@ class AdministrativeTagsController < ApplicationController
   end
 
   def destroy
-    AdministrativeTags.destroy(item: @item, tag: CGI.unescape(params[:id]))
+    AdministrativeTags.destroy(pid: params[:object_id], tag: CGI.unescape(params[:id]))
   rescue ActiveRecord::RecordNotFound => e
     render status: :not_found, plain: e.message
   else

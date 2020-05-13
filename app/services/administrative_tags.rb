@@ -4,73 +4,73 @@
 class AdministrativeTags
   # Retrieve the administrative tags for an item
   #
-  # @param item [Dor::Item] the item to list administrative tags for
+  # @param pid [String] the item identifier to list administrative tags for
   # @return [Array<String>] an array of tag strings (possibly empty)
-  def self.for(item:)
-    new(item: item).for
+  def self.for(pid:)
+    new(pid: pid).for
   end
 
   # Retrieve the content type tag for an item
   #
-  # @param item [Dor::Item] the item to get the content type of
+  # @param pid [String] the item identifier to list administrative tags for
   # @return [Array<String>] an array of tag strings (possibly empty)
-  def self.content_type(item:)
-    new(item: item).content_type
+  def self.content_type(pid:)
+    new(pid: pid).content_type
   end
 
   # Retrieve the project tag for an item
   #
-  # @param item [Dor::Item] the item to get the project of
+  # @param pid [String] the item identifier to list administrative tags for
   # @return [Array<String>] an array of tag strings (possibly empty)
-  def self.project(item:)
-    new(item: item).project
+  def self.project(pid:)
+    new(pid: pid).project
   end
 
   # Add one or more administrative tags for an item
   #
-  # @param item [Dor::Item]  the item to create administrative tag(s) for
+  # @param pid [String] the item identifier to list administrative tags for
   # @param tags [Array<String>] a non-empty array of tags (strings)
   # @param replace [Boolean] replace current tags? default: false
   # @return [Array<AdministrativeTag>]
-  def self.create(item:, tags:, replace: false)
-    new(item: item).create(tags: tags, replace: replace)
+  def self.create(pid:, tags:, replace: false)
+    new(pid: pid).create(tags: tags, replace: replace)
   end
 
   # Update an administrative tag for an item
   #
-  # @param item [Dor::Item]  the item to update an administrative tag for
+  # @param pid [String] the item identifier to list administrative tags for
   # @param current [String] the current administrative tag
   # @param new [String] the replacement administrative tag
   # @return [Boolean] true if successful
   # @raise [ActiveRecord::RecordNotFound] if row not found for druid/tag combination
-  def self.update(item:, current:, new:)
-    new(item: item).update(current: current, new: new)
+  def self.update(pid:, current:, new:)
+    new(pid: pid).update(current: current, new: new)
   end
 
   # Destroy an administrative tag for an item
   #
-  # @param item [Dor::Item]  the item to delete an administrative tag for
+  # @param pid [String] the item identifier to list administrative tags for
   # @param tag [String] the administrative tag to delete
   # @return [Boolean] true if successful
   # @raise [ActiveRecord::RecordNotFound] if row not found for druid/tag combination
-  def self.destroy(item:, tag:)
-    new(item: item).destroy(tag: tag)
+  def self.destroy(pid:, tag:)
+    new(pid: pid).destroy(tag: tag)
   end
 
-  # @param item [Dor::Item] the item to list administrative tags for
-  def initialize(item:)
-    @item = item
+  # @param pid [String] the item identifier to list administrative tags for
+  def initialize(pid:)
+    @pid = pid
   end
 
   # @return [Array<String>] an array of tags (strings), possibly empty
   def for
-    AdministrativeTag.includes(:tag_label).where(druid: item.pid).pluck(:tag)
+    AdministrativeTag.includes(:tag_label).where(druid: pid).pluck(:tag)
   end
 
   # @return [Array<String>] an array of tags (strings), possibly empty
   def content_type
     AdministrativeTag.includes(:tag_label)
-                     .where(druid: item.pid, tag_label: TagLabel.content_type)
+                     .where(druid: pid, tag_label: TagLabel.content_type)
                      .limit(1) # "THERE CAN BE ONLY ONE!"
                      .pluck(:tag)
                      .map { |tag| tag.split(' : ').last }
@@ -79,7 +79,7 @@ class AdministrativeTags
   # @return [Array<String>] an array of tags (strings), possibly empty
   def project
     AdministrativeTag.includes(:tag_label)
-                     .where(druid: item.pid, tag_label: TagLabel.project)
+                     .where(druid: pid, tag_label: TagLabel.project)
                      .limit(1) # "THERE CAN BE ONLY ONE!"
                      .pluck(:tag)
                      .map { |tag| tag.split(' : ', 2).last }
@@ -90,7 +90,7 @@ class AdministrativeTags
   # @return [Array<AdministrativeTag>]
   def create(tags:, replace: false)
     ActiveRecord::Base.transaction do
-      AdministrativeTag.where(druid: item.pid).destroy_all if replace
+      AdministrativeTag.where(druid: pid).destroy_all if replace
 
       tags.map do |tag|
         tag_label = nil
@@ -101,7 +101,7 @@ class AdministrativeTags
         rescue ActiveRecord::RecordNotUnique
           retry
         end
-        AdministrativeTag.find_or_create_by!(druid: item.pid, tag_label: tag_label)
+        AdministrativeTag.find_or_create_by!(druid: pid, tag_label: tag_label)
       end
     end
   end
@@ -116,7 +116,7 @@ class AdministrativeTags
   def update(current:, new:)
     ActiveRecord::Base.transaction do
       old_label = TagLabel.find_by!(tag: current)
-      AdministrativeTag.find_by!(druid: item.pid, tag_label: old_label)
+      AdministrativeTag.find_by!(druid: pid, tag_label: old_label)
                        .update!(tag_label: TagLabel.find_or_create_by!(tag: new))
       old_label.destroy! if old_label.administrative_tags.count.zero?
     end
@@ -124,21 +124,20 @@ class AdministrativeTags
 
   # Destroy an administrative tag for an item
   #
-  # @param item [Dor::Item]  the item to delete an administrative tag for
   # @param tag [String] the administrative tag to delete
   # @return [AdministrativeTag] the tag instance
   # @raise [ActiveRecord::RecordNotFound] if row not found for druid/tag combination
   def destroy(tag:)
     ActiveRecord::Base.transaction do
       old_label = TagLabel.find_by!(tag: tag)
-      AdministrativeTag.find_by!(druid: item.pid, tag_label: old_label).destroy!
+      AdministrativeTag.find_by!(druid: pid, tag_label: old_label).destroy!
       old_label.destroy! if old_label.administrative_tags.count.zero?
     end
   end
 
   private
 
-  attr_reader :item
+  attr_reader :pid
 
   def tags_relation
     AdministrativeTag.arel_table[:tag]
