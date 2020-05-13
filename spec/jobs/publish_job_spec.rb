@@ -42,7 +42,7 @@ RSpec.describe PublishJob, type: :job do
       expect(EventFactory).to have_received(:create)
 
       expect(LogSuccessJob).to have_received(:perform_later)
-        .with(druid: druid, background_job_result: result, workflow: 'accessionWF', workflow_process: 'publish-complete')
+        .with(druid: druid, background_job_result: result, workflow: 'accessionWF', workflow_process: 'publish')
     end
   end
 
@@ -68,7 +68,7 @@ RSpec.describe PublishJob, type: :job do
         .with(druid: druid,
               background_job_result: result,
               workflow: 'accessionWF',
-              workflow_process: 'publish-complete',
+              workflow_process: 'publish',
               output: { errors: [{ detail: error_message, title: 'Data error' }] })
     end
   end
@@ -91,7 +91,7 @@ RSpec.describe PublishJob, type: :job do
         .with(druid: druid,
               background_job_result: result,
               workflow: 'accessionWF',
-              workflow_process: 'publish-complete',
+              workflow_process: 'publish',
               output: { errors: [{ detail: 'Not all files have dark access and/or are unshelved when item access is dark: ["foo.txt", "bar.txt"]', title: 'Access mismatch' }] })
     end
   end
