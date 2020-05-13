@@ -93,7 +93,15 @@ class AdministrativeTags
       AdministrativeTag.where(druid: item.pid).destroy_all if replace
 
       tags.map do |tag|
-        AdministrativeTag.find_or_create_by!(druid: item.pid, tag_label: TagLabel.find_or_create_by!(tag: tag))
+        tag_label = nil
+        begin
+          # This avoids a race condition because find_or_create_by is not atomic.
+          # If two threads are creating the same tag, one will get an exception.
+          tag_label = TagLabel.find_or_create_by!(tag: tag)
+        rescue ActiveRecord::RecordNotUnique
+          retry
+        end
+        AdministrativeTag.find_or_create_by!(druid: item.pid, tag_label: tag_label)
       end
     end
   end
