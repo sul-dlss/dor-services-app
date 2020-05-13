@@ -93,17 +93,19 @@ class AdministrativeTags
       AdministrativeTag.where(druid: pid).destroy_all if replace
 
       tags.map do |tag|
-        tag_label = nil
-        begin
-          # This avoids a race condition because find_or_create_by is not atomic.
-          # If two threads are creating the same tag, one will get an exception.
-          tag_label = TagLabel.find_or_create_by!(tag: tag)
-        rescue ActiveRecord::RecordNotUnique
-          retry
-        end
+        # This is not atomic, so a race condition could occur here.
+        tag_label = TagLabel.find_or_create_by!(tag: tag)
+
         AdministrativeTag.find_or_create_by!(druid: pid, tag_label: tag_label)
       end
     end
+  rescue ActiveRecord::RecordNotUnique
+    # This catches the exception triggered by the race condition because find_or_create_by is not atomic.
+    # If two threads are creating the same tag, one will get an exception.
+    # We must catch this outside the transaction block, because once a constraint
+    # is violated, PG will permit no more statements in that transaction.
+
+    retry
   end
 
   # Update an administrative tag for an item
