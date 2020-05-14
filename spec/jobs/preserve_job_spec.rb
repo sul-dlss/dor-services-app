@@ -56,7 +56,7 @@ RSpec.describe PreserveJob, type: :job do
         .with(druid: druid,
               background_job_result: result,
               workflow: 'accessionWF',
-              workflow_process: 'preservation-ingest-initiated',
+              workflow_process: 'sdr-ingest-transfer',
               output: { errors: [{ detail: error_message, title: 'Preservation error' }] })
       expect(Honeybadger).to have_received(:context).with(background_job_result_id: result.id)
     end

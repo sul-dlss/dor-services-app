@@ -10,7 +10,7 @@ class PreserveJob < ApplicationJob
     LogFailureJob.perform_later(druid: opts[:druid],
                                 background_job_result: opts[:background_job_result],
                                 workflow: 'accessionWF',
-                                workflow_process: 'preservation-ingest-initiated',
+                                workflow_process: 'sdr-ingest-transfer',
                                 output: { errors: [{ title: 'Preservation error', detail: error.message }] })
   end
 
