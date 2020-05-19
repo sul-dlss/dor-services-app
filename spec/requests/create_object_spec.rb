@@ -64,13 +64,14 @@ RSpec.describe 'Create object' do
     end
 
     context 'when an object already exists' do
-      let(:search_result) { ['item'] }
+      let(:search_result) { ['druid:abc123'] }
 
       it 'returns a 409 error' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.status).to eq(409)
+        expect(response.body).to match(/druid:abc123/)
       end
     end
 

@@ -29,9 +29,8 @@ module Cocina
 
     def validate(obj)
       if obj.is_a?(Cocina::Models::RequestDRO)
-        if Dor::SearchService.query_by_id(obj.identification.sourceId).first
-          raise Dor::DuplicateIdError.new(obj.identification.sourceId), "An object with the source ID '#{obj.identification.sourceId}' has already been registered."
-        end
+        druid = Dor::SearchService.query_by_id(obj.identification.sourceId).first
+        raise Dor::DuplicateIdError.new(obj.identification.sourceId), "An object (#{druid}) with the source ID '#{obj.identification.sourceId}' has already been registered." if druid
 
         validator = ValidateDarkService.new(obj)
         raise Dor::ParameterError, "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" unless validator.valid?
