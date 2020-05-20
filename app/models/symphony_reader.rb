@@ -1,17 +1,25 @@
 # frozen_string_literal: true
 
-# Reader from symphony's JSON API to a MARC record
+# Reader from symphony's JSON API to fetch marcxml given a catkey, or fetch a catkey given a barcode
 class SymphonyReader
   class ResponseError < StandardError; end
 
-  attr_reader :catkey
+  attr_reader :catkey, :barcode
 
   def self.client
     Faraday.new(headers: Settings.catalog.symphony.headers)
   end
 
-  def initialize(catkey:)
+  def initialize(catkey: nil, barcode: nil)
     @catkey = catkey
+    @barcode = barcode
+  end
+
+  def fetch_catkey
+    json = JSON.parse(fetch_barcode_response.body)
+    return nil unless json['fields'] && json['fields']['bib']
+
+    json['fields']['bib']['key']
   end
 
   def to_marc
@@ -35,13 +43,28 @@ class SymphonyReader
 
   private
 
+  # see https://symphony-webservices-dev.stanford.edu/symws/sdk.html for documentation of symphony web services
+
   def client
     self.class.client
   end
 
-  # see https://symphony-webservices-dev.stanford.edu/symws/resource_Catalog_Bib.html for response info
-  def symphony_response
-    resp = client.get(format(Settings.catalog.symphony.json_url, catkey: catkey))
+  def fetch_barcode_response
+    raise 'no barcode suppled' unless barcode
+
+    url = Settings.catalog.symphony.json_url + Settings.catalog.symphony.barcode_path
+    symphony_response(format(url, barcode: barcode))
+  end
+
+  def fetch_marc_response
+    raise 'no catkey suppled' unless catkey
+
+    url = Settings.catalog.symphony.json_url + Settings.catalog.symphony.marcxml_path
+    symphony_response(format(url, catkey: catkey))
+  end
+
+  def symphony_response(url)
+    resp = client.get(url)
 
     if resp.status == 200
       validate_response(resp)
@@ -49,14 +72,14 @@ class SymphonyReader
     elsif resp.status == 404
       # 404 received here is for the catkey, but this app cares about the druid
       #   for the DOR object, hence raising 404 from here could be misleading
-      errmsg = "Record not found in Symphony: #{@catkey}"
+      errmsg = "Record not found in Symphony. API call: #{url}"
     else
-      errmsg = "Got HTTP Status-Code #{resp.status} retrieving #{@catkey} from Symphony: #{resp.body}"
+      errmsg = "Got HTTP Status-Code #{resp.status} calling #{url}: #{resp.body}"
     end
 
     raise ResponseError, errmsg
   rescue Faraday::TimeoutError => e
-    errmsg = "Timeout for Symphony response for catkey #{@catkey}: #{e}"
+    errmsg = "Timeout for Symphony response for API call #{url}: #{e}"
     Honeybadger.notify(errmsg)
     raise ResponseError, errmsg
   end
@@ -75,14 +98,14 @@ class SymphonyReader
     raise ResponseError, errmsg
   end
 
-  def json
-    @json ||= JSON.parse(symphony_response.body)
+  def marc_json
+    @marc_json ||= JSON.parse(fetch_marc_response.body)
   end
 
   def bib_record
-    return {} unless json['fields'] && json['fields']['bib']
+    return {} unless marc_json['fields'] && marc_json['fields']['bib']
 
-    json['fields']['bib']
+    marc_json['fields']['bib']
   end
 
   def leader

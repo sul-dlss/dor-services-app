@@ -6,11 +6,7 @@ class MarcxmlResource
     if catkey
       new(catkey: catkey)
     elsif barcode
-      barcode_search_url = format(Settings.catalog.barcode_search_url, barcode: barcode)
-      response = Faraday.get(barcode_search_url)
-      catkey = JSON.parse(response.body)['id']
-
-      new(catkey: catkey)
+      new(catkey: SymphonyReader.new(barcode: barcode).fetch_catkey)
     else
       raise ArgumentError, 'Must supply either a catkey or barcode'
     end

@@ -5,10 +5,11 @@ require 'rails_helper'
 RSpec.describe SymphonyReader do
   subject(:reader) { described_class.new(catkey: catkey) }
   let(:catkey) { 'catkey' }
+  let(:marc_url) { Settings.catalog.symphony.json_url + Settings.catalog.symphony.marcxml_path }
 
   describe '#to_marc' do
     before do
-      stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: catkey)).to_return(body: body.to_json, headers: headers)
+      stub_request(:get, format(marc_url, catkey: catkey)).to_return(body: body.to_json, headers: headers)
     end
 
     let(:body) do
@@ -83,11 +84,11 @@ RSpec.describe SymphonyReader do
 
       context 'when catkey not found' do
         before do
-          stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: catkey)).to_return(status: 404)
+          stub_request(:get, format(marc_url, catkey: catkey)).to_return(status: 404)
         end
 
         it 'raises ResponseError and does not notify Honeybadger' do
-          msg = 'Record not found in Symphony: catkey'
+          msg = 'Record not found in Symphony. API call: https://sirsi.example.com/symws/catalog/bib/key/catkey?includeFields=bib'
           allow(Honeybadger).to receive(:notify)
           expect { reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg)
           expect(Honeybadger).not_to have_received(:notify).with(msg)
@@ -107,11 +108,11 @@ RSpec.describe SymphonyReader do
         end
 
         before do
-          stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: catkey)).to_return(status: 403, body: err_body.to_json)
+          stub_request(:get, format(marc_url, catkey: catkey)).to_return(status: 403, body: err_body.to_json)
         end
 
         it 'raises ResponseError' do
-          msg_regex = /^Got HTTP Status-Code 403 retrieving catkey from Symphony:.*Something somewhere went wrong./
+          msg_regex = %r{Got HTTP Status-Code 403 calling https:\/\/sirsi.example.com\/symws\/catalog\/bib\/key\/catkey\?includeFields=bib:.*Something somewhere went wrong.}
           expect { reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
         end
       end
@@ -120,11 +121,11 @@ RSpec.describe SymphonyReader do
         let(:faraday_msg) { 'faraday failed' }
 
         before do
-          stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: catkey)).to_raise(Faraday::TimeoutError.new(faraday_msg))
+          stub_request(:get, format(marc_url, catkey: catkey)).to_raise(Faraday::TimeoutError.new(faraday_msg))
         end
 
         it 'raises ResponseError and notifies Honeybadger' do
-          msg_regex = /^Timeout for Symphony response for catkey catkey: #{faraday_msg}/
+          msg_regex = %r{^Timeout for Symphony response for API call https:\/\/sirsi.example.com\/symws\/catalog\/bib\/key\/catkey\?includeFields=bib: #{faraday_msg}}
           allow(Honeybadger).to receive(:notify)
           expect { reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
           expect(Honeybadger).to have_received(:notify).with(msg_regex)

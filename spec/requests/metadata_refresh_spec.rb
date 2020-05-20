@@ -62,13 +62,15 @@ RSpec.describe 'Refresh metadata' do
   end
 
   describe 'errors in response from Symphony' do
+    let(:marc_url) { Settings.catalog.symphony.json_url + Settings.catalog.symphony.marcxml_path }
+
     before do
       allow(object.identityMetadata).to receive(:otherId).and_return(['catkey:666'])
     end
 
     context 'when incomplete response' do
       before do
-        stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: '666')).to_return(body: '{}', headers: { 'Content-Length': 0 })
+        stub_request(:get, format(marc_url, catkey: '666')).to_return(body: '{}', headers: { 'Content-Length': 0 })
       end
 
       it 'returns a 500 error' do
@@ -81,14 +83,14 @@ RSpec.describe 'Refresh metadata' do
 
     context 'when catkey not found' do
       before do
-        stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: '666')).to_return(status: 404)
+        stub_request(:get, format(marc_url, catkey: '666')).to_return(status: 404)
       end
 
       it 'returns a 500 error' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.status).to eq(500)
-        expect(response.body).to eq('Record not found in Symphony: 666')
+        expect(response.body).to eq('Record not found in Symphony. API call: https://sirsi.example.com/symws/catalog/bib/key/666?includeFields=bib')
       end
     end
 
@@ -105,14 +107,14 @@ RSpec.describe 'Refresh metadata' do
       end
 
       before do
-        stub_request(:get, format(Settings.catalog.symphony.json_url, catkey: '666')).to_return(status: 403, body: err_body.to_json)
+        stub_request(:get, format(marc_url, catkey: '666')).to_return(status: 403, body: err_body.to_json)
       end
 
       it 'returns a 500 error' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.status).to eq(500)
-        expect(response.body).to match(/^Got HTTP Status-Code 403 retrieving 666 from Symphony:.*Something somewhere went wrong./)
+        expect(response.body).to match(%r{^Got HTTP Status-Code 403 calling https:\/\/sirsi.example.com\/symws\/catalog\/bib\/key\/666\?includeFields=bib:.*Something somewhere went wrong.})
       end
     end
   end
