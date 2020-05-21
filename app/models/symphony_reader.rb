@@ -16,10 +16,9 @@ class SymphonyReader
   end
 
   def fetch_catkey
-    json = JSON.parse(fetch_barcode_response.body)
-    return nil unless json['fields'] && json['fields']['bib']
+    return nil unless barcode_json['fields'] && barcode_json['fields']['bib']
 
-    json['fields']['bib']['key']
+    barcode_json['fields']['bib']['key']
   end
 
   def to_marc
@@ -100,6 +99,10 @@ class SymphonyReader
 
   def marc_json
     @marc_json ||= JSON.parse(fetch_marc_response.body)
+  end
+
+  def barcode_json
+    @barcode_json ||= JSON.parse(fetch_barcode_response.body)
   end
 
   def bib_record
