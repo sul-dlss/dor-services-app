@@ -3,8 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe "Looking up an item's marcxml" do
-  let(:barcode_url) { Settings.catalog.symphony.json_url + Settings.catalog.symphony.barcode_path }
-  let(:marc_url) { Settings.catalog.symphony.json_url + Settings.catalog.symphony.marcxml_path }
+  let(:barcode_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.barcode_path }
+  let(:marc_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path }
   let(:barcode) { '101' }
   let(:catkey) { '12345' }
   let(:body) do

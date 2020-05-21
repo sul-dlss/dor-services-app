@@ -8,8 +8,8 @@ RSpec.describe SymphonyReader do
 
   let(:catkey) { 'catkey' }
   let(:barcode) { 'barcode' }
-  let(:marc_url) { Settings.catalog.symphony.json_url + Settings.catalog.symphony.marcxml_path }
-  let(:barcode_url) { Settings.catalog.symphony.json_url + Settings.catalog.symphony.barcode_path }
+  let(:marc_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path }
+  let(:barcode_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.barcode_path }
 
   describe '#to_marc' do
     before do

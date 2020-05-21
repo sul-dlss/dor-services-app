@@ -51,14 +51,14 @@ class SymphonyReader
   def fetch_barcode_response
     raise 'no barcode suppled' unless barcode
 
-    url = Settings.catalog.symphony.json_url + Settings.catalog.symphony.barcode_path
+    url = Settings.catalog.symphony.base_url + Settings.catalog.symphony.barcode_path
     symphony_response(format(url, barcode: barcode))
   end
 
   def fetch_marc_response
     raise 'no catkey suppled' unless catkey
 
-    url = Settings.catalog.symphony.json_url + Settings.catalog.symphony.marcxml_path
+    url = Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path
     symphony_response(format(url, catkey: catkey))
   end
 

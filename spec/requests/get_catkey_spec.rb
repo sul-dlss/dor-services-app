@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe "Looking up an item's catkey by it's barcode" do
-  let(:barcode_url) { Settings.catalog.symphony.json_url + Settings.catalog.symphony.barcode_path }
+  let(:barcode_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.barcode_path }
   let(:barcode) { '101' }
   let(:barcode_with_no_catkey) { '102' }
   let(:catkey) { '12345' }

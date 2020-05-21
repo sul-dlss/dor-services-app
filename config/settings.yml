@@ -63,7 +63,7 @@ goobi:
 
 catalog:
   symphony:
-    json_url: "https://sirsi.example.com/symws/catalog/"
+    base_url: "https://sirsi.example.com/symws/catalog/"
     marcxml_path: "bib/key/%{catkey}?includeFields=bib"
     barcode_path: "item/barcode/%{barcode}"
     headers:

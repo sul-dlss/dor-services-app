@@ -62,7 +62,7 @@ RSpec.describe 'Refresh metadata' do
   end
 
   describe 'errors in response from Symphony' do
-    let(:marc_url) { Settings.catalog.symphony.json_url + Settings.catalog.symphony.marcxml_path }
+    let(:marc_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path }
 
     before do
       allow(object.identityMetadata).to receive(:otherId).and_return(['catkey:666'])
