@@ -37,7 +37,7 @@ RSpec.describe MetadataService do
     let(:resource) { instance_double(MarcxmlResource, mods: mods) }
 
     before do
-      allow(MarcxmlResource).to receive(:find_by).and_return(resource)
+      allow(MarcxmlResource).to receive(:new).and_return(resource)
     end
 
     it 'raises an exception if an unknown metadata type is requested' do
@@ -50,12 +50,12 @@ RSpec.describe MetadataService do
 
     it 'fetches a record based on barcode' do
       expect(described_class.fetch('barcode:12345')).to be_equivalent_to(mods)
-      expect(MarcxmlResource).to have_received(:find_by).with(barcode: '12345')
+      expect(MarcxmlResource).to have_received(:new).with(barcode: '12345')
     end
 
     it 'fetches a record based on catkey' do
       expect(described_class.fetch('catkey:12345')).to be_equivalent_to(mods)
-      expect(MarcxmlResource).to have_received(:find_by).with(catkey: '12345')
+      expect(MarcxmlResource).to have_received(:new).with(catkey: '12345')
     end
   end
 

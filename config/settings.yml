@@ -62,9 +62,10 @@ goobi:
   base_sleep_seconds: 2
 
 catalog:
-  barcode_search_url: "https://searchworks.stanford.edu/barcode/%{barcode}"
   symphony:
-    json_url: "https://sirsi.example.com/symws/catalog/bib/key/%{catkey}?includeFields=bib"
+    base_url: "https://sirsi.example.com/symws/catalog/"
+    marcxml_path: "bib/key/%{catkey}?includeFields=bib"
+    barcode_path: "item/barcode/%{barcode}"
     headers:
       SD-ORIGINATING-APP-ID: DOR-SERVICES-APP
       SD-PREFERRED-ROLE: GUEST
