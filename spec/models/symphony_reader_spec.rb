@@ -67,7 +67,7 @@ RSpec.describe SymphonyReader do
     end
 
     it 'raises an error if no catkey is provided' do
-      expect { described_class.new.to_marc }.to raise_error(RuntimeError, 'no catkey suppled')
+      expect { described_class.new.to_marc }.to raise_error(ArgumentError, 'Must supply either a catkey or barcode')
     end
 
     context 'when response is chunked' do
@@ -103,7 +103,7 @@ RSpec.describe SymphonyReader do
       end
 
       it 'raises an error if no barcode is provided' do
-        expect { described_class.new.fetch_catkey }.to raise_error(RuntimeError, 'no barcode suppled')
+        expect { described_class.new.fetch_catkey }.to raise_error(ArgumentError, 'Must supply either a catkey or barcode')
       end
     end
 

@@ -23,7 +23,7 @@ class MetadataService
         (prefix, identifier) = parse_identifier(identifier)
         valid_identifier!(prefix, identifier)
 
-        marcxml = MarcxmlResource.find_by(prefix.to_sym => identifier)
+        marcxml = MarcxmlResource.new(prefix.to_sym => identifier)
         marcxml.mods
       end
     end

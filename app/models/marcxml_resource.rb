@@ -2,20 +2,11 @@
 
 # MARC resource model for retrieving and transforming MARC records
 class MarcxmlResource
-  def self.find_by(catkey: nil, barcode: nil)
-    if catkey
-      new(catkey: catkey)
-    elsif barcode
-      new(catkey: SymphonyReader.new(barcode: barcode).fetch_catkey)
-    else
-      raise ArgumentError, 'Must supply either a catkey or barcode'
-    end
-  end
+  attr_reader :catkey, :barcode
 
-  attr_reader :catkey
-
-  def initialize(catkey:)
-    @catkey = catkey
+  def initialize(params)
+    @catkey = params[:catkey]
+    @barcode = params[:barcode]
   end
 
   def mods
@@ -33,6 +24,6 @@ class MarcxmlResource
   end
 
   def marc_record
-    SymphonyReader.new(catkey: catkey).to_marc
+    SymphonyReader.new(catkey: catkey, barcode: barcode).to_marc
   end
 end

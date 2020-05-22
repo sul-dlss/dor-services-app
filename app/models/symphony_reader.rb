@@ -13,6 +13,8 @@ class SymphonyReader
   def initialize(catkey: nil, barcode: nil)
     @catkey = catkey
     @barcode = barcode
+
+    raise ArgumentError, 'Must supply either a catkey or barcode' if @barcode.nil? && @catkey.nil?
   end
 
   def fetch_catkey
@@ -22,6 +24,8 @@ class SymphonyReader
   end
 
   def to_marc
+    @catkey = fetch_catkey if catkey.nil? # we need a catkey to do this lookup, so fetch it from the barcode if none exists
+
     record = MARC::Record.new
 
     # note that new record already has default leader, but we don't want it unless it's from Symphony
