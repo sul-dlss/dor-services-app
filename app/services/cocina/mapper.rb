@@ -29,7 +29,6 @@ module Cocina
               else
                 raise "unable to build '#{klass}'"
               end
-      check_source_id(props) if klass == Cocina::Models::DRO
       klass.new(props)
     end
 
@@ -169,10 +168,6 @@ module Cocina
       else
         raise UnsupportedObjectType, "Unknown type for #{item.class}"
       end
-    end
-
-    def check_source_id(props)
-      raise "Item #{props[:externalIdentifier]} has a null sourceId. This item requires remediation." if props[:identification][:sourceId].nil?
     end
   end
   # rubocop:enable Metrics/ClassLength

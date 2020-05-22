@@ -97,14 +97,6 @@ RSpec.describe Cocina::Mapper do
       end
     end
 
-    context 'when item has null sourceId' do
-      let(:source_id) { nil }
-
-      it 'raises' do
-        expect { cocina_model }.to raise_error(/has a null sourceId/)
-      end
-    end
-
     context 'when item has identityMetadata objectLabel' do
       before do
         item.identityMetadata.objectLabel = 'Use me'
