@@ -13,8 +13,6 @@ class SymphonyReader
   def initialize(catkey: nil, barcode: nil)
     @catkey = catkey
     @barcode = barcode
-
-    raise ArgumentError, 'Must supply either a catkey or barcode' if @barcode.nil? && @catkey.nil?
   end
 
   def fetch_catkey
@@ -53,14 +51,14 @@ class SymphonyReader
   end
 
   def fetch_barcode_response
-    raise 'no barcode suppled' unless barcode
+    raise 'no barcode supplied' unless barcode
 
     url = Settings.catalog.symphony.base_url + Settings.catalog.symphony.barcode_path
     symphony_response(format(url, barcode: barcode))
   end
 
   def fetch_marc_response
-    raise 'no catkey suppled' unless catkey
+    raise 'no catkey supplied' unless catkey
 
     url = Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path
     symphony_response(format(url, catkey: catkey))
