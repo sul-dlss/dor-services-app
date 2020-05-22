@@ -9,10 +9,12 @@ class MarcxmlResource
     @barcode = params[:barcode]
   end
 
+  # @raises SymphonyReader::ResponseError
   def mods
     marc_to_mods_xslt.transform(Nokogiri::XML(marcxml)).to_xml
   end
 
+  # @raises SymphonyReader::ResponseError
   def marcxml
     marc_record.to_xml.to_s
   end
@@ -23,6 +25,7 @@ class MarcxmlResource
     @marc_to_mods_xslt ||= Nokogiri::XSLT(File.open(File.join(Rails.root, 'app', 'xslt', 'MARC21slim2MODS3-6_SDR_v1.xsl')))
   end
 
+  # @raises SymphonyReader::ResponseError
   def marc_record
     SymphonyReader.new(catkey: catkey, barcode: barcode).to_marc
   end

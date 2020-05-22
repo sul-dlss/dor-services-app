@@ -24,14 +24,12 @@ class ObjectsController < ApplicationController
     raise e
   end
 
-  rescue_from(SymphonyReader::ResponseError) do |e|
-    json_api_error(status: :bad_gateway, message: e.message)
-  end
-
   def create
     cocina_object = Cocina::ObjectCreator.create(params.except(:action, :controller).to_unsafe_h)
 
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
+  rescue SymphonyReader::ResponseError
+    json_api_error(status: :bad_gateway, title: 'Catalog connection error', message: 'Unable to read descriptive metadata from the catalog')
   end
 
   def update
@@ -111,7 +109,7 @@ class ObjectsController < ApplicationController
 
   private
 
-  def json_api_error(status:, message:)
+  def json_api_error(status:, title: nil, message:)
     status_code = Rack::Utils.status_code(status)
     render status: status,
            content_type: 'application/vnd.api+json',
@@ -119,7 +117,7 @@ class ObjectsController < ApplicationController
              errors: [
                {
                  'status': status_code.to_s,
-                 'title': Rack::Utils::HTTP_STATUS_CODES[status_code],
+                 'title': title || Rack::Utils::HTTP_STATUS_CODES[status_code],
                  'detail': message
                }
              ]

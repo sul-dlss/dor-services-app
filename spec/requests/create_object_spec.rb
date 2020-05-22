@@ -120,6 +120,23 @@ RSpec.describe 'Create object' do
           expect(MetadataService).to have_received(:fetch).with('catkey:8888')
         end
       end
+
+      context 'when connecting to symphony fails' do
+        let(:search_result) { [] }
+
+        before do
+          allow(MetadataService).to receive(:fetch).and_raise(SymphonyReader::ResponseError)
+        end
+
+        it 'draws an error message' do
+          post '/v1/objects',
+               params: data,
+               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+          expect(response.body).to eq '{"errors":[{"status":"502","title":"Catalog connection error",' \
+            '"detail":"Unable to read descriptive metadata from the catalog"}]}'
+          expect(response.status).to eq 502
+        end
+      end
     end
 
     context 'when catkey is not provided' do

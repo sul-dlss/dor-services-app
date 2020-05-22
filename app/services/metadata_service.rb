@@ -18,6 +18,7 @@ class MetadataService
       #       preferred order specified above in KNOWN_PREFIXES, so that the .first is the preferred one
     end
 
+    # @raises SymphonyReader::ResponseError
     def fetch(identifier)
       @@cache.fetch(identifier) do
         (prefix, identifier) = parse_identifier(identifier)
