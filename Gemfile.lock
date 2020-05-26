@@ -88,7 +88,7 @@ GEM
       capistrano-bundler (~> 1.1)
     capistrano-shared_configs (0.2.2)
     chronic (0.10.2)
-    cocina-models (0.32.0)
+    cocina-models (0.33.0)
       activesupport
       dry-struct (~> 1.0)
       dry-types (~> 1.1)
@@ -492,7 +492,7 @@ DEPENDENCIES
   capistrano-passenger
   capistrano-rails
   capistrano-shared_configs
-  cocina-models (~> 0.32.0)
+  cocina-models (~> 0.33.0)
   committee
   config
   deprecation
