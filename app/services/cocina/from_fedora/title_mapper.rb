@@ -18,8 +18,10 @@ module Cocina
         elsif item.label == 'Hydrus'
           # Some hydrus items don't have titles, so using label. See https://github.com/sul-dlss/hydrus/issues/421
           item.label
-        else
+        elsif item.full_title
           item.full_title
+        else
+          raise Mapper::MissingTitle
         end
       end
 

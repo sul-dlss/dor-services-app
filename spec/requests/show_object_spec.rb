@@ -20,10 +20,6 @@ RSpec.describe 'Get the object' do
     end
 
     context 'when the object exists with minimal metadata' do
-      before do
-        allow(object).to receive(:collection_ids).and_return([])
-      end
-
       let(:expected) do
         {
           externalIdentifier: 'druid:bc123df4567',
@@ -230,6 +226,30 @@ RSpec.describe 'Get the object' do
         get '/v1/objects/druid:mk420bs7601',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:ok)
+        expect(response_model).to eq expected
+      end
+    end
+
+    context 'when the object exists without a title' do
+      let(:object) do
+        Dor::Item.new(pid: 'druid:bc123df4567',
+                      source_id: 'src:99999',
+                      label: 'foo',
+                      read_rights: 'world')
+      end
+
+      let(:expected) do
+        {
+          errors: [{ detail: 'All objects are required to have a title, but druid:mk420bs7601 appears to be malformed as a title cannot be found.', status: '422', title: 'Missing title' }]
+        }
+      end
+
+      let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
+
+      it 'returns the object' do
+        get '/v1/objects/druid:mk420bs7601',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response_model).to eq expected
       end
     end
