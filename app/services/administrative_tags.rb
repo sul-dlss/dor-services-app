@@ -100,7 +100,7 @@ class AdministrativeTags
       end
     end
   rescue ActiveRecord::RecordNotUnique
-    # This catches the exception triggered by the race condition because find_or_create_by is not atomic.
+    # This catches the exception triggered by the race condition because find_or_create_by! is not atomic.
     # If two threads are creating the same tag, one will get an exception.
     # We must catch this outside the transaction block, because once a constraint
     # is violated, PG will permit no more statements in that transaction.
@@ -114,7 +114,7 @@ class AdministrativeTags
   # @param new [String] the replacement administrative tag
   # @return [Boolean] true if successful
   # @raise [ActiveRecord::RecordNotFound] if row not found for druid/tag combination
-  # @raise [ActiveRecord::RecordInvalid] if any druid/tag rows are duplicates
+  # @raise [ActiveRecord::RecordNotUnique] if any druid/tag rows are duplicates
   def update(current:, new:)
     ActiveRecord::Base.transaction do
       old_label = TagLabel.find_by!(tag: current)
@@ -122,6 +122,13 @@ class AdministrativeTags
                        .update!(tag_label: TagLabel.find_or_create_by!(tag: new))
       old_label.destroy! if old_label.administrative_tags.count.zero?
     end
+  rescue ActiveRecord::RecordNotUnique
+    # This catches the exception triggered by the race condition because find_or_create_by! is not atomic.
+    # If two threads are creating the same tag, one will get an exception.
+    # We must catch this outside the transaction block, because once a constraint
+    # is violated, PG will permit no more statements in that transaction.
+
+    retry
   end
 
   # Destroy an administrative tag for an item

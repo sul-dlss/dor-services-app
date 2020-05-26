@@ -254,6 +254,13 @@ CREATE INDEX index_administrative_tags_on_druid ON public.administrative_tags US
 
 
 --
+-- Name: index_administrative_tags_on_druid_and_tag_label_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_administrative_tags_on_druid_and_tag_label_id ON public.administrative_tags USING btree (druid, tag_label_id);
+
+
+--
 -- Name: index_administrative_tags_on_tag_label_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -309,6 +316,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200226171829'),
 ('20200507202909'),
 ('20200507202950'),
-('20200507224637');
-
-
+('20200507224637'),
+('20200521153735');

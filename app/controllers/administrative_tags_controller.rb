@@ -24,6 +24,12 @@ class AdministrativeTagsController < ApplicationController
                               tags: params.require(:administrative_tags),
                               replace: params[:replace])
   rescue ActiveRecord::RecordInvalid => e
+    Honeybadger.notify('[SURPRISE] AdministrativeTags.create raised AR::RecordInvalid!',
+                       context: {
+                         druid: params[:object_id],
+                         tags: params.require(:administrative_tags),
+                         replace: params[:replace]
+                       })
     render status: :conflict, plain: e.message
   else
     head :created
@@ -36,6 +42,12 @@ class AdministrativeTagsController < ApplicationController
   rescue ActiveRecord::RecordNotFound => e
     render status: :not_found, plain: e.message
   rescue ActiveRecord::RecordInvalid => e
+    Honeybadger.notify('[SURPRISE] AdministrativeTags.update raised AR::RecordInvalid!',
+                       context: {
+                         druid: params[:object_id],
+                         current: CGI.unescape(params[:id]),
+                         new: params.require(:administrative_tag)
+                       })
     render status: :conflict, plain: e.message
   else
     head :no_content
