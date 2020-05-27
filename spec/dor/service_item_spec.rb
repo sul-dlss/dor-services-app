@@ -27,78 +27,6 @@ RSpec.describe Dor::ServiceItem do
     end
   end
 
-  describe '#goobi_workflow_name' do
-    before do
-      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
-    end
-
-    it 'returns goobi_workflow_name from a valid identityMetadata' do
-      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
-      expect(si.goobi_workflow_name).to eq('book_workflow')
-    end
-
-    it 'returns first goobi_workflow_name if multiple are in the tags' do
-      allow(AdministrativeTags).to receive(:for)
-        .with(pid: @dor_item.id)
-        .and_return(['DPG : Workflow : book_workflow', 'DPG : Workflow : another_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
-      expect(si.goobi_workflow_name).to eq('book_workflow')
-    end
-
-    it 'returns blank for goobi_workflow_name if none are found' do
-      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['Process : Content Type : Book (flipbook, ltr)'])
-      expect(si.goobi_workflow_name).to eq(Settings.goobi.default_goobi_workflow_name)
-    end
-  end
-
-  describe '#goobi_tag_list' do
-    before do
-      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
-    end
-
-    it 'returns an array of arrays with the tags from the object in the key:value format expected to be passed to goobi' do
-      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)', 'LAB : Map Work'])
-      expect(si.goobi_tag_list.length).to eq 3
-      si.goobi_tag_list.each { |goobi_tag| expect(goobi_tag.class).to eq Dor::GoobiTag }
-      expect(si.goobi_tag_list[0]).to have_attributes(name: 'DPG', value: 'Workflow : book_workflow')
-      expect(si.goobi_tag_list[1]).to have_attributes(name: 'Process', value: 'Content Type : Book (flipbook, ltr)')
-      expect(si.goobi_tag_list[2]).to have_attributes(name: 'LAB', value: 'Map Work')
-    end
-
-    it 'returns an empty array when there are no tags' do
-      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return([])
-      expect(si.goobi_tag_list).to eq([])
-    end
-
-    it 'works with singleton tags (no colon, so no value, just a name)' do
-      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['Name : Some Value', 'JustName'])
-      expect(si.goobi_tag_list.length).to eq 2
-      expect(si.goobi_tag_list[0].class).to eq Dor::GoobiTag
-      expect(si.goobi_tag_list[0]).to have_attributes(name: 'Name', value: 'Some Value')
-      expect(si.goobi_tag_list[1]).to have_attributes(name: 'JustName', value: nil)
-    end
-  end
-
-  describe '#goobi_ocr_tag_present?' do
-    before do
-      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
-    end
-
-    it 'returns false if the goobi ocr tag is not present' do
-      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
-      expect(si.goobi_ocr_tag_present?).to be false
-    end
-
-    it 'returns true if the goobi ocr tag is present' do
-      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'])
-      expect(si.goobi_ocr_tag_present?).to be true
-    end
-
-    it 'returns true if the goobi ocr tag is present even if the case is mixed' do
-      allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['DPG : Workflow : book_workflow', 'DPG : ocr : true'])
-      expect(si.goobi_ocr_tag_present?).to be true
-    end
-  end
-
   describe '#object_type' do
     it 'returns object_type from a valid identityMetadata' do
       setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
@@ -124,26 +52,6 @@ RSpec.describe Dor::ServiceItem do
     it 'returns blank for project name if not in tag' do
       allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['Process : Content Type : Book (flipbook, ltr)'])
       expect(si.project_name).to eq('')
-    end
-  end
-
-  describe '#collection_name and id' do
-    before do
-      setup_test_objects('druid:aa111aa1111', build_identity_metadata_1)
-    end
-
-    it 'returns collection name and id from a valid identityMetadata' do
-      collection = Dor::Collection.new(pid: 'druid:cc111cc1111')
-      allow(collection).to receive_messages(label: 'Collection label', id: 'druid:cc111cc1111')
-      allow(@dor_item).to receive(:collections).and_return([collection])
-      expect(si.collection_name).to eq('Collection label')
-      expect(si.collection_id).to eq('druid:cc111cc1111')
-    end
-
-    it 'returns blank for collection name and id if there are none' do
-      allow(@dor_item).to receive(:collections).and_return([])
-      expect(si.collection_name).to eq('')
-      expect(si.collection_id).to eq('')
     end
   end
 
