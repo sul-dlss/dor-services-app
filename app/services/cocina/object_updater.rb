@@ -79,9 +79,18 @@ module Cocina
       item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
       item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
       create_embargo(item, obj.access.embargo) if obj.access.embargo
-      item.contentMetadata.content = ContentMetadataGenerator.generate(druid: item.pid, object: obj) if obj&.structural&.contains
+      update_content_metadata(item, obj)
 
       add_identity_metadata(obj, item, 'item')
+    end
+
+    def update_content_metadata(item, obj)
+      # We don't want to overwrite contentMetadata unless they provided structural.contains
+      if obj.structural&.contains
+        item.contentMetadata.content = ContentMetadataGenerator.generate(druid: item.pid, object: obj)
+      else
+        item.contentMetadata.contentType = ToFedora::ContentType.map(obj.type)
+      end
     end
 
     def validate

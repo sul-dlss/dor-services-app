@@ -24,6 +24,10 @@ RSpec.describe 'Update object' do
   let(:item) do
     Dor::Item.new(pid: druid).tap do |item|
       item.descMetadata.title_info.main_title = title
+
+      # We swap these two lines after https://github.com/sul-dlss/dor-services/pull/706
+      # item.contentMetadata.contentType = ['book']
+      item.contentMetadata.content = '<contentMetadata type="book" />'
     end
   end
 

@@ -98,7 +98,7 @@ module Cocina
           apply_default_access(item)
         end
 
-        item.contentMetadata.content = ContentMetadataGenerator.generate(druid: pid, object: obj) if obj&.structural&.contains
+        item.contentMetadata.content = ContentMetadataGenerator.generate(druid: pid, object: obj)
 
         add_identity_metadata(obj, item, 'item')
       end
