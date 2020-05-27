@@ -4,6 +4,7 @@ module Cocina
   module ToFedora
     # This tranforms the DRO.type attribute to the process tag value
     class ProcessTag
+      # TODO: add Software
       def self.map(type, direction)
         tag = case type
               when Cocina::Models::Vocab.image
@@ -19,9 +20,14 @@ module Cocina
               when Cocina::Models::Vocab.book
                 short_dir = direction == 'right-to-left' ? 'rtl' : 'ltr'
                 "Book (#{short_dir})"
+              when Cocina::Models::Vocab.document
+                'Document'
+              when Cocina::Models::Vocab.object
+                'File'
               else
-                Cocina::Models::Vocab.object
+                raise "unable to find process tag for #{type}"
               end
+
         "Process : Content Type : #{tag}"
       end
     end
