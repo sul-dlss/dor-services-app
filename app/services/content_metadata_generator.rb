@@ -68,6 +68,8 @@ class ContentMetadataGenerator
       # if this resource contains no known 3D file extensions, the resource type is file
       resource_has_3d_type = file_set.structural.contains.any? { |file| VALID_THREE_DIMENSION_EXTENTIONS.include?(::File.extname(file.filename)) }
       resource_has_3d_type ? '3d' : 'file'
+    when Cocina::Models::Vocab.webarchive_seed
+      'image'
     when Cocina::Models::Vocab.document
       'document'
     else
