@@ -147,7 +147,7 @@ module Cocina
     end
 
     def add_dro_tags(pid, obj)
-      tags = [content_type_tag(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection)]
+      tags = [ToFedora::ProcessTag.map(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection)]
       tags << "Project : #{obj.administrative.partOfProject}" if obj.administrative.partOfProject
       AdministrativeTags.create(pid: pid, tags: tags)
     end
@@ -156,27 +156,6 @@ module Cocina
       return unless obj.administrative.partOfProject
 
       AdministrativeTags.create(pid: pid, tags: ["Project : #{obj.administrative.partOfProject}"])
-    end
-
-    def content_type_tag(type, direction)
-      tag = case type
-            when Cocina::Models::Vocab.image
-              'Image'
-            when Cocina::Models::Vocab.three_dimensional
-              '3D'
-            when Cocina::Models::Vocab.map
-              'Map'
-            when Cocina::Models::Vocab.media
-              'Media'
-            when Cocina::Models::Vocab.manuscript
-              'Manuscript'
-            when Cocina::Models::Vocab.book
-              short_dir = direction == 'right-to-left' ? 'rtl' : 'ltr'
-              "Book (#{short_dir})"
-            else
-              Cocina::Models::Vocab.object
-            end
-      "Process : Content Type : #{tag}"
     end
 
     def change_access(item, access)

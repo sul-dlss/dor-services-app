@@ -124,7 +124,7 @@ module Cocina
     end
 
     def add_tags(pid, obj)
-      add_tag(pid, content_type_tag(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection), 'Process : Content Type')
+      add_tag(pid, ToFedora::ProcessTag.map(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection), 'Process : Content Type')
       add_tag(pid, "Project : #{obj.administrative.partOfProject}", 'Project') if obj.administrative.partOfProject
     end
 
@@ -142,28 +142,6 @@ module Cocina
         return tag if tag.start_with?(prefix)
       end
       nil
-    end
-
-    # TODO: duplicate from ObjectCreator
-    def content_type_tag(type, direction)
-      tag = case type
-            when Cocina::Models::Vocab.image
-              'Image'
-            when Cocina::Models::Vocab.three_dimensional
-              '3D'
-            when Cocina::Models::Vocab.map
-              'Map'
-            when Cocina::Models::Vocab.media
-              'Media'
-            when Cocina::Models::Vocab.manuscript
-              'Manuscript'
-            when Cocina::Models::Vocab.book
-              short_dir = direction == 'right-to-left' ? 'rtl' : 'ltr'
-              "Book (#{short_dir})"
-            else
-              Cocina::Models::Vocab.object
-            end
-      "Process : Content Type : #{tag}"
     end
 
     # TODO: duplicate from ObjectCreator

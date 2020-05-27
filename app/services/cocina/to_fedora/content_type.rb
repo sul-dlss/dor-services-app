@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Cocina
   module ToFedora
     # This tranforms the DRO.type attribute to the
