@@ -36,7 +36,7 @@ class ContentMetadataGenerator
   def object_type
     # image, file, book, map, 3d
     case object.type
-    when Cocina::Models::Vocab.image
+    when Cocina::Models::Vocab.image, Cocina::Models::Vocab.manuscript
       'image'
     when Cocina::Models::Vocab.book
       'book'
@@ -44,6 +44,14 @@ class ContentMetadataGenerator
       'map'
     when Cocina::Models::Vocab.three_dimensional
       '3d'
+    when Cocina::Models::Vocab.media
+      'media'
+    when Cocina::Models::Vocab.webarchive_seed
+      'webarchive-seed'
+    when Cocina::Models::Vocab.geo
+      'geo'
+    when Cocina::Models::Vocab.document
+      'document'
     else
       'file'
     end
@@ -60,6 +68,8 @@ class ContentMetadataGenerator
       # if this resource contains no known 3D file extensions, the resource type is file
       resource_has_3d_type = file_set.structural.contains.any? { |file| VALID_THREE_DIMENSION_EXTENTIONS.include?(::File.extname(file.filename)) }
       resource_has_3d_type ? '3d' : 'file'
+    when Cocina::Models::Vocab.document
+      'document'
     else
       'file'
     end

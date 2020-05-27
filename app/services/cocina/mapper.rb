@@ -100,7 +100,7 @@ module Cocina
         Cocina::Models::Vocab.map
       when 'Media'
         Cocina::Models::Vocab.media
-      when /^Manuscript/
+      when /^Manuscript/ # Manuscript is a subtype of image
         Cocina::Models::Vocab.manuscript
       when 'Book (ltr)', 'Book (rtl)'
         Cocina::Models::Vocab.book
