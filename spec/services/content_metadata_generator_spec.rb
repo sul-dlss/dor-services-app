@@ -272,21 +272,23 @@ RSpec.describe ContentMetadataGenerator do
 
     let(:object_type) { Cocina::Models::Vocab.webarchive_seed }
 
+    let(:filesets) do
+      [
+        {
+          'version' => 1,
+          'label' => 'Preview',
+          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+          'structural' => { 'contains' => [file2] }
+        }
+      ]
+    end
+
     it 'generates contentMetadata.xml' do
       expect(generate).to be_equivalent_to '<?xml version="1.0"?>
          <contentMetadata objectId="druid:bc123de5678" type="webarchive-seed">
-           <resource id="bc123de5678_1" sequence="1" type="file">
-             <label>Page 1</label>
-             <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
-               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
-               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
-             </file>
+           <resource id="bc123de5678_1" sequence="1" type="image">
+             <label>Preview</label>
              <file id="00001.jp2" mimetype="image/jp2"  size="149570" preserve="yes" publish="yes" shelve="yes"/>
-           </resource>
-           <resource id="bc123de5678_2" sequence="2" type="file">
-             <label>Page 2</label>
-             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
-             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
            </resource>
          </contentMetadata>'
     end
