@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Builds the contentMetadata xml from cocina filesets
+# rubocop:disable Metrics/ClassLength
 class ContentMetadataGenerator
   VALID_THREE_DIMENSION_EXTENTIONS = ['.obj'].freeze
 
@@ -70,10 +71,27 @@ class ContentMetadataGenerator
       resource_has_3d_type ? '3d' : 'file'
     when Cocina::Models::Vocab.webarchive_seed
       'image'
+    when Cocina::Models::Vocab.geo
+      geo_resource_type(file_set.structural.contains)
     when Cocina::Models::Vocab.document
       'document'
     else
       'file'
+    end
+  end
+
+  # This logic has been excerpted from
+  # https://github.com/sul-dlss/gis-robot-suite/blob/master/robots/gisAssembly/generate-content-metadata.rb#L30
+  def geo_resource_type(files)
+    case ::File.extname(files.first.filename)
+    when '.zip', '.TAB', '.tab', '.dat', '.bin', '.xls', '.xlsx', '.tar', '.tgz', '.csv', '.tif', '.json', '.geojson', '.topojson', '.dbf'
+      'object'
+    when '.png', '.jpg', '.gif', '.jp2'
+      'preview'
+    when '.xml', '.txt', '.pdf'
+      'attachment'
+    else
+      raise "Unknown resource type for geo: #{file_set.structural.contains.first.filename}"
     end
   end
 
@@ -152,3 +170,4 @@ class ContentMetadataGenerator
     end
   end
 end
+# rubocop:enable Metrics/ClassLength
