@@ -91,21 +91,31 @@ module Cocina
     attr_reader :item
 
     def dro_type
-      case AdministrativeTags.content_type(pid: item.pid).first
-      when 'Image'
-        Cocina::Models::Vocab.image
-      when '3D'
-        Cocina::Models::Vocab.three_dimensional
-      when 'Map'
-        Cocina::Models::Vocab.map
-      when 'Media'
-        Cocina::Models::Vocab.media
-      when /^Manuscript/ # Manuscript is a subtype of image
-        Cocina::Models::Vocab.manuscript
-      when 'Book (ltr)', 'Book (rtl)'
+      case item.contentMetadata.contentType.first
+      when 'image'
+        if AdministrativeTags.content_type(pid: item.pid).first =~ /^Manuscript/
+          Cocina::Models::Vocab.manuscript
+        else
+          Cocina::Models::Vocab.image
+        end
+      when 'book'
         Cocina::Models::Vocab.book
-      else
+      when 'media'
+        Cocina::Models::Vocab.media
+      when 'map'
+        Cocina::Models::Vocab.map
+      when 'geo'
+        Cocina::Models::Vocab.geo
+      when 'webarchive-seed'
+        Cocina::Models::Vocab.webarchive_seed
+      when '3d'
+        Cocina::Models::Vocab.three_dimensional
+      when 'document'
+        Cocina::Models::Vocab.document
+      when 'file', nil
         Cocina::Models::Vocab.object
+      else
+        raise "Unknown content type #{item.contentMetadata.contentType.first}"
       end
     end
 

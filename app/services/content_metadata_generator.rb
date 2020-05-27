@@ -13,15 +13,16 @@ class ContentMetadataGenerator
 
   def initialize(druid:, object:)
     @druid = druid
-    @object = object
+    @object_type = object.type
+    @resources = object&.structural&.contains || []
   end
 
   def generate
     @xml_doc = Nokogiri::XML('<contentMetadata />')
     @xml_doc.root['objectId'] = druid
-    @xml_doc.root['type'] = object_type
+    @xml_doc.root['type'] = Cocina::ToFedora::ContentType.map(object_type)
 
-    object.structural.contains&.each_with_index do |cocina_fileset, index|
+    resources.each_with_index do |cocina_fileset, index|
       # each resource type description gets its own incrementing counter
       resource_type_counters[resource_type(cocina_fileset)] += 1
       @xml_doc.root.add_child create_resource_node(cocina_fileset, index + 1)
@@ -32,34 +33,10 @@ class ContentMetadataGenerator
 
   private
 
-  attr_reader :object, :druid
-
-  def object_type
-    # image, file, book, map, 3d
-    case object.type
-    when Cocina::Models::Vocab.image, Cocina::Models::Vocab.manuscript
-      'image'
-    when Cocina::Models::Vocab.book
-      'book'
-    when Cocina::Models::Vocab.map
-      'map'
-    when Cocina::Models::Vocab.three_dimensional
-      '3d'
-    when Cocina::Models::Vocab.media
-      'media'
-    when Cocina::Models::Vocab.webarchive_seed
-      'webarchive-seed'
-    when Cocina::Models::Vocab.geo
-      'geo'
-    when Cocina::Models::Vocab.document
-      'document'
-    else
-      'file'
-    end
-  end
+  attr_reader :object_type, :resources, :druid
 
   def resource_type(file_set)
-    case object.type
+    case object_type
     when Cocina::Models::Vocab.image, Cocina::Models::Vocab.map
       'image'
     when Cocina::Models::Vocab.book

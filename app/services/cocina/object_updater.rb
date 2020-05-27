@@ -79,9 +79,18 @@ module Cocina
       item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
       item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
       create_embargo(item, obj.access.embargo) if obj.access.embargo
-      item.contentMetadata.content = ContentMetadataGenerator.generate(druid: item.pid, object: obj) if obj&.structural&.contains
+      update_content_metadata(item, obj)
 
       add_identity_metadata(obj, item, 'item')
+    end
+
+    def update_content_metadata(item, obj)
+      # We don't want to overwrite contentMetadata unless they provided structural.contains
+      if obj.structural&.contains
+        item.contentMetadata.content = ContentMetadataGenerator.generate(druid: item.pid, object: obj)
+      else
+        item.contentMetadata.contentType = ToFedora::ContentType.map(obj.type)
+      end
     end
 
     def validate
@@ -115,7 +124,7 @@ module Cocina
     end
 
     def add_tags(pid, obj)
-      add_tag(pid, content_type_tag(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection), 'Process : Content Type')
+      add_tag(pid, ToFedora::ProcessTag.map(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection), 'Process : Content Type')
       add_tag(pid, "Project : #{obj.administrative.partOfProject}", 'Project') if obj.administrative.partOfProject
     end
 
@@ -133,28 +142,6 @@ module Cocina
         return tag if tag.start_with?(prefix)
       end
       nil
-    end
-
-    # TODO: duplicate from ObjectCreator
-    def content_type_tag(type, direction)
-      tag = case type
-            when Cocina::Models::Vocab.image
-              'Image'
-            when Cocina::Models::Vocab.three_dimensional
-              '3D'
-            when Cocina::Models::Vocab.map
-              'Map'
-            when Cocina::Models::Vocab.media
-              'Media'
-            when Cocina::Models::Vocab.manuscript
-              'Manuscript'
-            when Cocina::Models::Vocab.book
-              short_dir = direction == 'right-to-left' ? 'rtl' : 'ltr'
-              "Book (#{short_dir})"
-            else
-              Cocina::Models::Vocab.object
-            end
-      "Process : Content Type : #{tag}"
     end
 
     # TODO: duplicate from ObjectCreator

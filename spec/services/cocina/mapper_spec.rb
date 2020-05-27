@@ -14,6 +14,7 @@ RSpec.describe Cocina::Mapper do
     end
 
     let(:type) { 'Process : Content Type : 3D' }
+    let(:content_type) { '3d' }
     let(:agreement) { 'druid:666' }
     let(:source_id) { 'whaever:8888' }
 
@@ -22,12 +23,17 @@ RSpec.describe Cocina::Mapper do
       item.identityMetadata.agreementId = [agreement]
       item.descMetadata.title_info.main_title = 'Hello'
 
+      # We can swap these two lines after https://github.com/sul-dlss/dor-services/pull/706
+      # item.contentMetadata.contentType = [content_type]
+      allow(item.contentMetadata).to receive(:contentType).and_return([content_type])
+
       create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Project : Google Books'))
       create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: type))
     end
 
     context 'when item has a manuscript tag' do
       let(:type) { 'Process : Content Type : Manuscript (ltr)' }
+      let(:content_type) { 'image' }
 
       it 'builds the object with type manuscript' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
@@ -36,7 +42,7 @@ RSpec.describe Cocina::Mapper do
     end
 
     context 'when item has a book tag' do
-      let(:type) { 'Process : Content Type : Book (rtl)' }
+      let(:content_type) { 'book' }
 
       it 'builds the object with type book' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
@@ -44,8 +50,8 @@ RSpec.describe Cocina::Mapper do
       end
     end
 
-    context 'when item has a d3 tag' do
-      let(:type) { 'Process : Content Type : 3D' }
+    context 'when item has a 3d content_type' do
+      let(:content_type) { '3d' }
 
       it 'builds the object with type three_dimensional' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
@@ -53,9 +59,11 @@ RSpec.describe Cocina::Mapper do
       end
     end
 
-    context 'when item has an image tag' do
+    context 'when item has an image content_type' do
       let(:type) { 'Process : Content Type : Image' }
-      let(:content_metadata_ds) { instance_double(Dor::ContentMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml)) }
+      let(:content_type) { 'image' }
+
+      let(:content_metadata_ds) { Dor::ContentMetadataDS.from_xml(xml) }
       let(:xml) do
         <<~XML
           <contentMetadata objectId="bb000zn0114" type="image">
@@ -77,6 +85,7 @@ RSpec.describe Cocina::Mapper do
       let(:fileSet1) { cocina_model.structural.contains.first }
 
       before do
+        allow(content_metadata_ds).to receive(:new?).and_return(false)
         allow(item).to receive(:contentMetadata).and_return(content_metadata_ds)
       end
 
@@ -86,11 +95,13 @@ RSpec.describe Cocina::Mapper do
         expect(cocina_model.structural.contains.first).to be_file_set
         expect(fileSet1.label).to eq 'Image 1'
       end
+
       it 'files with imageData have presentation attribute with height and width' do
         file1 = fileSet1.structural.contains.first
         expect(file1.presentation.height).to eq 1696
         expect(file1.presentation.width).to eq 2548
       end
+
       it 'files without imageData have empty presentation attribute' do
         file2 = fileSet1.structural.contains.second
         expect(file2.presentation).to eq nil
@@ -131,10 +142,11 @@ RSpec.describe Cocina::Mapper do
     end
 
     context 'with files' do
-      let(:content_metadata_ds) { instance_double(Dor::ContentMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml)) }
+      let(:content_metadata_ds) { Dor::ContentMetadataDS.from_xml(xml) }
+
       let(:xml) do
         <<~XML
-          <contentMetadata type="sample" objectId="druid:dd116zh0343">
+          <contentMetadata type="file" objectId="druid:dd116zh0343">
             <resource sequence="1" type="folder" id="folder1PuSu">
               <label>Folder 1</label>
               <file mimetype="text/plain" shelve="yes" publish="yes" size="7888" preserve="yes" datetime="2012-06-15T22:57:43Z" id="folder1PuSu/story1u.txt">
@@ -177,6 +189,7 @@ RSpec.describe Cocina::Mapper do
       end
 
       before do
+        allow(content_metadata_ds).to receive(:new?).and_return(false)
         allow(item).to receive(:contentMetadata).and_return(content_metadata_ds)
       end
 
