@@ -36,13 +36,13 @@ module Dor
       <<-END
         <stanfordCreationRequest>
             <objectId>#{@druid_obj.id}</objectId>
-            <objectType>#{object_type}</objectType>
+            <objectType>#{@druid_obj.object_type}</objectType>
             <sourceID>#{@druid_obj.source_id.encode(xml: :text)}</sourceID>
             <title>#{title_or_label.encode(xml: :text)}</title>
             <contentType>#{content_type}</contentType>
             <project>#{project_name.encode(xml: :text)}</project>
-            <catkey>#{ckey}</catkey>
-            <barcode>#{barcode}</barcode>
+            <catkey>#{@druid_obj.catkey}</catkey>
+            <barcode>#{@druid_obj.barcode}</barcode>
             <collectionId>#{collection_id}</collectionId>
             <collectionName>#{collection_name.encode(xml: :text)}</collectionName>
             <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>

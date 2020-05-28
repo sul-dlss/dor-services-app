@@ -2,40 +2,14 @@
 
 module Dor
   class ServiceItem
-    # @return [String] value with SIRSI/Symphony numeric catkey in it for specified object, or nil if none exists
-    # this is a class level method so it can be used on aribtrary druids (e.g. collection the item is associated with) without having to instantiate the object
-    # look in identityMetadata/otherId[@name='catkey']
-    def self.get_ckey(object)
-      object.catkey
-    end
-
     def initialize(druid_obj)
       @druid_obj = druid_obj
-    end
-
-    # the ckey for the current object
-    # @return [String] value with SIRSI/Symphony numeric catkey in it for specified object, or nil if none exists
-    def ckey
-      @druid_obj.catkey
     end
 
     # the previous ckeys for the current object
     # @return [Array] previous catkeys for the object in an array, empty array if none exist
     def previous_ckeys
       @druid_obj.previous_catkeys.reject(&:empty?)
-    end
-
-    # @return [String] value with object_type in it (nil if none found)
-    # look in identityMetadata/objectType
-    def object_type
-      @druid_obj.object_type
-    end
-
-    # the barcode
-    # @return [String] value with barcode in it (nil if none found)
-    # look in identityMetadata/otherId name="barcode"
-    def barcode
-      @druid_obj.barcode
     end
 
     # the @id attribute of resource/file elements including extension
