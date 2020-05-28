@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # Builds the contentMetadata xml from cocina filesets
-# rubocop:disable Metrics/ClassLength
 class ContentMetadataGenerator
   VALID_THREE_DIMENSION_EXTENTIONS = ['.obj'].freeze
 
@@ -147,4 +146,3 @@ class ContentMetadataGenerator
     end
   end
 end
-# rubocop:enable Metrics/ClassLength
