@@ -17,10 +17,6 @@ RSpec.describe Dor::Goobi do
     #  this just lets us test the methods in goobi.rb without doing a lot of setup
     allow(Dor::Item).to receive(:find).and_return(item)
 
-    # rubocop:disable RSpec/SubjectStub
-    allow(goobi).to receive(:project_name).and_return('Project Name')
-    # rubocop:enable RSpec/SubjectStub
-
     allow(AdministrativeTags).to receive(:content_type).with(pid: pid).and_return(['book'])
   end
 
@@ -158,6 +154,7 @@ RSpec.describe Dor::Goobi do
       allow(AdministrativeTags).to receive(:for).and_return(tags)
       allow(goobi).to receive(:collection_id).and_return('druid:oo000oo0001')
       allow(goobi).to receive(:collection_name).and_return('collection name')
+      allow(goobi).to receive(:project_name).and_return('Project Name')
     end
 
     context 'without ocr tag present' do
@@ -273,6 +270,42 @@ RSpec.describe Dor::Goobi do
         expect(response.status).to eq 409
         expect(Faraday).to have_received(:post).once # Don't retry request errors
       end
+    end
+  end
+
+  describe '#content_type' do
+    subject(:content_type) { goobi.send :content_type }
+
+    let(:item) { Dor::Item.new }
+
+    before do
+      # We swap these two lines after https://github.com/sul-dlss/dor-services/pull/706
+      # item.contentMetadata.contentType = ['map']
+      item.contentMetadata.content = '<contentMetadata type="map" />'
+    end
+
+    it 'returns the content_type_tag from tag service if the value exists' do
+      allow(AdministrativeTags).to receive(:content_type).and_return(['Process Value'])
+      expect(content_type).to eq 'Process Value'
+    end
+
+    it 'returns the type from contentMetadata if content_type from tag service does not have a value' do
+      allow(AdministrativeTags).to receive(:content_type).and_return([])
+      expect(content_type).to eq 'map'
+    end
+  end
+
+  describe '#project_name' do
+    subject(:project_name) { goobi.send :project_name }
+
+    it 'returns project name from a valid identityMetadata' do
+      allow(AdministrativeTags).to receive(:for).and_return(['Project : Batchelor Maps : Batch 1', 'Process : Content Type : Book (flipbook, ltr)'])
+      expect(project_name).to eq('Batchelor Maps : Batch 1')
+    end
+
+    it 'returns blank for project name if not in tag' do
+      allow(AdministrativeTags).to receive(:for).and_return(['Process : Content Type : Book (flipbook, ltr)'])
+      expect(project_name).to eq('')
     end
   end
 end
