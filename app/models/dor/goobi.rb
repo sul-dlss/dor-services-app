@@ -63,6 +63,25 @@ module Dor
       end
     end
 
+    # returns the value of the content_type tag from admin tags service if it exists, else returns the value from contentMetadata object type
+    # note, the content_type tag comes from value of the tag called "Process : Content Type"
+    # @return [String] first collection name the item is in (blank if none)
+    def content_type
+      if AdministrativeTags.content_type(pid: @druid_obj.id).empty?
+        @druid_obj.contentMetadata.contentType.first
+      else
+        AdministrativeTags.content_type(pid: @druid_obj.id).first
+      end
+    end
+
+    # returns the name of the project by examining the objects tags
+    # @return [String] first project tag value if one exists (blank if none)
+    def project_name
+      project_tag_id = 'Project : '
+      content_tag = AdministrativeTags.for(pid: @druid_obj.id).select { |tag| tag.include?(project_tag_id) }
+      content_tag.empty? ? '' : content_tag[0].gsub(project_tag_id, '').strip
+    end
+
     # returns an array of arrays, each element contains an array of [name, value] of DOR object tags in the format expected to pass to Goobi
     # the name of the tag is the first namespace part of the tag (before first colon), value of the tag is everything after this
     # @return [Array] of GoobiTag objects

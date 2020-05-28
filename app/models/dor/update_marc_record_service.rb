@@ -206,6 +206,18 @@ module Dor
         '. '
       end
     end
+
+    # the previous ckeys for the current object
+    # @return [Array] previous catkeys for the object in an array, empty array if none exist
+    def previous_ckeys
+      @druid_obj.previous_catkeys.reject(&:empty?)
+    end
+
+    # the @id attribute of resource/file elements including extension
+    # @return [String] thumbnail filename (nil if none found)
+    def thumb
+      @thumb ||= ERB::Util.url_encode(ThumbnailService.new(@druid_obj).thumb).presence
+    end
   end
   # rubocop:enable Metrics/ClassLength
 end

@@ -582,4 +582,45 @@ RSpec.describe Dor::UpdateMarcRecordService do
       Dor::UpdateMarcRecordService.new(@dor_item).send(:dor_items_for_constituents)
     end
   end
+
+  describe '#thumb' do
+    subject(:thumb) { umrs.send(:thumb) }
+
+    let(:dor_item) { Dor::Item.new(pid: druid) }
+    let(:druid) { 'druid:bb111bb2222' }
+
+    it 'returns thumb from a valid contentMetadata' do
+      dor_item.contentMetadata.content = build_content_metadata_1
+      expect(thumb).to eq 'bb111bb2222%2Fwt183gy6220_00_0001.jp2'
+    end
+
+    it 'returns nil for contentMetadata without thumb' do
+      dor_item.contentMetadata.content = build_content_metadata_2
+      expect(thumb).to be_nil
+    end
+  end
+
+  describe '#previous_ckeys' do
+    subject(:previous_ckeys) { umrs.send :previous_ckeys }
+
+    context 'when previous_catkeys exists' do
+      let(:dor_item) { Dor::Item.new(pid: 'druid:aa111aa1111') }
+
+      before do
+        dor_item.identityMetadata.add_other_Id('previous_catkey', '123')
+      end
+
+      it 'returns values for previous catkeys in identityMetadata' do
+        expect(previous_ckeys).to eq(%w(123))
+      end
+    end
+
+    context 'when previous_catkeys are empty' do
+      let(:dor_item) { Dor::Item.new(pid: 'druid:aa111aa1111') }
+
+      it 'returns an empty array for previous catkeys in identityMetadata without either' do
+        expect(previous_ckeys).to eq([])
+      end
+    end
+  end
 end
