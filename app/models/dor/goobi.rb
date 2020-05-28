@@ -25,6 +25,7 @@ module Dor
       end
     end
 
+    # We send all tags to Goobi, but "DPG : Workflow : xxx" is the one tag that Goobi uses
     def goobi_xml_tags
       goobi_tag_list.map(&:to_xml).join
     end
