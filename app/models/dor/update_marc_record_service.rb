@@ -20,7 +20,7 @@ module Dor
     end
 
     def ckeys?
-      (ckey.present? || previous_ckeys.present?)
+      (@druid_obj.catkey.present? || previous_ckeys.present?)
     end
 
     def push_symphony_records
@@ -52,8 +52,8 @@ module Dor
       records = previous_ckeys.map { |previous_catkey| get_identifier(previous_catkey) }
 
       # now add the current ckey
-      if ckey.present?
-        records << (released_to_searchworks? ? new_856_record(ckey) : get_identifier(ckey)) # if released to searchworks, create the record
+      if @druid_obj.catkey.present?
+        records << (released_to_searchworks? ? new_856_record(@druid_obj.catkey) : get_identifier(@druid_obj.catkey)) # if released to searchworks, create the record
       end
 
       records
@@ -78,8 +78,8 @@ module Dor
     end
 
     def new_856_record(ckey)
-      new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{object_type}"
-      new856 += "|xbarcode:#{barcode}" unless barcode.nil?
+      new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{@druid_obj.object_type}"
+      new856 += "|xbarcode:#{@druid_obj.barcode}" unless @druid_obj.barcode.nil?
       new856 += "|xfile:#{thumb}" unless thumb.nil?
       new856 += get_x2_collection_info unless get_x2_collection_info.nil?
       new856 += get_x2_constituent_info unless get_x2_constituent_info.nil?
@@ -135,7 +135,7 @@ module Dor
 
       unless collections.empty?
         collections.each do |coll|
-          coll_info += "|xcollection:#{coll.id.sub('druid:', '')}:#{Dor::ServiceItem.get_ckey(coll)}:#{coll.label}"
+          coll_info += "|xcollection:#{coll.id.sub('druid:', '')}:#{coll.catkey}:#{coll.label}"
         end
       end
 
@@ -148,7 +148,7 @@ module Dor
       dor_items_for_constituents.map do |cons_obj|
         cons_obj_id = cons_obj.id.sub('druid:', '')
         cons_obj_title = cons_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo/mods:title', mods: 'http://www.loc.gov/mods/v3').first.content
-        "|xset:#{cons_obj_id}:#{Dor::ServiceItem.get_ckey(cons_obj)}:#{cons_obj_title}"
+        "|xset:#{cons_obj_id}:#{cons_obj.catkey}:#{cons_obj_title}"
       end.join('')
     end
 

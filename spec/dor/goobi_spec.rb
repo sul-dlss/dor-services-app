@@ -6,22 +6,23 @@ RSpec.describe Dor::Goobi do
   subject(:goobi) { Dor::Goobi.new(item) }
 
   let(:pid) { 'druid:aa123bb4567' }
-  let(:item) { Dor::Item.new(pid: pid) }
+  let(:item) do
+    Dor::Item.new(pid: pid, barcode: 'barcode_12345', catkey: 'ckey_12345',
+                  label: 'Object Title & A Special character',
+                  source_id: 'some:source_id', object_type: 'item')
+  end
 
-  # rubocop:disable RSpec/SubjectStub
   before do
     # all of the methods we are stubbing out below are tested elsewhere,
     #  this just lets us test the methods in goobi.rb without doing a lot of setup
     allow(Dor::Item).to receive(:find).and_return(item)
-    allow(item).to receive(:source_id).and_return('some_source_id')
-    allow(item).to receive(:label).and_return('Object Title & A Special character')
+
+    # rubocop:disable RSpec/SubjectStub
     allow(goobi).to receive(:project_name).and_return('Project Name')
-    allow(goobi).to receive(:object_type).and_return('item')
-    allow(goobi).to receive(:ckey).and_return('ckey_12345')
-    allow(goobi).to receive(:barcode).and_return('barcode_12345')
+    # rubocop:enable RSpec/SubjectStub
+
     allow(AdministrativeTags).to receive(:content_type).with(pid: pid).and_return(['book'])
   end
-  # rubocop:enable RSpec/SubjectStub
 
   describe '#title_or_label' do
     subject(:title_or_label) { Nokogiri::XML(goobi.send(:xml_request)).xpath('//title').first.content }
@@ -167,7 +168,7 @@ RSpec.describe Dor::Goobi do
           <stanfordCreationRequest>
             <objectId>#{pid}</objectId>
             <objectType>item</objectType>
-            <sourceID>some_source_id</sourceID>
+            <sourceID>some:source_id</sourceID>
             <title>Object Title &amp; A Special character</title>
             <contentType>book</contentType>
             <project>Project Name</project>
@@ -196,7 +197,7 @@ RSpec.describe Dor::Goobi do
           <stanfordCreationRequest>
             <objectId>#{pid}</objectId>
             <objectType>item</objectType>
-            <sourceID>some_source_id</sourceID>
+            <sourceID>some:source_id</sourceID>
             <title>Object Title &amp; A Special character</title>
             <contentType>book</contentType>
             <project>Project Name</project>
@@ -225,7 +226,7 @@ RSpec.describe Dor::Goobi do
           <stanfordCreationRequest>
             <objectId>#{pid}</objectId>
             <objectType>item</objectType>
-            <sourceID>some_source_id</sourceID>
+            <sourceID>some:source_id</sourceID>
             <title>Constituent label &amp; A Special character</title>
             <contentType>book</contentType>
             <project>Project Name</project>

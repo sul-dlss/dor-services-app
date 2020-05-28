@@ -40,18 +40,16 @@ RSpec.describe Dor::UpdateMarcRecordService do
     let(:dor_item) { Dor::Item.new(pid: 'druid:aa222cc3333') }
 
     it 'does nothing' do
-      expect(umrs).to receive(:ckey).and_return(nil)
       expect(umrs).not_to receive(:push_symphony_records)
       umrs.update
     end
   end
 
   context 'for a druid with a catkey' do
-    let(:dor_item) { Dor::Item.new(pid: druid) }
+    let(:dor_item) { Dor::Item.new(pid: druid, catkey: '8832162') }
     let(:druid) { 'druid:bb333dd4444' }
 
     it 'executes the UpdateMarcRecordService push_symphony_records method' do
-      expect(umrs).to receive(:ckey).exactly(4).times.and_return('8832162')
       expect(umrs.generate_symphony_records).to eq(["8832162\t#{druid.gsub('druid:', '')}\t"])
       expect(umrs).to receive(:push_symphony_records)
       umrs.update
@@ -68,158 +66,119 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   describe '.generate_symphony_records' do
-    let(:item) { Dor::Item.new }
-    let(:collection) { Dor::Collection.new }
-    let(:constituent) { Dor::Item.new }
+    subject(:generate_symphony_records) { updater.generate_symphony_records }
+
+    let(:item) { Dor::Item.new(pid: 'druid:aa111aa1111') }
+    let(:collection) { Dor::Collection.new(pid: 'druid:cc111cc1111', label: 'Collection label') }
+    let(:constituent) { Dor::Item.new(pid: 'druid:dd111dd1111') }
     let(:release_data) { { 'Searchworks' => { 'release' => true } } }
+    let(:updater) { Dor::UpdateMarcRecordService.new(item) }
 
     context "when the druid object doesn't have catkey or previous catkeys" do
-      it 'generates an empty array' do
+      before do
         item.rightsMetadata.content = build_rights_metadata_1
         item.identityMetadata.content = build_identity_metadata_4
 
-        allow(collection).to receive_messages(
-          label: 'Collection label',
-          id: 'cc111cc1111',
-          catkey: '12345678'
-        )
+        allow(item).to receive_messages(collections: [collection])
+      end
 
-        allow(item).to receive_messages(
-          id: 'aa111aa1111',
-          collections: [collection]
-        )
-
-        updater = Dor::UpdateMarcRecordService.new(item)
-        expect(updater.generate_symphony_records).to eq([])
+      it 'generates an empty array' do
+        expect(generate_symphony_records).to eq []
       end
     end
 
     context 'when an item object has a catkey' do
-      it 'generates a single symphony record' do
+      before do
         item.rightsMetadata.content = build_rights_metadata_1
         item.identityMetadata.content = build_identity_metadata_1
         item.contentMetadata.content = build_content_metadata_1
 
         constituent.descMetadata.content = build_desc_metadata_1
 
-        allow(collection).to receive_messages(
-          label: 'Collection label',
-          id: 'cc111cc1111'
-        )
-
-        allow(item).to receive_messages(
-          pid: 'aa111aa1111',
-          collections: [collection]
-        )
-
-        allow(constituent).to receive_messages(
-          id: 'dd111dd1111'
-        )
+        allow(item).to receive_messages(collections: [collection])
 
         allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
-        updater = Dor::UpdateMarcRecordService.new(item)
+      end
+
+      it 'generates a single symphony record' do
         # rubocop:disable Metrics/LineLength
-        expect(updater.generate_symphony_records).to eq(["8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"])
+        expect(generate_symphony_records).to eq [
+          "8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"
+        ]
       end
     end
 
     context 'when an object is stanford only and has a catkey' do
-      it 'generates symphony record with a z subfield' do
+      before do
         item.rightsMetadata.content = build_rights_metadata_2
         item.identityMetadata.content = build_identity_metadata_1
         item.contentMetadata.content = build_content_metadata_1
 
         constituent.descMetadata.content = build_desc_metadata_1
 
-        allow(collection).to receive_messages(
-          label: 'Collection label',
-          id: 'cc111cc1111'
-        )
-
-        allow(item).to receive_messages(
-          pid: 'aa111aa1111',
-          collections: [collection]
-        )
-
-        allow(constituent).to receive_messages(
-          id: 'dd111dd1111'
-        )
-
+        allow(item).to receive_messages(collections: [collection])
         allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
-        updater = Dor::UpdateMarcRecordService.new(item)
-        expect(updater.generate_symphony_records).to match_array(["8832162\taa111aa1111\t.856. 41|zAvailable to Stanford-affiliated users.|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"])
+      end
+
+      it 'generates symphony record with a z subfield' do
+        expect(generate_symphony_records).to match_array [
+          "8832162\taa111aa1111\t.856. 41|zAvailable to Stanford-affiliated users.|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"
+        ]
       end
     end
 
     context 'when an object has both previous and current catkeys' do
-      it 'generates blank symphony records and a regular symphony record' do
+      before do
         item.rightsMetadata.content = build_rights_metadata_1
         item.identityMetadata.content = build_identity_metadata_3
         item.contentMetadata.content = build_content_metadata_1
 
         constituent.descMetadata.content = build_desc_metadata_1
 
-        allow(collection).to receive_messages(
-          label: 'Collection label',
-          id: 'cc111cc1111'
-        )
-
-        allow(item).to receive_messages(
-          pid: 'aa111aa1111',
-          collections: [collection]
-        )
-
-        allow(constituent).to receive_messages(
-          id: 'dd111dd1111'
-        )
+        allow(item).to receive_messages(collections: [collection])
 
         allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
-        updater = Dor::UpdateMarcRecordService.new(item)
-        expect(updater.generate_symphony_records).to match_array(["123\taa111aa1111\t", "456\taa111aa1111\t", "8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"])
+      end
+
+      it 'generates blank symphony records and a regular symphony record' do
+        expect(generate_symphony_records).to match_array [
+          "123\taa111aa1111\t",
+          "456\taa111aa1111\t",
+          "8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"
+        ]
       end
     end
 
     context 'when an object has only previous catkeys' do
-      it 'generates blank symphony records for an item object' do
+      before do
         item.rightsMetadata.content = build_rights_metadata_1
         item.identityMetadata.content = build_identity_metadata_5
         item.contentMetadata.content = build_content_metadata_1
 
         constituent.descMetadata.content = build_desc_metadata_1
 
-        allow(collection).to receive_messages(
-          label: 'Collection label',
-          id: 'cc111cc1111'
-        )
-
-        allow(item).to receive_messages(
-          id: 'aa111aa1111',
-          collections: [collection]
-        )
-
-        allow(constituent).to receive_messages(
-          id: 'dd111dd1111'
-        )
+        allow(item).to receive_messages(collections: [collection])
 
         allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
-        updater = Dor::UpdateMarcRecordService.new(item)
-        expect(updater.generate_symphony_records).to match_array(%W(123\taa111aa1111\t 456\taa111aa1111\t))
+      end
+
+      it 'generates blank symphony records for an item object' do
+        expect(generate_symphony_records).to match_array %W(123\taa111aa1111\t 456\taa111aa1111\t)
       end
     end
 
     context 'when an collection object has a catkey' do
-      it 'generates a single symphony record' do
+      before do
         collection.rightsMetadata.content = build_rights_metadata_1
         collection.identityMetadata.content = build_identity_metadata_2
 
-        allow(collection).to receive_messages(
-          label: 'Collection label',
-          id: 'aa111aa1111',
-          collections: []
-        )
+        allow(collection).to receive_messages(collections: [])
+      end
 
-        updater = Dor::UpdateMarcRecordService.new(collection)
-        expect(updater.generate_symphony_records).to match_array(["8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xcollection"])
+      let(:updater) { Dor::UpdateMarcRecordService.new(collection) }
+
+      it 'generates a single symphony record' do
+        expect(generate_symphony_records).to match_array ["8832162\tcc111cc1111\t.856. 41|uhttp://purl.stanford.edu/cc111cc1111|xSDR-PURL|xcollection"]
       end
     end
   end

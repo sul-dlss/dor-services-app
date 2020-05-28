@@ -7,16 +7,7 @@ RSpec.describe Dor::ServiceItem do
 
   let(:dor_item) { @dor_item }
 
-  describe '#catkey' do
-    context 'when catkey exists' do
-      let(:dor_item) { Dor::Item.new(pid: 'druid:aa111aa1111', catkey: '8832162') }
-
-      it 'returns catkey from a valid identityMetadata' do
-        expect(si.ckey).to eq('8832162')
-        expect(si.previous_ckeys).to eq([])
-      end
-    end
-
+  describe '#previous_ckeys' do
     context 'when previous_catkeys exists' do
       let(:dor_item) { Dor::Item.new(pid: 'druid:aa111aa1111') }
 
@@ -24,36 +15,16 @@ RSpec.describe Dor::ServiceItem do
         dor_item.identityMetadata.add_other_Id('previous_catkey', '123')
       end
 
-      it 'returns nil for current catkey but values for previous catkeys in identityMetadata' do
-        expect(si.ckey).to be_nil
+      it 'returns values for previous catkeys in identityMetadata' do
         expect(si.previous_ckeys).to eq(%w(123))
       end
     end
 
-    context 'when previous_catkeys and catkey are empty' do
+    context 'when previous_catkeys are empty' do
       let(:dor_item) { Dor::Item.new(pid: 'druid:aa111aa1111') }
 
-      it 'returns nil for current catkey and empty array for previous catkeys in identityMetadata without either' do
-        expect(si.ckey).to be_nil
+      it 'returns an empty array for previous catkeys in identityMetadata without either' do
         expect(si.previous_ckeys).to eq([])
-      end
-    end
-  end
-
-  describe '#object_type' do
-    context 'with object_type' do
-      let(:dor_item) { Dor::Item.new(pid: 'druid:aa111aa1111', object_type: 'item') }
-
-      it 'returns object_type from a valid identityMetadata' do
-        expect(si.object_type).to eq('item')
-      end
-    end
-
-    context 'without object_type' do
-      let(:dor_item) { Dor::Abstract.new(pid: 'druid:aa111aa1111') }
-
-      it 'returns a blank object type for identityMetadata without object_type' do
-        expect(si.object_type).to be_nil
       end
     end
   end
@@ -71,24 +42,6 @@ RSpec.describe Dor::ServiceItem do
     it 'returns blank for project name if not in tag' do
       allow(AdministrativeTags).to receive(:for).with(pid: @dor_item.id).and_return(['Process : Content Type : Book (flipbook, ltr)'])
       expect(si.project_name).to eq('')
-    end
-  end
-
-  describe '#barcode' do
-    let(:dor_item) { Dor::Item.new(pid: 'druid:aa111aa1111') }
-
-    context 'when present' do
-      before do
-        dor_item.identityMetadata.add_other_Id('barcode', '36105216275185')
-      end
-
-      it 'returns barcode from a valid identityMetadata' do
-        expect(si.barcode).to eq('36105216275185')
-      end
-    end
-
-    it 'returns an empty string without barcode' do
-      expect(si.barcode).to be_nil
     end
   end
 
