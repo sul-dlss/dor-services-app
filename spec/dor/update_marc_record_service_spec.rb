@@ -37,8 +37,9 @@ RSpec.describe Dor::UpdateMarcRecordService do
       XML
     end
 
+    let(:dor_item) { Dor::Item.new(pid: 'druid:aa222cc3333') }
+
     it 'does nothing' do
-      setup_test_objects('druid:aa222cc3333', build_identity_metadata_without_ckey)
       expect(umrs).to receive(:ckey).and_return(nil)
       expect(umrs).not_to receive(:push_symphony_records)
       umrs.update
@@ -46,9 +47,10 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   context 'for a druid with a catkey' do
+    let(:dor_item) { Dor::Item.new(pid: druid) }
+    let(:druid) { 'druid:bb333dd4444' }
+
     it 'executes the UpdateMarcRecordService push_symphony_records method' do
-      druid = 'druid:bb333dd4444'
-      setup_test_objects(druid, build_identity_metadata_with_ckey)
       expect(umrs).to receive(:ckey).exactly(4).times.and_return('8832162')
       expect(umrs.generate_symphony_records).to eq(["8832162\t#{druid.gsub('druid:', '')}\t"])
       expect(umrs).to receive(:push_symphony_records)
@@ -206,7 +208,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
 
     context 'when an collection object has a catkey' do
-      it 'generates a single symphony record for a collection object with a catkey' do
+      it 'generates a single symphony record' do
         collection.rightsMetadata.content = build_rights_metadata_1
         collection.identityMetadata.content = build_identity_metadata_2
 
