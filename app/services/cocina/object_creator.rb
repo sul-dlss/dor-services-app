@@ -144,6 +144,9 @@ module Cocina
       else
         item.descMetadata.mods_title = obj.label
       end
+
+      # collections registered via Argo have abstracts, which appear here as note of type summary
+      item.descMetadata.abstract = obj.description.note.first.value if obj.description&.note&.first&.type == 'summary'
     end
 
     def add_dro_tags(pid, obj)

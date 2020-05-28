@@ -132,7 +132,13 @@ module Cocina
     end
 
     def build_descriptive
-      { title: [{ status: 'primary', value: TitleMapper.build(item) }] }
+      desc = { title: [{ status: 'primary', value: TitleMapper.build(item) }] }
+
+      # collections are registered with abstracts
+      return desc if item.descMetadata.abstract.blank?
+
+      desc[:note] = [{ type: 'summary', value: item.descMetadata.abstract.first }]
+      desc
     end
 
     def build_apo_administrative
