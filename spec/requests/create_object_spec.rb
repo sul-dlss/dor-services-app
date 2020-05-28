@@ -621,6 +621,50 @@ RSpec.describe 'Create object' do
         expect(response.location).to eq "/v1/objects/#{druid}"
       end
     end
+
+    context 'when a description including summary note (abstract) is provided' do
+      let(:data) do
+        <<~JSON
+          {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
+            "label":"#{label}",
+            "version":1,
+            "access":{},
+            "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
+            "description":{
+              "title":[{"status":"primary","value":"#{title}"}],
+              "note":[{"value":"coll abstract","type":"summary"}]
+              }
+            }
+        JSON
+      end
+      let(:expected) do
+        Cocina::Models::Collection.new(type: Cocina::Models::Vocab.collection,
+                                       label: expected_label,
+                                       version: 1,
+                                       access: { access: 'dark', download: 'none' },
+                                       administrative: {
+                                         hasAdminPolicy: 'druid:dd999df4567'
+                                       },
+                                       description: {
+                                         title: [{ value: title, status: 'primary' }],
+                                         note: [{ value: 'coll abstract', type: 'summary' }]
+                                       },
+                                       externalIdentifier: druid)
+      end
+
+      before do
+        allow_any_instance_of(Dor::Collection).to receive(:save!)
+      end
+
+      it 'creates the collection with populated description title and note' do
+        post '/v1/objects',
+             params: data,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response.body).to eq expected.to_json
+        expect(response.status).to eq(201)
+        expect(response.location).to eq "/v1/objects/#{druid}"
+      end
+    end
   end
 
   context 'when an APO is provided' do

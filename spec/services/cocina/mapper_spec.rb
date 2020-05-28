@@ -117,6 +117,17 @@ RSpec.describe Cocina::Mapper do
         expect(cocina_model.label).to eq('Use me')
       end
     end
+
+    context 'when item has an abstract in descMetadata' do
+      before do
+        item.descMetadata.abstract = 'de Kooning'
+      end
+
+      it 'populates note of type summary in cocina model' do
+        expect(cocina_model.description.note.first.value).to eq('de Kooning')
+        expect(cocina_model.description.note.first.type).to eq('summary')
+      end
+    end
   end
 
   context 'when item is an Etd' do
