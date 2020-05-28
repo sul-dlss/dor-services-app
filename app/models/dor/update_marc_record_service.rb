@@ -4,9 +4,16 @@ require 'open3'
 require 'shellwords'
 
 module Dor
+  # rubocop:disable Metrics/ClassLength
   class UpdateMarcRecordService < ServiceItem
     # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
     BORN_DIGITAL_APOS = %w(druid:bx911tp9024 druid:jj305hm5259).freeze
+
+    def initialize(druid_obj)
+      super
+      @druid_id = Dor::PidUtils.remove_druid_prefix(druid_obj.id)
+      @dra_object = druid_obj.rightsMetadata.dra_object
+    end
 
     def update
       push_symphony_records if ckeys?
@@ -200,4 +207,5 @@ module Dor
       end
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
