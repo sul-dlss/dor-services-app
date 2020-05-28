@@ -5,12 +5,12 @@ require 'shellwords'
 
 module Dor
   # rubocop:disable Metrics/ClassLength
-  class UpdateMarcRecordService < ServiceItem
+  class UpdateMarcRecordService
     # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
     BORN_DIGITAL_APOS = %w(druid:bx911tp9024 druid:jj305hm5259).freeze
 
     def initialize(druid_obj)
-      super
+      @druid_obj = druid_obj
       @druid_id = Dor::PidUtils.remove_druid_prefix(druid_obj.id)
       @dra_object = druid_obj.rightsMetadata.dra_object
     end
@@ -153,7 +153,8 @@ module Dor
     end
 
     def get_x2_part_info
-      title_info = primary_mods_title_info_element
+      mods_xml = @druid_obj.descMetadata.ng_xml
+      title_info = ModsUtils.primary_title_info(mods_xml)
 
       return unless title_info
 
@@ -163,7 +164,7 @@ module Dor
 
       part_label = part_parts.map(&:text).compact.join(parts_delimiter(part_parts))
 
-      part_sort = @druid_obj.datastreams['descMetadata'].ng_xml.xpath('//*[@type="date/sequential designation"]').first
+      part_sort = mods_xml.xpath('//*[@type="date/sequential designation"]').first
 
       str = ''
       str += "|xlabel:#{part_label}" unless part_label.empty?

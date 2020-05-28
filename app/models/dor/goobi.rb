@@ -2,7 +2,7 @@
 
 module Dor
   # This class passes data to the Goobi server using a custom XML message that was developed by Intranda
-  class Goobi < ServiceItem
+  class Goobi
     SERVER_ERROR_STATUSES = (500...600).freeze
     class ServerError < StandardError; end
 
@@ -11,6 +11,10 @@ module Dor
                             Errno::ETIMEDOUT,
                             Faraday::TimeoutError,
                             Faraday::RetriableResponse].freeze
+
+    def initialize(druid_obj)
+      @druid_obj = druid_obj
+    end
 
     def register
       with_retries(max_tries: Settings.goobi.max_tries,
@@ -114,7 +118,7 @@ module Dor
     end
 
     def title_or_label
-      title_element = primary_mods_title_info_element
+      title_element = ModsUtils.primary_title_info(@druid_obj.descMetadata.ng_xml)
       return title_element.content.strip if title_element.respond_to?(:content) && title_element.content.present?
 
       @druid_obj.label
