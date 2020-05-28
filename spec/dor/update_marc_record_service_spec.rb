@@ -69,222 +69,156 @@ RSpec.describe Dor::UpdateMarcRecordService do
     let(:item) { Dor::Item.new }
     let(:collection) { Dor::Collection.new }
     let(:constituent) { Dor::Item.new }
-
-    let(:rels_ext_xml) { instance_double(ActiveFedora::RelsExtDatastream) }
-    let(:identity_metadata_xml) { instance_double(Dor::IdentityMetadataDS) }
-    let(:content_metadata_xml) { instance_double(Dor::ContentMetadataDS) }
-    let(:desc_metadata_xml) { instance_double(Dor::DescMetadataDS) }
-    let(:rights_metadata_xml) { instance_double(Dor::RightsMetadataDS) }
     let(:release_data) { { 'Searchworks' => { 'release' => true } } }
 
-    it 'generates an empty array for a druid object without catkey or previous catkeys' do
-      rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
-      allow(rights_metadata_xml).to receive_messages(
-        ng_xml: rights_metadata_ng_xml,
-        dra_object: Dor::RightsAuth.parse(rights_metadata_ng_xml, true)
-      )
+    context "when the druid object doesn't have catkey or previous catkeys" do
+      it 'generates an empty array' do
+        item.rightsMetadata.content = build_rights_metadata_1
+        item.identityMetadata.content = build_identity_metadata_4
 
-      allow(identity_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_identity_metadata_4)
-      )
+        allow(collection).to receive_messages(
+          label: 'Collection label',
+          id: 'cc111cc1111',
+          catkey: '12345678'
+        )
 
-      allow(collection).to receive_messages(
-        label: 'Collection label',
-        id: 'cc111cc1111',
-        catkey: '12345678'
-      )
+        allow(item).to receive_messages(
+          id: 'aa111aa1111',
+          collections: [collection]
+        )
 
-      allow(item).to receive_messages(
-        id: 'aa111aa1111',
-        collections: [collection],
-        datastreams: { 'identityMetadata' => identity_metadata_xml, 'rightsMetadata' => rights_metadata_xml }
-      )
-
-      updater = Dor::UpdateMarcRecordService.new(item)
-      expect(updater.generate_symphony_records).to eq([])
+        updater = Dor::UpdateMarcRecordService.new(item)
+        expect(updater.generate_symphony_records).to eq([])
+      end
     end
 
-    it 'generates a single symphony record for an item object with a catkey' do
-      allow(identity_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_identity_metadata_1)
-      )
+    context 'when an item object has a catkey' do
+      it 'generates a single symphony record' do
+        item.rightsMetadata.content = build_rights_metadata_1
+        item.identityMetadata.content = build_identity_metadata_1
+        item.contentMetadata.content = build_content_metadata_1
 
-      allow(content_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_content_metadata_1)
-      )
+        constituent.descMetadata.content = build_desc_metadata_1
 
-      allow(desc_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_desc_metadata_1)
-      )
+        allow(collection).to receive_messages(
+          label: 'Collection label',
+          id: 'cc111cc1111'
+        )
 
-      rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
-      allow(rights_metadata_xml).to receive_messages(
-        ng_xml: rights_metadata_ng_xml,
-        dra_object: Dor::RightsAuth.parse(rights_metadata_ng_xml, true)
-      )
+        allow(item).to receive_messages(
+          pid: 'aa111aa1111',
+          collections: [collection]
+        )
 
-      allow(collection).to receive_messages(
-        label: 'Collection label',
-        id: 'cc111cc1111'
-      )
+        allow(constituent).to receive_messages(
+          id: 'dd111dd1111'
+        )
 
-      allow(item).to receive_messages(
-        pid: 'aa111aa1111',
-        collections: [collection],
-        datastreams: { 'rightsMetadata' => rights_metadata_xml, 'identityMetadata' => identity_metadata_xml, 'contentMetadata' => content_metadata_xml, 'RELS-EXT' => rels_ext_xml }
-      )
-
-      allow(constituent).to receive_messages(
-        id: 'dd111dd1111',
-        datastreams: { 'descMetadata' => desc_metadata_xml }
-      )
-
-      allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
-      updater = Dor::UpdateMarcRecordService.new(item)
-      # rubocop:disable Metrics/LineLength
-      expect(updater.generate_symphony_records).to eq(["8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"])
+        allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
+        updater = Dor::UpdateMarcRecordService.new(item)
+        # rubocop:disable Metrics/LineLength
+        expect(updater.generate_symphony_records).to eq(["8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"])
+      end
     end
 
-    it 'generates symphony record with a z subfield for a stanford only item object with catkey' do
-      allow(identity_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_identity_metadata_1)
-      )
+    context 'when an object is stanford only and has a catkey' do
+      it 'generates symphony record with a z subfield' do
+        item.rightsMetadata.content = build_rights_metadata_2
+        item.identityMetadata.content = build_identity_metadata_1
+        item.contentMetadata.content = build_content_metadata_1
 
-      allow(content_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_content_metadata_1)
-      )
+        constituent.descMetadata.content = build_desc_metadata_1
 
-      allow(desc_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_desc_metadata_1)
-      )
+        allow(collection).to receive_messages(
+          label: 'Collection label',
+          id: 'cc111cc1111'
+        )
 
-      rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_2)
-      allow(rights_metadata_xml).to receive_messages(
-        ng_xml: rights_metadata_ng_xml,
-        dra_object: Dor::RightsAuth.parse(rights_metadata_ng_xml, true)
-      )
+        allow(item).to receive_messages(
+          pid: 'aa111aa1111',
+          collections: [collection]
+        )
 
-      allow(collection).to receive_messages(
-        label: 'Collection label',
-        id: 'cc111cc1111'
-      )
+        allow(constituent).to receive_messages(
+          id: 'dd111dd1111'
+        )
 
-      allow(item).to receive_messages(
-        pid: 'aa111aa1111',
-        collections: [collection],
-        datastreams: { 'rightsMetadata' => rights_metadata_xml, 'identityMetadata' => identity_metadata_xml, 'contentMetadata' => content_metadata_xml, 'RELS-EXT' => rels_ext_xml }
-      )
-
-      allow(constituent).to receive_messages(
-        id: 'dd111dd1111',
-        datastreams: { 'descMetadata' => desc_metadata_xml }
-      )
-
-      allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
-      updater = Dor::UpdateMarcRecordService.new(item)
-      expect(updater.generate_symphony_records).to match_array(["8832162\taa111aa1111\t.856. 41|zAvailable to Stanford-affiliated users.|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"])
+        allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
+        updater = Dor::UpdateMarcRecordService.new(item)
+        expect(updater.generate_symphony_records).to match_array(["8832162\taa111aa1111\t.856. 41|zAvailable to Stanford-affiliated users.|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"])
+      end
     end
 
-    it 'generates blank symphony records and a regular symphony record for an item object with both previous and current catkeys' do
-      allow(identity_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_identity_metadata_3)
-      )
+    context 'when an object has both previous and current catkeys' do
+      it 'generates blank symphony records and a regular symphony record' do
+        item.rightsMetadata.content = build_rights_metadata_1
+        item.identityMetadata.content = build_identity_metadata_3
+        item.contentMetadata.content = build_content_metadata_1
 
-      allow(content_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_content_metadata_1)
-      )
+        constituent.descMetadata.content = build_desc_metadata_1
 
-      allow(desc_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_desc_metadata_1)
-      )
+        allow(collection).to receive_messages(
+          label: 'Collection label',
+          id: 'cc111cc1111'
+        )
 
-      rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
-      allow(rights_metadata_xml).to receive_messages(
-        ng_xml: rights_metadata_ng_xml,
-        dra_object: Dor::RightsAuth.parse(rights_metadata_ng_xml, true)
-      )
+        allow(item).to receive_messages(
+          pid: 'aa111aa1111',
+          collections: [collection]
+        )
 
-      allow(collection).to receive_messages(
-        label: 'Collection label',
-        id: 'cc111cc1111'
-      )
+        allow(constituent).to receive_messages(
+          id: 'dd111dd1111'
+        )
 
-      allow(item).to receive_messages(
-        pid: 'aa111aa1111',
-        collections: [collection],
-        datastreams: { 'rightsMetadata' => rights_metadata_xml, 'identityMetadata' => identity_metadata_xml, 'contentMetadata' => content_metadata_xml, 'RELS-EXT' => rels_ext_xml }
-      )
-
-      allow(constituent).to receive_messages(
-        id: 'dd111dd1111',
-        datastreams: { 'descMetadata' => desc_metadata_xml }
-      )
-
-      allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
-      updater = Dor::UpdateMarcRecordService.new(item)
-      expect(updater.generate_symphony_records).to match_array(["123\taa111aa1111\t", "456\taa111aa1111\t", "8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"])
+        allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
+        updater = Dor::UpdateMarcRecordService.new(item)
+        expect(updater.generate_symphony_records).to match_array(["123\taa111aa1111\t", "456\taa111aa1111\t", "8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character"])
+      end
     end
 
-    it 'generates blank symphony records for an item object with only previous catkeys' do
-      allow(identity_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_identity_metadata_5)
-      )
+    context 'when an object has only previous catkeys' do
+      it 'generates blank symphony records for an item object' do
+        item.rightsMetadata.content = build_rights_metadata_1
+        item.identityMetadata.content = build_identity_metadata_5
+        item.contentMetadata.content = build_content_metadata_1
 
-      allow(content_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_content_metadata_1)
-      )
+        constituent.descMetadata.content = build_desc_metadata_1
 
-      allow(desc_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_desc_metadata_1)
-      )
+        allow(collection).to receive_messages(
+          label: 'Collection label',
+          id: 'cc111cc1111'
+        )
 
-      rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
-      allow(rights_metadata_xml).to receive_messages(
-        ng_xml: rights_metadata_ng_xml,
-        dra_object: Dor::RightsAuth.parse(rights_metadata_ng_xml, true)
-      )
+        allow(item).to receive_messages(
+          id: 'aa111aa1111',
+          collections: [collection]
+        )
 
-      allow(collection).to receive_messages(
-        label: 'Collection label',
-        id: 'cc111cc1111'
-      )
+        allow(constituent).to receive_messages(
+          id: 'dd111dd1111'
+        )
 
-      allow(item).to receive_messages(
-        id: 'aa111aa1111',
-        collections: [collection],
-        datastreams: { 'rightsMetadata' => rights_metadata_xml, 'identityMetadata' => identity_metadata_xml, 'contentMetadata' => content_metadata_xml, 'RELS-EXT' => rels_ext_xml }
-      )
-
-      allow(constituent).to receive_messages(
-        id: 'dd111dd1111',
-        datastreams: { 'descMetadata' => desc_metadata_xml }
-      )
-
-      allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
-      updater = Dor::UpdateMarcRecordService.new(item)
-      expect(updater.generate_symphony_records).to match_array(%W(123\taa111aa1111\t 456\taa111aa1111\t))
+        allow_any_instance_of(Dor::UpdateMarcRecordService).to receive(:dor_items_for_constituents).and_return([constituent])
+        updater = Dor::UpdateMarcRecordService.new(item)
+        expect(updater.generate_symphony_records).to match_array(%W(123\taa111aa1111\t 456\taa111aa1111\t))
+      end
     end
 
-    it 'generates a single symphony record for a collection object with a catkey' do
-      rights_metadata_ng_xml = Nokogiri::XML(build_rights_metadata_1)
-      allow(rights_metadata_xml).to receive_messages(
-        ng_xml: rights_metadata_ng_xml,
-        dra_object: Dor::RightsAuth.parse(rights_metadata_ng_xml, true)
-      )
+    context 'when an collection object has a catkey' do
+      it 'generates a single symphony record for a collection object with a catkey' do
+        collection.rightsMetadata.content = build_rights_metadata_1
+        collection.identityMetadata.content = build_identity_metadata_2
 
-      allow(identity_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_identity_metadata_2)
-      )
+        allow(collection).to receive_messages(
+          label: 'Collection label',
+          id: 'aa111aa1111',
+          collections: []
+        )
 
-      allow(collection).to receive_messages(
-        label: 'Collection label',
-        id: 'aa111aa1111',
-        collections: [],
-        datastreams: { 'rightsMetadata' => rights_metadata_xml, 'identityMetadata' => identity_metadata_xml }
-      )
-
-      updater = Dor::UpdateMarcRecordService.new(collection)
-      expect(updater.generate_symphony_records).to match_array(["8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xcollection"])
+        updater = Dor::UpdateMarcRecordService.new(collection)
+        expect(updater.generate_symphony_records).to match_array(["8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xcollection"])
+      end
     end
   end
 
@@ -449,16 +383,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
     it 'returns the appropriate information for a collection object' do
       setup_test_objects('druid:aa111aa1111', '')
       collection = Dor::Collection.new
-      identity_metadata_xml = String
-
-      allow(identity_metadata_xml).to receive_messages(
-        ng_xml: Nokogiri::XML(build_identity_metadata_2)
-      )
+      collection.identityMetadata.content = build_identity_metadata_2
 
       allow(collection).to receive_messages(
         label: 'Collection label',
-        id: 'cc111cc1111',
-        datastreams: { 'identityMetadata' => identity_metadata_xml }
+        id: 'cc111cc1111'
       )
       allow(@dor_item).to receive_messages(
         id: 'aa111aa1111',
@@ -469,10 +398,15 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   describe '#get_x2_part_info' do
-    let(:dor_item) { setup_test_objects('druid:aa111aa1111', '') }
-    let(:desc_metadata_xml) { instance_double(Dor::DescMetadataDS, ng_xml: Nokogiri::XML(xml)) }
+    let(:dor_item) { Dor::Item.new(pid: 'druid:aa111aa1111') }
+
+    before do
+      dor_item.descMetadata.content = xml
+    end
 
     context 'without descMetadata' do
+      let(:xml) {}
+
       it 'returns nil for objects with part information' do
         expect(umrs.get_x2_part_info).to be_nil
       end
@@ -486,10 +420,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
           <title>Some label</title>
           </titleInfo></mods>
         XML
-      end
-
-      before do
-        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
       end
 
       it 'returns an empty string for objects with part information' do
@@ -509,10 +439,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
         XML
       end
 
-      before do
-        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
-      end
-
       it 'returns a part label' do
         expect(umrs.get_x2_part_info).to eq '|xlabel:55th legislature, 1997-1998'
       end
@@ -528,10 +454,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
           <partNumber>2011</partNumber>
           </titleInfo></mods>
         XML
-      end
-
-      before do
-        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
       end
 
       it 'returns a part label' do
@@ -553,10 +475,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
         XML
       end
 
-      before do
-        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
-      end
-
       it 'returns both the label and part number' do
         expect(umrs.get_x2_part_info).to eq '|xlabel:Issue #3. 2011|xsort:123'
       end
@@ -573,10 +491,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
           </titleInfo>
           </mods>
         XML
-      end
-
-      before do
-        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
       end
 
       it 'returns both the label and part number' do
@@ -601,10 +515,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
         XML
       end
 
-      before do
-        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
-      end
-
       it 'returns the label from the primary title' do
         expect(umrs.get_x2_part_info).to eq '|xlabel:Issue #3. 2011'
       end
@@ -625,10 +535,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
           </titleInfo>
           </mods>
         XML
-      end
-
-      before do
-        allow(dor_item).to receive_messages(datastreams: { 'descMetadata' => desc_metadata_xml })
       end
 
       it 'returns the label from the first title' do
