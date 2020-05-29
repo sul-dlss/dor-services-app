@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::DroStructuralBuilder do
-  subject(:structural) { described_class.build(item) }
+RSpec.describe Cocina::FromFedora::DroStructural do
+  subject(:structural) { described_class.props(item) }
 
   let(:item) do
     Dor::Item.new(pid: 'druid:hx013yf6680')

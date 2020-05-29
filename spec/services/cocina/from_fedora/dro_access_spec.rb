@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::DROAccessBuilder do
-  subject(:access) { described_class.build(item) }
+RSpec.describe Cocina::FromFedora::DROAccess do
+  subject(:access) { described_class.props(item) }
 
   let(:item) do
     Dor::Item.new
