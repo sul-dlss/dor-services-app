@@ -22,8 +22,8 @@ module Cocina
           label: item.objectLabel.first || item.label,
           version: item.current_version.to_i,
           administrative: FromFedora::Administrative.props(item),
-          access: DROAccessBuilder.build(item),
-          structural: DroStructuralBuilder.build(item)
+          access: DROAccess.props(item),
+          structural: DroStructural.props(item)
         }.tap do |props|
           description = FromFedora::Descriptive.props(item)
           props[:description] = description unless description.nil?
