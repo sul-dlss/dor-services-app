@@ -142,7 +142,8 @@ RSpec.describe ContentMetadataGenerator do
         "label":"The object label","version":1,"access":{},
         "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
         "description":{"title":[{"status":"primary","value":"the object title"}]},
-        "identification":{},"structural":{"contains":#{filesets.to_json}}}
+        "identification":{"sourceId":"sul:9999999"},
+        "structural":{"contains":#{filesets.to_json}}}
     JSON
   end
 

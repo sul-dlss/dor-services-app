@@ -1594,6 +1594,7 @@ components:
         - label
         - type
         - version
+        - filename
         - access
         - administrative
         - hasMessageDigests
@@ -1810,7 +1811,7 @@ components:
         description:
           $ref: '#/components/schemas/Description'
         identification:
-          $ref: '#/components/schemas/Identification'
+          $ref: '#/components/schemas/RequestIdentification'
         structural:
           $ref: '#/components/schemas/RequestDROStructural'
         geographic:
@@ -1904,11 +1905,30 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RequestFile'
+    RequestIdentification:
+      description: Same as a Identification, but requires a sourceId.
+      type: object
+      additionalProperties: false
+      properties:
+        sourceId:
+          type: string
+          example: 'sul:PC0170_s3_Fiesta_Bowl_2012-01-02_210609_2026'
+        catalogLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatalogLink'
+      required:
+        - sourceId
     Sequence:
       description: A sequence or ordering of resources within a Collection or Object.
       type: object
       additionalProperties: false
       properties:
+        members:
+          description: "Identifiers for Members in their stated Order for the Sequence."
+          type: array
+          items:
+            type: string
         viewingDirection:
           description: The direction that a sequence of canvases should be displayed to the user
           type: string
