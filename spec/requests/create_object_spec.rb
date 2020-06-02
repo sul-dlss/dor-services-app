@@ -972,4 +972,83 @@ RSpec.describe 'Create object' do
       end
     end
   end
+
+  context 'when type does not have a process tag (e.g., webarchive-binary)' do
+    before do
+      allow(Dor::SearchService).to receive(:query_by_id).and_return([])
+      allow_any_instance_of(Dor::Item).to receive(:save!)
+      allow(AdministrativeTags).to receive(:create)
+    end
+
+    let(:expected) do
+      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
+                              label: 'This is my label',
+                              version: 1,
+                              administrative: { hasAdminPolicy: 'druid:dd999df4567' },
+                              description: { title: [{ value: 'This is my label', status: 'primary' }] },
+                              identification: { sourceId: 'warc:999999' },
+                              externalIdentifier: 'druid:gg777gg7777',
+                              structural: {},
+                              access: { access: 'world' })
+    end
+    let(:data) do
+      <<~JSON
+        { "type":"http://cocina.sul.stanford.edu/models/webarchive-binary.jsonld",
+          "label":"This is my label","version":1,"access":{"access":"world"},
+          "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
+          "identification":{"sourceId":"warc:999999"},
+          "structural":{}}
+      JSON
+    end
+
+    it 'registers the object and does not create process tag' do
+      post '/v1/objects',
+           params: data,
+           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+      expect(response.body).to eq expected.to_json
+      expect(response.status).to eq(201)
+      expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+      expect(AdministrativeTags).not_to have_received(:create)
+    end
+  end
+
+  context 'when type does have a process tag' do
+    before do
+      allow(Dor::SearchService).to receive(:query_by_id).and_return([])
+      allow_any_instance_of(Dor::Item).to receive(:save!)
+      allow(AdministrativeTags).to receive(:create)
+    end
+
+    let(:expected) do
+      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
+                              label: 'This is my label',
+                              version: 1,
+                              administrative: { hasAdminPolicy: 'druid:dd999df4567' },
+                              description: { title: [{ value: 'This is my label', status: 'primary' }] },
+                              identification: { sourceId: 'warc:999999' },
+                              externalIdentifier: 'druid:gg777gg7777',
+                              structural: {},
+                              access: { access: 'world' })
+    end
+    let(:data) do
+      <<~JSON
+        { "type":"http://cocina.sul.stanford.edu/models/object.jsonld",
+          "label":"This is my label","version":1,"access":{"access":"world"},
+          "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
+          "identification":{"sourceId":"warc:999999"},
+          "structural":{}}
+      JSON
+    end
+
+    it 'registers the object and creates process tag' do
+      post '/v1/objects',
+           params: data,
+           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+      expect(response.body).to eq expected.to_json
+      expect(response.status).to eq(201)
+      expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
+      expect(AdministrativeTags).to have_received(:create).with(pid: 'druid:gg777gg7777',
+                                                                tags: ['Process : Content Type : File'])
+    end
+  end
 end

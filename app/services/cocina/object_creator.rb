@@ -150,9 +150,11 @@ module Cocina
     end
 
     def add_dro_tags(pid, obj)
-      tags = [ToFedora::ProcessTag.map(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection)]
+      tags = []
+      process_tag = ToFedora::ProcessTag.map(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection)
+      tags << process_tag if process_tag
       tags << "Project : #{obj.administrative.partOfProject}" if obj.administrative.partOfProject
-      AdministrativeTags.create(pid: pid, tags: tags)
+      AdministrativeTags.create(pid: pid, tags: tags) if tags.any?
     end
 
     def add_collection_tags(pid, obj)
