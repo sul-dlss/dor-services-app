@@ -24,11 +24,9 @@ module Cocina
                 'Document'
               when Cocina::Models::Vocab.object
                 'File'
-              else
-                raise "unable to find process tag for #{type}"
               end
 
-        "Process : Content Type : #{tag}"
+        "Process : Content Type : #{tag}" if tag
       end
     end
   end
