@@ -21,7 +21,14 @@ module Cocina
             structural[:hasMemberOrders] = [{ viewingDirection: 'right-to-left' }]
           end
 
-          structural[:contains] = build_filesets(item.contentMetadata, version: item.current_version.to_i, id: item.pid) unless item.contentMetadata.new?
+          contains = build_filesets(item.contentMetadata, version: item.current_version.to_i, id: item.pid)
+          structural[:contains] = contains if contains.present?
+
+          sequence = build_sequence(item.contentMetadata)
+          if sequence.present?
+            structural[:hasMemberOrders] ||= [{}]
+            structural[:hasMemberOrders].first[:members] = sequence
+          end
           structural[:hasAgreement] = item.identityMetadata.agreementId.first unless item.identityMetadata.agreementId.empty?
           # Note that there is a bug with item.collection_ids that returns [] until item.collections is called. Below side-steps this.
           structural[:isMemberOf] = item.collections.first.id if item.collections.present?
@@ -33,7 +40,7 @@ module Cocina
       attr_reader :item
 
       def build_filesets(content_metadata_ds, version:, id:)
-        content_metadata_ds.ng_xml.xpath('//resource').map.with_index(1) do |resource_node, index|
+        content_metadata_ds.ng_xml.xpath('//resource[file]').map.with_index(1) do |resource_node, index|
           files = build_files(resource_node.xpath('file'), version: version, parent_id: id)
           structural = {}
           structural[:contains] = files if files.present?
@@ -47,6 +54,13 @@ module Cocina
             # Use external identifier if label blank (which it is at least for some WAS Crawls).
             attrs[:label] = label.presence || attrs[:externalIdentifier]
           end
+        end
+      end
+
+      # @return [Array<String>] the identifiers of files in a sequence for a virtual object
+      def build_sequence(content_metadata_ds)
+        content_metadata_ds.ng_xml.xpath('//resource/externalFile').map do |resource_node|
+          "#{resource_node['resourceId']}/#{resource_node['fileId']}"
         end
       end
 
