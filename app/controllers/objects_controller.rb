@@ -4,28 +4,28 @@ class ObjectsController < ApplicationController
   before_action :load_item, except: [:create]
 
   rescue_from(Cocina::ObjectUpdater::NotImplemented) do |e|
-    render status: :unprocessable_entity, plain: e.message
+    json_api_error(status: :unprocessable_entity, message: e.message)
   end
 
   rescue_from(ActiveFedora::ObjectNotFoundError) do |e|
-    render status: :not_found, plain: e.message
+    json_api_error(status: :not_found, message: e.message)
   end
 
   rescue_from(Dor::ParameterError) do |e|
-    render status: :bad_request, plain: e.message
+    json_api_error(status: :bad_request, message: e.message)
   end
 
   rescue_from(Dor::DuplicateIdError) do |e|
-    render status: :conflict, plain: e.message
+    json_api_error(status: :conflict, message: e.message)
   end
 
   rescue_from(Dry::Struct::Error) do |e|
-    render status: :internal_server_error, plain: e.message
+    json_api_error(status: :internal_server_error, message: e.message)
     raise e
   end
 
   rescue_from(SymphonyReader::ResponseError) do |e|
-    render status: :bad_gateway, plain: e.message
+    json_api_error(status: :bad_gateway, message: e.message)
   end
 
   def create
@@ -104,12 +104,27 @@ class ObjectsController < ApplicationController
   # This proxies a request to the Goobi server and proxies it's response to the client.
   def notify_goobi
     response = Dor::Goobi.new(@item).register
-    return render status: :conflict, plain: response.body if response.status == 409
+    return json_api_error(status: :conflict, message: response.body) if response.status == 409
 
     proxy_faraday_response(response)
   end
 
   private
+
+  def json_api_error(status:, message:)
+    status_code = Rack::Utils.status_code(status)
+    render status: status,
+           content_type: 'application/vnd.api+json',
+           json: {
+             errors: [
+               {
+                 'status': status_code.to_s,
+                 'title': Rack::Utils::HTTP_STATUS_CODES[status_code],
+                 'detail': message
+               }
+             ]
+           }
+  end
 
   def workflow_client
     WorkflowClientFactory.build

@@ -409,8 +409,11 @@ RSpec.describe 'Create object' do
           post '/v1/objects',
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(response.status).to eq(400)
-          expect(response.body).to eq('Not all files have dark access and/or are unshelved when item access is dark: ["00001.jp2", "00002.html", "00002.jp2"]')
+          expect(response.status).to eq 400
+          expect(response.body).to eq '{"errors":[' \
+            '{"status":"400","title":"Bad Request",' \
+            '"detail":"Not all files have dark access and/or are unshelved when item access is dark: ' \
+            '[\\"00001.jp2\\", \\"00002.html\\", \\"00002.jp2\\"]"}]}'
         end
       end
     end
