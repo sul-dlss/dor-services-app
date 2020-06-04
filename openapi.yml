@@ -1034,6 +1034,12 @@ paths:
                   - $ref: '#/components/schemas/DRO'
                   - $ref: '#/components/schemas/Collection'
                   - $ref: '#/components/schemas/AdminPolicy'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       parameters:
         - name: id
           in: path

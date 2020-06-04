@@ -45,6 +45,10 @@ class ObjectsController < ApplicationController
     models = ActiveFedora::ContentModel.models_asserted_by(@item)
     @item = @item.adapt_to(Etd) if models.include?('info:fedora/afmodel:Etd')
     render json: Cocina::Mapper.build(@item)
+  rescue Cocina::Mapper::MissingTitle
+    json_api_error(status: :unprocessable_entity,
+                   title: 'Missing title',
+                   message: "All objects are required to have a title, but #{params[:id]} appears to be malformed as a title cannot be found.")
   end
 
   # Initialize specified workflow (assemblyWF by default), and also version if needed

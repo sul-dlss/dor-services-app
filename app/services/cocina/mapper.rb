@@ -5,6 +5,10 @@ module Cocina
   class Mapper
     # Raised when called on something other than an item (DRO), etd, collection, or adminPolicy (APO)
     class UnsupportedObjectType < StandardError; end
+
+    # Raised when we can't figure out the title for the object.
+    class MissingTitle < StandardError; end
+
     # @param [Dor::Abstract] item the Fedora object to convert to a cocina object
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
     def self.build(item)
