@@ -389,6 +389,76 @@ RSpec.describe 'Update object' do
       end
 
       context 'when access match' do
+        let(:structural) do
+          {
+            isMemberOf: 'druid:xx888xx7777',
+            contains: [
+              {
+                type: 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+                externalIdentifier: 'gg777gg7777_1', label: 'Page 1', version: 1,
+                structural: {
+                  contains: [
+                    {
+                      type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                      externalIdentifier: 'druid:gg777gg7777/00001.html',
+                      label: '00001.html',
+                      filename: '00001.html',
+                      size: 0,
+                      version: 1,
+                      hasMimeType: 'text/html',
+                      hasMessageDigests: [
+                        {
+                          type: 'sha1', digest: 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'
+                        }, {
+                          type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
+                        }
+                      ],
+                      access: { access: 'dark', download: 'none' },
+                      administrative: { sdrPreserve: true, shelve: false }
+                    }, {
+                      type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                      externalIdentifier: 'druid:gg777gg7777/00001.jp2',
+                      label: '00001.jp2',
+                      filename: '00001.jp2',
+                      size: 0, version: 1,
+                      hasMimeType: 'image/jp2', hasMessageDigests: [],
+                      access: { access: 'world', download: 'none' },
+                      administrative: { sdrPreserve: true, shelve: true }
+                    }
+                  ]
+                }
+              }, {
+                type: 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+                externalIdentifier: 'gg777gg7777_2',
+                label: 'Page 2', version: 1,
+                structural: {
+                  contains: [
+                    {
+                      type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                      externalIdentifier: 'druid:gg777gg7777/00002.html',
+                      label: '00002.html', filename: '00002.html', size: 0,
+                      version: 1, hasMimeType: 'text/html',
+                      hasMessageDigests: [],
+                      access: { access: 'world', download: 'none' },
+                      administrative: { sdrPreserve: true, shelve: false }
+                    }, {
+                      type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                      externalIdentifier: 'druid:gg777gg7777/00002.jp2',
+                      label: '00002.jp2',
+                      filename: '00002.jp2',
+                      size: 0, version: 1,
+                      hasMimeType: 'image/jp2',
+                      hasMessageDigests: [],
+                      access: { access: 'world', download: 'none' },
+                      administrative: { sdrPreserve: true, shelve: true }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        end
+
         it 'creates contentMetadata' do
           patch "/v1/objects/#{druid}",
                 params: data,
