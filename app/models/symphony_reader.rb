@@ -6,6 +6,10 @@ class SymphonyReader
 
   attr_reader :catkey, :barcode
 
+  RETRIABLE_EXCEPTIONS = [Errno::ETIMEDOUT,
+                          Faraday::TimeoutError,
+                          Faraday::RetriableResponse].freeze
+
   def self.client
     Faraday.new(headers: Settings.catalog.symphony.headers)
   end
@@ -65,24 +69,25 @@ class SymphonyReader
   end
 
   def symphony_response(url)
-    resp = client.get(url)
+    with_retries(max_tries: Settings.request.max_tries,
+                 base_sleep_seconds: Settings.request.base_sleep_seconds,
+                 max_sleep_seconds: Settings.request.max_sleep_seconds,
+                 rescue: RETRIABLE_EXCEPTIONS) do |_attempt|
+      resp = client.get(url)
 
-    if resp.status == 200
-      validate_response(resp)
-      return resp
-    elsif resp.status == 404
-      # 404 received here is for the catkey, but this app cares about the druid
-      #   for the DOR object, hence raising 404 from here could be misleading
-      errmsg = "Record not found in Symphony. API call: #{url}"
-    else
-      errmsg = "Got HTTP Status-Code #{resp.status} calling #{url}: #{resp.body}"
+      if resp.status == 200
+        validate_response(resp)
+        return resp
+      elsif resp.status == 404
+        # 404 received here is for the catkey, but this app cares about the druid
+        #   for the DOR object, hence raising 404 from here could be misleading
+        errmsg = "Record not found in Symphony. API call: #{url}"
+      else
+        errmsg = "Got HTTP Status-Code #{resp.status} calling #{url}: #{resp.body}"
+      end
+
+      raise ResponseError, errmsg
     end
-
-    raise ResponseError, errmsg
-  rescue Faraday::TimeoutError => e
-    errmsg = "Timeout for Symphony response for API call #{url}: #{e}"
-    Honeybadger.notify(errmsg)
-    raise ResponseError, errmsg
   end
 
   # expects resp.status to be 200;  does not check response code

@@ -17,9 +17,9 @@ module Dor
     end
 
     def register
-      with_retries(max_tries: Settings.goobi.max_tries,
-                   base_sleep_seconds: Settings.goobi.base_sleep_seconds,
-                   max_sleep_seconds: Settings.goobi.max_sleep_seconds,
+      with_retries(max_tries: Settings.request.max_tries,
+                   base_sleep_seconds: Settings.request.base_sleep_seconds,
+                   max_sleep_seconds: Settings.request.max_sleep_seconds,
                    rescue: RETRIABLE_EXCEPTIONS) do |_attempt|
         response = Faraday.post(Settings.goobi.url, xml_request, 'Content-Type' => 'application/xml')
         # When we upgrade to Faraday 1.0, we can rely on Faraday::ServerError

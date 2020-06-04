@@ -153,21 +153,6 @@ RSpec.describe SymphonyReader do
           expect { marc_reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
         end
       end
-
-      context 'when Faraday::Timeout' do
-        let(:faraday_msg) { 'faraday failed' }
-
-        before do
-          stub_request(:get, format(marc_url, catkey: catkey)).to_raise(Faraday::TimeoutError.new(faraday_msg))
-        end
-
-        it 'raises ResponseError and notifies Honeybadger' do
-          msg_regex = %r{^Timeout for Symphony response for API call https:\/\/sirsi.example.com\/symws\/catalog\/bib\/key\/catkey\?includeFields=bib: #{faraday_msg}}
-          allow(Honeybadger).to receive(:notify)
-          expect { marc_reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
-          expect(Honeybadger).to have_received(:notify).with(msg_regex)
-        end
-      end
     end
   end
 end
