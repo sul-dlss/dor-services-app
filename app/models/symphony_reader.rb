@@ -21,6 +21,7 @@ class SymphonyReader
     barcode_json['fields']['bib']['key']
   end
 
+  # @raises ResponseError
   def to_marc
     @catkey = fetch_catkey if catkey.nil? # we need a catkey to do this lookup, so fetch it from the barcode if none exists
 
@@ -99,14 +100,17 @@ class SymphonyReader
     raise ResponseError, errmsg
   end
 
+  # @raises ResponseError
   def marc_json
     @marc_json ||= JSON.parse(fetch_marc_response.body)
   end
 
+  # @raises ResponseError
   def barcode_json
     @barcode_json ||= JSON.parse(fetch_barcode_response.body)
   end
 
+  # @raises ResponseError
   def bib_record
     return {} unless marc_json['fields'] && marc_json['fields']['bib']
 

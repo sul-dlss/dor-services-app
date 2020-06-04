@@ -4,10 +4,12 @@ module Cocina
   # Given a Cocina model, create an ActiveFedora model.
   # rubocop:disable Metrics/ClassLength
   class ObjectCreator
+    # @raises SymphonyReader::ResponseError if symphony connection failed
     def self.create(params, event_factory: EventFactory)
       new.create(params, event_factory: event_factory)
     end
 
+    # @raises SymphonyReader::ResponseError if symphony connection failed
     def create(params, event_factory:)
       obj = Cocina::Models.build_request(params)
 
@@ -42,6 +44,7 @@ module Cocina
 
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj
     # @return [Dor::Abstract] a persisted ActiveFedora model
+    # @raises SymphonyReader::ResponseError if symphony connection failed
     def create_from_model(obj)
       af_object = case obj
                   when Cocina::Models::RequestAdminPolicy
@@ -78,6 +81,7 @@ module Cocina
 
     # @param [Cocina::Models::RequestDRO] obj
     # @return [Dor::Item] a persisted Item model
+    # @raises SymphonyReader::ResponseError if symphony connection failed
     def create_dro(obj)
       pid = Dor::SuriService.mint_id
       Dor::Item.new(pid: pid,
@@ -129,6 +133,7 @@ module Cocina
       obj.identification&.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
     end
 
+    # @raises SymphonyReader::ResponseError if symphony connection failed
     def add_description(item, obj)
       # Hydrus doesn't set description. See https://github.com/sul-dlss/hydrus/issues/421
       return if obj.label == 'Hydrus'
