@@ -63,6 +63,22 @@ RSpec.describe 'Create object' do
       allow(Dor::SearchService).to receive(:query_by_id).and_return(search_result)
     end
 
+    context 'when the service is disabled' do
+      before do
+        allow(Settings.enabled_features).to receive(:registration).and_return(false)
+      end
+
+      let(:search_result) { ['druid:abc123'] }
+
+      it 'returns a 503 error' do
+        post '/v1/objects',
+             params: data,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response.status).to eq 503
+        expect(response.body).to eq '{"errors":[{"status":"503","title":"Service Unavailable","detail":"Registration is temporarily disabled"}]}'
+      end
+    end
+
     context 'when an object already exists' do
       let(:search_result) { ['druid:abc123'] }
 
