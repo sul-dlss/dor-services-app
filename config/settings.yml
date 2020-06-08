@@ -1,3 +1,7 @@
+# Feature flippers
+enabled_features:
+  registration: true
+
 content:
   base_dir: '/dor/workspace'
 
