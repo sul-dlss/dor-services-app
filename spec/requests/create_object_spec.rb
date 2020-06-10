@@ -10,6 +10,7 @@ RSpec.describe 'Create object' do
   before do
     allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
     allow(Dor).to receive(:find).and_return(apo)
+    allow(Cocina::ActiveFedoraPersister).to receive(:store)
     stub_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')
   end
 
@@ -119,7 +120,6 @@ RSpec.describe 'Create object' do
         end
 
         before do
-          allow_any_instance_of(Dor::Item).to receive(:save!)
           allow(MetadataService).to receive(:fetch).and_return(mods_from_symphony)
         end
 
@@ -606,7 +606,6 @@ RSpec.describe 'Create object' do
 
     before do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
-      allow_any_instance_of(Dor::Item).to receive(:save!)
     end
 
     it 'registers the book and sets the viewing direction' do
@@ -694,7 +693,6 @@ RSpec.describe 'Create object' do
       end
 
       before do
-        allow_any_instance_of(Dor::Collection).to receive(:save!)
         allow(MetadataService).to receive(:fetch).and_return(mods_from_symphony)
       end
 
@@ -710,10 +708,6 @@ RSpec.describe 'Create object' do
     end
 
     context 'when the catkey is not provided and save is successful' do
-      before do
-        allow_any_instance_of(Dor::Collection).to receive(:save!)
-      end
-
       it 'creates the collection' do
         post '/v1/objects',
              params: data,
@@ -753,10 +747,6 @@ RSpec.describe 'Create object' do
                                          note: [{ value: 'coll abstract', type: 'summary' }]
                                        },
                                        externalIdentifier: druid)
-      end
-
-      before do
-        allow_any_instance_of(Dor::Collection).to receive(:save!)
       end
 
       it 'creates the collection with populated description title and note' do
@@ -802,7 +792,6 @@ RSpec.describe 'Create object' do
 
     context 'when the request is successful' do
       before do
-        allow_any_instance_of(Dor::AdminPolicyObject).to receive(:save!)
         # This stubs out Solr:
         allow_any_instance_of(Dor::AdminPolicyObject).to receive(:admin_policy_object_id).and_return('druid:dd999df4567')
       end
@@ -857,7 +846,6 @@ RSpec.describe 'Create object' do
 
     before do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
-      allow_any_instance_of(Dor::Item).to receive(:save!)
     end
 
     it 'registers the book and sets the rights' do
@@ -909,7 +897,6 @@ RSpec.describe 'Create object' do
 
     before do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
-      allow_any_instance_of(Dor::Item).to receive(:save!)
     end
 
     it 'registers the book and sets the rights' do
@@ -959,7 +946,6 @@ RSpec.describe 'Create object' do
 
     before do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
-      allow_any_instance_of(Dor::Item).to receive(:save!)
     end
 
     it 'registers the book and sets the rights' do
@@ -976,7 +962,6 @@ RSpec.describe 'Create object' do
   context 'when no description is provided (registration use case)' do
     before do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
-      allow_any_instance_of(Dor::Item).to receive(:save!)
     end
 
     context 'when structural is provided' do
@@ -1079,7 +1064,6 @@ RSpec.describe 'Create object' do
   context 'when type does not have a process tag (e.g., webarchive-binary)' do
     before do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
-      allow_any_instance_of(Dor::Item).to receive(:save!)
       allow(AdministrativeTags).to receive(:create)
     end
 
@@ -1118,7 +1102,6 @@ RSpec.describe 'Create object' do
   context 'when type does have a process tag' do
     before do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
-      allow_any_instance_of(Dor::Item).to receive(:save!)
       allow(AdministrativeTags).to receive(:create)
     end
 

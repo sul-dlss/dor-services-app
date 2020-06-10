@@ -5,17 +5,17 @@ module Cocina
   # rubocop:disable Metrics/ClassLength
   class ObjectCreator
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def self.create(params, event_factory: EventFactory)
-      new.create(params, event_factory: event_factory)
+    def self.create(params, event_factory: EventFactory, persister: ActiveFedoraPersister)
+      new.create(params, event_factory: event_factory, persister: persister)
     end
 
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def create(params, event_factory:)
+    def create(params, event_factory:, persister:)
       obj = Cocina::Models.build_request(params)
 
       # Validate will raise an error if not valid.
       validate(obj)
-      af_model = create_from_model(obj)
+      af_model = create_from_model(obj, persister: persister)
 
       # Fedora 3 has no unique constrains, so
       # index right away to reduce the likelyhood of duplicate sourceIds
@@ -43,9 +43,10 @@ module Cocina
     end
 
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj
+    # @param [#store] persister the service responsible for persisting the model
     # @return [Dor::Abstract] a persisted ActiveFedora model
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def create_from_model(obj)
+    def create_from_model(obj, persister:)
       af_object = case obj
                   when Cocina::Models::RequestAdminPolicy
                     create_apo(obj)
@@ -57,7 +58,7 @@ module Cocina
                     raise "unsupported type #{obj.type}"
                   end
 
-      af_object.save!
+      persister.store(af_object)
       af_object
     end
 
@@ -174,6 +175,8 @@ module Cocina
                       "loc:#{access.readLocation}"
                     when 'citation-only'
                       'none'
+                    when 'dark'
+                      'dark'
                     else
                       access.download == 'none' ? "#{access.access}-nd" : access.access
                     end
