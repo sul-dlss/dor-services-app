@@ -59,7 +59,7 @@ class ReleaseTags
     # @param tags [Hash] a hash of tags obtained via Dor::Item.release_tags or matching format
     # @return [Hash] a hash of latest tags for each to value
     def newest_release_tag(tags)
-      Hash[tags.map { |key, val| [key, newest_release_tag_in_an_array(val)] }]
+      tags.transform_values { |val| newest_release_tag_in_an_array(val) }
     end
 
     private
@@ -79,7 +79,7 @@ class ReleaseTags
     # @return [Hash] a hash of self tags for each to value
     def tags_for_what_value(tags, what_target)
       return_hash = {}
-      tags.keys.each do |key|
+      tags.each_key do |key|
         self_tags = tags[key].select { |tag| tag['what'].casecmp(what_target) == 0 }
         return_hash[key] = self_tags unless self_tags.empty?
       end
@@ -91,7 +91,7 @@ class ReleaseTags
     # @param hash_two [Hash] a hash of tags obtained via Dor::Item.release_tags or matching format
     # @return [Hash] the combined hash with uniquiness enforced
     def combine_two_release_tag_hashes(hash_one, hash_two)
-      hash_two.keys.each do |key|
+      hash_two.each_key do |key|
         hash_one[key] = hash_two[key] if hash_one[key].nil?
         hash_one[key] = (hash_one[key] + hash_two[key]).uniq unless hash_one[key].nil?
       end

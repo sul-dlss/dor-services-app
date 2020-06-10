@@ -12,6 +12,7 @@ class PublicXmlService
   end
 
   # @raise [Dor::DataError]
+  # rubocop:disable Metrics/AbcSize
   def to_xml
     pub = Nokogiri::XML('<publicObject/>').root
     pub['id'] = object.pid
@@ -35,6 +36,7 @@ class PublicXmlService
     new_pub.encoding = 'UTF-8'
     new_pub.to_xml
   end
+  # rubocop:enable Metrics/AbcSize
 
   private
 

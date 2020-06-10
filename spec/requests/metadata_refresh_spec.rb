@@ -114,7 +114,7 @@ RSpec.describe 'Refresh metadata' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.status).to eq(500)
-        expect(response.body).to match(%r{^Got HTTP Status-Code 403 calling https:\/\/sirsi.example.com\/symws\/catalog\/bib\/key\/666\?includeFields=bib:.*Something somewhere went wrong.})
+        expect(response.body).to match(%r{^Got HTTP Status-Code 403 calling https://sirsi.example.com/symws/catalog/bib/key/666\?includeFields=bib:.*Something somewhere went wrong.})
       end
     end
   end

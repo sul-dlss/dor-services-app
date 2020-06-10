@@ -31,6 +31,7 @@ class VersionService
   # @option opts [String] :opening_user_name add opening username to the events datastream
   # @raise [Dor::Exception] if the object hasn't been accessioned, or if a version is already opened
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
+  # rubocop:disable Metrics/AbcSize
   def open(opts = {})
     sdr_version = try_to_get_current_version(opts[:assume_accessioned])
 
@@ -49,6 +50,7 @@ class VersionService
     work.save!
     event_factory.create(druid: work.pid, event_type: 'version_open', data: { who: opts[:opening_user_name], version: work.current_version })
   end
+  # rubocop:enable Metrics/AbcSize
 
   # Determines whether a new version can be opened for an object.
   # @param [Hash] opts optional params
@@ -72,6 +74,7 @@ class VersionService
   # @option opts [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
   # @raise [Dor::Exception] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a tag or description
+  # rubocop:disable Metrics/AbcSize
   def close(opts = {})
     unless opts.empty?
       work.versionMetadata.update_current_version(description: opts[:description], significance: opts[:significance].to_sym) if opts[:description] && opts[:significance]
@@ -94,6 +97,7 @@ class VersionService
     work.save!
     event_factory.create(druid: work.pid, event_type: 'version_close', data: { who: opts[:user_name], version: work.current_version })
   end
+  # rubocop:enable Metrics/AbcSize
 
   # Performs checks on whether a new version can be opened for an object
   # @return [Integer] the version from Preservation (SDR) if a version can be opened

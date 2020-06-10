@@ -41,6 +41,7 @@ class PublicDescMetadataService
   end
 
   # Create MODS accessCondition statements from rightsMetadata
+  # rubocop:disable Metrics/AbcSize
   def add_access_conditions!
     # clear out any existing accessConditions
     doc.xpath('//mods:accessCondition', 'mods' => 'http://www.loc.gov/mods/v3').each(&:remove)
@@ -77,6 +78,7 @@ class PublicDescMetadataService
       doc.root.element_children.last.add_next_sibling doc.create_element('accessCondition', new_text, type: 'license')
     end
   end
+  # rubocop:enable Metrics/AbcSize
 
   # expand constituent relations into relatedItem references -- see JUMBO-18
   # @return [Void]

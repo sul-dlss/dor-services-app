@@ -189,7 +189,7 @@ RSpec.describe 'Create object' do
         end
       end
 
-      # rubocop:disable Metrics/LineLength
+      # rubocop:disable Layout/LineLength
       context 'when a really long title' do
         let(:item) do
           Dor::Item.new(pid: druid,
@@ -230,7 +230,7 @@ RSpec.describe 'Create object' do
           expect(item.objectType.first).to eq('item')
         end
       end
-      # rubocop:enable Metrics/LineLength
+      # rubocop:enable Layout/LineLength
     end
 
     context 'when hydrus' do

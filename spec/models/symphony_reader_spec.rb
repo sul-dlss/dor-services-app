@@ -149,7 +149,7 @@ RSpec.describe SymphonyReader do
         end
 
         it 'raises ResponseError' do
-          msg_regex = %r{Got HTTP Status-Code 403 calling https:\/\/sirsi.example.com\/symws\/catalog\/bib\/key\/catkey\?includeFields=bib:.*Something somewhere went wrong.}
+          msg_regex = %r{Got HTTP Status-Code 403 calling https://sirsi.example.com/symws/catalog/bib/key/catkey\?includeFields=bib:.*Something somewhere went wrong.}
           expect { marc_reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
         end
       end
@@ -162,7 +162,7 @@ RSpec.describe SymphonyReader do
         end
 
         it 'raises ResponseError and notifies Honeybadger' do
-          msg_regex = %r{^Timeout for Symphony response for API call https:\/\/sirsi.example.com\/symws\/catalog\/bib\/key\/catkey\?includeFields=bib: #{faraday_msg}}
+          msg_regex = %r{^Timeout for Symphony response for API call https://sirsi.example.com/symws/catalog/bib/key/catkey\?includeFields=bib: #{faraday_msg}}
           allow(Honeybadger).to receive(:notify)
           expect { marc_reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
           expect(Honeybadger).to have_received(:notify).with(msg_regex)
