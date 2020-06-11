@@ -21,7 +21,8 @@ class MetadataController < ApplicationController
                          content: 'contentMetadata',
                          rights: 'rightsMetadata',
                          identity: 'identityMetadata',
-                         provenance: 'provenanceMetadata' }
+                         provenance: 'provenanceMetadata',
+                         geo: 'geoMetadata' }
 
     datastream_names.each do |section, datastream_name|
       values = params[section]

@@ -11,6 +11,7 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
   let(:contentMetadata) { instance_double(Dor::ContentMetadataDS, createDate: create_date) }
   let(:provenanceMetadata) { instance_double(Dor::ProvenanceMetadataDS, createDate: create_date) }
   let(:identityMetadata) { instance_double(Dor::IdentityMetadataDS, createDate: create_date) }
+  let(:geo_metadata) { instance_double(Dor::GeoMetadataDS, createDate: create_date) }
 
   let(:datastreams) do
     {
@@ -19,7 +20,8 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
       'technicalMetadata' => technicalMetadata,
       'contentMetadata' => contentMetadata,
       'provenanceMetadata' => provenanceMetadata,
-      'identityMetadata' => identityMetadata
+      'identityMetadata' => identityMetadata,
+      'geoMetadata' => geo_metadata
     }
   end
 
@@ -41,6 +43,10 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
         "provenance": {
           "updated": "2019-11-08T15:15:43Z",
           "content": "<provMetadata></provMetadata>"
+        },
+        "geo": {
+          "updated": "2019-11-08T15:15:43Z",
+          "content": "<geoMetadata></geoMetadata>"
         }
       }
     JSON
@@ -80,6 +86,12 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
         .with(datastream: provenanceMetadata,
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
               content: '<provMetadata></provMetadata>',
+              event_factory: EventFactory)
+
+      expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
+        .with(datastream: geo_metadata,
+              updated: Time.zone.parse('2019-11-08T15:15:43Z'),
+              content: '<geoMetadata></geoMetadata>',
               event_factory: EventFactory)
 
       expect(work).to have_received(:save!)
