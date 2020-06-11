@@ -56,7 +56,7 @@ module Cocina
       admin_node.add_child "<dissemination><workflow id=\"#{obj.administrative.registrationWorkflow}\"></dissemination>"
       item.administrativeMetadata.ng_xml_will_change!
 
-      add_identity_metadata(obj, item, 'adminPolicy')
+      Cocina::ToFedora::Identity.apply(obj, item, 'adminPolicy')
     end
 
     def update_collection
@@ -64,7 +64,7 @@ module Cocina
       item.catkey = catkey_for(obj)
       item.label = truncate_label(obj.label)
 
-      add_identity_metadata(obj, item, 'collection')
+      Cocina::ToFedora::Identity.apply(obj, item, 'collection')
     end
 
     def update_dro
@@ -81,7 +81,7 @@ module Cocina
       create_embargo(item, obj.access.embargo) if obj.access.embargo
       update_content_metadata(item, obj)
 
-      add_identity_metadata(obj, item, 'item')
+      Cocina::ToFedora::Identity.apply(obj, item, 'item')
     end
 
     def update_content_metadata(item, obj)
@@ -152,16 +152,6 @@ module Cocina
       rights_type = access == 'citation-only' ? 'none' : access
       Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, rights_type)
       item.rightsMetadata.ng_xml_will_change!
-    end
-
-    # TODO: duplicate from ObjectCreator
-    def add_identity_metadata(obj, item, object_type)
-      item.objectId = item.pid
-      item.objectCreator = 'DOR'
-      # May have already been set when setting descriptive metadata.
-      item.objectLabel = obj.label if item.objectLabel.empty?
-      item.objectType = object_type
-      # Not currently mapping other ids.
     end
 
     # TODO: duplicate from ObjectCreator
