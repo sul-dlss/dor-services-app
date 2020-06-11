@@ -76,7 +76,7 @@ module Cocina
         admin_node.add_child "<dissemination><workflow id=\"#{obj.administrative.registrationWorkflow}\"></dissemination>"
         item.administrativeMetadata.ng_xml_will_change!
 
-        add_identity_metadata(obj, item, 'adminPolicy')
+        Cocina::ToFedora::Identity.apply(obj, item, 'adminPolicy')
       end
     end
 
@@ -105,7 +105,7 @@ module Cocina
 
         item.contentMetadata.content = ContentMetadataGenerator.generate(druid: pid, object: obj)
 
-        add_identity_metadata(obj, item, 'item')
+        Cocina::ToFedora::Identity.apply(obj, item, 'item')
       end
     end
 
@@ -126,7 +126,7 @@ module Cocina
                           label: truncate_label(obj.label)).tap do |item|
         add_description(item, obj)
         add_collection_tags(pid, obj)
-        add_identity_metadata(obj, item, 'collection')
+        Cocina::ToFedora::Identity.apply(obj, item, 'collection')
       end
     end
 
@@ -191,15 +191,6 @@ module Cocina
       apo = Dor.find(item.admin_policy_object_id)
       rights_xml = apo.defaultObjectRights.ng_xml
       item.rightsMetadata.content = rights_xml.to_s
-    end
-
-    def add_identity_metadata(obj, item, object_type)
-      item.objectId = item.pid
-      item.objectCreator = 'DOR'
-      # May have already been set when setting descriptive metadata.
-      item.objectLabel = obj.label if item.objectLabel.empty?
-      item.objectType = object_type
-      # Not currently mapping other ids.
     end
 
     def truncate_label(label)
