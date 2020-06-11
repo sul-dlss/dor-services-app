@@ -94,10 +94,8 @@ module Cocina
     end
 
     def validate
-      if obj.is_a?(Cocina::Models::DRO)
-        validator = ValidateDarkService.new(obj)
-        raise Dor::ParameterError, "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" unless validator.valid?
-      end
+      validator = ValidateDarkService.new(obj)
+      raise Dor::ParameterError, "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" unless validator.valid?
 
       raise Dor::ParameterError, "Identifier on the query and in the body don't match" if item.pid != obj.externalIdentifier
 

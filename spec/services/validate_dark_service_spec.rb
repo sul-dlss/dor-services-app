@@ -79,4 +79,20 @@ RSpec.describe ValidateDarkService do
       expect(validator.invalid_files.first.externalIdentifier).to eq('bc123df4567_1')
     end
   end
+
+  context 'with a non-DRO object' do
+    let(:item) do
+      Cocina::Models::Collection.new(
+        externalIdentifier: 'druid:bc123df4567',
+        label: 'The Structure of Scientific Revolutions',
+        type: Cocina::Models::Vocab.collection,
+        version: 1,
+        access: { access: access }
+      )
+    end
+
+    it 'is valid' do
+      expect(validator.valid?).to be true
+    end
+  end
 end

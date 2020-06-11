@@ -1,21 +1,22 @@
 # frozen_string_literal: true
 
-# Validates that shelve and publish file attributes are set to false for dark objects.
+# Validates that shelve and publish file attributes are set to false for dark DRO objects.
 class ValidateDarkService
-  # @param [Cocina::Models::DRO,Cocina::Models::RequestDRO] item to be validated
+  # @param [#dro?] item to be validated
   def initialize(item)
     @item = item
   end
 
+  # @return [Boolean] true if not a DRO (no validation necessary) or if the files have the correct attributes.
   def valid?
+    return true unless meets_preconditions?
+
     invalid_files.empty?
   end
 
   def invalid_files
     @invalid_files ||= begin
       [].tap do |invalid_files|
-        next unless item.access&.access == 'dark'
-
         files.each do |file|
           invalid_files << file if file.administrative.shelve || file.access.access != 'dark'
         end
@@ -30,6 +31,10 @@ class ValidateDarkService
   private
 
   attr_reader :item
+
+  def meets_preconditions?
+    item.dro? && item.access&.access == 'dark'
+  end
 
   def files
     [].tap do |files|
