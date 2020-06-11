@@ -238,6 +238,7 @@ RSpec.describe VersionService do
         allow(vmd_ds).to receive(:pid).and_return('druid:ab123cd4567')
         # stub out calls for open_for_versioning?
         allow(workflow_client).to receive(:active_lifecycle).and_return(true, false)
+        allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return('completed')
 
         allow(vmd_ds).to receive(:save)
         allow(ev_ds).to receive(:add_event)
@@ -292,6 +293,7 @@ RSpec.describe VersionService do
         allow(vmd_ds).to receive(:pid).and_return('druid:ab123cd4567')
         # stub out calls for open_for_versioning?
         allow(workflow_client).to receive(:active_lifecycle).and_return(true, false)
+        allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return('completed')
         allow(vmd_ds).to receive(:save)
         allow(ev_ds).to receive(:add_event)
         allow(obj).to receive(:save!)
@@ -312,11 +314,43 @@ RSpec.describe VersionService do
       end
     end
 
-    context 'when the object already has an active instance of accesssionWF' do
+    context 'when the object has an active accesssionWF' do
+      before do
+        allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return('completed')
+      end
+
       it 'raises an exception' do
         expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(Time.new)
         expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'submitted', version: '1').and_return(true)
         expect { close }.to raise_error(Dor::Exception, 'accessionWF already created for versioned object druid:ab12cd3456')
+      end
+    end
+
+    context 'when the object has an active assemblyWF' do
+      before do
+        allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return('waiting')
+      end
+
+      it 'raises an exception' do
+        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(Time.new)
+        expect { close }.to raise_error(Dor::Exception, 'Trying to close version on druid:ab12cd3456 which has active assemblyWF')
+        expect(workflow_client).to have_received(:workflow_status).with(hash_including(workflow: 'assemblyWF'))
+      end
+    end
+
+    context 'when the object has no assemblyWF' do
+      before do
+        allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return(nil)
+        allow(workflow_client).to receive(:close_version)
+        allow(obj).to receive(:save!)
+      end
+
+      it 'creates the accessioningWF' do
+        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(Time.new)
+        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'submitted', version: '1').and_return(false)
+        close
+        expect(workflow_client).to have_received(:workflow_status).with(hash_including(workflow: 'assemblyWF'))
+        expect(workflow_client).to have_received(:close_version).with(repo: 'dor', druid: druid, version: '1', create_accession_wf: true)
       end
     end
 

@@ -38,7 +38,7 @@ class VersionService
     vmd_ds.sync_then_increment_version sdr_version
     vmd_ds.save unless work.new_record?
 
-    WorkflowClientFactory.build.create_workflow_by_name(work.pid, 'versioningWF', version: work.current_version)
+    workflow_client.create_workflow_by_name(work.pid, 'versioningWF', version: work.current_version)
 
     return if (opts.keys & open_options_requiring_work_save).empty?
 
@@ -81,14 +81,15 @@ class VersionService
 
     raise Dor::Exception, "latest version in versionMetadata for #{work.pid} requires tag and description before it can be closed" unless work.versionMetadata.current_version_closeable?
     raise Dor::Exception, "Trying to close version on #{work.pid} which is not opened for versioning" unless open_for_versioning?
+    raise Dor::Exception, "Trying to close version on #{work.pid} which has active assemblyWF" if active_assembly_wf?
     raise Dor::Exception, "accessionWF already created for versioned object #{work.pid}" if accessioning?
 
     # Default to creating accessionWF when calling close_version
     create_accession_wf = opts.fetch(:start_accession, true)
-    WorkflowClientFactory.build.close_version(repo: 'dor',
-                                              druid: work.pid,
-                                              version: work.current_version,
-                                              create_accession_wf: create_accession_wf)
+    workflow_client.close_version(repo: 'dor',
+                                  druid: work.pid,
+                                  version: work.current_version,
+                                  create_accession_wf: create_accession_wf)
     work.events.add_event('close', opts[:user_name], "Version #{work.current_version} closed") if opts[:user_name]
     work.save!
     event_factory.create(druid: work.pid, event_type: 'version_close', data: { who: opts[:user_name], version: work.current_version })
@@ -105,7 +106,7 @@ class VersionService
     # The accessioned milestone is the last step of the accessionWF.
     # During local development, we need a way to open a new version even if the object has not been accessioned.
     raise(Dor::Exception, 'Object net yet accessioned') unless
-        assume_accessioned || WorkflowClientFactory.build.lifecycle('dor', work.pid, 'accessioned')
+        assume_accessioned || workflow_client.lifecycle('dor', work.pid, 'accessioned')
     # Raised when the current version has any incomplete wf steps and there is a versionWF.
     # The open milestone is part of the versioningWF.
     raise Dor::VersionAlreadyOpenError, 'Object already opened for versioning' if open_for_versioning?
@@ -122,7 +123,7 @@ class VersionService
   # Checks if current version has any incomplete wf steps and there is a versionWF
   # @return [Boolean] true if object is open for versioning
   def open_for_versioning?
-    return true if WorkflowClientFactory.build.active_lifecycle('dor', work.pid, 'opened', version: work.current_version)
+    return true if workflow_client.active_lifecycle('dor', work.pid, 'opened', version: work.current_version)
 
     false
   end
@@ -130,7 +131,7 @@ class VersionService
   # Checks if the current version has any incomplete wf steps and there is an accessionWF.
   # @return [Boolean] true if object is currently being accessioned
   def accessioning?
-    return true if WorkflowClientFactory.build.active_lifecycle('dor', work.pid, 'submitted', version: work.current_version)
+    return true if workflow_client.active_lifecycle('dor', work.pid, 'submitted', version: work.current_version)
 
     false
   end
@@ -141,5 +142,13 @@ class VersionService
 
   def open_options_requiring_work_save
     [:opening_user_name, :significance, :description]
+  end
+
+  def active_assembly_wf?
+    return true if workflow_client.workflow_status(druid: work.pid, version: work.current_version, workflow: 'assemblyWF', process: 'accessioning-initiate') == 'waiting'
+  end
+
+  def workflow_client
+    @workflow_client ||= WorkflowClientFactory.build
   end
 end
