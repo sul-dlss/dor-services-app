@@ -16,21 +16,16 @@ class WorkspacesController < ApplicationController
 
   def destroy
     druid = params[:object_id]
-    # decide whether the druid is full or truncated
-    if full_druid_tree?(druid)
-      CleanupResetService.cleanup_by_reset_druid druid
-    else
-      CleanupService.cleanup_by_druid druid
-    end
+    CleanupService.cleanup_by_druid druid
+
     EventFactory.create(druid: druid,
                         event_type: 'cleanup-workspace',
-                        data: { status: 'success', full_druid_tree: full_druid_tree?(druid) })
+                        data: { status: 'success' })
 
     head :no_content
   rescue Errno::ENOENT, Errno::ENOTEMPTY => e
     EventFactory.create(druid: druid, event_type: 'cleanup-workspace',
-                        data: { status: 'failure', full_druid_tree: full_druid_tree?(druid),
-                                message: e.message, backtrace: e.backtrace })
+                        data: { status: 'failure', message: e.message, backtrace: e.backtrace })
 
     render build_error('Unable to remove directory', e)
   end
@@ -47,14 +42,6 @@ class WorkspacesController < ApplicationController
   end
 
   private
-
-  # determines if the druid is the regular druid tree or the truncated one
-  def full_druid_tree?(druid)
-    workspace_root = Settings.cleanup.local_workspace_root
-    full_druid_tree = DruidTools::Druid.new(druid, workspace_root)
-    truncate_druid_tree = DruidTools::AccessDruid.new(druid, workspace_root)
-    (!Dir.glob(truncate_druid_tree.path).empty? && !Dir.glob(full_druid_tree.path + '*').empty?)
-  end
 
   # JSON-API error response
   def build_error(msg, err)
