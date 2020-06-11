@@ -379,6 +379,7 @@ RSpec.describe 'Update object' do
             "label":"#{label}","version":1,
             "access":{
               "access":"#{access}",
+              "download":"world",
               "copyright":"All rights reserved unless otherwise indicated.",
               "useAndReproductionStatement":"Property rights reside with the repository..."
             },
@@ -497,6 +498,7 @@ RSpec.describe 'Update object' do
             "label":"#{label}","version":1,
             "access":{
               "access":"#{access}",
+              "download":"world",
               "copyright":"All rights reserved unless otherwise indicated.",
               "useAndReproductionStatement":"Property rights reside with the repository..."
             },

@@ -75,7 +75,7 @@ module Cocina
       item.label = truncate_label(obj.label)
 
       add_tags(item.id, obj)
-      change_access(item, obj.access.access)
+      Cocina::ToFedora::Access.apply(item, obj.access)
       item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
       item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
       create_embargo(item, obj.access.embargo) if obj.access.embargo
@@ -142,16 +142,6 @@ module Cocina
         return tag if tag.start_with?(prefix)
       end
       nil
-    end
-
-    # TODO: duplicate from ObjectCreator
-    def change_access(item, access)
-      raise 'location-based access not implemented' if access == 'location-based'
-
-      # See https://github.com/sul-dlss/dor-services/blob/master/lib/dor/datastreams/rights_metadata_ds.rb
-      rights_type = access == 'citation-only' ? 'none' : access
-      Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, rights_type)
-      item.rightsMetadata.ng_xml_will_change!
     end
 
     # TODO: duplicate from ObjectCreator
