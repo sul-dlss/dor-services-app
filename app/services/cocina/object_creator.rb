@@ -95,7 +95,7 @@ module Cocina
         add_dro_tags(pid, obj)
 
         if obj.access
-          change_access(item, obj.access)
+          Cocina::ToFedora::Access.apply(item, obj.access)
           item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
           item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
           create_embargo(item, obj.access.embargo) if obj.access.embargo
@@ -167,23 +167,6 @@ module Cocina
       return unless obj.administrative.partOfProject
 
       AdministrativeTags.create(pid: pid, tags: ["Project : #{obj.administrative.partOfProject}"])
-    end
-
-    def change_access(item, access)
-      rights_type = case access.access
-                    when 'location-based'
-                      "loc:#{access.readLocation}"
-                    when 'citation-only'
-                      'none'
-                    when 'dark'
-                      'dark'
-                    else
-                      access.download == 'none' ? "#{access.access}-nd" : access.access
-                    end
-
-      # See https://github.com/sul-dlss/dor-services/blob/master/lib/dor/datastreams/rights_metadata_ds.rb
-      Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, rights_type)
-      item.rightsMetadata.ng_xml_will_change!
     end
 
     # add the default rights from the admin policy to the provided item

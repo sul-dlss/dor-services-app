@@ -2,7 +2,7 @@
 
 module Cocina
   module ToFedora
-    # This tranforms the DRO.type attribute to the
+    # This transforms the DRO.type attribute to the
     # Fedora 3 data model contentMetadata#contentType value
     class ContentType
       def self.map(object_type)

@@ -2,7 +2,7 @@
 
 module Cocina
   module ToFedora
-    # This tranforms the DRO.type attribute to the process tag value
+    # This transforms the DRO.type attribute to the process tag value
     class ProcessTag
       # TODO: add Software
       def self.map(type, direction)
