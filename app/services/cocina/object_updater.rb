@@ -99,8 +99,8 @@ module Cocina
 
       raise Dor::ParameterError, "Identifier on the query and in the body don't match" if item.pid != obj.externalIdentifier
 
-      # Validate APO exists (this raises an error if it doesn't)
-      Dor.find(obj.administrative.hasAdminPolicy)
+      validator = Cocina::ApoExistenceValidator.new(obj)
+      raise ValidationError, validator.error unless validator.valid?
 
       # Can't currently roundtrip desc metadata, including title.
       # Note that title is the only desc metadata field handled by the mapper. However, the mapped title is composed from

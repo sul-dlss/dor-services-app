@@ -39,6 +39,8 @@ class ObjectsController < ApplicationController
     cocina_object = Cocina::ObjectUpdater.run(obj, update_request)
 
     render json: cocina_object
+  rescue Cocina::ValidationError => e
+    json_api_error(status: e.status, message: e.message)
   end
 
   def show

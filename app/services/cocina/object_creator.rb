@@ -35,8 +35,8 @@ module Cocina
       validator = ValidateDarkService.new(obj)
       raise Dor::ParameterError, "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" unless validator.valid?
 
-      # Validate APO exists (this raises an error if it doesn't)
-      Dor.find(obj.administrative.hasAdminPolicy)
+      validator = Cocina::ApoExistenceValidator.new(obj)
+      raise ValidationError, validator.error unless validator.valid?
     end
 
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj

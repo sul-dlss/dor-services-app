@@ -10,7 +10,7 @@ RSpec.describe Cocina::ObjectCreator do
 
   before do
     allow(Dor::SearchService).to receive(:query_by_id).and_return([])
-    allow(Dor).to receive(:find).with(apo)
+    allow(Dor).to receive(:find).with(apo).and_return(Dor::AdminPolicyObject.new)
     allow(Dor::SuriService).to receive(:mint_id).and_return('druid:mb046vj7485')
     allow(RefreshMetadataAction).to receive(:run) do |args|
       args[:datastream].mods_title = 'foo'
