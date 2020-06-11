@@ -15,10 +15,6 @@ class ObjectsController < ApplicationController
     json_api_error(status: :bad_request, message: e.message)
   end
 
-  rescue_from(Dor::DuplicateIdError) do |e|
-    json_api_error(status: :conflict, message: e.message)
-  end
-
   rescue_from(Dry::Struct::Error) do |e|
     json_api_error(status: :internal_server_error, message: e.message)
     raise e
@@ -33,6 +29,8 @@ class ObjectsController < ApplicationController
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
   rescue SymphonyReader::ResponseError
     json_api_error(status: :bad_gateway, title: 'Catalog connection error', message: 'Unable to read descriptive metadata from the catalog')
+  rescue Cocina::ValidationError => e
+    json_api_error(status: e.status, message: e.message)
   end
 
   def update
