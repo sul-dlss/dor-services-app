@@ -5,14 +5,13 @@ module Cocina
   # rubocop:disable Metrics/ClassLength
   class ObjectCreator
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def self.create(params, event_factory: EventFactory, persister: ActiveFedoraPersister)
-      new.create(params, event_factory: event_factory, persister: persister)
+    def self.create(obj, event_factory: EventFactory, persister: ActiveFedoraPersister)
+      new.create(obj, event_factory: event_factory, persister: persister)
     end
 
+    # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def create(params, event_factory:, persister:)
-      obj = Cocina::Models.build_request(params)
-
+    def create(obj, event_factory:, persister:)
       # Validate will raise an error if not valid.
       validate(obj)
       af_model = create_from_model(obj, persister: persister)
@@ -21,7 +20,7 @@ module Cocina
       # index right away to reduce the likelyhood of duplicate sourceIds
       SynchronousIndexer.reindex_remotely(af_model.pid)
 
-      event_factory.create(druid: af_model.pid, event_type: 'registration', data: params)
+      event_factory.create(druid: af_model.pid, event_type: 'registration', data: obj.to_h)
 
       # This will rebuild the cocina model from fedora, which shows we are only returning persisted data
       Mapper.build(af_model)

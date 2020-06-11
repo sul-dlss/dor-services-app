@@ -19,7 +19,7 @@ RSpec.describe Cocina::ObjectCreator do
   end
 
   context 'when item is a Dor::Item' do
-    let(:request) do
+    let(:params) do
       {
         'type' => 'http://cocina.sul.stanford.edu/models/media.jsonld',
         'label' => ':auto',
@@ -35,6 +35,8 @@ RSpec.describe Cocina::ObjectCreator do
         }
       }
     end
+
+    let(:request) { Cocina::Models.build_request(params) }
 
     context 'when the access is dark' do
       it 'creates dark access' do
