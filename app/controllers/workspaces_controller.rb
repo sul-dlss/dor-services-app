@@ -22,8 +22,16 @@ class WorkspacesController < ApplicationController
     else
       CleanupService.cleanup_by_druid druid
     end
+    EventFactory.create(druid: druid,
+                        event_type: 'cleanup-workspace',
+                        data: { status: 'success', full_druid_tree: full_druid_tree?(druid) })
+
     head :no_content
   rescue Errno::ENOENT, Errno::ENOTEMPTY => e
+    EventFactory.create(druid: druid, event_type: 'cleanup-workspace',
+                        data: { status: 'failure', full_druid_tree: full_druid_tree?(druid),
+                                message: e.message, backtrace: e.backtrace })
+
     render build_error('Unable to remove directory', e)
   end
 
