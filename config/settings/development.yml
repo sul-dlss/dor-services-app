@@ -1,1 +1,3 @@
-fedora_url: 'http://fedoraAdmin:fedoraAdmin@localhost:8983/fedora'
+fedora_url: http://fedoraAdmin:fedoraAdmin@localhost:8983/fedora
+solr:
+  url: https://localhost:89843/solr/dorservices

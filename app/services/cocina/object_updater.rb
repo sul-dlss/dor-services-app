@@ -7,15 +7,15 @@ module Cocina
     class NotImplemented < StandardError; end
 
     # @param [ActiveFedora::Base] item
-    # @param [Hash] params the cocina model represented as a hash
+    # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj the cocina model
     # @param [#create] event_factory creates events
-    def self.run(item, params, event_factory: EventFactory)
-      new(item, params).run(event_factory: event_factory)
+    def self.run(item, obj, event_factory: EventFactory)
+      new(item, obj).run(event_factory: event_factory)
     end
 
-    def initialize(item, params)
+    def initialize(item, obj)
       @params = params
-      @obj = Cocina::Models.build(params)
+      @obj = obj
       @item = item
     end
 
@@ -36,7 +36,7 @@ module Cocina
 
       item.save!
 
-      event_factory.create(druid: item.pid, event_type: 'update', data: params)
+      event_factory.create(druid: item.pid, event_type: 'update', data: obj.to_h)
 
       # This will rebuild the cocina model from fedora, which shows we are only returning persisted data
       Mapper.build(item)

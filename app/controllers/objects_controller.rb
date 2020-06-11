@@ -27,7 +27,8 @@ class ObjectsController < ApplicationController
   def create
     return json_api_error(status: :service_unavailable, message: 'Registration is temporarily disabled') unless Settings.enabled_features.registration
 
-    cocina_object = Cocina::ObjectCreator.create(params.except(:action, :controller).to_unsafe_h)
+    model_request = Cocina::Models.build_request(params.except(:action, :controller).to_unsafe_h)
+    cocina_object = Cocina::ObjectCreator.create(model_request)
 
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
   rescue SymphonyReader::ResponseError
@@ -36,7 +37,8 @@ class ObjectsController < ApplicationController
 
   def update
     obj = Dor.find(params[:id])
-    cocina_object = Cocina::ObjectUpdater.run(obj, params.except(:action, :controller, :id).to_unsafe_h)
+    update_request = Cocina::Models.build(params.except(:action, :controller, :id).to_unsafe_h)
+    cocina_object = Cocina::ObjectUpdater.run(obj, update_request)
 
     render json: cocina_object
   end
