@@ -95,9 +95,9 @@ module Cocina
 
     def validate
       validator = ValidateDarkService.new(obj)
-      raise Dor::ParameterError, "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" unless validator.valid?
+      raise ValidationError, validator.error unless validator.valid?
 
-      raise Dor::ParameterError, "Identifier on the query and in the body don't match" if item.pid != obj.externalIdentifier
+      raise ValidationError, "Identifier on the query and in the body don't match" if item.pid != obj.externalIdentifier
 
       validator = Cocina::ApoExistenceValidator.new(obj)
       raise ValidationError, validator.error unless validator.valid?
