@@ -2059,6 +2059,8 @@ components:
       properties:
         descriptive:
           $ref: '#/components/schemas/LegacyDatastream'
+        geo:
+          $ref: '#/components/schemas/LegacyDatastream'
         rights:
           $ref: '#/components/schemas/LegacyDatastream'
         content:
