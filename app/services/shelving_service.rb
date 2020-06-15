@@ -3,6 +3,7 @@
 # Push file changes for shelve-able files into stacks
 class ShelvingService
   class ContentDirNotFoundError < RuntimeError; end
+  class ConfigurationError < RuntimeError; end
 
   def self.shelve(work)
     new(work).shelve
@@ -32,11 +33,11 @@ class ShelvingService
   # retrieve the differences between the current contentMetadata and the previously ingested version
   # (filtering to select only the files that should be shelved to stacks)
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  # @raise [Dor::ParameterError] if missing local workspace root.
+  # @raise [ConfigurationError] if missing local workspace root.
   # @raise [Dor::Exception] if missing contentMetadata stream or something else went wrong.
   def shelve_diff
     @shelve_diff ||= begin
-      raise Dor::ParameterError, 'Missing Dor::Config.stacks.local_workspace_root' if Dor::Config.stacks.local_workspace_root.nil?
+      raise ConfigurationError, 'Missing configuration Dor::Config.stacks.local_workspace_root' if Dor::Config.stacks.local_workspace_root.nil?
       raise Dor::Exception, 'Missing contentMetadata datastream' if work.contentMetadata.nil?
 
       current_content = work.contentMetadata.content
