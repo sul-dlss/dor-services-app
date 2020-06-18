@@ -14,6 +14,7 @@ module Cocina
         @item = item
       end
 
+      # @raises [SolrConnectionError]
       def props
         {
           externalIdentifier: item.pid,

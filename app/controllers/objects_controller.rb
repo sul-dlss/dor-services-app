@@ -49,6 +49,10 @@ class ObjectsController < ApplicationController
     models = ActiveFedora::ContentModel.models_asserted_by(@item)
     @item = @item.adapt_to(Etd) if models.include?('info:fedora/afmodel:Etd')
     render json: Cocina::Mapper.build(@item)
+  rescue SolrConnectionError => e
+    json_api_error(status: :internal_server_error,
+                   title: 'Unable to reach Solr',
+                   message: e.message)
   rescue Cocina::Mapper::MissingTitle
     json_api_error(status: :unprocessable_entity,
                    title: 'Missing title',
