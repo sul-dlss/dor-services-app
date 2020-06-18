@@ -19,6 +19,8 @@ RSpec.describe 'Get the object' do
       end
     end
 
+    let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
+
     context 'when the object exists with minimal metadata' do
       let(:expected) do
         {
@@ -45,8 +47,6 @@ RSpec.describe 'Get the object' do
           structural: {}
         }
       end
-
-      let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
 
       it 'returns the object' do
         get '/v1/objects/druid:mk420bs7601',
@@ -111,8 +111,6 @@ RSpec.describe 'Get the object' do
           }
         }
       end
-
-      let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
 
       it 'returns the object' do
         get '/v1/objects/druid:mk420bs7601',
@@ -220,8 +218,6 @@ RSpec.describe 'Get the object' do
         }
       end
 
-      let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
-
       it 'returns the object' do
         get '/v1/objects/druid:mk420bs7601',
             headers: { 'Authorization' => "Bearer #{jwt}" }
@@ -244,12 +240,29 @@ RSpec.describe 'Get the object' do
         }
       end
 
-      let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
-
-      it 'returns the object' do
+      it 'returns the error' do
         get '/v1/objects/druid:mk420bs7601',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:unprocessable_entity)
+        expect(response_model).to eq expected
+      end
+    end
+
+    context 'when there is a solr error' do
+      before do
+        allow(Cocina::Mapper).to receive(:build).and_raise(SolrConnectionError, 'broken')
+      end
+
+      let(:expected) do
+        {
+          errors: [{ detail: 'broken', status: '500', title: 'Unable to reach Solr' }]
+        }
+      end
+
+      it 'returns the error' do
+        get '/v1/objects/druid:mk420bs7601',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:internal_server_error)
         expect(response_model).to eq expected
       end
     end

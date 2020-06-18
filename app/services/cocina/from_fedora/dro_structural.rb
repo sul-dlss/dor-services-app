@@ -14,6 +14,8 @@ module Cocina
 
       def props
         {}.tap do |structural|
+          # In Fedora 3 we have no way of persisting LTR or RTL, so we rely on AdministrativeTags.
+          # when we migrate from Fedora 3, we don't need to look this up from AdministrativeTags
           case AdministrativeTags.content_type(pid: item.id).first
           when 'Book (ltr)'
             structural[:hasMemberOrders] = [{ viewingDirection: 'left-to-right' }]
@@ -30,8 +32,13 @@ module Cocina
             structural[:hasMemberOrders].first[:members] = sequence
           end
           structural[:hasAgreement] = item.identityMetadata.agreementId.first unless item.identityMetadata.agreementId.empty?
-          # Note that there is a bug with item.collection_ids that returns [] until item.collections is called. Below side-steps this.
-          structural[:isMemberOf] = item.collections.first.id if item.collections.present?
+          begin
+            # Note that there is a bug with item.collection_ids that returns [] until item.collections is called. Below side-steps this.
+            structural[:isMemberOf] = item.collections.first.id if item.collections.present?
+          rescue RSolr::Error::ConnectionRefused
+            # ActiveFedora calls RSolr to lookup collections, but sometimes that call fails.
+            raise SolrConnectionError, 'unable to connect to solr to resolve collections'
+          end
         end
       end
 

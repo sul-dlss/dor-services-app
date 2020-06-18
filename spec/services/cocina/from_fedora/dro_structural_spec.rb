@@ -12,7 +12,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
 
   before do
     allow(item).to receive(:contentMetadata).and_return(content_metadata_ds)
-    allow(item).to receive(:collection_ids).and_return([])
+    allow(item).to receive(:collections).and_return([])
     allow(AdministrativeTags).to receive(:content_type).and_return(['file'])
   end
 
@@ -210,6 +210,23 @@ RSpec.describe Cocina::FromFedora::DroStructural do
       resource1 = structural[:contains].first
       file1 = resource1[:structural][:contains].first
       expect(file1[:filename]).to eq 'sul-logo.png'
+    end
+  end
+
+  context 'when there is an error with solr' do
+    let(:xml) do
+      <<~XML
+        <contentMetadata objectId="ck831vq4558" type="file">
+        </contentMetadata>
+      XML
+    end
+
+    before do
+      allow(item).to receive(:collections).and_raise(RSolr::Error::ConnectionRefused)
+    end
+
+    it 'raise an error' do
+      expect { structural }.to raise_error SolrConnectionError
     end
   end
 end
