@@ -68,14 +68,6 @@ def clean_workspace
   FileUtils.rm_rf Dir.glob(TEST_WORKSPACE + '/*')
 end
 
-def instantiate_fixture(druid, klass = ActiveFedora::Base)
-  mask = File.join(fixture_dir, "*_#{druid.sub(/:/, '_')}.xml")
-  fname = Dir[mask].first
-  return nil if fname.nil?
-
-  item_from_foxml(File.read(fname), klass)
-end
-
 def fixture_dir
   @fixture_dir ||= File.join(File.dirname(__FILE__), 'fixtures')
 end
