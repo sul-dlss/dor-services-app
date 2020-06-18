@@ -33,7 +33,7 @@ module Cocina
       raise ValidationError.new(validator.error, status: :conflict) unless validator.valid?
 
       validator = ValidateDarkService.new(obj)
-      raise Dor::ParameterError, "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" unless validator.valid?
+      raise ValidationError, validator.error unless validator.valid?
 
       validator = Cocina::ApoExistenceValidator.new(obj)
       raise ValidationError, validator.error unless validator.valid?

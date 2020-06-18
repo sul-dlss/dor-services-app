@@ -11,10 +11,6 @@ class ObjectsController < ApplicationController
     json_api_error(status: :not_found, message: e.message)
   end
 
-  rescue_from(Dor::ParameterError) do |e|
-    json_api_error(status: :bad_request, message: e.message)
-  end
-
   rescue_from(Dry::Struct::Error) do |e|
     json_api_error(status: :internal_server_error, message: e.message)
     raise e

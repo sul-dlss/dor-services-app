@@ -44,6 +44,6 @@ class PublishJob < ApplicationJob
 
   def validator_for?(item)
     model = Cocina::Mapper.build(item)
-    ValidateDarkService.new(model)
+    Cocina::ValidateDarkService.new(model)
   end
 end

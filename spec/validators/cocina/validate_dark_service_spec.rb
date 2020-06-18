@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe ValidateDarkService do
+RSpec.describe Cocina::ValidateDarkService do
   let(:validator) { described_class.new(item) }
 
   let(:access) { 'dark' }
@@ -64,9 +64,7 @@ RSpec.describe ValidateDarkService do
 
     it 'is not valid' do
       expect(validator.valid?).to be false
-      expect(validator.invalid_files.size).to eq(1)
-      expect(validator.invalid_files.first.externalIdentifier).to eq('bc123df4567_1')
-      expect(validator.invalid_filenames).to eq(['page1.txt'])
+      expect(validator.error).to eq 'Not all files have dark access and/or are unshelved when item access is dark: ["page1.txt"]'
     end
   end
 
@@ -75,8 +73,7 @@ RSpec.describe ValidateDarkService do
 
     it 'is not valid' do
       expect(validator.valid?).to be false
-      expect(validator.invalid_files.size).to eq(1)
-      expect(validator.invalid_files.first.externalIdentifier).to eq('bc123df4567_1')
+      expect(validator.error).to eq 'Not all files have dark access and/or are unshelved when item access is dark: ["page1.txt"]'
     end
   end
 
