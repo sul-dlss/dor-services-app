@@ -5,6 +5,9 @@
 #
 # Should run once a day from cron
 class EmbargoReleaseService
+  RELEASEABLE_NOW_QUERY = 'embargo_status_ssim:"embargoed" AND embargo_release_dtsim:[* TO NOW]'
+  TWENTY_PERCENT_RELEASEABLE_NOW_QUERY = 'twenty_pct_status_ssim:"embargoed" AND twenty_pct_visibility_release_dtsim:[* TO NOW]'
+
   # Finds druids from solr based on the passed in query
   # It will then load each item from Dor, and call the block with the item
   # @param [String] query used to locate druids of items to release from solr
@@ -55,13 +58,12 @@ class EmbargoReleaseService
     Honeybadger.notify "Unable to release embargo for: #{druid}", backtrace: e.backtrace
   end
 
-  def release_all
-    release_items('embargo_status_ssim:"embargoed" AND embargo_release_dtsim:[* TO NOW]') do |item|
+  def self.release_all
+    release_items(RELEASEABLE_NOW_QUERY) do |item|
       new(item).release('application:accessionWF:embargo-release')
     end
 
-    release_items('twenty_pct_status_ssim:"embargoed" AND twenty_pct_visibility_release_dtsim:[* TO NOW]',
-                  '20% visibility embargo') do |item|
+    release_items(TWENTY_PERCENT_RELEASEABLE_NOW_QUERY, '20% visibility embargo') do |item|
       new(item).release_20_pct_vis_embargo('application:accessionWF:embargo-release')
     end
   end

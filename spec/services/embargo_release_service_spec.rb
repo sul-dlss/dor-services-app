@@ -204,6 +204,20 @@ RSpec.describe EmbargoReleaseService do
     end
   end
 
+  describe '.release_all' do
+    before do
+      allow(described_class).to receive(:release_items)
+    end
+
+    it 'releases all items that are releaseable currently' do
+      described_class.release_all
+      expect(described_class).to have_received(:release_items)
+        .once.with(described_class::RELEASEABLE_NOW_QUERY)
+      expect(described_class).to have_received(:release_items)
+        .once.with(described_class::TWENTY_PERCENT_RELEASEABLE_NOW_QUERY, '20% visibility embargo')
+    end
+  end
+
   describe '.release_items' do
     subject(:release_items) { described_class.release_items(query, &block) }
 
