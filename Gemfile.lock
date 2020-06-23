@@ -225,7 +225,6 @@ GEM
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     iso-639 (0.2.10)
-    jaro_winkler (1.5.4)
     jbuilder (2.10.0)
       activesupport (>= 5.0.0)
     json (2.3.0)
@@ -363,12 +362,14 @@ GEM
     rdf-xsd (1.99.0)
       rdf (~> 1.99)
     redis (4.2.1)
+    regexp_parser (1.7.1)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     retries (0.0.5)
+    rexml (3.2.4)
     rsolr (2.3.0)
       builder (>= 2.1.2)
       faraday (>= 0.9.0)
@@ -391,13 +392,17 @@ GEM
     rspec-support (3.9.3)
     rspec_junit_formatter (0.4.1)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.74.0)
-      jaro_winkler (~> 1.5.1)
+    rubocop (0.85.1)
       parallel (~> 1.10)
-      parser (>= 2.6)
+      parser (>= 2.7.0.1)
       rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 1.7)
+      rexml
+      rubocop-ast (>= 0.0.3)
       ruby-progressbar (~> 1.7)
-      unicode-display_width (>= 1.4.0, < 1.7)
+      unicode-display_width (>= 1.4.0, < 2.0)
+    rubocop-ast (0.0.3)
+      parser (>= 2.7.0.1)
     rubocop-rails (2.5.2)
       activesupport
       rack (>= 1.1)
@@ -468,7 +473,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.7)
-    unicode-display_width (1.6.1)
+    unicode-display_width (1.7.0)
     uuidtools (2.1.5)
     webmock (3.8.3)
       addressable (>= 2.3.6)
@@ -523,7 +528,7 @@ DEPENDENCIES
   retries
   rspec-rails
   rspec_junit_formatter
-  rubocop (~> 0.74.0)
+  rubocop (~> 0.85)
   rubocop-rails
   rubocop-rspec (~> 1.32.0)
   ruby-cache (~> 0.3.0)

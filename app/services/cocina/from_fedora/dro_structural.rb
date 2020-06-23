@@ -12,6 +12,7 @@ module Cocina
         @item = item
       end
 
+      # rubocop:disable Metrics/AbcSize
       def props
         {}.tap do |structural|
           # In Fedora 3 we have no way of persisting LTR or RTL, so we rely on AdministrativeTags.
@@ -41,6 +42,7 @@ module Cocina
           end
         end
       end
+      # rubocop:enable Metrics/AbcSize
 
       private
 

@@ -8,6 +8,7 @@ def instantiate_fixture(druid, klass = ActiveFedora::Base)
   item_from_foxml(File.read(fname), klass)
 end
 
+# rubocop:disable Metrics/AbcSize
 def item_from_foxml(foxml, item_class = Dor::Abstract)
   foxml = Nokogiri::XML(foxml) unless foxml.is_a?(Nokogiri::XML::Node)
   xml_streams = foxml.xpath('//foxml:datastream')
@@ -64,3 +65,4 @@ def item_from_foxml(foxml, item_class = Dor::Abstract)
   end
   result
 end
+# rubocop:enable Metrics/AbcSize

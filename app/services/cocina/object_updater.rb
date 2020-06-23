@@ -67,6 +67,7 @@ module Cocina
       Cocina::ToFedora::Identity.apply(obj, item, 'collection')
     end
 
+    # rubocop:disable Metrics/AbcSize
     def update_dro
       item.admin_policy_object_id = obj.administrative.hasAdminPolicy
       item.source_id = obj.identification.sourceId
@@ -83,6 +84,7 @@ module Cocina
 
       Cocina::ToFedora::Identity.apply(obj, item, 'item')
     end
+    # rubocop:enable Metrics/AbcSize
 
     def update_content_metadata(item, obj)
       # We don't want to overwrite contentMetadata unless they provided structural.contains

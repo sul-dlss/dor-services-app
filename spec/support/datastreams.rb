@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/LineLength
+# rubocop:disable Layout/LineLength
 def build_identity_metadata_1
   '<identityMetadata>
   <sourceId source="sul">36105216275185</sourceId>
@@ -241,4 +241,4 @@ def build_rights_metadata_3
   </rightsMetadata>
   '
 end
-# rubocop:enable Metrics/LineLength
+# rubocop:enable Layout/LineLength

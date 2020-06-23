@@ -141,8 +141,8 @@ class ContentMetadataGenerator
 
   # @return [Hash<String,Assembly::ObjectFile>]
   def object_files
-    @object_files ||= file_names.each_with_object({}) do |(short, file_path), out|
-      out[short] = Assembly::ObjectFile.new(file_path)
+    @object_files ||= file_names.transform_values do |file_path|
+      Assembly::ObjectFile.new(file_path)
     end
   end
 end
