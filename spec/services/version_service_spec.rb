@@ -56,9 +56,9 @@ RSpec.describe VersionService do
         expect(vmd_ds).to receive(:save)
         expect(vmd_ds.ng_xml.to_xml).to match(/Initial Version/)
         open
-        expect(workflow_client).to have_received(:lifecycle).with('dor', druid, 'accessioned')
-        expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'opened', version: '1')
-        expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'submitted', version: '1')
+        expect(workflow_client).to have_received(:lifecycle).with(druid: druid, milestone_name: 'accessioned')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1')
         expect(workflow_client).to have_received(:create_workflow_by_name).with(obj.pid, 'versioningWF', version: '2')
       end
 
@@ -111,9 +111,9 @@ RSpec.describe VersionService do
       end
 
       it 'raises an exception' do
-        expect(workflow_client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(true)
-        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(nil)
-        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'submitted', version: '1').and_return(nil)
+        expect(workflow_client).to receive(:lifecycle).with(druid: druid, milestone_name: 'accessioned').and_return(true)
+        expect(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1').and_return(nil)
+        expect(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1').and_return(nil)
         expect(Preservation::Client.objects).to receive(:current_version).and_return(3)
         expect { open }.to raise_error(Dor::Exception, 'Cannot sync to a version greater than current: 1, requested 3')
       end
@@ -158,42 +158,42 @@ RSpec.describe VersionService do
 
       it 'returns true' do
         expect(can_open?).to be true
-        expect(workflow_client).to have_received(:lifecycle).with('dor', druid, 'accessioned')
-        expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'opened', version: '1')
-        expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'submitted', version: '1')
+        expect(workflow_client).to have_received(:lifecycle).with(druid: druid, milestone_name: 'accessioned')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1')
       end
     end
 
     context 'when the object has not been accessioned' do
       before do
-        allow(workflow_client).to receive(:lifecycle).with('dor', druid, 'accessioned').and_return(false)
+        allow(workflow_client).to receive(:lifecycle).with(druid: druid, milestone_name: 'accessioned').and_return(false)
       end
 
       it 'returns false' do
         expect(can_open?).to be false
-        expect(workflow_client).to have_received(:lifecycle).with('dor', druid, 'accessioned')
+        expect(workflow_client).to have_received(:lifecycle).with(druid: druid, milestone_name: 'accessioned')
       end
     end
 
     context 'when the object has already been opened' do
       before do
-        allow(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(Time.new)
+        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1').and_return(Time.new)
       end
 
       it 'returns false' do
         expect(can_open?).to be false
-        expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'opened', version: '1')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1')
       end
     end
 
     context 'when the object is still being accessioned' do
       before do
-        allow(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'submitted', version: '1').and_return(Time.new)
+        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1').and_return(Time.new)
       end
 
       it 'returns false' do
         expect(can_open?).to be false
-        expect(workflow_client).to have_received(:active_lifecycle).with('dor', druid, 'submitted', version: '1')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1')
       end
     end
 
@@ -255,7 +255,7 @@ RSpec.describe VersionService do
                                                              event_type: 'version_close')
 
         expect(workflow_client).to have_received(:close_version)
-          .with(repo: 'dor', druid: druid, version: '2', create_accession_wf: true)
+          .with(druid: druid, version: '2', create_accession_wf: true)
 
         expect(ev_ds).to have_received(:add_event).with('close', 'jcoyne', 'Version 2 closed')
         expect(obj).to have_received(:save!)
@@ -303,13 +303,13 @@ RSpec.describe VersionService do
       it 'passes the correct value of create_accession_wf' do
         close
         expect(workflow_client).to have_received(:close_version)
-          .with(repo: 'dor', druid: druid, version: '2', create_accession_wf: false)
+          .with(druid: druid, version: '2', create_accession_wf: false)
       end
     end
 
     context 'when the object has not been opened for versioning' do
       it 'raises an exception' do
-        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(nil)
+        expect(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1').and_return(nil)
         expect { close }.to raise_error(Dor::Exception, 'Trying to close version on druid:ab12cd3456 which is not opened for versioning')
       end
     end
@@ -320,8 +320,8 @@ RSpec.describe VersionService do
       end
 
       it 'raises an exception' do
-        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(Time.new)
-        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'submitted', version: '1').and_return(true)
+        expect(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1').and_return(Time.new)
+        expect(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1').and_return(true)
         expect { close }.to raise_error(Dor::Exception, 'accessionWF already created for versioned object druid:ab12cd3456')
       end
     end
@@ -332,7 +332,7 @@ RSpec.describe VersionService do
       end
 
       it 'raises an exception' do
-        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(Time.new)
+        expect(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1').and_return(Time.new)
         expect { close }.to raise_error(Dor::Exception, 'Trying to close version on druid:ab12cd3456 which has active assemblyWF')
         expect(workflow_client).to have_received(:workflow_status).with(hash_including(workflow: 'assemblyWF'))
       end
@@ -346,11 +346,11 @@ RSpec.describe VersionService do
       end
 
       it 'creates the accessioningWF' do
-        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'opened', version: '1').and_return(Time.new)
-        expect(workflow_client).to receive(:active_lifecycle).with('dor', druid, 'submitted', version: '1').and_return(false)
+        expect(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1').and_return(Time.new)
+        expect(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1').and_return(false)
         close
         expect(workflow_client).to have_received(:workflow_status).with(hash_including(workflow: 'assemblyWF'))
-        expect(workflow_client).to have_received(:close_version).with(repo: 'dor', druid: druid, version: '1', create_accession_wf: true)
+        expect(workflow_client).to have_received(:close_version).with(druid: druid, version: '1', create_accession_wf: true)
       end
     end
 
