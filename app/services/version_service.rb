@@ -89,8 +89,7 @@ class VersionService
 
     # Default to creating accessionWF when calling close_version
     create_accession_wf = opts.fetch(:start_accession, true)
-    workflow_client.close_version(repo: 'dor',
-                                  druid: work.pid,
+    workflow_client.close_version(druid: work.pid,
                                   version: work.current_version,
                                   create_accession_wf: create_accession_wf)
     work.events.add_event('close', opts[:user_name], "Version #{work.current_version} closed") if opts[:user_name]
@@ -110,7 +109,7 @@ class VersionService
     # The accessioned milestone is the last step of the accessionWF.
     # During local development, we need a way to open a new version even if the object has not been accessioned.
     raise(Dor::Exception, 'Object net yet accessioned') unless
-        assume_accessioned || workflow_client.lifecycle('dor', work.pid, 'accessioned')
+        assume_accessioned || workflow_client.lifecycle(druid: work.pid, milestone_name: 'accessioned')
     # Raised when the current version has any incomplete wf steps and there is a versionWF.
     # The open milestone is part of the versioningWF.
     raise Dor::VersionAlreadyOpenError, 'Object already opened for versioning' if open_for_versioning?
@@ -127,7 +126,7 @@ class VersionService
   # Checks if current version has any incomplete wf steps and there is a versionWF
   # @return [Boolean] true if object is open for versioning
   def open_for_versioning?
-    return true if workflow_client.active_lifecycle('dor', work.pid, 'opened', version: work.current_version)
+    return true if workflow_client.active_lifecycle(druid: work.pid, milestone_name: 'opened', version: work.current_version)
 
     false
   end
@@ -135,7 +134,7 @@ class VersionService
   # Checks if the current version has any incomplete wf steps and there is an accessionWF.
   # @return [Boolean] true if object is currently being accessioned
   def accessioning?
-    return true if workflow_client.active_lifecycle('dor', work.pid, 'submitted', version: work.current_version)
+    return true if workflow_client.active_lifecycle(druid: work.pid, milestone_name: 'submitted', version: work.current_version)
 
     false
   end
