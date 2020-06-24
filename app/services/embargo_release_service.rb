@@ -64,7 +64,7 @@ class EmbargoReleaseService
     end
 
     release_items(TWENTY_PERCENT_RELEASEABLE_NOW_QUERY, '20% visibility embargo') do |item|
-      new(item).release_20_pct_vis_embargo('application:accessionWF:embargo-release')
+      new(item).release_20_pct_vis('application:accessionWF:embargo-release')
     end
   end
 

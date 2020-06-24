@@ -205,16 +205,32 @@ RSpec.describe EmbargoReleaseService do
   end
 
   describe '.release_all' do
+    let(:fake_item) { instance_double(Dor::Item) }
+    let(:fake_instance) do
+      instance_double(described_class, release: nil, release_20_pct_vis: nil)
+    end
+
     before do
       allow(described_class).to receive(:release_items)
+        .with(described_class::RELEASEABLE_NOW_QUERY)
+        .and_yield(fake_item)
+
+      allow(described_class).to receive(:release_items)
+        .with(described_class::TWENTY_PERCENT_RELEASEABLE_NOW_QUERY, '20% visibility embargo')
+        .and_yield(fake_item)
+
+      allow(described_class).to receive(:new).and_return(fake_instance)
     end
 
     it 'releases all items that are releaseable currently' do
       described_class.release_all
+
       expect(described_class).to have_received(:release_items)
         .once.with(described_class::RELEASEABLE_NOW_QUERY)
+      expect(fake_instance).to have_received(:release).once
       expect(described_class).to have_received(:release_items)
         .once.with(described_class::TWENTY_PERCENT_RELEASEABLE_NOW_QUERY, '20% visibility embargo')
+      expect(fake_instance).to have_received(:release_20_pct_vis).once
     end
   end
 
