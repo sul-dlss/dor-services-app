@@ -6,7 +6,7 @@
 # Should run once a day from cron
 class EmbargoReleaseService
   RELEASEABLE_NOW_QUERY = 'embargo_status_ssim:"embargoed" AND embargo_release_dtsim:[* TO NOW]'
-  TWENTY_PERCENT_RELEASEABLE_NOW_QUERY = 'twenty_pct_status_ssim:"embargoed" AND twenty_pct_visibility_release_dtsim:[* TO NOW]'
+  TWENTY_PERCENT_RELEASEABLE_NOW_QUERY = 'twenty_pct_status_ssim:"embargoed" AND twenty_pct_release_embargo_release_dtsim:[* TO NOW]'
 
   # Finds druids from solr based on the passed in query
   # It will then load each item from Dor, and call the block with the item
