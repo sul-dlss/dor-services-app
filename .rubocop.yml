@@ -17,10 +17,6 @@ Rails:
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
 
-# Configuration parameters: AllowURI, URISchemes.
-Layout/LineLength:
-  Max: 200
-
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
@@ -70,6 +66,9 @@ Style/HashTransformKeys:
   Enabled: true
 
 Style/HashTransformValues:
+  Enabled: true
+
+Style/RedundantFetchBlock:
   Enabled: true
 
 Style/RedundantRegexpCharacterClass:
