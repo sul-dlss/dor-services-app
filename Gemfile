@@ -60,7 +60,7 @@ group :test, :development do
   gem 'rack-console'
   gem 'rspec-rails'
   gem 'rspec_junit_formatter'
-  gem 'rubocop', '~> 0.85.1'
+  gem 'rubocop', '~> 0.86'
   gem 'rubocop-rails'
   gem 'rubocop-rspec', '~> 1.32.0'
   gem 'simplecov', '~> 0.17.1' # https://github.com/codeclimate/test-reporter/issues/413
