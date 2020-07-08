@@ -17,6 +17,7 @@ class MetadataController < ApplicationController
   # This supports the Legacy Fedora 3 data model. This is used by the accessionWF.
   def update_legacy_metadata
     datastream_names = { descriptive: 'descMetadata',
+                         embargo: 'embargoMetadata',
                          technical: 'technicalMetadata',
                          content: 'contentMetadata',
                          rights: 'rightsMetadata',

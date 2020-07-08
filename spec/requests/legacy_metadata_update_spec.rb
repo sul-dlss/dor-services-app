@@ -6,6 +6,7 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
   let(:work) { instance_double(Dor::Item, pid: 'druid:bc123df4567', datastreams: datastreams, save!: nil) }
   let(:create_date) { Time.zone.parse('2019-08-09T19:18:15Z') }
   let(:descMetadata) { instance_double(Dor::DescMetadataDS, createDate: create_date) }
+  let(:embargoMetadata) { instance_double(Dor::EmbargoMetadataDS, createDate: create_date) }
   let(:rightsMetadata) { instance_double(Dor::RightsMetadataDS, createDate: create_date) }
   let(:technicalMetadata) { instance_double(Dor::TechnicalMetadataDS, createDate: create_date) }
   let(:contentMetadata) { instance_double(Dor::ContentMetadataDS, createDate: create_date) }
@@ -16,6 +17,7 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
   let(:datastreams) do
     {
       'descMetadata' => descMetadata,
+      'embargoMetadata' => embargoMetadata,
       'rightsMetadata' => rightsMetadata,
       'technicalMetadata' => technicalMetadata,
       'contentMetadata' => contentMetadata,
@@ -31,6 +33,10 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
         "descriptive": {
           "updated": "2019-11-08T15:15:43Z",
           "content": "<descMetadata></descMetadata>"
+        },
+        "embargo": {
+          "updated": "2019-11-08T15:15:43Z",
+          "content": "<embargoMetadata></embargoMetadata>"
         },
         "rights": {
           "updated": "2019-11-08T15:15:43Z",
@@ -68,6 +74,12 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
         .with(datastream: descMetadata,
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
               content: '<descMetadata></descMetadata>',
+              event_factory: EventFactory)
+
+      expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
+        .with(datastream: embargoMetadata,
+              updated: Time.zone.parse('2019-11-08T15:15:43Z'),
+              content: '<embargoMetadata></embargoMetadata>',
               event_factory: EventFactory)
 
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
