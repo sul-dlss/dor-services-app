@@ -76,10 +76,10 @@ module Cocina
       item.label = truncate_label(obj.label)
 
       add_tags(item.id, obj)
+
       Cocina::ToFedora::Access.apply(item, obj.access)
       item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
       item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
-      create_embargo(item, obj.access.embargo) if obj.access.embargo
       update_content_metadata(item, obj)
 
       Cocina::ToFedora::Identity.apply(obj, item, 'item')
@@ -113,14 +113,6 @@ module Cocina
     # TODO: duplicate from ObjectCreator
     def catkey_for(obj)
       obj.identification&.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
-    end
-
-    # TODO: duplicate from ObjectCreator
-    def create_embargo(item, embargo)
-      EmbargoService.create(item: item,
-                            release_date: embargo.releaseDate,
-                            access: embargo.access,
-                            use_and_reproduction_statement: embargo.useAndReproductionStatement)
     end
 
     def add_tags(pid, obj)

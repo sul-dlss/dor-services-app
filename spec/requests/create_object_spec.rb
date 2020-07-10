@@ -827,7 +827,7 @@ RSpec.describe 'Create object' do
                                 ]
                               },
                               access: {
-                                access: 'citation-only',
+                                access: 'stanford',
                                 download: 'none',
                                 embargo: { access: 'world', releaseDate: '2020-02-29' }
                               })
@@ -835,7 +835,7 @@ RSpec.describe 'Create object' do
     let(:data) do
       <<~JSON
         { "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
-          "label":"This is my label","version":1,"access":{"access":"world",
+          "label":"This is my label","version":1,"access":{"access":"stanford",
           "embargo":{"access":"world","releaseDate":"2020-02-29"}},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"status":"primary","value":"This is my title"}]},
@@ -852,7 +852,6 @@ RSpec.describe 'Create object' do
       post '/v1/objects',
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-
       expect(response.body).to eq expected.to_json
       expect(response.status).to eq(201)
       expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
