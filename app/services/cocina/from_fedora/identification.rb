@@ -15,15 +15,15 @@ module Cocina
       end
 
       def props
-        case item
-        when Dor::Etd
-          # ETDs don't have source_id, but we can use the dissertationid (in otherId) for this purpose
-          { sourceId: item.otherId.find { |id| id.start_with?('dissertationid:') } }
-        when Dor::Collection
-          {}
-        else
-          { sourceId: item.source_id }
-        end
+        return {} if item.is_a? Dor::Collection
+
+        return { sourceId: item.source_id } if item.source_id
+
+        # ETDs post Summer 2020 have a source id, but legacy ones don't.  In that case look for a dissertation_id.
+        dissertation = item.otherId.find { |id| id.start_with?('dissertationid:') }
+        raise "unable to resolve a sourceId for #{item.pid}" unless dissertation
+
+        { sourceId: dissertation }
       end
 
       private
