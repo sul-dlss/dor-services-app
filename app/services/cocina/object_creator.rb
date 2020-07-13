@@ -73,13 +73,14 @@ module Cocina
         admin_node.add_child "<dissemination><workflow id=\"#{obj.administrative.registrationWorkflow}\"></dissemination>"
         item.administrativeMetadata.ng_xml_will_change!
 
-        Cocina::ToFedora::Identity.apply(obj, item, 'adminPolicy')
+        Cocina::ToFedora::Identity.apply(obj, item, object_type: 'adminPolicy')
       end
     end
 
     # @param [Cocina::Models::RequestDRO] obj
     # @return [Dor::Item] a persisted Item model
     # @raises SymphonyReader::ResponseError if symphony connection failed
+    # rubocop:disable Metrics/AbcSize
     def create_dro(obj)
       pid = Dor::SuriService.mint_id
       Dor::Item.new(pid: pid,
@@ -101,10 +102,10 @@ module Cocina
         end
 
         item.contentMetadata.content = ContentMetadataGenerator.generate(druid: pid, object: obj)
-
-        Cocina::ToFedora::Identity.apply(obj, item, 'item')
+        Cocina::ToFedora::Identity.apply(obj, item, object_type: 'item', agreement_id: obj.structural&.hasAgreement)
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def create_embargo(item, embargo)
       EmbargoService.create(item: item,
@@ -123,7 +124,7 @@ module Cocina
                           label: truncate_label(obj.label)).tap do |item|
         add_description(item, obj)
         add_collection_tags(pid, obj)
-        Cocina::ToFedora::Identity.apply(obj, item, 'collection')
+        Cocina::ToFedora::Identity.apply(obj, item, object_type: 'collection')
       end
     end
 

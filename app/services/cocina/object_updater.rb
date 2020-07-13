@@ -56,7 +56,7 @@ module Cocina
       admin_node.add_child "<dissemination><workflow id=\"#{obj.administrative.registrationWorkflow}\"></dissemination>"
       item.administrativeMetadata.ng_xml_will_change!
 
-      Cocina::ToFedora::Identity.apply(obj, item, 'adminPolicy')
+      Cocina::ToFedora::Identity.apply(obj, item, object_type: 'adminPolicy')
     end
 
     def update_collection
@@ -64,7 +64,7 @@ module Cocina
       item.catkey = catkey_for(obj)
       item.label = truncate_label(obj.label)
 
-      Cocina::ToFedora::Identity.apply(obj, item, 'collection')
+      Cocina::ToFedora::Identity.apply(obj, item, object_type: 'collection')
     end
 
     # rubocop:disable Metrics/AbcSize
@@ -81,8 +81,7 @@ module Cocina
       item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
       create_embargo(item, obj.access.embargo) if obj.access.embargo
       update_content_metadata(item, obj)
-
-      Cocina::ToFedora::Identity.apply(obj, item, 'item')
+      Cocina::ToFedora::Identity.apply(obj, item, object_type: 'item', agreement_id: obj.structural&.hasAgreement)
     end
     # rubocop:enable Metrics/AbcSize
 
