@@ -17,9 +17,18 @@ module Cocina
                         access.download == 'none' ? "#{access.access}-nd" : access.access
                       end
 
+        create_embargo(item, access.embargo) if access.embargo
+
         # See https://github.com/sul-dlss/dor-services/blob/master/lib/dor/datastreams/rights_metadata_ds.rb
         Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, rights_type)
         item.rightsMetadata.ng_xml_will_change!
+      end
+
+      def self.create_embargo(item, embargo)
+        EmbargoService.create(item: item,
+                              release_date: embargo.releaseDate,
+                              access: embargo.access,
+                              use_and_reproduction_statement: embargo.useAndReproductionStatement)
       end
     end
   end

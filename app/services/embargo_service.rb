@@ -23,10 +23,6 @@ class EmbargoService
   def create
     return unless release_date
 
-    # Based on https://github.com/sul-dlss/hydrus/blob/master/app/models/hydrus/item.rb#L451
-    # Except Hydrus has a slightly different model than DOR, so, not setting rightsMetadata.rmd_embargo_release_date
-    # item.rightsMetadata.rmd_embargo_release_date = release_date.utc.strftime('%FT%TZ')
-    deny_read_access
     item.rightsMetadata.embargo_release_date = release_date
 
     item.embargoMetadata.release_date = release_date
@@ -39,17 +35,6 @@ class EmbargoService
   private
 
   attr_reader :item, :release_date, :access, :use_and_reproduction_statement
-
-  def deny_read_access
-    rights_xml = item.rightsMetadata.ng_xml
-    rights_xml.search('//rightsMetadata/access[@type=\'read\']').each do |node|
-      node.children.remove
-      machine_node = Nokogiri::XML::Node.new('machine', rights_xml)
-      node.add_child(machine_node)
-      machine_node.add_child Nokogiri::XML::Node.new('none', rights_xml)
-    end
-    item.rightsMetadata.ng_xml_will_change!
-  end
 
   def generic_access_xml
     <<-XML

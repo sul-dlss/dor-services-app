@@ -77,9 +77,9 @@ RSpec.describe 'Get the object' do
           label: 'foo',
           version: 1,
           access: {
-            access: 'citation-only',
+            access: 'world',
             copyright: 'All rights reserved unless otherwise indicated.',
-            download: 'none',
+            download: 'world',
             embargo: {
               releaseDate: '2019-09-26T07:00:00.000+00:00',
               access: 'world'

@@ -2,7 +2,6 @@
 
 module Cocina
   # Given a Cocina model, create an ActiveFedora model.
-  # rubocop:disable Metrics/ClassLength
   class ObjectCreator
     # @raises SymphonyReader::ResponseError if symphony connection failed
     def self.create(obj, event_factory: EventFactory, persister: ActiveFedoraPersister)
@@ -95,7 +94,6 @@ module Cocina
           Cocina::ToFedora::Access.apply(item, obj.access)
           item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
           item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
-          create_embargo(item, obj.access.embargo) if obj.access.embargo
         else
           apply_default_access(item)
         end
@@ -104,13 +102,6 @@ module Cocina
 
         Cocina::ToFedora::Identity.apply(obj, item, 'item')
       end
-    end
-
-    def create_embargo(item, embargo)
-      EmbargoService.create(item: item,
-                            release_date: embargo.releaseDate,
-                            access: embargo.access,
-                            use_and_reproduction_statement: embargo.useAndReproductionStatement)
     end
 
     # @param [Cocina::Models::RequestCollection] obj
@@ -177,5 +168,4 @@ module Cocina
       label.length > 254 ? label[0, 254] : label
     end
   end
-  # rubocop:enable Metrics/ClassLength
 end

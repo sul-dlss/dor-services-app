@@ -699,7 +699,7 @@ RSpec.describe 'Update object' do
                                 ],
                                 isMemberOf: 'druid:xx888xx7777'
                               },
-                              access: { access: 'citation-only', embargo: { access: 'world', releaseDate: '2020-02-29' } })
+                              access: { access: 'stanford', embargo: { access: 'world', releaseDate: '2020-02-29' } })
     end
     let(:data) do
       <<~JSON
@@ -707,7 +707,7 @@ RSpec.describe 'Update object' do
           "externalIdentifier": "#{druid}",
           "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
           "label":"This is my label","version":1,
-          "access":{"access":"world",
+          "access":{"access":"stanford",
             "embargo":{"access":"world","releaseDate":"2020-02-29"}
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
@@ -725,7 +725,6 @@ RSpec.describe 'Update object' do
       patch "/v1/objects/#{druid}",
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-
       expect(response.body).to eq expected.to_json
       expect(response.status).to eq(200)
     end
