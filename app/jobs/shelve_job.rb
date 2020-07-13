@@ -25,6 +25,10 @@ class ShelveJob < ApplicationJob
       # end
 
       ShelvingService.shelve(item)
+
+      # Shelving can take a long time and can cause the database connections to get stale.
+      # So reset to avoid: ActiveRecord::StatementInvalid: PG::ConnectionBad: PQconsumeInput() could not receive data from server: Connection timed out : BEGIN
+      ActiveRecord::Base.clear_active_connections!
       EventFactory.create(druid: druid, event_type: 'shelving_complete', data: { background_job_result_id: background_job_result.id })
     rescue ShelvingService::ContentDirNotFoundError => e
       return LogFailureJob.perform_later(druid: druid,
