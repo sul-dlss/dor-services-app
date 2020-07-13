@@ -42,7 +42,8 @@ RSpec.describe 'Update object' do
       hasMemberOrders: [
         { viewingDirection: 'right-to-left' }
       ],
-      isMemberOf: 'druid:xx888xx7777'
+      isMemberOf: 'druid:xx888xx7777',
+      hasAgreement: 'druid:cd777df7777'
     }
   end
   let(:access) { 'world' }
@@ -84,7 +85,8 @@ RSpec.describe 'Update object' do
         "identification":#{identification.to_json},
         "structural":{
           "hasMemberOrders":[{"viewingDirection":"right-to-left"}],
-          "isMemberOf":"druid:xx888xx7777"
+          "isMemberOf":"druid:xx888xx7777",
+          "hasAgreement":"druid:cd777df7777"
         }
       }
     JSON

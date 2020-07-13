@@ -18,7 +18,7 @@ RSpec.describe 'Create object' do
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected_label) { label }
-    let(:structural) { {} }
+    let(:structural) { { hasAgreement: 'druid:bc777df7777' } }
     let(:access) { 'world' }
     let(:expected) do
       Cocina::Models::DRO.new(type: Cocina::Models::Vocab.image,
@@ -52,7 +52,8 @@ RSpec.describe 'Create object' do
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
           "description":{"title":[{"status":"primary","value":"#{title}"}]},
-          "identification":#{identification.to_json},"structural":{}}
+          "identification":#{identification.to_json},
+          "structural":{"hasAgreement":"druid:bc777df7777"}}
       JSON
     end
 
