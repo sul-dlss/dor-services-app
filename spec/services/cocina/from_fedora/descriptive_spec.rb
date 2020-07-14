@@ -85,6 +85,26 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           type: 'system details'
         }
       ]
+      expect(descriptive[:language]).to match_array [
+        {
+          value: 'Arabic',
+          code: 'ara',
+          uri: 'http://id.loc.gov/vocabulary/iso639-2/ara',
+          source: {
+            code: 'iso639-2b',
+            uri: 'http://id.loc.gov/vocabulary/iso639-2'
+          }
+        },
+        {
+          value: 'French',
+          code: 'fre',
+          uri: 'http://id.loc.gov/vocabulary/iso639-2/fre',
+          source: {
+            code: 'iso639-2b',
+            uri: 'http://id.loc.gov/vocabulary/iso639-2'
+          }
+        }
+      ]
     end
   end
 end
