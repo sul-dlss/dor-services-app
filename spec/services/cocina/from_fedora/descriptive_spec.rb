@@ -111,6 +111,14 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         },
         type: 'corporate'
       ]
+      expect(descriptive[:form]).to match_array [
+        {
+          value: 'electronic',
+          source: {
+            code: 'marcform'
+          }
+        }
+      ]
     end
   end
 end

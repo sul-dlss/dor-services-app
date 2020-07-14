@@ -21,6 +21,7 @@ module Cocina
           desc[:note] = notes if notes.present?
           desc[:language] = language if language.present?
           desc[:contributor] = contributor if contributor.present?
+          desc[:form] = form if form.present?
         end
       end
 
@@ -71,9 +72,21 @@ module Cocina
         # TODO: Enchance for ETD specific data
         @contributor ||= [].tap do |names|
           item.descMetadata.ng_xml.xpath('//mods:name', mods: DESC_METADATA_NS).each do |name|
-            namePart = name.xpath('./mods:namePart', mods: DESC_METADATA_NS).first
+            name_part = name.xpath('./mods:namePart', mods: DESC_METADATA_NS).first
             type = name.attribute('type')
-            names << { name: { value: namePart.content }, type: type.value }
+            names << { name: { value: name_part.content }, type: type.value }
+          end
+        end
+      end
+
+      def form
+        # TODO: Enchance for ETD form data
+        @form ||= [].tap do |forms|
+          item.descMetadata.ng_xml.xpath('//mods:physicalDescription', mods: DESC_METADATA_NS).each do |form_data|
+            form_data.xpath('./mods:form', mods: DESC_METADATA_NS).each do |form_content|
+              source = form_content.attribute('authority').value
+              forms << { value: form_content.content, source: { code: source } }
+            end
           end
         end
       end
