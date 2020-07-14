@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Get the object' do
   before do
     allow(Dor).to receive(:find).and_return(object)
+    allow(object).to receive(:admin_policy_object_id).and_return('druid:df123cd4567')
   end
 
   context 'when the requested object is an item' do
@@ -34,7 +35,9 @@ RSpec.describe 'Get the object' do
             download: 'world',
             useAndReproductionStatement: 'Property rights reside with the repository...'
           },
-          administrative: {},
+          administrative: {
+            hasAdminPolicy: 'druid:df123cd4567'
+          },
           description: {
             title: [
               { status: 'primary',
@@ -87,6 +90,7 @@ RSpec.describe 'Get the object' do
             useAndReproductionStatement: 'Property rights reside with the repository...'
           },
           administrative: {
+            hasAdminPolicy: 'druid:df123cd4567',
             releaseTags: [
               {
                 to: 'Searchworks',
@@ -186,7 +190,9 @@ RSpec.describe 'Get the object' do
             download: 'world',
             useAndReproductionStatement: 'Property rights reside with the repository...'
           },
-          administrative: {},
+          administrative: {
+            hasAdminPolicy: 'druid:df123cd4567'
+          },
           description: {
             title: [
               { status: 'primary',
@@ -289,7 +295,9 @@ RSpec.describe 'Get the object' do
           access: 'world',
           download: 'world'
         },
-        administrative: {},
+        administrative: {
+          hasAdminPolicy: 'druid:df123cd4567'
+        },
         description: {
           title: [
             { status: 'primary',
@@ -316,7 +324,6 @@ RSpec.describe 'Get the object' do
       before do
         object.descMetadata.title_info.main_title = 'Hello'
         object.label = 'foo'
-        allow(object).to receive(:admin_policy_object_id).and_return('druid:df123cd4567')
       end
 
       it 'returns the object' do
@@ -372,7 +379,6 @@ RSpec.describe 'Get the object' do
       object.identityMetadata.other_ids = ['dissertationid:00000123']
       object.label = 'foo'
       allow(object).to receive(:collection_ids).and_return([])
-      allow(object).to receive(:admin_policy_object_id).and_return('druid:df123cd4567')
     end
 
     it 'returns the object' do
