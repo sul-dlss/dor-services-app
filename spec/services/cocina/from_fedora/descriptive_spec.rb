@@ -105,6 +105,12 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           }
         }
       ]
+      expect(descriptive[:contributor]).to match_array [
+        name: {
+          value: 'Stanford University. Libraries. Humanities and Area Studies Resource Group'
+        },
+        type: 'corporate'
+      ]
     end
   end
 end

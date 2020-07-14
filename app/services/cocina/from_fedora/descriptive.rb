@@ -20,6 +20,7 @@ module Cocina
         { title: [{ status: 'primary', value: TitleMapper.build(item) }] }.tap do |desc|
           desc[:note] = notes if notes.present?
           desc[:language] = language if language.present?
+          desc[:contributor] = contributor if contributor.present?
         end
       end
 
@@ -47,7 +48,6 @@ module Cocina
       end
 
       def language
-        # TODO: Add uri, source.code, source.uri
         @language ||= [].tap do |langs|
           item.descMetadata.ng_xml.xpath('//mods:language', mods: DESC_METADATA_NS).each do |lang|
             val = lang.xpath('./mods:languageTerm[@type="text"]', mods: DESC_METADATA_NS).first
@@ -63,6 +63,17 @@ module Cocina
                 uri: val.attribute('authorityURI').value
               }
             }
+          end
+        end
+      end
+
+      def contributor
+        # TODO: Enchance for ETD specific data
+        @contributor ||= [].tap do |names|
+          item.descMetadata.ng_xml.xpath('//mods:name', mods: DESC_METADATA_NS).each do |name|
+            namePart = name.xpath('./mods:namePart', mods: DESC_METADATA_NS).first
+            type = name.attribute('type')
+            names << { name: { value: namePart.content }, type: type.value }
           end
         end
       end
