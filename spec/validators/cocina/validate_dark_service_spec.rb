@@ -16,6 +16,9 @@ RSpec.describe Cocina::ValidateDarkService do
       label: 'The Structure of Scientific Revolutions',
       type: 'http://cocina.sul.stanford.edu/models/book.jsonld',
       version: 1,
+      administrative: {
+        hasAdminPolicy: 'druid:df123cd4567'
+      },
       access: { access: access },
       structural: {
         contains: [

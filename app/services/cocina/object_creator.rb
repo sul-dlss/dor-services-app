@@ -79,7 +79,6 @@ module Cocina
     # @param [Cocina::Models::RequestDRO] obj
     # @return [Dor::Item] a persisted Item model
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    # rubocop:disable Metrics/AbcSize
     def create_dro(obj)
       pid = Dor::SuriService.mint_id
       Dor::Item.new(pid: pid,
@@ -103,7 +102,6 @@ module Cocina
         Cocina::ToFedora::Identity.apply(obj, item, object_type: 'item', agreement_id: obj.structural&.hasAgreement)
       end
     end
-    # rubocop:enable Metrics/AbcSize
 
     # @param [Cocina::Models::RequestCollection] obj
     # @return [Dor::Collection] a persisted Collection model

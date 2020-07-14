@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Get the object' do
   before do
     allow(Dor).to receive(:find).and_return(object)
+    allow(collection).to receive(:admin_policy_object_id).and_return('druid:df123cd4567')
   end
 
   let(:object) { instance_double(Dor::Item, collections: [collection]) }
@@ -27,7 +28,9 @@ RSpec.describe 'Get the object' do
             access: 'dark',
             download: 'none'
           },
-          administrative: {},
+          administrative: {
+            hasAdminPolicy: 'druid:df123cd4567'
+          },
           description: {
             title: [
               { status: 'primary',

@@ -1130,6 +1130,8 @@ components:
           description: Administrative or Internal project this resource is a part of
           example: Google Books
           type: string
+      required:
+        - hasAdminPolicy
     AdminPolicy:
       type: object
       additionalProperties: true
@@ -1166,6 +1168,8 @@ components:
           type: string
         hasAdminPolicy:
           type: string
+      required:
+        - hasAdminPolicy
     AppliesTo:
       description: Property model for indicating the parts, aspects, or versions of the resource to which a
         descriptive element is applicable.

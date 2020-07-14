@@ -36,7 +36,7 @@ module Cocina
           registration_workflow = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/dissemination/workflow/@id').text
           admin[:defaultObjectRights] = item.defaultObjectRights.content
           admin[:registrationWorkflow] = registration_workflow if registration_workflow.present?
-          admin[:hasAdminPolicy] = item.admin_policy_object_id if item.admin_policy_object_id
+          admin[:hasAdminPolicy] = item.admin_policy_object_id
         end
       end
     end
