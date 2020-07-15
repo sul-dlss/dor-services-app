@@ -317,12 +317,14 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         },
         {
           value: 'computer',
+          type: 'media',
           source: {
             code: 'rdamedia'
           }
         },
         {
           value: 'online resource',
+          type: 'carrier',
           source: {
             code: 'rdacarrier'
           }

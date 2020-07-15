@@ -123,7 +123,9 @@ module Cocina
           item.descMetadata.ng_xml.xpath('//mods:physicalDescription', mods: DESC_METADATA_NS).each do |form_data|
             form_data.xpath('./mods:form', mods: DESC_METADATA_NS).each do |form_content|
               source = form_content.attribute('authority').value
+              type = form_content.attribute('type')&.value
               forms << { value: form_content.content, source: { code: source } }
+              forms.last[:type] = type if type.present?
             end
 
             form_data.xpath('./mods:extent', mods: DESC_METADATA_NS).each do |extent|
