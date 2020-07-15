@@ -19,7 +19,7 @@ module Cocina
       def props
         { title: [{ status: 'primary', value: TitleMapper.build(item) }] }.tap do |desc|
           desc[:note] = NotesMapper.build(item)
-          desc[:language] = language if language.present?
+          desc[:language] = LanguageMapper.build(item)
           desc[:contributor] = contributor if contributor.present?
           desc[:form] = form if form.present?
         end
@@ -29,32 +29,6 @@ module Cocina
 
       attr_reader :item
 
-      def language
-        @language ||= [].tap do |langs|
-          item.descMetadata.ng_xml.xpath('//mods:language', mods: DESC_METADATA_NS).each do |lang|
-            language_hash = {}
-            val = lang.xpath('./mods:languageTerm[@type="text"]', mods: DESC_METADATA_NS).first
-            code = lang.xpath('./mods:languageTerm[@type="code"]', mods: DESC_METADATA_NS).first
-
-            language_hash = {
-              value: val.content,
-              uri: val.attribute('valueURI').value,
-              source: {
-                uri: val.attribute('authorityURI').value
-              }
-            } if val.present?
-
-            language_hash = {
-              code: code.content,
-              source: {
-                code: code.attribute('authority').value
-              }
-            } if code.present?
-
-            langs << language_hash unless language_hash.empty?
-          end
-        end
-      end
 
       def contributor
         @contributor ||= [].tap do |names|
