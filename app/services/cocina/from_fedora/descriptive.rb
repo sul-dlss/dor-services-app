@@ -20,8 +20,8 @@ module Cocina
         { title: [{ status: 'primary', value: TitleMapper.build(item) }] }.tap do |desc|
           desc[:note] = NotesMapper.build(item)
           desc[:language] = LanguageMapper.build(item)
-          desc[:contributor] = contributor if contributor.present?
-          desc[:form] = form if form.present?
+          desc[:contributor] = ContributorMapper.build(item)
+          desc[:form] = FormMapper.build(item)
         end
       end
 
@@ -29,46 +29,6 @@ module Cocina
 
       attr_reader :item
 
-
-      def contributor
-        @contributor ||= [].tap do |names|
-          item.descMetadata.ng_xml.xpath('//mods:name', mods: DESC_METADATA_NS).each do |name|
-            name_part = name.xpath('./mods:namePart', mods: DESC_METADATA_NS).first
-            role_hash = {}
-            name.xpath('./mods:role/mods:roleTerm', mods: DESC_METADATA_NS).each do |role_term|
-              if role_term.attribute('type').value.include? 'code'
-                role_hash[:code] = role_term.content 
-                role_hash[:source] = { code: role_term.attribute('authority').value }
-              end
-              role_hash[:value] = role_term.content if role_term.attribute('type').value.include? 'text'
-            end
-            type = name.attribute('type')
-            usage = name.attribute('usage')
-            name_hash = { name: { value: name_part.content }, type: type.value }
-            name_hash[:status] = usage.value if usage.present?
-            name_hash[:role] = [role_hash] unless role_hash.empty?
-            names << name_hash
-          end
-        end
-      end
-
-      def form
-        # TODO: Enchance for ETD form data
-        @form ||= [].tap do |forms|
-          item.descMetadata.ng_xml.xpath('//mods:physicalDescription', mods: DESC_METADATA_NS).each do |form_data|
-            form_data.xpath('./mods:form', mods: DESC_METADATA_NS).each do |form_content|
-              source = form_content.attribute('authority').value
-              type = form_content.attribute('type')&.value
-              forms << { value: form_content.content, source: { code: source } }
-              forms.last[:type] = type if type.present?
-            end
-
-            form_data.xpath('./mods:extent', mods: DESC_METADATA_NS).each do |extent|
-              forms << { value: extent.content, type: 'extent' }
-            end
-          end
-        end
-      end
     end
   end
 end

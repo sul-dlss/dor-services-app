@@ -19,7 +19,7 @@ module Cocina
           language_hash = {}
           val = lang.xpath('./mods:languageTerm[@type="text"]', mods: DESC_METADATA_NS).first
           code = lang.xpath('./mods:languageTerm[@type="code"]', mods: DESC_METADATA_NS).first
-    
+
           language_hash = {
             value: val.content,
             uri: val.attribute('valueURI').value,
@@ -27,14 +27,14 @@ module Cocina
               uri: val.attribute('authorityURI').value
             }
           } if val.present?
-    
+
           language_hash = {
             code: code.content,
             source: {
               code: code.attribute('authority').value
             }
           } if code.present?
-    
+
           langs << language_hash unless language_hash.empty?
         end
       end
