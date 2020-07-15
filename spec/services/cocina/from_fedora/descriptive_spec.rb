@@ -251,25 +251,49 @@ RSpec.describe Cocina::FromFedora::Descriptive do
             value: 'Doe, John Jr.'
           },
           type: 'personal',
-          status: 'primary'
+          status: 'primary',
+          role: [{
+            value: 'author'
+          }]
         },
         {
           name: {
             value: 'Doe, John Sr.'
           },
-          type: 'personal'
+          type: 'personal',
+          role: [{
+            value: 'degree supervisor',
+            code: 'ths',
+            source: {
+              code: 'marcrelator'
+            }
+          }]
         },
         {
           name: {
             value: 'Doe, Jane'
           },
-          type: 'personal'
+          type: 'personal',
+          role: [{
+            value: 'degree committee member',
+            code: 'ths',
+            source: {
+              code: 'marcrelator'
+            }
+          }]
         },
         {
           name: {
             value: 'Majors, Brad'
           },
-          type: 'personal'
+          type: 'personal',
+          role: [{
+            value: 'degree committee member',
+            code: 'ths',
+            source: {
+              code: 'marcrelator'
+            }
+          }]
         },
         {
           name: {
