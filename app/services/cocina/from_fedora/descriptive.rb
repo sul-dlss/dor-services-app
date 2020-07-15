@@ -33,6 +33,11 @@ module Cocina
         @notes ||= [].tap do |items|
           items << original_url if original_url
           items << abstract if abstract
+          items << statement_of_responsibility if statement_of_responsibility
+          items << thesis_statement if thesis_statement
+          additional_notes.each do |note|
+            items << { value: note.content }
+          end
         end
       end
 
@@ -48,22 +53,44 @@ module Cocina
         { type: 'system details', value: val.content } if val
       end
 
+      def statement_of_responsibility
+        val = item.descMetadata.ng_xml.xpath('//mods:note[@type="statement of responsibility"]', mods: DESC_METADATA_NS).first
+        { type: 'statement of responsibility', value: val.content } if val
+      end
+
+      def thesis_statement
+        val = item.descMetadata.ng_xml.xpath('//mods:note[@type="thesis"]', mods: DESC_METADATA_NS).first
+        { type: 'thesis', value: val.content } if val
+      end
+
+      # Returns any notes values that do not include a type attribute
+      def additional_notes
+        item.descMetadata.ng_xml.xpath('//mods:note[not(@type)]', mods: DESC_METADATA_NS)
+      end
+
       def language
         @language ||= [].tap do |langs|
           item.descMetadata.ng_xml.xpath('//mods:language', mods: DESC_METADATA_NS).each do |lang|
+            language_hash = {}
             val = lang.xpath('./mods:languageTerm[@type="text"]', mods: DESC_METADATA_NS).first
             code = lang.xpath('./mods:languageTerm[@type="code"]', mods: DESC_METADATA_NS).first
-            break if val.blank?
 
-            langs << {
+            language_hash = {
               value: val.content,
-              code: code.content,
               uri: val.attribute('valueURI').value,
               source: {
-                code: val.attribute('authority').value,
                 uri: val.attribute('authorityURI').value
               }
-            }
+            } if val.present?
+
+            language_hash = {
+              code: code.content,
+              source: {
+                code: code.attribute('authority').value
+              }
+            } if code.present?
+
+            langs << language_hash unless language_hash.empty?
           end
         end
       end
@@ -74,7 +101,10 @@ module Cocina
           item.descMetadata.ng_xml.xpath('//mods:name', mods: DESC_METADATA_NS).each do |name|
             name_part = name.xpath('./mods:namePart', mods: DESC_METADATA_NS).first
             type = name.attribute('type')
-            names << { name: { value: name_part.content }, type: type.value }
+            usage = name.attribute('usage')
+            name_hash = { name: { value: name_part.content }, type: type.value }
+            name_hash[:status] = usage.value if usage.present?
+            names << name_hash
           end
         end
       end
@@ -86,6 +116,10 @@ module Cocina
             form_data.xpath('./mods:form', mods: DESC_METADATA_NS).each do |form_content|
               source = form_content.attribute('authority').value
               forms << { value: form_content.content, source: { code: source } }
+            end
+
+            form_data.xpath('./mods:extent', mods: DESC_METADATA_NS).each do |extent|
+              forms << { value: extent.content, type: 'extent' }
             end
           end
         end

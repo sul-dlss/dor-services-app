@@ -121,4 +121,190 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       ]
     end
   end
+
+  context 'when the item is an ETD' do
+    before do
+      item.descMetadata.content = <<~XML
+        <?xml version="1.0"?>
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo>
+            <title>A Totally Ficticious Dissertation</title>
+          </titleInfo>
+          <name type="personal" usage="primary">
+            <namePart>Doe, John Jr.</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+          <name type="personal">
+            <namePart>Doe, John Sr.</namePart>
+            <role>
+              <roleTerm type="text">degree supervisor</roleTerm>
+            </role>
+            <role>
+              <roleTerm authority="marcrelator" type="code">ths</roleTerm>
+            </role>
+          </name>
+          <name type="personal">
+            <namePart>Doe, Jane</namePart>
+            <role>
+              <roleTerm type="text">degree committee member</roleTerm>
+            </role>
+            <role>
+              <roleTerm authority="marcrelator" type="code">ths</roleTerm>
+            </role>
+          </name>
+          <name type="personal">
+            <namePart>Majors, Brad</namePart>
+            <role>
+              <roleTerm type="text">degree committee member</roleTerm>
+            </role>
+            <role>
+              <roleTerm authority="marcrelator" type="code">ths</roleTerm>
+            </role>
+          </name>
+          <name type="corporate">
+            <namePart>Stanford University</namePart>
+            <namePart>Department of Computer Science.</namePart>
+          </name>
+          <typeOfResource>text</typeOfResource>
+          <genre authority="marcgt">theses</genre>
+          <genre authority="rdacontent">text</genre>
+          <originInfo>
+            <place>
+              <placeTerm type="code" authority="marccountry">cau</placeTerm>
+            </place>
+            <dateIssued encoding="marc">2020</dateIssued>
+            <copyrightDate encoding="marc">2020</copyrightDate>
+            <issuance>monographic</issuance>
+          </originInfo>
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="text">[Stanford, California]</placeTerm>
+            </place>
+            <publisher>[Stanford University]</publisher>
+            <dateIssued>2020</dateIssued>
+          </originInfo>
+          <originInfo eventType="copyright notice">
+            <copyrightDate>&#xA9;2020</copyrightDate>
+          </originInfo>
+          <language>
+            <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+          </language>
+          <physicalDescription>
+            <form authority="marccategory">electronic resource</form>
+            <form authority="marcsmd">remote</form>
+            <extent>1 online resource.</extent>
+            <form type="media" authority="rdamedia">computer</form>
+            <form type="carrier" authority="rdacarrier">online resource</form>
+          </physicalDescription>
+          <abstract displayLabel="Abstract">Blah blah blah, I believe in science!</abstract>
+          <note type="statement of responsibility">John Doe Jr.</note>
+          <note>Submitted to the Department of Computer Science.</note>
+          <note type="thesis">Thesis Ph.D. Stanford University 2020.</note>
+          <location>
+            <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/ab123dc1234</url>
+          </location>
+          <recordInfo>
+            <descriptionStandard>rda</descriptionStandard>
+            <recordContentSource authority="marcorg">CSt</recordContentSource>
+            <recordCreationDate encoding="marc">200312</recordCreationDate>
+            <recordIdentifier source="SIRSI">a13500152</recordIdentifier>
+            <recordOrigin>Converted from MARCXML to MODS version 3.6 using MARC21slim2MODS3-6_SDR.xsl (SUL version 1 2018/06/13; LC Revision 1.118 2018/01/31)</recordOrigin>
+            <languageOfCataloging>
+              <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+            </languageOfCataloging>
+          </recordInfo>
+        </mods>
+      XML
+    end
+
+    it 'has a url' do
+      expect(descriptive[:note]).to match_array [
+        {
+          type: 'summary',
+          value: 'Blah blah blah, I believe in science!'
+        },
+        {
+          value: 'John Doe Jr.',
+          type: 'statement of responsibility'
+        },
+        {
+          value: 'Thesis Ph.D. Stanford University 2020.',
+          type: 'thesis'
+        },
+        {
+          value: 'Submitted to the Department of Computer Science.'
+        }
+      ]
+      expect(descriptive[:language]).to match_array [
+        {
+          code: 'eng',
+          source: {
+            code: 'iso639-2b'
+          }
+        }
+      ]
+      expect(descriptive[:contributor]).to match_array [
+        {
+          name: {
+            value: 'Doe, John Jr.'
+          },
+          type: 'personal',
+          status: 'primary'
+        },
+        {
+          name: {
+            value: 'Doe, John Sr.'
+          },
+          type: 'personal'
+        },
+        {
+          name: {
+            value: 'Doe, Jane'
+          },
+          type: 'personal'
+        },
+        {
+          name: {
+            value: 'Majors, Brad'
+          },
+          type: 'personal'
+        },
+        {
+          name: {
+            value: 'Stanford University'
+          },
+          type: 'corporate'
+        }
+      ]
+      expect(descriptive[:form]).to match_array [
+        {
+          value: 'electronic resource',
+          source: {
+            code: 'marccategory'
+          }
+        },
+        {
+          value: 'remote',
+          source: {
+            code: 'marcsmd'
+          }
+        },
+        {
+          value: 'computer',
+          source: {
+            code: 'rdamedia'
+          }
+        },
+        {
+          value: 'online resource',
+          source: {
+            code: 'rdacarrier'
+          }
+        },
+        { value: '1 online resource.', type: 'extent' }
+      ]
+    end
+  end
 end
