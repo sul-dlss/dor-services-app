@@ -4,6 +4,12 @@ module Cocina
   # Maps languages
   class LanguageMapper
     DESC_METADATA_NS = Dor::DescMetadataDS::MODS_NS
+    LANG_XPATH = '//mods:language'
+    LANG_TEXT_XPATH = './mods:languageTerm[@type="text"]/text()'
+    LANG_TEXT_AUTHORITY_URI_XPATH = './mods:languageTerm[@type="text"]/@authorityURI'
+    LANG_TEXT_VALUE_URI_XPATH = './mods:languageTerm[@type="text"]/@valueURI'
+    LANG_CODE_XPATH = './mods:languageTerm[@type="code"]/text()'
+    LANG_CODE_AUTHORITY_XPATH = './mods:languageTerm[@type="code"]/@authority'
 
     def self.build(item)
       new(item).build
@@ -15,27 +21,11 @@ module Cocina
 
     def build
       [].tap do |langs|
-        item.descMetadata.ng_xml.xpath('//mods:language', mods: DESC_METADATA_NS).each do |lang|
-          language_hash = {}
-          val = lang.xpath('./mods:languageTerm[@type="text"]', mods: DESC_METADATA_NS).first
-          code = lang.xpath('./mods:languageTerm[@type="code"]', mods: DESC_METADATA_NS).first
-
-          # The order of code and val here are important because it's more likely we have a code
-          # without a val than vise versa
-          if code.present?
-            language_hash = { code: code.content,
-                              source: {
-                                code: code.attribute('authority').value
-                              } }
-          end
-
-          if val.present?
-            language_hash[:value] = val.content
-            language_hash[:uri] = val.attribute('valueURI').value
-            language_hash[:source][:uri] = val.attribute('authorityURI').value
-          end
-
-          langs << language_hash unless language_hash.empty?
+        languages.each do |lang|
+          langs << { code: language_code_for(lang),
+                     value: language_text_for(lang),
+                     uri: language_uri_for(lang),
+                     source: language_source_for(lang) }.delete_if { |_key, value| value.blank? }
         end
       end
     end
@@ -43,5 +33,28 @@ module Cocina
     private
 
     attr_reader :item
+
+    def languages
+      @languages ||= item.descMetadata.ng_xml.xpath(LANG_XPATH, mods: DESC_METADATA_NS)
+    end
+
+    def language_code_for(lang)
+      lang.xpath(LANG_CODE_XPATH, mods: DESC_METADATA_NS).to_s
+    end
+
+    def language_text_for(lang)
+      lang.xpath(LANG_TEXT_XPATH, mods: DESC_METADATA_NS).to_s
+    end
+
+    def language_uri_for(lang)
+      lang.xpath(LANG_TEXT_VALUE_URI_XPATH, mods: DESC_METADATA_NS).to_s
+    end
+
+    def language_source_for(lang)
+      {
+        code: lang.xpath(LANG_CODE_AUTHORITY_XPATH, mods: DESC_METADATA_NS).to_s,
+        uri: lang.xpath(LANG_TEXT_AUTHORITY_URI_XPATH, mods: DESC_METADATA_NS).to_s
+      }.delete_if { |_key, value| value.blank? }
+    end
   end
 end
