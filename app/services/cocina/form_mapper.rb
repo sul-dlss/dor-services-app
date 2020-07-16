@@ -4,6 +4,11 @@ module Cocina
   # Maps forms
   class FormMapper
     DESC_METADATA_NS = Dor::DescMetadataDS::MODS_NS
+    PHYSICAL_DESCRIPTION_XPATH = '//mods:physicalDescription'
+    FORM_XPATH = './mods:form'
+    FORM_AUTHORITY_XPATH = './@authority'
+    FORM_TYPE_XPATH = './@type'
+    EXTENT_XPATH = './mods:extent'
 
     def self.build(item)
       new(item).build
@@ -15,15 +20,16 @@ module Cocina
 
     def build
       [].tap do |forms|
-        item.descMetadata.ng_xml.xpath('//mods:physicalDescription', mods: DESC_METADATA_NS).each do |form_data|
-          form_data.xpath('./mods:form', mods: DESC_METADATA_NS).each do |form_content|
-            source = form_content.attribute('authority').value
-            type = form_content.attribute('type')&.value
-            forms << { value: form_content.content, source: { code: source } }
-            forms.last[:type] = type if type.present?
+        physical_descriptions.each do |form_data|
+          form_data.xpath(FORM_XPATH, mods: DESC_METADATA_NS).each do |form_content|
+            forms << {
+              value: form_content.content,
+              type: type_for(form_content),
+              source: source_for(form_content)
+            }.reject { |_k, v| v.blank? }
           end
 
-          form_data.xpath('./mods:extent', mods: DESC_METADATA_NS).each do |extent|
+          form_data.xpath(EXTENT_XPATH, mods: DESC_METADATA_NS).each do |extent|
             forms << { value: extent.content, type: 'extent' }
           end
         end
@@ -33,5 +39,17 @@ module Cocina
     private
 
     attr_reader :item
+
+    def physical_descriptions
+      item.descMetadata.ng_xml.xpath('//mods:physicalDescription', mods: DESC_METADATA_NS)
+    end
+
+    def source_for(form)
+      { code: form.xpath(FORM_AUTHORITY_XPATH, mods: DESC_METADATA_NS).to_s }
+    end
+
+    def type_for(form)
+      form.xpath(FORM_TYPE_XPATH, mods: DESC_METADATA_NS).to_s
+    end
   end
 end
