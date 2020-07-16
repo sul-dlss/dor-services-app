@@ -28,7 +28,6 @@ module Cocina
       private
 
       attr_reader :item
-
     end
   end
 end

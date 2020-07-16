@@ -20,20 +20,21 @@ module Cocina
           val = lang.xpath('./mods:languageTerm[@type="text"]', mods: DESC_METADATA_NS).first
           code = lang.xpath('./mods:languageTerm[@type="code"]', mods: DESC_METADATA_NS).first
 
-          language_hash = {
-            value: val.content,
-            uri: val.attribute('valueURI').value,
-            source: {
-              uri: val.attribute('authorityURI').value
-            }
-          } if val.present?
+          # The order of code and val here are important because it's more likely we have a code
+          # without a val than vise versa
+          if code.present?
+            language_hash = { code: code.content,
+                              source: {
+                                code: code.attribute('authority').value
+                              }
+                            }
+          end
 
-          language_hash = {
-            code: code.content,
-            source: {
-              code: code.attribute('authority').value
-            }
-          } if code.present?
+          if val.present?
+            language_hash.merge(value: val.content,
+                                uri: val.attribute('valueURI').value)
+            language_hash[:source].merge(uri: val.attribute('authorityURI').value)
+          end
 
           langs << language_hash unless language_hash.empty?
         end
