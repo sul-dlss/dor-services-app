@@ -25,7 +25,7 @@ module Cocina
           langs << { code: language_code_for(lang),
                      value: language_text_for(lang),
                      uri: language_uri_for(lang),
-                     source: language_source_for(lang) }.delete_if { |_key, value| value.blank? }
+                     source: language_source_for(lang) }.reject { |_k, v| v.blank? }
         end
       end
     end
@@ -54,7 +54,7 @@ module Cocina
       {
         code: lang.xpath(LANG_CODE_AUTHORITY_XPATH, mods: DESC_METADATA_NS).to_s,
         uri: lang.xpath(LANG_TEXT_AUTHORITY_URI_XPATH, mods: DESC_METADATA_NS).to_s
-      }.delete_if { |_key, value| value.blank? }
+      }.reject { |_k, v| v.blank? }
     end
   end
 end
