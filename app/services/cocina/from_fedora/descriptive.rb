@@ -17,11 +17,15 @@ module Cocina
       end
 
       def props
+        note = NotesMapper.build(item)
+        language = LanguageMapper.build(item)
+        contributor = ContributorMapper.build(item)
+        form = FormMapper.build(item)
         { title: [{ status: 'primary', value: TitleMapper.build(item) }] }.tap do |desc|
-          desc[:note] = NotesMapper.build(item)
-          desc[:language] = LanguageMapper.build(item)
-          desc[:contributor] = ContributorMapper.build(item)
-          desc[:form] = FormMapper.build(item)
+          desc[:note] = note unless note.empty?
+          desc[:language] = language unless language.empty?
+          desc[:contributor] = contributor unless contributor.empty?
+          desc[:form] = form unless form.empty?
         end
       end
 
