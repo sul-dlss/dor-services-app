@@ -72,6 +72,10 @@ RSpec.describe Cocina::FromFedora::Descriptive do
     it 'has a url' do
       expect(descriptive[:note]).to match_array [
         {
+          value: 'http://ennejah.info/',
+          type: 'system details'
+        },
+        {
           type: 'summary',
           value: 'Official site of opposition candidate Boulkheir, "the Mauritanian Obama," ' \
           'for the 2009 Mauritania presidential election. The election was held July 18, 2009. ' \
@@ -81,8 +85,10 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           '"mess3oud ould belkhier LE CANDIDAT DU FNDD ET LE NOTRE VOTONS POUR LUI".'
         },
         {
-          value: 'http://ennejah.info/',
-          type: 'system details'
+          value: 'Site closed after 2010.'
+        },
+        {
+          value: 'Archived by Stanford University Libraries, Humanities and Area Studies Resource Group'
         }
       ]
       expect(descriptive[:language]).to match_array [
@@ -109,7 +115,14 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         name: {
           value: 'Stanford University. Libraries. Humanities and Area Studies Resource Group'
         },
-        type: 'corporate'
+        type: 'corporate',
+        role: [{
+          value: 'collector',
+          code: 'col',
+          source: {
+            code: 'marcrelator'
+          }
+        }]
       ]
       expect(descriptive[:form]).to match_array [
         {

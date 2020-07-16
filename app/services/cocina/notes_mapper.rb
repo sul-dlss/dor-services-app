@@ -53,7 +53,7 @@ module Cocina
 
     # Returns any notes values that do not include a type attribute
     def additional_notes
-      item.descMetadata.ng_xml.xpath('//mods:note[not(@type)]', mods: DESC_METADATA_NS)
+      item.descMetadata.ng_xml.xpath('//mods:note[not(@type)][not(@displayLabel)]', mods: DESC_METADATA_NS)
     end
   end
 end

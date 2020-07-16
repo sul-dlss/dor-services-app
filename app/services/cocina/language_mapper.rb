@@ -31,9 +31,9 @@ module Cocina
           end
 
           if val.present?
-            language_hash.merge(value: val.content,
-                                uri: val.attribute('valueURI').value)
-            language_hash[:source].merge(uri: val.attribute('authorityURI').value)
+            language_hash[:value] = val.content
+            language_hash[:uri] = val.attribute('valueURI').value
+            language_hash[:source][:uri] = val.attribute('authorityURI').value
           end
 
           langs << language_hash unless language_hash.empty?
