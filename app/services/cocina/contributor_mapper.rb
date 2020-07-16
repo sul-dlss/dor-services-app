@@ -4,6 +4,10 @@ module Cocina
   # Maps contributors
   class ContributorMapper
     DESC_METADATA_NS = Dor::DescMetadataDS::MODS_NS
+    NAME_XPATH = '//mods:name'
+    NAME_PART_XPATH = './mods:namePart'
+    ROLE_CODE_XPATH = './mods:role/mods:roleTerm[@type="code"]'
+    ROLE_TEXT_XPATH = './mods:role/mods:roleTerm[@type="text"]'
 
     def self.build(item)
       new(item).build
@@ -14,23 +18,13 @@ module Cocina
     end
 
     def build
-      [].tap do |names|
-        item.descMetadata.ng_xml.xpath('//mods:name', mods: DESC_METADATA_NS).each do |name|
-          name_part = name.xpath('./mods:namePart', mods: DESC_METADATA_NS).first
-          role_hash = {}
-          name.xpath('./mods:role/mods:roleTerm', mods: DESC_METADATA_NS).each do |role_term|
-            if role_term.attribute('type').value.include? 'code'
-              role_hash[:code] = role_term.content
-              role_hash[:source] = { code: role_term.attribute('authority').value }
-            end
-            role_hash[:value] = role_term.content if role_term.attribute('type').value.include? 'text'
-          end
-          type = name.attribute('type')
-          usage = name.attribute('usage')
-          name_hash = { name: { value: name_part.content }, type: type.value }
-          name_hash[:status] = usage.value if usage.present?
-          name_hash[:role] = [role_hash] unless role_hash.empty?
-          names << name_hash
+      [].tap do |contributors|
+        names.each do |name|
+          contributors << { name: name_parts(name),
+                            type: name.attribute('type').value }
+          contributors.last[:status] = name.attribute('usage').value if name.attribute('usage').present?
+          roles = [roles_for(name)]
+          contributors.last[:role] = roles unless roles.flatten.empty?
         end
       end
     end
@@ -38,5 +32,31 @@ module Cocina
     private
 
     attr_reader :item
+
+    def names
+      @names ||= item.descMetadata.ng_xml.xpath(NAME_XPATH, mods: DESC_METADATA_NS)
+    end
+
+    def name_parts(name)
+      [].tap do |parts|
+        name.xpath(NAME_PART_XPATH, mods: DESC_METADATA_NS).each do |name_part|
+          parts << { value: name_part.content }
+        end
+      end
+    end
+
+    def roles_for(name)
+      role_code = name.xpath(ROLE_CODE_XPATH, mods: DESC_METADATA_NS).first
+      role_text = name.xpath(ROLE_TEXT_XPATH, mods: DESC_METADATA_NS).first
+      return [] if role_code.nil? && role_text.nil?
+
+      {}.tap do |role|
+        if role_code.present?
+          role[:code] = role_code.content unless role_code.nil?
+          role[:source] = { code: role_code.attribute('authority').value }
+        end
+        role[:value] = role_text.content unless role_text.nil?
+      end
+    end
   end
 end
