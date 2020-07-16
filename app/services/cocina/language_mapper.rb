@@ -26,8 +26,7 @@ module Cocina
             language_hash = { code: code.content,
                               source: {
                                 code: code.attribute('authority').value
-                              }
-                            }
+                              } }
           end
 
           if val.present?
