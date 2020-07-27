@@ -11,6 +11,8 @@ module Cocina
     LANG_CODE_XPATH = './mods:languageTerm[@type="code"]/text()'
     LANG_CODE_AUTHORITY_XPATH = './mods:languageTerm[@type="code"]/@authority'
 
+    # @param [Dor::Item,Dor::Etd] item
+    # @return [Hash] a hash that can be mapped to a cocina model
     def self.build(item)
       new(item).build
     end

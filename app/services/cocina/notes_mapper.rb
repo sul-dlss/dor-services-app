@@ -5,6 +5,8 @@ module Cocina
   class NotesMapper
     DESC_METADATA_NS = Dor::DescMetadataDS::MODS_NS
 
+    # @param [Dor::Item,Dor::Etd] item
+    # @return [Hash] a hash that can be mapped to a cocina model
     def self.build(item)
       new(item).build
     end

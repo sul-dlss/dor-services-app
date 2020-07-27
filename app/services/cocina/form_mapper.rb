@@ -10,6 +10,8 @@ module Cocina
     FORM_TYPE_XPATH = './@type'
     EXTENT_XPATH = './mods:extent'
 
+    # @param [Dor::Item,Dor::Etd] item
+    # @return [Hash] a hash that can be mapped to a cocina model
     def self.build(item)
       new(item).build
     end
