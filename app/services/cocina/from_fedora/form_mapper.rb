@@ -2,7 +2,7 @@
 
 module Cocina
   module FromFedora
-    # Maps forms
+    # Maps relevant mods:physicalDescription from descMetadata to cocina
     class FormMapper
       DESC_METADATA_NS = Dor::DescMetadataDS::MODS_NS
       PHYSICAL_DESCRIPTION_XPATH = '//mods:physicalDescription'
