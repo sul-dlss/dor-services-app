@@ -113,6 +113,11 @@ module Cocina
                           label: truncate_label(obj.label)).tap do |item|
         add_description(item, obj)
         add_collection_tags(pid, obj)
+        if obj.access
+          Cocina::ToFedora::Access.apply(item, obj.access)
+        else
+          apply_default_access(item)
+        end
         Cocina::ToFedora::Identity.apply(obj, item, object_type: 'collection')
       end
     end

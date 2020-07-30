@@ -7,6 +7,8 @@ module Cocina
     class Access
       # TODO: this should be expanded to support file level rights: https://consul.stanford.edu/pages/viewpage.action?spaceKey=chimera&title=Rights+metadata+--+the+rightsMetadata+datastream
       #       See https://argo.stanford.edu/view/druid:bb142ws0723 as an example
+      # @param [Dor::Item, Dor::Collection] item
+      # @param [Cocina::Models::DROAccess, Cocina::Models::Access] access
       def self.apply(item, access)
         rights_type = case access.access
                       when 'location-based'
@@ -19,7 +21,7 @@ module Cocina
                         access.download == 'none' ? "#{access.access}-nd" : access.access
                       end
 
-        create_embargo(item, access.embargo) if access.embargo
+        create_embargo(item, access.embargo) if access.is_a?(Cocina::Models::DROAccess) && access.embargo
 
         # See https://github.com/sul-dlss/dor-services/blob/master/lib/dor/datastreams/rights_metadata_ds.rb
         Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, rights_type)
