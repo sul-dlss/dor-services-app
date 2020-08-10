@@ -112,8 +112,7 @@ class SdrIngestService
   # @param [Pathname] metadata_dir The location of the the object's metadata files
   # @return [Moab::FileGroup] Traverse the metadata directory and generate a metadata group
   def self.get_metadata_file_group(metadata_dir)
-    file_group = Moab::FileGroup.new(group_id: 'metadata').group_from_directory(metadata_dir)
-    file_group
+    Moab::FileGroup.new(group_id: 'metadata').group_from_directory(metadata_dir)
   end
 
   # @param [Pathname] bag_dir the location of the bag to be verified
