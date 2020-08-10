@@ -29,17 +29,17 @@ RSpec.describe Cocina::ValidateDarkService do
             version: 1,
             structural: {
               contains: [
-                externalIdentifier: 'bc123df4567_1',
-                label: 'Page 1',
-                type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
-                version: 1,
-                access: { access: file_access },
-                administrative: {
-                  shelve: shelve,
-                  sdrPreserve: true
-                },
-                hasMessageDigests: [],
-                filename: 'page1.txt'
+                { externalIdentifier: 'bc123df4567_1',
+                  label: 'Page 1',
+                  type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                  version: 1,
+                  access: { access: file_access },
+                  administrative: {
+                    shelve: shelve,
+                    sdrPreserve: true
+                  },
+                  hasMessageDigests: [],
+                  filename: 'page1.txt' }
               ]
             }
           }
