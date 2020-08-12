@@ -36,9 +36,6 @@ Rails.application.routes.draw do
         post 'notify_goobi'
         post 'accession'
         post 'refresh_metadata', to: 'metadata_refresh#refresh'
-
-        get 'contents', to: 'content#list'
-        get 'contents/*path', to: 'content#read', format: false, as: :read_content
       end
       resources :members, only: [:index], defaults: { format: :json }
 
