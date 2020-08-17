@@ -21,6 +21,9 @@
 
 # Learn more: http://github.com/javan/whenever
 
+# Suppress warnings to avoid unnecessary cron emails.
+env 'RUBYOPT', '-W0'
+
 every :day, at: '2:16am' do
   rake 'dsa:embargo_release'
 end
