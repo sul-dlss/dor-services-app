@@ -499,7 +499,7 @@ DEPENDENCIES
   config
   deprecation
   dlss-capistrano (~> 3.6)
-  dor-services (~> 9.5)
+  dor-services (~> 9.6)
   dor-workflow-client (~> 3.17)
   dry-schema (~> 1.4)
   equivalent-xml

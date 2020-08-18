@@ -10,16 +10,20 @@ module Cocina
       # @param [Dor::Item, Dor::Collection] item
       # @param [Cocina::Models::DROAccess, Cocina::Models::Access] access
       def self.apply(item, access)
-        rights_type = case access.access
-                      when 'location-based'
-                        "loc:#{access.readLocation}"
-                      when 'citation-only'
-                        'none'
-                      when 'dark'
-                        'dark'
-                      else
-                        access.download == 'none' ? "#{access.access}-nd" : access.access
-                      end
+        rights_type =  if access.is_a?(Cocina::Models::DROAccess) && access.controlledDigitalLending
+                         'cdl-stanford-nd'
+                       else
+                         case access.access
+                         when 'location-based'
+                           "loc:#{access.readLocation}"
+                         when 'citation-only'
+                           'none'
+                         when 'dark'
+                           'dark'
+                         else
+                           access.download == 'none' ? "#{access.access}-nd" : access.access
+                         end
+                       end
 
         create_embargo(item, access.embargo) if access.is_a?(Cocina::Models::DROAccess) && access.embargo
 
