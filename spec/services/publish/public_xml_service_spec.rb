@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe PublicXmlService do
+RSpec.describe Publish::PublicXmlService do
   subject(:service) { described_class.new(item, released_for: release_tags) }
 
   let(:release_tags) { {} }
@@ -58,7 +58,7 @@ RSpec.describe PublicXmlService do
       item.descMetadata.content    = mods
       item.rightsMetadata.content  = rights
       item.rels_ext.content        = rels
-      allow_any_instance_of(PublicDescMetadataService).to receive(:ng_xml).and_return(Nokogiri::XML(mods)) # calls Item.find and not needed in general tests
+      allow_any_instance_of(Publish::PublicDescMetadataService).to receive(:ng_xml).and_return(Nokogiri::XML(mods)) # calls Item.find and not needed in general tests
       allow(OpenURI).to receive(:open_uri).with('https://purl-test.stanford.edu/ab123cd4567.xml').and_return('<xml/>')
       WebMock.disable_net_connect!
     end

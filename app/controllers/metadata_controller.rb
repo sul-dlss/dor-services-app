@@ -5,12 +5,12 @@ class MetadataController < ApplicationController
   before_action :load_item
 
   def dublin_core
-    service = DublinCoreService.new(@item)
+    service = Publish::DublinCoreService.new(@item)
     render xml: service
   end
 
   def descriptive
-    service = PublicDescMetadataService.new(@item)
+    service = Publish::PublicDescMetadataService.new(@item)
     render xml: service
   end
 

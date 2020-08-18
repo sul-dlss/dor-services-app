@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe PublishMetadataService do
+RSpec.describe Publish::MetadataTransferService do
   let(:item) do
     instantiate_fixture('druid:ab123cd4567', Dor::Item).tap do |i|
       i.contentMetadata.content = '<contentMetadata/>'
@@ -84,14 +84,14 @@ RSpec.describe PublishMetadataService do
           </mods:mods>
         EOXML
       end
-      let(:md_service) { instance_double(PublicDescMetadataService, to_xml: mods, ng_xml: Nokogiri::XML(mods)) }
-      let(:dc_service) { instance_double(DublinCoreService, ng_xml: Nokogiri::XML('<oai_dc:dc></oai_dc:dc>')) }
-      let(:public_service) { instance_double(PublicXmlService, to_xml: '<publicObject></publicObject>') }
+      let(:md_service) { instance_double(Publish::PublicDescMetadataService, to_xml: mods, ng_xml: Nokogiri::XML(mods)) }
+      let(:dc_service) { instance_double(Publish::DublinCoreService, ng_xml: Nokogiri::XML('<oai_dc:dc></oai_dc:dc>')) }
+      let(:public_service) { instance_double(Publish::PublicXmlService, to_xml: '<publicObject></publicObject>') }
 
       before do
-        allow(DublinCoreService).to receive(:new).and_return(dc_service)
-        allow(PublicXmlService).to receive(:new).and_return(public_service)
-        allow(PublicDescMetadataService).to receive(:new).and_return(md_service)
+        allow(Publish::DublinCoreService).to receive(:new).and_return(dc_service)
+        allow(Publish::PublicXmlService).to receive(:new).and_return(public_service)
+        allow(Publish::PublicDescMetadataService).to receive(:new).and_return(md_service)
       end
 
       context 'with an item' do
@@ -112,9 +112,9 @@ RSpec.describe PublishMetadataService do
         it 'identityMetadta, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
           item.rightsMetadata.content = "<rightsMetadata><access type='discover'><machine><world/></machine></access></rightsMetadata>"
           service.publish
-          expect(DublinCoreService).to have_received(:new).with(item)
-          expect(PublicXmlService).to have_received(:new).with(item, released_for: release_tags)
-          expect(PublicDescMetadataService).to have_received(:new).with(item)
+          expect(Publish::DublinCoreService).to have_received(:new).with(item)
+          expect(Publish::PublicXmlService).to have_received(:new).with(item, released_for: release_tags)
+          expect(Publish::PublicDescMetadataService).to have_received(:new).with(item)
         end
 
         it 'even when rightsMetadata uses xml namespaces' do

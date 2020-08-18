@@ -11,7 +11,7 @@ require_relative '../config/boot'
 IO.readlines('/home/lyberadmin/repub_druids.txt').each do |druid|
   puts "Republishing #{druid}"
   object = Dor.find(druid)
-  PublishMetadataService.publish(object)
+  Publish::MetadataTransferService.publish(object)
 rescue StandardError => e
   puts "ERR Problem with #{druid}\n" << e.inspect << "\n" << e.backtrace.join("\n")
 end
