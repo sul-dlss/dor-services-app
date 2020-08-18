@@ -26,7 +26,7 @@ class PublishJob < ApplicationJob
       #                                                         detail: "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" }] })
       # end
 
-      PublishMetadataService.publish(item)
+      Publish::MetadataTransferService.publish(item)
       EventFactory.create(druid: druid, event_type: 'publishing_complete', data: { background_job_result_id: background_job_result.id })
     rescue Dor::DataError => e
       return LogFailureJob.perform_later(druid: druid,

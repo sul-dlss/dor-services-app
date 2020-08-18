@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe DublinCoreService do
+RSpec.describe Publish::DublinCoreService do
   subject(:service) { described_class.new(item) }
 
   let(:item) { instantiate_fixture('druid:ab123cd4567', Dor::Item) }
@@ -29,7 +29,7 @@ RSpec.describe DublinCoreService do
       EOXML
 
       item.descMetadata.content = mods
-      expect { xml }.to raise_error(DublinCoreService::CrosswalkError)
+      expect { xml }.to raise_error(Publish::DublinCoreService::CrosswalkError)
     end
   end
 end

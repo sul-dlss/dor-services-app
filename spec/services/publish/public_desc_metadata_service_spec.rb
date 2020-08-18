@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe PublicDescMetadataService do
+RSpec.describe Publish::PublicDescMetadataService do
   subject(:service) { described_class.new(obj) }
 
   let(:obj) { instantiate_fixture('druid:ab123cd4567', Dor::Item) }

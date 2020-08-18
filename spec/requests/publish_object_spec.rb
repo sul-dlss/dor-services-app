@@ -13,7 +13,7 @@ RSpec.describe 'Publish object' do
   end
 
   context 'with a workflow provided' do
-    it 'calls PublishMetadataService and returns 201' do
+    it 'calls Publish::MetadataTransferService and returns 201' do
       post "/v1/objects/#{druid}/publish?workflow=releaseWF&lane-id=low", headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(PublishJob).to have_received(:set).with(queue: :low)
@@ -35,7 +35,7 @@ RSpec.describe 'Publish object' do
 
   context 'without a workflow provided' do
     # This happens when Argo invokes the API
-    it 'calls PublishMetadataService and returns 201' do
+    it 'calls Publish::MetadataTransferService and returns 201' do
       post "/v1/objects/#{druid}/publish", headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(job).to have_received(:perform_later)
