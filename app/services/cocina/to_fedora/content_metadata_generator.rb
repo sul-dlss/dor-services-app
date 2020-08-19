@@ -4,7 +4,7 @@ module Cocina
   module ToFedora
     # Builds the contentMetadata xml from cocina filesets
     class ContentMetadataGenerator
-      VALID_THREE_DIMENSION_EXTENTIONS = ['.obj'].freeze
+      VALID_THREE_DIMENSION_EXTENSIONS = ['.obj'].freeze
 
       # @param [String] druid the identifier of the item
       # @param [Cocina::Model::RequestDRO] object the cocina model
@@ -45,7 +45,7 @@ module Cocina
           resource_has_images ? 'page' : 'object'
         when Cocina::Models::Vocab.three_dimensional
           # if this resource contains no known 3D file extensions, the resource type is file
-          resource_has_3d_type = file_set.structural.contains.any? { |file| VALID_THREE_DIMENSION_EXTENTIONS.include?(::File.extname(file.filename)) }
+          resource_has_3d_type = file_set.structural.contains.any? { |file| VALID_THREE_DIMENSION_EXTENSIONS.include?(::File.extname(file.filename)) }
           resource_has_3d_type ? '3d' : 'file'
         when Cocina::Models::Vocab.webarchive_seed
           'image'
