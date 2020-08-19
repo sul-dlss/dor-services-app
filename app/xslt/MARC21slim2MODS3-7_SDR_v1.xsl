@@ -2561,8 +2561,7 @@
 										<place>
 											<placeTerm>
 												<xsl:attribute name="type">code</xsl:attribute>
-												<xsl:attribute name="authority"
-												>marcgac</xsl:attribute>
+												<xsl:attribute name="authority">marcgac</xsl:attribute>
 												<xsl:call-template name="chopPunctuation">
 												<xsl:with-param name="chopString">
 												<xsl:value-of select="."/>
@@ -7375,13 +7374,21 @@
 			<place>
 				<placeTerm>
 					<xsl:attribute name="type">text</xsl:attribute>
-					<xsl:call-template name="chopPunctuationFront">
+					<!-- SUL edit 20200819 issue #992 -->
+					<xsl:call-template name="chopPunctuation">
+						<xsl:with-param name="chopString" select="."/>
+						<xsl:with-param name="punctuation">
+							<xsl:text>:,;/ </xsl:text>
+						</xsl:with-param>
+					</xsl:call-template>
+<!-- SUL edit 20200819 issue #992
+						<xsl:call-template name="chopPunctuationFront">
 						<xsl:with-param name="chopString">
 							<xsl:call-template name="chopPunctuation">
 								<xsl:with-param name="chopString" select="."/>
 							</xsl:call-template>
 						</xsl:with-param>
-					</xsl:call-template>
+					</xsl:call-template>-->
 				</placeTerm>
 			</place>
 		</xsl:for-each>
