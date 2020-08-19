@@ -5333,10 +5333,11 @@
 				<xsl:when test="@ind1 = '4'">
 					<xsl:attribute name="displayLabel">Content advice</xsl:attribute>
 				</xsl:when>
-				<xsl:when test="@ind1 = '8'"/>
+<!-- SUL edit 20200819 issue #994
+					<xsl:when test="@ind1 = '8'"/>
 				<xsl:otherwise>
 					<xsl:attribute name="displayLabel">Summary</xsl:attribute>
-				</xsl:otherwise>
+				</xsl:otherwise>-->
 			</xsl:choose>
 
 			<xsl:call-template name="xxx880"/>
