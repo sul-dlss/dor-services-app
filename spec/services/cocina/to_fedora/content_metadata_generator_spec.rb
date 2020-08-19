@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe ContentMetadataGenerator do
+RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   subject(:generate) do
     described_class.generate(druid: 'druid:bc123de5678', object: model)
   end

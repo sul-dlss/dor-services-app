@@ -88,7 +88,7 @@ module Cocina
     def update_content_metadata(item, obj)
       # We don't want to overwrite contentMetadata unless they provided structural.contains
       if obj.structural&.contains
-        item.contentMetadata.content = ContentMetadataGenerator.generate(druid: item.pid, object: obj)
+        item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: item.pid, object: obj)
       else
         item.contentMetadata.contentType = ToFedora::ContentType.map(obj.type)
       end
