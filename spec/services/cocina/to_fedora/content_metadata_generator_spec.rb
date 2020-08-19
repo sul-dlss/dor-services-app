@@ -58,7 +58,11 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       'access' => {
         'access' => 'stanford'
       },
-      'hasMessageDigests' => []
+      'hasMessageDigests' => [],
+      'presentation' => {
+        'height' => 200,
+        'width' => 300
+      }
     }
   end
 
@@ -183,7 +187,9 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
                <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
                <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
              </file>
-             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes"/>
+             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+               <imageData height="200" width="300"/>
+             </file>
            </resource>
            <resource id="bc123de5678_2" sequence="2" type="page">
              <label>Page 2</label>
@@ -210,7 +216,9 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
                <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
                <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
              </file>
-             <file id="00001.jp2" mimetype="image/jp2"  size="149570" preserve="yes" publish="yes" shelve="yes"/>
+             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+               <imageData height="200" width="300"/>
+             </file>
            </resource>
            <resource id="bc123de5678_2" sequence="2" type="image">
              <label>Page 2</label>
@@ -233,7 +241,9 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
                <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
                <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
              </file>
-             <file id="00001.jp2" mimetype="image/jp2"  size="149570" preserve="yes" publish="yes" shelve="yes"/>
+             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+               <imageData height="200" width="300"/>
+             </file>
            </resource>
            <resource id="bc123de5678_2" sequence="2" type="file">
              <label>Page 2</label>
@@ -331,7 +341,9 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
            </resource>
            <resource id="bc123de5678_2" sequence="2" type="preview">
              <label>Preview</label>
-             <file id="00001.jp2" mimetype="image/jp2" size="149570" publish="yes" shelve="yes" preserve="yes"/>
+             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+               <imageData height="200" width="300"/>
+             </file>
              <file id="00002.jp2" mimetype="image/jp2" size="111467" publish="yes" shelve="yes" preserve="yes"/>
            </resource>
            <resource id="bc123de5678_3" sequence="3" type="attachment">
@@ -363,7 +375,9 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
          <contentMetadata objectId="druid:bc123de5678" type="webarchive-seed">
            <resource id="bc123de5678_1" sequence="1" type="image">
              <label>Preview</label>
-             <file id="00001.jp2" mimetype="image/jp2"  size="149570" preserve="yes" publish="yes" shelve="yes"/>
+             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+               <imageData height="200" width="300"/>
+             </file>
            </resource>
          </contentMetadata>'
     end
@@ -381,7 +395,9 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
                <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
                <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
              </file>
-             <file id="00001.jp2" mimetype="image/jp2"  size="149570" preserve="yes" publish="yes" shelve="yes"/>
+             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+               <imageData height="200" width="300"/>
+             </file>
            </resource>
            <resource id="bc123de5678_2" sequence="2" type="document">
              <label>Page 2</label>
@@ -404,7 +420,9 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
                <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
                <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
              </file>
-             <file id="00001.jp2" mimetype="image/jp2"  size="149570" preserve="yes" publish="yes" shelve="yes"/>
+             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+               <imageData height="200" width="300"/>
+             </file>
            </resource>
            <resource id="bc123de5678_2" sequence="2" type="file">
              <label>Page 2</label>

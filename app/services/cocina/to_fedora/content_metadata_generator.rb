@@ -92,6 +92,7 @@ module Cocina
           Array(cocina_file.hasMessageDigests).each do |message_digest|
             file_node.add_child(create_checksum_node(message_digest.type, message_digest.digest))
           end
+          file_node.add_child("\n      <imageData height=\"#{cocina_file.presentation.height}\" width=\"#{cocina_file.presentation.width}\" />\n") if cocina_file.presentation
         end
       end
 
