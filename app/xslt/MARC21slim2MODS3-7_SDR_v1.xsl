@@ -5698,7 +5698,7 @@
 			</subject>
 		</xsl:if>
 <!-- tmee 1.93 20140130 -->
-		<xsl:if test="@ind=' ' or @ind1='0' or @ind1='1'">
+		<xsl:if test="@ind1=' ' or @ind1='0' or @ind1='1'">
 			<subject>
 				<!-- 1.121 -->
 				<xsl:call-template name="xxx880"/>
