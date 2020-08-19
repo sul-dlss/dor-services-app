@@ -1191,7 +1191,10 @@
 		<xsl:for-each
 			select="marc:datafield[@tag = 264][@ind2 = 0] | marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '264')][@ind2 = 0]">
 			<!-- 1.120 - @264/ind2 -->
-			<originInfo eventType="producer">
+<!-- SUL edit 20200819 issue #989
+				<originInfo eventType="producer">-->
+			<!-- SUL edit 20200819 issue #989 -->
+			<originInfo eventType="production">
 				<!-- Template checks for altRepGroup - 880 $6 -->
 				<xsl:call-template name="xxx880"/>
 				<!-- 1.133 -->
@@ -1230,13 +1233,17 @@
 						<xsl:value-of select="marc:subfield[@code = 'c']"/>
 					</dateOther>
 				</xsl:if>
+				<!-- SUL edit 20200819 issue #989 -->
 			</originInfo>
 		</xsl:for-each>
 		<!-- 1.121 -->
 		<xsl:for-each
 			select="marc:datafield[@tag = 264][@ind2 = 1] | marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '264')][@ind2 = 1]">
 			<!-- 1.120 - @264/ind2 -->
-			<originInfo eventType="publisher">
+			<!-- SUL edit 20200819 issue #989 -->
+				<originInfo eventType="publication">
+			<!-- SUL edit 20200819 issue #989
+				<originInfo eventType="publisher">-->
 				<!-- Template checks for altRepGroup - 880 $6 1.88 20130829 added chopPunc-->
 				<xsl:call-template name="xxx880"/>
 				<!-- 1.133 -->
@@ -1275,13 +1282,17 @@
 						<xsl:value-of select="marc:subfield[@code = 'c']"/>
 					</dateIssued>
 				</xsl:if>
+					<!-- SUL edit 20200819 issue #989 -->
 			</originInfo>
 		</xsl:for-each>
 		<!-- 1.121 -->
 		<xsl:for-each
 			select="marc:datafield[@tag = 264][@ind2 = 2] | marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '264')][@ind2 = 2]">
 			<!-- 1.120 - @264/ind2 -->
-			<originInfo eventType="distributor">
+			<!-- SUL edit 20200819 issue #989 -->
+				<originInfo eventType="distribution">
+			<!-- SUL edit 20200819 issue #989
+				<originInfo eventType="distributor">-->
 				<!-- Template checks for altRepGroup - 880 $6 -->
 				<xsl:call-template name="xxx880"/>
 				<!-- 1.133 -->
@@ -1320,13 +1331,17 @@
 						<xsl:value-of select="marc:subfield[@code = 'c']"/>
 					</dateOther>
 				</xsl:if>
+					<!-- SUL edit 20200819 issue #989 -->
 			</originInfo>
 		</xsl:for-each>
 		<!-- 1.121 -->
 		<xsl:for-each
 			select="marc:datafield[@tag = 264][@ind2 = 3] | marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '264')][@ind2 = 3]">
 			<!-- 1.120 - @264/ind2 -->
-			<originInfo eventType="manufacturer">
+			<!-- SUL edit 20200819 issue #989 -->
+			<originInfo eventType="manufacture">
+			<!-- SUL edit 20200819 issue #989
+			<originInfo eventType="manufacturer"> -->
 				<!-- Template checks for altRepGroup - 880 $6 -->
 				<xsl:call-template name="xxx880"/>
 				<!-- 1.133 -->
@@ -1365,6 +1380,7 @@
 						<xsl:value-of select="marc:subfield[@code = 'c']"/>
 					</dateOther>
 				</xsl:if>
+				<!-- SUL edit 20200819 issue #989 -->
 			</originInfo>
 		</xsl:for-each>
 		<!-- 1.130 depreciated
