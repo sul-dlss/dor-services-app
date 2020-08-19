@@ -6005,11 +6005,90 @@
 		</subject>
 	</xsl:template>
 
+<!-- SUL edit 20200819 issue #997 -->
 	<xsl:template name="createSubFrom653">
-
+		<xsl:choose>
+			<xsl:when test="@ind2=' ' or @ind2='0'">
+				<xsl:for-each select="marc:subfield[@code='a']">
+					<subject>
+						<topic>
+							<xsl:value-of select="."/>
+						</topic>
+					</subject>
+				</xsl:for-each>
+			</xsl:when>
+			
+			<xsl:when test="@ind2='1'">
+				<xsl:for-each select="marc:subfield[@code='a']">
+					<subject>
+						<name type="personal">
+							<namePart>
+								<xsl:value-of select="."/>
+							</namePart>
+						</name>
+					</subject>
+				</xsl:for-each>
+			</xsl:when>
+			
+			<xsl:when test="@ind2='2'">
+				<xsl:for-each select="marc:subfield[@code='a']">
+					<subject>
+						<name type="corporate">
+							<namePart>
+								<xsl:value-of select="."/>
+							</namePart>
+						</name>
+					</subject>
+				</xsl:for-each>
+			</xsl:when>
+			
+			<xsl:when test="@ind2='3'">
+				<xsl:for-each select="marc:subfield[@code='a']">
+					<subject>
+						<name type="conference">
+							<namePart>
+								<xsl:value-of select="."/>
+							</namePart>
+						</name>
+					</subject>
+				</xsl:for-each>
+			</xsl:when>
+			
+			<xsl:when test="@ind2='4'">
+				<xsl:for-each select="marc:subfield[@code='a']">
+					<subject>
+						<temporal>
+							<xsl:value-of select="."/>
+						</temporal>
+					</subject>
+				</xsl:for-each>
+			</xsl:when>
+			
+			<xsl:when test="@ind2='5'">
+				<xsl:for-each select="marc:subfield[@code='a']">
+					<subject>
+						<geographic>
+							<xsl:value-of select="."/>
+						</geographic>
+					</subject>
+				</xsl:for-each>
+			</xsl:when>
+			
+			<xsl:when test="@ind2='6'">
+				<xsl:for-each select="marc:subfield[@code='a']">
+					<subject>
+						<genre>
+							<xsl:value-of select="."/>
+						</genre>
+					</subject>
+				</xsl:for-each>
+			</xsl:when>
+		</xsl:choose>
+	</xsl:template>
+<!-- SUL edit 20200819 issue #997
 		<xsl:if test="@ind2 = ' '">
 			<subject>
-				<!-- 1.121 -->
+				<!-\- 1.121 -\->
 				<xsl:call-template name="xxx880"/>
 				<topic>
 					<xsl:value-of select="."/>
@@ -6018,18 +6097,18 @@
 		</xsl:if>
 		<xsl:if test="@ind2 = '0'">
 			<subject>
-				<!-- 1.121 -->
+				<!-\- 1.121 -\->
 				<xsl:call-template name="xxx880"/>
 				<topic>
 					<xsl:value-of select="."/>
 				</topic>
 			</subject>
 		</xsl:if>
-		<!-- tmee 1.93 20140130 -->
-		<!-- SUL edit 20200819 issue #985 -->
+		<!-\- tmee 1.93 20140130 -\->
+		<!-\- SUL edit 20200819 issue #985 -\->
 		<xsl:if test="@ind1 = ' ' or @ind1 = '0' or @ind1 = '1'">
 			<subject>
-				<!-- 1.121 -->
+				<!-\- 1.121 -\->
 				<xsl:call-template name="xxx880"/>
 				<name type="personal">
 					<namePart>
@@ -6040,7 +6119,7 @@
 		</xsl:if>
 		<xsl:if test="@ind1 = '3'">
 			<subject>
-				<!-- 1.121 -->
+				<!-\- 1.121 -\->
 				<xsl:call-template name="xxx880"/>
 				<name type="family">
 					<namePart>
@@ -6051,7 +6130,7 @@
 		</xsl:if>
 		<xsl:if test="@ind2 = '2'">
 			<subject>
-				<!-- 1.121 -->
+				<!-\- 1.121 -\->
 				<xsl:call-template name="xxx880"/>
 				<name type="corporate">
 					<namePart>
@@ -6062,7 +6141,7 @@
 		</xsl:if>
 		<xsl:if test="@ind2 = '3'">
 			<subject>
-				<!-- 1.121 -->
+				<!-\- 1.121 -\->
 				<xsl:call-template name="xxx880"/>
 				<name type="conference">
 					<namePart>
@@ -6073,7 +6152,7 @@
 		</xsl:if>
 		<xsl:if test="@ind2 = 4">
 			<subject>
-				<!-- 1.121 -->
+				<!-\- 1.121 -\->
 				<xsl:call-template name="xxx880"/>
 				<temporal>
 					<xsl:value-of select="."/>
@@ -6082,7 +6161,7 @@
 		</xsl:if>
 		<xsl:if test="@ind2 = 5">
 			<subject>
-				<!-- 1.121 -->
+				<!-\- 1.121 -\->
 				<xsl:call-template name="xxx880"/>
 				<geographic>
 					<xsl:value-of select="."/>
@@ -6092,14 +6171,14 @@
 
 		<xsl:if test="@ind2 = 6">
 			<subject>
-				<!-- 1.121 -->
+				<!-\- 1.121 -\->
 				<xsl:call-template name="xxx880"/>
 				<genre>
 					<xsl:value-of select="."/>
 				</genre>
 			</subject>
 		</xsl:if>
-	</xsl:template>
+	</xsl:template>-->
 
 	<xsl:template name="createSubFrom656">
 		<subject>
