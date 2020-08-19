@@ -98,7 +98,7 @@ module Cocina
           apply_default_access(item)
         end
 
-        item.contentMetadata.content = ContentMetadataGenerator.generate(druid: pid, object: obj)
+        item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: pid, object: obj)
         Cocina::ToFedora::Identity.apply(obj, item, object_type: 'item', agreement_id: obj.structural&.hasAgreement)
       end
     end
