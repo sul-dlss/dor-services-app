@@ -3675,11 +3675,12 @@
 			</subTitle>
 		</xsl:if>
 	</xsl:template>
-	<xsl:template name="script">
+<!-- SUL edit 20200819 issue #982
+		<xsl:template name="script">
 		<xsl:param name="scriptCode"/>
 		<xsl:attribute name="script">
 			<xsl:choose>
-				<!-- ISO 15924	and CJK is a local code	20101123-->
+				<!-\- ISO 15924	and CJK is a local code	20101123-\->
 				<xsl:when test="$scriptCode='(3'">Arab</xsl:when>
 				<xsl:when test="$scriptCode='(4'">Arab</xsl:when>
 				<xsl:when test="$scriptCode='(B'">Latn</xsl:when>
@@ -3691,7 +3692,7 @@
 				<xsl:when test="$scriptCode='(S'">Grek</xsl:when>
 			</xsl:choose>
 		</xsl:attribute>
-	</xsl:template>
+	</xsl:template>-->
 	<xsl:template name="parsePart">
 		<!-- assumes 773$q= 1:2:3<4
 		     with up to 3 levels and one optional start page
@@ -3937,7 +3938,8 @@
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template name="scriptCode">
+<!-- SUL edit 20200819 issue #982
+		<xsl:template name="scriptCode">
 		<xsl:variable name="sf06" select="normalize-space(child::marc:subfield[@code='6'])"/>
 		<xsl:variable name="sf06a" select="substring($sf06, 1, 3)"/>
 		<xsl:variable name="sf06b" select="substring($sf06, 5, 2)"/>
@@ -3959,7 +3961,7 @@
 				</xsl:choose>
 			</xsl:attribute>
 		</xsl:if>
-	</xsl:template>
+	</xsl:template>-->
 
 	<!-- tmee 20100927 for 880s & corresponding fields  20101123 scriptCode -->
 	<!-- 1.121 --><!-- 880 processing -->
@@ -3968,14 +3970,16 @@
 		<xsl:if test="child::marc:subfield[@code='6']">
 			<xsl:variable name="sf06" select="normalize-space(child::marc:subfield[@code='6'])"/>
 			<xsl:variable name="sf06b" select="substring($sf06, 5, 2)"/>
-			<xsl:variable name="scriptCode" select="substring($sf06, 8, 2)"/>
+			<!-- SUL edit 20200819 issue #982
+				<xsl:variable name="scriptCode" select="substring($sf06, 8, 2)"/>-->
 			<!-- 1.121 -->
 			<xsl:if test="$sf06b != '00'">
 				<xsl:attribute name="altRepGroup">
 					<xsl:value-of select="$sf06b"/>
 				</xsl:attribute>				
 			</xsl:if>
-			<xsl:call-template name="scriptCode"/>
+<!-- SUL edit 20200819 issue #982
+				<xsl:call-template name="scriptCode"/>-->
 		</xsl:if>
 	</xsl:template>
 	<!--1.121 --><!-- 880 processing when called from subfield -->
@@ -3984,14 +3988,16 @@
 		<xsl:if test="preceding-sibling::*[@code='6']">
 			<xsl:variable name="sf06" select="normalize-space(preceding-sibling::*[@code='6'])"/>
 			<xsl:variable name="sf06b" select="substring($sf06, 5, 2)"/>
-			<xsl:variable name="scriptCode" select="substring($sf06, 8, 2)"/>
+			<!-- SUL edit 20200819 issue #982
+				<xsl:variable name="scriptCode" select="substring($sf06, 8, 2)"/>-->
 			<!-- 1.121 -->
 			<xsl:if test="$sf06b != '00'">
 				<xsl:attribute name="altRepGroup">
 					<xsl:value-of select="$sf06b"/>
 				</xsl:attribute>				
 			</xsl:if>
-			<xsl:attribute name="script">
+<!-- SUL edit 20200819 issue #982
+				<xsl:attribute name="script">
 				<xsl:choose>
 					<xsl:when test="$scriptCode=''">Latn</xsl:when>
 					<xsl:when test="$scriptCode='(3'">Arab</xsl:when>
@@ -4004,7 +4010,7 @@
 					<xsl:when test="$scriptCode='(2'">Hebr</xsl:when>
 					<xsl:when test="$scriptCode='(S'">Grek</xsl:when>
 				</xsl:choose>
-			</xsl:attribute>
+			</xsl:attribute>-->
 		</xsl:if>
 	</xsl:template>
 	
@@ -5698,6 +5704,7 @@
 			</subject>
 		</xsl:if>
 <!-- tmee 1.93 20140130 -->
+		<!-- SUL edit 20200819 issue #985 -->
 		<xsl:if test="@ind1=' ' or @ind1='0' or @ind1='1'">
 			<subject>
 				<!-- 1.121 -->
