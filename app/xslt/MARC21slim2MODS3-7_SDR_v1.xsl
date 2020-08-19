@@ -1383,6 +1383,16 @@
 				<!-- SUL edit 20200819 issue #989 -->
 			</originInfo>
 		</xsl:for-each>
+		<!-- SUL edit 20200819 issue #991 -->
+		<xsl:for-each select="marc:datafield[@tag=264][@ind2=4]">
+			<originInfo eventType="copyright notice">
+				<copyrightDate>
+					<xsl:call-template name="chopPunctuation">
+						<xsl:with-param name="chopString" select="marc:subfield[@code='c']"/>
+					</xsl:call-template>
+				</copyrightDate>
+			</originInfo>
+		</xsl:for-each>
 		<!-- 1.130 depreciated
 		<xsl:for-each select="marc:datafield[@tag=880]">
 			<xsl:variable name="related_datafield" select="substring-before(marc:subfield[@code='6'],'-')"/>
