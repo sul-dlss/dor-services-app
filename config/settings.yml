@@ -26,6 +26,12 @@ workflow:
   shift_age: 'weekly'
   timeout: 60
 
+tech_md_service:
+  url: 'http://metadata.stanford.edu:8080'
+  # To generate the token run: rake generate_token
+  token: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhcmdvLXRlc3QifQ.nhJQsj8V98agZxzDP2OSCVPkIb70yE9_dyLUiTzcKko'
+
+
 # URLs
 fedora_url: 'https://user:password@fedora.example.com:1000/fedora'
 solr:

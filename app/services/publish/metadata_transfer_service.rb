@@ -31,8 +31,9 @@ module Publish
     # @raise [Dor::DataError]
     def transfer_metadata(release_tags)
       transfer_to_document_store(DublinCoreService.new(item).ng_xml.to_xml(&:no_declaration), 'dc')
+      transfer_to_document_store(ContentMetadataWithImageSizes.new(item.contentMetadata).to_xml, 'contentMetadata') if item.datastreams['contentMetadata']
 
-      %w[identityMetadata contentMetadata rightsMetadata].each do |stream|
+      %w[identityMetadata rightsMetadata].each do |stream|
         transfer_to_document_store(item.datastreams[stream].content.to_s, stream) if item.datastreams[stream]
       end
       transfer_to_document_store(PublicXmlService.new(item, released_for: release_tags).to_xml, 'public')
