@@ -1191,7 +1191,7 @@
 		<xsl:for-each
 			select="marc:datafield[@tag = 264][@ind2 = 0] | marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '264')][@ind2 = 0]">
 			<!-- 1.120 - @264/ind2 -->
-<!-- SUL edit 20200819 issue #989
+			<!-- SUL edit 20200819 issue #989
 				<originInfo eventType="producer">-->
 			<!-- SUL edit 20200819 issue #989 -->
 			<originInfo eventType="production">
@@ -1241,8 +1241,8 @@
 			select="marc:datafield[@tag = 264][@ind2 = 1] | marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '264')][@ind2 = 1]">
 			<!-- 1.120 - @264/ind2 -->
 			<!-- SUL edit 20200819 issue #989 -->
-				<originInfo eventType="publication">
-			<!-- SUL edit 20200819 issue #989
+			<originInfo eventType="publication">
+				<!-- SUL edit 20200819 issue #989
 				<originInfo eventType="publisher">-->
 				<!-- Template checks for altRepGroup - 880 $6 1.88 20130829 added chopPunc-->
 				<xsl:call-template name="xxx880"/>
@@ -1282,7 +1282,7 @@
 						<xsl:value-of select="marc:subfield[@code = 'c']"/>
 					</dateIssued>
 				</xsl:if>
-					<!-- SUL edit 20200819 issue #989 -->
+				<!-- SUL edit 20200819 issue #989 -->
 			</originInfo>
 		</xsl:for-each>
 		<!-- 1.121 -->
@@ -1290,8 +1290,8 @@
 			select="marc:datafield[@tag = 264][@ind2 = 2] | marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '264')][@ind2 = 2]">
 			<!-- 1.120 - @264/ind2 -->
 			<!-- SUL edit 20200819 issue #989 -->
-				<originInfo eventType="distribution">
-			<!-- SUL edit 20200819 issue #989
+			<originInfo eventType="distribution">
+				<!-- SUL edit 20200819 issue #989
 				<originInfo eventType="distributor">-->
 				<!-- Template checks for altRepGroup - 880 $6 -->
 				<xsl:call-template name="xxx880"/>
@@ -1331,7 +1331,7 @@
 						<xsl:value-of select="marc:subfield[@code = 'c']"/>
 					</dateOther>
 				</xsl:if>
-					<!-- SUL edit 20200819 issue #989 -->
+				<!-- SUL edit 20200819 issue #989 -->
 			</originInfo>
 		</xsl:for-each>
 		<!-- 1.121 -->
@@ -1340,7 +1340,7 @@
 			<!-- 1.120 - @264/ind2 -->
 			<!-- SUL edit 20200819 issue #989 -->
 			<originInfo eventType="manufacture">
-			<!-- SUL edit 20200819 issue #989
+				<!-- SUL edit 20200819 issue #989
 			<originInfo eventType="manufacturer"> -->
 				<!-- Template checks for altRepGroup - 880 $6 -->
 				<xsl:call-template name="xxx880"/>
@@ -1384,11 +1384,11 @@
 			</originInfo>
 		</xsl:for-each>
 		<!-- SUL edit 20200819 issue #991 -->
-		<xsl:for-each select="marc:datafield[@tag=264][@ind2=4]">
+		<xsl:for-each select="marc:datafield[@tag = 264][@ind2 = 4]">
 			<originInfo eventType="copyright notice">
 				<copyrightDate>
 					<xsl:call-template name="chopPunctuation">
-						<xsl:with-param name="chopString" select="marc:subfield[@code='c']"/>
+						<xsl:with-param name="chopString" select="marc:subfield[@code = 'c']"/>
 					</xsl:call-template>
 				</copyrightDate>
 			</originInfo>
@@ -2561,7 +2561,8 @@
 										<place>
 											<placeTerm>
 												<xsl:attribute name="type">code</xsl:attribute>
-												<xsl:attribute name="authority">marcgac</xsl:attribute>
+												<xsl:attribute name="authority"
+												>marcgac</xsl:attribute>
 												<xsl:call-template name="chopPunctuation">
 												<xsl:with-param name="chopString">
 												<xsl:value-of select="."/>
@@ -3473,7 +3474,10 @@
 		</identifier>
 	</xsl:template>
 	<xsl:template match="marc:subfield[@code = 'w']" mode="relatedItem">
-		<identifier type="local">
+		<!-- SUL edit 20200819 issue #996 -->
+		<identifier>
+			<!-- SUL edit 20200819 issue #996
+			<identifier type="local">-->
 			<!-- 1.121 -->
 			<xsl:call-template name="xxs880"/>
 			<xsl:apply-templates/>
@@ -5333,7 +5337,7 @@
 				<xsl:when test="@ind1 = '4'">
 					<xsl:attribute name="displayLabel">Content advice</xsl:attribute>
 				</xsl:when>
-<!-- SUL edit 20200819 issue #994
+				<!-- SUL edit 20200819 issue #994
 					<xsl:when test="@ind1 = '8'"/>
 				<xsl:otherwise>
 					<xsl:attribute name="displayLabel">Summary</xsl:attribute>
@@ -6006,11 +6010,11 @@
 		</subject>
 	</xsl:template>
 
-<!-- SUL edit 20200819 issue #997 -->
+	<!-- SUL edit 20200819 issue #997 -->
 	<xsl:template name="createSubFrom653">
 		<xsl:choose>
-			<xsl:when test="@ind2=' ' or @ind2='0'">
-				<xsl:for-each select="marc:subfield[@code='a']">
+			<xsl:when test="@ind2 = ' ' or @ind2 = '0'">
+				<xsl:for-each select="marc:subfield[@code = 'a']">
 					<subject>
 						<topic>
 							<xsl:value-of select="."/>
@@ -6018,9 +6022,9 @@
 					</subject>
 				</xsl:for-each>
 			</xsl:when>
-			
-			<xsl:when test="@ind2='1'">
-				<xsl:for-each select="marc:subfield[@code='a']">
+
+			<xsl:when test="@ind2 = '1'">
+				<xsl:for-each select="marc:subfield[@code = 'a']">
 					<subject>
 						<name type="personal">
 							<namePart>
@@ -6030,9 +6034,9 @@
 					</subject>
 				</xsl:for-each>
 			</xsl:when>
-			
-			<xsl:when test="@ind2='2'">
-				<xsl:for-each select="marc:subfield[@code='a']">
+
+			<xsl:when test="@ind2 = '2'">
+				<xsl:for-each select="marc:subfield[@code = 'a']">
 					<subject>
 						<name type="corporate">
 							<namePart>
@@ -6042,9 +6046,9 @@
 					</subject>
 				</xsl:for-each>
 			</xsl:when>
-			
-			<xsl:when test="@ind2='3'">
-				<xsl:for-each select="marc:subfield[@code='a']">
+
+			<xsl:when test="@ind2 = '3'">
+				<xsl:for-each select="marc:subfield[@code = 'a']">
 					<subject>
 						<name type="conference">
 							<namePart>
@@ -6054,9 +6058,9 @@
 					</subject>
 				</xsl:for-each>
 			</xsl:when>
-			
-			<xsl:when test="@ind2='4'">
-				<xsl:for-each select="marc:subfield[@code='a']">
+
+			<xsl:when test="@ind2 = '4'">
+				<xsl:for-each select="marc:subfield[@code = 'a']">
 					<subject>
 						<temporal>
 							<xsl:value-of select="."/>
@@ -6064,9 +6068,9 @@
 					</subject>
 				</xsl:for-each>
 			</xsl:when>
-			
-			<xsl:when test="@ind2='5'">
-				<xsl:for-each select="marc:subfield[@code='a']">
+
+			<xsl:when test="@ind2 = '5'">
+				<xsl:for-each select="marc:subfield[@code = 'a']">
 					<subject>
 						<geographic>
 							<xsl:value-of select="."/>
@@ -6074,9 +6078,9 @@
 					</subject>
 				</xsl:for-each>
 			</xsl:when>
-			
-			<xsl:when test="@ind2='6'">
-				<xsl:for-each select="marc:subfield[@code='a']">
+
+			<xsl:when test="@ind2 = '6'">
+				<xsl:for-each select="marc:subfield[@code = 'a']">
 					<subject>
 						<genre>
 							<xsl:value-of select="."/>
@@ -6086,7 +6090,7 @@
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
-<!-- SUL edit 20200819 issue #997
+	<!-- SUL edit 20200819 issue #997
 		<xsl:if test="@ind2 = ' '">
 			<subject>
 				<!-\- 1.121 -\->
@@ -7461,7 +7465,7 @@
 							<xsl:text>:,;/ </xsl:text>
 						</xsl:with-param>
 					</xsl:call-template>
-<!-- SUL edit 20200819 issue #992
+					<!-- SUL edit 20200819 issue #992
 						<xsl:call-template name="chopPunctuationFront">
 						<xsl:with-param name="chopString">
 							<xsl:call-template name="chopPunctuation">
