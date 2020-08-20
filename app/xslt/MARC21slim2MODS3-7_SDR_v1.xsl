@@ -4826,6 +4826,8 @@
 			<!-- 1.121 -->
 			<xsl:call-template name="xxx880"/>
 			<!-- 1.122 -->
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 			<!-- SUL edit 20200820 issue #983 and #984
  		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<title>
@@ -4856,6 +4858,8 @@
 			<!-- 1.121 -->
 			<xsl:call-template name="xxx880"/>
 			<!-- 1.122 -->
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 			<!-- SUL edit 20200820 issue #983 and #984
  		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<title>
@@ -5001,6 +5005,8 @@
 			<xsl:call-template name="nameTitleGroup"/>
 			<xsl:call-template name="xxx880"/>
 			<!-- 1.122 -->
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 			<!-- SUL edit 20200820 issue #983 and #984
  		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<title>
@@ -5051,6 +5057,8 @@
 				<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 				<xsl:call-template name="nameTitleGroup"/>
 				<!-- 1.122 -->
+				<!-- SUL edit 20200820 issue #984 -->
+				<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 				<!-- SUL edit 20200820 issue #983 and #984
  			   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 				<xsl:call-template name="nameABCDQ"/>
@@ -5085,6 +5093,8 @@
 			<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 			<xsl:call-template name="nameTitleGroup"/>
 			<!-- 1.122 -->
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 			<!-- SUL edit 20200820 issue #983 and #984
  		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<xsl:call-template name="nameABCDN"/>
@@ -5103,6 +5113,8 @@
 			<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 			<xsl:call-template name="nameTitleGroup"/>
 			<!-- 1.122 -->
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 			<!-- SUL edit 20200820 issue #983 and #984
  		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<xsl:call-template name="nameACDENQ"/>
@@ -5123,6 +5135,8 @@
 				<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 				<xsl:call-template name="nameTitleGroup"/>
 				<!-- 1.122 -->
+				<!-- SUL edit 20200820 issue #984 -->
+				<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 				<!-- SUL edit 20200820 issue #983 and #984
  			   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 				<xsl:call-template name="nameABCDQ"/>
@@ -5150,6 +5164,8 @@
 			<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 			<xsl:call-template name="nameTitleGroup"/>
 			<!-- 1.122 -->
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 			<!-- SUL edit 20200820 issue #983 and #984
  		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<xsl:call-template name="nameABCDN"/>
@@ -5166,6 +5182,8 @@
 			<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 			<xsl:call-template name="nameTitleGroup"/>
 			<!-- 1.122 -->
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 			<!-- SUL edit 20200820 issue #983 and #984
  		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<xsl:call-template name="nameACDENQ"/>
