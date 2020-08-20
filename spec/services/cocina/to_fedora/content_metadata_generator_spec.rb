@@ -140,6 +140,10 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     ]
   end
 
+  let(:structural) do
+    { contains: filesets }
+  end
+
   let(:data) do
     <<~JSON
       { "type":"#{object_type}",
@@ -147,12 +151,18 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
         "description":{"title":[{"status":"primary","value":"the object title"}]},
         "identification":{"sourceId":"sul:9999999"},
-        "structural":{"contains":#{filesets.to_json}}}
+        "structural":#{structural.to_json}}
     JSON
   end
 
   context 'with a book' do
     let(:object_type) { Cocina::Models::Vocab.book }
+    let(:structural) do
+      {
+        contains: filesets,
+        hasMemberOrders: [{ viewingDirection: 'right-to-left' }]
+      }
+    end
 
     let(:filesets) do
       [
@@ -181,6 +191,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     it 'generates contentMetadata.xml' do
       expect(generate).to be_equivalent_to '<?xml version="1.0"?>
          <contentMetadata objectId="druid:bc123de5678" type="book">
+           <bookData readingOrder="rtl" />
            <resource id="bc123de5678_1" sequence="1" type="page">
              <label>Page 1</label>
              <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">

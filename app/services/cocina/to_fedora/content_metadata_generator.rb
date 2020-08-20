@@ -15,14 +15,16 @@ module Cocina
       def initialize(druid:, object:)
         @druid = druid
         @object_type = object.type
-        @resources = object&.structural&.contains || []
+        # NOTE: structural is an optional element, so we need to guard for nil.
+        @resources = object.structural&.contains || []
+        @orders = object.structural&.hasMemberOrders
       end
 
       def generate
         @xml_doc = Nokogiri::XML('<contentMetadata />')
         @xml_doc.root['objectId'] = druid
         @xml_doc.root['type'] = Cocina::ToFedora::ContentType.map(object_type)
-
+        add_book_data(orders.first) if orders.present?
         resources.each_with_index do |cocina_fileset, index|
           # each resource type description gets its own incrementing counter
           resource_type_counters[resource_type(cocina_fileset)] += 1
@@ -34,7 +36,15 @@ module Cocina
 
       private
 
-      attr_reader :object_type, :resources, :druid
+      attr_reader :object_type, :resources, :druid, :orders
+
+      def add_book_data(sequence)
+        direction = sequence.viewingDirection == 'right-to-left' ? 'rtl' : 'ltr'
+        book_data = Nokogiri::XML::Node.new('bookData', @xml_doc).tap do |node|
+          node['readingOrder'] = direction
+        end
+        @xml_doc.root.add_child(book_data)
+      end
 
       def resource_type(file_set)
         case object_type
