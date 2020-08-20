@@ -3649,10 +3649,11 @@
 
 	<!-- 1.116 -->
 	<xsl:template name="nameIdentifier">
-		<xsl:if test="marc:subfield[@code = '0']">
+		<!-- SUL edit 20200820 issue #984 and #1006 -->
+		<xsl:if test="marc:subfield[@code = '1']">
 			<nameIdentifier>
 				<xsl:call-template name="subfieldSelect">
-					<xsl:with-param name="codes">0</xsl:with-param>
+					<xsl:with-param name="codes">1</xsl:with-param>
 				</xsl:call-template>
 			</nameIdentifier>
 		</xsl:if>
