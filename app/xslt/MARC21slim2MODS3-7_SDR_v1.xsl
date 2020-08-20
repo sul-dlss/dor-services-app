@@ -2145,7 +2145,9 @@
 				<relatedItem>
 					<!-- 1.115 -->
 					<xsl:if test="marc:subfield[@code = 'i']">
-						<xsl:attribute name="otherType">
+						<xsl:attribute name="displayLabel">
+							<!-- SUL edit 20200820 issue #1000
+							<xsl:attribute name="otherType">-->
 							<xsl:value-of select="marc:subfield[@code = 'i']"/>
 						</xsl:attribute>
 					</xsl:if>
@@ -2155,7 +2157,8 @@
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
 							<!-- SUL edit 20200820 issue #1000 -->
-							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']"
+								mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
@@ -2201,7 +2204,9 @@
 				<relatedItem>
 					<!-- 1.115 -->
 					<xsl:if test="marc:subfield[@code = 'i']">
-						<xsl:attribute name="otherType">
+						<xsl:attribute name="displayLabel">
+							<!-- SUL edit 20200820 issue #1000
+							<xsl:attribute name="otherType">-->
 							<xsl:value-of select="marc:subfield[@code = 'i']"/>
 						</xsl:attribute>
 					</xsl:if>
@@ -2211,7 +2216,8 @@
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
 							<!-- SUL edit 20200820 issue #1000 -->
-							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']"
+								mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
@@ -2289,7 +2295,9 @@
 				<relatedItem>
 					<!-- 1.115 -->
 					<xsl:if test="marc:subfield[@code = 'i']">
-						<xsl:attribute name="otherType">
+						<xsl:attribute name="displayLabel">
+							<!-- SUL edit 20200820 issue #1000
+							<xsl:attribute name="otherType">-->
 							<xsl:value-of select="marc:subfield[@code = 'i']"/>
 						</xsl:attribute>
 					</xsl:if>
@@ -2299,7 +2307,8 @@
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
 							<!-- SUL edit 20200820 issue #1000 -->
-							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']"
+								mode="valueURI"/>
 							<title>
 								<!-- 1.120 - @711$v -->
 								<xsl:call-template name="chopPunctuation">
@@ -2362,7 +2371,9 @@
 				<relatedItem>
 					<!-- 1.115 -->
 					<xsl:if test="marc:subfield[@code = 'i']">
-						<xsl:attribute name="otherType">
+						<xsl:attribute name="displayLabel">
+							<!-- SUL edit 20200820 issue #1000
+							<xsl:attribute name="otherType">-->
 							<xsl:value-of select="marc:subfield[@code = 'i']"/>
 						</xsl:attribute>
 					</xsl:if>
@@ -2372,7 +2383,8 @@
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
 							<!-- SUL edit 20200820 issue #1000 -->
-							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']"
+								mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
@@ -2404,7 +2416,9 @@
 				<relatedItem>
 					<!-- 1.115 -->
 					<xsl:if test="marc:subfield[@code = 'i']">
-						<xsl:attribute name="otherType">
+						<xsl:attribute name="displayLabel">
+							<!-- SUL edit 20200820 issue #1000
+							<xsl:attribute name="otherType">-->
 							<xsl:value-of select="marc:subfield[@code = 'i']"/>
 						</xsl:attribute>
 					</xsl:if>
@@ -2414,7 +2428,8 @@
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
 							<!-- SUL edit 20200820 issue #1000 -->
-							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']"
+								mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
@@ -2490,7 +2505,9 @@
 					<!-- selects displayLabel attribute -->
 					<xsl:choose>
 						<xsl:when test="marc:subfield[@code = 'i']">
-							<xsl:attribute name="otherType">
+							<xsl:attribute name="displayLabel">
+								<!-- SUL edit 20200820 issue #1000
+							<xsl:attribute name="otherType">-->
 								<xsl:value-of select="marc:subfield[@code = 'i']"/>
 							</xsl:attribute>
 							<!-- 1.120 - @76X-78X$i -->
@@ -2511,7 +2528,8 @@
 							<titleInfo>
 								<xsl:call-template name="xxs880"/>
 								<!-- SUL edit 20200820 issue #1000 -->
-								<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+								<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']"
+									mode="valueURI"/>
 								<title>
 									<xsl:call-template name="chopPunctuation">
 										<xsl:with-param name="chopString">
@@ -2548,7 +2566,8 @@
 								<!-- 1.121 -->
 								<xsl:call-template name="xxs880"/>
 								<!-- SUL edit 20200820 issue #1000 -->
-								<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+								<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']"
+									mode="valueURI"/>
 								<title>
 									<xsl:call-template name="chopPunctuation">
 										<xsl:with-param name="chopString">
@@ -2667,7 +2686,8 @@
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
 							<!-- SUL edit 20200820 issue #1000 -->
-							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']"
+								mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
@@ -2723,7 +2743,8 @@
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
 							<!-- SUL edit 20200820 issue #1000 -->
-							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']"
+								mode="valueURI"/>
 							<title>
 								<!-- 1.120 - @800$v -->
 								<xsl:call-template name="chopPunctuation">
@@ -2802,7 +2823,8 @@
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
 							<!-- SUL edit 20200820 issue #1000 -->
-							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']"
+								mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
@@ -2869,7 +2891,8 @@
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
 							<!-- SUL edit 20200820 issue #1000 -->
-							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']"
+								mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
