@@ -2646,7 +2646,8 @@
 				test="@tag = 800 or (@tag = '880' and not(../marc:datafield[@tag = '800'][substring(marc:subfield[@code = '6'], 5, 2) = $s6]))">
 				<relatedItem type="series">
 					<!-- 1.122 -->
-					<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/>
+					<!-- SUL edit 20200820 issue #983 and #984
+ 				   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 					<xsl:for-each
 						select=". | ../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '800')][substring(marc:subfield[@code = '6'], 5, 2) = $s6]">
 						<titleInfo>
@@ -2699,7 +2700,8 @@
 				test="@tag = 810 or (@tag = '880' and not(../marc:datafield[@tag = '810'][substring(marc:subfield[@code = '6'], 5, 2) = $s6]))">
 				<relatedItem type="series">
 					<!-- 1.122 -->
-					<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/>
+					<!-- SUL edit 20200820 issue #983 and #984
+ 				   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 					<xsl:for-each
 						select=". | ../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '810')][substring(marc:subfield[@code = '6'], 5, 2) = $s6]">
 						<titleInfo>
@@ -2775,7 +2777,8 @@
 				test="@tag = 811 or (@tag = '880' and not(../marc:datafield[@tag = '811'][substring(marc:subfield[@code = '6'], 5, 2) = $s6]))">
 				<relatedItem type="series">
 					<!-- 1.122 -->
-					<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/>
+					<!-- SUL edit 20200820 issue #983 and #984
+ 				   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 					<xsl:for-each
 						select=". | ../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '811')][substring(marc:subfield[@code = '6'], 5, 2) = $s6]">
 						<titleInfo>
@@ -2839,7 +2842,8 @@
 				test="@tag = 830 or (@tag = '880' and not(../marc:datafield[@tag = '830'][substring(marc:subfield[@code = '6'], 5, 2) = $s6]))">
 				<relatedItem type="series">
 					<!-- 1.122 -->
-					<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/>
+					<!-- SUL edit 20200820 issue #983 and #984
+ 				   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 					<xsl:for-each
 						select=". | ../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '830')][substring(marc:subfield[@code = '6'], 5, 2) = $s6]">
 						<titleInfo>
@@ -4821,7 +4825,8 @@
 			<!-- 1.121 -->
 			<xsl:call-template name="xxx880"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+ 		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<title>
 				<xsl:variable name="str">
 					<xsl:for-each select="marc:subfield">
@@ -4850,7 +4855,8 @@
 			<!-- 1.121 -->
 			<xsl:call-template name="xxx880"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+ 		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<title>
 				<xsl:variable name="str">
 					<xsl:for-each select="marc:subfield">
@@ -4994,7 +5000,8 @@
 			<xsl:call-template name="nameTitleGroup"/>
 			<xsl:call-template name="xxx880"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+ 		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<title>
 				<xsl:variable name="str">
 					<xsl:for-each select="marc:subfield">
@@ -5043,7 +5050,8 @@
 				<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 				<xsl:call-template name="nameTitleGroup"/>
 				<!-- 1.122 -->
-				<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/>
+				<!-- SUL edit 20200820 issue #983 and #984
+ 			   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 				<xsl:call-template name="nameABCDQ"/>
 				<xsl:call-template name="affiliation"/>
 				<xsl:call-template name="role"/>
@@ -5076,7 +5084,8 @@
 			<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 			<xsl:call-template name="nameTitleGroup"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+ 		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<xsl:call-template name="nameABCDN"/>
 			<xsl:call-template name="role"/>
 			<!-- 1.116 -->
@@ -5093,7 +5102,8 @@
 			<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 			<xsl:call-template name="nameTitleGroup"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+ 		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<xsl:call-template name="nameACDENQ"/>
 			<xsl:call-template name="role"/>
 			<!-- 1.116 -->
@@ -5112,7 +5122,8 @@
 				<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 				<xsl:call-template name="nameTitleGroup"/>
 				<!-- 1.122 -->
-				<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/>
+				<!-- SUL edit 20200820 issue #983 and #984
+ 			   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 				<xsl:call-template name="nameABCDQ"/>
 				<xsl:call-template name="affiliation"/>
 				<xsl:call-template name="role"/>
@@ -5138,7 +5149,8 @@
 			<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 			<xsl:call-template name="nameTitleGroup"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+ 		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<xsl:call-template name="nameABCDN"/>
 			<xsl:call-template name="role"/>
 			<!-- 1.116 -->
@@ -5153,7 +5165,8 @@
 			<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 			<xsl:call-template name="nameTitleGroup"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+ 		   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
 			<xsl:call-template name="nameACDENQ"/>
 			<xsl:call-template name="role"/>
 			<!-- 1.116 -->
