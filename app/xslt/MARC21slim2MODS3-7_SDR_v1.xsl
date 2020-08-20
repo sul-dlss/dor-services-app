@@ -5283,9 +5283,14 @@
 			<!-- Template checks for altRepGroup - 880 $6 -->
 			<xsl:call-template name="xxx880"/>
 			<!-- 1.132 <xsl:apply-templates select="marc:subfield[@code='0'][. != '']" mode="xlink"/>-->
-			<xsl:call-template name="subfieldSelect">
-				<xsl:with-param name="codes">abvxyz</xsl:with-param>
-				<xsl:with-param name="delimeter">-</xsl:with-param>
+			<!-- SUL edit 20200820 issue #962 -->
+			<xsl:call-template name="chopPunctuation">
+				<xsl:with-param name="chopString">
+					<xsl:call-template name="subfieldSelect">
+						<xsl:with-param name="codes">abvxyz</xsl:with-param>
+						<xsl:with-param name="delimeter">-</xsl:with-param>
+					</xsl:call-template>
+				</xsl:with-param>
 			</xsl:call-template>
 			<!-- SUL edit 20200819 issue #988 -->
 		</genre>
