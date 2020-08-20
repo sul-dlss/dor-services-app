@@ -4,25 +4,19 @@ module Cocina
   module FromFedora
     # builds the Structural subschema for Cocina::Models::DRO from a Dor::Item
     class DroStructural
-      def self.props(item)
-        new(item).props
+      def self.props(item, type:)
+        new(item, type: type).props
       end
 
-      def initialize(item)
+      def initialize(item, type:)
         @item = item
+        @type = type
       end
 
       # rubocop:disable Metrics/AbcSize
       def props
         {}.tap do |structural|
-          # In Fedora 3 we have no way of persisting LTR or RTL, so we rely on AdministrativeTags.
-          # when we migrate from Fedora 3, we don't need to look this up from AdministrativeTags
-          case AdministrativeTags.content_type(pid: item.id).first
-          when 'Book (ltr)'
-            structural[:hasMemberOrders] = [{ viewingDirection: 'left-to-right' }]
-          when 'Book (rtl)'
-            structural[:hasMemberOrders] = [{ viewingDirection: 'right-to-left' }]
-          end
+          structural[:hasMemberOrders] = create_member_order if type == Cocina::Models::Vocab.book
 
           contains = build_filesets(item.contentMetadata, version: item.current_version.to_i, id: item.pid)
           structural[:contains] = contains if contains.present?
@@ -46,7 +40,27 @@ module Cocina
 
       private
 
-      attr_reader :item
+      attr_reader :item, :type
+
+      def create_member_order
+        reading_direction = item.contentMetadata.ng_xml.xpath('//bookData/@readingDirection').first&.value
+        # See https://consul.stanford.edu/pages/viewpage.action?spaceKey=chimera&title=DOR+content+types%2C+resource+types+and+interpretive+metadata
+        case reading_direction
+        when 'ltr'
+          [{ viewingDirection: 'left-to-right' }]
+        when 'rtl'
+          [{ viewingDirection: 'right-to-left' }]
+        else
+          # Fallback to using tags.  Some books don't have bookData nodes in contentMetadata XML.
+          # When we migrate from Fedora 3, we don't need to look this up from AdministrativeTags
+          case AdministrativeTags.content_type(pid: item.id).first
+          when 'Book (ltr)'
+            [{ viewingDirection: 'left-to-right' }]
+          when 'Book (rtl)'
+            [{ viewingDirection: 'right-to-left' }]
+          end
+        end
+      end
 
       def build_filesets(content_metadata_ds, version:, id:)
         content_metadata_ds.ng_xml.xpath('//resource[file]').map.with_index(1) do |resource_node, index|

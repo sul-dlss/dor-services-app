@@ -44,6 +44,10 @@ RSpec.describe Cocina::Mapper do
     context 'when item has a book tag' do
       let(:content_type) { 'book' }
 
+      before do
+        allow(AdministrativeTags).to receive(:content_type).with(pid: item.id).and_return(['Book (rtl)'])
+      end
+
       it 'builds the object with type book' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
         expect(cocina_model.type).to eq Cocina::Models::Vocab.book

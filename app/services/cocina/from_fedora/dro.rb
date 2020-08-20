@@ -24,7 +24,7 @@ module Cocina
           version: item.current_version.to_i,
           administrative: FromFedora::Administrative.props(item),
           access: DROAccess.props(item),
-          structural: DroStructural.props(item)
+          structural: DroStructural.props(item, type: dro_type)
         }.tap do |props|
           description = FromFedora::Descriptive.props(item)
           props[:description] = description unless description.nil?

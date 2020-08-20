@@ -3,7 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::DroStructural do
-  subject(:structural) { described_class.props(item) }
+  subject(:structural) { described_class.props(item, type: type) }
+
+  let(:type) { Cocina::Models::Vocab.book }
 
   let(:item) do
     Dor::Item.new(pid: 'druid:hx013yf6680')
@@ -227,6 +229,48 @@ RSpec.describe Cocina::FromFedora::DroStructural do
 
     it 'raise an error' do
       expect { structural }.to raise_error SolrConnectionError
+    end
+  end
+
+  context 'with bookData' do
+    subject { structural[:hasMemberOrders].first[:viewingDirection] }
+
+    let(:book_data) { "<bookData readingDirection=\"#{reading_direction}\" />" }
+    let(:xml) do
+      <<~XML
+        <contentMetadata type="book" id="druid:hx013yf6680">
+          #{book_data}
+          <resource id="bb000sc2803_1" sequence="1" type="page">
+            <file id="aar_19990525_0001.jp2" preserve="yes" shelve="no" publish="no" size="6765428" mimetype="image/jp2">
+              <checksum type="md5">a85c1b8d484fe3d7dee5e0b10d2020de</checksum>
+              <checksum type="sha1">ccb1cd8bf179d7049a3e1164a369d35061ea23a2</checksum>
+              <imageData width="5992" height="9041"/>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    context 'when readingDirection is "rtl"' do
+      let(:reading_direction) { 'rtl' }
+
+      it { is_expected.to eq 'right-to-left' }
+    end
+
+    context 'when readingDirection is "ltr"' do
+      let(:reading_direction) { 'ltr' }
+
+      it { is_expected.to eq 'left-to-right' }
+    end
+
+    context "when bookData doesn't exist" do
+      before do
+        allow(AdministrativeTags).to receive(:content_type).with(pid: item.id).and_return(['Book (rtl)'])
+      end
+
+      let(:book_data) { nil }
+
+      it { is_expected.to eq 'right-to-left' }
     end
   end
 end
