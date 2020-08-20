@@ -2154,6 +2154,8 @@
 						select=". | ../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '700')][marc:subfield[@code = 't']][substring(marc:subfield[@code = '6'], 5, 2) = $s6]">
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
+							<!-- SUL edit 20200820 issue #1000 -->
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
@@ -2208,6 +2210,8 @@
 						select=". | ../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '710')][marc:subfield[@code = 't']][substring(marc:subfield[@code = '6'], 5, 2) = $s6]">
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
+							<!-- SUL edit 20200820 issue #1000 -->
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
@@ -2294,6 +2298,8 @@
 						select=". | ../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '711')][marc:subfield[@code = 't']][substring(marc:subfield[@code = '6'], 5, 2) = $s6]">
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
+							<!-- SUL edit 20200820 issue #1000 -->
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 							<title>
 								<!-- 1.120 - @711$v -->
 								<xsl:call-template name="chopPunctuation">
@@ -2365,6 +2371,8 @@
 						select=". | ../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '730')][@ind2 = '2'][substring(marc:subfield[@code = '6'], 5, 2) = $s6]">
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
+							<!-- SUL edit 20200820 issue #1000 -->
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
@@ -2405,6 +2413,8 @@
 						select=". | ../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '740')][@ind2 = '2'][substring(marc:subfield[@code = '6'], 5, 2) = $s6]">
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
+							<!-- SUL edit 20200820 issue #1000 -->
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
@@ -2500,6 +2510,8 @@
 						<xsl:for-each select="marc:subfield[@code = 't']">
 							<titleInfo>
 								<xsl:call-template name="xxs880"/>
+								<!-- SUL edit 20200820 issue #1000 -->
+								<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 								<title>
 									<xsl:call-template name="chopPunctuation">
 										<xsl:with-param name="chopString">
@@ -2535,6 +2547,8 @@
 							<titleInfo type="uniform">
 								<!-- 1.121 -->
 								<xsl:call-template name="xxs880"/>
+								<!-- SUL edit 20200820 issue #1000 -->
+								<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 								<title>
 									<xsl:call-template name="chopPunctuation">
 										<xsl:with-param name="chopString">
@@ -2652,6 +2666,8 @@
 						select=". | ../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '800')][substring(marc:subfield[@code = '6'], 5, 2) = $s6]">
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
+							<!-- SUL edit 20200820 issue #1000 -->
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
@@ -2706,6 +2722,8 @@
 						select=". | ../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '810')][substring(marc:subfield[@code = '6'], 5, 2) = $s6]">
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
+							<!-- SUL edit 20200820 issue #1000 -->
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 							<title>
 								<!-- 1.120 - @800$v -->
 								<xsl:call-template name="chopPunctuation">
@@ -2783,6 +2801,8 @@
 						select=". | ../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '811')][substring(marc:subfield[@code = '6'], 5, 2) = $s6]">
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
+							<!-- SUL edit 20200820 issue #1000 -->
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
@@ -2848,6 +2868,8 @@
 						select=". | ../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '830')][substring(marc:subfield[@code = '6'], 5, 2) = $s6]">
 						<titleInfo>
 							<xsl:call-template name="xxx880"/>
+							<!-- SUL edit 20200820 issue #1000 -->
+							<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
@@ -5858,7 +5880,10 @@
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subjectAuthority"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>-->
 			<name type="personal">
 				<namePart>
 					<!-- 1.126 -->
@@ -5894,7 +5919,10 @@
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subjectAuthority"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>-->
 			<name type="corporate">
 				<xsl:for-each select="marc:subfield[@code = 'a']">
 					<namePart>
@@ -5939,7 +5967,10 @@
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subjectAuthority"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>-->
 			<name type="conference">
 				<namePart>
 					<xsl:call-template name="subfieldSelect">
@@ -5977,7 +6008,10 @@
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subjectAuthority"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>-->
 			<titleInfo>
 				<title>
 					<xsl:call-template name="chopPunctuation">
@@ -6022,7 +6056,10 @@
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subjectAuthority"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>-->
 			<topic>
 				<xsl:call-template name="chopPunctuation">
 					<xsl:with-param name="chopString">
@@ -6041,7 +6078,10 @@
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subjectAuthority"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>-->
 			<xsl:for-each select="marc:subfield[@code = 'a']">
 				<geographic>
 					<xsl:call-template name="chopPunctuation">
@@ -6232,7 +6272,10 @@
 		<subject>
 			<xsl:call-template name="xxx880"/>
 			<!-- 1.122 -->
-			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>
+			<!-- SUL edit 20200820 issue #984 -->
+			<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+			<!-- SUL edit 20200820 issue #983 and #984
+			<xsl:apply-templates select="marc:subfield[@code = '0']" mode="xlink"/>-->
 			<xsl:if test="marc:subfield[@code = 2]">
 				<xsl:attribute name="authority">
 					<xsl:value-of select="marc:subfield[@code = 2]"/>
