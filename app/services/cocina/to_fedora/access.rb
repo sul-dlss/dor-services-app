@@ -10,7 +10,7 @@ module Cocina
       # @param [Dor::Item, Dor::Collection] item
       # @param [Cocina::Models::DROAccess, Cocina::Models::Access] access
       def self.apply(item, access)
-        rights_type =  if access.is_a?(Cocina::Models::DROAccess) && access.controlledDigitalLending
+        rights_type =  if access.is_a?(Cocina::Models::DROAccess) && access.controlled_digital_lending
                          'cdl-stanford-nd'
                        else
                          case access.access

@@ -16,6 +16,7 @@ module Cocina
         { access: access_rights }.tap do |h|
           h[:readLocation] = location if location
           h[:download] = download? ? h[:access] : 'none'
+          h[:controlled_digital_lending] = true if rights_object.controlled_digital_lending
         end
       end
 
