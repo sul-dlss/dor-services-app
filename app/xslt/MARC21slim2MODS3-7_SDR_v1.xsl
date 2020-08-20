@@ -5792,7 +5792,13 @@
 				<xsl:for-each select="marc:subfield[@code = 'a' or @code = 'b' or @code = 'c']">
 					<xsl:if test="@code = 'a'">
 						<scale>
-							<xsl:value-of select="."/>
+							<!-- SUL edit 20200820 issue #121 -->
+							<xsl:call-template name="chopPunctuation">
+								<xsl:with-param name="chopString" select="."/>
+								<xsl:with-param name="punctuation">
+									<xsl:text>:,;/ </xsl:text>
+								</xsl:with-param>
+							</xsl:call-template>
 						</scale>
 					</xsl:if>
 					<xsl:if test="@code = 'b'">
