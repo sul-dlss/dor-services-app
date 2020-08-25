@@ -1203,14 +1203,30 @@
 						<xsl:for-each select="marc:subfield[@code = 'a']">
 							<place>
 								<placeTerm type="text">
-									<xsl:value-of select="."/>
+									<!-- SUL edit 20200825 issue #990 -->
+									<xsl:call-template name="chopPunctuation">
+										<xsl:with-param name="chopString" select="."/>
+										<xsl:with-param name="punctuation">
+											<xsl:text>:,;/ </xsl:text>
+										</xsl:with-param>
+									</xsl:call-template>
+									<!-- SUL edit 20200825 issue #990
+									<xsl:value-of select="."/>-->
 								</placeTerm>
 							</place>
 							<xsl:if test="following-sibling::marc:subfield[@code = 'b']">
 								<xsl:for-each
 									select="following-sibling::marc:subfield[@code = 'b'][1]">
 									<publisher>
-										<xsl:value-of select="."/>
+										<!-- SUL edit 20200825 issue #990 -->
+										<xsl:call-template name="chopPunctuation">
+											<xsl:with-param name="chopString" select="."/>
+											<xsl:with-param name="punctuation">
+												<xsl:text>:,;/ </xsl:text>
+											</xsl:with-param>
+										</xsl:call-template>
+										<!-- SUL edit 20200825 issue #990
+										<xsl:value-of select="."/>-->
 									</publisher>
 								</xsl:for-each>
 							</xsl:if>
@@ -1219,18 +1235,42 @@
 					<xsl:otherwise>
 						<place>
 							<placeTerm type="text">
-								<xsl:value-of select="marc:subfield[@code = 'a']"/>
+								<!-- SUL edit 20200825 issue #990 -->
+								<xsl:call-template name="chopPunctuation">
+									<xsl:with-param name="chopString">
+										<xsl:value-of select="marc:subfield[@code = 'a']"/>
+										<!-- SUL edit 20200825 issue #990 -->
+									</xsl:with-param>
+									<xsl:with-param name="punctuation">
+										<xsl:text>:,;/ </xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
 							</placeTerm>
 						</place>
 						<publisher>
-							<xsl:value-of select="marc:subfield[@code = 'b']"/>
+							<!-- SUL edit 20200825 issue #990 -->
+							<xsl:call-template name="chopPunctuation">
+								<xsl:with-param name="chopString">
+									<xsl:value-of select="marc:subfield[@code = 'b']"/>
+									<!-- SUL edit 20200825 issue #990 -->
+								</xsl:with-param>
+								<xsl:with-param name="punctuation">
+									<xsl:text>:,;/ </xsl:text>
+								</xsl:with-param>
+							</xsl:call-template>
 						</publisher>
 					</xsl:otherwise>
 				</xsl:choose>
 				<!-- 1.134 -->
 				<xsl:if test="marc:subfield[@code = 'c']">
 					<dateOther type="production">
-						<xsl:value-of select="marc:subfield[@code = 'c']"/>
+						<!-- SUL edit 20200825 issue #990 -->
+						<xsl:call-template name="chopPunctuation">
+							<xsl:with-param name="chopString">
+								<xsl:value-of select="marc:subfield[@code = 'a']"/>
+								<!-- SUL edit 20200825 issue #990 -->
+							</xsl:with-param>
+						</xsl:call-template>
 					</dateOther>
 				</xsl:if>
 				<!-- SUL edit 20200819 issue #989 -->
@@ -1252,14 +1292,30 @@
 						<xsl:for-each select="marc:subfield[@code = 'a']">
 							<place>
 								<placeTerm type="text">
-									<xsl:value-of select="."/>
+									<!-- SUL edit 20200825 issue #990 -->
+									<xsl:call-template name="chopPunctuation">
+										<xsl:with-param name="chopString" select="."/>
+										<xsl:with-param name="punctuation">
+											<xsl:text>:,;/ </xsl:text>
+										</xsl:with-param>
+									</xsl:call-template>
+									<!-- SUL edit 20200825 issue #990
+									<xsl:value-of select="."/>-->
 								</placeTerm>
 							</place>
 							<xsl:if test="following-sibling::marc:subfield[@code = 'b']">
 								<xsl:for-each
 									select="following-sibling::marc:subfield[@code = 'b'][1]">
 									<publisher>
-										<xsl:value-of select="."/>
+										<!-- SUL edit 20200825 issue #990 -->
+										<xsl:call-template name="chopPunctuation">
+											<xsl:with-param name="chopString" select="."/>
+											<xsl:with-param name="punctuation">
+												<xsl:text>:,;/ </xsl:text>
+											</xsl:with-param>
+										</xsl:call-template>
+										<!-- SUL edit 20200825 issue #990
+										<xsl:value-of select="."/> -->
 									</publisher>
 								</xsl:for-each>
 							</xsl:if>
@@ -1268,18 +1324,42 @@
 					<xsl:otherwise>
 						<place>
 							<placeTerm type="text">
-								<xsl:value-of select="marc:subfield[@code = 'a']"/>
+								<!-- SUL edit 20200825 issue #990 -->
+								<xsl:call-template name="chopPunctuation">
+									<xsl:with-param name="chopString">
+										<xsl:value-of select="marc:subfield[@code = 'a']"/>
+										<!-- SUL edit 20200825 issue #990 -->
+									</xsl:with-param>
+									<xsl:with-param name="punctuation">
+										<xsl:text>:,;/ </xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
 							</placeTerm>
 						</place>
 						<publisher>
-							<xsl:value-of select="marc:subfield[@code = 'b']"/>
+							<!-- SUL edit 20200825 issue #990 -->
+							<xsl:call-template name="chopPunctuation">
+								<xsl:with-param name="chopString">
+									<xsl:value-of select="marc:subfield[@code = 'b']"/>
+									<!-- SUL edit 20200825 issue #990 -->
+								</xsl:with-param>
+								<xsl:with-param name="punctuation">
+									<xsl:text>:,;/ </xsl:text>
+								</xsl:with-param>
+							</xsl:call-template>
 						</publisher>
 					</xsl:otherwise>
 				</xsl:choose>
 				<!-- 1.134 -->
 				<xsl:if test="marc:subfield[@code = 'c']">
 					<dateIssued>
-						<xsl:value-of select="marc:subfield[@code = 'c']"/>
+						<!-- SUL edit 20200825 issue #990 -->
+						<xsl:call-template name="chopPunctuation">
+							<xsl:with-param name="chopString">
+								<xsl:value-of select="marc:subfield[@code = 'c']"/>
+								<!-- SUL edit 20200825 issue #990 -->
+							</xsl:with-param>
+						</xsl:call-template>
 					</dateIssued>
 				</xsl:if>
 				<!-- SUL edit 20200819 issue #989 -->
@@ -1301,14 +1381,30 @@
 						<xsl:for-each select="marc:subfield[@code = 'a']">
 							<place>
 								<placeTerm type="text">
-									<xsl:value-of select="."/>
+									<!-- SUL edit 20200825 issue #990 -->
+									<xsl:call-template name="chopPunctuation">
+										<xsl:with-param name="chopString" select="."/>
+										<xsl:with-param name="punctuation">
+											<xsl:text>:,;/ </xsl:text>
+										</xsl:with-param>
+									</xsl:call-template>
+									<!-- SUL edit 20200825 issue #990
+									<xsl:value-of select="."/>-->
 								</placeTerm>
 							</place>
 							<xsl:if test="following-sibling::marc:subfield[@code = 'b']">
 								<xsl:for-each
 									select="following-sibling::marc:subfield[@code = 'b'][1]">
 									<publisher>
-										<xsl:value-of select="."/>
+										<!-- SUL edit 20200825 issue #990 -->
+										<xsl:call-template name="chopPunctuation">
+											<xsl:with-param name="chopString" select="."/>
+											<xsl:with-param name="punctuation">
+												<xsl:text>:,;/ </xsl:text>
+											</xsl:with-param>
+										</xsl:call-template>
+										<!-- SUL edit 20200825 issue #990
+									<xsl:value-of select="."/>-->
 									</publisher>
 								</xsl:for-each>
 							</xsl:if>
@@ -1317,18 +1413,42 @@
 					<xsl:otherwise>
 						<place>
 							<placeTerm type="text">
-								<xsl:value-of select="marc:subfield[@code = 'a']"/>
+								<!-- SUL edit 20200825 issue #990 -->
+								<xsl:call-template name="chopPunctuation">
+									<xsl:with-param name="chopString">
+										<xsl:value-of select="marc:subfield[@code = 'a']"/>
+										<!-- SUL edit 20200825 issue #990 -->
+									</xsl:with-param>
+									<xsl:with-param name="punctuation">
+										<xsl:text>:,;/ </xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
 							</placeTerm>
 						</place>
 						<publisher>
-							<xsl:value-of select="marc:subfield[@code = 'b']"/>
+							<!-- SUL edit 20200825 issue #990 -->
+							<xsl:call-template name="chopPunctuation">
+								<xsl:with-param name="chopString">
+									<xsl:value-of select="marc:subfield[@code = 'b']"/>
+									<!-- SUL edit 20200825 issue #990 -->
+								</xsl:with-param>
+								<xsl:with-param name="punctuation">
+									<xsl:text>:,;/ </xsl:text>
+								</xsl:with-param>
+							</xsl:call-template>
 						</publisher>
 					</xsl:otherwise>
 				</xsl:choose>
 				<!-- 1.134 -->
 				<xsl:if test="marc:subfield[@code = 'c']">
 					<dateOther type="distribution">
-						<xsl:value-of select="marc:subfield[@code = 'c']"/>
+						<!-- SUL edit 20200825 issue #990 -->
+						<xsl:call-template name="chopPunctuation">
+							<xsl:with-param name="chopString">
+								<xsl:value-of select="marc:subfield[@code = 'c']"/>
+								<!-- SUL edit 20200825 issue #990 -->
+							</xsl:with-param>
+						</xsl:call-template>
 					</dateOther>
 				</xsl:if>
 				<!-- SUL edit 20200819 issue #989 -->
@@ -1350,14 +1470,30 @@
 						<xsl:for-each select="marc:subfield[@code = 'a']">
 							<place>
 								<placeTerm type="text">
-									<xsl:value-of select="."/>
+									<!-- SUL edit 20200825 issue #990 -->
+									<xsl:call-template name="chopPunctuation">
+										<xsl:with-param name="chopString" select="."/>
+										<xsl:with-param name="punctuation">
+											<xsl:text>:,;/ </xsl:text>
+										</xsl:with-param>
+									</xsl:call-template>
+									<!-- SUL edit 20200825 issue #990
+									<xsl:value-of select="."/>-->
 								</placeTerm>
 							</place>
 							<xsl:if test="following-sibling::marc:subfield[@code = 'b']">
 								<xsl:for-each
 									select="following-sibling::marc:subfield[@code = 'b'][1]">
 									<publisher>
-										<xsl:value-of select="."/>
+										<!-- SUL edit 20200825 issue #990 -->
+										<xsl:call-template name="chopPunctuation">
+											<xsl:with-param name="chopString" select="."/>
+											<xsl:with-param name="punctuation">
+												<xsl:text>:,;/ </xsl:text>
+											</xsl:with-param>
+										</xsl:call-template>
+										<!-- SUL edit 20200825 issue #990
+									<xsl:value-of select="."/>-->
 									</publisher>
 								</xsl:for-each>
 							</xsl:if>
@@ -1366,18 +1502,42 @@
 					<xsl:otherwise>
 						<place>
 							<placeTerm type="text">
-								<xsl:value-of select="marc:subfield[@code = 'a']"/>
+								<!-- SUL edit 20200825 issue #990 -->
+								<xsl:call-template name="chopPunctuation">
+									<xsl:with-param name="chopString">
+										<xsl:value-of select="marc:subfield[@code = 'a']"/>
+										<!-- SUL edit 20200825 issue #990 -->
+									</xsl:with-param>
+									<xsl:with-param name="punctuation">
+										<xsl:text>:,;/ </xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
 							</placeTerm>
 						</place>
 						<publisher>
-							<xsl:value-of select="marc:subfield[@code = 'b']"/>
+							<!-- SUL edit 20200825 issue #990 -->
+							<xsl:call-template name="chopPunctuation">
+								<xsl:with-param name="chopString">
+									<xsl:value-of select="marc:subfield[@code = 'a']"/>
+									<!-- SUL edit 20200825 issue #990 -->
+								</xsl:with-param>
+								<xsl:with-param name="punctuation">
+									<xsl:text>:,;/ </xsl:text>
+								</xsl:with-param>
+							</xsl:call-template>
 						</publisher>
 					</xsl:otherwise>
 				</xsl:choose>
 				<!-- 1.134 -->
 				<xsl:if test="marc:subfield[@code = 'c']">
 					<dateOther type="manufacture">
-						<xsl:value-of select="marc:subfield[@code = 'c']"/>
+						<!-- SUL edit 20200825 issue #990 -->
+						<xsl:call-template name="chopPunctuation">
+							<xsl:with-param name="chopString">
+								<xsl:value-of select="marc:subfield[@code = 'c']"/>
+								<!-- SUL edit 20200825 issue #990 -->
+							</xsl:with-param>
+						</xsl:call-template>
 					</dateOther>
 				</xsl:if>
 				<!-- SUL edit 20200819 issue #989 -->
@@ -1387,8 +1547,12 @@
 		<xsl:for-each select="marc:datafield[@tag = 264][@ind2 = 4]">
 			<originInfo eventType="copyright notice">
 				<copyrightDate>
+					<!-- SUL edit 20200825 issue #990 -->
 					<xsl:call-template name="chopPunctuation">
-						<xsl:with-param name="chopString" select="marc:subfield[@code = 'c']"/>
+						<xsl:with-param name="chopString">
+							<xsl:value-of select="marc:subfield[@code = 'c']"/>
+							<!-- SUL edit 20200825 issue #990 -->
+						</xsl:with-param>
 					</xsl:call-template>
 				</copyrightDate>
 			</originInfo>
@@ -2166,7 +2330,7 @@
 										<xsl:call-template name="subfieldSelect">
 											<xsl:with-param name="codes">tmnrposlf</xsl:with-param>
 										</xsl:call-template>
-											<!-- SUL edit 20200825 issue #1000
+										<!-- SUL edit 20200825 issue #1000
 											<xsl:call-template name="specialSubfieldSelect">
 											<xsl:with-param name="anyCodes"
 												>tfklmorsv</xsl:with-param>
@@ -3328,7 +3492,7 @@
 					</xsl:call-template>
 				</xsl:otherwise>
 			</xsl:choose>
-			</xsl:variable>
+		</xsl:variable>
 		<xsl:if test="string-length(normalize-space($partNumber))">
 			<partNumber>
 				<xsl:call-template name="chopPunctuation">
