@@ -2162,16 +2162,22 @@
 							<title>
 								<xsl:call-template name="chopPunctuation">
 									<xsl:with-param name="chopString">
-										<xsl:call-template name="specialSubfieldSelect">
+										<!-- SUL edit 20200825 issue #1000 -->
+										<xsl:call-template name="subfieldSelect">
+											<xsl:with-param name="codes">tmnrposlf</xsl:with-param>
+										</xsl:call-template>
+											<!-- SUL edit 20200825 issue #1000
+											<xsl:call-template name="specialSubfieldSelect">
 											<xsl:with-param name="anyCodes"
 												>tfklmorsv</xsl:with-param>
 											<xsl:with-param name="axis">t</xsl:with-param>
-											<xsl:with-param name="afterCodes">g</xsl:with-param>
-										</xsl:call-template>
+										<xsl:with-param name="afterCodes">g</xsl:with-param>
+										</xsl:call-template>-->
 									</xsl:with-param>
 								</xsl:call-template>
 							</title>
-							<xsl:call-template name="part"/>
+							<!-- SUL edit 20200825 issue #1000
+							<xsl:call-template name="part"/>-->
 						</titleInfo>
 						<name type="personal">
 							<xsl:call-template name="xxx880"/>
@@ -3322,7 +3328,7 @@
 					</xsl:call-template>
 				</xsl:otherwise>
 			</xsl:choose>
-		</xsl:variable>
+			</xsl:variable>
 		<xsl:if test="string-length(normalize-space($partNumber))">
 			<partNumber>
 				<xsl:call-template name="chopPunctuation">
