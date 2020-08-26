@@ -1042,7 +1042,7 @@ paths:
 components:
   schemas:
     Access:
-      description: Access metadata
+      description: Access metadata for collections
       type: object
       additionalProperties: false
       properties:
@@ -1431,6 +1431,10 @@ components:
             - 'citation-only'
             - 'dark'
           default: 'dark'
+        controlledDigitalLending:
+          description: Available for controlled digital lending.
+          type: boolean
+          default: false
         copyright:
           description: The human readable copyright statement that applies
           example: Copyright World Trade Organization
@@ -1586,7 +1590,7 @@ components:
           items:
             $ref: '#/components/schemas/MessageDigest'
         access:
-          $ref: '#/components/schemas/Access'
+          $ref: '#/components/schemas/FileAccess'
         administrative:
           $ref: '#/components/schemas/FileAdministrative'
         presentation:
@@ -1600,6 +1604,44 @@ components:
         - access
         - administrative
         - hasMessageDigests
+    FileAccess:
+      description: Access metadata for files
+      type: object
+      additionalProperties: false
+      properties:
+        access:
+          description: Access level
+          type: string
+          enum:
+            - 'world'
+            - 'stanford'
+            - 'location-based'
+            - 'citation-only'
+            - 'dark'
+          default: 'dark'
+        controlledDigitalLending:
+          description: Available for controlled digital lending.
+          type: boolean
+          default: false
+        download:
+          description: Download access level for a file
+          type: string
+          enum:
+            - 'world'
+            - 'stanford'
+            - 'location-based'
+            - 'none'
+          default: 'none'
+        readLocation:
+          description: If access is "location-based", which location should have access.
+          type: string
+          enum:
+            - 'spec'
+            - 'music'
+            - 'ars'
+            - 'art'
+            - 'hoover'
+            - 'm&m'
     FileAdministrative:
       type: object
       additionalProperties: false
@@ -1866,7 +1908,7 @@ components:
           items:
             $ref: '#/components/schemas/MessageDigest'
         access:
-          $ref: '#/components/schemas/Access'
+          $ref: '#/components/schemas/FileAccess'
         administrative:
           $ref: '#/components/schemas/FileAdministrative'
         presentation:
