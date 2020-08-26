@@ -11,7 +11,7 @@ RSpec.describe Cocina::ToFedora::Access do
 
   describe 'with cdl access' do
     let(:access) do
-      Cocina::Models::DROAccess.new(access: 'citation-only', controlled_digital_lending: true, download: 'none')
+      Cocina::Models::DROAccess.new(access: 'citation-only', controlledDigitalLending: true, download: 'none')
     end
 
     it 'builds the xml' do
