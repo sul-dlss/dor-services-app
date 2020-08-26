@@ -12,7 +12,8 @@ module Cocina
     # @raises SymphonyReader::ResponseError if symphony connection failed
     def create(obj, event_factory:, persister:)
       # Validate will raise an error if not valid.
-      validate(obj)
+      ObjectValidator.validate(obj)
+
       af_model = create_from_model(obj, persister: persister)
 
       # Fedora 3 has no unique constrains, so
@@ -26,17 +27,6 @@ module Cocina
     end
 
     private
-
-    def validate(obj)
-      validator = Cocina::UniqueSourceIdValidator.new(obj)
-      raise ValidationError.new(validator.error, status: :conflict) unless validator.valid?
-
-      validator = ValidateDarkService.new(obj)
-      raise ValidationError, validator.error unless validator.valid?
-
-      validator = Cocina::ApoExistenceValidator.new(obj)
-      raise ValidationError, validator.error unless validator.valid?
-    end
 
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj
     # @param [#store] persister the service responsible for persisting the model

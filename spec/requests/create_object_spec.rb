@@ -546,6 +546,9 @@ RSpec.describe 'Create object' do
       let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
 
       before do
+        # Allows the CollectionExistenceValidator to find the collection:
+        allow(Dor).to receive(:find).with('druid:xx888xx7777').and_return(Dor::Collection.new)
+
         allow(Dor::Item).to receive(:new).and_return(item)
         allow(item).to receive(:collections).and_return([collection])
         allow(item).to receive(:save!)
