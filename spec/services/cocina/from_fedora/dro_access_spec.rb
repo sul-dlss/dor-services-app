@@ -106,7 +106,7 @@ RSpec.describe Cocina::FromFedora::DROAccess do
     end
 
     it 'builds the hash' do
-      expect(access).to eq(access: 'controlled digital lending', controlled_digital_lending: true, download: 'controlled digital lending')
+      expect(access).to eq(access: 'controlled digital lending', download: 'none', controlled_digital_lending: true)
     end
   end
 
