@@ -19,28 +19,57 @@ RSpec.describe Cocina::ObjectCreator do
   end
 
   context 'when item is a Dor::Item' do
-    let(:params) do
-      {
-        'type' => 'http://cocina.sul.stanford.edu/models/media.jsonld',
-        'label' => ':auto',
-        'access' => { 'access' => 'dark', 'download' => 'none' },
-        'version' => 1, 'structural' => {},
-        'administrative' => {
-          'partOfProject' => 'Naxos : 2009',
-          'hasAdminPolicy' => apo
-        },
-        'identification' => {
-          'sourceId' => 'sul:8.559351',
-          'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }]
-        }
-      }
-    end
-
     let(:request) { Cocina::Models.build_request(params) }
 
     context 'when the access is dark' do
+      let(:params) do
+        {
+          'type' => 'http://cocina.sul.stanford.edu/models/media.jsonld',
+          'label' => ':auto',
+          'access' => { 'access' => 'dark', 'download' => 'none' },
+          'version' => 1, 'structural' => {},
+          'administrative' => {
+            'partOfProject' => 'Naxos : 2009',
+            'hasAdminPolicy' => apo
+          },
+          'identification' => {
+            'sourceId' => 'sul:8.559351',
+            'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }]
+          }
+        }
+      end
+
       it 'creates dark access' do
         expect(item.access.access).to eq 'dark'
+      end
+    end
+
+    context "when the collection doesn't exist" do
+      before do
+        allow(Dor).to receive(:find).and_raise(ActiveFedora::ObjectNotFoundError)
+      end
+
+      let(:params) do
+        {
+          'type' => 'http://cocina.sul.stanford.edu/models/media.jsonld',
+          'label' => ':auto',
+          'access' => { 'access' => 'world', 'download' => 'world' },
+          'version' => 1,
+          'administrative' => {
+            'hasAdminPolicy' => apo
+          },
+          'structural' => {
+            'isMemberOf' => 'druid:bk024qs1809'
+          },
+          'identification' => {
+            'sourceId' => 'sul:8.559351',
+            'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }]
+          }
+        }
+      end
+
+      it 'raises an error' do
+        expect { item }.to raise_error Cocina::ValidationError
       end
     end
   end
