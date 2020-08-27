@@ -84,6 +84,32 @@ RSpec.describe Cocina::FromFedora::DROAccess do
     end
   end
 
+  describe 'with cdl access' do
+    let(:xml) do
+      <<~XML
+        <?xml version="1.0"?>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <world/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <cdl>
+                <group rule="no-download">stanford</group>
+              </cdl>
+            </machine>
+          </access>
+        </rightsMetadata>
+      XML
+    end
+
+    it 'builds the hash' do
+      expect(access).to eq(access: 'controlled digital lending', download: 'none', controlled_digital_lending: true)
+    end
+  end
+
   describe 'with copyright but no use statement (contrived example)' do
     let(:xml) do
       <<~XML

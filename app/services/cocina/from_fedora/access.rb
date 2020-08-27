@@ -16,6 +16,7 @@ module Cocina
         { access: access_rights }.tap do |h|
           h[:readLocation] = location if location
           h[:download] = download? ? h[:access] : 'none'
+          h[:controlled_digital_lending] = true if rights_object.controlled_digital_lending
         end
       end
 
@@ -29,7 +30,7 @@ module Cocina
 
       # @return [Bool] true unless the rule="no-download" has been set or if the access is citation-only or dark
       def download?
-        return false if %w[citation-only dark].include? access_rights
+        return false if ['controlled digital lending', 'citation-only', 'dark'].include? access_rights
 
         !rights_object.world.rule && !rights_object.group.fetch(:stanford).rule
       end
