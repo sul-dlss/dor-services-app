@@ -13,10 +13,12 @@ module Cocina
       end
 
       def props
-        { access: access_rights }.tap do |h|
+        {
+          access: access_rights,
+          download: download? ? access_rights : 'none'
+        }.tap do |h|
           h[:readLocation] = location if location
-          h[:download] = download? ? h[:access] : 'none'
-          h[:controlled_digital_lending] = true if rights_object.controlled_digital_lending
+          h[:controlledDigitalLending] = true if cdl?
         end
       end
 
@@ -30,7 +32,7 @@ module Cocina
 
       # @return [Bool] true unless the rule="no-download" has been set or if the access is citation-only or dark
       def download?
-        return false if ['controlled digital lending', 'citation-only', 'dark'].include? access_rights
+        return false if %w[citation-only dark].include? access_rights
 
         !rights_object.world.rule && !rights_object.group.fetch(:stanford).rule
       end
@@ -43,16 +45,39 @@ module Cocina
       # https://github.com/sul-dlss/dor-services/blob/b9b4768eac560ef99b4a8d03475ea31fe4ae2367/lib/dor/datastreams/rights_metadata_ds.rb#L221-L228
       # to https://github.com/sul-dlss/cocina-models/blob/master/docs/maps/DRO.json#L102
       def access_rights
-        @access_rights ||= if rights != 'None'
-                             rights.downcase
-                           elsif location
-                             'location-based'
-                           else
-                             rights.sub('None', 'citation-only').downcase
-                           end
+        @access_rights ||=
+          if world?
+            'world'
+          elsif stanford?
+            'stanford'
+          elsif dark?
+            'dark'
+          elsif location
+            'location-based'
+          else
+            'citation-only'
+          end
       end
 
-      delegate :rights, to: :item
+      def rights_xml
+        @rights_xml ||= item.rightsMetadata.ng_xml
+      end
+
+      def stanford?
+        rights_xml.search('//rightsMetadata/access[@type=\'read\']/machine/group').length == 1
+      end
+
+      def world?
+        rights_xml.search('//rightsMetadata/access[@type=\'read\']/machine/world').length == 1
+      end
+
+      def dark?
+        rights_xml.search('//rightsMetadata/access[@type=\'discover\']/machine/none').length == 1
+      end
+
+      def cdl?
+        rights_object.controlled_digital_lending
+      end
     end
   end
 end
