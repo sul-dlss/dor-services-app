@@ -6187,8 +6187,17 @@
 				<xsl:call-template name="xxx880"/>
 				<cartographics>
 					<coordinates>
-						<xsl:call-template name="subfieldSelect">
-							<xsl:with-param name="codes">defg</xsl:with-param>
+						<!-- SUL edit 20200828 issue #1018 -->
+						<xsl:call-template name="chopPunctuation">
+							<xsl:with-param name="chopString">
+								<xsl:call-template name="subfieldSelect">
+									<xsl:with-param name="codes">defg</xsl:with-param>
+								</xsl:call-template>
+								<!-- SUL edit 2020828 issue #1018 -->
+							</xsl:with-param>
+							<xsl:with-param name="punctuation">
+								<text>., ;:</text>
+							</xsl:with-param>
 						</xsl:call-template>
 					</coordinates>
 				</cartographics>
@@ -6241,7 +6250,16 @@
 					</xsl:if>
 					<xsl:if test="@code = 'c'">
 						<coordinates>
-							<xsl:value-of select="."/>
+							<!-- SUL edit 20200828 issue #1018 -->
+							<xsl:call-template name="chopPunctuation">
+								<xsl:with-param name="chopString">
+									<xsl:value-of select="."/>
+									<!-- SUL edit 2020828 issue #1018 -->
+								</xsl:with-param>
+								<xsl:with-param name="punctuation">
+									<text>., ;:</text>
+								</xsl:with-param>
+							</xsl:call-template>
 						</coordinates>
 					</xsl:if>
 				</xsl:for-each>
