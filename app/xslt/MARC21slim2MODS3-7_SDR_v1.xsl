@@ -5780,7 +5780,10 @@
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="uri"/>
 			<xsl:call-template name="subfieldSelect">
-				<xsl:with-param name="codes">ab</xsl:with-param>
+				<!-- SUL edit 20200828 issue #1003 -->
+				<xsl:with-param name="codes">abc</xsl:with-param>
+				<!-- SUL edit 20200828 issue #1003
+				<xsl:with-param name="codes">ab</xsl:with-param>-->
 			</xsl:call-template>
 
 		</abstract>
