@@ -5691,8 +5691,8 @@
 						<xsl:value-of select="marc:subfield[@code = '2']"/>
 					</xsl:attribute>
 				</xsl:when>
-				<!-- SUL edit 20200819 issue #988 -->
-				<xsl:when test="@ind2 != ' ' and @ind2 != '4'">
+				<!-- SUL edit 20200819 issue #988 and #1007 -->
+				<xsl:when test="@ind2 != ' ' and @ind2 != '4' and @ind2 != '7'">
 					<xsl:attribute name="authority">
 						<!-- SUL edit 20200819 issue #988 -->
 						<xsl:choose>
@@ -5703,7 +5703,7 @@
 							<xsl:when test="@ind2 = '5'">cash</xsl:when>
 							<xsl:when test="@ind2 = '6'">rvm</xsl:when>
 						</xsl:choose>
-						<!-- SUL edit 20200819 issue #988					
+						<!-- SUL edit 20200819 issue #988 and #1007				
 						<xsl:value-of select="@ind2"/>-->
 					</xsl:attribute>
 				</xsl:when>
