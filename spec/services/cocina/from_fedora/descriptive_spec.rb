@@ -111,7 +111,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           }
         }
       ]
-      expect(descriptive[:contributor]).to match_array [
+      expect(descriptive[:contributor]).to match_array [{
         name: [{
           value: 'Stanford University. Libraries. Humanities and Area Studies Resource Group'
         }],
@@ -123,7 +123,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
             code: 'marcrelator'
           }
         }]
-      ]
+      }]
       expect(descriptive[:form]).to match_array [
         {
           value: 'electronic',
