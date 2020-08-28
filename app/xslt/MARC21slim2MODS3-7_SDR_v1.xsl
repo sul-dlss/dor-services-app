@@ -2346,10 +2346,19 @@
 						<name type="personal">
 							<xsl:call-template name="xxx880"/>
 							<namePart>
-								<xsl:call-template name="specialSubfieldSelect">
-									<xsl:with-param name="anyCodes">aq</xsl:with-param>
-									<xsl:with-param name="axis">t</xsl:with-param>
-									<xsl:with-param name="beforeCodes">g</xsl:with-param>
+								<!-- SUL edit 20200828 issue #1017 -->
+								<xsl:call-template name="chopPunctuation">
+									<xsl:with-param name="chopString">
+										<xsl:call-template name="specialSubfieldSelect">
+											<xsl:with-param name="anyCodes">aq</xsl:with-param>
+											<xsl:with-param name="axis">t</xsl:with-param>
+											<xsl:with-param name="beforeCodes">g</xsl:with-param>
+										</xsl:call-template>
+										<!-- SUL edit 20200828 issue #1017 -->
+									</xsl:with-param>
+									<xsl:with-param name="punctuation">
+										<text>., </text>
+									</xsl:with-param>
 								</xsl:call-template>
 							</namePart>
 							<xsl:call-template name="termsOfAddress"/>
@@ -2439,7 +2448,16 @@
 							</xsl:for-each>
 							<xsl:for-each select="marc:subfield[@code = 'b']">
 								<namePart>
-									<xsl:value-of select="."/>
+									<!-- SUL edit 20200828 issue #1016 -->
+									<xsl:call-template name="chopPunctuation">
+										<xsl:with-param name="chopString" select="."/>
+										<xsl:with-param name="punctuation">
+											<xsl:text>., </xsl:text>
+										</xsl:with-param>
+									</xsl:call-template>
+									<!-- 1.126 -->
+									<!-- SUL edit 20200828 issue #1016				
+				<xsl:value-of select="."/>-->
 								</namePart>
 							</xsl:for-each>
 							<xsl:variable name="tempNamePart">
@@ -2532,10 +2550,19 @@
 						<name type="conference">
 							<xsl:call-template name="xxx880"/>
 							<namePart>
-								<xsl:call-template name="specialSubfieldSelect">
-									<xsl:with-param name="anyCodes">aqdc</xsl:with-param>
-									<xsl:with-param name="axis">t</xsl:with-param>
-									<xsl:with-param name="beforeCodes">gn</xsl:with-param>
+								<!-- SUL edit 20200828 issue #1017 -->
+								<xsl:call-template name="chopPunctuation">
+									<xsl:with-param name="chopString">
+										<xsl:call-template name="specialSubfieldSelect">
+											<xsl:with-param name="anyCodes">aqdc</xsl:with-param>
+											<xsl:with-param name="axis">t</xsl:with-param>
+											<xsl:with-param name="beforeCodes">gn</xsl:with-param>
+										</xsl:call-template>
+										<!-- SUL edit 20200828 issue #1017 -->
+									</xsl:with-param>
+									<xsl:with-param name="punctuation">
+										<text>., </text>
+									</xsl:with-param>
 								</xsl:call-template>
 							</namePart>
 							<!-- 1.120 - @711$4 -->
@@ -2899,11 +2926,20 @@
 						<name type="personal">
 							<xsl:call-template name="xxx880"/>
 							<namePart>
-								<!-- 1.126 -->
-								<xsl:call-template name="specialSubfieldSelect">
-									<xsl:with-param name="anyCodes">aq</xsl:with-param>
-									<xsl:with-param name="axis">t</xsl:with-param>
-									<xsl:with-param name="beforeCodes">g</xsl:with-param>
+								<!-- SUL edit 20200828 issue #1017 -->
+								<xsl:call-template name="chopPunctuation">
+									<xsl:with-param name="chopString">
+										<!-- 1.126 -->
+										<xsl:call-template name="specialSubfieldSelect">
+											<xsl:with-param name="anyCodes">aq</xsl:with-param>
+											<xsl:with-param name="axis">t</xsl:with-param>
+											<xsl:with-param name="beforeCodes">g</xsl:with-param>
+										</xsl:call-template>
+										<!-- SUL edit 20200828 issue #1017 -->
+									</xsl:with-param>
+									<xsl:with-param name="punctuation">
+										<text>., </text>
+									</xsl:with-param>
 								</xsl:call-template>
 							</namePart>
 							<xsl:call-template name="termsOfAddress"/>
@@ -2988,14 +3024,32 @@
 							</xsl:for-each>
 							<xsl:for-each select="marc:subfield[@code = 'b']">
 								<namePart>
-									<xsl:value-of select="."/>
+									<!-- SUL edit 20200828 issue #1016 -->
+									<xsl:call-template name="chopPunctuation">
+										<xsl:with-param name="chopString" select="."/>
+										<xsl:with-param name="punctuation">
+											<xsl:text>., </xsl:text>
+										</xsl:with-param>
+									</xsl:call-template>
+									<!-- 1.126 -->
+									<!-- SUL edit 20200828 issue #1016				
+				<xsl:value-of select="."/>-->
 								</namePart>
 							</xsl:for-each>
 							<namePart>
-								<xsl:call-template name="specialSubfieldSelect">
-									<xsl:with-param name="anyCodes">c</xsl:with-param>
-									<xsl:with-param name="axis">t</xsl:with-param>
-									<xsl:with-param name="beforeCodes">dgn</xsl:with-param>
+								<!-- SUL edit 20200828 issue #1017 -->
+								<xsl:call-template name="chopPunctuation">
+									<xsl:with-param name="chopString">
+										<xsl:call-template name="specialSubfieldSelect">
+											<xsl:with-param name="anyCodes">c</xsl:with-param>
+											<xsl:with-param name="axis">t</xsl:with-param>
+											<xsl:with-param name="beforeCodes">dgn</xsl:with-param>
+										</xsl:call-template>
+										<!-- SUL edit 20200828 issue #1017 -->
+									</xsl:with-param>
+									<xsl:with-param name="punctuation">
+										<text>., </text>
+									</xsl:with-param>
 								</xsl:call-template>
 							</namePart>
 							<xsl:call-template name="role"/>
@@ -3060,10 +3114,19 @@
 						<name type="conference">
 							<xsl:call-template name="xxx880"/>
 							<namePart>
-								<xsl:call-template name="specialSubfieldSelect">
-									<xsl:with-param name="anyCodes">aqdc</xsl:with-param>
-									<xsl:with-param name="axis">t</xsl:with-param>
-									<xsl:with-param name="beforeCodes">gn</xsl:with-param>
+								<!-- SUL edit 20200828 issue #1017 -->
+								<xsl:call-template name="chopPunctuation">
+									<xsl:with-param name="chopString">
+										<xsl:call-template name="specialSubfieldSelect">
+											<xsl:with-param name="anyCodes">aqdc</xsl:with-param>
+											<xsl:with-param name="axis">t</xsl:with-param>
+											<xsl:with-param name="beforeCodes">gn</xsl:with-param>
+										</xsl:call-template>
+										<!-- SUL edit 20200828 issue #1017 -->
+									</xsl:with-param>
+									<xsl:with-param name="punctuation">
+										<text>., </text>
+									</xsl:with-param>
 								</xsl:call-template>
 							</namePart>
 							<xsl:call-template name="role"/>
@@ -3892,8 +3955,17 @@
 		<xsl:if
 			test="marc:subfield[@code = 'c'] or marc:subfield[@code = 'd'] or marc:subfield[@code = 'n']">
 			<namePart>
-				<xsl:call-template name="subfieldSelect">
-					<xsl:with-param name="codes">cdn</xsl:with-param>
+				<!-- SUL edit 20200828 issue #986 and #1016 -->
+				<xsl:call-template name="chopPunctuation">
+					<xsl:with-param name="chopString">
+						<xsl:call-template name="subfieldSelect">
+							<xsl:with-param name="codes">cdn</xsl:with-param>
+						</xsl:call-template>
+						<!-- SUL edit 20200828 issue #986 and #1016 -->
+					</xsl:with-param>
+					<xsl:with-param name="punctuation">
+						<text>., </text>
+					</xsl:with-param>
 				</xsl:call-template>
 			</namePart>
 		</xsl:if>
@@ -3919,9 +3991,17 @@
 	</xsl:template>
 	<xsl:template name="nameACDEQ">
 		<namePart>
-
-			<xsl:call-template name="subfieldSelect">
-				<xsl:with-param name="codes">acdeq</xsl:with-param>
+			<!-- SUL edit 20200828 issue #986 and #1016 -->
+			<xsl:call-template name="chopPunctuation">
+				<xsl:with-param name="chopString">
+					<xsl:call-template name="subfieldSelect">
+						<xsl:with-param name="codes">acdeq</xsl:with-param>
+					</xsl:call-template>
+					<!-- SUL edit 20200828 issue #986 and #1016 -->
+				</xsl:with-param>
+				<xsl:with-param name="punctuation">
+					<text>., </text>
+				</xsl:with-param>
 			</xsl:call-template>
 		</namePart>
 	</xsl:template>
@@ -6244,14 +6324,32 @@
 				</xsl:for-each>
 				<xsl:for-each select="marc:subfield[@code = 'b']">
 					<namePart>
-						<xsl:value-of select="."/>
+						<!-- SUL edit 20200828 issue #986 and #1016 -->
+						<xsl:call-template name="chopPunctuation">
+							<xsl:with-param name="chopString" select="."/>
+							<xsl:with-param name="punctuation">
+								<xsl:text>., </xsl:text>
+							</xsl:with-param>
+						</xsl:call-template>
+						<!-- 1.126 -->
+						<!-- SUL edit 20200828 issue #986 and #1016				
+				<xsl:value-of select="."/>-->
 					</namePart>
 				</xsl:for-each>
 				<xsl:if
 					test="marc:subfield[@code = 'c' or @code = 'd' or @code = 'n' or @code = 'p']">
 					<namePart>
-						<xsl:call-template name="subfieldSelect">
-							<xsl:with-param name="codes">cdnp</xsl:with-param>
+						<!-- SUL edit 20200828 issue #986 and #1016 -->
+						<xsl:call-template name="chopPunctuation">
+							<xsl:with-param name="chopString">
+								<xsl:call-template name="subfieldSelect">
+									<xsl:with-param name="codes">cdnp</xsl:with-param>
+								</xsl:call-template>
+								<!-- SUL edit 20200828 issue #986 and #1016 -->
+							</xsl:with-param>
+							<xsl:with-param name="punctuation">
+								<text>., </text>
+							</xsl:with-param>
 						</xsl:call-template>
 					</namePart>
 				</xsl:if>
