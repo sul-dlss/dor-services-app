@@ -8,6 +8,8 @@
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
 	MARC21slim2MODS3-7
 	
+	SUL edits described by issue at https://github.com/sul-dlss/dor-services-app/issues?q=is%3Aissue+marc2mods+is%3Aclosed
+	
 	MODS 3.7  (Revision 1.140) 20200717
 	
 	Revision 1.140 - Fixed admin metadata - XSLT was referencing MODS 3.6 - 2020/07/17 - tmee
@@ -3504,9 +3506,11 @@
 					<xsl:value-of select="."/>
 				</recordIdentifier>
 			</xsl:for-each>
-
-			<recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7.xsl
-				(Revision 1.140 20200717)</recordOrigin>
+			<recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7_SDR_v1.xsl
+				(SUL 3.7 version 1 20200828; LC Revision 1.140 20200717)</recordOrigin>
+				<!-- SUL edit 20200828 issue #1002
+				<recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7.xsl
+				(Revision 1.140 20200717)</recordOrigin>-->
 
 			<xsl:for-each select="marc:datafield[@tag = 040]/marc:subfield[@code = 'b']">
 				<languageOfCataloging>
