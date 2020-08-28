@@ -4,6 +4,8 @@ module Cocina
   module FromFedora
     # Creates Cocina Descriptive objects from Fedora objects
     class Descriptive
+      DESC_METADATA_NS = Dor::DescMetadataDS::MODS_NS
+
       # @param [Dor::Item,Dor::Etd] item
       # @return [Hash] a hash that can be mapped to a cocina administrative model
       def self.props(item)
@@ -15,13 +17,16 @@ module Cocina
       end
 
       def props
-        desc = { title: [{ status: 'primary', value: TitleMapper.build(item) }] }
-
-        # collections are registered with abstracts
-        return desc if item.descMetadata.abstract.blank?
-
-        desc[:note] = [{ type: 'summary', value: item.descMetadata.abstract.first }]
-        desc
+        note = NotesMapper.build(item)
+        language = LanguageMapper.build(item)
+        contributor = ContributorMapper.build(item)
+        form = FormMapper.build(item)
+        { title: [{ status: 'primary', value: TitleMapper.build(item) }] }.tap do |desc|
+          desc[:note] = note unless note.empty?
+          desc[:language] = language unless language.empty?
+          desc[:contributor] = contributor unless contributor.empty?
+          desc[:form] = form unless form.empty?
+        end
       end
 
       private
