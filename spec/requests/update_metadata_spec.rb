@@ -42,7 +42,7 @@ RSpec.describe 'Update object' do
       hasMemberOrders: [
         { viewingDirection: 'right-to-left' }
       ],
-      isMemberOf: 'druid:xx888xx7777',
+      isMemberOf: ['druid:xx888xx7777'],
       hasAgreement: 'druid:cd777df7777'
     }
   end
@@ -85,7 +85,7 @@ RSpec.describe 'Update object' do
         "identification":#{identification.to_json},
         "structural":{
           "hasMemberOrders":[{"viewingDirection":"right-to-left"}],
-          "isMemberOf":"druid:xx888xx7777",
+          "isMemberOf":["druid:xx888xx7777"],
           "hasAgreement":"druid:cd777df7777"
         }
       }
@@ -167,7 +167,7 @@ RSpec.describe 'Update object' do
     let(:expected_label) { label }
     let(:structural) do
       {
-        isMemberOf: 'druid:xx888xx7777'
+        isMemberOf: ['druid:xx888xx7777']
       }
     end
     let(:access) { 'world' }
@@ -208,7 +208,7 @@ RSpec.describe 'Update object' do
           "description":{"title":[{"status":"primary","value":"#{title}"}]},
           "identification":#{identification.to_json},
           "structural":{
-            "isMemberOf":"druid:xx888xx7777"
+            "isMemberOf":["druid:xx888xx7777"]
           }}
       JSON
     end
@@ -394,7 +394,7 @@ RSpec.describe 'Update object' do
       context 'when access match' do
         let(:structural) do
           {
-            isMemberOf: 'druid:xx888xx7777',
+            isMemberOf: ['druid:xx888xx7777'],
             contains: [
               {
                 type: 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
@@ -490,7 +490,7 @@ RSpec.describe 'Update object' do
     end
 
     context 'when collection is provided' do
-      let(:structural) { { isMemberOf: 'druid:xx888xx7777' } }
+      let(:structural) { { isMemberOf: ['druid:xx888xx7777'] } }
 
       let(:data) do
         <<~JSON
@@ -507,7 +507,7 @@ RSpec.describe 'Update object' do
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
             "description":{"title":[{"status":"primary","value":"#{title}"}]},
             "identification":#{identification.to_json},
-            "structural":{"isMemberOf":"druid:xx888xx7777"}}
+            "structural":{"isMemberOf":["druid:xx888xx7777"]}}
         JSON
       end
 
@@ -541,7 +541,7 @@ RSpec.describe 'Update object' do
                                 hasMemberOrders: [
                                   { viewingDirection: 'right-to-left' }
                                 ],
-                                isMemberOf: 'druid:xx888xx7777'
+                                isMemberOf: ['druid:xx888xx7777']
                               },
                               access: { access: 'world', download: 'world' })
     end
@@ -560,7 +560,7 @@ RSpec.describe 'Update object' do
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{
             "hasMemberOrders":[{"viewingDirection":"right-to-left"}],
-            "isMemberOf":"druid:xx888xx7777"
+            "isMemberOf":["druid:xx888xx7777"]
           }}
       JSON
     end
@@ -699,7 +699,7 @@ RSpec.describe 'Update object' do
                                 hasMemberOrders: [
                                   { viewingDirection: 'right-to-left' }
                                 ],
-                                isMemberOf: 'druid:xx888xx7777'
+                                isMemberOf: ['druid:xx888xx7777']
                               },
                               access: { access: 'stanford', embargo: { access: 'world', releaseDate: '2020-02-29' } })
     end

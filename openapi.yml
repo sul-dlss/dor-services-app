@@ -1250,8 +1250,10 @@ components:
       additionalProperties: false
       properties:
         value:
-          description: String value of the descriptive element.
-          type: string
+          description: String or integer value of the descriptive element.
+          oneOf:
+          - type: string
+          - type: integer
         type:
           description: Type of value provided by the descriptive element.
           type: string
@@ -1488,7 +1490,10 @@ components:
           items:
             $ref: '#/components/schemas/Sequence'
         isMemberOf:
-          $ref: '#/components/schemas/Druid'
+          description: Collections that this DRO is a member of
+          type: array
+          items:
+            $ref: '#/components/schemas/Druid'
         hasAgreement:
           description: Agreement that covers the deposit of the DRO into SDR.
           type: string
@@ -1704,8 +1709,7 @@ components:
       additionalProperties: false
       properties:
         sourceId:
-          type: string
-          example: 'sul:PC0170_s3_Fiesta_Bowl_2012-01-02_210609_2026'
+          $ref: '#/components/schemas/SourceId'
         catalogLinks:
           type: array
           items:
@@ -1878,7 +1882,10 @@ components:
           items:
             $ref: '#/components/schemas/Sequence'
         isMemberOf:
-          $ref: '#/components/schemas/Druid'
+          description: Collections that this DRO is a member of
+          type: array
+          items:
+            $ref: '#/components/schemas/Druid'
         hasAgreement:
           type: string
     RequestFile:
@@ -1955,8 +1962,7 @@ components:
       additionalProperties: false
       properties:
         sourceId:
-          type: string
-          example: 'sul:PC0170_s3_Fiesta_Bowl_2012-01-02_210609_2026'
+          $ref: '#/components/schemas/SourceId'
         catalogLinks:
           type: array
           items:
@@ -1995,6 +2001,17 @@ components:
         value:
           description: String describing the value source.
           type: string
+    SourceId:
+      type: string
+      pattern: '^.+:.+$'
+      description: >
+        Unique identifier in some other system. This is because a large proportion of what is deposited in SDR,
+        historically and currently, are representations of objects that are also represented in other systems.
+        For example, digitized paper and A/V collections have physical manifestations, and those physical objects are managed
+        in systems that have their own identifiers. Similarly, books have barcodes, archival materials have collection numbers
+        and physical locations, etc. The sourceId allows determining if an item has been deposited before and where to
+        look for the original item if you're looking at its SDR representation. The format is: "namespace:identifier"
+      example: 'sul:PC0170_s3_Fiesta_Bowl_2012-01-02_210609_2026'
     AdministrativeTag:
       type: string
       pattern: '^.+( : .+)+$'

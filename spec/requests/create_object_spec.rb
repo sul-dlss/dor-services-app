@@ -521,7 +521,7 @@ RSpec.describe 'Create object' do
 
     context 'when collection is provided' do
       let(:search_result) { [] }
-      let(:structural) { { isMemberOf: 'druid:xx888xx7777' } }
+      let(:structural) { { isMemberOf: ['druid:xx888xx7777'] } }
 
       let(:data) do
         <<~JSON
@@ -529,7 +529,7 @@ RSpec.describe 'Create object' do
             "label":"#{label}","version":1,"access":{"access":"world"},
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
             "description":{"title":[{"status":"primary","value":"#{title}"}]},
-            "identification":#{identification.to_json},"structural":{"isMemberOf":"druid:xx888xx7777"}}
+            "identification":#{identification.to_json},"structural":{"isMemberOf":["druid:xx888xx7777"]}}
         JSON
       end
 
