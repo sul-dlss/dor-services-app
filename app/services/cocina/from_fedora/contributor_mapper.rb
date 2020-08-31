@@ -21,11 +21,12 @@ module Cocina
       def build
         [].tap do |contributors|
           names.each do |name|
-            contributors << { name: name_parts(name),
-                              type: name.attribute('type').value }
-            contributors.last[:status] = name.attribute('usage').value if name.attribute('usage').present?
-            roles = [roles_for(name)]
-            contributors.last[:role] = roles unless roles.flatten.empty?
+            contributors << { name: name_parts(name) }.tap do |contributor_hash|
+              contributor_hash[:type] = name.attribute('type').value if name.attribute('type').present?
+              contributor_hash[:status] = name.attribute('usage').value if name.attribute('usage').present?
+              roles = [roles_for(name)]
+              contributor_hash[:role] = roles unless roles.flatten.empty?
+            end
           end
         end
       end
