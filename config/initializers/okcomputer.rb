@@ -7,7 +7,6 @@ require 'okcomputer'
 # /status/<name-of-check> for a specific check (e.g. for nagios warning)
 OkComputer.mount_at = 'status'
 OkComputer.check_in_parallel = true
-OkComputer::Registry.deregister "database" # no database in this app
 
 class CustomAppVersionCheck < OkComputer::AppVersionCheck
   def version
