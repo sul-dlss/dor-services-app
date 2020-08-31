@@ -51,6 +51,16 @@ RSpec.describe Cocina::FromFedora::Descriptive do
             <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh85041557">Elections</topic>
             <geographic authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n79061287">Mauritania</geographic>
           </subject>
+          <relatedItem type="otherFormat">
+            <titleInfo>
+              <title>Bulletin of the American Mathematical Society</title>
+            </titleInfo>
+            <name>
+              <namePart>American Mathematical Society.</namePart>
+            </name>
+            <identifier type="issn">0002-9904</identifier>
+            <identifier type="local">(OCoLC)11471303</identifier>
+          </relatedItem>
           <location>
             <physicalLocation type="repository" authority="naf" valueURI="http://id.loc.gov/authorities/names/n81070667">Stanford University. Libraries</physicalLocation>
             <url usage="primary display">https://purl.stanford.edu/bb196dd3409</url>

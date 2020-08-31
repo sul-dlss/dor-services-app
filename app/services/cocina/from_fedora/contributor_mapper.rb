@@ -5,7 +5,7 @@ module Cocina
     # Maps contributors
     class ContributorMapper
       DESC_METADATA_NS = Dor::DescMetadataDS::MODS_NS
-      NAME_XPATH = '//mods:name'
+      NAME_XPATH = '/mods:mods/mods:name'
       NAME_PART_XPATH = './mods:namePart'
       ROLE_CODE_XPATH = './mods:role/mods:roleTerm[@type="code"]'
       ROLE_TEXT_XPATH = './mods:role/mods:roleTerm[@type="text"]'
