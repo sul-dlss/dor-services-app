@@ -64,6 +64,7 @@ module Cocina
       item.catkey = catkey_for(obj)
       item.label = truncate_label(obj.label)
 
+      Cocina::ToFedora::Access.apply(item, obj.access)
       Cocina::ToFedora::Identity.apply(obj, item, object_type: 'collection')
     end
 
