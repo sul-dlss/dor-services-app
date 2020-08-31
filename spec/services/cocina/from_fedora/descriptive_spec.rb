@@ -17,6 +17,9 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           <titleInfo>
             <title>Messaoud Ould Boulkheir - Mauritania 2009 Presidential Election</title>
           </titleInfo>
+          <name>
+            <namePart>Joe McNopart</namePart>
+          </name>
           <name type="corporate">
             <namePart>Stanford University. Libraries. Humanities and Area Studies Resource Group</namePart>
             <role>
@@ -132,6 +135,10 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           source: {
             code: 'marcrelator'
           }
+        }]
+      }, {
+        name: [{
+          value: 'Joe McNopart'
         }]
       }]
       expect(descriptive[:form]).to match_array [
