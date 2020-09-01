@@ -6,8 +6,11 @@ module Cocina
     class DroStructural
       VIEWING_DIRECTION_FOR_CONTENT_TYPE = {
         'Book (ltr)' => 'left-to-right',
+        'Book (rtl)' => 'right-to-left',
         'Book (flipbook, ltr)' => 'left-to-right',
-        'Book (rtl)' => 'right-to-left'
+        'Book (flipbook, rtl)' => 'right-to-left',
+        'Manuscript (flipbook, ltr)' => 'left-to-right',
+        'Manuscript (ltr)' => 'left-to-right'
       }.freeze
 
       def self.props(item, type:)

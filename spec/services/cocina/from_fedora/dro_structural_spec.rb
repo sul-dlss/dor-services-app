@@ -281,6 +281,24 @@ RSpec.describe Cocina::FromFedora::DroStructural do
 
         it { is_expected.to eq 'left-to-right' }
       end
+
+      context "when content type is ['Book (flipbook, rtl)']" do
+        let(:content_type) { ['Book (flipbook, rtl)'] }
+
+        it { is_expected.to eq 'right-to-left' }
+      end
+
+      context "when content type is ['Manuscript (flipbook, ltr)']" do
+        let(:content_type) { ['Manuscript (flipbook, ltr)'] }
+
+        it { is_expected.to eq 'left-to-right' }
+      end
+
+      context "when content type is ['Manuscript (ltr)']" do
+        let(:content_type) { ['Manuscript (ltr)'] }
+
+        it { is_expected.to eq 'left-to-right' }
+      end
     end
   end
 end
