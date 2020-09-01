@@ -4,6 +4,15 @@ module Cocina
   module FromFedora
     # builds the Structural subschema for Cocina::Models::DRO from a Dor::Item
     class DroStructural
+      VIEWING_DIRECTION_FOR_CONTENT_TYPE = {
+        'Book (ltr)' => 'left-to-right',
+        'Book (rtl)' => 'right-to-left',
+        'Book (flipbook, ltr)' => 'left-to-right',
+        'Book (flipbook, rtl)' => 'right-to-left',
+        'Manuscript (flipbook, ltr)' => 'left-to-right',
+        'Manuscript (ltr)' => 'left-to-right'
+      }.freeze
+
       def self.props(item, type:)
         new(item, type: type).props
       end
@@ -13,20 +22,16 @@ module Cocina
         @type = type
       end
 
-      # rubocop:disable Metrics/AbcSize
       def props
         {}.tap do |structural|
-          structural[:hasMemberOrders] = create_member_order if type == Cocina::Models::Vocab.book
+          has_member_orders = build_has_member_orders
+          structural[:hasMemberOrders] = has_member_orders if has_member_orders.present?
 
           contains = build_filesets(item.contentMetadata, version: item.current_version.to_i, id: item.pid)
           structural[:contains] = contains if contains.present?
 
-          sequence = build_sequence(item.contentMetadata)
-          if sequence.present?
-            structural[:hasMemberOrders] ||= [{}]
-            structural[:hasMemberOrders].first[:members] = sequence
-          end
           structural[:hasAgreement] = item.identityMetadata.agreementId.first unless item.identityMetadata.agreementId.empty?
+
           begin
             # Note that there is a bug with item.collection_ids that returns [] until item.collections is called. Below side-steps this.
             structural[:isMemberOf] = item.collections.first.id if item.collections.present?
@@ -36,11 +41,20 @@ module Cocina
           end
         end
       end
-      # rubocop:enable Metrics/AbcSize
 
       private
 
       attr_reader :item, :type
+
+      def build_has_member_orders
+        member_orders = create_member_order if type == Cocina::Models::Vocab.book
+        sequence = build_sequence(item.contentMetadata)
+        if sequence.present?
+          member_orders ||= [{}]
+          member_orders.first[:members] = sequence
+        end
+        member_orders
+      end
 
       def create_member_order
         reading_direction = item.contentMetadata.ng_xml.xpath('//bookData/@readingDirection').first&.value
@@ -53,12 +67,8 @@ module Cocina
         else
           # Fallback to using tags.  Some books don't have bookData nodes in contentMetadata XML.
           # When we migrate from Fedora 3, we don't need to look this up from AdministrativeTags
-          case AdministrativeTags.content_type(pid: item.id).first
-          when 'Book (ltr)'
-            [{ viewingDirection: 'left-to-right' }]
-          when 'Book (rtl)'
-            [{ viewingDirection: 'right-to-left' }]
-          end
+          content_type = AdministrativeTags.content_type(pid: item.id).first
+          [{ viewingDirection: VIEWING_DIRECTION_FOR_CONTENT_TYPE[content_type] }] if VIEWING_DIRECTION_FOR_CONTENT_TYPE[content_type]
         end
       end
 

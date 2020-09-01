@@ -265,12 +265,40 @@ RSpec.describe Cocina::FromFedora::DroStructural do
 
     context "when bookData doesn't exist" do
       before do
-        allow(AdministrativeTags).to receive(:content_type).with(pid: item.id).and_return(['Book (rtl)'])
+        allow(AdministrativeTags).to receive(:content_type).with(pid: item.id).and_return(content_type)
       end
 
       let(:book_data) { nil }
 
-      it { is_expected.to eq 'right-to-left' }
+      context "when content type is ['Book (rtl)']" do
+        let(:content_type) { ['Book (rtl)'] }
+
+        it { is_expected.to eq 'right-to-left' }
+      end
+
+      context "when content type is ['Book (flipbook, ltr)']" do
+        let(:content_type) { ['Book (flipbook, ltr)'] }
+
+        it { is_expected.to eq 'left-to-right' }
+      end
+
+      context "when content type is ['Book (flipbook, rtl)']" do
+        let(:content_type) { ['Book (flipbook, rtl)'] }
+
+        it { is_expected.to eq 'right-to-left' }
+      end
+
+      context "when content type is ['Manuscript (flipbook, ltr)']" do
+        let(:content_type) { ['Manuscript (flipbook, ltr)'] }
+
+        it { is_expected.to eq 'left-to-right' }
+      end
+
+      context "when content type is ['Manuscript (ltr)']" do
+        let(:content_type) { ['Manuscript (ltr)'] }
+
+        it { is_expected.to eq 'left-to-right' }
+      end
     end
   end
 end
