@@ -4,6 +4,11 @@ module Cocina
   module FromFedora
     # builds the Structural subschema for Cocina::Models::DRO from a Dor::Item
     class DroStructural
+      VIEWING_DIRECTION_FOR_CONTENT_TYPE = {
+        'Book (ltr)' => 'left-to-right',
+        'Book (rtl)' => 'right-to-left'
+      }.freeze
+
       def self.props(item, type:)
         new(item, type: type).props
       end
@@ -58,12 +63,8 @@ module Cocina
         else
           # Fallback to using tags.  Some books don't have bookData nodes in contentMetadata XML.
           # When we migrate from Fedora 3, we don't need to look this up from AdministrativeTags
-          case AdministrativeTags.content_type(pid: item.id).first
-          when 'Book (ltr)'
-            [{ viewingDirection: 'left-to-right' }]
-          when 'Book (rtl)'
-            [{ viewingDirection: 'right-to-left' }]
-          end
+          content_type = AdministrativeTags.content_type(pid: item.id).first
+          [{ viewingDirection: VIEWING_DIRECTION_FOR_CONTENT_TYPE[content_type] }] if VIEWING_DIRECTION_FOR_CONTENT_TYPE[content_type]
         end
       end
 
