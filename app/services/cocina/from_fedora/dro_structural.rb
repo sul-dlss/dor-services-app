@@ -13,20 +13,16 @@ module Cocina
         @type = type
       end
 
-      # rubocop:disable Metrics/AbcSize
       def props
         {}.tap do |structural|
-          structural[:hasMemberOrders] = create_member_order if type == Cocina::Models::Vocab.book
+          has_member_orders = build_has_member_orders
+          structural[:hasMemberOrders] = has_member_orders if has_member_orders.present?
 
           contains = build_filesets(item.contentMetadata, version: item.current_version.to_i, id: item.pid)
           structural[:contains] = contains if contains.present?
 
-          sequence = build_sequence(item.contentMetadata)
-          if sequence.present?
-            structural[:hasMemberOrders] ||= [{}]
-            structural[:hasMemberOrders].first[:members] = sequence
-          end
           structural[:hasAgreement] = item.identityMetadata.agreementId.first unless item.identityMetadata.agreementId.empty?
+
           begin
             # Note that there is a bug with item.collection_ids that returns [] until item.collections is called. Below side-steps this.
             structural[:isMemberOf] = item.collections.first.id if item.collections.present?
@@ -36,11 +32,20 @@ module Cocina
           end
         end
       end
-      # rubocop:enable Metrics/AbcSize
 
       private
 
       attr_reader :item, :type
+
+      def build_has_member_orders
+        ret_val = create_member_order if type == Cocina::Models::Vocab.book
+        sequence = build_sequence(item.contentMetadata)
+        if sequence.present?
+          ret_val ||= [{}]
+          ret_val.first[:members] = sequence
+        end
+        ret_val if defined? ret_val
+      end
 
       def create_member_order
         reading_direction = item.contentMetadata.ng_xml.xpath('//bookData/@readingDirection').first&.value
