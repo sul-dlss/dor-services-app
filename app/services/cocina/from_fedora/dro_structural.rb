@@ -47,13 +47,13 @@ module Cocina
       attr_reader :item, :type
 
       def build_has_member_orders
-        ret_val = create_member_order if type == Cocina::Models::Vocab.book
+        member_orders = create_member_order if type == Cocina::Models::Vocab.book
         sequence = build_sequence(item.contentMetadata)
         if sequence.present?
-          ret_val ||= [{}]
-          ret_val.first[:members] = sequence
+          member_orders ||= [{}]
+          member_orders.first[:members] = sequence
         end
-        ret_val if defined? ret_val
+        member_orders
       end
 
       def create_member_order
