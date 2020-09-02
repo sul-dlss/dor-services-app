@@ -23,7 +23,7 @@ RSpec.describe 'Create object' do
                                      label: expected_label,
                                      version: 1,
                                      description: {
-                                       title: [{ value: title, status: 'primary' }]
+                                       title: [{ value: title }]
                                      },
                                      administrative: {
                                        hasAdminPolicy: 'druid:dd999df4567',
@@ -37,7 +37,7 @@ RSpec.describe 'Create object' do
         {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
           "label":"#{label}","version":1,"access":{},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
-          "description":{"title":[{"status":"primary","value":"#{title}"}]}}
+          "description":{"title":[{"value":"#{title}"}]}}
       JSON
     end
 
@@ -48,7 +48,7 @@ RSpec.describe 'Create object' do
           {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
             "label":"#{label}","version":1,"access":{},
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-            "description":{"title":[{"status":"primary","value":"#{title}"}]},
+            "description":{"title":[{"value":"#{title}"}]},
             "identification":#{identification.to_json}}
         JSON
       end
@@ -58,7 +58,7 @@ RSpec.describe 'Create object' do
                                        label: expected_label,
                                        version: 1,
                                        description: {
-                                         title: [{ value: title, status: 'primary' }]
+                                         title: [{ value: title }]
                                        },
                                        administrative: {
                                          hasAdminPolicy: 'druid:dd999df4567'
@@ -124,7 +124,7 @@ RSpec.describe 'Create object' do
             "access":{},
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "description":{
-              "title":[{"status":"primary","value":"#{title}"}],
+              "title":[{"value":"#{title}"}],
               "note":[{"value":"coll abstract","type":"summary"}]
               }
             }
@@ -139,7 +139,7 @@ RSpec.describe 'Create object' do
                                          hasAdminPolicy: 'druid:dd999df4567'
                                        },
                                        description: {
-                                         title: [{ value: title, status: 'primary' }],
+                                         title: [{ value: title }],
                                          note: [{ value: 'coll abstract', type: 'summary' }]
                                        },
                                        externalIdentifier: druid)
@@ -175,7 +175,7 @@ RSpec.describe 'Create object' do
                                          hasAdminPolicy: 'druid:dd999df4567'
                                        },
                                        description: {
-                                         title: [{ value: expected_label, status: 'primary' }]
+                                         title: [{ value: expected_label }]
                                        },
                                        externalIdentifier: druid)
       end
