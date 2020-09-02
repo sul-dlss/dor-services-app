@@ -2,12 +2,12 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::FromFedora::TitleMapper do
+RSpec.describe Cocina::FromFedora::Descriptive::Titles do
   describe '.build' do
-    subject(:build) { described_class.build(object) }
+    subject(:build) { described_class.build(ng_xml) }
 
     context 'when the object has no title' do
-      let(:object) { Dor::Item.new }
+      let(:ng_xml) { Dor::Item.new.descMetadata.ng_xml }
 
       it 'raises and error' do
         expect { build }.to raise_error Cocina::Mapper::MissingTitle

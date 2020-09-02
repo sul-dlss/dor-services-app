@@ -33,8 +33,7 @@ RSpec.describe 'Get the object' do
           },
           description: {
             title: [
-              { status: 'primary',
-                value: 'Hello' }
+              { value: 'Hello' }
             ]
           }
         }
