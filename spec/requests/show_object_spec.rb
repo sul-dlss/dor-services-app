@@ -375,7 +375,7 @@ RSpec.describe 'Get the object' do
     let(:object) { Etd.new(pid: 'druid:bc123df4567') }
 
     before do
-      object.properties.title = 'Test ETD'
+      object.descMetadata.mods_title = 'Test ETD'
       object.identityMetadata.other_ids = ['dissertationid:00000123']
       object.label = 'foo'
       allow(object).to receive(:collection_ids).and_return([])
