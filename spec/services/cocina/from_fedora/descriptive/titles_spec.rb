@@ -218,6 +218,29 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
     end
 
+    context 'when there are supplied titles' do
+      before do
+        object.descMetadata.content = <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo supplied="yes">
+              <title>"Because I could not stop for death"</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'creates title with type=supplied' do
+        expect(build).to eq [
+          {
+            "value": '"Because I could not stop for death"',
+            "type": 'supplied'
+          }
+        ]
+      end
+    end
+
     context 'when there are abbreviated titles' do
       before do
         object.descMetadata.content = <<~XML
