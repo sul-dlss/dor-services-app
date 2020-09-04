@@ -217,5 +217,69 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         ]
       end
     end
+
+    context 'when there are parallel titles' do
+      before do
+        object.descMetadata.content = <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo type="translated" lang="ger" altRepGroup="0">
+              <title>Berliner Mauer Kunst</title>
+            </titleInfo>
+            <titleInfo type="translated" lang="eng" altRepGroup="0">
+              <title>Berlin's wall art</title>
+            </titleInfo>
+            <titleInfo type="translated" lang="spa" altRepGroup="0">
+              <title>Arte en el muro de Berlin</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'creates parallelValues' do
+        expect(build).to eq [
+          {
+            "parallelValue": [
+              {
+                "value": 'Berliner Mauer Kunst',
+                "language": [
+                  {
+                    "code": 'ger',
+                    "source": {
+                      "code": 'iso639-2b'
+                    }
+                  }
+                ]
+              },
+              {
+                "value": "Berlin's wall art",
+                "language": [
+                  {
+                    "code": 'eng',
+                    "source": {
+                      "code": 'iso639-2b'
+                    }
+                  }
+                ]
+              },
+              {
+                "value": 'Arte en el muro de Berlin',
+                "language": [
+                  {
+                    "code": 'spa',
+                    "source": {
+                      "code": 'iso639-2b'
+                    }
+                  }
+                ]
+              }
+            ],
+            "type": 'parallel',
+            "status": 'primary'
+          }
+        ]
+      end
+    end
   end
 end
