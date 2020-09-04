@@ -218,6 +218,39 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
     end
 
+    context 'when there are abbreviated titles' do
+      before do
+        object.descMetadata.content = <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo usage="primary">
+              <title>Annual report of notifiable diseases</title>
+            </titleInfo>
+            <titleInfo type="abbreviated" authority="dnlm">
+              <title>Annu. rep. notif. dis.</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'creates simple values' do
+        expect(build).to eq [
+          {
+            "value": 'Annual report of notifiable diseases',
+            "status": 'primary'
+          },
+          {
+            "value": 'Annu. rep. notif. dis.',
+            "type": 'abbreviated',
+            "source": {
+              "code": 'dnlm'
+            }
+          }
+        ]
+      end
+    end
+
     context 'when there are parallel titles' do
       before do
         object.descMetadata.content = <<~XML

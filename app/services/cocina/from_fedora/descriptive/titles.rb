@@ -80,6 +80,8 @@ module Cocina
             result[:status] = 'primary' if title_info['usage'] == 'primary'
             result[:type] = title_info['type'] if display_types && title_info['type']
             result[:type] = 'transliterated' if title_info['transliteration']
+            result[:source] = { code: title_info[:authority] } if title_info['type'] == 'abbreviated'
+
             result[:language] = [language(title_info)] if title_info['lang']
             result[:standard] = { value: title_info['transliteration'] } if title_info['transliteration']
             result[:displayLabel] = title_info['displayLabel'] if title_info['displayLabel']
