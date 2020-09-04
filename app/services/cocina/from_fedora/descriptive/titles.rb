@@ -82,6 +82,7 @@ module Cocina
             result[:type] = 'transliterated' if title_info['transliteration']
             result[:language] = [language(title_info)] if title_info['lang']
             result[:standard] = { value: title_info['transliteration'] } if title_info['transliteration']
+            result[:displayLabel] = title_info['displayLabel'] if title_info['displayLabel']
           end
         end
 

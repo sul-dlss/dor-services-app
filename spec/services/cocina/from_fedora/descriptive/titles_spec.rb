@@ -338,5 +338,36 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         ]
       end
     end
+
+    context 'when there is a title with a display label' do
+      before do
+        object.descMetadata.content = <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo usage="primary">
+              <title>Unnatural death</title>
+            </titleInfo>
+            <titleInfo type="alternative" displayLabel="Original U.S. title">
+              <title>The Dawson pedigree</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'creates simple values' do
+        expect(build).to eq [
+          {
+            "value": 'Unnatural death',
+            "status": 'primary'
+          },
+          {
+            "value": 'The Dawson pedigree',
+            "type": 'alternative',
+            "displayLabel": 'Original U.S. title'
+          }
+        ]
+      end
+    end
   end
 end
