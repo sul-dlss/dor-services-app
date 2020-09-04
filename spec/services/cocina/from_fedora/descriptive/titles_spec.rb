@@ -66,5 +66,91 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         ]
       end
     end
+
+    context 'when there is a translated title (title is structuredValue)' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo usage="primary" lang="fre" altRepGroup="0">
+              <nonSort>Les</nonSort>
+              <title>misérables</title>
+            </titleInfo>
+            <titleInfo type="translated" lang="eng" altRepGroup="0">
+              <nonSort>The</nonSort>
+              <title>wretched</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'creates parallelValues' do
+        expect(build).to eq [
+          {
+            "parallelValue": [
+              {
+                "structuredValue": [
+                  {
+                    "value": 'Les',
+                    "type": 'nonsorting characters'
+                  },
+                  {
+                    "value": 'misérables',
+                    "type": 'main title'
+                  },
+                  {
+                    "note": [
+                      {
+                        "value": 4,
+                        "type": 'nonsorting character count'
+                      }
+                    ]
+                  }
+                ],
+                "status": 'primary',
+                "language": [
+                  {
+                    "code": 'fre',
+                    "source": {
+                      "code": 'iso639-2b'
+                    }
+                  }
+                ]
+              },
+              {
+                "structuredValue": [
+                  {
+                    "value": 'The',
+                    "type": 'nonsorting characters'
+                  },
+                  {
+                    "value": 'wretched',
+                    "type": 'main title'
+                  },
+                  {
+                    "note": [
+                      {
+                        "value": 4,
+                        "type": 'nonsorting character count'
+                      }
+                    ]
+                  }
+                ],
+                "type": 'translated',
+                "language": [
+                  {
+                    "code": 'eng',
+                    "source": {
+                      "code": 'iso639-2b'
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      end
+    end
   end
 end

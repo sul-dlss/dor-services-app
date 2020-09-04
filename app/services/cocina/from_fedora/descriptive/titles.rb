@@ -24,26 +24,48 @@ module Cocina
         end
 
         def build
-          title_infos = ng_xml.xpath('//mods:mods/mods:titleInfo', mods: DESC_METADATA_NS)
-          title_infos.map do |title_info|
-            # Find all the child nodes that have text
-            children = title_info.xpath('./*[child::node()[self::text()]]')
-            raise Mapper::MissingTitle if children.empty?
+          title_infos_with_groups = ng_xml.xpath('//mods:mods/mods:titleInfo[@altRepGroup]', mods: DESC_METADATA_NS)
+          grouped_title_infos = title_infos_with_groups.group_by { |node| node['altRepGroup'] }
 
-            # Is this a basic title or a title with parts
-            children.map(&:name) == ['title'] ? simple_value(title_info) : { structuredValue: structured_value(children) }
-          end
+          result = grouped_title_infos.map { |_k, node_set| { parallelValue: simple_or_structured(node_set) } }
+
+          title_infos_without_groups = ng_xml.xpath('//mods:mods/mods:titleInfo[not(@altRepGroup)]', mods: DESC_METADATA_NS)
+          result += simple_or_structured(title_infos_without_groups)
+          result
         end
 
         private
 
         attr_reader :ng_xml
 
+        def simple_or_structured(node_set)
+          node_set.map { |node| title_info_to_simple_or_structured(node) }
+        end
+
+        # @param [Nokogiri::XML::Element] title_info the titleInfo node
+        def title_info_to_simple_or_structured(title_info)
+          # Find all the child nodes that have text
+          children = title_info.xpath('./*[child::node()[self::text()]]')
+          raise Mapper::MissingTitle if children.empty?
+
+          # Is this a basic title or a title with parts
+          return simple_value(title_info) if children.map(&:name) == ['title']
+
+          with_attributes({ structuredValue: structured_value(children) }, title_info)
+        end
+
         # @param [Nokogiri::XML::Element] node the titleInfo node
         def simple_value(node)
-          { value: node.xpath('./mods:title', mods: DESC_METADATA_NS).text }.tap do |h|
-            h[:status] = 'primary' if node['usage'] == 'primary'
-            h[:type] = node['type'] if node['type']
+          with_attributes({ value: node.xpath('./mods:title', mods: DESC_METADATA_NS).text }, node)
+        end
+
+        # @param [Hash<Symbol,String>] value
+        # @param [Nokogiri::XML::Element] title_info the titleInfo node
+        def with_attributes(value, title_info)
+          value.tap do |result|
+            result[:status] = 'primary' if title_info['usage'] == 'primary'
+            result[:type] = title_info['type'] if title_info['type']
+            result[:language] = [{ code: title_info['lang'], source: { code: 'iso639-2b' } }] if title_info['lang']
           end
         end
 
