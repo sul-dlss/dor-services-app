@@ -152,5 +152,70 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         ]
       end
     end
+
+    context 'when there is a transliterated title (title is value)' do
+      before do
+        object.descMetadata.content = <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo usage="primary" lang="rus" script="Cyrl" altRepGroup="0">
+              <title>Война и миръ</title>
+            </titleInfo>
+            <titleInfo type="translated" lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="0">
+              <title>Voĭna i mir</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'creates parallelValues' do
+        expect(build).to eq [
+          {
+            "parallelValue": [
+              {
+                "value": 'Война и миръ',
+                "status": 'primary',
+                "language": [
+                  {
+                    "code": 'rus',
+                    "source": {
+                      "code": 'iso639-2b'
+                    },
+                    "script": {
+                      "code": 'Cyrl',
+                      "source": {
+                        "code": 'iso15924'
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "value": 'Voĭna i mir',
+                "language": [
+                  {
+                    "code": 'rus',
+                    "source": {
+                      "code": 'iso639-2b'
+                    },
+                    "script": {
+                      "code": 'Latn',
+                      "source": {
+                        "code": 'iso15924'
+                      }
+                    }
+                  }
+                ],
+                "type": 'transliterated',
+                "standard": {
+                  "value": 'ALA-LC Romanization Tables'
+                }
+              }
+            ]
+          }
+        ]
+      end
+    end
   end
 end

@@ -65,7 +65,15 @@ module Cocina
           value.tap do |result|
             result[:status] = 'primary' if title_info['usage'] == 'primary'
             result[:type] = title_info['type'] if title_info['type']
-            result[:language] = [{ code: title_info['lang'], source: { code: 'iso639-2b' } }] if title_info['lang']
+            result[:type] = 'transliterated' if title_info['transliteration']
+            result[:language] = [language(title_info)] if title_info['lang']
+            result[:standard] = { value: title_info['transliteration'] } if title_info['transliteration']
+          end
+        end
+
+        def language(title_info)
+          { code: title_info['lang'], source: { code: 'iso639-2b' } }.tap do |result|
+            result[:script] = { code: title_info['script'], source: { code: 'iso15924' } } if title_info['script']
           end
         end
 
