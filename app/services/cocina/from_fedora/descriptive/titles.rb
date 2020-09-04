@@ -69,7 +69,13 @@ module Cocina
         # @param [Nokogiri::XML::Element] node the titleInfo node
         # @param [Bool] display_types this is set to false in the case that it's a parallelValue and all are translations
         def simple_value(node, display_types:)
-          with_attributes({ value: node.xpath('./mods:title', mods: DESC_METADATA_NS).text }, node, display_types: display_types)
+          value = node.xpath('./mods:title', mods: DESC_METADATA_NS).text
+          if node['nameTitleGroup']
+            # Derefernce the name in a nameTitleGroup to create the value
+            name = node.xpath("//mods:name[@nameTitleGroup='#{node['nameTitleGroup']}']/mods:namePart", mods: DESC_METADATA_NS)
+            value = "#{name.first.text}. #{value}"
+          end
+          with_attributes({ value: value }, node, display_types: display_types)
         end
 
         # @param [Hash<Symbol,String>] value
@@ -83,6 +89,7 @@ module Cocina
             result[:type] = 'supplied' if title_info['supplied'] == 'yes'
 
             result[:source] = { code: title_info[:authority] } if title_info['type'] == 'abbreviated'
+            result[:uri] = title_info[:valueURI] if title_info['valueURI']
 
             result[:language] = [language(title_info)] if title_info['lang']
             result[:standard] = { value: title_info['transliteration'] } if title_info['transliteration']

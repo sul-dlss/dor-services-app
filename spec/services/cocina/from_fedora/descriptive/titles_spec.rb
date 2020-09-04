@@ -154,8 +154,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
     end
 
     context 'when there is a transliterated title (title is value)' do
-      before do
-        object.descMetadata.content = <<~XML
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.loc.gov/mods/v3" version="3.6"
             xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
@@ -218,9 +218,43 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
     end
 
+    context 'when there are uniform titles with authority' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo usage="primary">
+              <title>Hamlet</title>
+            </titleInfo>
+            <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="0">
+              <title>Hamlet</title>
+            </titleInfo>
+            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="0">
+              <namePart>Shakespeare, William, 1564-1616</namePart>
+            </name>
+          </mods>
+        XML
+      end
+
+      it 'creates value from the authority record' do
+        expect(build).to eq [
+          {
+            "value": 'Hamlet',
+            "status": 'primary'
+          },
+          {
+            "value": 'Shakespeare, William, 1564-1616. Hamlet',
+            "type": 'uniform',
+            "uri": 'http://id.loc.gov/authorities/names/n80008522'
+          }
+        ]
+      end
+    end
+
     context 'when there are supplied titles' do
-      before do
-        object.descMetadata.content = <<~XML
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.loc.gov/mods/v3" version="3.6"
             xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
@@ -242,8 +276,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
     end
 
     context 'when there are abbreviated titles' do
-      before do
-        object.descMetadata.content = <<~XML
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.loc.gov/mods/v3" version="3.6"
             xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
@@ -275,8 +309,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
     end
 
     context 'when there are parallel titles' do
-      before do
-        object.descMetadata.content = <<~XML
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.loc.gov/mods/v3" version="3.6"
             xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
@@ -339,8 +373,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
     end
 
     context 'when there are multiple untyped titles without primary' do
-      before do
-        object.descMetadata.content = <<~XML
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.loc.gov/mods/v3" version="3.6"
             xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
@@ -367,8 +401,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
     end
 
     context 'when there are multiple typed titles without primary' do
-      before do
-        object.descMetadata.content = <<~XML
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.loc.gov/mods/v3" version="3.6"
             xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
@@ -396,8 +430,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
     end
 
     context 'when there is a title with a display label' do
-      before do
-        object.descMetadata.content = <<~XML
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.loc.gov/mods/v3" version="3.6"
             xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
