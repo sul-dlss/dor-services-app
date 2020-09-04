@@ -42,5 +42,29 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         ]
       end
     end
+
+    context 'when there is an alternative title' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo usage="primary">
+              <title>Five red herrings</title>
+            </titleInfo>
+            <titleInfo type="alternative">
+              <title>Suspicious characters</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'has alternative type' do
+        expect(build).to eq [
+          { status: 'primary', value: 'Five red herrings' },
+          { type: 'alternative', value: 'Suspicious characters' }
+        ]
+      end
+    end
   end
 end

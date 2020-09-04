@@ -24,23 +24,30 @@ module Cocina
         end
 
         def build
-          # Basic title: only subelement of titleInfo is title and no titleInfo type attribute
-          # Filtering out text node children of titleInfo and the children that themselves have no text.
-          child_nodes = ng_xml.xpath('//mods:mods/mods:titleInfo[not(@type)]/child::node()[not(self::text())][child::node()[self::text()]]', mods: DESC_METADATA_NS)
-          return [{ value: child_nodes.first.text }] if child_nodes.map(&:name) == ['title']
+          title_infos = ng_xml.xpath('//mods:mods/mods:titleInfo', mods: DESC_METADATA_NS)
+          title_infos.map do |title_info|
+            # Find all the child nodes that have text
+            children = title_info.xpath('./*[child::node()[self::text()]]')
+            raise Mapper::MissingTitle if children.empty?
 
-          # Title with parts: multiple subelements in titleInfo
-          # Filtering out text node children of titleInfo and the children that themselves have no text.
-          child_nodes = ng_xml.xpath('//mods:mods/mods:titleInfo[not(@type)]/child::node()[not(self::text())][child::node()[self::text()]]', mods: DESC_METADATA_NS)
-          return [{ structuredValue: structured_value(child_nodes) }] if child_nodes.any?
-
-          raise Mapper::MissingTitle
+            # Is this a basic title or a title with parts
+            children.map(&:name) == ['title'] ? simple_value(title_info) : { structuredValue: structured_value(children) }
+          end
         end
 
         private
 
         attr_reader :ng_xml
 
+        # @param [Nokogiri::XML::Element] node the titleInfo node
+        def simple_value(node)
+          { value: node.xpath('./mods:title', mods: DESC_METADATA_NS).text }.tap do |h|
+            h[:status] = 'primary' if node['usage'] == 'primary'
+            h[:type] = node['type'] if node['type']
+          end
+        end
+
+        # @param [Nokogiri::XML::NodeSet] child_nodes the children of the titleInfo
         def structured_value(child_nodes)
           new_nodes = child_nodes.map do |node|
             { value: node.text, type: TYPES[node.name] }
