@@ -309,5 +309,34 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         ]
       end
     end
+
+    context 'when there are multiple typed titles without primary' do
+      before do
+        object.descMetadata.content = <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title>Symphony no. 6</title>
+            </titleInfo>
+            <titleInfo type="alternative">
+              <title>Pastoral symphony</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'creates simple values' do
+        expect(build).to eq [
+          {
+            "value": 'Symphony no. 6'
+          },
+          {
+            "value": 'Pastoral symphony',
+            "type": 'alternative'
+          }
+        ]
+      end
+    end
   end
 end
