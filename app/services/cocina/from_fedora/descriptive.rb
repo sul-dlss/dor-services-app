@@ -17,10 +17,11 @@ module Cocina
       end
 
       def props
-        note = Notes.build(item)
-        language = Language.build(item)
-        contributor = Contributor.build(item)
-        form = Form.build(item)
+        ng_xml = item.descMetadata.ng_xml
+        note = Notes.build(ng_xml)
+        language = Language.build(ng_xml)
+        contributor = Contributor.build(ng_xml)
+        form = Form.build(ng_xml)
         { title: [{ status: 'primary', value: TitleMapper.build(item) }] }.tap do |desc|
           desc[:note] = note unless note.empty?
           desc[:language] = language unless language.empty?

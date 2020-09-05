@@ -10,12 +10,14 @@ module Cocina
         ROLE_CODE_XPATH = './mods:role/mods:roleTerm[@type="code"]'
         ROLE_TEXT_XPATH = './mods:role/mods:roleTerm[@type="text"]'
 
-        def self.build(item)
-          new(item).build
+        # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
+        # @return [Hash] a hash that can be mapped to a cocina model
+        def self.build(ng_xml)
+          new(ng_xml).build
         end
 
-        def initialize(item)
-          @item = item
+        def initialize(ng_xml)
+          @ng_xml = ng_xml
         end
 
         def build
@@ -33,10 +35,10 @@ module Cocina
 
         private
 
-        attr_reader :item
+        attr_reader :ng_xml
 
         def names
-          @names ||= item.descMetadata.ng_xml.xpath(NAME_XPATH, mods: DESC_METADATA_NS)
+          @names ||= ng_xml.xpath(NAME_XPATH, mods: DESC_METADATA_NS)
         end
 
         def name_parts(name)

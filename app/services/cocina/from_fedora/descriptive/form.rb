@@ -11,14 +11,14 @@ module Cocina
         FORM_TYPE_XPATH = './@type'
         EXTENT_XPATH = './mods:extent'
 
-        # @param [Dor::Item,Dor::Etd] item
+        # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(item)
-          new(item).build
+        def self.build(ng_xml)
+          new(ng_xml).build
         end
 
-        def initialize(item)
-          @item = item
+        def initialize(ng_xml)
+          @ng_xml = ng_xml
         end
 
         def build
@@ -41,10 +41,10 @@ module Cocina
 
         private
 
-        attr_reader :item
+        attr_reader :ng_xml
 
         def physical_descriptions
-          item.descMetadata.ng_xml.xpath('//mods:physicalDescription', mods: DESC_METADATA_NS)
+          ng_xml.xpath('//mods:physicalDescription', mods: DESC_METADATA_NS)
         end
 
         def source_for(form)
