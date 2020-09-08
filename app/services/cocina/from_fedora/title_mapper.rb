@@ -13,9 +13,7 @@ module Cocina
       end
 
       def build
-        if item.is_a? Dor::Etd
-          item.properties.title.first
-        elsif item.label == 'Hydrus'
+        if item.label == 'Hydrus'
           # Some hydrus items don't have titles, so using label. See https://github.com/sul-dlss/hydrus/issues/421
           item.label
         elsif item.full_title

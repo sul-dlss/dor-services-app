@@ -144,7 +144,7 @@ RSpec.describe Cocina::Mapper do
     end
 
     before do
-      item.properties.title = 'Test ETD'
+      item.descMetadata.mods_title = 'Test ETD'
       allow(item).to receive(:collection_ids).and_return([])
     end
 
