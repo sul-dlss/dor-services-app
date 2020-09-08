@@ -2069,19 +2069,25 @@ components:
     UpdateLegacyMetadata:
       type: object
       properties:
+        administrative:
+          $ref: '#/components/schemas/LegacyDatastream'
         descriptive:
-          $ref: '#/components/schemas/LegacyDatastream'
-        geo:
-          $ref: '#/components/schemas/LegacyDatastream'
-        rights:
           $ref: '#/components/schemas/LegacyDatastream'
         content:
           $ref: '#/components/schemas/LegacyDatastream'
-        technical:
+        geo:
           $ref: '#/components/schemas/LegacyDatastream'
         identity:
           $ref: '#/components/schemas/LegacyDatastream'
         provenance:
+          $ref: '#/components/schemas/LegacyDatastream'
+        relationships:
+          $ref: '#/components/schemas/LegacyDatastream'
+        rights:
+          $ref: '#/components/schemas/LegacyDatastream'
+        technical:
+          $ref: '#/components/schemas/LegacyDatastream'
+        version:
           $ref: '#/components/schemas/LegacyDatastream'
     LegacyDatastream:
       type: object
