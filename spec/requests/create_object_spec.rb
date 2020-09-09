@@ -31,7 +31,7 @@ RSpec.describe 'Create object' do
                                 useAndReproductionStatement: 'Property rights reside with the repository...'
                               },
                               description: {
-                                title: [{ value: title, status: 'primary' }]
+                                title: [{ value: title }]
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567',
@@ -51,7 +51,7 @@ RSpec.describe 'Create object' do
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-          "description":{"title":[{"status":"primary","value":"#{title}"}]},
+          "description":{"title":[{"value":"#{title}"}]},
           "identification":#{identification.to_json},
           "structural":{"hasAgreement":"druid:bc777df7777"}}
       JSON
@@ -397,7 +397,7 @@ RSpec.describe 'Create object' do
           { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
             "label":"#{label}","version":1,"access":{"access":"#{access}"},
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-            "description":{"title":[{"status":"primary","value":"#{title}"}]},
+            "description":{"title":[{"value":"#{title}"}]},
             "identification":#{identification.to_json},"structural":{"contains":#{filesets.to_json}}}
         JSON
       end
@@ -528,7 +528,7 @@ RSpec.describe 'Create object' do
           { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
             "label":"#{label}","version":1,"access":{"access":"world"},
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-            "description":{"title":[{"status":"primary","value":"#{title}"}]},
+            "description":{"title":[{"value":"#{title}"}]},
             "identification":#{identification.to_json},"structural":{"isMemberOf":["druid:xx888xx7777"]}}
         JSON
       end
@@ -580,7 +580,7 @@ RSpec.describe 'Create object' do
                               label: expected_label,
                               version: 1,
                               description: {
-                                title: [{ value: title, status: 'primary' }]
+                                title: [{ value: title }]
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -602,7 +602,7 @@ RSpec.describe 'Create object' do
         { "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
           "label":"#{label}","version":1,"access":{"access":"world","download":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"status":"primary","value":"#{title}"}]},
+          "description":{"title":[{"value":"#{title}"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
@@ -628,7 +628,7 @@ RSpec.describe 'Create object' do
                                       label: 'This is my label',
                                       version: 1,
                                       description: {
-                                        title: [{ value: 'This is my title', status: 'primary' }]
+                                        title: [{ value: 'This is my title' }]
                                       },
                                       administrative: {
                                         defaultObjectRights: default_object_rights,
@@ -648,7 +648,7 @@ RSpec.describe 'Create object' do
             "defaultObjectRights":#{default_object_rights.to_json},
             "registrationWorkflow":"assemblyWF",
             "hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"status":"primary","value":"This is my title"}]}}
+          "description":{"title":[{"value":"This is my title"}]}}
       JSON
     end
 
@@ -676,7 +676,7 @@ RSpec.describe 'Create object' do
                               label: 'This is my label',
                               version: 1,
                               description: {
-                                title: [{ value: 'This is my title', status: 'primary' }]
+                                title: [{ value: 'This is my title' }]
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -700,7 +700,7 @@ RSpec.describe 'Create object' do
           "label":"This is my label","version":1,"access":{"access":"stanford",
           "embargo":{"access":"world","releaseDate":"2020-02-29"}},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"status":"primary","value":"This is my title"}]},
+          "description":{"title":[{"value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
@@ -726,7 +726,7 @@ RSpec.describe 'Create object' do
                               label: 'This is my label',
                               version: 1,
                               description: {
-                                title: [{ value: 'This is my title', status: 'primary' }]
+                                title: [{ value: 'This is my title' }]
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -750,7 +750,7 @@ RSpec.describe 'Create object' do
           "label":"This is my label","version":1,
           "access":{"access":"location-based","readLocation":"m&m"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"status":"primary","value":"This is my title"}]},
+          "description":{"title":[{"value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
@@ -776,7 +776,7 @@ RSpec.describe 'Create object' do
                               label: 'This is my label',
                               version: 1,
                               description: {
-                                title: [{ value: 'This is my title', status: 'primary' }]
+                                title: [{ value: 'This is my title' }]
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -799,7 +799,7 @@ RSpec.describe 'Create object' do
           "label":"This is my label","version":1,
           "access":{"access":"world","download":"none"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"status":"primary","value":"This is my title"}]},
+          "description":{"title":[{"value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
@@ -831,7 +831,7 @@ RSpec.describe 'Create object' do
                                 label: 'This is my label',
                                 version: 1,
                                 administrative: { hasAdminPolicy: 'druid:dd999df4567' },
-                                description: { title: [{ value: 'This is my label', status: 'primary' }] },
+                                description: { title: [{ value: 'This is my label' }] },
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
                                 structural: {},
@@ -863,7 +863,7 @@ RSpec.describe 'Create object' do
                                 label: 'This is my label',
                                 version: 1,
                                 administrative: { hasAdminPolicy: 'druid:dd999df4567' },
-                                description: { title: [{ value: 'This is my label', status: 'primary' }] },
+                                description: { title: [{ value: 'This is my label' }] },
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
                                 structural: {},
@@ -898,7 +898,7 @@ RSpec.describe 'Create object' do
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
                                 structural: {},
-                                description: { "title": [{ "value": 'This is my label', "status": 'primary' }] })
+                                description: { "title": [{ "value": 'This is my label' }] })
       end
 
       let(:data) do
@@ -933,7 +933,7 @@ RSpec.describe 'Create object' do
                               label: 'This is my label',
                               version: 1,
                               administrative: { hasAdminPolicy: 'druid:dd999df4567' },
-                              description: { title: [{ value: 'This is my label', status: 'primary' }] },
+                              description: { title: [{ value: 'This is my label' }] },
                               identification: { sourceId: 'warc:999999' },
                               externalIdentifier: 'druid:gg777gg7777',
                               structural: {},
@@ -971,7 +971,7 @@ RSpec.describe 'Create object' do
                               label: 'This is my label',
                               version: 1,
                               administrative: { hasAdminPolicy: 'druid:dd999df4567' },
-                              description: { title: [{ value: 'This is my label', status: 'primary' }] },
+                              description: { title: [{ value: 'This is my label' }] },
                               identification: { sourceId: 'warc:999999' },
                               externalIdentifier: 'druid:gg777gg7777',
                               structural: {},
