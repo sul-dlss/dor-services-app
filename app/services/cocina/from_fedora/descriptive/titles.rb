@@ -111,13 +111,14 @@ module Cocina
 
           unsortable = child_nodes.select { |node| node.name == 'nonSort' }
           if unsortable.any?
+            count = unsortable.sum do |node|
+              add = node.text.end_with?('-') || node.text.end_with?("'") ? 0 : 1
+              node.text.size + add
+            end
             new_nodes << {
               "note": [
                 {
-                  "value": unsortable.sum do |node|
-                    add = node.text.end_with?('-') || node.text.end_with?("'") ? 0 : 1
-                    node.text.size + add
-                  end,
+                  "value": count.to_s,  # cast to String until cocina-models 0.40.0 is used. See https://github.com/sul-dlss/cocina-models/pull/146
                   "type": 'nonsorting character count'
                 }
               ]
