@@ -12,14 +12,14 @@ module Cocina
         LANG_CODE_XPATH = './mods:languageTerm[@type="code"]/text()'
         LANG_CODE_AUTHORITY_XPATH = './mods:languageTerm[@type="code"]/@authority'
 
-        # @param [Dor::Item,Dor::Etd] item
+        # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(item)
-          new(item).build
+        def self.build(ng_xml)
+          new(ng_xml).build
         end
 
-        def initialize(item)
-          @item = item
+        def initialize(ng_xml)
+          @ng_xml = ng_xml
         end
 
         def build
@@ -35,10 +35,10 @@ module Cocina
 
         private
 
-        attr_reader :item
+        attr_reader :ng_xml
 
         def languages
-          @languages ||= item.descMetadata.ng_xml.xpath(LANG_XPATH, mods: DESC_METADATA_NS)
+          @languages ||= ng_xml.xpath(LANG_XPATH, mods: DESC_METADATA_NS)
         end
 
         def language_code_for(lang)
