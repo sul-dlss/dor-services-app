@@ -5,7 +5,7 @@ class MembersController < ApplicationController
   # Return the published members of this collection
   def index
     solr_params = {
-      q: "is_member_of_collection_ssim:\"#{params[:id]}\" published_dttsim:[* TO *]",
+      q: "is_member_of_collection_ssim:\"#{ActiveFedora::Base.internal_uri(params[:object_id])}\" published_dttsim:[* TO *]",
       wt: :json,
       fl: 'id,objectType_ssim',
       rows: 100_000_000
