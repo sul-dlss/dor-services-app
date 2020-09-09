@@ -38,7 +38,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
                               { type: 'main title', value: 'journal of stuff' },
                               { type: 'part number', value: 'volume 5' },
                               { type: 'part name', value: 'special issue' },
-                              { note: [{ type: 'nonsorting character count', value: 4 }] }] }
+                              { note: [{ type: 'nonsorting character count', value: '4' }] }] }
         ]
       end
     end
@@ -102,7 +102,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
                   {
                     "note": [
                       {
-                        "value": 4,
+                        "value": '4',
                         "type": 'nonsorting character count'
                       }
                     ]
@@ -131,7 +131,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
                   {
                     "note": [
                       {
-                        "value": 4,
+                        "value": '4',
                         "type": 'nonsorting character count'
                       }
                     ]
