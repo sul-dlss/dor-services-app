@@ -25,14 +25,6 @@ module Cocina
                    Titles.build(ng_xml)
                  end
 
-        # This validates that titles is parsable, if not it'll return a default.
-        # We should be able to remove this once this code uses cocina-models 0.40.1+
-        begin
-          Cocina::Models::Description.new(title: titles)
-        rescue Cocina::Models::ValidationError
-          titles = [{ value: item.full_title }]
-        end
-
         note = Notes.build(ng_xml)
         language = Language.build(ng_xml)
         contributor = Contributor.build(ng_xml)

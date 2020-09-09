@@ -1112,11 +1112,11 @@ components:
         description:
           $ref: '#/components/schemas/Description'
       required:
+        - administrative
         - externalIdentifier
         - label
         - type
         - version
-        - administrative
     AdminPolicyAdministrative:
       type: object
       additionalProperties: false
@@ -1202,7 +1202,7 @@ components:
             $ref: '#/components/schemas/CatalogLink'
     Contributor:
       description: Property model for describing agents contributing in some way to
-        the creation and history of the resource
+        the creation and history of the resource.
       type: object
       additionalProperties: false
       properties:
@@ -1215,7 +1215,8 @@ components:
           description: Entity type of the contributor (person, organization, etc.).
           type: string
         status:
-          description: Status of the contributor relative to other parallel contributors.
+          description: Status of the contributor relative to other parallel contributors
+            (e.g. the primary author among a group of contributors).
           type: string
         role:
           description: Relationships of the contributor to the resource or to an event
@@ -1223,92 +1224,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DescriptiveValue"
-    DescriptiveAdminMetadata:
-      description: Information about this description of the resource.
-      type: object
-      additionalProperties: false
-      properties:
-        contributor:
-          type: array
-          items:
-            $ref: "#/components/schemas/Contributor"
-        event:
-          type: array
-          items:
-            $ref: "#/components/schemas/Event"
-        language:
+        identifier:
+          description: Identifiers and URIs associated with the contributor entity.
           type: array
           items:
             $ref: "#/components/schemas/DescriptiveValue"
         note:
+          description: Other information associated with the contributor.
           type: array
           items:
             $ref: "#/components/schemas/DescriptiveValue"
-    DescriptiveBasicValue:
-      description: Value model for descriptive elements without recursive properties.
-      type: object
-      additionalProperties: false
-      properties:
-        value:
-          description: String or integer value of the descriptive element.
-          oneOf:
-          - type: string
-          - type: integer
-        type:
-          description: Type of value provided by the descriptive element.
-          type: string
-        status:
-          description: Status of the descriptive element relative to other instances
-            of the element.
-          type: string
-        code:
-          description: Code value of the descriptive element.
-          type: string
-        uri:
-          description: URI value of the descriptive element.
-          type: string
-          format: uri
-        standard:
-          description: Descriptive or content standard to which the value conforms.
-          type: array
-          items:
-            type: string
-        encoding:
-          description: Encoding schema, standard, or syntax to which the value conforms.
-          type: array
-          items:
-            type: string
-        source:
-          $ref: "#/components/schemas/Source"
-    DescriptiveStructuredValue:
-      description: Value model for descriptive elements structured as typed values.
-      type: object
-      additionalProperties: false
-      properties:
-        structuredValue:
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveBasicValue"
-    DescriptiveValue:
-      description: Default value model for descriptive elements.
-      type: object
-      additionalProperties: false
-      allOf:
-        - $ref: "#/components/schemas/DescriptiveBasicValue"
-        - $ref: "#/components/schemas/DescriptiveStructuredValue"
-        - $ref: "#/components/schemas/AppliesTo"
-    DescriptiveValueRequired:
-      type: object
-      additionalProperties: false
-      allOf:
-        - $ref: "#/components/schemas/DescriptiveValue"
-        - anyOf:
-            - type: object
-              required:
-                - value
-            - type: object
-              required:
-                - structuredValue
     Description:
       type: object
       additionalProperties: false
@@ -1337,17 +1262,23 @@ components:
           items:
             $ref: "#/components/schemas/DescriptiveValue"
         language:
-          description: Languages, scripts, and notations used in all or part of a resource.
+          description: Languages, scripts, symbolic systems, and notations used in all or
+            part of a resource.
           type: array
           items:
-            $ref: "#/components/schemas/DescriptiveValue"
+            $ref: "#/components/schemas/Language"
         note:
           description: Additional information relevant to a resource.
           type: array
           items:
             $ref: "#/components/schemas/DescriptiveValue"
         identifier:
-          description: Unique strings associated with the resource.
+          description: Identifiers and URIs associated with the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        subject:
+          description: Terms associated with the intellectual content of the resource.
           type: array
           items:
             $ref: "#/components/schemas/DescriptiveValue"
@@ -1355,11 +1286,13 @@ components:
           description: Stanford persistent URL associated with the resource.
           type: string
           format: uri
-        url:
-          description: URLs where the resource may be accessed in full or part.
+        access:
+          $ref: "#/components/schemas/DescriptiveAccessMetadata"
+        relatedResource:
+          description: Other resources associated with the described resource.
           type: array
           items:
-            $ref: "#/components/schemas/DescriptiveValue"
+            $ref: "#/components/schemas/RelatedResource"
         marcEncodedData:
           description: Data about the resource represented in MARC fixed fields and codes.
           type: array
@@ -1369,6 +1302,173 @@ components:
           $ref: "#/components/schemas/DescriptiveAdminMetadata"
       required:
         - title
+    DescriptiveAccessMetadata:
+      description: Information about how to access digital and physical versions of the object.
+      type: object
+      additionalProperties: false
+      properties:
+        url:
+          description: URLs where the resource may be accessed in full or part.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        physicalLocation:
+          description: Location of a physical version of the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        accessContact:
+          description: The library, organization, or person responsible for access to the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        digitalRepository:
+          description: The digital repositories that hold the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        note:
+          description: Other information related to accessing the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+    DescriptiveAdminMetadata:
+      description: Information about this resource description.
+      type: object
+      additionalProperties: false
+      properties:
+        contributor:
+          description: Contributors to this resource description.
+          type: array
+          items:
+            $ref: "#/components/schemas/Contributor"
+        event:
+          description: Events in the history of this resource description.
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        language:
+          description: Languages, scripts, symbolic systems, and notations used
+            in this resource description.
+          type: array
+          items:
+            $ref: "#/components/schemas/Language"
+        note:
+          description: Other information related to this resource description.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        standard:
+          # description: Descriptive or content standard to which this resource description conforms.
+          $ref: "#/components/schemas/Standard"
+        identifier:
+          description: Identifiers associated with this resource description.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+    DescriptiveBasicValue:
+      description: Basic value model for descriptive elements.
+      type: object
+      # additionalProperties breaks the validator, unclear as to why.
+      # additionalProperties: false
+      allOf:
+        - $ref: "#/components/schemas/DescriptiveStructuredValue"
+        - $ref: "#/components/schemas/DescriptiveParallelValue"
+        - type: object
+          additionalProperties: false
+          properties:
+            value:
+              description: String or integer value of the descriptive element.
+              oneOf:
+              - type: string
+              - type: integer
+            type:
+              description: Type of value provided by the descriptive element.
+              type: string
+            status:
+              description: Status of the descriptive element value relative to other instances
+                of the element.
+              type: string
+            code:
+              description: Code value of the descriptive element.
+              type: string
+            uri:
+              description: URI value of the descriptive element.
+              type: string
+              format: uri
+            standard:
+              # description: Descriptive or content standard to which the value conforms.
+              $ref: "#/components/schemas/Standard"
+            encoding:
+              # description: Encoding schema, standard, or syntax to which the value conforms.
+              $ref: "#/components/schemas/Standard"
+            source:
+              $ref: "#/components/schemas/Source"
+            displayLabel:
+              description: The preferred display label to use for the descriptive element in access systems.
+              type: string
+            qualifier:
+              description: A term providing information about the circumstances of the statement (e.g., approximate dates).
+              type: string
+            note:
+              description: Other information related to the descriptive element.
+              type: array
+              items:
+                $ref: "#/components/schemas/DescriptiveValue"
+            valueLanguage:
+              $ref: "#/components/schemas/DescriptiveValueLanguage"
+    DescriptiveParallelValue:
+      description: Value model for multiple representations of the same information (e.g. in different languages).
+      type: object
+      additionalProperties: false
+      properties:
+        parallelValue:
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+    DescriptiveStructuredValue:
+      description: Value model for descriptive elements structured as typed, ordered values.
+      type: object
+      additionalProperties: false
+      properties:
+        structuredValue:
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+    DescriptiveValue:
+      description: Default value model for descriptive elements.
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: "#/components/schemas/DescriptiveBasicValue"
+        - $ref: "#/components/schemas/AppliesTo"
+    DescriptiveValueLanguage:
+      description: Language of the descriptive element value
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: "#/components/schemas/Standard"
+        - type: object
+          properties:
+            valueScript:
+              $ref: '#/components/schemas/Standard'
+              # description: An alphabet or other notation used to represent a
+              #   language or other symbolic system of the descriptive element value.
+    DescriptiveValueRequired:
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: "#/components/schemas/DescriptiveValue"
+        - anyOf:
+            - type: object
+              required:
+                - value
+            - type: object
+              required:
+                - structuredValue
+            - type: object
+              required:
+                - parallelValue
     DRO:
       description: Domain-defined abstraction of a 'work'. Digital Repository Objects' abstraction is describable for our domain’s purposes, i.e. for management needs within our system.
       type: object
@@ -1415,11 +1515,12 @@ components:
         geographic:
           $ref: '#/components/schemas/Geographic'
       required:
+        - access
+        - administrative
         - externalIdentifier
         - label
         - type
         - version
-        - access
     DROAccess:
       type: object
       additionalProperties: false
@@ -1558,7 +1659,6 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/DescriptiveValue"
-
     File:
       description: Binaries that are the basis of what our domain manages. Binaries here do not include metadata files generated for the domain's own management purposes.
       type: object
@@ -1603,9 +1703,9 @@ components:
       required:
         - externalIdentifier
         - label
+        - filename
         - type
         - version
-        - filename
         - access
         - administrative
         - hasMessageDigests
@@ -1714,6 +1814,22 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CatalogLink'
+    Language:
+      description: Languages, scripts, symbolic systems, and notations used in all
+        or part of a resource or its descriptive metadata.
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: '#/components/schemas/DescriptiveValue'
+        - type: object
+          # additionalProperties breaks the validator, presumably because it can't
+          # conform to other schemas (allOf) and not have additionalProperties
+          # additionalProperties: false
+          properties:
+            script:
+              $ref: '#/components/schemas/DescriptiveValue'
+              # description: An alphabet or other notation used to represent a
+              #   language or other symbolic system associated with the resource.
     MessageDigest:
       description: The output of the message digest algorithm.
       type: object
@@ -1742,6 +1858,63 @@ components:
         width:
           description: Width in pixels
           type: integer
+    RelatedResource:
+      description: Other resource associated with the described resource.
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          description: The relationship of the related resource to the described resource.
+          type: string
+        title:
+          description: Titles of the related resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        contributor:
+          description: Agents contributing in some way to the creation and history of the
+            related resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/Contributor"
+        event:
+          description: Events in the history of the related resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        form:
+          description: Characteristics of the related resource's physical, digital, and intellectual
+            form and genre.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        language:
+          description: Languages, scripts, symbolic systems, and notations used in all or
+            part of a related resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/Language"
+        note:
+          description: Additional information relevant to a related resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        identifier:
+          description: Identifiers and URIs associated with the related resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        subject:
+          description: Terms associated with the intellectual content of the related resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        purl:
+          description: Stanford persistent URL associated with the related resource.
+          type: string
+          format: uri
+        access:
+          $ref: "#/components/schemas/DescriptiveAccessMetadata"
     ReleaseTag:
       description: A tag that indicates the item or collection should be released.
       type: object
@@ -1789,10 +1962,10 @@ components:
         description:
           $ref: '#/components/schemas/Description'
       required:
+        - administrative
         - label
         - type
         - version
-        - administrative
     RequestCollection:
       description: Same as a Collection, but doesn't have an externalIdentifier as one will be created
       type: object
@@ -1820,10 +1993,10 @@ components:
         identification:
           $ref: '#/components/schemas/CollectionIdentification'
       required:
+        - access
         - label
         - type
         - version
-        - access
     RequestDRO:
       description: A request to create a DRO.  This has the same general structure as a DRO but doesn't have externalIdentifier and doesn't require the access subschema. If no access subschema is provided, these values will be inherited from the AdminPolicy.
       type: object
@@ -1865,6 +2038,8 @@ components:
         geographic:
           $ref: '#/components/schemas/Geographic'
       required:
+        - administrative
+        - identification
         - label
         - type
         - version
@@ -1986,8 +2161,8 @@ components:
             - right-to-left
             - left-to-right
     Source:
-      description: Property model for indicating the vocabulary, authority, or other
-        origin for a term, code, or identifier.
+      description: Property model for indicating the vocabulary, authority, or
+        other origin for a term, code, or identifier.
       type: object
       additionalProperties: false
       properties:
@@ -2001,6 +2176,11 @@ components:
         value:
           description: String describing the value source.
           type: string
+        note:
+          description: Other information related to the value source.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
     SourceId:
       type: string
       pattern: '^.+:.+$'
@@ -2012,6 +2192,29 @@ components:
         and physical locations, etc. The sourceId allows determining if an item has been deposited before and where to
         look for the original item if you're looking at its SDR representation. The format is: "namespace:identifier"
       example: 'sul:PC0170_s3_Fiesta_Bowl_2012-01-02_210609_2026'
+    Standard:
+      description: Property model for indicating the encoding, standard, or syntax
+        to which a value conforms.
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          description: Code representing the standard or encoding.
+          type: string
+        uri:
+          description: URI for the standard or encoding.
+          type: string
+          format: uri
+        value:
+          description: String describing the standard or encoding.
+          type: string
+        note:
+          description: Other information related to the standard or encoding.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        source:
+          $ref: "#/components/schemas/Source"
     AdministrativeTag:
       type: string
       pattern: '^.+( : .+)+$'

@@ -91,7 +91,7 @@ module Cocina
             result[:source] = { code: title_info[:authority] } if title_info['type'] == 'abbreviated'
             result[:uri] = title_info[:valueURI] if title_info['valueURI']
 
-            result[:language] = [language(title_info)] if title_info['lang']
+            result[:valueLanguage] = language(title_info) if title_info['lang']
             result[:standard] = { value: title_info['transliteration'] } if title_info['transliteration']
             result[:displayLabel] = title_info['displayLabel'] if title_info['displayLabel']
           end
@@ -99,7 +99,7 @@ module Cocina
 
         def language(title_info)
           { code: title_info['lang'], source: { code: 'iso639-2b' } }.tap do |result|
-            result[:script] = { code: title_info['script'], source: { code: 'iso15924' } } if title_info['script']
+            result[:valueScript] = { code: title_info['script'], source: { code: 'iso15924' } } if title_info['script']
           end
         end
 

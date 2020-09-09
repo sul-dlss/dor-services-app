@@ -366,34 +366,4 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       ]
     end
   end
-
-  context "when the items has a translated title (which can't map to cocina-models yet)" do
-    # NOTE: this test can be removed when we have cocina-models 0.40.1+
-
-    let(:desc_metadata) do
-      <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <titleInfo type="translated" lang="ger" altRepGroup="0">
-            <title>Berliner Mauer Kunst</title>
-          </titleInfo>
-          <titleInfo type="translated" lang="eng" altRepGroup="0">
-            <title>Berlin's wall art</title>
-          </titleInfo>
-          <titleInfo type="translated" lang="spa" altRepGroup="0">
-            <title>Arte en el muro de Berlin</title>
-          </titleInfo>
-        </mods>
-      XML
-    end
-
-    it 'has a title' do
-      expect(descriptive[:title]).to match_array [
-        {
-          value: 'Berliner Mauer Kunst'
-        }
-      ]
-    end
-  end
 end

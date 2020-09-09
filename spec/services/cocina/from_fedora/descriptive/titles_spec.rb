@@ -121,14 +121,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
                   }
                 ],
                 "status": 'primary',
-                "language": [
-                  {
-                    "code": 'fre',
-                    "source": {
-                      "code": 'iso639-2b'
-                    }
+                "valueLanguage": {
+                  "code": 'fre',
+                  "source": {
+                    "code": 'iso639-2b'
                   }
-                ]
+                }
               },
               {
                 "structuredValue": [
@@ -150,14 +148,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
                   }
                 ],
                 "type": 'translated',
-                "language": [
-                  {
-                    "code": 'eng',
-                    "source": {
-                      "code": 'iso639-2b'
-                    }
+                "valueLanguage": {
+                  "code": 'eng',
+                  "source": {
+                    "code": 'iso639-2b'
                   }
-                ]
+                }
               }
             ]
           }
@@ -192,37 +188,33 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
               {
                 "value": 'Война и миръ',
                 "status": 'primary',
-                "language": [
-                  {
-                    "code": 'rus',
+                "valueLanguage": {
+                  "code": 'rus',
+                  "source": {
+                    "code": 'iso639-2b'
+                  },
+                  "valueScript": {
+                    "code": 'Cyrl',
                     "source": {
-                      "code": 'iso639-2b'
-                    },
-                    "script": {
-                      "code": 'Cyrl',
-                      "source": {
-                        "code": 'iso15924'
-                      }
+                      "code": 'iso15924'
                     }
                   }
-                ]
+                }
               },
               {
                 "value": 'Voĭna i mir',
-                "language": [
-                  {
-                    "code": 'rus',
+                "valueLanguage": {
+                  "code": 'rus',
+                  "source": {
+                    "code": 'iso639-2b'
+                  },
+                  "valueScript": {
+                    "code": 'Latn',
                     "source": {
-                      "code": 'iso639-2b'
-                    },
-                    "script": {
-                      "code": 'Latn',
-                      "source": {
-                        "code": 'iso15924'
-                      }
+                      "code": 'iso15924'
                     }
                   }
-                ],
+                },
                 "type": 'transliterated',
                 "standard": {
                   "value": 'ALA-LC Romanization Tables'
@@ -361,36 +353,30 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             "parallelValue": [
               {
                 "value": 'Berliner Mauer Kunst',
-                "language": [
-                  {
-                    "code": 'ger',
-                    "source": {
-                      "code": 'iso639-2b'
-                    }
+                "valueLanguage": {
+                  "code": 'ger',
+                  "source": {
+                    "code": 'iso639-2b'
                   }
-                ]
+                }
               },
               {
                 "value": "Berlin's wall art",
-                "language": [
-                  {
-                    "code": 'eng',
-                    "source": {
-                      "code": 'iso639-2b'
-                    }
+                "valueLanguage": {
+                  "code": 'eng',
+                  "source": {
+                    "code": 'iso639-2b'
                   }
-                ]
+                }
               },
               {
                 "value": 'Arte en el muro de Berlin',
-                "language": [
-                  {
-                    "code": 'spa',
-                    "source": {
-                      "code": 'iso639-2b'
-                    }
+                "valueLanguage": {
+                  "code": 'spa',
+                  "source": {
+                    "code": 'iso639-2b'
                   }
-                ]
+                }
               }
             ],
             "type": 'parallel',
