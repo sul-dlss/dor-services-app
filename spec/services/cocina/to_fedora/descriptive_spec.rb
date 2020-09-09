@@ -9,7 +9,7 @@ RSpec.describe Cocina::ToFedora::Descriptive do
     let(:descriptive) do
       Cocina::Models::Description.new(
         title: [
-          { value: "Gaudy night" }
+          { value: 'Gaudy night' }
         ]
       )
     end
@@ -50,6 +50,38 @@ RSpec.describe Cocina::ToFedora::Descriptive do
             <title>journal of stuff</title>
             <partNumber>volume 5</partNumber>
             <partName>special issue</partName>
+          </titleInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when the title has an alternative' do
+    let(:descriptive) do
+      Cocina::Models::Description.new(
+        title: [
+          {
+            value: 'Five red herrings',
+            status: 'primary'
+          },
+          {
+            value: 'Suspicious characters',
+            type: 'alternative'
+          }
+        ]
+      )
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo usage="primary">
+            <title>Five red herrings</title>
+          </titleInfo>
+          <titleInfo type="alternative">
+            <title>Suspicious characters</title>
           </titleInfo>
         </mods>
       XML

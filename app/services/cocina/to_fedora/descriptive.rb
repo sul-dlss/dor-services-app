@@ -28,10 +28,15 @@ module Cocina
                    'version' => '3.6',
                    'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
             descriptive.title.each do |title|
-              xml.titleInfo do
+              title_info_attrs = {}
+              title_info_attrs[:usage] = 'primary' if title.status == 'primary'
+              title_info_attrs[:type] = title.type if title.type
+
+              xml.titleInfo(title_info_attrs) do
                 title.structuredValue&.each do |component|
                   xml.public_send(TAG_NAME.fetch(component.type), component.value) if component.type
                 end
+
                 xml.title(title.value) if title.value
               end
             end
