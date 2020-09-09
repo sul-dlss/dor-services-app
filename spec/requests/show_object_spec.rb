@@ -111,7 +111,7 @@ RSpec.describe 'Get the object' do
             sourceId: 'src:99999'
           },
           structural: {
-            isMemberOf: 'druid:xx888xx7777'
+            isMemberOf: ['druid:xx888xx7777']
           }
         }
       end

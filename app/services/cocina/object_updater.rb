@@ -72,7 +72,7 @@ module Cocina
     def update_dro
       item.admin_policy_object_id = obj.administrative.hasAdminPolicy
       item.source_id = obj.identification.sourceId
-      item.collection_ids = [obj.structural&.isMemberOf].compact
+      item.collection_ids = Array.wrap(obj.structural&.isMemberOf).compact
       item.catkey = catkey_for(obj)
       item.label = truncate_label(obj.label)
 

@@ -59,7 +59,7 @@ RSpec.describe Cocina::ObjectCreator do
             'hasAdminPolicy' => apo
           },
           'structural' => {
-            'isMemberOf' => 'druid:bk024qs1809'
+            'isMemberOf' => ['druid:bk024qs1809']
           },
           'identification' => {
             'sourceId' => 'sul:8.559351',

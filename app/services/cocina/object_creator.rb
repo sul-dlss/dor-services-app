@@ -74,7 +74,7 @@ module Cocina
       Dor::Item.new(pid: pid,
                     admin_policy_object_id: obj.administrative.hasAdminPolicy,
                     source_id: obj.identification.sourceId,
-                    collection_ids: [obj.structural&.isMemberOf].compact,
+                    collection_ids: Array.wrap(obj.structural&.isMemberOf).compact,
                     catkey: catkey_for(obj),
                     label: truncate_label(obj.label)).tap do |item|
         add_description(item, obj)

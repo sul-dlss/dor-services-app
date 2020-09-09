@@ -34,7 +34,7 @@ module Cocina
 
           begin
             # Note that there is a bug with item.collection_ids that returns [] until item.collections is called. Below side-steps this.
-            structural[:isMemberOf] = item.collections.first.id if item.collections.present?
+            structural[:isMemberOf] = item.collections.map(&:id) if item.collections.present?
           rescue RSolr::Error::ConnectionRefused
             # ActiveFedora calls RSolr to lookup collections, but sometimes that call fails.
             raise SolrConnectionError, 'unable to connect to solr to resolve collections'
