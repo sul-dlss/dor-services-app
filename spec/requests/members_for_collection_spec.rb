@@ -23,7 +23,8 @@ RSpec.describe 'Get the members' do
       'response' => {
         'docs' => [
           { 'id' => 'druid:xx222xx3282', 'objectType_ssim' => ['collection'] },
-          { 'id' => 'druid:xx828xx3282', 'objectType_ssim' => ['item'] }
+          { 'id' => 'druid:xx828xx3282', 'objectType_ssim' => ['item'] },
+          { 'id' => 'druid:xx939xx4389' }
         ]
       }
     }
@@ -39,6 +40,10 @@ RSpec.describe 'Get the members' do
         {
           externalIdentifier: 'druid:xx828xx3282',
           type: 'item'
+        },
+        {
+          externalIdentifier: 'druid:xx939xx4389',
+          type: nil
         }
       ]
     }
