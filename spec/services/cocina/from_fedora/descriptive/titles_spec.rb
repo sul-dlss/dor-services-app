@@ -32,6 +32,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         XML
       end
 
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
       it 'is a structured value' do
         expect(build).to eq [
           { structuredValue: [{ type: 'nonsorting characters', value: 'The' },
@@ -59,6 +63,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         XML
       end
 
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
       it 'has alternative type' do
         expect(build).to eq [
           { status: 'primary', value: 'Five red herrings' },
@@ -83,6 +91,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             </titleInfo>
           </mods>
         XML
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
       end
 
       it 'creates parallelValues' do
@@ -169,6 +181,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         XML
       end
 
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
       it 'creates parallelValues' do
         expect(build).to eq [
           {
@@ -237,6 +253,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         XML
       end
 
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
       it 'creates value from the authority record' do
         expect(build).to eq [
           {
@@ -263,6 +283,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             </titleInfo>
           </mods>
         XML
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
       end
 
       it 'creates title with type=supplied' do
@@ -327,6 +351,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         XML
       end
 
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
       it 'creates parallelValues' do
         expect(build).to eq [
           {
@@ -388,6 +416,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         XML
       end
 
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
       it 'creates simple values' do
         expect(build).to eq [
           {
@@ -414,6 +446,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             </titleInfo>
           </mods>
         XML
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
       end
 
       it 'creates simple values' do
@@ -443,6 +479,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             </titleInfo>
           </mods>
         XML
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
       end
 
       it 'creates simple values' do
