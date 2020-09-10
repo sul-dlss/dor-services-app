@@ -34,11 +34,11 @@ RSpec.describe 'Get the members' do
       members: [
         {
           externalIdentifier: 'druid:xx222xx3282',
-          type: ['collection']
+          type: 'collection'
         },
         {
           externalIdentifier: 'druid:xx828xx3282',
-          type: ['item']
+          type: 'item'
         }
       ]
     }
