@@ -22,8 +22,8 @@ RSpec.describe 'Get the members' do
     {
       'response' => {
         'docs' => [
-          { 'id' => 'druid:xx222xx3282', 'objectType_ssim' => 'collection' },
-          { 'id' => 'druid:xx828xx3282', 'objectType_ssim' => 'item' }
+          { 'id' => 'druid:xx222xx3282', 'objectType_ssim' => ['collection'] },
+          { 'id' => 'druid:xx828xx3282', 'objectType_ssim' => ['item'] }
         ]
       }
     }
@@ -34,11 +34,11 @@ RSpec.describe 'Get the members' do
       members: [
         {
           externalIdentifier: 'druid:xx222xx3282',
-          type: 'collection'
+          type: ['collection']
         },
         {
           externalIdentifier: 'druid:xx828xx3282',
-          type: 'item'
+          type: ['item']
         }
       ]
     }
