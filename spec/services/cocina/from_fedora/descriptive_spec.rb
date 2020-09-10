@@ -9,9 +9,13 @@ RSpec.describe Cocina::FromFedora::Descriptive do
     Dor::Item.new
   end
 
+  before do
+    item.descMetadata.content = desc_metadata
+  end
+
   context 'when the item is a was-seed' do
-    before do
-      item.descMetadata.content = <<~XML
+    let(:desc_metadata) do
+      <<~XML
         <?xml version="1.0"?>
         <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.loc.gov/mods/v3" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
           <titleInfo>
@@ -153,8 +157,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
   end
 
   context 'when the item is an ETD' do
-    before do
-      item.descMetadata.content = <<~XML
+    let(:desc_metadata) do
+      <<~XML
         <?xml version="1.0"?>
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <titleInfo>
@@ -359,6 +363,36 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           }
         },
         { value: '1 online resource.', type: 'extent' }
+      ]
+    end
+  end
+
+  context "when the items has a translated title (which can't map to cocina-models yet)" do
+    # NOTE: this test can be removed when we have cocina-models 0.40.1+
+
+    let(:desc_metadata) do
+      <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo type="translated" lang="ger" altRepGroup="0">
+            <title>Berliner Mauer Kunst</title>
+          </titleInfo>
+          <titleInfo type="translated" lang="eng" altRepGroup="0">
+            <title>Berlin's wall art</title>
+          </titleInfo>
+          <titleInfo type="translated" lang="spa" altRepGroup="0">
+            <title>Arte en el muro de Berlin</title>
+          </titleInfo>
+        </mods>
+      XML
+    end
+
+    it 'has a title' do
+      expect(descriptive[:title]).to match_array [
+        {
+          value: 'Berliner Mauer Kunst'
+        }
       ]
     end
   end
