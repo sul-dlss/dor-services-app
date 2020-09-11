@@ -11,7 +11,7 @@ module Cocina
 
     # @param [Dor::Abstract] item the Fedora object to convert to a cocina object
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
-    # @raises [SolrConnectionError]
+    # @raises [SolrConnectionError,UnsupportedObjectType]
     def self.build(item)
       new(item).build
     end
@@ -22,7 +22,7 @@ module Cocina
     end
 
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
-    # @raises [SolrConnectionError]
+    # @raises [SolrConnectionError, UnsupportedObjectType]
     def build
       klass = cocina_klass
       props = if klass == Cocina::Models::DRO

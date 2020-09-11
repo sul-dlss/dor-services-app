@@ -36,10 +36,15 @@ module Cocina
 
       item.save!
 
-      event_factory.create(druid: item.pid, event_type: 'update', data: obj.to_h)
+      event_factory.create(druid: item.pid, event_type: 'update_complete', data: { success: true })
 
       # This will rebuild the cocina model from fedora, which shows we are only returning persisted data
-      Mapper.build(item)
+      Mapper.build(item).tap do
+        event_factory.create(druid: item.pid, event_type: 'update', data: { success: true, request: obj.to_h })
+      end
+    rescue Mapper::MissingTitle, Mapper::UnsupportedObjectType, ValidationError, NotImplemented => e
+      event_factory.create(druid: item.pid, event_type: 'update', data: { success: false, error: e.message, request: obj.to_h })
+      raise
     end
 
     private

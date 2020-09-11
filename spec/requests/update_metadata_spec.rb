@@ -17,6 +17,8 @@ RSpec.describe 'Update object' do
     allow(AdministrativeTags).to receive(:project).and_return(['Google Books'])
     allow(AdministrativeTags).to receive(:content_type).and_return(['Book (rtl)'])
     allow(AdministrativeTags).to receive(:for).and_return([])
+
+    allow(EventFactory).to receive(:create)
   end
 
   let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
@@ -107,6 +109,7 @@ RSpec.describe 'Update object' do
     # Tags are created.
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Process : Content Type : Book (rtl)'])
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
+    expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
   end
 
   context 'when tags change' do
@@ -145,6 +148,29 @@ RSpec.describe 'Update object' do
 
       # Tags are not updated or created.
       expect(AdministrativeTags).not_to have_received(:create)
+    end
+  end
+
+  context 'with bad data' do
+    before do
+      allow(Dor).to receive(:find).with(other_druid).and_return(item)
+    end
+
+    let(:item) do
+      Dor::Item.new(pid: other_druid)
+    end
+
+    let(:other_druid) { 'druid:xs123xx8388' }
+
+    it 'is a bad request' do
+      patch "/v1/objects/#{other_druid}",
+            params: data,
+            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+      expect(response.status).to eq(400)
+      expect(EventFactory).to have_received(:create)
+        .with(druid: other_druid,
+              data: hash_including(:request, success: false, error: "Identifier on the query and in the body don't match"),
+              event_type: 'update')
     end
   end
 
