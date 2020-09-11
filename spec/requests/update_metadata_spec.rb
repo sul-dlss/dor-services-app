@@ -24,10 +24,7 @@ RSpec.describe 'Update object' do
   let(:item) do
     Dor::Item.new(pid: druid).tap do |item|
       item.descMetadata.title_info.main_title = title
-
-      # We swap these two lines after https://github.com/sul-dlss/dor-services/pull/706
-      # item.contentMetadata.contentType = ['book']
-      item.contentMetadata.content = '<contentMetadata type="book" />'
+      item.contentMetadata.contentType = ['book']
     end
   end
 
@@ -107,6 +104,36 @@ RSpec.describe 'Update object' do
     # Tags are created.
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Process : Content Type : Book (rtl)'])
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
+  end
+
+  context 'when the object is a hydrus item' do
+    # This is how the item looks in the repository before being updated
+    let(:item) do
+      Dor::Item.new(pid: druid, label: 'Hydrus').tap do |item|
+        # Hydrus doesn't fill in a title right away.
+        item.descMetadata.content = <<~XML
+          <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+            <titleInfo>
+              <title/>
+            </titleInfo>
+          </mods>
+        XML
+
+        item.contentMetadata.contentType = ['book']
+      end
+    end
+
+    let(:title) { 'Hydrus' } # The title in the request (data)
+    let(:label) { 'Hydrus' } # This is the label in the request (data)
+
+    it 'updates the object' do
+      patch "/v1/objects/#{druid}",
+            params: data,
+            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+      expect(response.status).to eq(200)
+      expect(item).to have_received(:save!)
+      expect(response.body).to eq expected.to_json
+    end
   end
 
   context 'when tags change' do

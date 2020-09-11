@@ -107,7 +107,7 @@ module Cocina
       # Can't currently roundtrip desc metadata, including title.
       # Note that title is the only desc metadata field handled by the mapper. However, the mapped title is composed from
       # several MODS fields which makes writing back to the MODS problematic.
-      raise NotImplemented, 'Updating descriptive metadata not supported' if obj.description.title.first.value != FromFedora::Descriptive::Titles.build(item.descMetadata.ng_xml).first[:value]
+      raise NotImplemented, 'Updating descriptive metadata not supported' if obj.description.title.first.value != FromFedora::Descriptive.props(item).fetch(:title).first.fetch(:value)
     end
 
     # TODO: duplicate from ObjectCreator
