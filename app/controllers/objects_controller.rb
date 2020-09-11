@@ -117,7 +117,7 @@ class ObjectsController < ApplicationController
 
   private
 
-  def json_api_error(status:, title: nil, message:)
+  def json_api_error(status:, message:, title: nil)
     status_code = Rack::Utils.status_code(status)
     render status: status,
            content_type: 'application/vnd.api+json',
