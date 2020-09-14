@@ -16,13 +16,18 @@ class MetadataController < ApplicationController
 
   # This supports the Legacy Fedora 3 data model. This is used by the accessionWF.
   def update_legacy_metadata
-    datastream_names = { descriptive: 'descMetadata',
-                         technical: 'technicalMetadata',
-                         content: 'contentMetadata',
-                         rights: 'rightsMetadata',
-                         identity: 'identityMetadata',
-                         provenance: 'provenanceMetadata',
-                         geo: 'geoMetadata' }
+    datastream_names = {
+      administrative: 'administrativeMetadata',
+      content: 'contentMetadata',
+      descriptive: 'descMetadata',
+      geo: 'geoMetadata',
+      identity: 'identityMetadata',
+      provenance: 'provenanceMetadata',
+      relationships: 'RELS-EXT',
+      rights: 'rightsMetadata',
+      technical: 'technicalMetadata',
+      version: 'versionMetadata'
+    }
 
     datastream_names.each do |section, datastream_name|
       values = params[section]
