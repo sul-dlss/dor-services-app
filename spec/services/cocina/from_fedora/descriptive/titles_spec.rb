@@ -291,7 +291,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
     end
 
-    context 'when there are abbreviated titles' do
+    context 'when there are abbreviated titles with authority' do
       let(:ng_xml) do
         Nokogiri::XML <<~XML
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -307,6 +307,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         XML
       end
 
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
       it 'creates simple values' do
         expect(build).to eq [
           {
@@ -319,6 +323,40 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             "source": {
               "code": 'dnlm'
             }
+          }
+        ]
+      end
+    end
+
+    context 'when there are abbreviated titles without authority' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo usage="primary">
+              <title>Annual report of notifiable diseases</title>
+            </titleInfo>
+            <titleInfo type="abbreviated">
+              <title>Annu. rep. notif. dis.</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
+      it 'creates simple values' do
+        expect(build).to eq [
+          {
+            "value": 'Annual report of notifiable diseases',
+            "status": 'primary'
+          },
+          {
+            "value": 'Annu. rep. notif. dis.',
+            "type": 'abbreviated'
           }
         ]
       end
