@@ -88,7 +88,7 @@ module Cocina
             result[:type] = 'transliterated' if title_info['transliteration']
             result[:type] = 'supplied' if title_info['supplied'] == 'yes'
 
-            result[:source] = { code: title_info[:authority] } if title_info['type'] == 'abbreviated'
+            result[:source] = { code: title_info[:authority] } if title_info['type'] == 'abbreviated' && title_info[:authority]
             result[:uri] = title_info[:valueURI] if title_info['valueURI']
 
             result[:valueLanguage] = language(title_info) if title_info['lang']
