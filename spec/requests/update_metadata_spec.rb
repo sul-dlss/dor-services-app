@@ -106,6 +106,89 @@ RSpec.describe 'Update object' do
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
   end
 
+  context 'with a structured title' do
+    let(:expected) do
+      Cocina::Models::DRO.new(externalIdentifier: druid,
+                              type: Cocina::Models::Vocab.book,
+                              label: expected_label,
+                              version: 1,
+                              access: {
+                                access: access,
+                                download: 'world',
+                                copyright: 'All rights reserved unless otherwise indicated.',
+                                useAndReproductionStatement: 'Property rights reside with the repository...'
+                              },
+                              description: {
+                                title: [
+                                  {
+                                    structuredValue: [
+                                      {
+                                        value: title,
+                                        type: 'main title'
+                                      },
+                                      {
+                                        value: '(repeat)',
+                                        type: 'subtitle'
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              administrative: {
+                                hasAdminPolicy: apo_druid,
+                                partOfProject: 'Google Books'
+                              },
+                              identification: identification,
+                              structural: structural)
+    end
+    let(:data) do
+      <<~JSON
+        {
+          "externalIdentifier": "#{druid}",
+          "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
+          "label":"#{label}","version":1,
+          "access":{
+            "access":"#{access}",
+            "download":"world",
+            "copyright":"All rights reserved unless otherwise indicated.",
+            "useAndReproductionStatement":"Property rights reside with the repository..."
+          },
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
+          "description":{"title":[{"structuredValue":[{"value":"#{title}","type":"main title"},{"value":"(repeat)","type":"subtitle"}]}]},
+          "identification":#{identification.to_json},
+          "structural":{
+            "hasMemberOrders":[{"viewingDirection":"right-to-left"}],
+            "isMemberOf":["druid:xx888xx7777"],
+            "hasAgreement":"druid:cd777df7777"
+          }
+        }
+      JSON
+    end
+    let(:item) do
+      Dor::Item.new(pid: druid).tap do |item|
+        # Dor::DescMetadataDS does not have a setter for subtitles
+        item.descMetadata.content = <<~XML
+          <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.loc.gov/mods/v3" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title>#{title}</title>
+              <subTitle>(repeat)</subTitle>
+            </titleInfo>
+          </mods>
+        XML
+        item.contentMetadata.contentType = ['book']
+      end
+    end
+
+    it 'updates the object' do
+      patch "/v1/objects/#{druid}",
+            params: data,
+            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+      expect(response.status).to eq(200)
+      expect(item).to have_received(:save!)
+      expect(response.body).to eq expected.to_json
+    end
+  end
+
   context 'when the object is a hydrus item' do
     # This is how the item looks in the repository before being updated
     let(:item) do
