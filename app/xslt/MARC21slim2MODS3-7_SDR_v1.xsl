@@ -3510,7 +3510,7 @@
 				</recordIdentifier>
 			</xsl:for-each>
 			<recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7_SDR_v1.xsl
-				(SUL 3.7 version 1 20200828; LC Revision 1.140 20200717)</recordOrigin>
+				(SUL 3.7 version 1.1 20200917; LC Revision 1.140 20200717)</recordOrigin>
 				<!-- SUL edit 20200828 issue #1002
 				<recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7.xsl
 				(Revision 1.140 20200717)</recordOrigin>-->
@@ -5442,7 +5442,10 @@
 	<!-- name 100 110 111 1.93      -->
 
 	<xsl:template name="createNameFrom100">
-		<xsl:if test="@ind1 = '0' or @ind1 = '1'">
+		<!-- SUL edit 20200917 issue #1069 -->
+		<xsl:if test="@ind1 = '0' or @ind1 = '1' or @ind1 = '2' ">
+		<!-- SUL edit 20200917 issue #1069
+		<xsl:if test="@ind1 = '0' or @ind1 = '1'"> -->
 			<name type="personal">
 				<xsl:attribute name="usage">
 					<xsl:text>primary</xsl:text>
@@ -5523,7 +5526,10 @@
 	<!-- name 700 710 711 720 -->
 
 	<xsl:template name="createNameFrom700">
-		<xsl:if test="@ind1 = '0' or @ind1 = '1'">
+		<!-- SUL edit 20200917 issue #1069 -->
+		<xsl:if test="@ind1 = '0' or @ind1 = '1' or @ind1 = '2'">
+			<!-- SUL edit 20200917 issue #1069
+		<xsl:if test="@ind1 = '0' or @ind1 = '1'"> -->
 			<name type="personal">
 				<xsl:call-template name="xxx880"/>
 				<!-- 1.123 Add nameTitleGroup attribute if necessary -->
