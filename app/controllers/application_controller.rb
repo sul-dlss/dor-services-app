@@ -26,12 +26,13 @@ class ApplicationController < ActionController::API
   end
 
   def decoded_auth_token
-    @decoded_auth_token ||= begin
-      body = JWT.decode(http_auth_header, Settings.dor.hmac_secret, true, algorithm: 'HS256').first
-      HashWithIndifferentAccess.new body
-                            rescue StandardError
-                              nil
-    end
+    @decoded_auth_token ||=
+      begin
+        body = JWT.decode(http_auth_header, Settings.dor.hmac_secret, true, algorithm: 'HS256').first
+        HashWithIndifferentAccess.new body
+      rescue StandardError
+        nil
+      end
   end
 
   def http_auth_header
