@@ -1381,7 +1381,10 @@ components:
               description: String or integer value of the descriptive element.
               oneOf:
               - type: string
-              - type: integer
+              # Title note (nonsorting character count) was supposed to be able to accept an integer value,
+              # but this triggered a bug in committee:
+              # https://github.com/interagent/committee/issues/286
+              # - type: integer
             type:
               description: Type of value provided by the descriptive element.
               type: string

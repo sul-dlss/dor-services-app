@@ -65,6 +65,11 @@ RSpec.describe 'Update object' do
                             identification: identification,
                             structural: structural)
   end
+
+  let(:description) do
+    { title: [{ value: title }] }
+  end
+
   let(:data) do
     <<~JSON
       {
@@ -78,7 +83,7 @@ RSpec.describe 'Update object' do
           "useAndReproductionStatement":"Property rights reside with the repository..."
         },
         "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-        "description":{"title":[{"value":"#{title}"}]},
+        "description":#{description.to_json},
         "identification":#{identification.to_json},
         "structural":{
           "hasMemberOrders":[{"viewingDirection":"right-to-left"}],
@@ -104,6 +109,51 @@ RSpec.describe 'Update object' do
     # Tags are created.
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Process : Content Type : Book (rtl)'])
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
+  end
+
+  context 'with a structured title that has nonsorting characters' do
+    # This tests the problem found in https://github.com/sul-dlss/argo/issues/2253
+    # where an integer value in a string field was being detected as invalid data.
+    let(:description) do
+      {
+        title: [
+          { structuredValue: [
+            { value: 'The', "type": 'nonsorting characters' },
+            { value: 'romantic Bach', "type": 'main title' },
+            { value: "a celebration of Bach's most romantic music", "type": 'subtitle' },
+            { note: [{ "value": '4', "type": 'nonsorting character count' }] }
+          ] }
+        ]
+      }
+    end
+
+    let(:ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo>
+            <nonSort xml:space="preserve">The</nonSort>
+            <title>romantic Bach</title>
+            <subTitle>a celebration of Bach's most romantic music</subTitle>
+          </titleInfo>
+        </mods>
+      XML
+    end
+
+    let(:item) do
+      Dor::Item.new(pid: druid).tap do |item|
+        item.descMetadata.content = ng_xml.to_xml
+      end
+    end
+
+    it 'accepts the request with a supplied nonsorting character count' do
+      patch "/v1/objects/#{druid}",
+            params: data,
+            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+      expect(response.status).to eq(200)
+      expect(item).to have_received(:save!)
+    end
   end
 
   context 'with a structured title' do
