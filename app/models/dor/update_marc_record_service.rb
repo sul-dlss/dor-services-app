@@ -45,6 +45,7 @@ module Dor
     # Subfield x #6..n (optional): Collection(s) this object is a member of, recorded as collection:druid-value:ckey-value:title
     # Subfield x #7..n (optional): Set(s) this object is a member of, recorded as set:druid-value:ckey-value:title
     # Subfield x #8..n (optional): label and part sort keys for the member
+    # Subfield x #9..n (optional): High-level rights summary
     def generate_symphony_records
       return [] unless ckeys?
 
@@ -84,6 +85,7 @@ module Dor
       new856 += get_x2_collection_info unless get_x2_collection_info.nil?
       new856 += get_x2_constituent_info unless get_x2_constituent_info.nil?
       new856 += get_x2_part_info unless get_x2_part_info.nil?
+      new856 += get_x2_rights_info unless get_x2_rights_info.nil?
       new856
     end
 
@@ -171,6 +173,28 @@ module Dor
       str += "|xsort:#{part_sort.text}" if part_sort
 
       str
+    end
+
+    def get_x2_rights_info
+      values = []
+
+      primary = @dra_object.index_elements[:primary]
+
+      # make the "primary" categorization less granular + terser
+      case primary
+      when 'controlled digital lending'
+        values << 'rights:cdl'
+      when /world/
+        values << 'rights:world'
+      when /access_restricted/
+        values << 'rights:group=stanford' if @dra_object.stanford_only_rights.first.present?
+        values.concat(@dra_object.obj_lvl.location.keys.map { |k| "rights:location=#{k.to_s.gsub(/\W/, '')}" })
+        values.concat(@dra_object.obj_lvl.agent.keys.map { |k| "rights:agent=#{k.to_s.gsub(/\W/, '')}" })
+      else
+        values << "rights:#{primary}"
+      end
+
+      values.map { |value| "|x#{value}" }.join('')
     end
 
     def born_digital?
