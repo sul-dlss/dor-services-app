@@ -2,16 +2,16 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::ToFedora::Access do
+RSpec.describe Cocina::ToFedora::DROAccess do
   subject(:apply) { described_class.apply(item, access) }
 
   let(:item) do
-    Dor::Collection.new
+    Dor::Item.new
   end
 
-  describe 'with stanford access' do
+  describe 'with cdl access' do
     let(:access) do
-      Cocina::Models::Access.new(access: 'stanford', download: 'none')
+      Cocina::Models::DROAccess.new(access: 'citation-only', controlledDigitalLending: true, download: 'none')
     end
 
     it 'builds the xml' do
@@ -26,7 +26,9 @@ RSpec.describe Cocina::ToFedora::Access do
             </access>
             <access type="read">
               <machine>
-                <group rule="no-download">stanford</group>
+                <cdl>
+                  <group rule="no-download">stanford</group>
+                </cdl>
               </machine>
             </access>
             <use>

@@ -29,8 +29,6 @@ module Cocina
       attr_reader :item, :access
 
       def rights_type
-        return 'cdl-stanford-nd'if access.is_a?(Cocina::Models::DROAccess) && access.controlledDigitalLending
-
         case access.access
         when 'location-based'
           "loc:#{access.readLocation}"
