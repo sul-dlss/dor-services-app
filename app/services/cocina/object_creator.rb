@@ -80,11 +80,8 @@ module Cocina
         add_description(item, obj)
         add_dro_tags(pid, obj)
 
-        if obj.access
-          Cocina::ToFedora::DROAccess.apply(item, obj.access)
-        else
-          apply_default_access(item)
-        end
+        apply_default_access(item)
+        Cocina::ToFedora::DROAccess.apply(item, obj.access) if obj.access
 
         item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: pid, object: obj)
         Cocina::ToFedora::Identity.apply(obj, item, object_type: 'item', agreement_id: obj.structural&.hasAgreement)
@@ -101,11 +98,8 @@ module Cocina
                           label: truncate_label(obj.label)).tap do |item|
         add_description(item, obj)
         add_collection_tags(pid, obj)
-        if obj.access
-          Cocina::ToFedora::Access.apply(item, obj.access)
-        else
-          apply_default_access(item)
-        end
+        apply_default_access(item)
+        Cocina::ToFedora::Access.apply(item, obj.access) if obj.access
         Cocina::ToFedora::Identity.apply(obj, item, object_type: 'collection')
       end
     end
@@ -149,7 +143,9 @@ module Cocina
       AdministrativeTags.create(pid: pid, tags: ["Project : #{obj.administrative.partOfProject}"])
     end
 
-    # add the default rights from the admin policy to the provided item
+    # Copy the default rights, use statement and copyright statement from the
+    # admin policy to the provided item.  If the user provided the access
+    # subschema, they may overwrite some of these defaults.
     def apply_default_access(item)
       apo = Dor.find(item.admin_policy_object_id)
       rights_xml = apo.defaultObjectRights.ng_xml
