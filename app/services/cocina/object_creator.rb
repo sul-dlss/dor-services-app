@@ -81,9 +81,7 @@ module Cocina
         add_dro_tags(pid, obj)
 
         if obj.access
-          Cocina::ToFedora::Access.apply(item, obj.access)
-          item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
-          item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
+          Cocina::ToFedora::DROAccess.apply(item, obj.access)
         else
           apply_default_access(item)
         end

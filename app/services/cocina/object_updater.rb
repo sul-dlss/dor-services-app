@@ -78,9 +78,7 @@ module Cocina
 
       add_tags(item.id, obj)
 
-      Cocina::ToFedora::Access.apply(item, obj.access)
-      item.rightsMetadata.copyright = obj.access.copyright if obj.access.copyright
-      item.rightsMetadata.use_statement = obj.access.useAndReproductionStatement if obj.access.useAndReproductionStatement
+      Cocina::ToFedora::DROAccess.apply(item, obj.access)
       update_content_metadata(item, obj)
       Cocina::ToFedora::Identity.apply(obj, item, object_type: 'item', agreement_id: obj.structural&.hasAgreement)
     end
