@@ -18,7 +18,7 @@ RSpec.describe 'Create object' do
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected_label) { label }
-    let(:structural) { { hasAgreement: 'druid:bc777df7777' } }
+    let(:expected_structural) { { hasAgreement: 'druid:bc777df7777' } }
     let(:access) { 'world' }
     let(:expected) do
       Cocina::Models::DRO.new(type: Cocina::Models::Vocab.image,
@@ -39,7 +39,7 @@ RSpec.describe 'Create object' do
                               },
                               identification: identification,
                               externalIdentifier: druid,
-                              structural: structural)
+                              structural: expected_structural)
     end
     let(:data) do
       <<~JSON
@@ -53,12 +53,16 @@ RSpec.describe 'Create object' do
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
           "description":{"title":[{"value":"#{title}"}]},
           "identification":#{identification.to_json},
-          "structural":{"hasAgreement":"druid:bc777df7777"}}
+          "structural":#{structural.to_json}}
       JSON
     end
 
     let(:identification) do
       { sourceId: 'googlebooks:999999' }
+    end
+
+    let(:structural) do
+      { hasAgreement: 'druid:bc777df7777' }
     end
 
     before do
@@ -392,15 +396,8 @@ RSpec.describe 'Create object' do
           'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld'
         }
       end
-      let(:data) do
-        <<~JSON
-          { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
-            "label":"#{label}","version":1,"access":{"access":"#{access}"},
-            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-            "description":{"title":[{"value":"#{title}"}]},
-            "identification":#{identification.to_json},"structural":{"contains":#{filesets.to_json}}}
-        JSON
-      end
+
+      let(:structural) { { contains: filesets } }
 
       let(:item) do
         Dor::Item.new(pid: druid,
@@ -419,7 +416,7 @@ RSpec.describe 'Create object' do
       end
 
       context 'when access match' do
-        let(:structural) do
+        let(:expected_structural) do
           { contains: [
             {
               type: 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
@@ -522,16 +519,7 @@ RSpec.describe 'Create object' do
     context 'when collection is provided' do
       let(:search_result) { [] }
       let(:structural) { { isMemberOf: ['druid:xx888xx7777'] } }
-
-      let(:data) do
-        <<~JSON
-          { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
-            "label":"#{label}","version":1,"access":{"access":"world"},
-            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-            "description":{"title":[{"value":"#{title}"}]},
-            "identification":#{identification.to_json},"structural":{"isMemberOf":["druid:xx888xx7777"]}}
-        JSON
-      end
+      let(:expected_structural) { structural }
 
       let(:item) do
         Dor::Item.new(pid: druid,
@@ -893,7 +881,12 @@ RSpec.describe 'Create object' do
         Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
                                 label: 'This is my label',
                                 version: 1,
-                                access: { access: 'world', download: 'world' },
+                                access: {
+                                  access: 'world',
+                                  download: 'world',
+                                  copyright: 'resides with the creators',
+                                  useAndReproductionStatement: 'You can use it'
+                                },
                                 administrative: { hasAdminPolicy: 'druid:dd999df4567' },
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
@@ -911,7 +904,30 @@ RSpec.describe 'Create object' do
         JSON
       end
 
-      it 'inherits access from the admin policy' do
+      before do
+        apo.defaultObjectRights.content = <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <use>
+              <human type="useAndReproduction">You can use it</human>
+            </use>
+            <copyright>
+              <human>resides with the creators</human>
+            </copyright>
+          </rightsMetadata>
+        XML
+      end
+
+      it 'inherits access, copyright and use statement from the admin policy' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
