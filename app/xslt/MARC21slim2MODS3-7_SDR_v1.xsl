@@ -7141,11 +7141,14 @@
 							../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '100')] or
 							../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '110')] or
 							../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '111')]">
+						<!-- SUL edit 20200924 issue #1071 -->
+						<xsl:attribute name="nameTitleGroup">2</xsl:attribute>
+						<!-- SUL edit 20200924 issue #1071					
 						<xsl:attribute name="nameTitleGroup">
 							<xsl:value-of
 								select="count(preceding-sibling::marc:datafield[@tag = '700' or @tag = '710' or @tag = '711' or @tag = '880']) + 2"
 							/>
-						</xsl:attribute>
+						</xsl:attribute>-->
 					</xsl:when>
 					<xsl:otherwise/>
 				</xsl:choose>
@@ -7166,11 +7169,14 @@
 				<xsl:choose>
 					<xsl:when
 						test="../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '240')]">
+						<!-- SUL edit 20200924 issue #1071 -->
+						<xsl:attribute name="nameTitleGroup">2</xsl:attribute>
+						<!-- SUL edit 20200924 issue #1071					
 						<xsl:attribute name="nameTitleGroup">
 							<xsl:value-of
 								select="count(preceding-sibling::marc:datafield[@tag = '700' or @tag = '710' or @tag = '711' or @tag = '880']) + 2"
 							/>
-						</xsl:attribute>
+						</xsl:attribute>-->
 					</xsl:when>
 					<xsl:otherwise/>
 				</xsl:choose>
@@ -7179,9 +7185,14 @@
 				<xsl:choose>
 					<xsl:when test="child::marc:subfield[@code = 't']">
 						<xsl:attribute name="nameTitleGroup">
+							<!-- SUL edit 20200924 issue #1071 -->
+							<xsl:value-of
+								select="count(preceding-sibling::marc:datafield[@tag = '700' or @tag = '710' or @tag = '711' or @tag = '880']) + 3"
+							/>
+							<!-- SUL edit 20200924 issue #1071					
 							<xsl:value-of
 								select="count(preceding-sibling::marc:datafield[@tag = '700' or @tag = '710' or @tag = '711' or @tag = '880']) + 2"
-							/>
+							/>-->
 						</xsl:attribute>
 					</xsl:when>
 					<xsl:otherwise/>
@@ -7200,9 +7211,14 @@
 				test="self::marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '711')][not(marc:subfield[@code = 't'])]"/>
 			<xsl:otherwise>
 				<xsl:attribute name="nameTitleGroup">
+					<!-- SUL edit 20200924 issue #1071 -->
+					<xsl:value-of
+						select="count(preceding-sibling::marc:datafield[@tag = '700' or @tag = '710' or @tag = '711' or @tag = '880']) + 3"
+					/>
+					<!-- SUL edit 20200924 issue #1071					
 					<xsl:value-of
 						select="count(preceding-sibling::marc:datafield[@tag = '700' or @tag = '710' or @tag = '711' or @tag = '880']) + 2"
-					/>
+					/>-->
 				</xsl:attribute>
 			</xsl:otherwise>
 		</xsl:choose>
