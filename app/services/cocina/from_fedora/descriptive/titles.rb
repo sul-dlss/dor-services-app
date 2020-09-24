@@ -13,6 +13,12 @@ module Cocina
           'partName' => 'part name'
         }.freeze
 
+        NAME_PART = {
+          'family' => 'surname',
+          'given' => 'forename',
+          'date' => 'life dates'
+        }.freeze
+
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
         # @return [Hash] a hash that can be mapped to a cocina model
         # @raises [Mapper::MissingTitle]
@@ -71,12 +77,26 @@ module Cocina
         # @param [Bool] display_types this is set to false in the case that it's a parallelValue and all are translations
         def simple_value(node, display_types:)
           value = node.xpath('./mods:title', mods: DESC_METADATA_NS).text
-          if node['nameTitleGroup']
-            # Derefernce the name in a nameTitleGroup to create the value
-            name = node.xpath("//mods:name[@nameTitleGroup='#{node['nameTitleGroup']}']/mods:namePart", mods: DESC_METADATA_NS)
-            value = "#{name.first.text}. #{value}"
-          end
+          return structured_name(node: node, name_title_group: node['nameTitleGroup'], title: value) if node['nameTitleGroup']
+
           with_attributes({ value: value }, node, display_types: display_types)
+        end
+
+        def structured_name(node:, name_title_group:, title:)
+          # Derefernce the name in a nameTitleGroup to create the value
+          parts = node.xpath("//mods:name[@nameTitleGroup='#{name_title_group}']/mods:namePart", mods: DESC_METADATA_NS)
+          vals = case parts.size
+                 when 0
+                   raise "name not found for #{name_title_group}" unless parts
+                 when 1
+                   [{ value: parts.first.text, type: 'name' }]
+                 when Integer
+                   parts.map { |part| { value: part.text, type: NAME_PART.fetch(part['type']) } }
+                 end
+
+          with_attributes({ structuredValue: vals + [{ value: title, type: 'title' }] },
+                          node,
+                          display_types: true)
         end
 
         # @param [Hash<Symbol,String>] value
