@@ -53,6 +53,10 @@ class ObjectsController < ApplicationController
     json_api_error(status: :unprocessable_entity,
                    title: 'Missing title',
                    message: "All objects are required to have a title, but #{params[:id]} appears to be malformed as a title cannot be found.")
+  rescue Cocina::Mapper::MissingSourceID => e
+    json_api_error(status: :unprocessable_entity,
+                   title: 'Missing sourceId',
+                   message: e)
   end
 
   # Initialize specified workflow (assemblyWF by default), and also version if needed

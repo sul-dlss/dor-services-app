@@ -9,9 +9,12 @@ module Cocina
     # Raised when we can't figure out the title for the object.
     class MissingTitle < StandardError; end
 
+    # Raised when this object is missing a sourceID, so it can't be mapped to cocina.
+    class MissingSourceID < StandardError; end
+
     # @param [Dor::Abstract] item the Fedora object to convert to a cocina object
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
-    # @raises [SolrConnectionError,UnsupportedObjectType]
+    # @raises [SolrConnectionError,UnsupportedObjectType,MissingTitle,MissingSourceID]
     def self.build(item)
       new(item).build
     end

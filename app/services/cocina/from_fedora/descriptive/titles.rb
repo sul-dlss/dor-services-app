@@ -15,6 +15,7 @@ module Cocina
 
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
         # @return [Hash] a hash that can be mapped to a cocina model
+        # @raises [Mapper::MissingTitle]
         def self.build(ng_xml)
           new(ng_xml).build
         end
