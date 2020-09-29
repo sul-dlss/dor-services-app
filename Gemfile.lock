@@ -125,7 +125,7 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     dor-rights-auth (1.6.0)
       nokogiri
-    dor-services (9.6.1)
+    dor-services (9.6.2)
       active-fedora (>= 8.7.0, < 9)
       activesupport (~> 5.1)
       deprecation (~> 0)
@@ -209,7 +209,7 @@ GEM
     ffi (1.13.1)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
-    haml (5.1.2)
+    haml (5.2.0)
       temple (>= 0.8.0)
       tilt
     hashdiff (1.0.1)
