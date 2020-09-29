@@ -256,9 +256,67 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             "status": 'primary'
           },
           {
-            "value": 'Shakespeare, William, 1564-1616. Hamlet',
+            "structuredValue": [
+              {
+                "value": 'Shakespeare, William, 1564-1616',
+                "type": 'name'
+              },
+              {
+                "value": 'Hamlet',
+                "type": 'title'
+              }
+            ],
             "type": 'uniform',
             "uri": 'http://id.loc.gov/authorities/names/n80008522'
+          }
+        ]
+      end
+    end
+
+    context 'when there are uniform titles with multiple name part elements' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo type="uniform" nameTitleGroup="1">
+              <title>Princesse jaune. Vocal score</title>
+            </titleInfo>
+            <name type="personal" usage="primary" nameTitleGroup="1">
+              <namePart type="family">Saint-Sa&#xEB;ns</namePart>
+              <namePart type="given">Camille</namePart>
+              <namePart type="date">1835-1921</namePart>
+            </name>
+          </mods>
+        XML
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
+      it 'creates value from the authority record' do
+        expect(build).to eq [
+          {
+            "structuredValue": [
+              {
+                "value": 'Saint-Saëns',
+                "type": 'surname'
+              },
+              {
+                "value": 'Camille',
+                "type": 'forename'
+              },
+              {
+                "value": '1835-1921',
+                "type": 'life dates'
+              },
+              {
+                "value": 'Princesse jaune. Vocal score',
+                "type": 'title'
+              }
+            ],
+            "type": 'uniform'
           }
         ]
       end
