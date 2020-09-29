@@ -4,8 +4,6 @@ module Cocina
   module ToFedora
     # Builds the contentMetadata xml from cocina filesets
     class ContentMetadataGenerator
-      VALID_THREE_DIMENSION_EXTENSIONS = ['.obj'].freeze
-
       # @param [String] druid the identifier of the item
       # @param [Cocina::Model::RequestDRO] object the cocina model
       def self.generate(druid:, object:)
@@ -27,8 +25,9 @@ module Cocina
         add_book_data(orders.first) if orders.present?
         resources.each_with_index do |cocina_fileset, index|
           # each resource type description gets its own incrementing counter
-          resource_type_counters[resource_type(cocina_fileset)] += 1
-          @xml_doc.root.add_child create_resource_node(cocina_fileset, index + 1)
+          type = ResourceType.for(object_type: object_type, file_set: cocina_fileset)
+          resource_type_counters[type] += 1
+          @xml_doc.root.add_child create_resource_node(cocina_fileset, type, index + 1)
         end
 
         @xml_doc.to_xml
@@ -44,43 +43,6 @@ module Cocina
           node['readingOrder'] = direction
         end
         @xml_doc.root.add_child(book_data)
-      end
-
-      def resource_type(file_set)
-        case object_type
-        when Cocina::Models::Vocab.image, Cocina::Models::Vocab.map
-          'image'
-        when Cocina::Models::Vocab.book
-          resource_has_images = file_set.structural.contains.any? { |file| file.hasMimeType.start_with?('image/') }
-          resource_has_images ? 'page' : 'object'
-        when Cocina::Models::Vocab.three_dimensional
-          # if this resource contains no known 3D file extensions, the resource type is file
-          resource_has_3d_type = file_set.structural.contains.any? { |file| VALID_THREE_DIMENSION_EXTENSIONS.include?(::File.extname(file.filename)) }
-          resource_has_3d_type ? '3d' : 'file'
-        when Cocina::Models::Vocab.webarchive_seed
-          'image'
-        when Cocina::Models::Vocab.geo
-          geo_resource_type(file_set.structural.contains)
-        when Cocina::Models::Vocab.document
-          'document'
-        else
-          'file'
-        end
-      end
-
-      # This logic has been excerpted from
-      # https://github.com/sul-dlss/gis-robot-suite/blob/master/robots/gisAssembly/generate-content-metadata.rb#L30
-      def geo_resource_type(files)
-        case ::File.extname(files.first.filename)
-        when '.zip', '.TAB', '.tab', '.dat', '.bin', '.xls', '.xlsx', '.tar', '.tgz', '.csv', '.tif', '.json', '.geojson', '.topojson', '.dbf'
-          'object'
-        when '.png', '.jpg', '.gif', '.jp2'
-          'preview'
-        when '.xml', '.txt', '.pdf'
-          'attachment'
-        else
-          raise "Unknown resource type for geo: #{file_set.structural.contains.first.filename}"
-        end
       end
 
       def resource_type_counters
@@ -126,14 +88,15 @@ module Cocina
       end
 
       # @param [Hash] cocina_fileset the cocina fileset
+      # @param [String] type resource type to use
       # @param [Integer] sequence
-      def create_resource_node(cocina_fileset, sequence)
+      def create_resource_node(cocina_fileset, type, sequence)
         pid = druid.gsub('druid:', '') # remove druid prefix when creating IDs
 
         Nokogiri::XML::Node.new('resource', @xml_doc).tap do |resource|
           resource['id'] = "#{pid}_#{sequence}"
           resource['sequence'] = sequence
-          resource['type'] = resource_type(cocina_fileset)
+          resource['type'] = type
 
           resource.add_child(Nokogiri::XML::Node.new('label', @xml_doc)
             .tap { |c| c.content = fileset_label(cocina_fileset, resource['type']) })

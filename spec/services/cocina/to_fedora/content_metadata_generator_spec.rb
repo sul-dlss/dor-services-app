@@ -419,15 +419,98 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     end
   end
 
-  context 'with a media' do
+  context 'with a media (video resource)' do
     let(:object_type) { Cocina::Models::Vocab.media }
+
+    let(:file1) do
+      {
+        'version' => 1,
+        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'filename' => 'bb012xz4244_pm.mpeg',
+        'label' => 'bb012xz4244_pm.mpeg',
+        'hasMimeType' => 'video/mpeg',
+        'size' => 997,
+        'administrative' => {
+          'sdrPreserve' => true,
+          'shelve' => false
+        },
+        'access' => {
+          'access' => 'dark'
+        },
+        'hasMessageDigests' => [
+          {
+            'type' => 'sha1',
+            'digest' => 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'
+          },
+          {
+            'type' => 'md5',
+            'digest' => 'e6d52da47a5ade91ae31227b978fb023'
+          }
+
+        ]
+      }
+    end
 
     it 'generates contentMetadata.xml' do
       expect(generate).to be_equivalent_to '<?xml version="1.0"?>
          <contentMetadata objectId="druid:bc123de5678" type="media">
-           <resource id="bc123de5678_1" sequence="1" type="file">
+           <resource id="bc123de5678_1" sequence="1" type="video">
              <label>Page 1</label>
-             <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
+             <file id="bb012xz4244_pm.mpeg" mimetype="video/mpeg" size="997" preserve="yes" publish="no" shelve="no">
+               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
+               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
+             </file>
+             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+               <imageData height="200" width="300"/>
+             </file>
+           </resource>
+           <resource id="bc123de5678_2" sequence="2" type="file">
+             <label>Page 2</label>
+             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
+             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
+           </resource>
+         </contentMetadata>'
+    end
+  end
+
+  context 'with a media (audio resource)' do
+    let(:object_type) { Cocina::Models::Vocab.media }
+
+    let(:file1) do
+      {
+        'version' => 1,
+        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'filename' => 'bb015cf9132_ars0021_201006112000_11_01_sl.m4a',
+        'label' => 'bb015cf9132_ars0021_201006112000_11_01_sl.m4a',
+        'hasMimeType' => 'audio/mp4',
+        'size' => 997,
+        'administrative' => {
+          'sdrPreserve' => true,
+          'shelve' => false
+        },
+        'access' => {
+          'access' => 'dark'
+        },
+        'hasMessageDigests' => [
+          {
+            'type' => 'sha1',
+            'digest' => 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'
+          },
+          {
+            'type' => 'md5',
+            'digest' => 'e6d52da47a5ade91ae31227b978fb023'
+          }
+
+        ]
+      }
+    end
+
+    it 'generates contentMetadata.xml' do
+      expect(generate).to be_equivalent_to '<?xml version="1.0"?>
+         <contentMetadata objectId="druid:bc123de5678" type="media">
+           <resource id="bc123de5678_1" sequence="1" type="audio">
+             <label>Page 1</label>
+             <file id="bb015cf9132_ars0021_201006112000_11_01_sl.m4a" mimetype="audio/mp4" size="997" preserve="yes" publish="no" shelve="no">
                <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
                <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
              </file>
