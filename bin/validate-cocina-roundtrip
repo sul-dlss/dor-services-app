@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+
+SAMPLE_SIZE = 100
+results = ActiveFedora::SolrService.query('*:*', sort: 'random asc', fl: 'id', rows: SAMPLE_SIZE)
+druids = results.map { |r| r['id'] }
+
+druids.each do |druid|
+  item = Dor.find(druid)
+  original_xml = item.descMetadata.content
+  print druid
+  desc_props = Cocina::FromFedora::Descriptive.props(item)
+  cocina = Cocina::Models::Description.new(desc_props)
+  result_xml = Cocina::ToFedora::Descriptive.transform(cocina).to_xml
+  if !EquivalentXml.equivalent?(result_xml, original_xml)
+    puts ' is different:'
+    puts "Expected: #{original_xml}\n"
+    puts "Received: #{result_xml}\n\n\n"
+  else
+    puts " successfully round tripped.\n\n"
+  end
+rescue StandardError => e
+  puts " error. #{e.message}\n\n"
+end
