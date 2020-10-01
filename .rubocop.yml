@@ -110,6 +110,9 @@ Lint/TopLevelReturnWithArgument:
 Lint/UnreachableLoop:
   Enabled: true
 
+Naming/PredicateName:
+  ForbiddenPrefixes: is_
+
 Style/AccessorGrouping:
   Enabled: true
 

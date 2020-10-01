@@ -4,8 +4,6 @@ module Cocina
   module ToFedora
     # Finds the correct type of resource
     class ResourceType
-      VALID_THREE_DIMENSION_EXTENSIONS = ['.obj'].freeze
-
       def self.for(object_type:, file_set:)
         new(object_type: object_type, file_set: file_set).find_resource_type
       end
@@ -20,12 +18,10 @@ module Cocina
         when Cocina::Models::Vocab.image, Cocina::Models::Vocab.map
           'image'
         when Cocina::Models::Vocab.book
-          resource_has_images = file_set.structural.contains.any? { |file| file.hasMimeType.start_with?('image/') }
-          resource_has_images ? 'page' : 'object'
+          Cocina::FileSet.has_any_images?(file_set) ? 'page' : 'object'
         when Cocina::Models::Vocab.three_dimensional
           # if this resource contains no known 3D file extensions, the resource type is file
-          resource_has_3d_type = file_set.structural.contains.any? { |file| VALID_THREE_DIMENSION_EXTENSIONS.include?(::File.extname(file.filename)) }
-          resource_has_3d_type ? '3d' : 'file'
+          Cocina::FileSet.has_any_3d?(file_set) ? '3d' : 'file'
         when Cocina::Models::Vocab.webarchive_seed
           'image'
         when Cocina::Models::Vocab.geo
@@ -44,9 +40,9 @@ module Cocina
       attr_reader :object_type, :file_set
 
       def for_media
-        if file_set.structural.contains.any? { |file| file.hasMimeType.start_with? 'audio/' }
+        if Cocina::FileSet.has_any_audio?(file_set)
           'audio'
-        elsif file_set.structural.contains.any? { |file| file.hasMimeType.start_with? 'video/' }
+        elsif Cocina::FileSet.has_any_video?(file_set)
           'video'
         else
           'file'

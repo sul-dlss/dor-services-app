@@ -97,11 +97,16 @@ module Cocina
           resource['id'] = "#{pid}_#{sequence}"
           resource['sequence'] = sequence
           resource['type'] = type
+          resource['thumb'] = 'yes' if has_thumbnail?(type, cocina_fileset)
 
           resource.add_child(Nokogiri::XML::Node.new('label', @xml_doc)
             .tap { |c| c.content = fileset_label(cocina_fileset, resource['type']) })
           create_file_nodes(resource, cocina_fileset)
         end
+      end
+
+      def has_thumbnail?(type, cocina_fileset)
+        %w[audio video].include?(type) && Cocina::FileSet.has_any_images?(cocina_fileset)
       end
 
       def create_file_nodes(resource, cocina_fileset)
