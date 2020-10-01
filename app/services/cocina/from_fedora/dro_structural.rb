@@ -97,10 +97,22 @@ module Cocina
         end
       end
 
+      def digests(node)
+        [].tap do |digests|
+          # The old google books use upcased versions. See https://argo.stanford.edu/view/druid:dd116zh0343
+          # Web archive crawls use SHA1
+          sha1 = node.xpath('checksum[@type="sha1" or @type="SHA1" or @type="SHA-1"]').text.presence
+          digests << { type: 'sha1', digest: sha1 } if sha1
+          md5 = node.xpath('checksum[@type="md5" or @type="MD5"]').text.presence
+          digests << { type: 'md5', digest: md5 } if md5
+        end
+      end
+
       def build_files(file_nodes, version:, parent_id:)
         file_nodes.map do |node|
           height = node.xpath('imageData/@height').text.presence&.to_i
           width = node.xpath('imageData/@width').text.presence&.to_i
+          use = node.xpath('@role').text.presence
           {
             externalIdentifier: "#{parent_id}/#{node['id']}",
             type: Cocina::Models::Vocab.file,
@@ -108,7 +120,7 @@ module Cocina
             filename: node['id'],
             size: node['size'].to_i,
             version: version,
-            hasMessageDigests: [],
+            hasMessageDigests: digests(node),
             access: { access: node['publish'] == 'yes' ? 'world' : 'dark' },
             administrative: {
               sdrPreserve: node['preserve'] == 'yes',
@@ -118,12 +130,7 @@ module Cocina
             # Files from Goobi and Hydrus don't have mimetype until they hit exif-collect in the assemblyWF
             attrs[:hasMimeType] = node['mimetype'] if node['mimetype']
             attrs[:presentation] = { height: height, width: width } if height && width
-            # The old google books use upcased versions. See https://argo.stanford.edu/view/druid:dd116zh0343
-            # Web archive crawls use SHA1
-            sha1 = node.xpath('checksum[@type="sha1" or @type="SHA1" or @type="SHA-1"]').text.presence
-            attrs[:hasMessageDigests] << { type: 'sha1', digest: sha1 } if sha1
-            md5 = node.xpath('checksum[@type="md5" or @type="MD5"]').text.presence
-            attrs[:hasMessageDigests] << { type: 'md5', digest: md5 } if md5
+            attrs[:use] = use if use
           end
         end
       end
