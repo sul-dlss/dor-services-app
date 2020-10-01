@@ -273,7 +273,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
     end
 
-    context 'when there are uniform titles with multiple name part elements' do
+    context 'when there are uniform titles with multiple name part elements (all labeled)' do
       let(:ng_xml) do
         Nokogiri::XML <<~XML
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -313,6 +313,50 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
               },
               {
                 "value": 'Princesse jaune. Vocal score',
+                "type": 'title'
+              }
+            ],
+            "type": 'uniform'
+          }
+        ]
+      end
+    end
+
+    context 'when there are uniform titles with multiple name part elements (some unlabeled)' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo type="uniform" nameTitleGroup="1">
+              <title>Tractatus de intellectus emendatione. German</title>
+            </titleInfo>
+            <name type="personal" usage="primary" nameTitleGroup="1">
+              <namePart>Spinoza, Benedictus de</namePart>
+              <namePart type="date">1632-1677</namePart>
+            </name>
+          </mods>
+        XML
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
+      it 'creates value from the authority record' do
+        expect(build).to eq [
+          {
+            "structuredValue": [
+              {
+                "value": 'Spinoza, Benedictus de',
+                "type": 'name'
+              },
+              {
+                "value": '1632-1677',
+                "type": 'life dates'
+              },
+              {
+                "value": 'Tractatus de intellectus emendatione. German',
                 "type": 'title'
               }
             ],

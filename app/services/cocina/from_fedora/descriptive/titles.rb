@@ -85,14 +85,9 @@ module Cocina
         def structured_name(node:, name_title_group:, title:)
           # Derefernce the name in a nameTitleGroup to create the value
           parts = node.xpath("//mods:name[@nameTitleGroup='#{name_title_group}']/mods:namePart", mods: DESC_METADATA_NS)
-          vals = case parts.size
-                 when 0
-                   raise "name not found for #{name_title_group}" unless parts
-                 when 1
-                   [{ value: parts.first.text, type: 'name' }]
-                 when Integer
-                   parts.map { |part| { value: part.text, type: NAME_PART.fetch(part['type']) } }
-                 end
+          raise "name not found for #{name_title_group}" if parts.blank?
+
+          vals = parts.map { |part| { value: part.text, type: NAME_PART.fetch(part['type'], 'name') } }
 
           with_attributes({ structuredValue: vals + [{ value: title, type: 'title' }] },
                           node,
