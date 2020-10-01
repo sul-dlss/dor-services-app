@@ -431,6 +431,7 @@ RSpec.describe 'Create object' do
                     size: 0,
                     version: 1,
                     hasMimeType: 'text/html',
+                    use: 'transcription',
                     hasMessageDigests: [
                       {
                         type: 'sha1', digest: 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'

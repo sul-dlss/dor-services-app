@@ -301,4 +301,32 @@ RSpec.describe Cocina::FromFedora::DroStructural do
       end
     end
   end
+
+  context 'when there is a transcript' do
+    subject { file2[:use] }
+
+    let(:resource1) { structural[:contains].first }
+    let(:file2) { resource1[:structural][:contains].second }
+
+    let(:xml) do
+      <<~XML
+        <contentMetadata type="book" id="druid:hx013yf6680">
+          <resource id="cd027gx5097_1" sequence="1" type="page">
+            <label>Page 1</label>
+            <file id="cd027gx5097_0001.tif" mimetype="image/tiff" size="48151214" publish="no" shelve="no" preserve="yes">
+              <checksum type="sha1">7f772a52f4b851c2a33addd357f5132d67043b50</checksum>
+              <checksum type="md5">faa48cebd1ca4a09a646399d7088b3f2</checksum>
+              <imageData height="6806" width="5339"/>
+            </file>
+            <file id="cd027gx5097_0001.xml" mimetype="application/xml" size="74861" publish="yes" shelve="yes" preserve="yes" role="transcription">
+              <checksum type="sha1">959fe418e26d271a52f2133518b34c01cad4921f</checksum>
+              <checksum type="md5">da80f0e0212caf85b5a76c9ef99a9222</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it { is_expected.to eq 'transcription' }
+  end
 end

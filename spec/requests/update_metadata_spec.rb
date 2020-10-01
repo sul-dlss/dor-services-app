@@ -595,6 +595,7 @@ RSpec.describe 'Update object' do
                       size: 0,
                       version: 1,
                       hasMimeType: 'text/html',
+                      use: 'transcription',
                       hasMessageDigests: [
                         {
                           type: 'sha1', digest: 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'
@@ -652,7 +653,6 @@ RSpec.describe 'Update object' do
           patch "/v1/objects/#{druid}",
                 params: data,
                 headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-
           expect(response.body).to eq expected.to_json
           expect(response.status).to eq(200)
           expect(item.contentMetadata.resource.file.count).to eq 4
