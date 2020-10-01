@@ -11,7 +11,7 @@ module Cocina
         'part name' => 'partName',
         'part number' => 'partNumber'
       }.freeze
-      # @param [Cocina::Models::Descriptive] descriptive
+      # @param [Cocina::Models::Description] descriptive
       # @return [Nokogiri::XML::Document]
       def self.transform(descriptive)
         new(descriptive).transform
