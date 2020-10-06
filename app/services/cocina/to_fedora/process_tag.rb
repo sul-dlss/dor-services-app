@@ -24,6 +24,8 @@ module Cocina
                 'Document'
               when Cocina::Models::Vocab.object
                 'File'
+              when Cocina::Models::Vocab.webarchive_seed
+                'Webarchive Seed'
               end
 
         "Process : Content Type : #{tag}" if tag

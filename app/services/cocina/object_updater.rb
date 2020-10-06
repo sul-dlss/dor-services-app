@@ -125,6 +125,8 @@ module Cocina
     end
 
     def add_tag(pid, new_tag, prefix)
+      raise "Must provide a #{prefix} tag for #{pid}" unless new_tag
+
       existing_tag = tag_starting_with(pid, prefix)
       if existing_tag.nil?
         AdministrativeTags.create(pid: pid, tags: [new_tag])
