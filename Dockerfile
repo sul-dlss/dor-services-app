@@ -1,7 +1,7 @@
 # This Dockerfile is optimized for running in development. That means it trades
 # build speed for size. If we were using this for production, we might instead
 # optimize for a smaller size at the cost of a slower build.
-FROM ruby:2.7.1-alpine
+FROM ruby:2.7.2-alpine
 
 # Provide SSL defaults that work in dev/test environments where we do not require connections to secured services
 # These values are overrideable at both buildtime and runtime (hence the ARG/ENV combo).
