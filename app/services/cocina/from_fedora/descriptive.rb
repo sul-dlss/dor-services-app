@@ -8,6 +8,7 @@ module Cocina
 
       # @param [Dor::Item,Dor::Etd] item
       # @return [Hash] a hash that can be mapped to a cocina administrative model
+      # @raises [Cocina::Mapper::InvalidDescMetadata] if some assumption about descMetadata is violated
       def self.props(item)
         new(item).props
       end
