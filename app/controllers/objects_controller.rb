@@ -57,6 +57,10 @@ class ObjectsController < ApplicationController
     json_api_error(status: :unprocessable_entity,
                    title: 'Missing sourceId',
                    message: e)
+  rescue Cocina::Mapper::InvalidDescMetadata => e
+    json_api_error(status: :unprocessable_entity,
+                   title: 'Invalid descMetadata',
+                   message: e)
   end
 
   # Initialize specified workflow (assemblyWF by default), and also version if needed

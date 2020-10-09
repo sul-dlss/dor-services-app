@@ -56,6 +56,8 @@ module Cocina
 
           {}.tap do |role|
             if role_code.present?
+              raise Cocina::Mapper::InvalidDescMetadata, "#{ROLE_CODE_XPATH} is missing required authority attribute" unless role_code.attribute('authority')
+
               role[:code] = role_code.content unless role_code.nil?
               role[:source] = { code: role_code.attribute('authority').value }
             end

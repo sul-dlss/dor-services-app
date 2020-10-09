@@ -12,6 +12,9 @@ module Cocina
     # Raised when this object is missing a sourceID, so it can't be mapped to cocina.
     class MissingSourceID < StandardError; end
 
+    # Raised when assumptions about descMetadata are violated
+    class InvalidDescMetadata < StandardError; end
+
     # @param [Dor::Abstract] item the Fedora object to convert to a cocina object
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
     # @raises [SolrConnectionError,UnsupportedObjectType,MissingTitle,MissingSourceID]
