@@ -8,7 +8,6 @@ module Cocina
         TAG_NAME = {
           'time' => :temporal,
           'genre' => :genre,
-          'place' => :geographic
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] subjects
@@ -72,23 +71,26 @@ module Cocina
 
         def write_basic(subject)
           subject_attributes = {}
-          subject_attributes[:authority] = subject.source.code if subject.source
+          subject_attributes[:authority] = subject.source.code if subject.source && subject.type != 'place'
           xml.subject(subject_attributes) do
             write_topic(subject)
           end
         end
 
         def write_topic(subject)
-          if subject.type == 'person'
+          case subject.type
+          when 'person'
             xml.name topic_attributes_for(subject).merge(type: 'personal') do
               xml.namePart subject.value
             end
-          elsif subject.type == 'title'
+          when 'title'
             xml.titleInfo topic_attributes_for(subject) do
               xml.title subject.value
             end
-          elsif subject.type == 'map coordinates'
+          when 'map coordinates'
             cartographics(xml, subject)
+          when 'place'
+            geographic(xml, subject)
           else
             xml.public_send(TAG_NAME.fetch(subject.type, :topic),
                             subject.value,
@@ -103,6 +105,14 @@ module Cocina
               topic_attributes[:authorityURI] = subject.source.uri
             end
             topic_attributes[:valueURI] = subject.uri if subject.uri
+          end
+        end
+
+        def geographic(xml, subject)
+          if subject.code
+            xml.geographicCode subject.code, authority: subject.source.code
+          else
+            xml.geographic subject.value
           end
         end
 
