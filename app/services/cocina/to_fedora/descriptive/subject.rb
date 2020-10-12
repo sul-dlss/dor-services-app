@@ -58,9 +58,20 @@ module Cocina
           subject_attributes[:valueURI] = subject.uri if subject.uri
 
           xml.subject(subject_attributes) do
-            subject.structuredValue&.each do |component|
-              write_topic(component)
+            if subject.type == 'place'
+              hierarchical_geographic(xml, subject)
+            else
+              subject.structuredValue&.each do |component|
+                write_topic(component)
+              end
             end
+          end
+        end
+
+        def hierarchical_geographic(xml, subject)
+          xml.hierarchicalGeographic do
+            xml.country subject.structuredValue.find { |geo| geo.type == 'country' }.value
+            xml.city subject.structuredValue.find { |geo| geo.type == 'city' }.value
           end
         end
 
