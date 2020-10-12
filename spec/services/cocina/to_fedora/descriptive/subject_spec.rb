@@ -941,4 +941,44 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       XML
     end
   end
+
+  context 'when it has a musical genre as topic' do
+    xit 'TODO' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject authority="lcsh">
+            <topic>String quartets</topic>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has a display label' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": 'Stuff',
+            "type": 'topic',
+            "displayLabel": 'This is about'
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject displayLabel="This is about">
+            <topic>Stuff</topic>
+          </subject>
+        </mods>
+      XML
+    end
+  end
 end
