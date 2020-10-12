@@ -255,4 +255,36 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       XML
     end
   end
+
+  context 'when it has a name subject with authority' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
+            "type": 'person',
+            "uri": 'http://id.loc.gov/authorities/names/n79046044',
+            "source": {
+              "code": 'naf',
+              "uri": 'http://id.loc.gov/authorities/names/'
+            }
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject authority="naf">
+            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79046044">
+              <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
+            </name>
+          </subject>
+        </mods>
+      XML
+    end
+  end
 end

@@ -69,7 +69,7 @@ module Cocina
           subject_attributes[:authority] = subject.source.code if subject.source
           xml.subject(subject_attributes) do
             if subject.type == 'person'
-              xml.name type: 'personal' do
+              xml.name topic_attributes_for(subject).merge(type: 'personal') do
                 xml.namePart subject.value
               end
             else
