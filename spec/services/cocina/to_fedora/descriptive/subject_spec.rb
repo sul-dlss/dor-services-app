@@ -780,10 +780,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
-          "code": "n-us-md",
-          "type": "place",
+          "code": 'n-us-md',
+          "type": 'place',
           "source": {
-            "code": "marcgac"
+            "code": 'marcgac'
           }
         )
       ]
@@ -796,6 +796,45 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <subject>
             <geographicCode authority="marcgac">n-us-md</geographicCode>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has a geographic code subject' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "parallelValue": [
+              {
+                "value": 'United States',
+                "source": {
+                  "code": 'lcsh'
+                }
+              },
+              {
+                "code": 'us',
+                "source": {
+                  "code": 'iso3166'
+                }
+              }
+            ],
+            "type": 'place'
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject>
+            <geographic authority="lcsh">United States</geographic>
+            <geographicCode authority="iso3166">us</geographicCode>
           </subject>
         </mods>
       XML

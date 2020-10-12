@@ -7,7 +7,7 @@ module Cocina
       class Subject
         TAG_NAME = {
           'time' => :temporal,
-          'genre' => :genre,
+          'genre' => :genre
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] subjects
@@ -26,6 +26,8 @@ module Cocina
           subjects.each_with_index do |subject, _alt_rep_group|
             if subject.structuredValue
               write_structured(subject)
+            elsif subject.parallelValue
+              write_parallel(subject)
             else
               write_basic(subject)
             end
@@ -36,17 +38,13 @@ module Cocina
 
         attr_reader :xml, :subjects, :forms
 
-        # def write_parallel(note, alt_rep_group:)
-        #   note.parallelValue.each do |descriptive_value|
-        #     attributes = {
-        #       altRepGroup: alt_rep_group,
-        #       lang: descriptive_value.valueLanguage.code
-        #     }
-        #     attributes[:script] = descriptive_value.valueLanguage.valueScript.code
-        #
-        #     xml.abstract(descriptive_value.value, attributes)
-        #   end
-        # end
+        def write_parallel(subject)
+          xml.subject do
+            subject.parallelValue.each do |geo|
+              geographic(xml, geo)
+            end
+          end
+        end
 
         def write_structured(subject)
           subject_attributes = {}
@@ -112,7 +110,9 @@ module Cocina
           if subject.code
             xml.geographicCode subject.code, authority: subject.source.code
           else
-            xml.geographic subject.value
+            attrs = {}
+            attrs[:authority] = subject.source.code if subject.source
+            xml.geographic subject.value, attrs
           end
         end
 
