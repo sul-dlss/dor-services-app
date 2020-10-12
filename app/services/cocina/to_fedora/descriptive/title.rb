@@ -5,6 +5,12 @@ module Cocina
     class Descriptive
       # Maps titles from cocina to MODS XML
       class Title
+        TAG_NAME = {
+          'nonsorting characters' => :nonSort,
+          'main title' => :title,
+          'part name' => 'partName',
+          'part number' => 'partNumber'
+        }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValueRequired>] titles
         def self.write(xml:, titles:)
