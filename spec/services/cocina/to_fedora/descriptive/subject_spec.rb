@@ -461,4 +461,91 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       XML
     end
   end
+
+  context 'when it has a name-title subject with authority' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          structuredValue: [
+            {
+              "value": 'Dunnett, Dorothy',
+              "type": 'person'
+            },
+            {
+              "value": 'Lymond chronicles',
+              "type": 'title'
+            }
+          ],
+          "uri": 'http://id.loc.gov/authorities/names/n97075542',
+          "source": {
+            "code": 'naf',
+            "uri": 'http://id.loc.gov/authorities/names/'
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n97075542">
+            <name type="personal">
+              <namePart>Dunnett, Dorothy</namePart>
+            </name>
+            <titleInfo>
+              <title>Lymond chronicles</title>
+            </titleInfo>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has a name-title subject with authority plus authority for name' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          structuredValue: [
+            {
+              "value": 'Dunnett, Dorothy',
+              "type": 'person',
+              "uri": 'http://id.loc.gov/authorities/names/n50025011',
+              "source": {
+                "code": 'naf',
+                "uri": 'http://id.loc.gov/authorities/names/'
+              }
+            },
+            {
+              "value": 'Lymond chronicles',
+              "type": 'title'
+            }
+          ],
+          "uri": 'http://id.loc.gov/authorities/names/n97075542',
+          "source": {
+            "code": 'naf',
+            "uri": 'http://id.loc.gov/authorities/names/'
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n97075542">
+            <name authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50025011" type="personal">
+              <namePart>Dunnett, Dorothy</namePart>
+            </name>
+            <titleInfo>
+              <title>Lymond chronicles</title>
+            </titleInfo>
+          </subject>
+        </mods>
+      XML
+    end
+  end
 end

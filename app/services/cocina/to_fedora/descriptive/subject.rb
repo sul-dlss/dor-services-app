@@ -75,6 +75,10 @@ module Cocina
             xml.name topic_attributes_for(subject).merge(type: 'personal') do
               xml.namePart subject.value
             end
+          elsif subject.type == 'title'
+            xml.titleInfo topic_attributes_for(subject) do
+              xml.title subject.value
+            end
           else
             xml.public_send(TAG_NAME.fetch(subject.type, :topic),
                             subject.value,
