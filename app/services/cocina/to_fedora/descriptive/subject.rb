@@ -4,6 +4,7 @@ module Cocina
   module ToFedora
     class Descriptive
       # Maps subjects from cocina to MODS XML
+      # rubocop:disable Metrics/ClassLength
       class Subject
         TAG_NAME = {
           'time' => :temporal,
@@ -23,11 +24,11 @@ module Cocina
         end
 
         def write
-          subjects.each_with_index do |subject, _alt_rep_group|
+          subjects.each_with_index do |subject, alt_rep_group|
             if subject.structuredValue
               write_structured(subject)
             elsif subject.parallelValue
-              write_parallel(subject)
+              write_parallel(subject, alt_rep_group: alt_rep_group)
             else
               write_basic(subject)
             end
@@ -38,10 +39,18 @@ module Cocina
 
         attr_reader :xml, :subjects, :forms
 
-        def write_parallel(subject)
-          xml.subject do
-            subject.parallelValue.each do |geo|
-              geographic(xml, geo)
+        def write_parallel(subject, alt_rep_group:)
+          if subject.type == 'place'
+            xml.subject do
+              subject.parallelValue.each do |geo|
+                geographic(geo)
+              end
+            end
+          else
+            subject.parallelValue.each do |val|
+              xml.subject lang: val.valueLanguage.code, altRepGroup: alt_rep_group do
+                write_topic(val)
+              end
             end
           end
         end
@@ -91,7 +100,7 @@ module Cocina
           when 'map coordinates'
             cartographics(xml, subject)
           when 'place'
-            geographic(xml, subject)
+            geographic(subject)
           else
             xml.public_send(TAG_NAME.fetch(subject.type, :topic),
                             subject.value,
@@ -110,7 +119,7 @@ module Cocina
           end
         end
 
-        def geographic(xml, subject)
+        def geographic(subject)
           if subject.code
             xml.geographicCode subject.code, authority: subject.source.code
           else
@@ -141,6 +150,7 @@ module Cocina
           end
         end
       end
+      # rubocop:enable Metrics/ClassLength
     end
   end
 end
