@@ -5,12 +5,6 @@ module Cocina
     # This transforms the DRO.descriptive schema to the
     # Fedora 3 data model descMetadata
     class Descriptive
-      TAG_NAME = {
-        'nonsorting characters' => :nonSort,
-        'main title' => :title,
-        'part name' => 'partName',
-        'part number' => 'partNumber'
-      }.freeze
       # @param [Cocina::Models::Description] descriptive
       # @return [Nokogiri::XML::Document]
       def self.transform(descriptive)
