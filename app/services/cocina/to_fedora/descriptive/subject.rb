@@ -68,7 +68,13 @@ module Cocina
           subject_attributes = {}
           subject_attributes[:authority] = subject.source.code if subject.source
           xml.subject(subject_attributes) do
-            xml.topic subject.value, topic_attributes_for(subject)
+            if subject.type == 'person'
+              xml.name type: 'personal' do
+                xml.namePart subject.value
+              end
+            else
+              xml.topic subject.value, topic_attributes_for(subject)
+            end
           end
         end
 
