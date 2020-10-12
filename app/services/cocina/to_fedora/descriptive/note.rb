@@ -43,7 +43,9 @@ module Cocina
         end
 
         def write_basic(note)
-          xml.abstract note.value
+          attributes = {}
+          attributes[:displayLabel] = note.displayLabel if note.displayLabel
+          xml.abstract note.value, attributes
         end
       end
     end
