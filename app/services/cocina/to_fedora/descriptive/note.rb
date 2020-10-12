@@ -17,14 +17,34 @@ module Cocina
         end
 
         def write
-          notes.each_with_index do |note, _alt_rep_group|
-            xml.abstract note.value
+          notes.each_with_index do |note, alt_rep_group|
+            if note.parallelValue
+              write_parallel(note, alt_rep_group: alt_rep_group)
+            else
+              write_basic(note)
+            end
           end
         end
 
         private
 
         attr_reader :xml, :notes
+
+        def write_parallel(note, alt_rep_group:)
+          note.parallelValue.each do |descriptive_value|
+            attributes = {
+              altRepGroup: alt_rep_group,
+              lang: descriptive_value.valueLanguage.code
+            }
+            attributes[:script] = descriptive_value.valueLanguage.valueScript.code
+
+            xml.abstract(descriptive_value.value, attributes)
+          end
+        end
+
+        def write_basic(note)
+          xml.abstract note.value
+        end
       end
     end
   end
