@@ -16,6 +16,12 @@ RSpec.describe Cocina::ToFedora::Descriptive do
             value: 'This is an abstract.',
             type: 'summary'
           }
+        ],
+        subject: [
+          {
+            "value": 'Cats',
+            "type": 'topic'
+          }
         ]
       )
     end
@@ -29,6 +35,9 @@ RSpec.describe Cocina::ToFedora::Descriptive do
             <title>Gaudy night</title>
           </titleInfo>
           <abstract>This is an abstract.</abstract>
+          <subject>
+            <topic>Cats</topic>
+          </subject>
         </mods>
       XML
     end
