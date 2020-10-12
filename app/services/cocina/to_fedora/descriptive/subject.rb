@@ -7,7 +7,8 @@ module Cocina
       class Subject
         TAG_NAME = {
           'time' => :temporal,
-          'genre' => :genre
+          'genre' => :genre,
+          'place' => :geographic
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] subjects

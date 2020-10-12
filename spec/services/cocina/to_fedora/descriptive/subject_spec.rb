@@ -650,4 +650,36 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       XML
     end
   end
+
+  context 'when it has a geographic subject subdivision' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          structuredValue: [
+            {
+              "value": 'Cats',
+              "type": 'topic'
+            },
+            {
+              "value": 'Europe',
+              "type": 'place'
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject>
+            <topic>Cats</topic>
+            <geographic>Europe</geographic>
+          </subject>
+        </mods>
+      XML
+    end
+  end
 end
