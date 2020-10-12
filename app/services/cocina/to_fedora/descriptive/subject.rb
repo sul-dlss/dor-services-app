@@ -54,8 +54,13 @@ module Cocina
         end
 
         def write_basic(subject)
-          xml.subject do
-            xml.topic subject.value
+          subject_attributes = {}
+          subject_attributes[:authority] = subject.source.code if subject.source
+          xml.subject(subject_attributes) do
+            topic_attributes = subject_attributes.dup
+            topic_attributes[:valueURI] = subject.uri if subject.uri
+            topic_attributes[:authorityURI] = subject.source.uri if subject.source
+            xml.topic subject.value, topic_attributes
           end
         end
       end
