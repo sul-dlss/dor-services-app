@@ -23,7 +23,7 @@ module Cocina
                    'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
             Descriptive::Title.write(xml: xml, titles: descriptive.title)
             Descriptive::Note.write(xml: xml, notes: descriptive.note)
-            Descriptive::Subject.write(xml: xml, subjects: descriptive.subject)
+            Descriptive::Subject.write(xml: xml, subjects: descriptive.subject, forms: descriptive.form)
           end
         end
       end

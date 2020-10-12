@@ -12,13 +12,15 @@ module Cocina
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] subjects
-        def self.write(xml:, subjects:)
-          new(xml: xml, subjects: subjects).write
+        # @params [Array<Cocina::Models::DescriptiveValue>] forms
+        def self.write(xml:, subjects:, forms: [])
+          new(xml: xml, subjects: subjects, forms: forms).write
         end
 
-        def initialize(xml:, subjects:)
+        def initialize(xml:, subjects:, forms:)
           @xml = xml
           @subjects = subjects
+          @forms = forms
         end
 
         def write
@@ -33,7 +35,7 @@ module Cocina
 
         private
 
-        attr_reader :xml, :subjects
+        attr_reader :xml, :subjects, :forms
 
         # def write_parallel(note, alt_rep_group:)
         #   note.parallelValue.each do |descriptive_value|
@@ -68,13 +70,6 @@ module Cocina
           end
         end
 
-        def hierarchical_geographic(xml, subject)
-          xml.hierarchicalGeographic do
-            xml.country subject.structuredValue.find { |geo| geo.type == 'country' }.value
-            xml.city subject.structuredValue.find { |geo| geo.type == 'city' }.value
-          end
-        end
-
         def write_basic(subject)
           subject_attributes = {}
           subject_attributes[:authority] = subject.source.code if subject.source
@@ -92,6 +87,8 @@ module Cocina
             xml.titleInfo topic_attributes_for(subject) do
               xml.title subject.value
             end
+          elsif subject.type == 'map coordinates'
+            cartographics(xml, subject)
           else
             xml.public_send(TAG_NAME.fetch(subject.type, :topic),
                             subject.value,
@@ -106,6 +103,21 @@ module Cocina
               topic_attributes[:authorityURI] = subject.source.uri
             end
             topic_attributes[:valueURI] = subject.uri if subject.uri
+          end
+        end
+
+        def cartographics(xml, subject)
+          xml.cartographics do
+            xml.coordinates subject.value
+            xml.scale forms.find { |form| form.type == 'map scale' }.value
+            xml.projection forms.find { |form| form.type == 'map projection' }.value
+          end
+        end
+
+        def hierarchical_geographic(xml, subject)
+          xml.hierarchicalGeographic do
+            xml.country subject.structuredValue.find { |geo| geo.type == 'country' }.value
+            xml.city subject.structuredValue.find { |geo| geo.type == 'city' }.value
           end
         end
       end

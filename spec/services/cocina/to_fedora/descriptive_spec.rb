@@ -17,10 +17,23 @@ RSpec.describe Cocina::ToFedora::Descriptive do
             type: 'summary'
           }
         ],
+        form: [
+          {
+            value: '1:22,000,000',
+            type: 'map scale'
+          },
+          {
+            value: 'Conic proj',
+            type: 'map projection'
+          }
+        ],
         subject: [
           {
-            "value": 'Cats',
-            "type": 'topic'
+            value: 'E 72°--E 148°/N 13°--N 18°',
+            type: 'map coordinates',
+            encoding: {
+              value: 'DMS'
+            }
           }
         ]
       )
@@ -36,7 +49,11 @@ RSpec.describe Cocina::ToFedora::Descriptive do
           </titleInfo>
           <abstract>This is an abstract.</abstract>
           <subject>
-            <topic>Cats</topic>
+            <cartographics>
+              <coordinates>E 72°--E 148°/N 13°--N 18°</coordinates>
+              <scale>1:22,000,000</scale>
+              <projection>Conic proj</projection>
+            </cartographics>
           </subject>
         </mods>
       XML
