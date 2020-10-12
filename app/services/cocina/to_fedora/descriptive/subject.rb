@@ -57,9 +57,7 @@ module Cocina
 
           xml.subject(subject_attributes) do
             subject.structuredValue&.each do |component|
-              xml.public_send(TAG_NAME.fetch(component.type, :topic),
-                              component.value,
-                              topic_attributes_for(component))
+              write_topic(component)
             end
           end
         end
@@ -68,13 +66,19 @@ module Cocina
           subject_attributes = {}
           subject_attributes[:authority] = subject.source.code if subject.source
           xml.subject(subject_attributes) do
-            if subject.type == 'person'
-              xml.name topic_attributes_for(subject).merge(type: 'personal') do
-                xml.namePart subject.value
-              end
-            else
-              xml.topic subject.value, topic_attributes_for(subject)
+            write_topic(subject)
+          end
+        end
+
+        def write_topic(subject)
+          if subject.type == 'person'
+            xml.name topic_attributes_for(subject).merge(type: 'personal') do
+              xml.namePart subject.value
             end
+          else
+            xml.public_send(TAG_NAME.fetch(subject.type, :topic),
+                            subject.value,
+                            topic_attributes_for(subject))
           end
         end
 
