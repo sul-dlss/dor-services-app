@@ -46,7 +46,14 @@ module Cocina
         # end
 
         def write_structured(subject)
-          xml.subject do
+          subject_attributes = {}
+          if subject.source
+            subject_attributes[:authority] = subject.source.code
+            subject_attributes[:authorityURI] = subject.source.uri
+          end
+          subject_attributes[:valueURI] = subject.uri if subject.uri
+
+          xml.subject(subject_attributes) do
             subject.structuredValue&.each do |component|
               xml.public_send(TAG_NAME.fetch(component.type, :topic), component.value)
             end
