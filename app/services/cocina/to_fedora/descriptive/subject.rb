@@ -102,6 +102,7 @@ module Cocina
               topic_attributes[:authority] = subject.source.code
               topic_attributes[:authorityURI] = subject.source.uri
             end
+            topic_attributes[:encoding] = subject.encoding.code if subject.encoding
             topic_attributes[:valueURI] = subject.uri if subject.uri
           end
         end
