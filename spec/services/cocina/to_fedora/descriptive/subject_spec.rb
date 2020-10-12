@@ -866,4 +866,40 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       XML
     end
   end
+
+  context 'when it has a temporal subject with range' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "structuredValue": [
+            {
+              "value": '1890-06-11',
+              "type": 'start'
+            },
+            {
+              "value": '1894-03-19',
+              "type": 'end'
+            }
+          ],
+          "encoding": {
+            "code": 'w3cdtf'
+          },
+          "type": 'time'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject>
+            <temporal encoding="w3cdtf" point="start">1890-06-11</temporal>
+            <temporal encoding="w3cdtf" point="end">1894-03-19</temporal>
+          </subject>
+        </mods>
+      XML
+    end
+  end
 end

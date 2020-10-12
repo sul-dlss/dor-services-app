@@ -57,8 +57,11 @@ module Cocina
           subject_attributes[:valueURI] = subject.uri if subject.uri
 
           xml.subject(subject_attributes) do
-            if subject.type == 'place'
+            case subject.type
+            when 'place'
               hierarchical_geographic(xml, subject)
+            when 'time'
+              time_range(xml, subject)
             else
               subject.structuredValue&.each do |component|
                 write_topic(component)
@@ -114,6 +117,12 @@ module Cocina
             attrs = {}
             attrs[:authority] = subject.source.code if subject.source
             xml.geographic subject.value, attrs
+          end
+        end
+
+        def time_range(xml, subject)
+          subject.structuredValue.each do |point|
+            xml.temporal point.value, point: point.type, encoding: subject.encoding.code
           end
         end
 
