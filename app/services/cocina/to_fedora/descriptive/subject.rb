@@ -4,25 +4,31 @@ module Cocina
   module ToFedora
     class Descriptive
       # Maps subjects from cocina to MODS XML
+      # rubocop:disable Metrics/ClassLength
       class Subject
         TAG_NAME = {
-          'time' => :temporal
+          'time' => :temporal,
+          'genre' => :genre
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] subjects
-        def self.write(xml:, subjects:)
-          new(xml: xml, subjects: subjects).write
+        # @params [Array<Cocina::Models::DescriptiveValue>] forms
+        def self.write(xml:, subjects:, forms: [])
+          new(xml: xml, subjects: subjects, forms: forms).write
         end
 
-        def initialize(xml:, subjects:)
+        def initialize(xml:, subjects:, forms:)
           @xml = xml
           @subjects = subjects
+          @forms = forms
         end
 
         def write
-          subjects.each_with_index do |subject, _alt_rep_group|
+          subjects.each_with_index do |subject, alt_rep_group|
             if subject.structuredValue
               write_structured(subject)
+            elsif subject.parallelValue
+              write_parallel(subject, alt_rep_group: alt_rep_group)
             else
               write_basic(subject)
             end
@@ -31,19 +37,23 @@ module Cocina
 
         private
 
-        attr_reader :xml, :subjects
+        attr_reader :xml, :subjects, :forms
 
-        # def write_parallel(note, alt_rep_group:)
-        #   note.parallelValue.each do |descriptive_value|
-        #     attributes = {
-        #       altRepGroup: alt_rep_group,
-        #       lang: descriptive_value.valueLanguage.code
-        #     }
-        #     attributes[:script] = descriptive_value.valueLanguage.valueScript.code
-        #
-        #     xml.abstract(descriptive_value.value, attributes)
-        #   end
-        # end
+        def write_parallel(subject, alt_rep_group:)
+          if subject.type == 'place'
+            xml.subject do
+              subject.parallelValue.each do |geo|
+                geographic(geo)
+              end
+            end
+          else
+            subject.parallelValue.each do |val|
+              xml.subject lang: val.valueLanguage.code, altRepGroup: alt_rep_group do
+                write_topic(val)
+              end
+            end
+          end
+        end
 
         def write_structured(subject)
           subject_attributes = {}
@@ -56,25 +66,42 @@ module Cocina
           subject_attributes[:valueURI] = subject.uri if subject.uri
 
           xml.subject(subject_attributes) do
-            subject.structuredValue&.each do |component|
-              write_topic(component)
+            case subject.type
+            when 'place'
+              hierarchical_geographic(xml, subject)
+            when 'time'
+              time_range(xml, subject)
+            else
+              subject.structuredValue&.each do |component|
+                write_topic(component)
+              end
             end
           end
         end
 
         def write_basic(subject)
           subject_attributes = {}
-          subject_attributes[:authority] = subject.source.code if subject.source
+          subject_attributes[:authority] = subject.source.code if subject.source && subject.type != 'place'
+          subject_attributes[:displayLabel] = subject.displayLabel if subject.displayLabel
           xml.subject(subject_attributes) do
             write_topic(subject)
           end
         end
 
         def write_topic(subject)
-          if subject.type == 'person'
+          case subject.type
+          when 'person'
             xml.name topic_attributes_for(subject).merge(type: 'personal') do
               xml.namePart subject.value
             end
+          when 'title'
+            xml.titleInfo topic_attributes_for(subject) do
+              xml.title subject.value
+            end
+          when 'map coordinates'
+            cartographics(xml, subject)
+          when 'place'
+            geographic(subject)
           else
             xml.public_send(TAG_NAME.fetch(subject.type, :topic),
                             subject.value,
@@ -88,10 +115,43 @@ module Cocina
               topic_attributes[:authority] = subject.source.code
               topic_attributes[:authorityURI] = subject.source.uri
             end
+            topic_attributes[:encoding] = subject.encoding.code if subject.encoding
             topic_attributes[:valueURI] = subject.uri if subject.uri
           end
         end
+
+        def geographic(subject)
+          if subject.code
+            xml.geographicCode subject.code, authority: subject.source.code
+          else
+            attrs = {}
+            attrs[:authority] = subject.source.code if subject.source
+            xml.geographic subject.value, attrs
+          end
+        end
+
+        def time_range(xml, subject)
+          subject.structuredValue.each do |point|
+            xml.temporal point.value, point: point.type, encoding: subject.encoding.code
+          end
+        end
+
+        def cartographics(xml, subject)
+          xml.cartographics do
+            xml.coordinates subject.value
+            xml.scale forms.find { |form| form.type == 'map scale' }.value
+            xml.projection forms.find { |form| form.type == 'map projection' }.value
+          end
+        end
+
+        def hierarchical_geographic(xml, subject)
+          xml.hierarchicalGeographic do
+            xml.country subject.structuredValue.find { |geo| geo.type == 'country' }.value
+            xml.city subject.structuredValue.find { |geo| geo.type == 'city' }.value
+          end
+        end
       end
+      # rubocop:enable Metrics/ClassLength
     end
   end
 end
