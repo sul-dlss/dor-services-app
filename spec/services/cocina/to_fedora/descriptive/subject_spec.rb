@@ -295,12 +295,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
           {
             structuredValue: [
               {
-                "value": "Shakespeare, William, 1564-1616",
-                "type": "person"
+                "value": 'Shakespeare, William, 1564-1616',
+                "type": 'person'
               },
               {
-                "value": "Homes and haunts",
-                "type": "topic"
+                "value": 'Homes and haunts',
+                "type": 'topic'
               }
             ]
           }
@@ -314,6 +314,47 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <subject>
+            <name type="personal">
+              <namePart>Shakespeare, William, 1564-1616</namePart>
+            </name>
+            <topic>Homes and haunts</topic>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has a name subject with additional terms and authority for the set' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            structuredValue: [
+              {
+                "value": 'Shakespeare, William, 1564-1616',
+                "type": 'person'
+              },
+              {
+                "value": 'Homes and haunts',
+                "type": 'topic'
+              }
+            ],
+            "uri": 'http://id.loc.gov/authorities/subjects/sh85120951',
+            "source": {
+              "code": 'lcsh',
+              "uri": 'http://id.loc.gov/authorities/subjects/'
+            }
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85120951">
             <name type="personal">
               <namePart>Shakespeare, William, 1564-1616</namePart>
             </name>
