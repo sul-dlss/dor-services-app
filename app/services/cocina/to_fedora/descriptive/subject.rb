@@ -50,12 +50,16 @@ module Cocina
           if subject.source
             subject_attributes[:authority] = subject.source.code
             subject_attributes[:authorityURI] = subject.source.uri
+          elsif subject.structuredValue&.first&.source
+            subject_attributes[:authority] = subject.structuredValue.first.source.code
           end
           subject_attributes[:valueURI] = subject.uri if subject.uri
 
           xml.subject(subject_attributes) do
             subject.structuredValue&.each do |component|
-              xml.public_send(TAG_NAME.fetch(component.type, :topic), component.value)
+              xml.public_send(TAG_NAME.fetch(component.type, :topic),
+                              component.value,
+                              topic_attributes_for(component))
             end
           end
         end
@@ -64,10 +68,17 @@ module Cocina
           subject_attributes = {}
           subject_attributes[:authority] = subject.source.code if subject.source
           xml.subject(subject_attributes) do
-            topic_attributes = subject_attributes.dup
+            xml.topic subject.value, topic_attributes_for(subject)
+          end
+        end
+
+        def topic_attributes_for(subject)
+          {}.tap do |topic_attributes|
+            if subject.source
+              topic_attributes[:authority] = subject.source.code
+              topic_attributes[:authorityURI] = subject.source.uri
+            end
             topic_attributes[:valueURI] = subject.uri if subject.uri
-            topic_attributes[:authorityURI] = subject.source.uri if subject.source
-            xml.topic subject.value, topic_attributes
           end
         end
       end

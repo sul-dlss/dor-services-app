@@ -51,8 +51,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
               "type": 'topic'
             },
             {
-              "value": "1640",
-              "type": "time"
+              "value": '1640',
+              "type": 'time'
             }
           ]
         )
@@ -80,10 +80,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
           {
             "value": 'Cats',
             "type": 'topic',
-            "uri": "http://id.loc.gov/authorities/subjects/sh85021262",
+            "uri": 'http://id.loc.gov/authorities/subjects/sh85021262',
             "source": {
-              "code": "lcsh",
-              "uri": "http://id.loc.gov/authorities/subjects/"
+              "code": 'lcsh',
+              "uri": 'http://id.loc.gov/authorities/subjects/'
             }
           }
         )
@@ -103,7 +103,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     end
   end
 
-
   context 'when it has a multi-term topic subject with authority for set' do
     let(:subjects) do
       [
@@ -114,14 +113,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
               "type": 'topic'
             },
             {
-              "value": "Anatomy",
-              "type": "topic"
+              "value": 'Anatomy',
+              "type": 'topic'
             }
           ],
-          "uri": "http://id.loc.gov/authorities/subjects/sh85021263",
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85021263',
           "source": {
-            "code": "lcsh",
-            "uri": "http://id.loc.gov/authorities/subjects/"
+            "code": 'lcsh',
+            "uri": 'http://id.loc.gov/authorities/subjects/'
           }
         )
       ]
@@ -135,6 +134,48 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
           <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021263">
             <topic>Cats</topic>
             <topic>Anatomy</topic>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has a multi-term topic subject with authority for terms' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          structuredValue: [
+            {
+              "value": 'Cats',
+              "type": 'topic',
+              "uri": 'http://id.loc.gov/authorities/subjects/sh85021262',
+              "source": {
+                "code": 'lcsh',
+                "uri": 'http://id.loc.gov/authorities/subjects/'
+              }
+            },
+            {
+              "value": 'Behavior',
+              "type": 'topic',
+              "uri": 'http://id.loc.gov/authorities/subjects/sj96004895',
+              "source": {
+                "code": 'lcsh',
+                "uri": 'http://id.loc.gov/authorities/subjects/'
+              }
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject authority="lcsh">
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sj96004895">Behavior</topic>
           </subject>
         </mods>
       XML
