@@ -6,7 +6,8 @@ module Cocina
       # Maps subjects from cocina to MODS XML
       class Subject
         TAG_NAME = {
-          'time' => :temporal
+          'time' => :temporal,
+          'genre' => :genre
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] subjects
