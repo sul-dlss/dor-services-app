@@ -24,6 +24,7 @@ module Cocina
             Descriptive::Title.write(xml: xml, titles: descriptive.title)
             Descriptive::Note.write(xml: xml, notes: descriptive.note)
             Descriptive::Subject.write(xml: xml, subjects: descriptive.subject, forms: descriptive.form)
+            Descriptive::Event.write(xml: xml, events: descriptive.event)
           end
         end
       end
