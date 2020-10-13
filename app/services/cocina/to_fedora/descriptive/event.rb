@@ -51,11 +51,7 @@ module Cocina
 
         def note(note)
           attributes = {}
-          # if name.valueLanguage
-          #   attributes[:lang] = name.valueLanguage.code
-          #   attributes[:script] = name.valueLanguage.valueScript.code
-          #   attributes[:transliteration] = name.standard.value if name.standard
-          # end
+          attributes[:authority] = note.source.code if note.source&.code
           xml.send(note.type, note.value, attributes)
         end
 
