@@ -641,4 +641,63 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       XML
     end
   end
+
+  context 'when it has a publisher that is transliterated' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          "type": 'publication',
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Institut russkoĭ literatury (Pushkinskiĭ Dom)',
+                  "type": 'transliteration',
+                  "standard": {
+                    "value": 'ALA-LC Romanization Tables'
+                  },
+                  "valueLanguage": {
+                    "code": 'rus',
+                    "source": {
+                      "code": 'iso639-2b'
+                    },
+                    "valueScript": {
+                      "code": 'Latn',
+                      "source": {
+                        "code": 'iso15924'
+                      }
+                    }
+                  }
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo>
+            <publisher lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
 end

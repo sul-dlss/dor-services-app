@@ -47,7 +47,14 @@ module Cocina
         end
 
         def contributor(contributor)
-          xml.send(contributor.role.first.value, contributor.name.first.value)
+          attributes = {}
+          name = contributor.name.first
+          if name.valueLanguage
+            attributes[:lang] = name.valueLanguage.code
+            attributes[:script] = name.valueLanguage.valueScript.code
+            attributes[:transliteration] = name.standard.value
+          end
+          xml.send(contributor.role.first.value, name.value, attributes)
         end
 
         def location(location)
