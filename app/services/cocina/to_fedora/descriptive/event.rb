@@ -7,7 +7,8 @@ module Cocina
       class Event
         TAG_NAME = {
           'creation' => :dateCreated,
-          'publication' => :dateIssued
+          'publication' => :dateIssued,
+          'copyright' => :copyrightDate
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::Event>] events
