@@ -34,11 +34,16 @@ module Cocina
 
         def write_basic(event)
           xml.originInfo do
-            event.date.each do |date|
+            Array(event.date).each do |date|
               if date.structuredValue
                 date_range(date.structuredValue, event.type)
               else
                 date_tag(date, event.type)
+              end
+            end
+            Array(event.location).each do |location|
+              xml.place authority: location.source.code, authorityURI: location.source.uri, valueURI: location.uri do
+                xml.placeTerm location.value, type: 'text'
               end
             end
           end
