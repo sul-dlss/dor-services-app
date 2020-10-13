@@ -819,7 +819,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
-  context 'edition' do
+  context 'with edition' do
     let(:events) do
       [
         Cocina::Models::Event.new(
@@ -841,6 +841,42 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <originInfo>
             <edition>1st ed.</edition>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'with issuance and frequency' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          "type": 'publication',
+          "note": [
+            {
+              "value": 'serial',
+              "type": 'issuance',
+              "source": {
+                "value": 'MODS issuance terms'
+              }
+            },
+            {
+              "value": 'every full moon',
+              "type": 'frequency'
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo>
+            <issuance>serial</issuance>
+            <frequency>every full moon</frequency>
           </originInfo>
         </mods>
       XML

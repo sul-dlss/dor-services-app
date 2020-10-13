@@ -73,9 +73,7 @@ module Cocina
         def location(location)
           if location.code
             xml.place do
-              if location.value
-                xml.placeTerm location.value, type: 'text', authority: location.source.code, authorityURI: location.source.uri, valueURI: location.uri
-              end
+              xml.placeTerm location.value, type: 'text', authority: location.source.code, authorityURI: location.source.uri, valueURI: location.uri if location.value
               attributes = { type: 'code', authority: location.source.code }
               if location.uri
                 attributes[:valueURI] = location.uri
