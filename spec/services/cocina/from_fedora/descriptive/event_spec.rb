@@ -237,4 +237,32 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       ]
     end
   end
+
+  context 'with multiple single dates' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <dateIssued keyDate="yes">1940</dateIssued>
+          <dateIssued>1942</dateIssued>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "date": [
+            {
+              "value": '1940',
+              "status": 'primary'
+            },
+            {
+              "value": '1942'
+            }
+          ]
+        }
+      ]
+    end
+  end
 end
