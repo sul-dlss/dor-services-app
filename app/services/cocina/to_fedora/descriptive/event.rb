@@ -43,7 +43,20 @@ module Cocina
             Array(event.contributor).each do |contrib|
               contributor(contrib)
             end
+            Array(event.note).each do |note|
+              note(note)
+            end
           end
+        end
+
+        def note(note)
+          attributes = {}
+          # if name.valueLanguage
+          #   attributes[:lang] = name.valueLanguage.code
+          #   attributes[:script] = name.valueLanguage.valueScript.code
+          #   attributes[:transliteration] = name.standard.value if name.standard
+          # end
+          xml.send(note.type, note.value, attributes)
         end
 
         def contributor(contributor)
@@ -60,7 +73,9 @@ module Cocina
         def location(location)
           if location.code
             xml.place do
-              xml.placeTerm location.value, type: 'text', authority: location.source.code, authorityURI: location.source.uri, valueURI: location.uri if location.value
+              if location.value
+                xml.placeTerm location.value, type: 'text', authority: location.source.code, authorityURI: location.source.uri, valueURI: location.uri
+              end
               attributes = { type: 'code', authority: location.source.code }
               if location.uri
                 attributes[:valueURI] = location.uri
