@@ -19,7 +19,7 @@ module Cocina
 
         def initialize(xml:, subjects:, forms:)
           @xml = xml
-          @subjects = subjects
+          @subjects = Array(subjects)
           @forms = forms
         end
 
