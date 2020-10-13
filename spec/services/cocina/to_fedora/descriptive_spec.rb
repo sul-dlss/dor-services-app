@@ -35,6 +35,16 @@ RSpec.describe Cocina::ToFedora::Descriptive do
               value: 'DMS'
             }
           }
+        ],
+        event: [
+          {
+            type: 'creation',
+            date: [
+              {
+                value: '1980'
+              }
+            ]
+          }
         ]
       )
     end
@@ -50,11 +60,14 @@ RSpec.describe Cocina::ToFedora::Descriptive do
           <abstract>This is an abstract.</abstract>
           <subject>
             <cartographics>
-              <coordinates>E 72°--E 148°/N 13°--N 18°</coordinates>
+              <coordinates>E 72&#xB0;--E 148&#xB0;/N 13&#xB0;--N 18&#xB0;</coordinates>
               <scale>1:22,000,000</scale>
               <projection>Conic proj</projection>
             </cartographics>
           </subject>
+          <originInfo>
+            <dateCreated>1980</dateCreated>
+          </originInfo>
         </mods>
       XML
     end
