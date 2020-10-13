@@ -347,4 +347,33 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       ]
     end
   end
+
+  context 'with place text (authorized)' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+        <place authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">
+          <placeTerm type="text">Stanford (Calif.)</placeTerm>
+        </place>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "location": [
+            {
+              "value": 'Stanford (Calif.)',
+              "uri": 'http://id.loc.gov/authorities/names/n50046557',
+              "source": {
+                "code": 'naf',
+                "uri": 'http://id.loc.gov/authorities/names/'
+              }
+            }
+          ]
+        }
+      ]
+    end
+  end
 end
