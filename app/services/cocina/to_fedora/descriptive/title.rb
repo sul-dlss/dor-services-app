@@ -8,6 +8,7 @@ module Cocina
         TAG_NAME = {
           'nonsorting characters' => :nonSort,
           'main title' => :title,
+          'subtitle' => :subTitle,
           'part name' => 'partName',
           'part number' => 'partNumber'
         }.freeze
