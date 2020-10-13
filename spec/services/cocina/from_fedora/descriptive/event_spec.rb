@@ -63,4 +63,27 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       ]
     end
   end
+
+  context 'with a single copyrightDate' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <copyrightDate>1930</copyrightDate>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'copyright',
+          "date": [
+            {
+              "value": '1930'
+            }
+          ]
+        }
+      ]
+    end
+  end
 end

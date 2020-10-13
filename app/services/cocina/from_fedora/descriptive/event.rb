@@ -25,6 +25,9 @@ module Cocina
 
               date_issued = origin.xpath('mods:dateIssued', mods: DESC_METADATA_NS)
               events << build_event('publication', date_issued) if date_issued.present?
+
+              copyright_date = origin.xpath('mods:copyrightDate', mods: DESC_METADATA_NS)
+              events << build_event('copyright', copyright_date) if copyright_date.present?
             end
           end
         end
