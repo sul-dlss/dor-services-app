@@ -40,7 +40,14 @@ module Cocina
             Array(event.location).each do |loc|
               location(loc)
             end
+            Array(event.contributor).each do |contrib|
+              contributor(contrib)
+            end
           end
+        end
+
+        def contributor(contributor)
+          xml.send(contributor.role.first.value, contributor.name.first.value)
         end
 
         def location(location)
