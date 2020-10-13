@@ -52,7 +52,7 @@ module Cocina
           if name.valueLanguage
             attributes[:lang] = name.valueLanguage.code
             attributes[:script] = name.valueLanguage.valueScript.code
-            attributes[:transliteration] = name.standard.value
+            attributes[:transliteration] = name.standard.value if name.standard
           end
           xml.send(contributor.role.first.value, name.value, attributes)
         end
