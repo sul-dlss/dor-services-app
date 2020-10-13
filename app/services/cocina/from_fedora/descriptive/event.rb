@@ -18,29 +18,55 @@ module Cocina
         end
 
         def build
-          [].tap do |events|
-            origin_info.each do |origin|
-              date_created = origin.xpath('mods:dateCreated', mods: DESC_METADATA_NS)
-              events << build_event('creation', date_created) if date_created.present?
+          origin_info.flat_map do |origin|
+            events = build_events_for_origin_info(origin)
 
-              date_issued = origin.xpath('mods:dateIssued', mods: DESC_METADATA_NS)
-              events << build_event('publication', date_issued) if date_issued.present?
-
-              copyright_date = origin.xpath('mods:copyrightDate', mods: DESC_METADATA_NS)
-              events << build_event('copyright', copyright_date) if copyright_date.present?
-
-              date_captured = origin.xpath('mods:dateCaptured', mods: DESC_METADATA_NS)
-              events << build_event('capture', date_captured) if date_captured.present?
-
-              date_other = origin.xpath('mods:dateOther', mods: DESC_METADATA_NS)
-              events << build_event(nil, date_other) if date_other.present?
-            end
+            events = [{}] if events.empty?
+            place = origin.xpath('mods:place', mods: DESC_METADATA_NS)
+            add_place_info(events.last, place) if place.present?
+            events
           end
         end
 
         private
 
         attr_reader :ng_xml
+
+        def build_events_for_origin_info(origin)
+          [].tap do |events|
+            date_created = origin.xpath('mods:dateCreated', mods: DESC_METADATA_NS)
+            events << build_event('creation', date_created) if date_created.present?
+
+            date_issued = origin.xpath('mods:dateIssued', mods: DESC_METADATA_NS)
+            events << build_event('publication', date_issued) if date_issued.present?
+
+            copyright_date = origin.xpath('mods:copyrightDate', mods: DESC_METADATA_NS)
+            events << build_event('copyright', copyright_date) if copyright_date.present?
+
+            date_captured = origin.xpath('mods:dateCaptured', mods: DESC_METADATA_NS)
+            events << build_event('capture', date_captured) if date_captured.present?
+
+            date_other = origin.xpath('mods:dateOther', mods: DESC_METADATA_NS)
+            events << build_event(nil, date_other) if date_other.present?
+          end
+        end
+
+        def add_place_info(event, place_set)
+          event[:location] = place_set.map do |place|
+            place_term = place.xpath('mods:placeTerm', mods: DESC_METADATA_NS).first
+            {
+              value: place_term.text
+            }.tap do |result|
+              if place['valueURI']
+                result[:uri] = place['valueURI']
+                result[:source] = {
+                  code: place['authority'],
+                  uri: place['authorityURI']
+                }
+              end
+            end
+          end
+        end
 
         def build_event(type, node_set)
           points = node_set.select { |node| node['point'] }
