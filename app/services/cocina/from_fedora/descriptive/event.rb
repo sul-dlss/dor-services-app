@@ -55,13 +55,16 @@ module Cocina
           event[:location] = place_set.map do |place|
             place_term = place.xpath('mods:placeTerm', mods: DESC_METADATA_NS).first
             {
-              value: place_term.text,
-              uri: place['valueURI'],
-              source: {
-                code: place['authority'],
-                uri: place['authorityURI']
-              }
-            }
+              value: place_term.text
+            }.tap do |result|
+              if place['valueURI']
+                result[:uri] = place['valueURI']
+                result[:source] = {
+                  code: place['authority'],
+                  uri: place['authorityURI']
+                }
+              end
+            end
           end
         end
 

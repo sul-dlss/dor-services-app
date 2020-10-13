@@ -376,4 +376,54 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       ]
     end
   end
+
+  context 'with multiple originInfo elements for different events' do
+    let(:xml) do
+      <<~XML
+        <originInfo eventType="creation">
+          <dateCreated>1899</dateCreated>
+          <place>
+            <placeTerm type="text">York</placeTerm>
+          </place>
+        </originInfo>
+        <originInfo eventType="publication">
+          <dateIssued>1901</dateIssued>
+          <place>
+            <placeTerm type="text">London</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'creation',
+          "date": [
+            {
+              "value": '1899'
+            }
+          ],
+          "location": [
+            {
+              "value": 'York'
+            }
+          ]
+        },
+        {
+          "type": 'publication',
+          "date": [
+            {
+              "value": '1901'
+            }
+          ],
+          "location": [
+            {
+              "value": 'London'
+            }
+          ]
+        }
+      ]
+    end
+  end
 end
