@@ -265,4 +265,30 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       ]
     end
   end
+
+  context 'with BCE date (edtf encoding)' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <dateCreated encoding="edtf">-0499</dateCreated>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'creation',
+          "date": [
+            {
+              "value": '-0499',
+              "encoding": {
+                "code": 'edtf'
+              }
+            }
+          ]
+        }
+      ]
+    end
+  end
 end
