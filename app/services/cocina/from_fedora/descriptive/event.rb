@@ -22,15 +22,33 @@ module Cocina
             events = build_events_for_origin_info(origin)
 
             events = [{}] if events.empty?
+
             place = origin.xpath('mods:place', mods: DESC_METADATA_NS)
             add_place_info(events.last, place) if place.present?
-            events
+
+            issuance = origin.xpath('mods:issuance', mods: DESC_METADATA_NS)
+            frequency = origin.xpath('mods:frequency', mods: DESC_METADATA_NS)
+            if issuance.present? || frequency.present?
+              publication_event = find_or_create_publication_event(events)
+              add_issuance_info(publication_event, issuance)
+              add_frequency_info(publication_event, frequency)
+            end
+            events.reject(&:blank?)
           end
         end
 
         private
 
         attr_reader :ng_xml
+
+        def find_or_create_publication_event(events)
+          publication_event = events.find { |e| e[:type] == 'publication' }
+          return publication_event if publication_event
+
+          { type: 'publication' }.tap do |event|
+            events << event
+          end
+        end
 
         def build_events_for_origin_info(origin)
           [].tap do |events|
@@ -66,6 +84,27 @@ module Cocina
               end
             end
           end
+        end
+
+        def add_issuance_info(event, set)
+          return if set.blank?
+
+          event[:note] ||= []
+          event[:note] << {
+            source: { value: 'MODS issuance terms' },
+            type: 'issuance',
+            value: set.text
+          }
+        end
+
+        def add_frequency_info(event, set)
+          return if set.blank?
+
+          event[:note] ||= []
+          event[:note] << {
+            type: 'frequency',
+            value: set.text
+          }
         end
 
         def build_event(type, node_set)
