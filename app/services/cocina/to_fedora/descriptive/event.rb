@@ -23,8 +23,10 @@ module Cocina
         end
 
         def write
-          events.each_with_index do |event, _alt_rep_group|
-            write_basic(event)
+          events.each do |event|
+            attributes = {}
+            attributes[:eventType] = event.type if events.size > 1
+            write_basic(event, attributes)
           end
         end
 
@@ -32,8 +34,8 @@ module Cocina
 
         attr_reader :xml, :events
 
-        def write_basic(event)
-          xml.originInfo do
+        def write_basic(event, attributes)
+          xml.originInfo attributes do
             Array(event.date).each do |date|
               basic_date(date, event.type)
             end

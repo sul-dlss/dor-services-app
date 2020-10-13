@@ -921,4 +921,58 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       XML
     end
   end
+
+  context 'with multiple originInfo elements' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          "type": 'creation',
+          "date": [
+            {
+              "value": '1899'
+            }
+          ],
+          "location": [
+            {
+              "value": 'York'
+            }
+          ]
+        ),
+        Cocina::Models::Event.new(
+          "type": 'publication',
+          "date": [
+            {
+              "value": '1901'
+            }
+          ],
+          "location": [
+            {
+              "value": 'London'
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo eventType="creation">
+            <dateCreated>1899</dateCreated>
+            <place>
+              <placeTerm type="text">York</placeTerm>
+            </place>
+          </originInfo>
+          <originInfo eventType="publication">
+            <dateIssued>1901</dateIssued>
+            <place>
+              <placeTerm type="text">London</placeTerm>
+            </place>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
 end
