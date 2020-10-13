@@ -17,7 +17,7 @@ module Cocina
         end
 
         def write
-          notes.each_with_index do |note, alt_rep_group|
+          Array(notes).each_with_index do |note, alt_rep_group|
             if note.parallelValue
               write_parallel(note, alt_rep_group: alt_rep_group)
             else

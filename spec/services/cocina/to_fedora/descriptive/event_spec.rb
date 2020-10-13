@@ -16,6 +16,19 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  context 'when events is nil' do
+    let(:events) { nil }
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        </mods>
+      XML
+    end
+  end
+
   context 'when it has a single dateCreated' do
     let(:events) do
       [
