@@ -47,12 +47,27 @@ module Cocina
           if location.code
             xml.place do
               xml.placeTerm location.value, type: 'text', authority: location.source.code, authorityURI: location.source.uri, valueURI: location.uri if location.value
-              xml.placeTerm location.code, type: 'code', authority: location.source.code, authorityURI: location.source.uri, valueURI: location.uri
+              attributes = { type: 'code', authority: location.source.code }
+              if location.uri
+                attributes[:valueURI] = location.uri
+                attributes[:authorityURI] = location.source.uri
+              end
+              xml.placeTerm location.code, attributes
             end
           elsif location.value
-            xml.place authority: location.source.code, authorityURI: location.source.uri, valueURI: location.uri do
-              xml.placeTerm location.value, type: 'text'
-            end
+            location_text_value(location)
+          end
+        end
+
+        def location_text_value(location)
+          attributes = {}
+          if location.uri
+            attributes[:authority] = location.source.code
+            attributes[:authorityURI] = location.source.uri
+            attributes[:valueURI] = location.uri
+          end
+          xml.place attributes do
+            xml.placeTerm location.value, type: 'text'
           end
         end
 
