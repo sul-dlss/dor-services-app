@@ -292,7 +292,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     end
   end
 
-  context 'with Multiple date types' do
+  context 'with multiple date types' do
     let(:xml) do
       <<~XML
         <originInfo>
@@ -317,6 +317,30 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
           "date": [
             {
               "value": '1940'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  context 'with date range, no start point' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <dateIssued point="end">1980</dateIssued>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "date": [
+            {
+              "value": '1980',
+              'type': 'end'
             }
           ]
         }
