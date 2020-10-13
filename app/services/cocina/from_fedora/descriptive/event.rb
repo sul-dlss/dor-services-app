@@ -63,7 +63,8 @@ module Cocina
 
         def build_date(type, node)
           {}.tap do |date|
-            date[:value] = node.text if node.text
+            date[:value] = node.text
+            date[:qualifier] = node[:qualifier] if node[:qualifier]
             date[:encoding] = { code: node['encoding'] } if node['encoding']
             date[:status] = 'primary' if node['keyDate']
             date[:note] = [{ value: node['type'], type: 'date type' }] unless type

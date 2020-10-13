@@ -175,4 +175,28 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       ]
     end
   end
+
+  context 'with an approximate date' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <dateCreated qualifier="approximate">1940</dateCreated>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'creation',
+          "date": [
+            {
+              "value": '1940',
+              "qualifier": 'approximate'
+            }
+          ]
+        }
+      ]
+    end
+  end
 end
