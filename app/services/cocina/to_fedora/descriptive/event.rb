@@ -8,7 +8,8 @@ module Cocina
         TAG_NAME = {
           'creation' => :dateCreated,
           'publication' => :dateIssued,
-          'copyright' => :copyrightDate
+          'copyright' => :copyrightDate,
+          'capture' => :dateCaptured
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::Event>] events
@@ -37,6 +38,8 @@ module Cocina
             value = date.value
             attributes = {}
             attributes[:encoding] = date.encoding.code if date.encoding
+            attributes[:keyDate] = 'yes' if date.status == 'primary'
+
             xml.public_send(TAG_NAME.fetch(event.type), value, attributes)
           end
         end
