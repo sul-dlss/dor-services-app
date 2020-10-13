@@ -35,14 +35,27 @@ module Cocina
         def write_basic(event)
           xml.originInfo do
             date = event.date.first
-            value = date.value
-            tag = TAG_NAME.fetch(event.type, :dateOther)
-            attributes = {}
-            attributes[:encoding] = date.encoding.code if date.encoding
-            attributes[:keyDate] = 'yes' if date.status == 'primary'
-            attributes[:type] = date.note.find { |note| note.type == 'date type' }.value if tag == :dateOther
+            if date.structuredValue
+              date_range(date.structuredValue, event.type)
+            else
+              date_tag(date, event.type)
+            end
+          end
+        end
 
-            xml.public_send(tag, value, attributes)
+        def date_tag(date, event_type, attributes = {})
+          value = date.value
+          tag = TAG_NAME.fetch(event_type, :dateOther)
+          attributes[:encoding] = date.encoding.code if date.encoding
+          attributes[:keyDate] = 'yes' if date.status == 'primary'
+          attributes[:type] = date.note.find { |note| note.type == 'date type' }.value if tag == :dateOther
+
+          xml.public_send(tag, value, attributes)
+        end
+
+        def date_range(dates, event_type)
+          dates.each do |date|
+            date_tag(date, event_type, point: date.type)
           end
         end
       end
