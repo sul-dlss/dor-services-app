@@ -31,6 +31,9 @@ module Cocina
 
               date_captured = origin.xpath('mods:dateCaptured', mods: DESC_METADATA_NS)
               events << build_event('capture', date_captured) if date_captured.present?
+
+              date_other = origin.xpath('mods:dateOther', mods: DESC_METADATA_NS)
+              events << build_event(nil, date_other) if date_other.present?
             end
           end
         end
@@ -44,7 +47,10 @@ module Cocina
           date = { value: node.text }
           date[:encoding] = { code: node['encoding'] } if node['encoding']
           date[:status] = 'primary' if node['keyDate']
-          { type: type, date: [date] }
+          date[:note] = [{ value: node['type'], type: 'date type' }] unless type
+          { date: [date] }.tap do |event|
+            event[:type] = type if type
+          end
         end
 
         def origin_info

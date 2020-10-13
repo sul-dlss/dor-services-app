@@ -113,4 +113,32 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       ]
     end
   end
+
+  context 'with a single dateOther' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <dateOther type="Islamic">1441 AH</dateOther>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "date": [
+            {
+              "value": '1441 AH',
+              "note": [
+                {
+                  "value": 'Islamic',
+                  "type": 'date type'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    end
+  end
 end
