@@ -5,6 +5,10 @@ module Cocina
     class Descriptive
       # Maps events from cocina to MODS XML
       class Event
+        TAG_NAME = {
+          'creation' => :dateCreated,
+          'publication' => :dateIssued
+        }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::Event>] events
         def self.write(xml:, events:)
@@ -28,7 +32,11 @@ module Cocina
 
         def write_basic(event)
           xml.originInfo do
-            xml.dateCreated event.date.first.value
+            date = event.date.first
+            value = date.value
+            attributes = {}
+            attributes[:encoding] = date.encoding.code if date.encoding
+            xml.public_send(TAG_NAME.fetch(event.type), value, attributes)
           end
         end
       end
