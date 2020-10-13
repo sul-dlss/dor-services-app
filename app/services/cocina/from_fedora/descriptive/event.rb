@@ -43,22 +43,21 @@ module Cocina
         attr_reader :ng_xml
 
         def build_event(type, node_set)
-          date = if node_set.size == 1
-                   build_date(type, node_set.first)
-                 else
-                   build_structured_date(type, node_set)
-                 end
-          { date: [date] }.tap do |event|
+          dates = build_structured_date(type, node_set.select { |node| node['point'] })
+          node_set.reject { |node| node['point'] }.each do |node|
+            dates << build_date(type, node)
+          end
+
+          { date: dates }.tap do |event|
             event[:type] = type if type
           end
         end
 
         def build_structured_date(type, node_set)
-          { structuredValue: [] }.tap do |date|
-            node_set.each do |node|
-              date[:structuredValue] << build_date(type, node)
-            end
-          end
+          return [] if node_set.blank?
+
+          dates = node_set.map { |node| build_date(type, node) }
+          [{ structuredValue: dates }]
         end
 
         def build_date(type, node)
