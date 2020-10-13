@@ -44,6 +44,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
         Cocina::Models::DescriptiveValueRequired.new(
           { structuredValue: [{ type: 'nonsorting characters', value: 'The' },
                               { type: 'main title', value: 'journal of stuff' },
+                              { type: 'subtitle', value: 'a journal' },
                               { type: 'part number', value: 'volume 5' },
                               { type: 'part name', value: 'special issue' },
                               { note: [{ type: 'nonsorting character count', value: '4' }] }] }
@@ -59,6 +60,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
           <titleInfo>
             <nonSort>The</nonSort>
             <title>journal of stuff</title>
+            <subTitle>a journal</subTitle>
             <partNumber>volume 5</partNumber>
             <partName>special issue</partName>
           </titleInfo>
