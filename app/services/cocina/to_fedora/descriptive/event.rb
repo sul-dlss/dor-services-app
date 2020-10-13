@@ -36,11 +36,13 @@ module Cocina
           xml.originInfo do
             date = event.date.first
             value = date.value
+            tag = TAG_NAME.fetch(event.type, :dateOther)
             attributes = {}
             attributes[:encoding] = date.encoding.code if date.encoding
             attributes[:keyDate] = 'yes' if date.status == 'primary'
+            attributes[:type] = date.note.find { |note| note.type == 'date type' }.value if tag == :dateOther
 
-            xml.public_send(TAG_NAME.fetch(event.type), value, attributes)
+            xml.public_send(tag, value, attributes)
           end
         end
       end
