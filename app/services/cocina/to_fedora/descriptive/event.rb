@@ -47,6 +47,7 @@ module Cocina
           value = date.value
           tag = TAG_NAME.fetch(event_type, :dateOther)
           attributes[:encoding] = date.encoding.code if date.encoding
+          attributes[:qualifier] = date.qualifier if date.qualifier
           attributes[:keyDate] = 'yes' if date.status == 'primary'
           attributes[:type] = date.note.find { |note| note.type == 'date type' }.value if tag == :dateOther
 
