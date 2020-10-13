@@ -24,13 +24,39 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       XML
     end
 
-    it 'raises an error' do
+    it 'builds the cocina data structure' do
       expect(build).to eq [
         {
           "type": 'creation',
           "date": [
             {
               "value": '1980'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  context 'with a simple dateIssued (with encoding)' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <dateIssued encoding="w3cdtf">1928</dateIssued>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "date": [
+            {
+              "value": '1928',
+              "encoding": {
+                "code": 'w3cdtf'
+              }
             }
           ]
         }
