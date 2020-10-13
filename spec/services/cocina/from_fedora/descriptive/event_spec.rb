@@ -86,4 +86,31 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       ]
     end
   end
+
+  context 'with a single dateCaptured (ISO 8601 encoding, keyDate)' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <dateCaptured keyDate="yes" encoding="iso8601">20131012231249</dateCaptured>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'capture',
+          "date": [
+            {
+              "value": '20131012231249',
+              "encoding": {
+                "code": 'iso8601'
+              },
+              "status": 'primary'
+            }
+          ]
+        }
+      ]
+    end
+  end
 end

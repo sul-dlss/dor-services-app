@@ -28,6 +28,9 @@ module Cocina
 
               copyright_date = origin.xpath('mods:copyrightDate', mods: DESC_METADATA_NS)
               events << build_event('copyright', copyright_date) if copyright_date.present?
+
+              date_captured = origin.xpath('mods:dateCaptured', mods: DESC_METADATA_NS)
+              events << build_event('capture', date_captured) if date_captured.present?
             end
           end
         end
@@ -40,6 +43,7 @@ module Cocina
           node = node_set.first
           date = { value: node.text }
           date[:encoding] = { code: node['encoding'] } if node['encoding']
+          date[:status] = 'primary' if node['keyDate']
           { type: type, date: [date] }
         end
 
