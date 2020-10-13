@@ -291,4 +291,36 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       ]
     end
   end
+
+  context 'with Multiple date types' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <dateIssued>1955</dateIssued>
+          <copyrightDate>1940</copyrightDate>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "date": [
+            {
+              "value": '1955'
+            }
+          ]
+        },
+        {
+          "type": 'copyright',
+          "date": [
+            {
+              "value": '1940'
+            }
+          ]
+        }
+      ]
+    end
+  end
 end
