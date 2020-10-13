@@ -43,13 +43,31 @@ module Cocina
         attr_reader :ng_xml
 
         def build_event(type, node_set)
-          node = node_set.first
-          date = { value: node.text }
-          date[:encoding] = { code: node['encoding'] } if node['encoding']
-          date[:status] = 'primary' if node['keyDate']
-          date[:note] = [{ value: node['type'], type: 'date type' }] unless type
+          date = if node_set.size == 1
+                   build_date(type, node_set.first)
+                 else
+                   build_structured_date(type, node_set)
+                 end
           { date: [date] }.tap do |event|
             event[:type] = type if type
+          end
+        end
+
+        def build_structured_date(type, node_set)
+          { structuredValue: [] }.tap do |date|
+            node_set.each do |node|
+              date[:structuredValue] << build_date(type, node)
+            end
+          end
+        end
+
+        def build_date(type, node)
+          {}.tap do |date|
+            date[:value] = node.text if node.text
+            date[:encoding] = { code: node['encoding'] } if node['encoding']
+            date[:status] = 'primary' if node['keyDate']
+            date[:note] = [{ value: node['type'], type: 'date type' }] unless type
+            date[:type] = node['point'] if node['point']
           end
         end
 

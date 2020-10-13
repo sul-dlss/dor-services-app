@@ -141,4 +141,38 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       ]
     end
   end
+
+  context 'with a date range' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <dateCreated keyDate="yes" point="start">1920</dateCreated>
+          <dateCreated point="end">1925</dateCreated>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'creation',
+          "date": [
+            {
+              "structuredValue": [
+                {
+                  "value": '1920',
+                  "type": 'start',
+                  "status": 'primary'
+                },
+                {
+                  "value": '1925',
+                  "type": 'end'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    end
+  end
 end
