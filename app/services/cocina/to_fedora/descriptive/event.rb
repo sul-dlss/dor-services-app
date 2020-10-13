@@ -23,16 +23,25 @@ module Cocina
         end
 
         def write
-          events.each do |event|
+          events.each_with_index do |event, count|
             attributes = {}
             attributes[:eventType] = event.type if events.size > 1
-            write_basic(event, attributes)
+            if translated?(event)
+              TranslatedEvent.write(xml: xml, event: event, count: count)
+            else
+              write_basic(event, attributes)
+            end
           end
         end
 
         private
 
         attr_reader :xml, :events
+
+        def translated?(event)
+          Array(event.location).any?(&:parallelValue) &&
+            Array(event.contributor).flat_map(&:name).all?(&:parallelValue)
+        end
 
         def write_basic(event, attributes)
           xml.originInfo attributes do

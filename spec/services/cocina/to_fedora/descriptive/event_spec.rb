@@ -922,7 +922,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
-  context 'with multiple originInfo elements' do
+  context 'with multiple events' do
     let(:events) do
       [
         Cocina::Models::Event.new(
@@ -970,6 +970,118 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
             <place>
               <placeTerm type="text">London</placeTerm>
             </place>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'with event represented in multiple languages' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          "type": 'publication',
+          "location": [
+            {
+              "parallelValue": [
+                {
+                  "value": 'Kyōto-shi',
+                  "valueLanguage": {
+                    "valueScript": {
+                      "code": 'Latn',
+                      "source": {
+                        "code": 'iso15924'
+                      }
+                    }
+                  }
+                },
+                {
+                  "value": '京都市',
+                  "valueLanguage": {
+                    "valueScript": {
+                      "code": 'Hani',
+                      "source": {
+                        "code": 'iso15924'
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "code": 'ja',
+              "source": {
+                "code": 'marccountry'
+              }
+            }
+          ],
+          "contributor": [
+            {
+              "type": 'organization',
+              "name": [
+                {
+                  "parallelValue": [
+                    {
+                      "value": 'Rinsen Shoten',
+                      "valueLanguage": {
+                        "valueScript": {
+                          "code": 'Latn',
+                          "source": {
+                            "code": 'iso15924'
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "value": '臨川書店',
+                      "valueLanguage": {
+                        "valueScript": {
+                          "code": 'Hani',
+                          "source": {
+                            "code": 'iso15924'
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ],
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo script="Latn" altRepGroup="0">
+            <place>
+              <placeTerm type="code" authority="marccountry">ja</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">Kyōto-shi</placeTerm>
+            </place>
+            <publisher>Rinsen Shoten</publisher>
+          </originInfo>
+          <originInfo script="Hani" altRepGroup="0">
+            <place>
+              <placeTerm type="text">京都市</placeTerm>
+            </place>
+            <publisher>臨川書店</publisher>
           </originInfo>
         </mods>
       XML
