@@ -11,19 +11,34 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
                'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                'version' => '3.6',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, notes: [note])
+        described_class.write(xml: xml, notes: notes)
       end
     end
   end
 
+  context 'when note is nil' do
+    let(:notes) { nil }
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        </mods>
+      XML
+    end
+  end
+
   context 'when it has a simple abstract' do
-    let(:note) do
-      Cocina::Models::DescriptiveValue.new(
-        {
-          value: 'This is an abstract.',
-          type: 'summary'
-        }
-      )
+    let(:notes) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            value: 'This is an abstract.',
+            type: 'summary'
+          }
+        )
+      ]
     end
 
     it 'builds the xml' do
@@ -38,44 +53,46 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
   end
 
   context 'when it has a multilingual abstract' do
-    let(:note) do
-      Cocina::Models::DescriptiveValue.new(
-        {
-          "type": 'summary',
-          "parallelValue": [
-            {
-              "value": 'This is an abstract.',
-              "valueLanguage": {
-                "code": 'eng',
-                "source": {
-                  "code": 'iso639-2b'
-                },
-                "valueScript": {
-                  "code": 'Latn',
+    let(:notes) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "type": 'summary',
+            "parallelValue": [
+              {
+                "value": 'This is an abstract.',
+                "valueLanguage": {
+                  "code": 'eng',
                   "source": {
-                    "code": 'iso15924'
+                    "code": 'iso639-2b'
+                  },
+                  "valueScript": {
+                    "code": 'Latn',
+                    "source": {
+                      "code": 'iso15924'
+                    }
+                  }
+                }
+              },
+              {
+                "value": 'Это аннотация.',
+                "valueLanguage": {
+                  "code": 'rus',
+                  "source": {
+                    "code": 'iso639-2b'
+                  },
+                  "valueScript": {
+                    "code": 'Cyrl',
+                    "source": {
+                      "code": 'iso15924'
+                    }
                   }
                 }
               }
-            },
-            {
-              "value": 'Это аннотация.',
-              "valueLanguage": {
-                "code": 'rus',
-                "source": {
-                  "code": 'iso639-2b'
-                },
-                "valueScript": {
-                  "code": 'Cyrl',
-                  "source": {
-                    "code": 'iso15924'
-                  }
-                }
-              }
-            }
-          ]
-        }
-      )
+            ]
+          }
+        )
+      ]
     end
 
     it 'builds the xml' do
@@ -91,14 +108,16 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
   end
 
   context 'when it has a display label' do
-    let(:note) do
-      Cocina::Models::DescriptiveValue.new(
-        {
-          "value": 'This is a synopsis.',
-          "type": 'summary',
-          "displayLabel": 'Synopsis'
-        }
-      )
+    let(:notes) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": 'This is a synopsis.',
+            "type": 'summary',
+            "displayLabel": 'Synopsis'
+          }
+        )
+      ]
     end
 
     it 'builds the xml' do

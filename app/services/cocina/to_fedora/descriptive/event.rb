@@ -23,7 +23,7 @@ module Cocina
         end
 
         def write
-          events.each_with_index do |event, count|
+          Array(events).each_with_index do |event, count|
             attributes = {}
             attributes[:eventType] = event.type if events.size > 1
             if translated?(event)
