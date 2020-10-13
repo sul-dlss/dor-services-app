@@ -377,6 +377,38 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     end
   end
 
+  context 'with issuance and frequency' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <issuance>serial</issuance>
+          <frequency>every full moon</frequency>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "note": [
+            {
+              "value": 'serial',
+              "type": 'issuance',
+              "source": {
+                "value": 'MODS issuance terms'
+              }
+            },
+            {
+              "value": 'every full moon',
+              "type": 'frequency'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
   context 'with multiple originInfo elements for different events' do
     let(:xml) do
       <<~XML
