@@ -44,13 +44,14 @@ module Cocina
         end
 
         def location(location)
-          if location.value
+          if location.code
+            xml.place do
+              xml.placeTerm location.value, type: 'text', authority: location.source.code, authorityURI: location.source.uri, valueURI: location.uri if location.value
+              xml.placeTerm location.code, type: 'code', authority: location.source.code, authorityURI: location.source.uri, valueURI: location.uri
+            end
+          elsif location.value
             xml.place authority: location.source.code, authorityURI: location.source.uri, valueURI: location.uri do
               xml.placeTerm location.value, type: 'text'
-            end
-          elsif location.code
-            xml.place do
-              xml.placeTerm location.code, type: 'code', authority: location.source.code, authorityURI: location.source.uri, valueURI: location.uri
             end
           end
         end
