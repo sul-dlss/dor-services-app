@@ -29,6 +29,108 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
     end
   end
 
+  context 'when it is a simple note' do
+    let(:notes) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "value": 'This is a note.'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <note>This is a note.</note>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has a note with type' do
+    let(:notes) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "value": 'This is the preferred citation.',
+          "type": 'preferred citation'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <note type="preferred citation">This is the preferred citation.</note>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has a multilingual note' do
+    let(:notes) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "parallelValue": [
+            {
+              "value": 'This is a note.',
+              "valueLanguage": {
+                "code": 'eng',
+                "source": {
+                  "code": 'iso639-2b'
+                }
+              }
+            },
+            {
+              "value": "C'est une note.",
+              "valueLanguage": {
+                "code": 'fre',
+                "source": {
+                  "code": 'iso639-2b'
+                }
+              }
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <note lang="eng" altRepGroup="0">This is a note.</note>
+          <note lang="fre" altRepGroup="0">C'est une note.</note>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has a displayLabel' do
+    let(:notes) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "value": 'This is a conservation note.',
+          "displayLabel": 'Conservation note'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <note displayLabel="Conservation note">This is a conservation note.</note>
+        </mods>
+      XML
+    end
+  end
+
   context 'when it has a simple abstract' do
     let(:notes) do
       [

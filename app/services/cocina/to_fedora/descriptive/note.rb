@@ -36,16 +36,25 @@ module Cocina
               altRepGroup: alt_rep_group,
               lang: descriptive_value.valueLanguage.code
             }
-            attributes[:script] = descriptive_value.valueLanguage.valueScript.code
+            attributes[:script] = descriptive_value.valueLanguage.valueScript.code if descriptive_value.valueLanguage.valueScript
 
-            xml.abstract(descriptive_value.value, attributes)
+            tag(descriptive_value, tag_name(note.type), attributes)
           end
         end
 
         def write_basic(note)
           attributes = {}
           attributes[:displayLabel] = note.displayLabel if note.displayLabel
-          xml.abstract note.value, attributes
+          tag(note, tag_name(note.type), attributes)
+        end
+
+        def tag_name(type)
+          type == 'summary' ? :abstract : :note
+        end
+
+        def tag(note, tag_name, attributes)
+          attributes[:type] = note.type if note.type && tag_name != :abstract
+          xml.public_send tag_name, note.value, attributes
         end
       end
     end
