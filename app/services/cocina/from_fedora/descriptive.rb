@@ -30,12 +30,14 @@ module Cocina
         language = Language.build(ng_xml)
         contributor = Contributor.build(ng_xml)
         events = Event.build(ng_xml)
+        subjects = Subject.build(ng_xml)
         form = Form.build(ng_xml)
         { title: titles }.tap do |desc|
           desc[:note] = note unless note.empty?
           desc[:language] = language unless language.empty?
           desc[:contributor] = contributor unless contributor.empty?
           desc[:event] = events unless events.empty?
+          desc[:subject] = subjects unless subjects.empty?
           desc[:form] = form unless form.empty?
         end
       end
