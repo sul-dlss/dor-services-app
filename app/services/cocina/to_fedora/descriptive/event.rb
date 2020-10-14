@@ -11,6 +11,11 @@ module Cocina
           'copyright' => :copyrightDate,
           'capture' => :dateCaptured
         }.freeze
+
+        EVENT_TYPE = {
+          'creation' => 'production',
+          'publication' => 'publication'
+        }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::Event>] events
         def self.write(xml:, events:)
@@ -25,7 +30,7 @@ module Cocina
         def write
           Array(events).each_with_index do |event, count|
             attributes = {}
-            attributes[:eventType] = event.type if events.size > 1
+            attributes[:eventType] = EVENT_TYPE.fetch(event.type) if events.size > 1
             if translated?(event)
               TranslatedEvent.write(xml: xml, event: event, count: count)
             else

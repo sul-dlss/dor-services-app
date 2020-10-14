@@ -972,7 +972,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="creation">
+          <originInfo eventType="production">
             <dateCreated>1899</dateCreated>
             <place>
               <placeTerm type="text">York</placeTerm>
