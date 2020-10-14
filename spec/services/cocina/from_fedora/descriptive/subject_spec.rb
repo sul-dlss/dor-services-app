@@ -33,4 +33,32 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       ]
     end
   end
+
+  context 'with a multi-term topic subject' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <topic>Cats</topic>
+          <temporal>1640</temporal>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Cats',
+              "type": 'topic'
+            },
+            {
+              "value": '1640',
+              "type": 'time'
+            }
+          ]
+        }
+      ]
+    end
+  end
 end
