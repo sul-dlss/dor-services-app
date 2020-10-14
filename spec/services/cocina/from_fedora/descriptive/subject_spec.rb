@@ -397,11 +397,25 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
   end
 
   context 'with a geographic code subject' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L558'
-  end
+    let(:xml) do
+      <<~XML
+        <subject>
+          <geographicCode authority="marcgac">n-us-md</geographicCode>
+        </subject>
+      XML
+    end
 
-  context 'with a geographic code subject' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L558'
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "code": 'n-us-md',
+          "type": 'place',
+          "source": {
+            "code": 'marcgac'
+          }
+        }
+      ]
+    end
   end
 
   context 'with a geographic code and term' do

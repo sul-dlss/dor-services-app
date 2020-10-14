@@ -55,6 +55,8 @@ module Cocina
           if node.name == 'name'
             query = node.xpath('mods:namePart', mods: DESC_METADATA_NS)
             attrs.merge(value: query.first.text, type: 'person')
+          elsif node.name == 'geographicCode'
+            attrs.merge(code: node.text, type: 'place', source: { code: node['authority'] })
           else
             attrs.merge(value: node.text, type: NODE_TYPE.fetch(node.name))
           end
