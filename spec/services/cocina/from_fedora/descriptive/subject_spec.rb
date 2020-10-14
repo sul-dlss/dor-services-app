@@ -167,7 +167,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
             }
           ],
           "source": {
-            "code": 'lcsh',
+            "code": 'lcsh'
           }
         }
       ]
@@ -206,7 +206,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
                 "uri": 'http://id.loc.gov/authorities/subjects/'
               }
             }
-          ]
+          ],
+          "source": {
+            "code": 'lcsh'
+          }
         }
       ]
     end

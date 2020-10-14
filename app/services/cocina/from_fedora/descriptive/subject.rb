@@ -38,7 +38,7 @@ module Cocina
 
         attr_reader :ng_xml
 
-        def source_attrs(subject, attrs={})
+        def source_attrs(subject, attrs = {})
           if subject[:valueURI]
             attrs[:source] = { code: subject[:authority], uri: subject[:authorityURI] }
             attrs[:uri] = subject[:valueURI]
