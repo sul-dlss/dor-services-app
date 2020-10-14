@@ -180,4 +180,47 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       ]
     end
   end
+
+  context 'with a multi-term topic subject with authority for both sets and terms' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh12345">
+          <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh23456">Horses</topic>
+          <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh34567">History</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Horses',
+              "type": 'topic',
+              "uri": 'http://id.loc.gov/authorities/subjects/sh23456',
+              "source": {
+                "code": 'lcsh',
+                "uri": 'http://id.loc.gov/authorities/subjects/'
+              }
+            },
+            {
+              "value": 'History',
+              "type": 'topic',
+              "uri": 'http://id.loc.gov/authorities/subjects/sh34567',
+              "source": {
+                "code": 'lcsh',
+                "uri": 'http://id.loc.gov/authorities/subjects/'
+              }
+            }
+          ],
+          "uri": 'http://id.loc.gov/authorities/subjects/sh12345',
+          "source": {
+            "code": 'lcsh',
+            "uri": 'http://id.loc.gov/authorities/subjects/'
+          }
+        }
+      ]
+    end
+  end
 end
