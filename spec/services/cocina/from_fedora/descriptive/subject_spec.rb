@@ -223,4 +223,25 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       ]
     end
   end
+
+  context 'with a name subject' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'Dunnett, Dorothy',
+          "type": 'person'
+        }
+      ]
+    end
+  end
 end

@@ -51,7 +51,12 @@ module Cocina
             attrs[:source] = { code: node[:authority], uri: node[:authorityURI] }
             attrs[:uri] = node[:valueURI]
           end
-          attrs.merge(value: node.text, type: NODE_TYPE.fetch(node.name))
+          if node.name == 'name'
+            query = node.xpath('mods:namePart', mods: DESC_METADATA_NS)
+            attrs.merge(value: query.first.text, type: 'person')
+          else
+            attrs.merge(value: node.text, type: NODE_TYPE.fetch(node.name))
+          end
         end
 
         def subjects
