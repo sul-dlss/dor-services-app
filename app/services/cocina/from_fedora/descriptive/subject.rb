@@ -24,7 +24,7 @@ module Cocina
           subjects.map do |subject|
             node_set = subject.xpath('*')
             attrs = {}
-            if subject[:authority]
+            if subject[:valueURI]
               attrs[:source] = { code: subject[:authority], uri: subject[:authorityURI] }
               attrs[:uri] = subject[:valueURI]
             end
@@ -47,7 +47,7 @@ module Cocina
         end
 
         def simple_item(node, attrs = {})
-          if node[:authority]
+          if node[:valueURI]
             attrs[:source] = { code: node[:authority], uri: node[:authorityURI] }
             attrs[:uri] = node[:valueURI]
           end
