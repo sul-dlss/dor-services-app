@@ -109,4 +109,37 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       ]
     end
   end
+
+  context 'with a multi-term topic subject with authority for set' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021263">
+          <topic>Cats</topic>
+          <topic>Anatomy</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Cats',
+              "type": 'topic'
+            },
+            {
+              "value": 'Anatomy',
+              "type": 'topic'
+            }
+          ],
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85021263',
+          "source": {
+            "code": 'lcsh',
+            "uri": 'http://id.loc.gov/authorities/subjects/'
+          }
+        }
+      ]
+    end
+  end
 end
