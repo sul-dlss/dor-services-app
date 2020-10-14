@@ -336,6 +336,30 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with a name subject with additional terms and authority for terms' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L247'
+  end
+
+  context 'with a name subject with additional terms and authority for terms and set' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L281'
+  end
+
+  context 'with a name-title subject with authority' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L320'
+  end
+
+  context 'with a name-title subject with authority plus authority for name' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L351'
+  end
+
+  context 'with a name-title subject with additional terms including genre subdivision, authority for set' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L387'
+  end
+
+  context 'with a name-title subject with additional terms including genre subdivision, authority for terms' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L429'
+  end
+
   context 'with a geographic subject subdivision' do
     let(:xml) do
       <<~XML
@@ -362,5 +386,47 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
         }
       ]
     end
+  end
+
+  context 'with a hierarchical geographic subject subdivision' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L503'
+  end
+
+  context 'with a cartographic subject' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L528'
+  end
+
+  context 'with a geographic code subject' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L558'
+  end
+
+  context 'with a geographic code subject' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L558'
+  end
+
+  context 'with a geographic code and term' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L574'
+  end
+
+  context 'with a temporal subject with encoding' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L601'
+  end
+
+  context 'with a temporal subject with range' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L617'
+  end
+
+  context 'with a multilingual subject' do
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L643'
+  end
+
+  context 'with a musical genre as topic' do
+    # See https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/51
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L672'
+  end
+
+  context 'with a display label' do
+    # See https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/51
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L688'
   end
 end
