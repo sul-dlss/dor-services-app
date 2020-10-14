@@ -291,7 +291,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <subject authority="naf">
+          <subject authority="lcsh">
             <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79046044">
               <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
             </name>

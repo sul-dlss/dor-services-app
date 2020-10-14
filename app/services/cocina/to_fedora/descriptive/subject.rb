@@ -81,7 +81,7 @@ module Cocina
 
         def write_basic(subject)
           subject_attributes = {}
-          subject_attributes[:authority] = subject.source.code if subject.source && subject.type != 'place'
+          subject_attributes[:authority] = 'lcsh' if subject.source && subject.type != 'place'
           subject_attributes[:displayLabel] = subject.displayLabel if subject.displayLabel
           xml.subject(subject_attributes) do
             write_topic(subject)
