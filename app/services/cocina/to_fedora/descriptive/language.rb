@@ -27,10 +27,14 @@ module Cocina
         attr_reader :xml, :languages
 
         def write_basic(language)
-          attributes = {}
-          attributes[:type] = 'text'
           xml.language do
-            xml.languageTerm attributes, language.value
+            if language.value
+              xml.languageTerm language.value, type: 'text'
+            else
+              attributes = { type: 'code' }
+              attributes[:authority] = language.source.code
+              xml.languageTerm language.code, attributes
+            end
           end
         end
       end
