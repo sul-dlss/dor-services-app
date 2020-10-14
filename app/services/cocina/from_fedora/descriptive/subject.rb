@@ -7,7 +7,8 @@ module Cocina
       class Subject
         NODE_TYPE = {
           'temporal' => 'time',
-          'topic' => 'topic'
+          'topic' => 'topic',
+          'geographic' => 'place'
         }.freeze
 
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML

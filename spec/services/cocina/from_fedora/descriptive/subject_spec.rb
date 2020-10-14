@@ -270,4 +270,32 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       ]
     end
   end
+
+  context 'with a geographic subject subdivision' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <topic>Cats</topic>
+          <geographic>Europe</geographic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Cats',
+              "type": 'topic'
+            },
+            {
+              "value": 'Europe',
+              "type": 'place'
+            }
+          ]
+        }
+      ]
+    end
+  end
 end
