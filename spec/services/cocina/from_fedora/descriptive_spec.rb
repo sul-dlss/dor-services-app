@@ -153,6 +153,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           }
         }
       ]
+      expect(descriptive[:subject].size).to eq 2
     end
   end
 
