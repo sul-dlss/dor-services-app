@@ -25,7 +25,12 @@ module Cocina
             node_set = subject.xpath('*')
             case node_set.size
             when 1
-              simple_item(node_set.first)
+              attrs = {}
+              if subject[:authority]
+                attrs[:source] = { code: subject[:authority], uri: subject[:authorityURI] }
+                attrs[:uri] = subject[:valueURI]
+              end
+              simple_item(node_set.first, attrs)
             else
               structured_value(node_set)
             end
@@ -41,8 +46,12 @@ module Cocina
           { structuredValue: values }
         end
 
-        def simple_item(node)
-          { value: node.text, type: NODE_TYPE.fetch(node.name) }
+        def simple_item(node, attrs = {})
+          if node[:authority]
+            attrs[:source] = { code: node[:authority], uri: node[:authorityURI] }
+            attrs[:uri] = node[:valueURI]
+          end
+          attrs.merge(value: node.text, type: NODE_TYPE.fetch(node.name))
         end
 
         def subjects
