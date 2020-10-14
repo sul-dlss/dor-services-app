@@ -16,15 +16,7 @@ module Cocina
         end
 
         def build
-          [].tap do |items|
-            items << original_url if original_url
-            items << abstract if abstract
-            items << statement_of_responsibility if statement_of_responsibility
-            items << thesis_statement if thesis_statement
-            additional_notes.each do |note|
-              items << { value: note.content }
-            end
-          end
+          abstract + notes
         end
 
         private
@@ -32,29 +24,19 @@ module Cocina
         attr_reader :ng_xml
 
         def abstract
-          val = ng_xml.xpath('//mods:abstract', mods: DESC_METADATA_NS).first
-          { type: 'summary', value: val.content } if val
+          set = ng_xml.xpath('//mods:abstract', mods: DESC_METADATA_NS)
+          set.map do |val|
+            { type: 'summary', value: val.content }
+          end
         end
 
-        # TODO: Figure out how to encode displayLabel https://github.com/sul-dlss/dor-services-app/issues/849#issuecomment-635713964
-        def original_url
-          val = ng_xml.xpath('//mods:note[@type="system details"][@displayLabel="Original site"]', mods: DESC_METADATA_NS).first
-          { type: 'system details', value: val.content } if val
-        end
-
-        def statement_of_responsibility
-          val = ng_xml.xpath('//mods:note[@type="statement of responsibility"]', mods: DESC_METADATA_NS).first
-          { type: 'statement of responsibility', value: val.content } if val
-        end
-
-        def thesis_statement
-          val = ng_xml.xpath('//mods:note[@type="thesis"]', mods: DESC_METADATA_NS).first
-          { type: 'thesis', value: val.content } if val
-        end
-
-        # Returns any notes values that do not include a type attribute
-        def additional_notes
-          ng_xml.xpath('//mods:note[not(@type)][not(@displayLabel)]', mods: DESC_METADATA_NS)
+        def notes
+          set = ng_xml.xpath('//mods:note', mods: DESC_METADATA_NS)
+          set.map do |node|
+            { value: node.text }.tap do |attributes|
+              attributes[:type] = node[:type] if node[:type]
+            end
+          end
         end
       end
     end

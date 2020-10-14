@@ -106,6 +106,9 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         },
         {
           value: 'Archived by Stanford University Libraries, Humanities and Area Studies Resource Group'
+        },
+        {
+          value: 'California Digital Library Web Archiving Service'
         }
       ]
       expect(descriptive[:language]).to match_array [
