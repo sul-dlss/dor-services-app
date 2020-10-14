@@ -33,6 +33,7 @@ module Cocina
         subjects = Subject.build(ng_xml)
         form = Form.build(ng_xml)
         identifier = Identifier.build(ng_xml)
+        admin_metadata = AdminMetadata.build(ng_xml)
         { title: titles }.tap do |desc|
           desc[:note] = note unless note.empty?
           desc[:language] = language unless language.empty?
@@ -41,6 +42,7 @@ module Cocina
           desc[:subject] = subjects unless subjects.empty?
           desc[:form] = form unless form.empty?
           desc[:identifier] = identifier unless identifier.empty?
+          desc[:adminMetadata] = admin_metadata unless admin_metadata.empty?
         end
       end
 
