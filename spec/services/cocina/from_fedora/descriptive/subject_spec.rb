@@ -271,6 +271,36 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with a name subject with additional terms' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <name type="personal">
+            <namePart>Shakespeare, William, 1564-1616</namePart>
+          </name>
+          <topic>Homes and haunts</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": "Shakespeare, William, 1564-1616",
+              "type": "person"
+            },
+            {
+              "value": "Homes and haunts",
+              "type": "topic"
+            }
+          ]
+        }
+      ]
+    end
+  end
+
   context 'with a geographic subject subdivision' do
     let(:xml) do
       <<~XML
