@@ -244,4 +244,30 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       ]
     end
   end
+
+  context 'with a name subject with authority' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh">
+          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79046044">
+            <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
+          </name>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
+          "type": 'person',
+          "uri": 'http://id.loc.gov/authorities/names/n79046044',
+          "source": {
+            "code": 'naf',
+            "uri": 'http://id.loc.gov/authorities/names/'
+          }
+        }
+      ]
+    end
+  end
 end
