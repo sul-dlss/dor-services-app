@@ -288,14 +288,49 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
         {
           "structuredValue": [
             {
-              "value": "Shakespeare, William, 1564-1616",
-              "type": "person"
+              "value": 'Shakespeare, William, 1564-1616',
+              "type": 'person'
             },
             {
-              "value": "Homes and haunts",
-              "type": "topic"
+              "value": 'Homes and haunts',
+              "type": 'topic'
             }
           ]
+        }
+      ]
+    end
+  end
+
+  context 'with a name subject with additional terms and authority for set' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85120951">
+          <name type="personal">
+            <namePart>Shakespeare, William, 1564-1616</namePart>
+          </name>
+          <topic>Homes and haunts</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Shakespeare, William, 1564-1616',
+              "type": 'person'
+            },
+            {
+              "value": 'Homes and haunts',
+              "type": 'topic'
+            }
+          ],
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85120951',
+          "source": {
+            "code": 'lcsh',
+            "uri": 'http://id.loc.gov/authorities/subjects/'
+          }
         }
       ]
     end
