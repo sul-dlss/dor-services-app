@@ -956,7 +956,21 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
   end
 
   context 'when it has a musical genre as topic' do
-    xit 'TODO' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": 'String quartets',
+            "type": 'topic'
+          },
+          "source": {
+            "code": 'lcsh'
+          }
+        )
+      ]
+    end
+
+    xit 'see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/51' do
       expect(xml).to be_equivalent_to <<~XML
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
