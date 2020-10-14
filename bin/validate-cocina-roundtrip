@@ -6,7 +6,7 @@ require_relative '../config/environment'
 SAMPLE_SIZE = 100
 results = ActiveFedora::SolrService.query('*:*', sort: 'random asc', fl: 'id', rows: SAMPLE_SIZE)
 druids = results.map { |r| r['id'] }
-
+counts = { different: 0, success: 0, error: 0 }
 druids.each do |druid|
   item = Dor.find(druid)
   original_xml = item.descMetadata.content
@@ -18,9 +18,17 @@ druids.each do |druid|
     puts ' is different:'
     puts "Expected: #{original_xml}\n"
     puts "Received: #{result_xml}\n\n\n"
+    counts[:different] += 1
   else
     puts " successfully round tripped.\n\n"
+    counts[:success] += 1
   end
 rescue StandardError => e
   puts " error. #{e.message}\n\n"
+  counts[:error] += 1
 end
+
+puts "\nStatus (n=#{SAMPLE_SIZE}):"
+puts "  Success:   #{counts[:success]} (#{100 * counts[:success].to_f / SAMPLE_SIZE}%)"
+puts "  Different: #{counts[:different]} (#{100 * counts[:different].to_f / SAMPLE_SIZE}%)"
+puts "  Error:     #{counts[:error]} (#{100 * counts[:error].to_f / SAMPLE_SIZE}%)"
