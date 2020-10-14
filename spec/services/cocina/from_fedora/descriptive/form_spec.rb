@@ -34,4 +34,28 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       ]
     end
   end
+
+  context 'with an object with multiple types' do
+    xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L17'
+  end
+
+  context 'with an object with multiple types and one predominant' do
+    xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L39'
+  end
+
+  context 'with a manuscript' do
+    xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L62'
+  end
+
+  context 'with an sttribute without a value' do
+    xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L79'
+  end
+
+  context 'with a collection' do
+    xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L89'
+  end
+
+  context 'with display label' do
+    xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L106'
+  end
 end
