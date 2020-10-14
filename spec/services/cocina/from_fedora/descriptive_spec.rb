@@ -146,6 +146,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         }]
       }]
       expect(descriptive[:form]).to match_array [
+        { source: { value: 'MODS resource type' }, type: 'resource type', value: 'text' },
         {
           value: 'electronic',
           source: {
@@ -337,6 +338,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         }
       ]
       expect(descriptive[:form]).to match_array [
+        { source: { value: 'MODS resource type' }, type: 'resource type', value: 'text' },
         {
           value: 'electronic resource',
           source: {
