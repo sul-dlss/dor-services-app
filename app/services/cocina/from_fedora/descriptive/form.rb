@@ -23,25 +23,42 @@ module Cocina
 
         def build
           [].tap do |forms|
-            physical_descriptions.each do |form_data|
-              form_data.xpath(FORM_XPATH, mods: DESC_METADATA_NS).each do |form_content|
-                forms << {
-                  value: form_content.content,
-                  type: type_for(form_content),
-                  source: source_for(form_content)
-                }.reject { |_k, v| v.blank? }
-              end
-
-              form_data.xpath(EXTENT_XPATH, mods: DESC_METADATA_NS).each do |extent|
-                forms << { value: extent.content, type: 'extent' }
-              end
-            end
+            add_types(forms)
+            add_physical_descriptions(forms)
           end
         end
 
         private
 
         attr_reader :ng_xml
+
+        def add_types(forms)
+          type_of_resource.each do |type|
+            forms << {
+              "value": type.text,
+              "type": 'resource type',
+              "source": {
+                "value": 'MODS resource type'
+              }
+            }
+          end
+        end
+
+        def add_physical_descriptions(forms)
+          physical_descriptions.each do |form_data|
+            form_data.xpath(FORM_XPATH, mods: DESC_METADATA_NS).each do |form_content|
+              forms << {
+                value: form_content.content,
+                type: type_for(form_content),
+                source: source_for(form_content)
+              }.reject { |_k, v| v.blank? }
+            end
+
+            form_data.xpath(EXTENT_XPATH, mods: DESC_METADATA_NS).each do |extent|
+              forms << { value: extent.content, type: 'extent' }
+            end
+          end
+        end
 
         def physical_descriptions
           ng_xml.xpath('//mods:physicalDescription', mods: DESC_METADATA_NS)
@@ -53,6 +70,10 @@ module Cocina
 
         def type_for(form)
           form.xpath(FORM_TYPE_XPATH, mods: DESC_METADATA_NS).to_s
+        end
+
+        def type_of_resource
+          ng_xml.xpath('//mods:typeOfResource', mods: DESC_METADATA_NS)
         end
       end
     end
