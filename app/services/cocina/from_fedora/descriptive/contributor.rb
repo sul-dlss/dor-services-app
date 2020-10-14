@@ -5,6 +5,12 @@ module Cocina
     class Descriptive
       # Maps contributors
       class Contributor
+        ROLES = {
+          'personal' => 'person',
+          'corporate' => 'organization',
+          'family' => 'family',
+          'conference' => 'conference'
+        }.freeze
         NAME_XPATH = '/mods:mods/mods:name'
         NAME_PART_XPATH = './mods:namePart'
         ROLE_CODE_XPATH = './mods:role/mods:roleTerm[@type="code"]'
@@ -24,8 +30,8 @@ module Cocina
           [].tap do |contributors|
             names.each do |name|
               contributors << { name: name_parts(name) }.tap do |contributor_hash|
-                contributor_hash[:type] = name.attribute('type').value if name.attribute('type').present?
-                contributor_hash[:status] = name.attribute('usage').value if name.attribute('usage').present?
+                contributor_hash[:type] = ROLES.fetch(name['type']) if name['type']
+                contributor_hash[:status] = name['usage'] if name['usage']
                 roles = [roles_for(name)]
                 contributor_hash[:role] = roles unless roles.flatten.empty?
               end
@@ -56,10 +62,10 @@ module Cocina
 
           {}.tap do |role|
             if role_code.present?
-              raise Cocina::Mapper::InvalidDescMetadata, "#{ROLE_CODE_XPATH} is missing required authority attribute" unless role_code.attribute('authority')
+              raise Cocina::Mapper::InvalidDescMetadata, "#{ROLE_CODE_XPATH} is missing required authority attribute" unless role_code['authority']
 
               role[:code] = role_code.content unless role_code.nil?
-              role[:source] = { code: role_code.attribute('authority').value }
+              role[:source] = { code: role_code['authority'] }
             end
             role[:value] = role_text.content unless role_text.nil?
           end

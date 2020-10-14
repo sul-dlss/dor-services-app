@@ -135,7 +135,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         name: [{
           value: 'Stanford University. Libraries. Humanities and Area Studies Resource Group'
         }],
-        type: 'corporate',
+        type: 'organization',
         role: [{
           value: 'collector',
           code: 'col',
@@ -289,7 +289,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           name: [{
             value: 'Doe, John Jr.'
           }],
-          type: 'personal',
+          type: 'person',
           status: 'primary',
           role: [{
             value: 'author'
@@ -299,7 +299,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           name: [{
             value: 'Doe, John Sr.'
           }],
-          type: 'personal',
+          type: 'person',
           role: [{
             value: 'degree supervisor',
             code: 'ths',
@@ -312,7 +312,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           name: [{
             value: 'Doe, Jane'
           }],
-          type: 'personal',
+          type: 'person',
           role: [{
             value: 'degree committee member',
             code: 'ths',
@@ -325,7 +325,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           name: [{
             value: 'Majors, Brad'
           }],
-          type: 'personal',
+          type: 'person',
           role: [{
             value: 'degree committee member',
             code: 'ths',
@@ -337,7 +337,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         {
           name: [{ value: 'Stanford University' },
                  { value: 'Department of Computer Science.' }],
-          type: 'corporate'
+          type: 'organization'
         }
       ]
       expect(descriptive[:form]).to match_array [
