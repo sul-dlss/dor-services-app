@@ -190,4 +190,79 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
       XML
     end
   end
+
+  context 'when transliterated title (title is value)' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L157'
+  end
+
+  context 'when uniform title with authority' do
+    let(:titles) do
+      [
+        Cocina::Models::DescriptiveValueRequired.new(
+            "value": "Hamlet",
+            "status": "primary"
+        ),
+        Cocina::Models::DescriptiveValueRequired.new(
+          "structuredValue": [
+            {
+              "value": "Shakespeare, William, 1564-1616",
+              "type": "name"
+            },
+            {
+              "value": "Hamlet",
+              "type": "title"
+            }
+          ],
+          "type": "uniform",
+          "uri": "http://id.loc.gov/authorities/names/n80008522"
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo usage="primary">
+            <title>Hamlet</title>
+          </titleInfo>
+          <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="0">
+            <title>Hamlet</title>
+          </titleInfo>
+          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="0">
+            <namePart>Shakespeare, William, 1564-1616</namePart>
+          </name>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when uniform title with multiple namePart subelements' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L243'
+  end
+
+  context 'with supplied title' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L278'
+  end
+
+  context 'with abbreviated title' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L292'
+  end
+
+  context 'with parallel titles' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L316'
+  end
+
+  context 'with multiple untyped titles without a primary' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L365'
+  end
+
+  context 'with multiple typed titles without a primary' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L383'
+  end
+
+  context 'with displayLabel' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L402'
+  end
 end

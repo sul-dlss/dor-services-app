@@ -9,8 +9,8 @@ module Cocina
           'nonsorting characters' => :nonSort,
           'main title' => :title,
           'subtitle' => :subTitle,
-          'part name' => 'partName',
-          'part number' => 'partNumber'
+          'part name' => :partName,
+          'part number' => :partNumber
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValueRequired>] titles
@@ -28,7 +28,7 @@ module Cocina
             if title.parallelValue
               write_parallel(title, alt_rep_group: alt_rep_group)
             elsif title.structuredValue
-              write_structured(title)
+              write_structured(title, name_title_group: alt_rep_group)
             elsif title.value
               write_basic(title)
             end
@@ -66,17 +66,44 @@ module Cocina
           end
         end
 
-        def write_structured(title)
+        def write_structured(title, name_title_group:)
+          return uniform_title(title, name_title_group: name_title_group) if title.type == 'uniform'
           title_info_attrs = {}
           title_info_attrs[:usage] = 'primary' if title.status == 'primary'
           title_info_attrs[:type] = title.type if title.type
 
           xml.titleInfo(title_info_attrs) do
-            title.structuredValue&.each do |component|
+            title.structuredValue.each do |component|
               xml.public_send(TAG_NAME.fetch(component.type), component.value) if component.type
             end
           end
         end
+
+        def uniform_title(title, name_title_group:)
+          title_info_attrs = { nameTitleGroup: name_title_group}
+          title_info_attrs[:usage] = 'primary' if title.status == 'primary'
+          title_info_attrs[:type] = title.type if title.type
+
+          title.structuredValue.select {|item| item.type == 'title' }.each do |title|
+            xml.titleInfo with_uri_info(title, title_info_attrs) do
+              xml.title(title.value)
+            end
+          end
+
+          title.structuredValue.select {|item| item.type == 'name' }.each do |contributor|
+            xml.name with_uri_info(contributor, type: 'personal', nameTitleGroup: name_title_group) do
+              xml.namePart(contributor.value)
+            end
+          end
+        end
+
+        def with_uri_info(cocina, xml_attrs)
+          xml_attrs[:valueURI] = cocina.uri
+          xml_attrs[:authorityURI] = cocina.source&.uri
+          xml_attrs[:authority] = cocina.source&.code
+          xml_attrs
+        end
+
       end
     end
   end
