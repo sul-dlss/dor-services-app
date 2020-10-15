@@ -5,6 +5,7 @@ module Cocina
     # Creates Cocina Descriptive objects from Fedora objects
     class Descriptive
       DESC_METADATA_NS = Dor::DescMetadataDS::MODS_NS
+      DUBLIN_CORE_NS = 'http://purl.org/dc/elements/1.1/'
 
       BUILDERS = {
         note: Notes,
