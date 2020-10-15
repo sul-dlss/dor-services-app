@@ -55,10 +55,14 @@ module Cocina
 
         def simple_item(node, attrs = {})
           attrs = source_attrs(node, attrs)
-          if node.name == 'name'
+          case node.name
+          when 'name'
             query = node.xpath('mods:namePart', mods: DESC_METADATA_NS)
             attrs.merge(value: query.first.text, type: 'person')
-          elsif node.name == 'geographicCode'
+          when 'titleInfo'
+            query = node.xpath('mods:title', mods: DESC_METADATA_NS)
+            attrs.merge(value: query.first.text, type: 'title')
+          when 'geographicCode'
             attrs.merge(code: node.text, type: 'place', source: { code: node['authority'] })
           else
             attrs.merge(value: node.text, type: NODE_TYPE.fetch(node.name))
