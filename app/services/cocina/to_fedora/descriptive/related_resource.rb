@@ -10,7 +10,8 @@ module Cocina
           'in series' => 'series',
           'preceeded by' => 'preceeding',
           'suceeded by' => 'succeeding',
-          'reviewed by' => 'reviewOf'
+          'reviewed by' => 'reviewOf',
+          'has original version' => 'original'
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] related_resources
