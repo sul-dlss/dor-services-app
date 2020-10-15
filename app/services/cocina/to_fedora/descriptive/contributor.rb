@@ -5,9 +5,7 @@ module Cocina
     class Descriptive
       # Maps contributors from cocina to MODS XML
       class Contributor
-        NAME_TYPE = {
-          'person' => 'personal'
-        }.freeze
+        NAME_TYPE = FromFedora::Descriptive::Contributor::ROLES.invert.freeze
 
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::Contributor>] contributors
