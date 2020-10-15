@@ -56,9 +56,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
               "type": 'extent'
             }
           ],
-          # TODO: waiting to hear back from Arcadia on whether this is to be transformed or is incorrect.
-          # "type": "in series"
-          "type": 'series'
+          "type": "in series"
         }
       ]
     end

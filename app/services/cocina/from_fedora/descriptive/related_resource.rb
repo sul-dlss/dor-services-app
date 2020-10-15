@@ -5,6 +5,8 @@ module Cocina
     class Descriptive
       # Maps MODS relatedItem to cocina relatedResource
       class RelatedResource
+        TYPES = ToFedora::Descriptive::RelatedResource::TYPES.invert.freeze
+
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
         # @return [Hash] a hash that can be mapped to a cocina model
         def self.build(ng_xml)
@@ -22,7 +24,7 @@ module Cocina
               item[:contributor] = build_contributors(related_item)
               item[:access] = build_access(related_item)
               item[:form] = build_form(related_item)
-              item[:type] = related_item['type']
+              item[:type] = TYPES.fetch(related_item['type']) if related_item['type']
               item[:displayLabel] = related_item['displayLabel']
             end.compact
           end

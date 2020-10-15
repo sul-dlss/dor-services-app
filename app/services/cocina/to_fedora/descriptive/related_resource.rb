@@ -5,6 +5,13 @@ module Cocina
     class Descriptive
       # Maps relatedResource from cocina to MODS relatedItem
       class RelatedResource
+        # see https://docs.google.com/spreadsheets/d/1d5PokzgXqNykvQeckG2ND43B6i9_CsjfIVwS_IsphS8/edit#gid=0
+        TYPES = {
+          'in series' => 'series',
+          'preceeded by' => 'preceeding',
+          'suceeded by' => 'succeeding',
+          'reviewed by' => 'reviewOf'
+        }
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] related_resources
         def self.write(xml:, related_resources:)
@@ -19,7 +26,7 @@ module Cocina
         def write
           Array(related_resources).each do |related|
             attributes = {}
-            attributes[:type] = related.type.downcase if related.type
+            attributes[:type] = TYPES.fetch(related.type) if related.type
             # Pending cocina-models 0.41.0 release
             # attributes[:displayLabel] = related.displayLabel if related.displayLabel
             xml.relatedItem attributes do
