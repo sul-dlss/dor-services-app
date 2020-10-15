@@ -439,6 +439,59 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     end
   end
 
+  describe 'publisher' do
+    context 'with one' do
+      let(:xml) do
+        <<~XML
+          <originInfo>
+            <publisher>Virago</publisher>
+          </originInfo>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "type": 'publication',
+            "contributor": [
+              {
+                "name": [
+                  {
+                    "value": 'Virago'
+                  }
+                ],
+                "type": 'organization',
+                "role": [
+                  {
+                    "value": 'publisher',
+                    "code": 'pbl',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                    "source": {
+                      "code": 'marcrelator',
+                      "uri": 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      end
+    end
+
+    context 'when it is transliterated' do
+      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L772'
+    end
+
+    context 'when it is in another language' do
+      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L821'
+    end
+
+    context 'when there are multiple' do
+      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L868'
+    end
+  end
+
   context 'with issuance and frequency' do
     let(:xml) do
       <<~XML
