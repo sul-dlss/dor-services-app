@@ -26,12 +26,29 @@ module Cocina
             add_genre(forms)
             add_types(forms)
             add_physical_descriptions(forms)
+            add_subject_cartographics(forms)
           end
         end
 
         private
 
         attr_reader :ng_xml
+
+        def add_subject_cartographics(forms)
+          cartographic_scale.each do |scale|
+            forms << {
+              value: scale.text,
+              type: 'map scale'
+            }
+          end
+
+          cartographic_projection.each do |projection|
+            forms << {
+              value: projection.text,
+              type: 'map projection'
+            }
+          end
+        end
 
         def add_genre(forms)
           genre.each do |type|
@@ -95,6 +112,14 @@ module Cocina
 
         def genre
           ng_xml.xpath('//mods:genre', mods: DESC_METADATA_NS)
+        end
+
+        def cartographic_scale
+          ng_xml.xpath('//mods:subject/mods:cartographics/mods:scale', mods: DESC_METADATA_NS)
+        end
+
+        def cartographic_projection
+          ng_xml.xpath('//mods:subject/mods:cartographics/mods:projection', mods: DESC_METADATA_NS)
         end
       end
     end
