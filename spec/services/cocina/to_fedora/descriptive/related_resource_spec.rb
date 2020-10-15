@@ -55,7 +55,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
                 "type": 'extent'
               }
             ],
-            "type": "in series"
+            "type": 'in series'
           }
         )
       ]

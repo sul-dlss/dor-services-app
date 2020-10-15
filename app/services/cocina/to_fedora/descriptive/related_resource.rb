@@ -11,7 +11,7 @@ module Cocina
           'preceeded by' => 'preceeding',
           'suceeded by' => 'succeeding',
           'reviewed by' => 'reviewOf'
-        }
+        }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] related_resources
         def self.write(xml:, related_resources:)
