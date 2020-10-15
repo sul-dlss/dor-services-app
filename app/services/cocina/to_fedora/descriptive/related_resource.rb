@@ -8,8 +8,8 @@ module Cocina
         # see https://docs.google.com/spreadsheets/d/1d5PokzgXqNykvQeckG2ND43B6i9_CsjfIVwS_IsphS8/edit#gid=0
         TYPES = {
           'in series' => 'series',
-          'preceeded by' => 'preceeding',
-          'suceeded by' => 'succeeding',
+          'preceded by' => 'preceding',
+          'succeeded by' => 'succeeding',
           'reviewed by' => 'reviewOf',
           'has original version' => 'original'
         }.freeze
