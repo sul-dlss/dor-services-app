@@ -59,7 +59,7 @@ module Cocina
           subject_attributes = {}
           if subject.source
             subject_attributes[:authority] = subject.source.code
-            subject_attributes[:authorityURI] = subject.source.uri
+            subject_attributes[:authorityURI] = subject.source.uri if subject.source.uri
           elsif subject.structuredValue&.first&.source
             subject_attributes[:authority] = subject.structuredValue.first.source.code
           end

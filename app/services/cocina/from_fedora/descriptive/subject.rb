@@ -24,11 +24,7 @@ module Cocina
         def build
           subjects.map do |subject|
             node_set = subject.xpath('*')
-            attrs = {}
-            if subject[:valueURI]
-              attrs[:source] = { code: subject[:authority], uri: subject[:authorityURI] }
-              attrs[:uri] = subject[:valueURI]
-            end
+            attrs = source_attrs(subject)
             case node_set.size
             when 1
               simple_item(node_set.first, attrs)
@@ -42,16 +38,23 @@ module Cocina
 
         attr_reader :ng_xml
 
+        def source_attrs(subject, attrs = {})
+          if subject[:valueURI]
+            attrs[:source] = { code: subject[:authority], uri: subject[:authorityURI] }
+            attrs[:uri] = subject[:valueURI]
+          elsif subject[:authority]
+            attrs[:source] = { code: subject[:authority] }
+          end
+          attrs
+        end
+
         def structured_value(node_set, attrs)
           values = node_set.map { |node| simple_item(node) }
           attrs.merge(structuredValue: values)
         end
 
         def simple_item(node, attrs = {})
-          if node[:valueURI]
-            attrs[:source] = { code: node[:authority], uri: node[:authorityURI] }
-            attrs[:uri] = node[:valueURI]
-          end
+          attrs = source_attrs(node, attrs)
           if node.name == 'name'
             query = node.xpath('mods:namePart', mods: DESC_METADATA_NS)
             attrs.merge(value: query.first.text, type: 'person')
