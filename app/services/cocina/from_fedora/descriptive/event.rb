@@ -81,12 +81,12 @@ module Cocina
         end
 
         def with_uri_info(cocina, xml_node)
-          if xml_node['valueURI']
-            cocina[:uri] = xml_node['valueURI']
+          cocina[:uri] = xml_node['valueURI'] if xml_node['valueURI']
+          if xml_node['authority']
             cocina[:source] = {
               code: xml_node['authority'],
               uri: xml_node['authorityURI']
-            }
+            }.compact
           end
           cocina
         end
