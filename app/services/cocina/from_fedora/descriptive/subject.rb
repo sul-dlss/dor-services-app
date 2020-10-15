@@ -64,6 +64,9 @@ module Cocina
             attrs.merge(value: query.first.text, type: 'title')
           when 'geographicCode'
             attrs.merge(code: node.text, type: 'place', source: { code: node['authority'] })
+          when 'cartographics'
+            coords = node.xpath('mods:coordinates', mods: DESC_METADATA_NS).first
+            attrs.merge(value: coords.text, type: 'map coordinates', encoding: { value: 'DMS' })
           else
             attrs.merge(value: node.text, type: NODE_TYPE.fetch(node.name))
           end

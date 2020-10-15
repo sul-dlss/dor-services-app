@@ -149,4 +149,31 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
   context 'with a genre with display label' do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_genre.txt#L125'
   end
+
+  context 'when there is a subject/cartographics node' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <cartographics>
+            <coordinates>E 72°--E 148°/N 13°--N 18°</coordinates>
+            <scale>1:22,000,000</scale>
+            <projection>Conic proj</projection>
+          </cartographics>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": '1:22,000,000',
+          "type": 'map scale'
+        },
+        {
+          "value": 'Conic proj',
+          "type": 'map projection'
+        }
+      ]
+    end
+  end
 end
