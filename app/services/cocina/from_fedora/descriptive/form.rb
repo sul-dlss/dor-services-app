@@ -3,7 +3,7 @@
 module Cocina
   module FromFedora
     class Descriptive
-      # Maps relevant mods:physicalDescription from descMetadata to cocina
+      # Maps relevant MODS physicalDescription, typeOfResource and genre from descMetadata to cocina form
       class Form
         PHYSICAL_DESCRIPTION_XPATH = '//mods:physicalDescription'
         FORM_XPATH = './mods:form'
@@ -23,6 +23,7 @@ module Cocina
 
         def build
           [].tap do |forms|
+            add_genre(forms)
             add_types(forms)
             add_physical_descriptions(forms)
           end
@@ -31,6 +32,22 @@ module Cocina
         private
 
         attr_reader :ng_xml
+
+        def add_genre(forms)
+          genre.each do |type|
+            forms << {
+              "value": type.text,
+              "type": type['type'] || 'genre'
+            }.tap do |item|
+              if type[:valueURI]
+                item[:uri] = type[:valueURI]
+                item[:source] = { code: type[:authority], uri: type[:authorityURI] }
+              elsif type[:authority]
+                item[:source] = { code: type[:authority] }
+              end
+            end
+          end
+        end
 
         def add_types(forms)
           type_of_resource.each do |type|
@@ -74,6 +91,10 @@ module Cocina
 
         def type_of_resource
           ng_xml.xpath('//mods:typeOfResource', mods: DESC_METADATA_NS)
+        end
+
+        def genre
+          ng_xml.xpath('//mods:genre', mods: DESC_METADATA_NS)
         end
       end
     end

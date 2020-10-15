@@ -47,7 +47,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L62'
   end
 
-  context 'with an sttribute without a value' do
+  context 'with an attribute without a value' do
     xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L79'
   end
 
@@ -55,7 +55,98 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L89'
   end
 
-  context 'with display label' do
+  context 'with a typeOfResource with display label' do
     xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L106'
+  end
+
+  context 'with a single genre' do
+    let(:xml) do
+      <<~XML
+        <genre>photographs</genre>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'photographs',
+          "type": 'genre'
+        }
+      ]
+    end
+  end
+
+  context 'with a multiple genre' do
+    let(:xml) do
+      <<~XML
+        <genre>photographs</genre>
+        <genre>prints</genre>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'photographs',
+          "type": 'genre'
+        },
+        {
+          "value": 'prints',
+          "type": 'genre'
+        }
+      ]
+    end
+  end
+
+  context 'with a genre with type' do
+    let(:xml) do
+      <<~XML
+        <genre type="style">Art Deco</genre>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'Art Deco',
+          "type": 'style'
+        }
+      ]
+    end
+  end
+
+  context 'with a genre with authority' do
+    let(:xml) do
+      <<~XML
+        <genre authority="lcgft" authorityURI="http://id.loc.gov/authorities/genreForms/"
+          valueURI="http://id.loc.gov/authorities/genreForms/gf2017027249">Photographs</genre>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'Photographs',
+          "type": 'genre',
+          "uri": 'http://id.loc.gov/authorities/genreForms/gf2017027249',
+          "source": {
+            "code": 'lcgft',
+            "uri": 'http://id.loc.gov/authorities/genreForms/'
+          }
+        }
+      ]
+    end
+  end
+
+  context 'with a genre with usage' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_genre.txt#L57'
+  end
+
+  context 'with a genre with multiple languages' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_genre.txt#L74'
+  end
+
+  context 'with a genre with display label' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_genre.txt#L125'
   end
 end
