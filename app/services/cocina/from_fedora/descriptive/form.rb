@@ -110,6 +110,7 @@ module Cocina
           ng_xml.xpath('//mods:typeOfResource', mods: DESC_METADATA_NS)
         end
 
+        # returns genre at the root and inside subjects
         def genre
           ng_xml.xpath('//mods:genre', mods: DESC_METADATA_NS)
         end
