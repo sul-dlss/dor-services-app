@@ -72,18 +72,23 @@ module Cocina
         def add_place_info(event, place_set)
           event[:location] = place_set.map do |place|
             place_term = place.xpath('mods:placeTerm', mods: DESC_METADATA_NS).first
-            {
-              value: place_term.text
-            }.tap do |result|
-              if place['valueURI']
-                result[:uri] = place['valueURI']
-                result[:source] = {
-                  code: place['authority'],
-                  uri: place['authorityURI']
-                }
-              end
+            if place_term['type'] == 'code'
+              with_uri_info({ code: place_term.text }, place_term)
+            else
+              with_uri_info({ value: place_term.text }, place)
             end
           end
+        end
+
+        def with_uri_info(cocina, xml_node)
+          if xml_node['valueURI']
+            cocina[:uri] = xml_node['valueURI']
+            cocina[:source] = {
+              code: xml_node['authority'],
+              uri: xml_node['authorityURI']
+            }
+          end
+          cocina
         end
 
         def add_issuance_info(event, set)
