@@ -10,7 +10,7 @@ module Cocina
         note: Notes,
         language: Language,
         contributor: Contributor,
-        event: Event,
+        event: Descriptive::Event,
         subject: Subject,
         form: Form,
         identifier: Identifier,
