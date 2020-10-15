@@ -94,7 +94,82 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
   end
 
   context 'with recordInfo converted from MARC' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_recordInfo.txt#L146'
+    let(:xml) do
+      <<~XML
+        <recordInfo>
+          <descriptionStandard>aacr</descriptionStandard>
+          <recordContentSource authority="marcorg">CSt</recordContentSource>
+          <recordCreationDate encoding="marc">180305</recordCreationDate>
+          <recordIdentifier source="SIRSI">a12374669</recordIdentifier>
+          <recordOrigin>Converted from MARCXML to MODS version 3.6 using MARC21slim2MODS3-6_SDR.xsl (SUL version 1 2018/06/13; LC Revision 1.118 2018/01/31)</recordOrigin>
+          <languageOfCataloging>
+            <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+          </languageOfCataloging>
+        </recordInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq(
+        "contributor": [
+          {
+            "name": [
+              {
+                "code": 'CSt',
+
+                "source": {
+                  "code": 'marcorg'
+                }
+              }
+            ],
+            "type": 'organization',
+            "role": [
+              {
+                "value": 'original cataloging agency'
+              }
+            ]
+          }
+        ],
+        "event": [
+          {
+            "type": 'creation',
+            "date": [
+              {
+                "value": '180305',
+                "encoding": {
+                  "code": 'marc'
+                }
+              }
+            ]
+          }
+        ],
+        "standard": {
+          "code": 'aacr'
+        },
+        "identifier": [
+          {
+            "value": 'a12374669',
+            "source": {
+              "value": 'SIRSI'
+            }
+          }
+        ],
+        "note": [
+          {
+            "type": 'record origin',
+            "value": 'Converted from MARCXML to MODS version 3.6 using MARC21slim2MODS3-6_SDR.xsl (SUL version 1 2018/06/13; LC Revision 1.118 2018/01/31)'
+          }
+        ],
+        "language": [
+          {
+            "code": 'eng',
+            "source": {
+              "code": 'iso639-2b'
+            }
+          }
+        ]
+      )
+    end
   end
 
   context 'with recordInfo converted from ISO 19139' do
