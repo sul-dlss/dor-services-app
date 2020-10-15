@@ -377,6 +377,68 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     end
   end
 
+  context 'with place code' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <place>
+            <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/" valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+          <place>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "location": [
+            {
+              "code": 'cau',
+              "uri": 'http://id.loc.gov/vocabulary/countries/cau',
+              "source": {
+                "code": 'marccountry',
+                "uri": 'http://id.loc.gov/vocabulary/countries/'
+              }
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  context 'with place code and text for different places' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <place>
+            <placeTerm type="code" authority="marccountry">enk</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">London</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "location": [
+            {
+              "code": 'enk',
+              "source": {
+                "code": 'marccountry'
+              }
+            },
+            {
+              "value": 'London'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
   context 'with issuance and frequency' do
     let(:xml) do
       <<~XML
