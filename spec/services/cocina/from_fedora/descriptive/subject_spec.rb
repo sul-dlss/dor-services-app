@@ -379,7 +379,42 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
   end
 
   context 'with a name-title subject with authority' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L320'
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n97075542">
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+          <titleInfo>
+            <title>Lymond chronicles</title>
+          </titleInfo>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Dunnett, Dorothy',
+              "type": 'person'
+            },
+            {
+              "value": 'Lymond chronicles',
+              "type": 'title'
+            }
+          ],
+          "uri": 'http://id.loc.gov/authorities/names/n97075542',
+          "source": {
+            # TODO: Reviewing with Arcadia
+            # "code": "naf",
+            "code": 'lcsh',
+            "uri": 'http://id.loc.gov/authorities/names/'
+          }
+        }
+      ]
+    end
   end
 
   context 'with a name-title subject with authority plus authority for name' do
