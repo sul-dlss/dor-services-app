@@ -8,7 +8,8 @@ module Cocina
         NODE_TYPE = {
           'temporal' => 'time',
           'topic' => 'topic',
-          'geographic' => 'place'
+          'geographic' => 'place',
+          'genre' => 'genre'
         }.freeze
 
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML

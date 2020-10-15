@@ -422,7 +422,45 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
   end
 
   context 'with a name-title subject with additional terms including genre subdivision, authority for set' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L387'
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
+          <name type="personal">
+            <namePart>Shakespeare, William, 1564-1616</namePart>
+          </name>
+          <titleInfo>
+            <title>Hamlet</title>
+          </titleInfo>
+          <genre>Bibliographies</genre>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Shakespeare, William, 1564-1616',
+              "type": 'person'
+            },
+            {
+              "value": 'Hamlet',
+              "type": 'title'
+            },
+            {
+              "value": 'Bibliographies',
+              "type": 'genre'
+            }
+          ],
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85120809',
+          "source": {
+            "code": 'lcsh',
+            "uri": 'http://id.loc.gov/authorities/subjects/'
+          }
+        }
+      ]
+    end
   end
 
   context 'with a name-title subject with additional terms including genre subdivision, authority for terms' do

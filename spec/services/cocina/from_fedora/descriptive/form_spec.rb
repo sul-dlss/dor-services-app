@@ -176,4 +176,29 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       ]
     end
   end
+
+  context 'when there is a subject/genre node' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
+          <name type="personal">
+            <namePart>Shakespeare, William, 1564-1616</namePart>
+          </name>
+          <titleInfo>
+            <title>Hamlet</title>
+          </titleInfo>
+          <genre>Bibliographies</genre>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'Bibliographies',
+          "type": 'genre'
+        }
+      ]
+    end
+  end
 end
