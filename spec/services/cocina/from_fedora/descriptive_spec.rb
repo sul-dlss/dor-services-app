@@ -58,7 +58,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
             <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh85041557">Elections</topic>
             <geographic authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n79061287">Mauritania</geographic>
           </subject>
-          <relatedItem type="otherFormat">
+          <relatedItem type="preceeding">
             <titleInfo>
               <title>Bulletin of the American Mathematical Society</title>
             </titleInfo>

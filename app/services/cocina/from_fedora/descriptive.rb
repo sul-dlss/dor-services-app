@@ -6,6 +6,18 @@ module Cocina
     class Descriptive
       DESC_METADATA_NS = Dor::DescMetadataDS::MODS_NS
 
+      BUILDERS = {
+        note: Notes,
+        language: Language,
+        contributor: Contributor,
+        event: Event,
+        subject: Subject,
+        form: Form,
+        identifier: Identifier,
+        adminMetadata: AdminMetadata,
+        relatedResource: RelatedResource
+      }.freeze
+
       # @param [Dor::Item,Dor::Etd] item
       # @return [Hash] a hash that can be mapped to a cocina administrative model
       # @raises [Cocina::Mapper::InvalidDescMetadata] if some assumption about descMetadata is violated
@@ -14,41 +26,31 @@ module Cocina
       end
 
       def initialize(item)
-        @item = item
+        @label = item.label
+        @ng_xml = item.descMetadata.ng_xml
       end
 
       def props
-        ng_xml = item.descMetadata.ng_xml
-        titles = if item.label == 'Hydrus'
+        titles = if label == 'Hydrus'
                    # Some hydrus items don't have titles, so using label. See https://github.com/sul-dlss/hydrus/issues/421
                    [{ value: 'Hydrus' }]
                  else
                    Titles.build(ng_xml)
                  end
-
-        note = Notes.build(ng_xml)
-        language = Language.build(ng_xml)
-        contributor = Contributor.build(ng_xml)
-        events = Event.build(ng_xml)
-        subjects = Subject.build(ng_xml)
-        form = Form.build(ng_xml)
-        identifier = Identifier.build(ng_xml)
-        admin_metadata = AdminMetadata.build(ng_xml)
-        { title: titles }.tap do |desc|
-          desc[:note] = note unless note.empty?
-          desc[:language] = language unless language.empty?
-          desc[:contributor] = contributor unless contributor.empty?
-          desc[:event] = events unless events.empty?
-          desc[:subject] = subjects unless subjects.empty?
-          desc[:form] = form unless form.empty?
-          desc[:identifier] = identifier unless identifier.empty?
-          desc[:adminMetadata] = admin_metadata unless admin_metadata.empty?
-        end
+        add_descriptive_elements(title: titles)
       end
 
       private
 
-      attr_reader :item
+      attr_reader :label, :ng_xml
+
+      def add_descriptive_elements(cocina_description)
+        BUILDERS.each do |descriptive_property, builder|
+          result = builder.build(ng_xml)
+          cocina_description.merge!(descriptive_property => result) if result.present?
+        end
+        cocina_description
+      end
     end
   end
 end
