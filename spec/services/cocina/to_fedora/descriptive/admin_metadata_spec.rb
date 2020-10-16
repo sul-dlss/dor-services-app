@@ -112,7 +112,87 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
   end
 
   context 'when it is converted from MARC' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_recordInfo.txt#L146'
+    let(:admin_metadata) do
+      Cocina::Models::DescriptiveAdminMetadata.new(
+        "contributor": [
+          {
+            "name": [
+              {
+                "code": 'CSt',
+
+                "source": {
+                  "code": 'marcorg'
+                }
+              }
+            ],
+            "type": 'organization',
+            "role": [
+              {
+                "value": 'original cataloging agency'
+              }
+            ]
+          }
+        ],
+        "event": [
+          {
+            "type": 'creation',
+            "date": [
+              {
+                "value": '180305',
+                "encoding": {
+                  "code": 'marc'
+                }
+              }
+            ]
+          }
+        ],
+        "standard": {
+          "code": 'aacr'
+        },
+        "identifier": [
+          {
+            "value": 'a12374669',
+            "source": {
+              "value": 'SIRSI'
+            }
+          }
+        ],
+        "note": [
+          {
+            "type": 'record origin',
+            "value": 'Converted from MARCXML to MODS version 3.6 using MARC21slim2MODS3-6_SDR.xsl (SUL version 1 2018/06/13; LC Revision 1.118 2018/01/31)'
+          }
+        ],
+        "language": [
+          {
+            "code": 'eng',
+            "source": {
+              "code": 'iso639-2b'
+            }
+          }
+        ]
+      )
+    end
+
+    it 'builds the xml' do
+      # TODO: XML may need adjustment when https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/75 is resolved
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <recordInfo>
+            <descriptionStandard>aacr</descriptionStandard>
+            <recordContentSource authority="marcorg">CSt</recordContentSource>
+            <recordCreationDate encoding="marc">180305</recordCreationDate>
+            <recordIdentifier source="SIRSI">a12374669</recordIdentifier>
+            <recordOrigin>Converted from MARCXML to MODS version 3.6 using MARC21slim2MODS3-6_SDR.xsl (SUL version 1 2018/06/13; LC Revision 1.118 2018/01/31)</recordOrigin>
+            <languageOfCataloging usage="primary">
+              <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+            </languageOfCataloging>
+          </recordInfo>
+        </mods>
+      XML
+    end
   end
 
   context 'when it is converted from ISO 19139' do
