@@ -25,8 +25,8 @@ module Cocina
 
         def build
           {}.tap do |extension|
-            extension[:form] = build_form
-            extension[:subject] = [build_subject]
+            extension[:form] = build_form.flatten
+            extension[:subject] = build_subject
           end.compact
         end
 
@@ -36,8 +36,13 @@ module Cocina
 
         def build_form
           [].tap do |form|
-            form << build_form_format
-            form << build_form_type
+            form << { value: format[:text], type: 'media type', source: { value: 'IANA media type terms' } }
+            form << case type
+                    when 'Image'
+                      build_image_type
+                    else
+                      [{ value: format[:format], type: 'data format' }, { value: type, type: 'type' }]
+                    end
           end
         end
 
@@ -56,19 +61,39 @@ module Cocina
           }
         end
 
+        def format
+          text, format = rdf_descriptive.xpath('//dc:format', NAMESPACE).text.split('; format=')
+          @format ||= { text: text, format: format }
+        end
+
+        def type
+          @type = rdf_descriptive.xpath('//dc:type', NAMESPACE).text
+        end
+
         def build_form_type
-          type = rdf_descriptive.xpath('//dc:type', NAMESPACE)
+          [build_media_type, build_image_type]
+        end
+
+        def build_media_type
           {
-            value: type.text,
+            value: format[:text],
             type: 'media type',
-            source: {
-              value: 'DCMI Type Vocabulary'
-            }
+            source: { value: 'IANA media type terms' }
           }
         end
 
+        def build_image_type
+          {
+            value: type,
+            type: 'media type',
+            source: { value: 'DCMI Type Vocabulary' }
+          }
+        end
+
+        def build_shapefile_type; end
+
         def build_subject
-          return build_subject_for_center_point unless rdf_descriptive.xpath('//gmd:centerPoint', NAMESPACE).empty?
+          return [build_subject_for_center_point] unless rdf_descriptive.xpath('//gmd:centerPoint', NAMESPACE).empty?
           return build_subject_for_bounding_box unless rdf_descriptive.xpath('//gml:boundedBy', NAMESPACE).empty?
         end
 
@@ -93,31 +118,57 @@ module Cocina
         end
 
         def build_subject_for_bounding_box
+          standard = rdf_descriptive.xpath('//gml:boundedBy/gml:Envelope', NAMESPACE).attr('srsName')
+          coverage = rdf_descriptive.xpath('//dc:coverage', NAMESPACE)
           lower_corner = rdf_descriptive.xpath('//gml:boundedBy/gml:Envelope/gml:lowerCorner', NAMESPACE)
           upper_corner = rdf_descriptive.xpath('//gml:boundedBy/gml:Envelope/gml:upperCorner', NAMESPACE)
-          {
-            structuredValue: [
-              {
-                value: lower_corner.text.split.first,
-                type: 'west'
-              },
-              {
-                value: lower_corner.text.split.last,
-                type: 'south'
-              },
-              {
-                value: upper_corner.text.split.first,
-                type: 'east'
-              },
-              {
-                value: upper_corner.text.split.last,
-                type: 'north'
-              }
-            ],
-            type: "bounding box coordinates",
-            encoding: {
-              value: "decimal"
+
+          coordinates = [
+            {
+              value: lower_corner.text.split.first,
+              type: 'west'
+            },
+            {
+              value: lower_corner.text.split.last,
+              type: 'south'
+            },
+            {
+              value: upper_corner.text.split.first,
+              type: 'east'
+            },
+            {
+              value: upper_corner.text.split.last,
+              type: 'north'
             }
+          ]
+
+          [].tap do |subject|
+            subject << {}.tap do |structure|
+              structure[:structuredValue] = coordinates
+              structure[:type] = 'bounding box coordinates'
+              structure[:encoding] = { value: 'decimal' }
+              structure[:standard] = { code: standard.value, type: 'coordinate reference system' } if standard
+            end
+
+            next if coverage.empty?
+
+            coverage.each do |coverage_block|
+              title = coverage_block.attr('dc:title')
+              uri = coverage_block.attr('rdf:resource')
+              subject << {}.tap do |coverage_for|
+                coverage_for[:value] = title if title
+                coverage_for[:type] = 'coverage'
+                coverage_for[:language] = { code: 'eng' }
+                coverage_for[:uri] = uri unless uri.blank?
+              end
+            end
+          end
+        end
+
+        def standard
+          {
+            code: rdf_descriptive.xpath('//gml:boundedBy/gml:Envelope[@gml:srsName]', NAMESPACE),
+            type: 'coordinate reference system'
           }
         end
       end
