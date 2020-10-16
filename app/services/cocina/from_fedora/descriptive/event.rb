@@ -4,6 +4,7 @@ module Cocina
   module FromFedora
     class Descriptive
       # Maps originInfo to cocina events
+      # rubocop:disable Metrics/ClassLength
       class Event
         ORIGININFO_XPATH = '/mods:mods/mods:originInfo'
 
@@ -28,10 +29,12 @@ module Cocina
 
             issuance = origin.xpath('mods:issuance', mods: DESC_METADATA_NS)
             frequency = origin.xpath('mods:frequency', mods: DESC_METADATA_NS)
-            if issuance.present? || frequency.present?
+            publisher = origin.xpath('mods:publisher', mods: DESC_METADATA_NS)
+            if issuance.present? || frequency.present? || publisher.present?
               publication_event = find_or_create_publication_event(events)
               add_issuance_info(publication_event, issuance)
               add_frequency_info(publication_event, frequency)
+              add_publisher_info(publication_event, publisher)
             end
             events.reject(&:blank?)
           end
@@ -112,6 +115,27 @@ module Cocina
           }
         end
 
+        def add_publisher_info(event, set)
+          return if set.blank?
+
+          event[:contributor] ||= []
+          event[:contributor] << {
+            name: [{ value: set.text }],
+            type: 'organization',
+            role: [
+              {
+                "value": 'publisher',
+                "code": 'pbl',
+                "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                "source": {
+                  "code": 'marcrelator',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          }
+        end
+
         def build_event(type, node_set)
           points = node_set.select { |node| node['point'] }
           dates = points.size == 1 ? [build_date(type, points.first)] : build_structured_date(type, points)
@@ -146,6 +170,7 @@ module Cocina
           @origin_info ||= ng_xml.xpath(ORIGININFO_XPATH, mods: DESC_METADATA_NS)
         end
       end
+      # rubocop:enable Metrics/ClassLength
     end
   end
 end
