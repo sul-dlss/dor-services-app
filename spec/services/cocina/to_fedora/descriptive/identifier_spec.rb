@@ -16,7 +16,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Identifier do
     end
   end
 
-  context 'when events is nil' do
+  context 'when identifiers is nil' do
     let(:identifiers) { nil }
 
     it 'builds the xml' do
