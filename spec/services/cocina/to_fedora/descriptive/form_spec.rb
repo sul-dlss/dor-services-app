@@ -204,4 +204,79 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
       end
     end
   end
+
+  describe 'physicalDescription' do
+    context 'with all elements' do
+      let(:forms) do
+        [
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'ink on paper',
+            "type": 'form'
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'access',
+            "type": 'reformatting quality',
+            "source": {
+              "value": 'MODS reformatting quality terms'
+            }
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'image/jpeg',
+            "type": 'media type',
+            "source": {
+              "value": 'IANA media types'
+            }
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": '1 sheet',
+            "type": 'extent'
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'reformatted digital',
+            "type": 'digital origin',
+            "source": {
+              "value": 'MODS digital origin terms'
+            }
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "note": [
+              {
+                "value": 'Small tear at top right corner.',
+                "displayLabel": 'Condition'
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <physicalDescription>
+              <form>ink on paper</form>
+              <reformattingQuality>access</reformattingQuality>
+              <internetMediaType>image/jpeg</internetMediaType>
+              <extent>1 sheet</extent>
+              <digitalOrigin>reformatted digital</digitalOrigin>
+              <note displayLabel="Condition">Small tear at top right corner.</note>
+            </physicalDescription>
+          </mods>
+        XML
+      end
+    end
+
+    context 'with multiple descriptions' do
+      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_physicalDescription.txt#L52'
+    end
+
+    context 'when form has authority' do
+      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_physicalDescription.txt#L90'
+    end
+
+    context 'when it has displayLabel' do
+      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_physicalDescription.txt#L107'
+    end
+  end
 end
