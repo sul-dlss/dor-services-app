@@ -29,7 +29,23 @@ module Cocina
         def write_basic(form)
           attributes = {}
           attributes[:displayLabel] = form.displayLabel if form.displayLabel
-          xml.typeOfResource form.value, attributes if form.type == 'resource type'
+          case form.type
+          when 'resource type'
+            xml.typeOfResource form.value, attributes
+          when 'map scale', 'map projection'
+            # do nothing, these end up in subject/cartographics
+          when 'genre'
+            xml.genre form.value, with_uri_info(form, attributes)
+          else
+            xml.genre form.value, with_uri_info(form, attributes.merge(type: form.type))
+          end
+        end
+
+        def with_uri_info(cocina, xml_attrs)
+          xml_attrs[:valueURI] = cocina.uri
+          xml_attrs[:authorityURI] = cocina.source&.uri
+          xml_attrs[:authority] = cocina.source&.code
+          xml_attrs.compact
         end
       end
     end
