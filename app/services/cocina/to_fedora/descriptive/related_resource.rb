@@ -11,7 +11,8 @@ module Cocina
           'preceded by' => 'preceding',
           'succeeded by' => 'succeeding',
           'reviewed by' => 'reviewOf',
-          'has original version' => 'original'
+          'has original version' => 'original',
+          'has part' => 'constituent'
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] related_resources
