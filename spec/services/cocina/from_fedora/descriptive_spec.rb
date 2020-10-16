@@ -153,6 +153,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         { source: { code: 'local' }, type: 'genre', value: 'archived website' },
         {
           value: 'electronic',
+          type: 'form',
           source: {
             code: 'marcform'
           }
@@ -351,12 +352,14 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         { source: { value: 'MODS resource type' }, type: 'resource type', value: 'text' },
         {
           value: 'electronic resource',
+          type: 'form',
           source: {
             code: 'marccategory'
           }
         },
         {
           value: 'remote',
+          type: 'form',
           source: {
             code: 'marcsmd'
           }

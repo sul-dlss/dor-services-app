@@ -34,7 +34,7 @@ module Cocina
         attr_reader :xml, :forms
 
         def physical_description_member?(form)
-          form.note.present? || ['form', 'reformatting quality', 'media type', 'extent', 'digital origin'].include?(form.type)
+          form.note.present? || PHYSICAL_DESCRIPTION_TAG.keys.include?(form.type)
         end
 
         def write_physical_description(forms)

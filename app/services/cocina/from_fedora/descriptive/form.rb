@@ -8,7 +8,6 @@ module Cocina
         PHYSICAL_DESCRIPTION_XPATH = '//mods:physicalDescription'
         FORM_XPATH = './mods:form'
         FORM_AUTHORITY_XPATH = './@authority'
-        FORM_TYPE_XPATH = './@type'
         EXTENT_XPATH = './mods:extent'
 
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
@@ -83,7 +82,7 @@ module Cocina
             form_data.xpath(FORM_XPATH, mods: DESC_METADATA_NS).each do |form_content|
               forms << {
                 value: form_content.content,
-                type: type_for(form_content),
+                type: form_content['type'] || 'form',
                 source: source_for(form_content)
               }.reject { |_k, v| v.blank? }
             end
@@ -100,10 +99,6 @@ module Cocina
 
         def source_for(form)
           { code: form.xpath(FORM_AUTHORITY_XPATH, mods: DESC_METADATA_NS).to_s }
-        end
-
-        def type_for(form)
-          form.xpath(FORM_TYPE_XPATH, mods: DESC_METADATA_NS).to_s
         end
 
         def type_of_resource
