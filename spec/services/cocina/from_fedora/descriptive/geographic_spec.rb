@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::FromFedora::Descriptive::GeoExtension do
+RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
   subject(:build) { described_class.build(ng_xml) }
 
   let(:ng_xml) do

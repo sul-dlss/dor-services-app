@@ -4,7 +4,7 @@ module Cocina
   module FromFedora
     class Descriptive
       # Maps MODS extension displayLabel geo to cocina descriptive extension
-      class GeoExtension
+      class Geographic
         NAMESPACE = {
           'mods' => DESC_METADATA_NS,
           'dc' => DUBLIN_CORE_NS,
@@ -24,8 +24,10 @@ module Cocina
         end
 
         def build
+          return unless description
+
           {}.tap do |extension|
-            extension[:form] = build_form.flatten
+            extension[:form] = build_form.flatten if build_form
             extension[:subject] = build_subject
           end.compact
         end
@@ -35,6 +37,8 @@ module Cocina
         attr_reader :ng_xml
 
         def build_form
+          return unless format
+
           [].tap do |form|
             form << { value: format[:text], type: MEDIA_TYPE, source: IANA_TERMS }
             form << build_type
@@ -118,6 +122,8 @@ module Cocina
         end
 
         def format
+          return unless description
+
           text, format = description.xpath('//dc:format', NAMESPACE).text.split(FORMAT_DELIM)
           @format ||= { text: text, format: format }
         end
