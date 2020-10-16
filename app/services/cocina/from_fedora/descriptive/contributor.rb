@@ -11,6 +11,14 @@ module Cocina
           'family' => 'family',
           'conference' => 'conference'
         }.freeze
+
+        NAME_PART = {
+          'family' => 'surname',
+          'given' => 'forename',
+          'terms of address' => 'term of address',
+          'date' => 'life dates'
+        }.freeze
+
         NAME_XPATH = '/mods:mods/mods:name'
         NAME_PART_XPATH = './mods:namePart'
         ROLE_CODE_XPATH = './mods:role/mods:roleTerm[@type="code"]'
@@ -34,7 +42,9 @@ module Cocina
                 contributor_hash[:status] = name['usage'] if name['usage']
                 roles = [roles_for(name)]
                 contributor_hash[:role] = roles unless roles.flatten.empty?
-              end
+                contributor_hash[:note] = notes_for(name)
+                contributor_hash[:identifier] = identifier_for(name)
+              end.compact
             end
           end
         end
@@ -43,15 +53,48 @@ module Cocina
 
         attr_reader :ng_xml
 
+        def identifier_for(name)
+          identifier = name.xpath('mods:nameIdentifier', mods: DESC_METADATA_NS).first
+          return unless identifier
+
+          type = 'URI' if URI::DEFAULT_PARSER.make_regexp.match?(identifier.text)
+          [{ value: identifier.text, type: type, source: { code: identifier['type'] } }.compact]
+        end
+
+        def notes_for(name)
+          [].tap do |parts|
+            affiliation = name.xpath('mods:affiliation', mods: DESC_METADATA_NS).first
+            parts << { value: affiliation.text, type: 'affiliation' } if affiliation
+
+            description = name.xpath('mods:description', mods: DESC_METADATA_NS).first
+            parts << { value: description.text, type: 'description' } if description
+          end.presence
+        end
+
         def names
           @names ||= ng_xml.xpath(NAME_XPATH, mods: DESC_METADATA_NS)
         end
 
         def name_parts(name)
           [].tap do |parts|
-            name.xpath(NAME_PART_XPATH, mods: DESC_METADATA_NS).each do |name_part|
-              parts << { value: name_part.content }
+            query = name.xpath(NAME_PART_XPATH, mods: DESC_METADATA_NS)
+            if query.size == 1
+              query.each do |name_part|
+                parts << name_part(name_part)
+              end
+            else
+              vals = query.map { |name_part| name_part(name_part) }
+              parts << { structuredValue: vals }
             end
+
+            display_form = name.xpath('mods:displayForm', mods: DESC_METADATA_NS).first
+            parts << { value: display_form.text, type: 'display' } if display_form
+          end
+        end
+
+        def name_part(name_part_node)
+          { value: name_part_node.content }.tap do |name_part|
+            name_part[:type] = NAME_PART.fetch(name_part_node['type']) if name_part_node['type']
           end
         end
 
