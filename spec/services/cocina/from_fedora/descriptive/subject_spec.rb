@@ -370,6 +370,40 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with a name subject with multiple namePart elements' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh">
+          <name type="personal">
+            <namePart>Nakahama, Manjir&#x14D;</namePart>
+            <namePart type="date">1827-1898</namePart>
+          </name>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data model' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Nakahama, Manjirō',
+              "type": 'name'
+            },
+            {
+              "value": '1827-1898',
+              "type": 'life dates'
+            }
+          ],
+          "type": 'person',
+          "source": {
+            "code": 'lcsh'
+          }
+        }
+      ]
+    end
+  end
+
   context 'with a name subject with additional terms and authority for terms' do
     xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L247'
   end
