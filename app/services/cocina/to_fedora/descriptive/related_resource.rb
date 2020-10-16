@@ -12,7 +12,10 @@ module Cocina
           'succeeded by' => 'succeeding',
           'reviewed by' => 'reviewOf',
           'has original version' => 'original',
-          'has part' => 'constituent'
+          'has part' => 'constituent',
+          'part of' => 'host',
+          'referenced by' => 'isReferencedBy',
+          'has other format' => 'otherFormat'
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] related_resources
