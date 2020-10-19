@@ -492,6 +492,30 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     end
   end
 
+  context 'with edition' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <edition>1st ed.</edition>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "note": [
+            {
+              "value": '1st ed.',
+              "type": 'edition'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
   context 'with issuance and frequency' do
     let(:xml) do
       <<~XML
