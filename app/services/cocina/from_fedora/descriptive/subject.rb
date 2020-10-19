@@ -58,8 +58,7 @@ module Cocina
           attrs = source_attrs(node, attrs)
           case node.name
           when 'name'
-            query = node.xpath('mods:namePart', mods: DESC_METADATA_NS)
-            attrs.merge(value: query.first.text, type: 'person')
+            Contributor.name_parts(node, add_default_type: true).first.merge(type: 'person').merge(attrs)
           when 'titleInfo'
             query = node.xpath('mods:title', mods: DESC_METADATA_NS)
             attrs.merge(value: query.first.text, type: 'title')

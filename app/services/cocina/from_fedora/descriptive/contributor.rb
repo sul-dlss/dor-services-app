@@ -37,7 +37,7 @@ module Cocina
         def build
           [].tap do |contributors|
             names.each do |name|
-              contributors << { name: name_parts(name) }.tap do |contributor_hash|
+              contributors << { name: self.class.name_parts(name) }.tap do |contributor_hash|
                 contributor_hash[:type] = ROLES.fetch(name['type']) if name['type']
                 contributor_hash[:status] = name['usage'] if name['usage']
                 roles = [roles_for(name)]
@@ -46,6 +46,35 @@ module Cocina
                 contributor_hash[:identifier] = identifier_for(name)
               end.compact
             end
+          end
+        end
+
+        # Also used by the Subject class
+        def self.name_parts(name, add_default_type: false)
+          [].tap do |parts|
+            query = name.xpath(NAME_PART_XPATH, mods: DESC_METADATA_NS)
+            if query.size == 1
+              query.each do |name_part|
+                parts << name_part(name_part, add_default_type: add_default_type)
+              end
+            else
+              vals = query.map { |name_part| name_part(name_part, add_default_type: add_default_type) }
+              parts << { structuredValue: vals }
+            end
+
+            display_form = name.xpath('mods:displayForm', mods: DESC_METADATA_NS).first
+            parts << { value: display_form.text, type: 'display' } if display_form
+          end
+        end
+
+        def self.name_part(name_part_node, add_default_type:)
+          { value: name_part_node.content }.tap do |name_part|
+            type = if add_default_type
+                     NAME_PART.fetch(name_part_node['type'], 'name')
+                   elsif name_part_node['type']
+                     NAME_PART.fetch(name_part_node['type'])
+                   end
+            name_part[:type] = type if type
           end
         end
 
@@ -73,29 +102,6 @@ module Cocina
 
         def names
           @names ||= ng_xml.xpath(NAME_XPATH, mods: DESC_METADATA_NS)
-        end
-
-        def name_parts(name)
-          [].tap do |parts|
-            query = name.xpath(NAME_PART_XPATH, mods: DESC_METADATA_NS)
-            if query.size == 1
-              query.each do |name_part|
-                parts << name_part(name_part)
-              end
-            else
-              vals = query.map { |name_part| name_part(name_part) }
-              parts << { structuredValue: vals }
-            end
-
-            display_form = name.xpath('mods:displayForm', mods: DESC_METADATA_NS).first
-            parts << { value: display_form.text, type: 'display' } if display_form
-          end
-        end
-
-        def name_part(name_part_node)
-          { value: name_part_node.content }.tap do |name_part|
-            name_part[:type] = NAME_PART.fetch(name_part_node['type']) if name_part_node['type']
-          end
         end
 
         def roles_for(name)
