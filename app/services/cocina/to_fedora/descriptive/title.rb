@@ -24,11 +24,11 @@ module Cocina
         end
 
         def write
-          titles.each_with_index do |title, alt_rep_group|
+          titles.each_with_index do |title, count|
             if title.parallelValue
-              write_parallel(title, alt_rep_group: alt_rep_group)
+              write_parallel(title, alt_rep_group: count)
             elsif title.structuredValue
-              write_structured(title)
+              write_structured(title, name_title_group: count)
             elsif title.value
               write_basic(title)
             end
@@ -66,16 +66,33 @@ module Cocina
           end
         end
 
-        def write_structured(title)
+        def write_structured(structured_node, name_title_group:)
           title_info_attrs = {}
-          title_info_attrs[:usage] = 'primary' if title.status == 'primary'
-          title_info_attrs[:type] = title.type if title.type
+          title_info_attrs[:usage] = 'primary' if structured_node.status == 'primary'
+          title_info_attrs[:type] = structured_node.type if structured_node.type
 
-          xml.titleInfo(title_info_attrs) do
-            title.structuredValue&.each do |component|
-              xml.public_send(TAG_NAME.fetch(component.type), component.value) if component.type
+          names = structured_node.structuredValue.group_by { |component| component.type == 'personal name' }
+
+          title_info_attrs[:nameTitleGroup] = name_title_group if names[true].present?
+
+          xml.titleInfo(with_uri_info(structured_node, title_info_attrs)) do
+            names[false].each do |title|
+              xml.public_send(TAG_NAME.fetch(title.type), title.value) unless title.note
             end
           end
+
+          Array(names[true]).each do |name|
+            xml.name with_uri_info(name, nameTitleGroup: name_title_group, type: 'personal') do
+              xml.namePart name.value
+            end
+          end
+        end
+
+        def with_uri_info(cocina, xml_attrs)
+          xml_attrs[:valueURI] = cocina.uri
+          xml_attrs[:authorityURI] = cocina.source&.uri
+          xml_attrs[:authority] = cocina.source&.code
+          xml_attrs.compact
         end
       end
     end
