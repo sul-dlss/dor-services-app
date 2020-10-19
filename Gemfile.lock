@@ -202,8 +202,9 @@ GEM
     factory_bot_rails (6.1.0)
       factory_bot (~> 6.1.0)
       railties (>= 5.0.0)
-    faraday (1.0.1)
+    faraday (1.1.0)
       multipart-post (>= 1.2, < 3)
+      ruby2_keywords
     faraday_middleware (1.0.0)
       faraday (~> 1.0)
     ffi (1.13.1)
@@ -398,7 +399,7 @@ GEM
       rubocop-ast (>= 0.6.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 2.0)
-    rubocop-ast (0.7.1)
+    rubocop-ast (0.8.0)
       parser (>= 2.7.1.5)
     rubocop-rails (2.8.1)
       activesupport (>= 4.2.0)
@@ -410,6 +411,7 @@ GEM
     ruby-enum (0.8.0)
       i18n
     ruby-progressbar (1.10.1)
+    ruby2_keywords (0.0.2)
     rubydora (2.1.0)
       activemodel (>= 4.2.10)
       activesupport
@@ -470,7 +472,7 @@ GEM
     unf_ext (0.0.7.7)
     unicode-display_width (1.7.0)
     uuidtools (2.1.5)
-    webmock (3.9.1)
+    webmock (3.9.3)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
