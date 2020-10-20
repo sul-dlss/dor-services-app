@@ -83,7 +83,25 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
   end
 
   context 'when it has a related item without type' do
-    xit 'TODO: Waiting to hear back from Arcadia about https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_relatedItem.txt#L51-L67' do
+    let(:resources) do
+      [
+        Cocina::Models::RelatedResource.new(
+          "title": [
+            {
+              "value": 'Supplement'
+            }
+          ],
+          "note": [
+            {
+              "value": 'Additional data.',
+              "type": 'summary'
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
