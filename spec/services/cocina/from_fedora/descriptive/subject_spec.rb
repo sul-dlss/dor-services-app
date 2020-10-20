@@ -611,6 +611,23 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with a cartographic subject missing coordinates' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <cartographics>
+            <scale>1:22,000,000</scale>
+            <projection>Conic proj</projection>
+          </cartographics>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq []
+    end
+  end
+
   context 'with a geographic code subject' do
     let(:xml) do
       <<~XML
