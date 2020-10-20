@@ -36,7 +36,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
     end
 
     it 'builds the cocina data structure' do
-      expect(build).to eq({
+      expect(build).to eq([{
                             "form": [
                               {
                                 "value": 'image/jpeg',
@@ -71,7 +71,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
                                 }
                               }
                             ]
-                          })
+                          }])
     end
   end
 
@@ -96,48 +96,54 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
     end
 
     it 'builds the cocina data structure' do
-      expect(build).to eq({ form: [
-                            {
-                              value: 'image/jpeg',
-                              type: 'media type',
-                              source: {
-                                value: 'IANA media type terms'
-                              }
-                            },
-                            {
-                              value: 'Image',
-                              type: 'media type',
-                              source: {
-                                value: 'DCMI Type Vocabulary'
-                              }
-                            }
-                          ],
-                            subject: [
-                              {
-                                structuredValue: [
-                                  {
-                                    value: '-122.191292',
-                                    type: 'west'
-                                  },
-                                  {
-                                    value: '37.4063388',
-                                    type: 'south'
-                                  },
-                                  {
-                                    value: '-122.149475',
-                                    type: 'east'
-                                  },
-                                  {
-                                    value: '37.4435369',
-                                    type: 'north'
-                                  }
-                                ],
-                                type: 'bounding box coordinates',
-                                encoding: {
-                                  value: 'decimal'
-                                }
-                              }
-                            ] })
+      expect(build).to eq(
+        [
+          {
+            form: [
+              {
+                value: 'image/jpeg',
+                type: 'media type',
+                source: {
+                  value: 'IANA media type terms'
+                }
+              },
+              {
+                value: 'Image',
+                type: 'media type',
+                source: {
+                  value: 'DCMI Type Vocabulary'
+                }
+              }
+            ],
+            subject: [
+              {
+                structuredValue: [
+                  {
+                    value: '-122.191292',
+                    type: 'west'
+                  },
+                  {
+                    value: '37.4063388',
+                    type: 'south'
+                  },
+                  {
+                    value: '-122.149475',
+                    type: 'east'
+                  },
+                  {
+                    value: '37.4435369',
+                    type: 'north'
+                  }
+                ],
+                type: 'bounding box coordinates',
+                encoding: {
+                  value: 'decimal'
+                }
+              }
+            ]
+          }
+        ]
+      )
     end
   end
 
@@ -164,7 +170,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
     end
 
     it 'builds the cocina data structure' do
-      expect(build).to eq({
+      expect(build).to eq([{
                             "form": [
                               {
                                 "value": 'application/x-esri-shapefile',
@@ -207,20 +213,19 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
                                   "value": 'decimal'
                                 },
                                 "standard": {
-                                  "code": 'EPSG:4326',
-                                  "type": 'coordinate reference system'
+                                  "code": 'EPSG:4326'
                                 }
                               },
                               {
                                 "value": 'Antarctica',
                                 "type": 'coverage',
-                                "language": {
+                                "valueLanguage": {
                                   "code": 'eng'
                                 },
                                 "uri": 'http://sws.geonames.org/6255152/'
                               }
                             ]
-                          })
+                          }])
     end
   end
 
@@ -246,7 +251,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
     end
 
     it 'builds the cocina data structure' do
-      expect(build).to eq({
+      expect(build).to eq([{
                             "form": [
                               {
                                 "value": 'application/x-esri-shapefile',
@@ -289,12 +294,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
                                   "value": 'decimal'
                                 },
                                 "standard": {
-                                  "code": 'EPSG:4326',
-                                  "type": 'coordinate reference system'
+                                  "code": 'EPSG:4326'
                                 }
                               }
                             ]
-                          })
+                          }])
     end
   end
 
@@ -320,7 +324,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
     end
 
     it 'builds the cocina data structure' do
-      expect(build).to eq({
+      expect(build).to eq([{
                             "form": [
                               {
                                 "value": 'application/x-esri-shapefile',
@@ -363,12 +367,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
                                   "value": 'decimal'
                                 },
                                 "standard": {
-                                  "code": 'EPSG:4326',
-                                  "type": 'coordinate reference system'
+                                  "code": 'EPSG:4326'
                                 }
                               }
                             ]
-                          })
+                          }])
     end
   end
 
@@ -394,7 +397,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
     end
 
     it 'builds the cocina data structure' do
-      expect(build).to eq({
+      expect(build).to eq([{
                             "form": [
                               {
                                 "value": 'image/tiff',
@@ -437,12 +440,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
                                   "value": 'decimal'
                                 },
                                 "standard": {
-                                  "code": 'EPSG:4326',
-                                  "type": 'coordinate reference system'
+                                  "code": 'EPSG:4326'
                                 }
                               }
                             ]
-                          })
+                          }])
     end
   end
 
@@ -471,7 +473,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
     end
 
     it 'builds the cocina data structure' do
-      expect(build).to eq({
+      expect(build).to eq([{
                             "form": [
                               {
                                 "value": 'application/x-esri-shapefile',
@@ -514,34 +516,33 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
                                   "value": 'decimal'
                                 },
                                 "standard": {
-                                  "code": 'EPSG:4326',
-                                  "type": 'coordinate reference system'
+                                  "code": 'EPSG:4326'
                                 }
                               },
                               {
                                 "value": 'California, Northern',
                                 "type": 'coverage',
-                                "language": {
+                                "valueLanguage": {
                                   "code": 'eng'
                                 }
                               },
                               {
                                 "value": 'Jackson Demonstration State Forest (Calif.)',
                                 "type": 'coverage',
-                                "language": {
+                                "valueLanguage": {
                                   "code": 'eng'
                                 }
                               },
                               {
                                 "value": 'Mendocino County (Calif.)',
                                 "type": 'coverage',
-                                "language": {
+                                "valueLanguage": {
                                   "code": 'eng'
                                 },
                                 "uri": 'http://sws.geonames.org/5372163/'
                               }
                             ]
-                          })
+                          }])
     end
   end
 end

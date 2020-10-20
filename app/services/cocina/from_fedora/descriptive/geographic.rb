@@ -4,6 +4,7 @@ module Cocina
   module FromFedora
     class Descriptive
       # Maps MODS extension displayLabel geo to cocina descriptive extension
+      # rubocop:disable Metrics/ClassLength
       class Geographic
         NAMESPACE = {
           'mods' => DESC_METADATA_NS,
@@ -12,6 +13,25 @@ module Cocina
           'gmd' => GMD_NS,
           'gml' => GML_NS
         }.freeze
+
+        # Directional Constants for GEO
+        SOUTH = 'south'
+        WEST = 'west'
+        NORTH = 'north'
+        EAST = 'east'
+
+        # Geo Extention Constants
+        BOUNDING_BOX_COORDS = 'bounding box coordinates'
+        COVERAGE = 'coverage'
+        DATA_FORMAT = 'data format'
+        DCMI_VOCAB = { value: 'DCMI Type Vocabulary' }.freeze
+        DECIMAL_ENCODING = { value: 'decimal' }.freeze
+        FORMAT_DELIM = '; format='
+        IANA_TERMS = { value: 'IANA media type terms' }.freeze
+        LANGUAGE = { code: 'eng' }.freeze
+        MEDIA_TYPE = 'media type'
+        POINT_COORDS = 'point coordinates'
+        TYPE = 'type'
 
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
         # @return [Hash] a hash that can be mapped to a cocina model
@@ -26,10 +46,10 @@ module Cocina
         def build
           return unless description
 
-          {}.tap do |extension|
+          [{}.tap do |extension|
             extension[:form] = build_form.flatten if build_form
             extension[:subject] = build_subject
-          end.compact
+          end.compact]
         end
 
         private
@@ -76,7 +96,7 @@ module Cocina
             structure[:structuredValue] = bounding_box_coordinates
             structure[:type] = BOUNDING_BOX_COORDS
             structure[:encoding] = DECIMAL_ENCODING
-            structure[:standard] = { code: standard, type: COORD_REF_SYSTEM } if standard
+            structure[:standard] = { code: standard } if standard
           end
         end
 
@@ -87,7 +107,7 @@ module Cocina
             {}.tap do |coverage_for|
               coverage_for[:value] = title if title
               coverage_for[:type] = COVERAGE
-              coverage_for[:language] = LANGUAGE
+              coverage_for[:valueLanguage] = LANGUAGE
               coverage_for[:uri] = uri if uri.present?
             end
           end
@@ -157,6 +177,7 @@ module Cocina
           @type = description.xpath('//dc:type', NAMESPACE).text
         end
       end
+      # rubocop:enable Metrics/ClassLength
     end
   end
 end

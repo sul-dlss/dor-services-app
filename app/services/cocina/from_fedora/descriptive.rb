@@ -10,26 +10,6 @@ module Cocina
       GMD_NS = 'http://www.isotc211.org/2005/gmd'
       GML_NS = 'http://www.opengis.net/gml/3.2/'
 
-      # Geo Extention Constants
-      BOUNDING_BOX_COORDS = 'bounding box coordinates'
-      COORD_REF_SYSTEM = 'coordinate reference system'
-      COVERAGE = 'coverage'
-      DATA_FORMAT = 'data format'
-      DCMI_VOCAB = { value: 'DCMI Type Vocabulary' }.freeze
-      DECIMAL_ENCODING = { value: 'decimal' }.freeze
-      FORMAT_DELIM = '; format='
-      IANA_TERMS = { value: 'IANA media type terms' }.freeze
-      LANGUAGE = { code: 'eng' }.freeze
-      MEDIA_TYPE = 'media type'
-      POINT_COORDS = 'point coordinates'
-      TYPE = 'type'
-
-      # Directional Constants for GEO
-      SOUTH = 'south'
-      WEST = 'west'
-      NORTH = 'north'
-      EAST = 'east'
-
       BUILDERS = {
         note: Notes,
         language: Language,

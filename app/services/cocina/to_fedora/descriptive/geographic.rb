@@ -127,7 +127,7 @@ module Cocina
           coverage.map do |data|
             coverage_attributes = {
               'rdf:resource' => data[:uri],
-              'dc:language' => data[:language][:code],
+              'dc:language' => data[:valueLanguage][:code],
               'dc:title' => data[:value]
             }
             xml['dc'].coverage coverage_attributes

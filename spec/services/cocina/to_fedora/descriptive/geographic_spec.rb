@@ -215,14 +215,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
               "value": 'decimal'
             },
             "standard": {
-              "code": 'EPSG:4326',
-              "type": 'coordinate reference system'
+              "code": 'EPSG:4326'
             }
           },
           {
             "value": 'Antarctica',
             "type": 'coverage',
-            "language": {
+            "valueLanguage": {
               "code": 'eng'
             },
             "uri": 'http://sws.geonames.org/6255152/'
@@ -301,8 +300,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
               "value": 'decimal'
             },
             "standard": {
-              "code": 'EPSG:4326',
-              "type": 'coordinate reference system'
+              "code": 'EPSG:4326'
             }
           }
         ] }
@@ -378,8 +376,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
               "value": 'decimal'
             },
             "standard": {
-              "code": 'EPSG:4326',
-              "type": 'coordinate reference system'
+              "code": 'EPSG:4326'
             }
           }
         ] }
@@ -456,8 +453,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
               "value": 'decimal'
             },
             "standard": {
-              "code": 'EPSG:4326',
-              "type": 'coordinate reference system'
+              "code": 'EPSG:4326'
             }
           }
         ]
@@ -534,28 +530,27 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
               "value": 'decimal'
             },
             "standard": {
-              "code": 'EPSG:4326',
-              "type": 'coordinate reference system'
+              "code": 'EPSG:4326'
             }
           },
           {
             "value": 'California, Northern',
             "type": 'coverage',
-            "language": {
+            "valueLanguage": {
               "code": 'eng'
             }
           },
           {
             "value": 'Jackson Demonstration State Forest (Calif.)',
             "type": 'coverage',
-            "language": {
+            "valueLanguage": {
               "code": 'eng'
             }
           },
           {
             "value": 'Mendocino County (Calif.)',
             "type": 'coverage',
-            "language": {
+            "valueLanguage": {
               "code": 'eng'
             },
             "uri": 'http://sws.geonames.org/5372163/'
