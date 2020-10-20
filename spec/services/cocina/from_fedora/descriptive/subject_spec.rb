@@ -305,6 +305,31 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with a name subject with authority missing authorityURI' do
+    let(:xml) do
+      <<~XML
+        <subject authority="fast" valueURI="(OCoLC)fst00596994">
+          <name type="corporate">
+            <namePart>Biblioteka Polskiej Akademii Nauk w Krakowie</namePart>
+          </name>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'Biblioteka Polskiej Akademii Nauk w Krakowie',
+          "type": 'person',
+          "uri": '(OCoLC)fst00596994',
+          "source": {
+            "code": 'fast'
+          }
+        }
+      ]
+    end
+  end
+
   context 'with a name subject with additional terms' do
     let(:xml) do
       <<~XML
