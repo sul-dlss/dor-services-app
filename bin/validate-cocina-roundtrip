@@ -3,21 +3,32 @@
 
 require_relative '../config/environment'
 
+def round_tripped_xml(item)
+  desc_props = Cocina::FromFedora::Descriptive.props(item)
+  cocina = Cocina::Models::Description.new(desc_props)
+  Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina).to_xml)
+end
+
+def normalized(ng_xml)
+  ng_xml.root.delete('version')
+  ng_xml.root.delete('xmlns:xsi')
+  ng_xml
+end
+
 SAMPLE_SIZE = 100
 results = ActiveFedora::SolrService.query('*:*', sort: 'random asc', fl: 'id', rows: SAMPLE_SIZE)
 druids = results.map { |r| r['id'] }
 counts = { different: 0, success: 0, error: 0 }
 druids.each do |druid|
   item = Dor.find(druid)
-  original_xml = item.descMetadata.content
+  original_xml = normalized(item.descMetadata.ng_xml)
   print druid
-  desc_props = Cocina::FromFedora::Descriptive.props(item)
-  cocina = Cocina::Models::Description.new(desc_props)
-  result_xml = Cocina::ToFedora::Descriptive.transform(cocina).to_xml
+  result_xml = normalized(round_tripped_xml(item))
+
   if !EquivalentXml.equivalent?(result_xml, original_xml)
     puts ' is different:'
-    puts "Expected: #{original_xml}\n"
-    puts "Received: #{result_xml}\n\n\n"
+    puts "Expected: #{original_xml.to_xml}\n"
+    puts "Received: #{result_xml.to_xml}\n\n\n"
     counts[:different] += 1
   else
     puts " successfully round tripped.\n\n"
