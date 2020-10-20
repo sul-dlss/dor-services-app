@@ -41,7 +41,7 @@ module Cocina
 
         def source_attrs(subject, attrs = {})
           if subject[:valueURI]
-            attrs[:source] = { code: subject[:authority], uri: subject[:authorityURI] }
+            attrs[:source] = { code: subject[:authority], uri: subject[:authorityURI] }.compact
             attrs[:uri] = subject[:valueURI]
           elsif subject[:authority]
             attrs[:source] = { code: subject[:authority] }
