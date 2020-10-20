@@ -29,11 +29,13 @@ module Cocina
 
             issuance = origin.xpath('mods:issuance', mods: DESC_METADATA_NS)
             frequency = origin.xpath('mods:frequency', mods: DESC_METADATA_NS)
+            edition = origin.xpath('mods:edition', mods: DESC_METADATA_NS)
             publisher = origin.xpath('mods:publisher', mods: DESC_METADATA_NS)
-            if issuance.present? || frequency.present? || publisher.present?
+            if issuance.present? || frequency.present? || edition.present? || publisher.present?
               publication_event = find_or_create_publication_event(events)
               add_issuance_info(publication_event, issuance)
               add_frequency_info(publication_event, frequency)
+              add_edition_info(publication_event, edition)
               add_publisher_info(publication_event, publisher)
             end
             events.reject(&:blank?)
@@ -111,6 +113,16 @@ module Cocina
           event[:note] ||= []
           event[:note] << {
             type: 'frequency',
+            value: set.text
+          }
+        end
+
+        def add_edition_info(event, set)
+          return if set.blank?
+
+          event[:note] ||= []
+          event[:note] << {
+            type: 'edition',
             value: set.text
           }
         end
