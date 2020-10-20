@@ -132,7 +132,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     let(:xml) do
       <<~XML
         <name type="personal" usage="primary">
-          <namePart type="terms of address">Dr.</namePart>
+          <namePart type="termsOfAddress">Dr.</namePart>
           <namePart type="given">Terry</namePart>
           <namePart type="family">Castle</namePart>
           <namePart type="date">1953-</namePart>

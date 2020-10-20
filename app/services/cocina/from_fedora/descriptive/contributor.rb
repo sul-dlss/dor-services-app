@@ -16,6 +16,7 @@ module Cocina
           'family' => 'surname',
           'given' => 'forename',
           'terms of address' => 'term of address',
+          'termsOfAddress' => 'term of address',
           'date' => 'life dates'
         }.freeze
 
