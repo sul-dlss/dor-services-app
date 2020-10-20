@@ -530,7 +530,34 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
   end
 
   context 'with a hierarchical geographic subject subdivision' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L503'
+    let(:xml) do
+      <<~XML
+          <subject>
+            <hierarchicalGeographic>
+              <country>Austria</country>
+              <city>Vienna</city>
+            </hierarchicalGeographic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Austria',
+              "type": 'country'
+            },
+            {
+              "value": 'Vienna',
+              "type": 'city'
+            }
+          ],
+          "type": 'place'
+        }
+      ]
+    end
   end
 
   context 'with a cartographic subject' do

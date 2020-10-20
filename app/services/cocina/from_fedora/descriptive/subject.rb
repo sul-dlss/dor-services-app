@@ -26,12 +26,13 @@ module Cocina
           subjects.map do |subject|
             node_set = subject.xpath('*')
             attrs = source_attrs(subject)
-            case node_set.size
-            when 1
-              simple_item(node_set.first, attrs)
-            else
-              structured_value(node_set, attrs)
-            end
+
+            next structured_value(node_set, attrs) if node_set.size != 1
+
+            node = node_set.first
+            next hierarchical_geographic(node, attrs) if node.name == 'hierarchicalGeographic'
+
+            simple_item(node, attrs)
           end
         end
 
@@ -52,6 +53,17 @@ module Cocina
         def structured_value(node_set, attrs)
           values = node_set.map { |node| simple_item(node) }
           attrs.merge(structuredValue: values)
+        end
+
+        def hierarchical_geographic(hierarchical_geographic_node, attrs)
+          node_set = hierarchical_geographic_node.xpath('*')
+          values = node_set.map do |node|
+            {
+              "value": node.text,
+              "type": node.name
+            }
+          end
+          attrs.merge(structuredValue: values, type: 'place')
         end
 
         def simple_item(node, attrs = {})
