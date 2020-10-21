@@ -39,6 +39,7 @@ module Cocina
               add_location(related.access)
               add_contributors(Array(related.contributor))
               add_physical_description(Array(related.form))
+              add_notes(Array(related.note))
             end
           end
         end
@@ -46,6 +47,12 @@ module Cocina
         private
 
         attr_reader :xml, :related_resources
+
+        def add_notes(notes)
+          notes.each do |note|
+            Note.write_basic(xml, note)
+          end
+        end
 
         def add_physical_description(forms)
           forms.each do |form|

@@ -8,29 +8,33 @@ module Cocina
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] notes
         def self.write(xml:, notes:)
-          new(xml: xml, notes: notes).write
-        end
-
-        def initialize(xml:, notes:)
-          @xml = xml
-          @notes = notes
-        end
-
-        def write
           Array(notes).each_with_index do |note, alt_rep_group|
             if note.parallelValue
-              write_parallel(note, alt_rep_group: alt_rep_group)
+              write_parallel(xml, note, alt_rep_group: alt_rep_group)
             else
-              write_basic(note)
+              write_basic(xml, note)
             end
           end
         end
 
-        private
+        def self.tag_name(type)
+          type == 'summary' ? :abstract : :note
+        end
+        private_class_method :tag_name
 
-        attr_reader :xml, :notes
+        def self.tag(xml, note, tag_name, attributes)
+          attributes[:type] = note.type if note.type && tag_name != :abstract
+          xml.public_send tag_name, note.value, attributes
+        end
+        private_class_method :tag
 
-        def write_parallel(note, alt_rep_group:)
+        def self.write_basic(xml, note)
+          attributes = {}
+          attributes[:displayLabel] = note.displayLabel if note.displayLabel
+          tag(xml, note, tag_name(note.type), attributes)
+        end
+
+        def self.write_parallel(xml, note, alt_rep_group:)
           note.parallelValue.each do |descriptive_value|
             attributes = {
               altRepGroup: alt_rep_group,
@@ -38,24 +42,10 @@ module Cocina
             }
             attributes[:script] = descriptive_value.valueLanguage.valueScript.code if descriptive_value.valueLanguage.valueScript
 
-            tag(descriptive_value, tag_name(note.type), attributes)
+            tag(xml, descriptive_value, tag_name(note.type), attributes)
           end
         end
-
-        def write_basic(note)
-          attributes = {}
-          attributes[:displayLabel] = note.displayLabel if note.displayLabel
-          tag(note, tag_name(note.type), attributes)
-        end
-
-        def tag_name(type)
-          type == 'summary' ? :abstract : :note
-        end
-
-        def tag(note, tag_name, attributes)
-          attributes[:type] = note.type if note.type && tag_name != :abstract
-          xml.public_send tag_name, note.value, attributes
-        end
+        private_class_method :write_parallel
       end
     end
   end
