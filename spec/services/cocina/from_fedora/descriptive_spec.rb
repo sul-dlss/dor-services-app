@@ -157,7 +157,9 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           source: {
             code: 'marcform'
           }
-        }
+        },
+        { value: 'text/html', type: 'media type', source: { value: 'IANA media types' } },
+        { value: 'born digital', type: 'digital origin', source: { value: 'MODS digital origin terms' } }
       ]
       expect(descriptive[:subject].size).to eq 2
     end

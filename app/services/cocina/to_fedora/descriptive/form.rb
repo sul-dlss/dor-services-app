@@ -49,7 +49,7 @@ module Cocina
                   xml.note val.value, attributes.compact
                 end
               else
-                xml.public_send PHYSICAL_DESCRIPTION_TAG.fetch(form.type), form.value
+                xml.public_send PHYSICAL_DESCRIPTION_TAG.fetch(form.type), form.value, with_uri_info(form, {})
               end
             end
           end
