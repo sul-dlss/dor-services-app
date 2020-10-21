@@ -4,11 +4,9 @@ module Cocina
   module FromFedora
     class Descriptive
       # Maps relevant MODS physicalDescription, typeOfResource and genre from descMetadata to cocina form
+      # rubocop:disable Metrics/ClassLength
       class Form
         PHYSICAL_DESCRIPTION_XPATH = '//mods:physicalDescription'
-        FORM_XPATH = './mods:form'
-        FORM_AUTHORITY_XPATH = './@authority'
-        EXTENT_XPATH = './mods:extent'
 
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
         # @return [Hash] a hash that can be mapped to a cocina model
@@ -79,17 +77,67 @@ module Cocina
 
         def add_physical_descriptions(forms)
           physical_descriptions.each do |form_data|
-            form_data.xpath(FORM_XPATH, mods: DESC_METADATA_NS).each do |form_content|
-              forms << {
-                value: form_content.content,
-                type: form_content['type'] || 'form',
-                source: source_for(form_content)
-              }.reject { |_k, v| v.blank? }
-            end
+            add_forms(forms, form_data)
+            add_reformatting_quality(forms, form_data)
+            add_media_type(forms, form_data)
+            add_extent(forms, form_data)
+            add_digital_origin(forms, form_data)
+            add_note(forms, form_data)
+          end
+        end
 
-            form_data.xpath(EXTENT_XPATH, mods: DESC_METADATA_NS).each do |extent|
-              forms << { value: extent.content, type: 'extent' }
-            end
+        def add_note(forms, physical_description)
+          physical_description.xpath('mods:note', mods: DESC_METADATA_NS).each do |node|
+            forms << {
+              note: [{ value: node.content, displayLabel: node['displayLabel'] }]
+            }
+          end
+        end
+
+        def add_digital_origin(forms, physical_description)
+          physical_description.xpath('mods:digitalOrigin', mods: DESC_METADATA_NS).each do |node|
+            forms << {
+              value: node.content,
+              type: 'digital origin',
+              source: { value: 'MODS digital origin terms' }
+            }.compact
+          end
+        end
+
+        def add_extent(forms, physical_description)
+          physical_description.xpath('mods:extent', mods: DESC_METADATA_NS).each do |extent|
+            forms << { value: extent.content, type: 'extent' }
+          end
+        end
+
+        def add_media_type(forms, physical_description)
+          physical_description.xpath('mods:internetMediaType', mods: DESC_METADATA_NS).each do |node|
+            forms << {
+              value: node.content,
+              type: 'media type',
+              source: { value: 'IANA media types' }
+            }.compact
+          end
+        end
+
+        def add_reformatting_quality(forms, physical_description)
+          physical_description.xpath('mods:reformattingQuality', mods: DESC_METADATA_NS).each do |node|
+            forms << {
+              value: node.content,
+              type: 'reformatting quality',
+              source: { value: 'MODS reformatting quality terms' }
+            }.compact
+          end
+        end
+
+        def add_forms(forms, physical_description)
+          physical_description.xpath('mods:form', mods: DESC_METADATA_NS).each do |form_content|
+            forms << {
+              value: form_content.content,
+              uri: form_content['valueURI'],
+              type: form_content['type'] || 'form',
+              source: source_for(form_content).presence
+            }.compact
           end
         end
 
@@ -98,7 +146,7 @@ module Cocina
         end
 
         def source_for(form)
-          { code: form.xpath(FORM_AUTHORITY_XPATH, mods: DESC_METADATA_NS).to_s }
+          { code: form['authority'], uri: form['authorityURI'] }.compact
         end
 
         def type_of_resource
@@ -118,6 +166,7 @@ module Cocina
           ng_xml.xpath('//mods:subject/mods:cartographics/mods:projection', mods: DESC_METADATA_NS)
         end
       end
+      # rubocop:enable Metrics/ClassLength
     end
   end
 end
