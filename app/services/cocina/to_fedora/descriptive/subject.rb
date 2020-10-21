@@ -71,6 +71,8 @@ module Cocina
               hierarchical_geographic(xml, subject)
             when 'time'
               time_range(xml, subject)
+            when 'person'
+              person(xml, subject)
             else
               subject.structuredValue&.each do |component|
                 write_topic(component)
@@ -148,6 +150,16 @@ module Cocina
           xml.hierarchicalGeographic do
             xml.country subject.structuredValue.find { |geo| geo.type == 'country' }.value
             xml.city subject.structuredValue.find { |geo| geo.type == 'city' }.value
+          end
+        end
+
+        def person(xml, subject)
+          xml.name type: 'personal' do
+            subject.structuredValue.each do |point|
+              attributes = {}
+              attributes[:type] = FromFedora::Descriptive::Contributor::NAME_PART.invert.fetch(point.type) if point.type != 'name'
+              xml.namePart point.value, attributes
+            end
           end
         end
       end
