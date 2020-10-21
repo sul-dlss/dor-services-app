@@ -15,7 +15,8 @@ module Cocina
         form: Form,
         identifier: Identifier,
         adminMetadata: AdminMetadata,
-        relatedResource: RelatedResource
+        relatedResource: RelatedResource,
+        classification: Classification
       }.freeze
 
       # @param [Dor::Item,Dor::Etd] item
