@@ -33,7 +33,7 @@ module Cocina
             next hierarchical_geographic(node, attrs) if node.name == 'hierarchicalGeographic'
 
             simple_item(node, attrs)
-          end
+          end.compact
         end
 
         private
@@ -78,6 +78,8 @@ module Cocina
             attrs.merge(code: node.text, type: 'place', source: { code: node['authority'] })
           when 'cartographics'
             coords = node.xpath('mods:coordinates', mods: DESC_METADATA_NS).first
+            return nil if coords.nil?
+
             attrs.merge(value: coords.text, type: 'map coordinates', encoding: { value: 'DMS' })
           else
             attrs.merge(value: node.text, type: NODE_TYPE.fetch(node.name))
