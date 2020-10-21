@@ -21,8 +21,6 @@ module Cocina
 
         NAME_XPATH = '/mods:mods/mods:name'
         NAME_PART_XPATH = './mods:namePart'
-        ROLE_CODE_XPATH = './mods:role/mods:roleTerm[@type="code"]'
-        ROLE_TEXT_XPATH = './mods:role/mods:roleTerm[@type="text"]'
 
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
         # @return [Hash] a hash that can be mapped to a cocina model
@@ -104,20 +102,39 @@ module Cocina
           @names ||= ng_xml.xpath(NAME_XPATH, mods: DESC_METADATA_NS)
         end
 
+        ROLE_CODE_XPATH = './mods:role/mods:roleTerm[@type="code"]'
+        ROLE_TEXT_XPATH = './mods:role/mods:roleTerm[@type="text"]'
+        ROLE_AUTHORITY_XPATH = './mods:role/mods:roleTerm/@authority'
+        ROLE_AUTHORITY_URI_XPATH = './mods:role/mods:roleTerm/@authorityURI'
+        ROLE_AUTHORITY_VALUE_XPATH = './mods:role/mods:roleTerm/@valueURI'
+
+        # rubocop:disable Metrics/AbcSize
+        # rubocop:disable Metrics/CyclomaticComplexity
+        # rubocop:disable Metrics/PerceivedComplexity
         def roles_for(name)
           role_code = name.xpath(ROLE_CODE_XPATH, mods: DESC_METADATA_NS).first
           role_text = name.xpath(ROLE_TEXT_XPATH, mods: DESC_METADATA_NS).first
           return [] if role_code.nil? && role_text.nil?
 
-          {}.tap do |role|
-            if role_code.present?
-              raise Cocina::Mapper::InvalidDescMetadata, "#{ROLE_CODE_XPATH} is missing required authority attribute" unless role_code['authority']
+          role_authority = name.xpath(ROLE_AUTHORITY_XPATH, mods: DESC_METADATA_NS).first
+          role_authority_uri = name.xpath(ROLE_AUTHORITY_URI_XPATH, mods: DESC_METADATA_NS).first
+          role_authority_value = name.xpath(ROLE_AUTHORITY_VALUE_XPATH, mods: DESC_METADATA_NS).first
 
-              role[:code] = role_code.content unless role_code.nil?
-              role[:source] = { code: role_code['authority'] }
+          {}.tap do |role|
+            raise Cocina::Mapper::InvalidDescMetadata, "#{ROLE_CODE_XPATH} is missing required authority attribute" if role_code&.content.present? && role_authority&.content.blank?
+
+            if role_authority&.content.present?
+              role[:source] = { code: role_authority.content }
+              role[:source][:uri] = role_authority_uri.content if role_authority_uri&.content.present?
             end
-            role[:value] = role_text.content unless role_text.nil?
+
+            role[:code] = role_code.content if role_code&.content.present?
+            role[:value] = role_text.content if role_text&.content.present?
+            role[:uri] = role_authority_value.content if role_authority_value&.content.present?
           end
+          # rubocop:enable Metrics/AbcSize
+          # rubocop:enable Metrics/CyclomaticComplexity
+          # rubocop:enable Metrics/PerceivedComplexity
         end
       end
     end
