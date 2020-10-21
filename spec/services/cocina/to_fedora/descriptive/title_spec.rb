@@ -207,7 +207,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
             "structuredValue": [
               {
                 "value": 'Shakespeare, William, 1564-1616',
-                "type": 'personal name',
+                "type": 'person',
                 "uri": 'http://id.loc.gov/authorities/names/n78095332',
                 "source": {
                   "uri": 'http://id.loc.gov/authorities/names/',

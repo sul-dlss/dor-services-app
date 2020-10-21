@@ -5,13 +5,8 @@ module Cocina
     class Descriptive
       # Maps titles from cocina to MODS XML
       class Title
-        TAG_NAME = {
-          'nonsorting characters' => :nonSort,
-          'main title' => :title,
-          'subtitle' => :subTitle,
-          'part name' => 'partName',
-          'part number' => 'partNumber'
-        }.freeze
+        TAG_NAME = FromFedora::Descriptive::Titles::TYPES.invert.freeze
+
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValueRequired>] titles
         def self.write(xml:, titles:)
@@ -71,7 +66,7 @@ module Cocina
           title_info_attrs[:usage] = 'primary' if structured_node.status == 'primary'
           title_info_attrs[:type] = structured_node.type if structured_node.type
 
-          names = structured_node.structuredValue.group_by { |component| component.type == 'personal name' }
+          names = structured_node.structuredValue.group_by { |component| component.type == FromFedora::Descriptive::Titles::PERSON_TYPE }
 
           title_info_attrs[:nameTitleGroup] = name_title_group if names[true].present?
 

@@ -259,7 +259,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             "structuredValue": [
               {
                 "value": 'Shakespeare, William, 1564-1616',
-                "type": 'name'
+                "type": 'person'
               },
               {
                 "value": 'Hamlet',
@@ -349,7 +349,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             "structuredValue": [
               {
                 "value": 'Spinoza, Benedictus de',
-                "type": 'name'
+                "type": 'person'
               },
               {
                 "value": '1632-1677',
