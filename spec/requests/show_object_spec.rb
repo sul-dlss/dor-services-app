@@ -355,8 +355,7 @@ RSpec.describe 'Get the object' do
         label: 'foo',
         version: 1,
         access: {
-          access: 'world',
-          download: 'world'
+          access: 'world'
         },
         administrative: {
           hasAdminPolicy: 'druid:df123cd4567'

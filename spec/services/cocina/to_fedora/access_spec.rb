@@ -11,7 +11,7 @@ RSpec.describe Cocina::ToFedora::Access do
 
   describe 'with stanford access' do
     let(:access) do
-      Cocina::Models::Access.new(access: 'stanford', download: 'none')
+      Cocina::Models::DROAccess.new(access: 'stanford', download: 'none')
     end
 
     it 'builds the xml' do

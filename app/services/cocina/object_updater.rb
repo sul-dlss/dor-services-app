@@ -111,7 +111,7 @@ module Cocina
       # Note that title is the only desc metadata field handled by the mapper. However, the mapped title is composed from
       # several MODS fields which makes writing back to the MODS problematic.
       raise NotImplemented, 'Updating descriptive metadata not supported' if
-        obj.description.title != FromFedora::Descriptive.props(item).fetch(:title).map { |value| Cocina::Models::DescriptiveValueRequired.new(value) }
+        obj.description.title != FromFedora::Descriptive.props(item).fetch(:title).map { |value| Cocina::Models::Title.new(value) }
     end
 
     # TODO: duplicate from ObjectCreator

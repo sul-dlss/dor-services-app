@@ -21,7 +21,7 @@ module Cocina
           label: item.label,
           version: item.current_version.to_i,
           administrative: FromFedora::Administrative.props(item),
-          access: Access.props(item)
+          access: Access.collection_props(item)
         }.tap do |props|
           description = FromFedora::Descriptive.props(item)
           props[:description] = description unless description.nil?

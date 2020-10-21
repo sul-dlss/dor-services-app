@@ -134,7 +134,7 @@ RSpec.describe 'Create object' do
         Cocina::Models::Collection.new(type: Cocina::Models::Vocab.collection,
                                        label: expected_label,
                                        version: 1,
-                                       access: { access: 'dark', download: 'none' },
+                                       access: { access: 'dark' },
                                        administrative: {
                                          hasAdminPolicy: 'druid:dd999df4567'
                                        },
@@ -170,7 +170,7 @@ RSpec.describe 'Create object' do
         Cocina::Models::Collection.new(type: Cocina::Models::Vocab.collection,
                                        label: expected_label,
                                        version: 1,
-                                       access: { access: 'world', download: 'none' },
+                                       access: { access: 'world' },
                                        administrative: {
                                          hasAdminPolicy: 'druid:dd999df4567'
                                        },

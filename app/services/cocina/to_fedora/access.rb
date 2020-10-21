@@ -37,7 +37,7 @@ module Cocina
         when 'dark'
           'dark'
         else
-          access.download == 'none' ? "#{access.access}-nd" : access.access
+          access.respond_to?(:download) && access.download == 'none' ? "#{access.access}-nd" : access.access
         end
       end
     end
