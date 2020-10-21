@@ -13,6 +13,8 @@ module Cocina
           'partName' => 'part name'
         }.freeze
 
+        PERSON_TYPE = 'person'
+
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
         # @return [Hash] a hash that can be mapped to a cocina model
         # @raises [Mapper::MissingTitle]
@@ -81,7 +83,7 @@ module Cocina
           parts = node.xpath("//mods:name[@nameTitleGroup='#{name_title_group}']/mods:namePart", mods: DESC_METADATA_NS)
           raise "name not found for #{name_title_group}" if parts.blank?
 
-          vals = parts.map { |part| { value: part.text, type: Contributor::NAME_PART.fetch(part['type'], 'name') } }
+          vals = parts.map { |part| { value: part.text, type: Contributor::NAME_PART.fetch(part['type'], PERSON_TYPE) } }
 
           with_attributes({ structuredValue: vals + [{ value: title, type: 'title' }] },
                           node,
