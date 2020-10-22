@@ -12,6 +12,7 @@ module Cocina
           'succeeded by' => 'succeeding',
           'reviewed by' => 'reviewOf',
           'has original version' => 'original',
+          'has version' => 'otherVersion',
           'has part' => 'constituent',
           'part of' => 'host',
           'referenced by' => 'isReferencedBy',
