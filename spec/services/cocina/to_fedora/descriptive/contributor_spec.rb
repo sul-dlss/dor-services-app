@@ -142,7 +142,78 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
   end
 
   context 'with additional subelements' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L75'
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          "name": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'Dr.',
+                  "type": 'term of address'
+                },
+                {
+                  "value": 'Terry',
+                  "type": 'forename'
+                },
+                {
+                  "value": 'Castle',
+                  "type": 'surname'
+                },
+                {
+                  "value": '1953-',
+                  "type": 'life dates'
+                }
+              ]
+            },
+            {
+              "value": 'Castle, Terry',
+              "type": 'display'
+            }
+          ],
+          "status": 'primary',
+          "type": 'person',
+          "identifier": [
+            {
+              "value": 'https://www.wikidata.org/wiki/Q7704207',
+              "type": 'URI',
+              "source": {
+                "code": 'wikidata'
+              }
+            }
+          ],
+          "note": [
+            {
+              "value": 'Stanford University',
+              "type": 'affiliation'
+            },
+            {
+              "value": 'Professor of English',
+              "type": 'description'
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <name type="personal" usage="primary">
+            <namePart type="termsOfAddress">Dr.</namePart>
+            <namePart type="given">Terry</namePart>
+            <namePart type="family">Castle</namePart>
+            <namePart type="date">1953-</namePart>
+            <affiliation>Stanford University</affiliation>
+            <nameIdentifier type="wikidata">https://www.wikidata.org/wiki/Q7704207</nameIdentifier>
+            <displayForm>Castle, Terry</displayForm>
+            <description>Professor of English</description>
+          </name>
+        </mods>
+      XML
+    end
   end
 
   context 'with ordinal' do
