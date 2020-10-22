@@ -1062,16 +1062,16 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
         Cocina::Models::DescriptiveValue.new(
           {
             "value": 'String quartets',
-            "type": 'topic'
-          },
-          "source": {
-            "code": 'lcsh'
+            "type": 'topic',
+            "source": {
+              "code": 'lcsh'
+            }
           }
         )
       ]
     end
 
-    xit 'see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/51' do
+    it 'see it builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
