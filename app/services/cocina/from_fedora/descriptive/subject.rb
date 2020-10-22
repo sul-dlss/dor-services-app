@@ -9,7 +9,8 @@ module Cocina
           'temporal' => 'time',
           'topic' => 'topic',
           'geographic' => 'place',
-          'genre' => 'genre'
+          'genre' => 'genre',
+          'occupation' => 'occupation'
         }.freeze
 
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML

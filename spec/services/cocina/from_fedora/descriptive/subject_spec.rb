@@ -671,6 +671,25 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L672'
   end
 
+  context 'with a occupation subject' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <occupation>Notaries</occupation>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'Notaries',
+          "type": 'occupation'
+        }
+      ]
+    end
+  end
+
   context 'with a display label' do
     # See https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/51
     xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L688'
