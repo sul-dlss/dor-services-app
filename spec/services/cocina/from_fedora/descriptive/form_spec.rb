@@ -141,6 +141,27 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       end
     end
 
+    context 'with authority missing authorityURI' do
+      let(:xml) do
+        <<~XML
+          <genre authority="lcgft" valueURI="http://id.loc.gov/authorities/genreForms/gf2017027249">Photographs</genre>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'Photographs',
+            "type": 'genre',
+            "uri": 'http://id.loc.gov/authorities/genreForms/gf2017027249',
+            "source": {
+              "code": 'lcgft'
+            }
+          }
+        ]
+      end
+    end
+
     context 'with usage' do
       xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_genre.txt#L57'
     end
