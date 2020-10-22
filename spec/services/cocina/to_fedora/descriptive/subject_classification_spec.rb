@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::ToFedora::Descriptive::Classification do
+RSpec.describe Cocina::ToFedora::Descriptive::Subject do
   subject(:xml) { writer.to_xml }
 
   let(:writer) do
@@ -12,13 +12,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Classification do
                'version' => '3.6',
                'xmlns:rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, classification: classification)
+        described_class.write(xml: xml, subjects: subjects)
       end
     end
   end
 
   context 'when classification is nil' do
-    let(:classification) { nil }
+    let(:subjects) { nil }
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
@@ -33,19 +33,17 @@ RSpec.describe Cocina::ToFedora::Descriptive::Classification do
 
   # 1. Classification with authority
   context 'when given a classification with authority' do
-    let(:classification) do
+    let(:subjects) do
       [
-        {
-          "subject": [
-            {
-              "type": 'classification',
-              "value": 'G9801.S12 2015 .Z3',
-              "source": {
-                "code": 'lcc'
-              }
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "type": 'classification',
+            "value": 'G9801.S12 2015 .Z3',
+            "source": {
+              "code": 'lcc'
             }
-          ]
-        }
+          }
+        )
       ]
     end
 
@@ -63,20 +61,18 @@ RSpec.describe Cocina::ToFedora::Descriptive::Classification do
 
   # 2. Classification with edition
   context 'when given a classification with authority' do
-    let(:classification) do
+    let(:subjects) do
       [
-        {
-          "subject": [
-            {
-              "type": 'classification',
-              "value": '683',
-              "source": {
-                "code": 'ddc',
-                "version": '11th edition'
-              }
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "type": 'classification',
+            "value": '683',
+            "source": {
+              "code": 'ddc',
+              "version": '11th edition'
             }
-          ]
-        }
+          }
+        )
       ]
     end
 
@@ -94,20 +90,18 @@ RSpec.describe Cocina::ToFedora::Descriptive::Classification do
 
   # 3. Display label
   context 'when given a classification with a display label' do
-    let(:classification) do
+    let(:subjects) do
       [
-        {
-          "subject": [
-            {
-              "type": 'classification',
-              "value": 'ML410.B3',
-              "displayLabel": 'Library of Congress classification',
-              "source": {
-                "code": 'lcc'
-              }
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "type": 'classification',
+            "value": 'ML410.B3',
+            "displayLabel": 'Library of Congress classification',
+            "source": {
+              "code": 'lcc'
             }
-          ]
-        }
+          }
+        )
       ]
     end
 

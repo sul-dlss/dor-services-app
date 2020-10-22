@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::FromFedora::Descriptive::Classification do
+RSpec.describe Cocina::FromFedora::Descriptive::Subject do
   subject(:build) { described_class.build(ng_xml) }
 
   let(:ng_xml) do
@@ -22,15 +22,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Classification do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "subject": [
-            {
-              "type": 'classification',
-              "value": 'G9801.S12 2015 .Z3',
-              "source": {
-                "code": 'lcc'
-              }
-            }
-          ]
+          "type": 'classification',
+          "value": 'G9801.S12 2015 .Z3',
+          "source": {
+            "code": 'lcc'
+          }
         }
       ]
     end
@@ -43,16 +39,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Classification do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "subject": [
-            {
-              "type": 'classification',
-              "value": '683',
-              "source": {
-                "code": 'ddc',
-                "version": '11th edition'
-              }
-            }
-          ]
+          "type": 'classification',
+          "value": '683',
+          "source": {
+            "code": 'ddc',
+            "version": '11th edition'
+          }
         }
       ]
     end
@@ -65,16 +57,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Classification do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "subject": [
-            {
-              "type": 'classification',
-              "value": 'ML410.B3',
-              "displayLabel": 'Library of Congress classification',
-              "source": {
-                "code": 'lcc'
-              }
-            }
-          ]
+          "type": 'classification',
+          "value": 'ML410.B3',
+          "displayLabel": 'Library of Congress classification',
+          "source": {
+            "code": 'lcc'
+          }
         }
       ]
     end
