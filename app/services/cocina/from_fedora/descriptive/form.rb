@@ -55,7 +55,7 @@ module Cocina
             }.tap do |item|
               if type[:valueURI]
                 item[:uri] = type[:valueURI]
-                item[:source] = { code: type[:authority], uri: type[:authorityURI] }
+                item[:source] = { code: type[:authority], uri: type[:authorityURI] }.compact
               elsif type[:authority]
                 item[:source] = { code: type[:authority] }
               end
