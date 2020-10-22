@@ -10,6 +10,8 @@ module Cocina
           'time' => :temporal,
           'genre' => :genre
         }.freeze
+        DEORDINAL_REGEX = /(?<=[0-9])(?:st|nd|rd|th)/.freeze
+
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] subjects
         # @params [Array<Cocina::Models::DescriptiveValue>] forms
@@ -85,9 +87,21 @@ module Cocina
           subject_attributes = {}
           subject_attributes[:authority] = 'lcsh' if subject.source && subject.type != 'place'
           subject_attributes[:displayLabel] = subject.displayLabel if subject.displayLabel
-          xml.subject(subject_attributes) do
-            write_topic(subject)
+          subject_attributes[:edition] = edition(subject.source.version) if subject.source&.version
+
+          case subject.type
+          when 'classification'
+            subject_attributes[:authority] = subject.source.code
+            write_classification(subject.value, subject_attributes)
+          else
+            xml.subject(subject_attributes) do
+              write_topic(subject)
+            end
           end
+        end
+
+        def write_classification(value, attrs)
+          xml.classification value, attrs
         end
 
         def write_topic(subject)
@@ -161,6 +175,10 @@ module Cocina
               xml.namePart point.value, attributes
             end
           end
+        end
+
+        def edition(version)
+          version.split.first.gsub(DEORDINAL_REGEX, '')
         end
       end
       # rubocop:enable Metrics/ClassLength
