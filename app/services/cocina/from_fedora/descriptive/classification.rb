@@ -3,7 +3,7 @@
 module Cocina
   module FromFedora
     class Descriptive
-      # Maps contributors
+      # Maps classification
       class Classification
         NAMESPACE = { 'mods' => DESC_METADATA_NS }.freeze
 

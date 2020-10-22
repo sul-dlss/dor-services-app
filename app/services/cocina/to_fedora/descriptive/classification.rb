@@ -3,7 +3,7 @@
 module Cocina
   module ToFedora
     class Descriptive
-      # Maps geo extension from cocina to MODS
+      # Maps classification extension from cocina to MODS
       class Classification
         DEORDINAL_REGEX = /(?<=[0-9])(?:st|nd|rd|th)/.freeze
 
@@ -21,10 +21,9 @@ module Cocina
         def write
           return if classification.nil?
 
-          attributes = {}
-          attributes[:authority] = authority
-          attributes[:edition] = edition if edition
-          attributes[:displayLabel] = display_label if display_label
+          attributes = { authority: authority,
+                         edition: edition,
+                         displayLabel: display_label }.compact
           xml.classification content, attributes
         end
 
@@ -33,23 +32,23 @@ module Cocina
         attr_reader :xml, :classification
 
         def content
-          subject.first[:value] if subject
+          first_subject[:value]
         end
 
-        def subject
-          classification.first[:subject]
+        def first_subject
+          classification.first[:subject]&.first || {}
         end
 
         def authority
-          classification.first[:subject].first[:source][:code]
+          first_subject[:source][:code]
         end
 
         def display_label
-          subject.first[:displayLabel] if subject
+          first_subject[:displayLabel]
         end
 
         def source
-          subject.first[:source] if subject
+          first_subject[:source]
         end
 
         def edition
