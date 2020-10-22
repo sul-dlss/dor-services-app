@@ -6,11 +6,12 @@ module Cocina
       # Maps subject nodes from MODS to cocina
       class Subject
         NODE_TYPE = {
-          'temporal' => 'time',
-          'topic' => 'topic',
-          'geographic' => 'place',
+          'classification' => 'classification',
           'genre' => 'genre',
-          'occupation' => 'occupation'
+          'geographic' => 'place',
+          'occupation' => 'occupation',
+          'temporal' => 'time',
+          'topic' => 'topic'
         }.freeze
 
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
@@ -25,8 +26,9 @@ module Cocina
 
         def build
           subjects.map do |subject|
-            node_set = subject.xpath('*')
             attrs = source_attrs(subject)
+            node_set = subject.xpath('*')
+            next subject_classification(subject, attrs) if subject.name == 'classification'
 
             next structured_value(node_set, attrs) if node_set.size != 1
 
@@ -46,7 +48,10 @@ module Cocina
             attrs[:source] = { code: subject[:authority], uri: subject[:authorityURI] }.compact
             attrs[:uri] = subject[:valueURI]
           elsif subject[:authority]
-            attrs[:source] = { code: subject[:authority] }
+            attrs[:source] = {}.tap do |source|
+              source[:code] = subject[:authority]
+              source[:version] = format_edition(subject[:edition]) if subject[:edition]
+            end
           end
           attrs
         end
@@ -65,6 +70,15 @@ module Cocina
             }
           end
           attrs.merge(structuredValue: values, type: 'place')
+        end
+
+        def subject_classification(subject_classification_node, attrs)
+          values = {}.tap do |content|
+            content[:type] = 'classification'
+            content[:value] = subject_classification_node.text
+            content[:displayLabel] = subject_classification_node[:displayLabel] if subject_classification_node[:displayLabel]
+          end
+          attrs.merge(values)
         end
 
         def simple_item(node, attrs = {})
@@ -89,7 +103,18 @@ module Cocina
         end
 
         def subjects
-          ng_xml.xpath('//mods:subject', mods: DESC_METADATA_NS)
+          subject_node = ng_xml.xpath('//mods:subject', mods: DESC_METADATA_NS)
+          return subject_node unless classification
+
+          subject_node << classification
+        end
+
+        def classification
+          ng_xml.xpath('//mods:classification', mods: DESC_METADATA_NS).first
+        end
+
+        def format_edition(edition)
+          "#{edition.to_i.ordinalize} edition"
         end
       end
     end

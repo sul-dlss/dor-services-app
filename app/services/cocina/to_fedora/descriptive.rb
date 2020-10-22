@@ -30,7 +30,6 @@ module Cocina
             Descriptive::Event.write(xml: xml, events: descriptive.event)
             Descriptive::Identifier.write(xml: xml, identifiers: descriptive.identifier)
             Descriptive::AdminMetadata.write(xml: xml, admin_metadata: descriptive.adminMetadata)
-            Descriptive::Classification.write(xml: xml, classification: descriptive.classification)
           end
         end
       end

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::ToFedora::Descriptive::Classification do
+RSpec.describe Cocina::ToFedora::Descriptive::Subject do
   subject(:xml) { writer.to_xml }
 
   let(:writer) do
