@@ -188,6 +188,31 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
   end
 
   context 'when it has displayLabel' do
-    xit 'pending release of cocina-models 0.41.0'
+    let(:resources) do
+      [
+        Cocina::Models::RelatedResource.new(
+          "title": [
+            {
+              "value": 'Fremontia : Journal of the California Native Plant Society'
+            }
+          ],
+          "displayLabel": 'Contained in (manifestation):'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <relatedItem displayLabel="Contained in (manifestation):">
+            <titleInfo>
+              <title>Fremontia : Journal of the California Native Plant Society</title>
+            </titleInfo>
+          </relatedItem>
+        </mods>
+      XML
+    end
   end
 end
