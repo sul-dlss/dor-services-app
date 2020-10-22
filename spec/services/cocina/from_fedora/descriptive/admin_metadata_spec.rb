@@ -175,4 +175,24 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
   context 'with recordInfo converted from ISO 19139' do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_recordInfo.txt#L213'
   end
+
+  context 'with recordIdentifier missing source' do
+    let(:xml) do
+      <<~XML
+        <recordInfo>
+          <recordIdentifier>a12374669</recordIdentifier>
+        </recordInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq(
+        "identifier": [
+          {
+            "value": 'a12374669'
+          }
+        ]
+      )
+    end
+  end
 end
