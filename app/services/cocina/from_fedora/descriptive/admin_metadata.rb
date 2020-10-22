@@ -50,11 +50,10 @@ module Cocina
           return unless identifier
 
           [{
-            source: {
-              value: identifier['source']
-            },
             value: identifier.text
-          }]
+          }.tap do |model|
+            model[:source] = { value: identifier['source'] } if identifier['source']
+          end]
         end
 
         def build_note
