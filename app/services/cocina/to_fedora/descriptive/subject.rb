@@ -113,7 +113,7 @@ module Cocina
 
         def topic_attributes_for(subject)
           {}.tap do |topic_attributes|
-            if subject.source
+            if subject.source&.uri
               topic_attributes[:authority] = subject.source.code
               topic_attributes[:authorityURI] = subject.source.uri
             end
