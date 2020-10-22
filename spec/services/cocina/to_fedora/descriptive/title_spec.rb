@@ -20,7 +20,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
     context 'when it is a basic value' do
       let(:titles) do
         [
-          Cocina::Models::DescriptiveValueRequired.new(
+          Cocina::Models::Title.new(
             { value: 'Gaudy night' }
           )
         ]
@@ -42,7 +42,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
     context 'when it has a structured value' do
       let(:titles) do
         [
-          Cocina::Models::DescriptiveValueRequired.new(
+          Cocina::Models::Title.new(
             { structuredValue: [{ type: 'nonsorting characters', value: 'The' },
                                 { type: 'main title', value: 'journal of stuff' },
                                 { type: 'subtitle', value: 'a journal' },
@@ -73,13 +73,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
     context 'when it has an alternative' do
       let(:titles) do
         [
-          Cocina::Models::DescriptiveValueRequired.new(
+          Cocina::Models::Title.new(
             {
               value: 'Five red herrings',
               status: 'primary'
             }
           ),
-          Cocina::Models::DescriptiveValueRequired.new(
+          Cocina::Models::Title.new(
             {
               value: 'Suspicious characters',
               type: 'alternative'
@@ -107,10 +107,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
     context 'when it is translated' do
       let(:titles) do
         [
-          Cocina::Models::DescriptiveValueRequired.new(
+          Cocina::Models::Title.new(
             {
               parallelValue: [
-                Cocina::Models::DescriptiveValueRequired.new(
+                Cocina::Models::Title.new(
                   {
                     structuredValue: [
                       {
@@ -139,7 +139,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
                     }
                   }
                 ),
-                Cocina::Models::DescriptiveValueRequired.new(
+                Cocina::Models::Title.new(
                   {
                     structuredValue: [
                       {
@@ -199,11 +199,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
     context 'when it is a uniform title with authority' do
       let(:titles) do
         [
-          Cocina::Models::DescriptiveValueRequired.new(
+          Cocina::Models::Title.new(
             "value": 'Hamlet',
             "status": 'primary'
           ),
-          Cocina::Models::DescriptiveValueRequired.new(
+          Cocina::Models::Title.new(
             "structuredValue": [
               {
                 "value": 'Shakespeare, William, 1564-1616',

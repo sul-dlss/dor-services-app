@@ -25,8 +25,7 @@ RSpec.describe 'Get the object' do
           label: 'collection #1',
           version: 1,
           access: {
-            access: 'dark',
-            download: 'none'
+            access: 'dark'
           },
           administrative: {
             hasAdminPolicy: 'druid:df123cd4567'

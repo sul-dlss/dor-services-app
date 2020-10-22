@@ -8,6 +8,13 @@ module Cocina
         new(item).props
       end
 
+      def self.collection_props(item)
+        props = new(item).props
+        # Collection access does not have download
+        props.delete(:download)
+        props
+      end
+
       def initialize(item)
         @item = item
       end
