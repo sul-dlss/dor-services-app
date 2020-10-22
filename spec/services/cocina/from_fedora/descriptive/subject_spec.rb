@@ -258,272 +258,274 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
-  context 'with a name subject' do
-    let(:xml) do
-      <<~XML
-        <subject>
-          <name type="personal">
-            <namePart>Dunnett, Dorothy</namePart>
-          </name>
-        </subject>
-      XML
-    end
+  describe 'name subject' do
+    context 'with one personal name' do
+      let(:xml) do
+        <<~XML
+          <subject>
+            <name type="personal">
+              <namePart>Dunnett, Dorothy</namePart>
+            </name>
+          </subject>
+        XML
+      end
 
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "value": 'Dunnett, Dorothy',
-          "type": 'person'
-        }
-      ]
-    end
-  end
-
-  context 'with a name subject with authority' do
-    let(:xml) do
-      <<~XML
-        <subject authority="lcsh">
-          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79046044">
-            <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
-          </name>
-        </subject>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "value": 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
-          "type": 'person',
-          "uri": 'http://id.loc.gov/authorities/names/n79046044',
-          "source": {
-            "code": 'naf',
-            "uri": 'http://id.loc.gov/authorities/names/'
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'Dunnett, Dorothy',
+            "type": 'person'
           }
-        }
-      ]
-    end
-  end
-
-  context 'with a name subject with authority missing authorityURI' do
-    let(:xml) do
-      <<~XML
-        <subject authority="fast" valueURI="(OCoLC)fst00596994">
-          <name type="corporate">
-            <namePart>Biblioteka Polskiej Akademii Nauk w Krakowie</namePart>
-          </name>
-        </subject>
-      XML
+        ]
+      end
     end
 
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "value": 'Biblioteka Polskiej Akademii Nauk w Krakowie',
-          "type": 'person',
-          "uri": '(OCoLC)fst00596994',
-          "source": {
-            "code": 'fast'
-          }
-        }
-      ]
-    end
-  end
+    context 'with authority' do
+      let(:xml) do
+        <<~XML
+          <subject authority="lcsh">
+            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79046044">
+              <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
+            </name>
+          </subject>
+        XML
+      end
 
-  context 'with a name subject with additional terms' do
-    let(:xml) do
-      <<~XML
-        <subject>
-          <name type="personal">
-            <namePart>Shakespeare, William, 1564-1616</namePart>
-          </name>
-          <topic>Homes and haunts</topic>
-        </subject>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "structuredValue": [
-            {
-              "value": 'Shakespeare, William, 1564-1616',
-              "type": 'person'
-            },
-            {
-              "value": 'Homes and haunts',
-              "type": 'topic'
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
+            "type": 'person',
+            "uri": 'http://id.loc.gov/authorities/names/n79046044',
+            "source": {
+              "code": 'naf',
+              "uri": 'http://id.loc.gov/authorities/names/'
             }
-          ]
-        }
-      ]
-    end
-  end
-
-  context 'with a name subject with additional terms and authority for set' do
-    let(:xml) do
-      <<~XML
-        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85120951">
-          <name type="personal">
-            <namePart>Shakespeare, William, 1564-1616</namePart>
-          </name>
-          <topic>Homes and haunts</topic>
-        </subject>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "structuredValue": [
-            {
-              "value": 'Shakespeare, William, 1564-1616',
-              "type": 'person'
-            },
-            {
-              "value": 'Homes and haunts',
-              "type": 'topic'
-            }
-          ],
-          "uri": 'http://id.loc.gov/authorities/subjects/sh85120951',
-          "source": {
-            "code": 'lcsh',
-            "uri": 'http://id.loc.gov/authorities/subjects/'
           }
-        }
-      ]
-    end
-  end
-
-  context 'with a name subject with multiple namePart elements' do
-    let(:xml) do
-      <<~XML
-        <subject authority="lcsh">
-          <name type="personal">
-            <namePart>Nakahama, Manjir&#x14D;</namePart>
-            <namePart type="date">1827-1898</namePart>
-          </name>
-        </subject>
-      XML
+        ]
+      end
     end
 
-    it 'builds the cocina data model' do
-      expect(build).to eq [
-        {
-          "structuredValue": [
-            {
-              "value": 'Nakahama, Manjirō',
-              "type": 'name'
-            },
-            {
-              "value": '1827-1898',
-              "type": 'life dates'
+    context 'with authority missing authorityURI' do
+      let(:xml) do
+        <<~XML
+          <subject authority="fast" valueURI="(OCoLC)fst00596994">
+            <name type="corporate">
+              <namePart>Biblioteka Polskiej Akademii Nauk w Krakowie</namePart>
+            </name>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'Biblioteka Polskiej Akademii Nauk w Krakowie',
+            "type": 'organization',
+            "uri": '(OCoLC)fst00596994',
+            "source": {
+              "code": 'fast'
             }
-          ],
-          "type": 'person',
-          "source": {
-            "code": 'lcsh'
           }
-        }
-      ]
-    end
-  end
-
-  context 'with a name subject with additional terms and authority for terms' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L247'
-  end
-
-  context 'with a name subject with additional terms and authority for terms and set' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L281'
-  end
-
-  context 'with a name-title subject with authority' do
-    let(:xml) do
-      <<~XML
-        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n97075542">
-          <name type="personal">
-            <namePart>Dunnett, Dorothy</namePart>
-          </name>
-          <titleInfo>
-            <title>Lymond chronicles</title>
-          </titleInfo>
-        </subject>
-      XML
+        ]
+      end
     end
 
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "structuredValue": [
-            {
-              "value": 'Dunnett, Dorothy',
-              "type": 'person'
-            },
-            {
-              "value": 'Lymond chronicles',
-              "type": 'title'
+    context 'with additional terms' do
+      let(:xml) do
+        <<~XML
+          <subject>
+            <name type="personal">
+              <namePart>Shakespeare, William, 1564-1616</namePart>
+            </name>
+            <topic>Homes and haunts</topic>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "structuredValue": [
+              {
+                "value": 'Shakespeare, William, 1564-1616',
+                "type": 'person'
+              },
+              {
+                "value": 'Homes and haunts',
+                "type": 'topic'
+              }
+            ]
+          }
+        ]
+      end
+    end
+
+    context 'with additional terms and authority for set' do
+      let(:xml) do
+        <<~XML
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85120951">
+            <name type="personal">
+              <namePart>Shakespeare, William, 1564-1616</namePart>
+            </name>
+            <topic>Homes and haunts</topic>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "structuredValue": [
+              {
+                "value": 'Shakespeare, William, 1564-1616',
+                "type": 'person'
+              },
+              {
+                "value": 'Homes and haunts',
+                "type": 'topic'
+              }
+            ],
+            "uri": 'http://id.loc.gov/authorities/subjects/sh85120951',
+            "source": {
+              "code": 'lcsh',
+              "uri": 'http://id.loc.gov/authorities/subjects/'
             }
-          ],
-          "uri": 'http://id.loc.gov/authorities/names/n97075542',
-          "source": {
-            # TODO: Reviewing with Arcadia
-            # "code": "naf",
-            "code": 'lcsh',
-            "uri": 'http://id.loc.gov/authorities/names/'
           }
-        }
-      ]
-    end
-  end
-
-  context 'with a name-title subject with authority plus authority for name' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L351'
-  end
-
-  context 'with a name-title subject with additional terms including genre subdivision, authority for set' do
-    let(:xml) do
-      <<~XML
-        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
-          <name type="personal">
-            <namePart>Shakespeare, William, 1564-1616</namePart>
-          </name>
-          <titleInfo>
-            <title>Hamlet</title>
-          </titleInfo>
-          <genre>Bibliographies</genre>
-        </subject>
-      XML
+        ]
+      end
     end
 
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "structuredValue": [
-            {
-              "value": 'Shakespeare, William, 1564-1616',
-              "type": 'person'
-            },
-            {
-              "value": 'Hamlet',
-              "type": 'title'
-            },
-            {
-              "value": 'Bibliographies',
-              "type": 'genre'
+    context 'with multiple namePart elements' do
+      let(:xml) do
+        <<~XML
+          <subject authority="lcsh">
+            <name type="personal">
+              <namePart>Nakahama, Manjir&#x14D;</namePart>
+              <namePart type="date">1827-1898</namePart>
+            </name>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data model' do
+        expect(build).to eq [
+          {
+            "structuredValue": [
+              {
+                "value": 'Nakahama, Manjirō',
+                "type": 'name'
+              },
+              {
+                "value": '1827-1898',
+                "type": 'life dates'
+              }
+            ],
+            "type": 'person',
+            "source": {
+              "code": 'lcsh'
             }
-          ],
-          "uri": 'http://id.loc.gov/authorities/subjects/sh85120809',
-          "source": {
-            "code": 'lcsh',
-            "uri": 'http://id.loc.gov/authorities/subjects/'
           }
-        }
-      ]
+        ]
+      end
     end
-  end
 
-  context 'with a name-title subject with additional terms including genre subdivision, authority for terms' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L429'
+    context 'with additional terms and authority for terms' do
+      xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L247'
+    end
+
+    context 'with additional terms and authority for terms and set' do
+      xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L281'
+    end
+
+    context 'with a name-title subject with authority' do
+      let(:xml) do
+        <<~XML
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n97075542">
+            <name type="personal">
+              <namePart>Dunnett, Dorothy</namePart>
+            </name>
+            <titleInfo>
+              <title>Lymond chronicles</title>
+            </titleInfo>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "structuredValue": [
+              {
+                "value": 'Dunnett, Dorothy',
+                "type": 'person'
+              },
+              {
+                "value": 'Lymond chronicles',
+                "type": 'title'
+              }
+            ],
+            "uri": 'http://id.loc.gov/authorities/names/n97075542',
+            "source": {
+              # TODO: Reviewing with Arcadia
+              # "code": "naf",
+              "code": 'lcsh',
+              "uri": 'http://id.loc.gov/authorities/names/'
+            }
+          }
+        ]
+      end
+    end
+
+    context 'with a name-title subject with authority plus authority for name' do
+      xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L351'
+    end
+
+    context 'with a name-title subject with additional terms including genre subdivision, authority for set' do
+      let(:xml) do
+        <<~XML
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
+            <name type="personal">
+              <namePart>Shakespeare, William, 1564-1616</namePart>
+            </name>
+            <titleInfo>
+              <title>Hamlet</title>
+            </titleInfo>
+            <genre>Bibliographies</genre>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "structuredValue": [
+              {
+                "value": 'Shakespeare, William, 1564-1616',
+                "type": 'person'
+              },
+              {
+                "value": 'Hamlet',
+                "type": 'title'
+              },
+              {
+                "value": 'Bibliographies',
+                "type": 'genre'
+              }
+            ],
+            "uri": 'http://id.loc.gov/authorities/subjects/sh85120809',
+            "source": {
+              "code": 'lcsh',
+              "uri": 'http://id.loc.gov/authorities/subjects/'
+            }
+          }
+        ]
+      end
+    end
+
+    context 'with a name-title subject with additional terms including genre subdivision, authority for terms' do
+      xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L429'
+    end
   end
 
   context 'with a geographic subject subdivision' do
