@@ -315,6 +315,33 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       end
     end
 
+    context 'when note does not have displayLabel' do
+      let(:xml) do
+        <<~XML
+          <physicalDescription>
+            <form>ink on paper</form>
+            <note>Small tear at top right corner.</note>
+          </physicalDescription>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'ink on paper',
+            "type": 'form'
+          },
+          {
+            "note": [
+              {
+                "value": 'Small tear at top right corner.'
+              }
+            ]
+          }
+        ]
+      end
+    end
+
     context 'when it has displayLabel' do
       xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_physicalDescription.txt#L107'
     end
