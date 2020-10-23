@@ -15,7 +15,8 @@ module Cocina
           'has part' => 'constituent',
           'part of' => 'host',
           'referenced by' => 'isReferencedBy',
-          'has other format' => 'otherFormat'
+          'has other format' => 'otherFormat',
+          'has version' => 'otherVersion'
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] related_resources
