@@ -27,3 +27,7 @@ coverage/*
 /spec/examples.txt
 /spec/fixtures/export
 /config/settings/*.local.yml
+/cache
+/tls
+druids.txt
+config/settings.local.yml
