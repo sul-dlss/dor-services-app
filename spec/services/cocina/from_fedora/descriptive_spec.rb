@@ -139,8 +139,10 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         role: [{
           value: 'collector',
           code: 'col',
+          uri: 'http://id.loc.gov/vocabulary/relators/col',
           source: {
-            code: 'marcrelator'
+            code: 'marcrelator',
+            uri: 'http://id.loc.gov/vocabulary/relators'
           }
         }]
       }, {

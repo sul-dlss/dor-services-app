@@ -34,6 +34,8 @@ module Cocina
         attr_reader :xml, :contributors
 
         def name_attributes(contributor)
+          return {} if contributor.type.nil?
+
           { type: NAME_TYPE.fetch(contributor.type) }.tap do |attributes|
             attributes[:usage] = 'primary' if contributor.status == 'primary'
           end
@@ -42,6 +44,26 @@ module Cocina
         def write_basic(contributor)
           xml.name name_attributes(contributor) do
             xml.namePart contributor.name.first.value
+            write_roles_for(contributor)
+          end
+        end
+
+        def write_roles_for(contributor)
+          Array(contributor.role).each do |role|
+            xml.role do
+              attributes = {}
+              if role.value.present?
+                attributes[:type] = 'text'
+                value = role.value
+              elsif role.code.present?
+                attributes[:type] = 'code'
+                value = role.code
+              end
+              attributes[:valueURI] = role.uri
+              attributes[:authority] = role.source&.code
+              attributes[:authorityURI] = role.source&.uri
+              xml.roleTerm value, attributes if value
+            end
           end
         end
 

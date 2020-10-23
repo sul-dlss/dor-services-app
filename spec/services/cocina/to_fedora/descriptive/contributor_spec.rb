@@ -57,6 +57,39 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
+  context 'with empty name' do
+    # see https://github.com/sul-dlss/dor-services-app/issues/1161
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          "name": [
+            {
+              "value": ''
+            }
+          ],
+          "role": [
+            {
+              "value": ''
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <name>
+            <namePart/>
+            <role/>
+          </name>
+        </mods>
+      XML
+    end
+  end
+
   context 'with a corporate name' do
     let(:contributors) do
       [
@@ -141,6 +174,125 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
+  context 'with role' do
+    context 'when role has code but not value' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            "name": [
+              {
+                "value": 'Dunnett, Dorothy'
+              }
+            ],
+            "status": 'primary',
+            "type": 'person',
+            "role": [
+              {
+                "code": 'aut',
+                "uri": 'http://id.loc.gov/vocabulary/relators/aut',
+                "source": {
+                  "code": 'marcrelator',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <name type="personal" usage="primary">
+              <namePart>Dunnett, Dorothy</namePart>
+              <role>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+              </role>
+            </name>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when role has value but not code' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            "name": [
+              {
+                "value": 'Dunnett, Dorothy'
+              }
+            ],
+            "status": 'primary',
+            "type": 'person',
+            "role": [
+              {
+                "value": 'author',
+                "uri": 'http://id.loc.gov/vocabulary/relators/aut',
+                "source": {
+                  "code": 'marcrelator',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <name type="personal" usage="primary">
+              <namePart>Dunnett, Dorothy</namePart>
+              <role>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              </role>
+            </name>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when role and name elements are empty' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            "name": [
+              {
+                "value": ''
+              }
+            ],
+            "role": [
+              {
+                "source":
+                  {
+                    "code": 'marcreleator'
+                  }
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds the (empty) xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <name>
+              <namePart/>
+              <role/>
+            </name>
+          </mods>
+        XML
+      end
+    end
+  end
+
   context 'with additional subelements' do
     let(:contributors) do
       [
@@ -218,10 +370,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
   context 'with ordinal' do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L140'
-  end
-
-  context 'with role' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L168'
   end
 
   context 'with authority' do

@@ -15,23 +15,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     XML
   end
 
-  context 'when the role is missing the authority' do
-    let(:xml) do
-      <<~XML
-        <name valueURI="corporate">
-          <namePart>Selective Service System</namePart>
-          <role>
-            <roleTerm type="code">isb</roleTerm>
-          </role>
-        </name>
-      XML
-    end
-
-    it 'raises an error' do
-      expect { build }.to raise_error Cocina::Mapper::InvalidDescMetadata, './mods:role/mods:roleTerm[@type="code"] is missing required authority attribute'
-    end
-  end
-
   context 'with a personal name' do
     let(:xml) do
       <<~XML
@@ -204,7 +187,199 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
   end
 
   context 'with role' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L168'
+    context 'when roleTerm for types code and text' do
+      let(:xml) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Dunnett, Dorothy'
+              }
+            ],
+            "status": 'primary',
+            "type": 'person',
+            "role": [
+              {
+                "value": 'author',
+                "code": 'aut',
+                "uri": 'http://id.loc.gov/vocabulary/relators/aut',
+                "source": {
+                  "code": 'marcrelator',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          }
+        ]
+      end
+    end
+
+    context 'when roleTerm is type code' do
+      let(:xml) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Dunnett, Dorothy'
+              }
+            ],
+            "status": 'primary',
+            "type": 'person',
+            "role": [
+              {
+                "code": 'aut',
+                "uri": 'http://id.loc.gov/vocabulary/relators/aut',
+                "source": {
+                  "code": 'marcrelator',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          }
+        ]
+      end
+    end
+
+    context 'when roleTerm is type text' do
+      let(:xml) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Dunnett, Dorothy'
+              }
+            ],
+            "status": 'primary',
+            "type": 'person',
+            "role": [
+              {
+                "value": 'author',
+                "uri": 'http://id.loc.gov/vocabulary/relators/aut',
+                "source": {
+                  "code": 'marcrelator',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          }
+        ]
+      end
+    end
+
+    context 'when the role text has no authority' do
+      let(:xml) do
+        <<~XML
+          <name type="personal">
+            <namePart>Bulgakov, Mikhail</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Bulgakov, Mikhail'
+              }
+            ],
+            "type": 'person',
+            "role": [
+              {
+                "value": 'author'
+              }
+            ]
+          }
+        ]
+      end
+    end
+
+    context 'when the role code is missing the authority' do
+      let(:xml) do
+        <<~XML
+          <name valueURI="corporate">
+            <namePart>Selective Service System</namePart>
+            <role>
+              <roleTerm type="code">isb</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'raises an error' do
+        expect { build }.to raise_error Cocina::Mapper::InvalidDescMetadata, './mods:role/mods:roleTerm[@type="code"] is missing required authority attribute'
+      end
+    end
+
+    context 'when roleTerm element is present but namePart is blank' do
+      let(:xml) do
+        <<~XML
+          <name>
+            <namePart/>
+            <role>
+              <roleTerm authority="marcreleator" type="text"/>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds the (valueless) cocina data structure' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": ''
+              }
+            ],
+            "role": [
+              {
+                "source":
+                  {
+                    "code": 'marcreleator'
+                  }
+              }
+            ]
+          }
+        ]
+      end
+    end
   end
 
   context 'with authority' do
