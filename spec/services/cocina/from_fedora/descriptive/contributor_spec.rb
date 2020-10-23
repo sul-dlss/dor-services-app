@@ -211,6 +211,80 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  context 'with multiple nameParts without types' do
+    let(:xml) do
+      <<~XML
+        <name type="corporate">
+          <namePart>United States</namePart>
+          <namePart>Office of Foreign Investment in the United States.</namePart>
+        </name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "name": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'United States'
+                },
+                {
+                  "value": 'Office of Foreign Investment in the United States.'
+                }
+              ]
+            }
+          ],
+          "type": 'organization'
+        }
+      ]
+    end
+  end
+
+  context 'with multiple names' do
+    let(:xml) do
+      <<~XML
+        <name type="corporate">
+          <namePart>Hawaii International Services Agency</namePart>
+        </name>
+        <name type="corporate">
+          <namePart>United States</namePart>
+          <namePart>Office of Foreign Investment in the United States.</namePart>
+        </name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "name": [
+            {
+              "value": 'Hawaii International Services Agency'
+            }
+          ],
+          "type": 'organization'
+        },
+        {
+          "name": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'United States'
+                },
+                {
+                  "value": 'Office of Foreign Investment in the United States.'
+                }
+              ]
+            }
+          ],
+          "type": 'organization'
+        }
+
+      ]
+    end
+  end
+
   context 'with ordinal' do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L140'
   end
