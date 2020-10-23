@@ -32,8 +32,7 @@ module Cocina
           Array(related_resources).each do |related|
             attributes = {}
             attributes[:type] = TYPES.fetch(related.type) if related.type
-            # Pending cocina-models 0.41.0 release
-            # attributes[:displayLabel] = related.displayLabel if related.displayLabel
+            attributes[:displayLabel] = related.displayLabel if related.displayLabel
             xml.relatedItem attributes do
               add_titles(Array(related.title))
               add_location(related.access)
