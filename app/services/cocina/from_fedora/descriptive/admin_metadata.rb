@@ -107,9 +107,11 @@ module Cocina
           lang_text_term = language_of_cataloging.xpath('mods:languageTerm[@type="text"]', mods: DESC_METADATA_NS).first
           language[:value] = lang_text_term.text if lang_text_term
           lang_code_term = language_of_cataloging.xpath('mods:languageTerm[@type="code"]', mods: DESC_METADATA_NS).first
-          language[:code] = lang_code_term.text if lang_code_term
-          language[:uri] = lang_code_term['valueURI']
-          language[:source] = { code: lang_code_term['authority'], uri: lang_code_term['authorityURI'] }.compact
+          if lang_code_term
+            language[:code] = lang_code_term.text
+            language[:uri] = lang_code_term['valueURI']
+            language[:source] = { code: lang_code_term['authority'], uri: lang_code_term['authorityURI'] }.compact
+          end
 
           script_text_term = language_of_cataloging.xpath('mods:scriptTerm[@type="text"]', mods: DESC_METADATA_NS).first
           if script_text_term
