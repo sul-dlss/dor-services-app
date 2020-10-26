@@ -916,7 +916,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     end
   end
 
-  context 'when it has a geographic code subject' do
+  context 'when it has a geographic code and term' do
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
