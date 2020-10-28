@@ -3,15 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive do
-  subject(:descriptive) { described_class.props(item) }
-
-  let(:item) do
-    Dor::Item.new
-  end
-
-  before do
-    item.descMetadata.content = desc_metadata
-  end
+  subject(:descriptive) { described_class.props(mods: Nokogiri::XML(desc_metadata)) }
 
   context 'when the item is a was-seed' do
     let(:desc_metadata) do
