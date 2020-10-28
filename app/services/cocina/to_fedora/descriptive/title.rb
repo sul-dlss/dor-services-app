@@ -20,21 +20,23 @@ module Cocina
 
         def write
           titles.each_with_index do |title, count|
+            @title = title
+            @title_group = count
             if title.parallelValue
-              write_parallel(title, alt_rep_group: count)
+              write_parallel(alt_rep_group: count)
             elsif title.structuredValue
-              write_structured(title, name_title_group: count)
+              write_structured
             elsif title.value
-              write_basic(title)
+              write_basic
             end
           end
         end
 
         private
 
-        attr_reader :xml, :titles
+        attr_reader :xml, :titles, :title, :title_group
 
-        def write_basic(title)
+        def write_basic
           title_info_attrs = {}
           title_info_attrs[:usage] = 'primary' if title.status == 'primary'
           title_info_attrs[:type] = title.type if title.type
@@ -44,7 +46,7 @@ module Cocina
           end
         end
 
-        def write_parallel(title, alt_rep_group:)
+        def write_parallel(alt_rep_group:)
           title.parallelValue.each_with_index do |descriptive_value, i|
             title_info_attrs = { altRepGroup: alt_rep_group }
             title_info_attrs[:lang] = descriptive_value.valueLanguage.code if descriptive_value.valueLanguage
@@ -61,57 +63,33 @@ module Cocina
           end
         end
 
-        def write_structured(structured_node, name_title_group:)
-          title_info_attrs = {} # title_attrs(structured_node)
-          # title_info_attrs[:usage] = 'primary' if structured_node.status == 'primary'
-          # title_info_attrs[:type] = structured_node.type if structured_node.type
-
-          names = structured_node.structuredValue.group_by { |component| FromFedora::Descriptive::Titles::NAME_TYPES.include? component.type }
-          name_title_group += 1 if names[true].present? && name_title_group < 1
-
-          title_info_attrs[:type] = structured_node.type # 'uniform' if structured_node.structuredValue.find { |component| component.type == 'title' }
-          title_info_attrs[:usage] = structured_node.status if names[false].present?
-          title_info_attrs[:nameTitleGroup] = name_title_group if names[true].present?
-
-          xml.titleInfo(with_uri_info(structured_node, title_info_attrs)) do
-            names[false].each do |title|
+        def write_structured
+          xml.titleInfo(with_uri_info(title, title_attrs)) do
+            sturctured_titles.each do |title|
               title_type = TAG_NAME.fetch(title.type, nil)
               if title_type == 'uniform title'
-                title_type = 'title' 
-                title_info_attrs.merge(title)
+                title_type = 'title'
+                title_attrs.merge(title)
               end
               xml.public_send(title_type, title.value) unless title.note
             end
           end
 
-          if names[true].present?
-            name_block = { attributes: {}, values: [] }
-            Array(names[true]).each do |name|
-              name_block[:attributes].tap do |attrs|
-                attrs[:type] = 'personal'
-                attrs[:usage] = structured_node.status if structured_node.status
-                attrs[:nameTitleGroup] = name_title_group
-                attrs[:valueURI] = name.uri if name.uri
-                attrs[:authorityURI] = name.source.uri if name.source&.uri
-                attrs[:authority] = name.source.code if name.source&.code
-              end
-              name_block[:values] << { value: name.value, type: name.type }
-              # xml.name with_uri_info(structured_node, type: 'personal', nameTitleGroup: name_title_group) do
-                # name_attrs = {}
-                
-                # name_attrs[:type] = name_type if name_type
-                # xml.namePart name.value # , with_uri_info(name, nameTitleGroup: name_title_group, type: name_type)
-             # end
-            end
-            xml.name name_block[:attributes] do
-              name_block[:values].each do |name|
-                name_type = TAG_NAME.fetch(name[:type], nil)
-                name_attr = {}
-                name_attr[:type] = name_type if name_type
-                xml.namePart name[:value], name_attr
-              end
+          return unless names
+
+          xml.name name_attrs do
+            format_name(name_with_authority) if name_with_authority
+            basic_names&.each do |name|
+              format_name(name)
             end
           end
+        end
+
+        def format_name(name)
+          name_type = TAG_NAME.fetch(name[:type], nil)
+          name_attr = {}
+          name_attr[:type] = name_type if name_type
+          xml.namePart name[:value], name_attr
         end
 
         def with_uri_info(cocina, xml_attrs)
@@ -123,12 +101,58 @@ module Cocina
           xml_attrs.compact
         end
 
-        # def title_attrs(node)
-        #   {}.tap do |attr|
-        #     attr[:usage] = 'primary' if node.status == 'primary'
-        #     # attr[:type] = node.type if node.type
-        #   end
-        # end
+        def components
+          @components ||= title.structuredValue.group_by { |component| FromFedora::Descriptive::Titles::NAME_TYPES.include? component.type }
+        end
+
+        def names
+          return unless components[true]
+
+          @names ||= components[true].group_by { |name| FromFedora::Descriptive::Titles::PERSON_TYPE == name.type }
+        end
+
+        def basic_names
+          return unless names[false]
+
+          names[false]
+        end
+
+        def name_with_authority
+          return unless names[true]
+
+          names[true].first
+        end
+
+        def name_attrs
+          {}.tap do |attrs|
+            attrs[:type] = 'personal'
+            attrs[:usage] = title.status if title.status
+            attrs[:nameTitleGroup] = name_title_group
+            attrs[:valueURI] = name_with_authority.uri if name_with_authority
+            attrs[:authorityURI] = name_with_authority.source.uri if name_with_authority&.source&.uri
+            attrs[:authority] = name_with_authority.source.code if name_with_authority&.source&.code
+          end
+        end
+
+        def sturctured_titles
+          components[false]
+        end
+
+        def name_title_group
+          return nil unless names
+
+          return title_group + 1 if title_group < 1
+
+          title_group
+        end
+
+        def title_attrs
+          {}.tap do |attrs|
+            attrs[:type] = title.type
+            attrs[:usage] = title.status
+            attrs[:nameTitleGroup] = name_title_group if name_title_group
+          end
+        end
       end
     end
   end
