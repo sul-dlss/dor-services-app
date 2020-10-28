@@ -34,6 +34,9 @@ module Cocina
 
           title_infos_without_groups = ng_xml.xpath('//mods:mods/mods:titleInfo[not(@altRepGroup)]', mods: DESC_METADATA_NS)
           result += simple_or_structured(title_infos_without_groups)
+
+          raise Cocina::Mapper::MissingTitle if result.empty?
+
           result
         end
 
@@ -54,14 +57,20 @@ module Cocina
         end
 
         def simple_or_structured(node_set, display_types: true)
-          node_set.map { |node| title_info_to_simple_or_structured(node, display_types: display_types) }
+          node_set.map { |node| title_info_to_simple_or_structured(node, display_types: display_types) }.compact
         end
 
         # @param [Nokogiri::XML::Element] title_info the titleInfo node
         def title_info_to_simple_or_structured(title_info, display_types:)
           # Find all the child nodes that have text
           children = title_info.xpath('./*[child::node()[self::text()]]')
-          raise Mapper::MissingTitle if children.empty?
+          if children.empty?
+            Honeybadger.notify('Notice: Missing title')
+            return nil
+          end
+
+          # If a displayLabel only
+          return with_attributes({}, title_info, display_types: display_types) if children.map(&:name) == []
 
           # Is this a basic title or a title with parts
           return simple_value(title_info, display_types: display_types) if children.map(&:name) == ['title']

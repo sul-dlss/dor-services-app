@@ -75,6 +75,44 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
     end
 
+    context 'when there are empty titles' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo usage="primary">
+              <title>Five red herrings</title>
+            </titleInfo>
+            <titleInfo>
+              <title />
+            </titleInfo>  
+            <titleInfo type="alternative">
+              <title />
+            </titleInfo>
+            <titleInfo type="alternative" displayLabel="Also known as: The Usual Suspects">
+              <title />
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      before do
+        allow(Honeybadger).to receive(:notify)
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
+      it 'ignores and notifies Honeybadger' do
+        expect(build).to eq [
+          { status: 'primary', value: 'Five red herrings' }
+        ]
+        expect(Honeybadger).to have_received(:notify).at_least(:once).with('Notice: Missing title')
+      end
+    end
+
     context 'when there is a translated title (title is structuredValue)' do
       let(:ng_xml) do
         Nokogiri::XML <<~XML
