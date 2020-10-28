@@ -529,6 +529,33 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     context 'with a name-title subject with additional terms including genre subdivision, authority for terms' do
       xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L507'
     end
+
+    context 'without name type' do
+      let(:xml) do
+        <<~XML
+          <subject authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n81070667">
+            <name>
+              <namePart>Stanford University. Libraries.</namePart>
+            </name>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            source:
+              {
+                code: 'naf',
+                uri: 'http://id.loc.gov/authorities/names'
+              },
+            type: 'name',
+            uri: 'http://id.loc.gov/authorities/names/n81070667',
+            value: 'Stanford University. Libraries.'
+          }
+        ]
+      end
+    end
   end
 
   context 'with a geographic subject subdivision' do
