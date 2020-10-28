@@ -116,7 +116,7 @@ module Cocina
           script_text_term = language_of_cataloging.xpath('mods:scriptTerm[@type="text"]', mods: DESC_METADATA_NS).first
           if script_text_term
             script_code_term = language_of_cataloging.xpath('mods:scriptTerm[@type="code"]', mods: DESC_METADATA_NS).first
-            language[:script] = { value: script_text_term.text, code: script_code_term.text, source: { code: script_code_term[:authority] } }
+            language[:script] = { value: script_text_term.text, code: script_code_term.text, source: { code: script_code_term[:authority] || '' } }
           end
           [language.compact]
         end
