@@ -21,7 +21,7 @@ module Cocina
 
         def write
           Array(contributors).each_with_index do |contributor, _alt_rep_group|
-            if contributor.name.count == 1
+            if contributor.name.count == 1 && contributor.name.first.structuredValue.nil?
               write_basic(contributor)
             else
               write_complex(contributor)
@@ -60,8 +60,8 @@ module Cocina
                 value = role.code
               end
               attributes[:valueURI] = role.uri if role.uri
-              attributes[:authority] = role.source&.code if role.source&.code
-              attributes[:authorityURI] = role.source&.uri if role.source&.uri
+              attributes[:authority] = role.source.code if role.source&.code
+              attributes[:authorityURI] = role.source.uri if role.source&.uri
               xml.roleTerm value, attributes if value
             end
           end
@@ -70,13 +70,13 @@ module Cocina
         def write_complex(contributor)
           xml.name name_attributes(contributor) do
             contributor.name.each do |name|
-              Array(name.structuredValue).each do |part|
-                xml.namePart part.value, type: NAME_PART.fetch(part.type)
+              Array(name.structuredValue).each do |name_part|
+                write_structured_name_part(name_part)
               end
 
               xml.displayForm name.value if name.type == 'display'
             end
-            contributor.note.each do |note|
+            Array(contributor.note).each do |note|
               case note.type
               when 'affiliation'
                 xml.affiliation note.value
@@ -87,10 +87,16 @@ module Cocina
               end
             end
 
-            contributor.identifier.each do |ident|
+            Array(contributor.identifier).each do |ident|
               xml.nameIdentifier ident.value, type: ident.source.code
             end
           end
+        end
+
+        def write_structured_name_part(name_part_structured_value)
+          attrib = {}
+          attrib[:type] = NAME_PART.fetch(name_part_structured_value.type) if name_part_structured_value.type
+          xml.namePart name_part_structured_value.value, attrib
         end
       end
     end

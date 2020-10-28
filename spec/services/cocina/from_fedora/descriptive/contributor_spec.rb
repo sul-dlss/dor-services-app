@@ -454,6 +454,55 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  context 'with multiple names, one primary, dates, no roles' do
+    let(:xml) do
+      <<~XML
+        <name type="personal" usage="primary">
+          <namePart>Sarmiento, Domingo Faustino</namePart>
+          <namePart type="date">1811-1888</namePart>
+        </name>
+        <name type="personal">
+          <namePart>Rojas, Ricardo</namePart>
+          <namePart type="date">1882-1957</namePart>
+        </name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "name": [
+            "structuredValue": [
+              {
+                "value": 'Sarmiento, Domingo Faustino'
+              },
+              {
+                "type": 'life dates',
+                "value": '1811-1888'
+              }
+            ]
+          ],
+          "type": 'person',
+          "status": 'primary'
+        },
+        {
+          "name": [
+            "structuredValue": [
+              {
+                "value": 'Rojas, Ricardo'
+              },
+              {
+                "type": 'life dates',
+                "value": '1882-1957'
+              }
+            ]
+          ],
+          "type": 'person'
+        }
+      ]
+    end
+  end
+
   context 'with multiple names, no primary' do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L410'
   end
