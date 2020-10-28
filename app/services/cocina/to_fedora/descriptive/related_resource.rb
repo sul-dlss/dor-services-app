@@ -7,16 +7,17 @@ module Cocina
       class RelatedResource
         # see https://docs.google.com/spreadsheets/d/1d5PokzgXqNykvQeckG2ND43B6i9_CsjfIVwS_IsphS8/edit#gid=0
         TYPES = {
-          'in series' => 'series',
-          'preceded by' => 'preceding',
-          'succeeded by' => 'succeeding',
-          'reviewed by' => 'reviewOf',
           'has original version' => 'original',
-          'has version' => 'otherVersion',
+          'has other format' => 'otherFormat',
           'has part' => 'constituent',
+          'has version' => 'otherVersion',
+          'in series' => 'series',
           'part of' => 'host',
+          'preceded by' => 'preceding',
+          'reviewed by' => 'reviewOf',
           'referenced by' => 'isReferencedBy',
-          'has other format' => 'otherFormat'
+          'references' => 'references',
+          'succeeded by' => 'succeeding'
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] related_resources
