@@ -59,9 +59,9 @@ module Cocina
                 attributes[:type] = 'code'
                 value = role.code
               end
-              attributes[:valueURI] = role.uri
-              attributes[:authority] = role.source&.code
-              attributes[:authorityURI] = role.source&.uri
+              attributes[:valueURI] = role.uri if role.uri
+              attributes[:authority] = role.source&.code if role.source&.code
+              attributes[:authorityURI] = role.source&.uri if role.source&.uri
               xml.roleTerm value, attributes if value
             end
           end

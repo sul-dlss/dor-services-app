@@ -404,7 +404,54 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
   end
 
   context 'with multiple names, one primary' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L365'
+    let(:xml) do
+      <<~XML
+        <name type="personal" usage="primary">
+          <namePart>Bulgakov, Mikhail</namePart>
+          <role>
+            <roleTerm type="text">author</roleTerm>
+          </role>
+        </name>
+        <name type="personal">
+          <namePart>Burgin, Diana Lewis</namePart>
+          <role>
+            <roleTerm type="text">translator</roleTerm>
+          </role>
+        </name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "name": [
+            {
+              "value": 'Bulgakov, Mikhail'
+            }
+          ],
+          "type": 'person',
+          "status": 'primary',
+          "role": [
+            {
+              "value": 'author'
+            }
+          ]
+        },
+        {
+          "name": [
+            {
+              "value": 'Burgin, Diana Lewis'
+            }
+          ],
+          "type": 'person',
+          "role": [
+            {
+              "value": 'translator'
+            }
+          ]
+        }
+      ]
+    end
   end
 
   context 'with multiple names, no primary' do
