@@ -325,4 +325,60 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
       )
     end
   end
+
+  context 'when there is no encoding for the recordCreationDate' do
+    let(:xml) do
+      <<~XML
+        <recordInfo>
+          <recordContentSource>DOR_MARC2MODS3-3.xsl Revision 1.1</recordContentSource>
+          <recordCreationDate>2011-02-08T20:00:27.321-08:00</recordCreationDate>
+          <recordIdentifier source="Data Provider Digital Object Identifier">36105033329140</recordIdentifier>
+        </recordInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure setting the code to blank instead of nil' do
+      expect(build).to eq(
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  code: 'DOR_MARC2MODS3-3.xsl Revision 1.1',
+                  source: {}
+                }
+              ],
+              role: [
+                {
+                  value: 'original cataloging agency'
+                }
+              ],
+              type: 'organization'
+            }
+          ],
+          event: [
+            {
+              date: [
+                {
+                  encoding: {
+                    code: ''
+                  },
+                  value: '2011-02-08T20:00:27.321-08:00'
+                }
+              ],
+              type: 'creation'
+            }
+          ],
+          identifier: [
+            {
+              source: {
+                value: 'Data Provider Digital Object Identifier'
+              },
+              value: '36105033329140'
+            }
+          ]
+        }
+      )
+    end
+  end
 end
