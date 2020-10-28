@@ -69,7 +69,9 @@ module Cocina
             return nil
           end
 
-          # If a displayLabel only
+          # If a displayLabel only with no title text element
+          # Note: this is an error condintion,
+          # exceptions documented at: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_value_dependencies.txt
           return with_attributes({}, title_info, display_types: display_types) if children.map(&:name) == []
 
           # Is this a basic title or a title with parts
