@@ -198,4 +198,64 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
   context 'when it is converted from ISO 19139' do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_recordInfo.txt#L146'
   end
+
+  context 'when there is no "note" (e.g. jv711gt9148)' do
+    let(:admin_metadata) do
+      Cocina::Models::DescriptiveAdminMetadata.new(
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  code: 'DOR_MARC2MODS3-3.xsl Revision 1.1',
+                  source: {}
+                }
+              ],
+              role: [
+                {
+                  value: 'original cataloging agency'
+                }
+              ],
+              type: 'organization'
+            }
+          ],
+          event: [
+            {
+              date: [
+                {
+                  encoding: {
+                    code: 'iso8601'
+                  },
+                  value: '2011-02-08T20:00:27.321-08:00'
+                }
+              ],
+              type: 'creation'
+            }
+          ],
+          identifier: [
+            {
+              source: {
+                value: 'Data Provider Digital Object Identifier'
+              },
+              value: '36105033329140'
+            }
+          ]
+        }
+      )
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <recordInfo>
+            <recordContentSource>DOR_MARC2MODS3-3.xsl Revision 1.1</recordContentSource>
+            <recordCreationDate encoding="iso8601">2011-02-08T20:00:27.321-08:00</recordCreationDate>
+            <recordIdentifier source="Data Provider Digital Object Identifier">36105033329140</recordIdentifier>
+          </recordInfo>
+        </mods>
+      XML
+    end
+  end
 end
