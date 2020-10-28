@@ -4,7 +4,8 @@
 require_relative '../config/environment'
 
 def round_tripped_xml(item)
-  desc_props = Cocina::FromFedora::Descriptive.props(item)
+  title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
+  desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml)
   cocina = Cocina::Models::Description.new(desc_props)
   Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina).to_xml)
 end

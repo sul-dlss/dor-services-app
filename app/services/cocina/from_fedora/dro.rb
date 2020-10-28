@@ -26,7 +26,8 @@ module Cocina
           access: DROAccess.props(item),
           structural: DroStructural.props(item, type: dro_type)
         }.tap do |props|
-          description = FromFedora::Descriptive.props(item)
+          title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
+          description = FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml)
           props[:description] = description unless description.nil?
 
           identification = FromFedora::Identification.props(item)

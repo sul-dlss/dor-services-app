@@ -18,31 +18,26 @@ module Cocina
         relatedResource: RelatedResource
       }.freeze
 
-      # @param [Dor::Item,Dor::Etd] item
+      # @param [#build] title_builder
+      # @param [Nokogiri::XML] mods
       # @return [Hash] a hash that can be mapped to a cocina administrative model
       # @raises [Cocina::Mapper::InvalidDescMetadata] if some assumption about descMetadata is violated
-      def self.props(item)
-        new(item).props
+      def self.props(mods:, title_builder: Titles)
+        new(title_builder: title_builder, mods: mods).props
       end
 
-      def initialize(item)
-        @label = item.label
-        @ng_xml = item.descMetadata.ng_xml
+      def initialize(title_builder:, mods:)
+        @title_builder = title_builder
+        @ng_xml = mods
       end
 
       def props
-        titles = if label == 'Hydrus'
-                   # Some hydrus items don't have titles, so using label. See https://github.com/sul-dlss/hydrus/issues/421
-                   [{ value: 'Hydrus' }]
-                 else
-                   Titles.build(ng_xml)
-                 end
-        add_descriptive_elements(title: titles)
+        add_descriptive_elements({ title: title_builder.build(ng_xml) })
       end
 
       private
 
-      attr_reader :label, :ng_xml
+      attr_reader :title_builder, :ng_xml
 
       def add_descriptive_elements(cocina_description)
         BUILDERS.each do |descriptive_property, builder|
