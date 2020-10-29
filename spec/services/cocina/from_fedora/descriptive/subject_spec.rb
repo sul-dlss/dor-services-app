@@ -531,6 +531,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
 
     context 'without name type' do
+      before do
+        allow(Honeybadger).to receive(:notify).with('Notice: Subject has <name> with no type attribute within <subject>')
+      end
+
       let(:xml) do
         <<~XML
           <subject authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n81070667">
@@ -554,6 +558,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
             value: 'Stanford University. Libraries.'
           }
         ]
+      end
+
+      it 'notifies honeybadger' do
+        build
+        expect(Honeybadger).to have_received(:notify).with('Notice: Subject has <name> with no type attribute within <subject>')
       end
     end
   end
