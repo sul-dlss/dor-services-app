@@ -99,9 +99,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
             <scriptTerm type="text">Latin</scriptTerm>
             <scriptTerm type="code">Latn</scriptTerm>
           </languageOfCataloging>
-          <recordContentSource authority="marcorg" authorityURI="http://id.loc.gov/vocabulary/organizations/" valueURI="http://id.loc.gov/vocabulary/organizations/cst">CSt</recordContentSource>
-          <descriptionStandard authority="dacs" authorityURI="http://id.loc.gov/vocabulary/descriptionConventions/" valueURI="http://id.loc.gov/vocabulary/descriptionConventions/dacs"></descriptionStandard>
-          <recordOrigin>human prepared</recordOrigin>
         </recordInfo>
       XML
     end
@@ -121,39 +118,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
               "value": 'Latin',
               "code": 'Latn'
             }
-          }
-        ],
-        "contributor": [
-          {
-            "name": [
-              {
-                "code": 'CSt',
-                "uri": 'http://id.loc.gov/vocabulary/organizations/cst',
-                "source": {
-                  "code": 'marcorg',
-                  "uri": 'http://id.loc.gov/vocabulary/organizations/'
-                }
-              }
-            ],
-            "type": 'organization',
-            "role": [
-              {
-                "value": 'original cataloging agency'
-              }
-            ]
-          }
-        ],
-        "standard": {
-          "code": 'dacs',
-          "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
-          "source": {
-            "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/'
-          }
-        },
-        "note": [
-          {
-            "type": 'record origin',
-            "value": 'human prepared'
           }
         ]
       )
@@ -327,9 +291,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
     let(:xml) do
       <<~XML
         <recordInfo>
-          <recordContentSource>DOR_MARC2MODS3-3.xsl Revision 1.1</recordContentSource>
           <recordCreationDate>2011-02-08T20:00:27.321-08:00</recordCreationDate>
-          <recordIdentifier source="Data Provider Digital Object Identifier">36105033329140</recordIdentifier>
         </recordInfo>
       XML
     end
@@ -337,22 +299,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
     it 'builds the cocina data structure leaving the code off instead of setting to nil' do
       expect(build).to eq(
         {
-          contributor: [
-            {
-              name: [
-                {
-                  code: 'DOR_MARC2MODS3-3.xsl Revision 1.1',
-                  source: {}
-                }
-              ],
-              role: [
-                {
-                  value: 'original cataloging agency'
-                }
-              ],
-              type: 'organization'
-            }
-          ],
           event: [
             {
               date: [
@@ -361,14 +307,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
                 }
               ],
               type: 'creation'
-            }
-          ],
-          identifier: [
-            {
-              source: {
-                value: 'Data Provider Digital Object Identifier'
-              },
-              value: '36105033329140'
             }
           ]
         }
