@@ -57,8 +57,8 @@ module Cocina
         end
 
         def structured_value(node_set, attrs)
-          values = node_set.map { |node| simple_item(node) }
-          attrs.merge(structuredValue: values)
+          values = node_set.map { |node| simple_item(node) }.compact
+          attrs.merge(structuredValue: values) if values.present?
         end
 
         def hierarchical_geographic(hierarchical_geographic_node, attrs)
