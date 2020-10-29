@@ -399,6 +399,111 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
   context 'with multiple names, one primary' do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L365'
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          "name": [
+            {
+              "value": 'Bulgakov, Mikhail'
+            }
+          ],
+          "type": 'person',
+          "status": 'primary',
+          "role": [
+            {
+              "value": 'author'
+            }
+          ]
+        ),
+        Cocina::Models::Contributor.new(
+          "name": [
+            {
+              "value": 'Burgin, Diana Lewis'
+            }
+          ],
+          "type": 'person',
+          "role": [
+            {
+              "value": 'translator'
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <name type="personal" usage="primary">
+            <namePart>Bulgakov, Mikhail</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+          <name type="personal">
+            <namePart>Burgin, Diana Lewis</namePart>
+            <role>
+              <roleTerm type="text">translator</roleTerm>
+            </role>
+          </name>
+        </mods>
+      XML
+    end
+  end
+
+  context 'with multiple names, one primary, dates, no roles' do
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          "name": [
+            "structuredValue": [
+              {
+                "value": 'Sarmiento, Domingo Faustino'
+              },
+              {
+                "type": 'life dates',
+                "value": '1811-1888'
+              }
+            ]
+          ],
+          "type": 'person',
+          "status": 'primary'
+        ),
+        Cocina::Models::Contributor.new(
+          "name": [
+            "structuredValue": [
+              {
+                "value": 'Rojas, Ricardo'
+              },
+              {
+                "type": 'life dates',
+                "value": '1882-1957'
+              }
+            ]
+          ],
+          "type": 'person'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <name type="personal" usage="primary">
+            <namePart>Sarmiento, Domingo Faustino</namePart>
+            <namePart type="date">1811-1888</namePart>
+          </name>
+          <name type="personal">
+            <namePart>Rojas, Ricardo</namePart>
+            <namePart type="date">1882-1957</namePart>
+          </name>
+        </mods>
+      XML
+    end
   end
 
   context 'with multiple names, no primary' do
