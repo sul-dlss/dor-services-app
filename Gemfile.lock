@@ -516,6 +516,7 @@ DEPENDENCIES
   moab-versioning (~> 4.0)
   okcomputer
   openapi_parser
+  parallel
   pg
   preservation-client (>= 3.0)
   progressbar

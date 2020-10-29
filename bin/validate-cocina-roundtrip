@@ -16,7 +16,9 @@ def normalized(ng_xml)
   ng_xml
 end
 
-SAMPLE_SIZE = 100
+SAMPLE_SIZE = 10
+
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 results = ActiveFedora::SolrService.query('*:*', sort: 'random asc', fl: 'id', rows: SAMPLE_SIZE)
 druids = results.map { |r| r['id'] }
 counts = { different: 0, success: 0, error: 0 }

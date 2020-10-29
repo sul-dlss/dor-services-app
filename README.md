@@ -101,3 +101,62 @@ To spin up a local rails console:
 To spin up a local development server:
 
   `bundle exec rails s`
+
+## Test Cocina mappings
+Given the tremendous heterogeneity of existing Fedora data, it is helpful to test mappings against actual production data. However, due to the slowness of retrieving from Fedora, creating a local cache of Fedora data is helpful.
+
+Several tools (described below) assist with creating a local cache and performing the testing.
+
+These tools are best run on a server within the network. (Currently installed on `sdr-deploy.stanford.edu`).
+
+### Setup
+1. Create a `settings.local.yml` containing:
+
+        ssl:
+          cert_file: "tls/certs/dor-services-prod-dor-prod.crt"
+          key_file: "tls/private/dor-services-prod-dor-prod.key"
+        
+        fedora_url: 'https://sul-dor-prod.stanford.edu/fedora'
+        
+        solr:
+          url: 'https://sul-solr.stanford.edu/solr/argo3_prod'
+2. Copy certificates locally:
+
+        scp -r <user from puppet>@<dor serices production host>:/etc/pki/tls .
+
+### Create a list of random druids
+```
+bin/generate-druid-list 100000
+```
+
+This will create `druids.txt`, containing a list of druids. If the file already exists, the existing druids will be used and new druids will be added to it.
+
+Note that the druids are unique.
+
+### Seed the cache
+```
+bin/generate-cache 100000
+```
+
+Using the druids from `druids.txt`, this will retrieve the item from Fedora and store the objects, datastreams, and disseminations in the `cache` directory.
+
+### Validate mapping to Cocina from Fedora
+```
+bin/validate-to-cocina 100000
+```
+
+Using the druids from `druids.txt` and the cache, this will map the Fedora item to the Cocina model and record any errors.
+
+Errors are returned ordered by the number of items that raised that error. For example:
+```
+41 of 500 (8.2%)
+Error: undefined method `text' for nil:NilClass (32 errors)
+Examples: druid:qb322bg3331, druid:vd938vg1826, druid:kc373zp2312, druid:gx497tb8747, druid:zq244qv7198, druid:pd738nx3263, druid:qm576pd0390, druid:tp743yv4651, druid:md775pw3650, druid:xw600sw0934
+Error: key not found: "Other version"
+Did you mean?  "otherVersion" (4 errors)
+Examples: druid:vx162kw9911, druid:rh979yv1005, druid:qb797px1044, druid:fq225gc7097
+```
+
+A complete set of results will be written to `results.txt`.
+
+Note that the validation is parallelized, so it is much faster than the other processes.

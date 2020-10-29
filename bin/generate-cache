@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+require_relative '../lib/fedora_cache'
+
+if ARGV.length != 1
+  puts 'Usage: bin/generate-cache <SAMPLE_SIZE>'
+  exit(false)
+end
+
+sample_size = Integer(ARGV[0])
+
+cache = FedoraCache.new
+
+druids = File.read('druids.txt').split
+druids.take(sample_size).each_with_index do |druid, index|
+  puts "#{druid} (#{index + 1})\n"
+  cache.cache_object(druid)
+  cache.cache_descmd(druid)
+end

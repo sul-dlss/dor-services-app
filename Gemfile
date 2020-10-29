@@ -58,6 +58,7 @@ gem 'preservation-client', '>= 3.0' # 3.x or greater is needed for token auth
 group :test, :development do
   gem 'equivalent-xml'
   gem 'factory_bot_rails'
+  gem 'parallel' # used for validating cocina tools
   gem 'rack-console'
   gem 'rspec_junit_formatter'
   gem 'rspec-rails'
