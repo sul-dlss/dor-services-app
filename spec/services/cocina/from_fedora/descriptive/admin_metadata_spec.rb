@@ -106,7 +106,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
       XML
     end
 
-    it 'builds the cocina data structure and sets the scriptTerm code to blank instead of nil' do
+    it 'builds the cocina data structure and does not add a scriptTerm source instead of setting to nil' do
       expect(build).to eq(
         "language": [
           {
@@ -119,10 +119,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
             },
             "script": {
               "value": 'Latin',
-              "code": 'Latn',
-              "source": {
-                "code": ''
-              }
+              "code": 'Latn'
             }
           }
         ],
@@ -337,7 +334,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
       XML
     end
 
-    it 'builds the cocina data structure setting the code to blank instead of nil' do
+    it 'builds the cocina data structure leaving the code off instead of setting to nil' do
       expect(build).to eq(
         {
           contributor: [
@@ -360,9 +357,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
             {
               date: [
                 {
-                  encoding: {
-                    code: ''
-                  },
                   value: '2011-02-08T20:00:27.321-08:00'
                 }
               ],
