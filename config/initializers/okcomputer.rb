@@ -30,8 +30,36 @@ class SymphonyCheck < OkComputer::HttpCheck
   end
 end
 
+# check models to see if at least they have some data
+class TablesHaveDataCheck < OkComputer::Check
+  def check
+    msg = [
+      BackgroundJobResult,
+      TagLabel,
+      Event,
+      AdministrativeTag
+    ].map { |klass| table_check(klass) }.join(' ')
+    mark_message msg
+  end
+
+  private
+
+  # @return [String] message
+  def table_check(klass)
+    # has at least 1 record
+    return "#{klass.name} has data." if klass.any?
+
+    mark_failure
+    "#{klass.name} has no data."
+  rescue => e # rubocop:disable Style/RescueStandardError
+    mark_failure
+    "#{e.class.name} received: #{e.message}."
+  end
+end
+
 OkComputer::Registry.register 'version', CustomAppVersionCheck.new
 OkComputer::Registry.register 'external-symphony', SymphonyCheck.new(format(Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path, catkey: 12345))
 OkComputer::Registry.register 'background_jobs', OkComputer::SidekiqLatencyCheck.new('default', 25)
+OkComputer::Registry.register 'feature-tables-have-data', TablesHaveDataCheck.new
 
 OkComputer.make_optional %w(external-symphony)
