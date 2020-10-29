@@ -85,7 +85,11 @@ module Cocina
           attrs = source_attrs(node, attrs)
           case node.name
           when 'name'
-            attrs[:type] = Contributor::ROLES.fetch(node[:type])
+            if node[:type]
+              attrs[:type] = Contributor::ROLES.fetch(node[:type])
+            else
+              Honeybadger.notify('Notice: Subject has <name> with no type attribute within <subject>')
+            end
             Contributor.name_parts(node, add_default_type: true).first.merge(attrs)
           when 'titleInfo'
             query = node.xpath('mods:title', mods: DESC_METADATA_NS)

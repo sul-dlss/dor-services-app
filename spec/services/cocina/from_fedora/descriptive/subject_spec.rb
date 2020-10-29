@@ -428,14 +428,17 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           }
         ]
       end
+
+      # Example 2 w dates
+      xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L224'
     end
 
     context 'with additional terms and authority for terms' do
-      xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L247'
+      xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L325'
     end
 
     context 'with additional terms and authority for terms and set' do
-      xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L281'
+      xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L359'
     end
 
     context 'with a name-title subject with authority' do
@@ -478,7 +481,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
 
     context 'with a name-title subject with authority plus authority for name' do
-      xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L351'
+      xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L429'
     end
 
     context 'with a name-title subject with additional terms including genre subdivision, authority for set' do
@@ -524,7 +527,43 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
 
     context 'with a name-title subject with additional terms including genre subdivision, authority for terms' do
-      xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L429'
+      xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L507'
+    end
+
+    context 'without name type' do
+      before do
+        allow(Honeybadger).to receive(:notify).with('Notice: Subject has <name> with no type attribute within <subject>')
+      end
+
+      let(:xml) do
+        <<~XML
+          <subject authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n81070667">
+            <name>
+              <namePart>Stanford University. Libraries.</namePart>
+            </name>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            source:
+              {
+                code: 'naf',
+                uri: 'http://id.loc.gov/authorities/names'
+              },
+            type: 'name',
+            uri: 'http://id.loc.gov/authorities/names/n81070667',
+            value: 'Stanford University. Libraries.'
+          }
+        ]
+      end
+
+      it 'notifies honeybadger' do
+        build
+        expect(Honeybadger).to have_received(:notify).with('Notice: Subject has <name> with no type attribute within <subject>')
+      end
     end
   end
 
@@ -715,24 +754,24 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
   end
 
   context 'with a geographic code and term' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L574'
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L652'
   end
 
   context 'with a temporal subject with encoding' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L601'
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L679'
   end
 
   context 'with a temporal subject with range' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L617'
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L695'
   end
 
   context 'with a multilingual subject' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L643'
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L721'
   end
 
   context 'with a musical genre as topic' do
     # See https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/51
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L672'
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L754'
   end
 
   context 'with a occupation subject' do
@@ -756,6 +795,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
 
   context 'with a display label' do
     # See https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/51
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L688'
+    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L770'
   end
 end
