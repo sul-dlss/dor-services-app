@@ -167,13 +167,13 @@ module Cocina
           [{ structuredValue: dates }]
         end
 
-        def build_date(type, node)
+        def build_date(event_type, node)
           {}.tap do |date|
             date[:value] = node.text
             date[:qualifier] = node[:qualifier] if node[:qualifier]
             date[:encoding] = { code: node['encoding'] } if node['encoding']
             date[:status] = 'primary' if node['keyDate']
-            date[:note] = [{ value: node['type'], type: 'date type' }] unless type
+            date[:note] = [{ value: node['type'], type: 'date type' }] if !event_type && node['type']
             date[:type] = node['point'] if node['point']
           end
         end
