@@ -6,6 +6,7 @@ module Cocina
       # Maps titles from cocina to MODS XML
       class Title
         TAG_NAME = FromFedora::Descriptive::Titles::TYPES.invert.freeze
+        NAME_TYPES = ['person', 'forename', 'surname', 'life dates'].freeze
 
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValueRequired>] titles
@@ -93,16 +94,14 @@ module Cocina
         end
 
         def with_uri_info(cocina, xml_attrs)
-          if cocina
-            xml_attrs[:valueURI] = cocina.uri
-            xml_attrs[:authorityURI] = cocina.source&.uri
-            xml_attrs[:authority] = cocina.source&.code
-          end
+          xml_attrs[:valueURI] = cocina.uri
+          xml_attrs[:authorityURI] = cocina.source&.uri
+          xml_attrs[:authority] = cocina.source&.code
           xml_attrs.compact
         end
 
         def components
-          @components ||= title.structuredValue.group_by { |component| FromFedora::Descriptive::Titles::NAME_TYPES.include? component.type }
+          @components ||= title.structuredValue.group_by { |component| NAME_TYPES.include? component.type }
         end
 
         def names
@@ -112,15 +111,13 @@ module Cocina
         end
 
         def basic_names
-          return unless names[false]
-
           names[false]
         end
 
         def name_with_authority
           return unless names[true]
 
-          names[true].first
+          Array(names[true]).first
         end
 
         def name_attrs
@@ -139,7 +136,7 @@ module Cocina
         end
 
         def name_title_group
-          return nil unless names
+          return unless names
 
           return title_group + 1 if title_group < 1
 
