@@ -62,6 +62,36 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     end
   end
 
+  context 'with Other version type data error' do
+    let(:xml) do
+      <<~XML
+        <relatedItem type="Other version">
+          <titleInfo>
+            <title>Lymond chronicles</title>
+          </titleInfo>
+        </relatedItem>
+      XML
+    end
+
+    before do
+      allow(Honeybadger).to receive(:notify)
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "title": [
+            {
+              "value": 'Lymond chronicles'
+            }
+          ],
+          "type": 'has version'
+        }
+      ]
+      expect(Honeybadger).to have_received(:notify).with('Notice: Invalid related resource type (Other version)')
+    end
+  end
+
   context 'without type' do
     let(:xml) do
       <<~XML

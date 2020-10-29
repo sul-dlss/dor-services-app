@@ -24,7 +24,7 @@ module Cocina
               item[:contributor] = build_contributors(related_item)
               item[:access] = build_access(related_item)
               item[:form] = build_form(related_item)
-              item[:type] = TYPES.fetch(related_item['type']) if related_item['type']
+              item[:type] = type_for(related_item['type']) if related_item['type']
               item[:displayLabel] = related_item['displayLabel']
             end.compact
           end
@@ -69,6 +69,15 @@ module Cocina
 
         def related_items
           ng_xml.xpath('//mods:mods/mods:relatedItem', mods: DESC_METADATA_NS)
+        end
+
+        def type_for(type)
+          # This handles a common data error.
+          if type.downcase == 'other version'
+            Honeybadger.notify('Notice: Invalid related resource type (Other version)')
+            return TYPES['otherVersion']
+          end
+          TYPES.fetch(type)
         end
       end
     end
