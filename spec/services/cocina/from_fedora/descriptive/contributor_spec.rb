@@ -111,6 +111,35 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  context 'with miscapitalized type' do
+    let(:xml) do
+      <<~XML
+        <name type="Personal" usage="primary">
+          <namePart>Dunnett, Dorothy</namePart>
+        </name>
+      XML
+    end
+
+    before do
+      allow(Honeybadger).to receive(:notify)
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "name": [
+            {
+              "value": 'Dunnett, Dorothy'
+            }
+          ],
+          "type": 'person',
+          "status": 'primary'
+        }
+      ]
+      expect(Honeybadger).to have_received(:notify).with('Notice: Contributor type incorrectly capitalized')
+    end
+  end
+
   context 'with additional subelements' do
     let(:xml) do
       <<~XML

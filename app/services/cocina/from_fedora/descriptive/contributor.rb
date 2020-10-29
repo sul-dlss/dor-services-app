@@ -36,7 +36,7 @@ module Cocina
           [].tap do |contributors|
             names.each do |name|
               contributors << { name: self.class.name_parts(name) }.tap do |contributor_hash|
-                contributor_hash[:type] = ROLES.fetch(name['type']) if name['type']
+                contributor_hash[:type] = type_for(name['type']) if name['type']
                 contributor_hash[:status] = name['usage'] if name['usage']
                 roles = [roles_for(name)]
                 contributor_hash[:role] = roles unless roles.flatten.empty?
@@ -135,6 +135,11 @@ module Cocina
           # rubocop:enable Metrics/AbcSize
           # rubocop:enable Metrics/CyclomaticComplexity
           # rubocop:enable Metrics/PerceivedComplexity
+        end
+
+        def type_for(type)
+          Honeybadger.notify('Notice: Contributor type incorrectly capitalized') if type.downcase != type
+          ROLES.fetch(type.downcase)
         end
       end
     end
