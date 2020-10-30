@@ -86,6 +86,32 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with invalid subject "#N/A" authority' do
+    let(:xml) do
+      <<~XML
+        <subject authority="#N/A">
+          <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure and logs an error' do
+      allow(Honeybadger).to receive(:notify)
+      expect(build).to eq [
+        {
+          "value": 'Cats',
+          "type": 'topic',
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85021262',
+          "source": {
+            "code": 'lcsh',
+            "uri": 'http://id.loc.gov/authorities/subjects/'
+          }
+        }
+      ]
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has authority attribute "#N/A"', tags: 'data_error')
+    end
+  end
+
   context 'with a single-term topic subject with authority on the topic' do
     let(:xml) do
       <<~XML
@@ -563,6 +589,29 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       it 'notifies honeybadger' do
         build
         expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has <name> with no type attribute within <subject>', { tags: 'data_error' })
+      end
+    end
+
+    context 'with invalid subject-name "#N/A" type' do
+      let(:xml) do
+        <<~XML
+          <subject>
+            <name type="#N/A" authority="#N/A" authorityURI="#N/A" valueURI="#N/A">
+              <namePart>Hoveyda, Fereydoun</namePart>
+            </name>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure and logs an error' do
+        allow(Honeybadger).to receive(:notify)
+        expect(build).to eq [
+          { source: { code: '#N/A', uri: '#N/A' },
+            type: 'name',
+            uri: '#N/A',
+            value: 'Hoveyda, Fereydoun' }
+        ]
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has <name> with an invalid type attribute "#N/A"', tags: 'data_error')
       end
     end
   end
