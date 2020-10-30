@@ -3,17 +3,24 @@
 module Cocina
   # Maps Dor::Items to Cocina objects
   class Mapper
+    # Generic base error class, so we can easily determine when a .build error is one we
+    # already account for, so that we can wrap the unexpected ones.
+    class BuildError < StandardError; end
+
     # Raised when called on something other than an item (DRO), etd, collection, or adminPolicy (APO)
-    class UnsupportedObjectType < StandardError; end
+    class UnsupportedObjectType < BuildError; end
 
     # Raised when we can't figure out the title for the object.
-    class MissingTitle < StandardError; end
+    class MissingTitle < BuildError; end
 
     # Raised when this object is missing a sourceID, so it can't be mapped to cocina.
-    class MissingSourceID < StandardError; end
+    class MissingSourceID < BuildError; end
 
     # Raised when assumptions about descMetadata are violated
-    class InvalidDescMetadata < StandardError; end
+    class InvalidDescMetadata < BuildError; end
+
+    # Raised on unexpected mapper failures, so .build errors can be rescued without rescuing all of StandardError
+    class UnexpectedBuildError < BuildError; end
 
     # @param [Dor::Abstract] item the Fedora object to convert to a cocina object
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
@@ -41,6 +48,10 @@ module Cocina
                 raise "unable to build '#{klass}'"
               end
       klass.new(props)
+    rescue StandardError => e
+      raise e if e.is_a?(BuildError) # if it's already a BuildError, just pass it through
+
+      raise UnexpectedBuildError # wrap unexpected StandardError, caller will probably want to look at #cause
     end
 
     private

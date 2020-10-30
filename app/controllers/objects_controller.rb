@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
   before_action :load_item, except: [:create]
 
@@ -61,6 +62,11 @@ class ObjectsController < ApplicationController
     json_api_error(status: :unprocessable_entity,
                    title: 'Invalid descMetadata',
                    message: e)
+  rescue Cocina::Mapper::UnexpectedBuildError => e
+    json_api_error(status: :unprocessable_entity,
+                   title: 'Unexpected Cocina::Mapper.build error',
+                   message: e.cause,
+                   meta: { backtrace: e.cause.backtrace })
   end
 
   # Initialize specified workflow (assemblyWF by default), and also version if needed
@@ -125,7 +131,7 @@ class ObjectsController < ApplicationController
 
   private
 
-  def json_api_error(status:, message:, title: nil)
+  def json_api_error(status:, message:, title: nil, meta: nil)
     status_code = Rack::Utils.status_code(status)
     render status: status,
            content_type: 'application/vnd.api+json',
@@ -135,7 +141,9 @@ class ObjectsController < ApplicationController
                  'status': status_code.to_s,
                  'title': title || Rack::Utils::HTTP_STATUS_CODES[status_code],
                  'detail': message
-               }
+               }.tap do |h|
+                 h[:meta] = meta if meta.present?
+               end
              ]
            }
   end
@@ -167,3 +175,4 @@ class ObjectsController < ApplicationController
     end
   end
 end
+# rubocop:enable Metrics/ClassLength

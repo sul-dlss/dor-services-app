@@ -317,6 +317,49 @@ RSpec.describe 'Get the object' do
       end
     end
 
+    context 'when there is an unexpected error mapping properties from the Fedora representation' do
+      let(:object) do
+        Dor::Item.new(pid: 'druid:bc123df4567',
+                      source_id: 'src:99999',
+                      label: 'foo',
+                      read_rights: 'world').tap do |i|
+          i.descMetadata.content = xml
+        end
+      end
+      let(:xml) do
+        <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title>journal of stuff (2)</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      let(:expected) do
+        {
+          errors: [
+            a_hash_including({ detail: 'key not found: nil',
+                               meta: { backtrace: include(match("app/services/cocina/mapper.rb:[0-9]+:in `build'$"),
+                                                          match("app/controllers/objects_controller.rb:[0-9]+:in `show'$")) },
+                               status: '422',
+                               title: 'Unexpected Cocina::Mapper.build error' })
+          ]
+        }
+      end
+
+      before { allow(Cocina::FromFedora::DRO).to receive(:props).and_raise(KeyError, 'key not found: nil') }
+
+      it 'returns the error' do
+        get '/v1/objects/druid:bc123df4567',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response_model).to include(expected)
+      end
+    end
+
     context 'when there is a solr error' do
       before do
         allow(Cocina::Mapper).to receive(:build).and_raise(SolrConnectionError, 'broken')
