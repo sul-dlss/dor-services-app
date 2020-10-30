@@ -26,6 +26,7 @@ module Cocina
 
         def build
           subjects.map do |subject|
+            check_valid_authority(subject)
             attrs = source_attrs(subject)
             node_set = subject.xpath('*')
             next subject_classification(subject, attrs) if subject.name == 'classification'
@@ -42,6 +43,14 @@ module Cocina
         private
 
         attr_reader :ng_xml
+
+        def check_valid_authority(subject)
+          return unless subject['authority'] == '#N/A'
+
+          # This is not a fatal problem. Just warn.
+          Honeybadger.notify('[DATA ERROR] Subject has authority attribute "#N/A"',
+                             tags: 'data_error')
+        end
 
         def source_attrs(subject, attrs = {})
           if subject[:valueURI]
@@ -86,7 +95,12 @@ module Cocina
           case node.name
           when 'name'
             if node[:type]
-              attrs[:type] = Contributor::ROLES.fetch(node[:type])
+              if node[:type] == '#N/A'
+                Honeybadger.notify('[DATA ERROR] Subject has <name> with an invalid type attribute "#N/A"',
+                                   tags: 'data_error')
+              else
+                attrs[:type] = Contributor::ROLES.fetch(node[:type])
+              end
             else
               Honeybadger.notify('[DATA ERROR] Subject has <name> with no type attribute within <subject>', { tags: 'data_error' })
             end
