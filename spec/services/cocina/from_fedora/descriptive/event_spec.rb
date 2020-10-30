@@ -243,6 +243,26 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     end
   end
 
+  context 'with approximate date range' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L147'
+  end
+
+  context 'with date range, approximate start date only' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L177'
+  end
+
+  context 'with date range, approximate end date only' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L206'
+  end
+
+  context 'with inferred date' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L235'
+  end
+
+  context 'with questionable date' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L253'
+  end
+
   context 'with a range plus single date' do
     let(:xml) do
       <<~XML
@@ -335,6 +355,18 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     end
   end
 
+  context 'with BCE date range (edtf encoding)' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L345'
+  end
+
+  context 'with CE date (edtf encoding)' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L378'
+  end
+
+  context 'with CE date range (edtf encoing)' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L398'
+  end
+
   context 'with multiple date types' do
     let(:xml) do
       <<~XML
@@ -372,6 +404,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     end
   end
 
+  context 'with Julian calendar' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L457'
+  end
+
   context 'with date range, no start point' do
     let(:xml) do
       <<~XML
@@ -394,6 +430,30 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
         }
       ]
     end
+  end
+
+  context 'with date range, no end point' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L520'
+  end
+
+  context 'with MARC-encoded uncertain date' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L538'
+  end
+
+  context 'with Unencoded date string' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L558'
+  end
+
+  context 'with originInfo eventType matches date type' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L575'
+  end
+
+  context 'with originInfo eventType differs from date type' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L592'
+  end
+
+  context 'with originInfo eventType differs from date type, converted from MARC with multiple 264s' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L605'
   end
 
   context 'with place text (authorized)' do
@@ -454,6 +514,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     end
   end
 
+  context 'with place text and code for same place' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L746'
+  end
+
   context 'with place code and text for different places' do
     let(:xml) do
       <<~XML
@@ -484,6 +548,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
           ]
         }
       ]
+    end
+
+    context 'with incorrect MODS from replayable spreadsheet' do
+      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L798'
     end
   end
 
@@ -596,6 +664,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     end
   end
 
+  context 'with issuance and frequency - authorized term' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L1054'
+  end
+
   context 'with multiple originInfo elements for different events' do
     let(:xml) do
       <<~XML
@@ -644,5 +716,35 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
         }
       ]
     end
+  end
+
+  context 'with multilingual' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L1128'
+  end
+
+  context 'with displayLabel' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L1282'
+    # let(:xml) do
+    #   <<~XML
+    #     <originInfo displayLabel="Origin">
+    #       <place>
+    #         <placeTerm type="text">Stanford (Calif.)</placeTerm>
+    #       <place>
+    #     </originInfo>
+    #   XML
+    # end
+    #
+    # it 'builds the cocina data structure' do
+    #   expect(build).to eq [
+    #     {
+    #       "displayLabel": 'Origin',
+    #       "location": [
+    #         {
+    #           "value": 'Stanford (Calif.)'
+    #         }
+    #       ]
+    #     }
+    #   ]
+    # end
   end
 end
