@@ -115,9 +115,9 @@ These tools are best run on a server within the network. (Currently installed on
         ssl:
           cert_file: "tls/certs/dor-services-prod-dor-prod.crt"
           key_file: "tls/private/dor-services-prod-dor-prod.key"
-        
+
         fedora_url: 'https://sul-dor-prod.stanford.edu/fedora'
-        
+
         solr:
           url: 'https://sul-solr.stanford.edu/solr/argo3_prod'
 2. Copy certificates locally:
@@ -160,3 +160,27 @@ Examples: druid:vx162kw9911, druid:rh979yv1005, druid:qb797px1044, druid:fq225gc
 A complete set of results will be written to `results.txt`.
 
 Note that the validation is parallelized, so it is much faster than the other processes.
+
+### Running the validation on sdr-deploy
+
+Get on VPN, ssh into the sdr-deploy server, check out your branch, run the validation.
+
+Note that you should ensure nobody else is currently running a validation, as you will be checking out a branch
+in a common directory.  As a best practice, re check-out master branch to indicate it is not in use.
+
+```
+ssh deploy@sdr-deploy.stanford.edu
+cd /opt/app/deploy/dor-services-app
+git branch # see if you are on master, which shows likely not in use
+git fetch
+git sw YOUR_BRANCH_NAME
+bin/validate-to-cocina 350000
+```
+
+When done, you many to fetch the `results.txt` to your local drive (it is written to the root folder of dor-services-app)
+and look for errors.
+
+```
+scp deploy@sdr-deploy.stanford.edu:~/dor-services-app/results.txt results-oct30.txt
+grep Error results-oct30.txt # shows the unique errors
+```
