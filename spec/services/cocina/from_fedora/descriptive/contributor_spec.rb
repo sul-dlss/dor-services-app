@@ -606,7 +606,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
-    context 'when the role code is missing the authority' do
+    context 'when the role code is missing the authority and length is 3' do
       let(:xml) do
         <<~XML
           <name valueURI="corporate">
@@ -618,8 +618,36 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         XML
       end
 
+      before do
+        allow(Honeybadger).to receive(:notify)
+      end
+
+      it 'builds the cocina data structure and Honeybadger notifies' do
+        expect(build).to eq [
+          { name: [
+            { value: 'Selective Service System' }
+          ], role: [
+            { code: 'isb' }
+          ] }
+        ]
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Contributor role code is missing authority', { tags: 'data_error' })
+      end
+    end
+
+    context 'when the role code is missing the authority and length is not 3' do
+      let(:xml) do
+        <<~XML
+          <name valueURI="corporate">
+            <namePart>Selective Service System</namePart>
+            <role>
+              <roleTerm type="code">isbx</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
       it 'raises an error' do
-        expect { build }.to raise_error Cocina::Mapper::InvalidDescMetadata, './mods:role/mods:roleTerm[@type="code"] is missing required authority attribute'
+        expect { build }.to raise_error Cocina::Mapper::InvalidDescMetadata, 'Contributor role code is missing and has unexpected value: isbx'
       end
     end
 

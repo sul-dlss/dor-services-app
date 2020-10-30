@@ -128,7 +128,6 @@ module Cocina
 
         # rubocop:disable Metrics/AbcSize
         # rubocop:disable Metrics/CyclomaticComplexity
-        # rubocop:disable Metrics/PerceivedComplexity
         def roles_for(name)
           role_code = name.xpath(ROLE_CODE_XPATH, mods: DESC_METADATA_NS).first
           role_text = name.xpath(ROLE_TEXT_XPATH, mods: DESC_METADATA_NS).first
@@ -138,9 +137,9 @@ module Cocina
           role_authority_uri = name.xpath(ROLE_AUTHORITY_URI_XPATH, mods: DESC_METADATA_NS).first
           role_authority_value = name.xpath(ROLE_AUTHORITY_VALUE_XPATH, mods: DESC_METADATA_NS).first
 
-          {}.tap do |role|
-            raise Cocina::Mapper::InvalidDescMetadata, "#{ROLE_CODE_XPATH} is missing required authority attribute" if role_code&.content.present? && role_authority&.content.blank?
+          check_code(role_code, role_authority)
 
+          {}.tap do |role|
             if role_authority&.content.present?
               role[:source] = { code: role_authority.content }
               role[:source][:uri] = role_authority_uri.content if role_authority_uri&.content.present?
@@ -156,7 +155,6 @@ module Cocina
           end
           # rubocop:enable Metrics/AbcSize
           # rubocop:enable Metrics/CyclomaticComplexity
-          # rubocop:enable Metrics/PerceivedComplexity
         end
 
         def type_for(type)
@@ -167,6 +165,17 @@ module Cocina
           Honeybadger.notify('[DATA ERROR] Contributor type incorrectly capitalized', { tags: 'data_error' }) if type.downcase != type
 
           ROLES.fetch(type.downcase)
+        end
+
+        def check_code(role_code, role_authority)
+          return if role_code.nil? || role_authority
+
+          if role_code.content.present? && role_code.content.size == 3
+            Honeybadger.notify('[DATA ERROR] Contributor role code is missing authority', { tags: 'data_error' })
+            return
+          end
+
+          raise Cocina::Mapper::InvalidDescMetadata, "Contributor role code is missing and has unexpected value: #{role_code.content}"
         end
       end
     end
