@@ -24,11 +24,11 @@ results = Parallel.map(druids.take(sample_size), in_processes: 4, progress: 'Tes
   nil
 rescue StandardError => e
   if ignore_errors.include?(e.message)
-    puts " ignoring. #{e.message}\n\n"
+    puts " ignoring. #{e.message.gsub('\n', ' ')}\n\n"
     nil
   else
-    puts " error. #{e.message}\n\n"
-    [e.message, druid]
+    puts " error. #{e.message.gsub('\n', ' ')}\n\n"
+    [e.message.gsub('\n', ' '), druid]
   end
 end.compact
 
