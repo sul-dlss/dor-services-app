@@ -532,7 +532,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
 
     context 'without name type' do
       before do
-        allow(Honeybadger).to receive(:notify).with('Notice: Subject has <name> with no type attribute within <subject>')
+        allow(Honeybadger).to receive(:notify)
       end
 
       let(:xml) do
@@ -562,7 +562,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
 
       it 'notifies honeybadger' do
         build
-        expect(Honeybadger).to have_received(:notify).with('Notice: Subject has <name> with no type attribute within <subject>')
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has <name> with no type attribute within <subject>', { tags: 'data_error' })
       end
     end
   end

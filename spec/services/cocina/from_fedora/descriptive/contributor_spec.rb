@@ -136,7 +136,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
           "status": 'primary'
         }
       ]
-      expect(Honeybadger).to have_received(:notify).with('Notice: Contributor type incorrectly capitalized')
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Contributor type incorrectly capitalized', { tags: 'data_error' })
     end
   end
 

@@ -74,7 +74,7 @@ module Cocina
         def type_for(type)
           # This handles a common data error.
           if type.downcase == 'other version'
-            Honeybadger.notify('Notice: Invalid related resource type (Other version)')
+            Honeybadger.notify('[DATA ERROR] Invalid related resource type (Other version)', { tags: 'data_error' })
             return TYPES['otherVersion']
           end
           TYPES.fetch(type)

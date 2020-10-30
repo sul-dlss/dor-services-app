@@ -65,7 +65,7 @@ module Cocina
           # Find all the child nodes that have text
           children = title_info.xpath('./*[child::node()[self::text()]]')
           if children.empty?
-            Honeybadger.notify('Notice: Missing title')
+            Honeybadger.notify('[DATA ERROR] Missing title', { tags: 'data_error' })
             return nil
           end
 
