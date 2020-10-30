@@ -58,6 +58,7 @@ module Cocina
         def build_events_for_origin_info(origin, display_label)
           [].tap do |events|
             date_created = origin.xpath('mods:dateCreated', mods: DESC_METADATA_NS)
+            # new_event = build_event('creation', date_created, display_label) if date_created.present?
             events << build_event('creation', date_created, display_label) if date_created.present?
 
             date_issued = origin.xpath('mods:dateIssued', mods: DESC_METADATA_NS)
@@ -158,6 +159,7 @@ module Cocina
           { date: dates }.tap do |event|
             event[:displayLabel] = display_label if display_label
             event[:type] = type if type
+            Honeybadger.notify('Data Error: originInfo/dateOther missing eventType', { tags: 'data_error' }) unless event[:type]
           end
         end
 

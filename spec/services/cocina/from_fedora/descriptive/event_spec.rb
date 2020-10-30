@@ -141,6 +141,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
           }
         ]
       end
+
+      it 'notifies Honeybadger event type is missing' do
+        allow(Honeybadger).to receive(:notify)
+        build
+        expect(Honeybadger).to have_received(:notify)
+          .with('Data Error: originInfo/dateOther missing eventType', tags: 'data_error')
+      end
     end
 
     describe 'without type attribute, with displayLabel' do
@@ -167,6 +174,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
             ]
           }
         ]
+      end
+
+      it 'notifies Honeybadger event type is missing' do
+        allow(Honeybadger).to receive(:notify)
+        build
+        expect(Honeybadger).to have_received(:notify)
+          .with('Data Error: originInfo/dateOther missing eventType', tags: 'data_error')
       end
     end
   end
@@ -350,6 +364,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
           ]
         }
       ]
+    end
+    it 'does not notify Honeybadger (as all is ok)' do
+      allow(Honeybadger).to receive(:notify)
+      build
+      expect(Honeybadger).not_to have_received(:notify)
     end
   end
 
