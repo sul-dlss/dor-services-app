@@ -151,36 +151,71 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
   end
 
   context 'when it has a single dateOther' do
-    let(:events) do
-      [
-        Cocina::Models::Event.new(
-          {
-            date: [
-              {
-                value: '1441 AH',
-                note: [
-                  {
-                    value: 'Islamic',
-                    type: 'date type'
-                  }
-                ]
-              }
-            ]
-          }
-        )
-      ]
+    describe 'with note' do
+      let(:events) do
+        [
+          Cocina::Models::Event.new(
+            {
+              date: [
+                {
+                  value: '1441 AH',
+                  note: [
+                    {
+                      value: 'Islamic',
+                      type: 'date type'
+                    }
+                  ]
+                }
+              ]
+            }
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <originInfo>
+              <dateOther type="Islamic">1441 AH</dateOther>
+            </originInfo>
+          </mods>
+        XML
+      end
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
-            <dateOther type="Islamic">1441 AH</dateOther>
-          </originInfo>
-        </mods>
-      XML
+    describe 'without note, with displayLabel' do
+      let(:events) do
+        [
+          Cocina::Models::Event.new(
+            {
+              "displayLabel": 'Acquisition date',
+              "date": [
+                {
+                  "value": '1970-11-23',
+                  "encoding": {
+                    "code": 'w3cdtf'
+                  },
+                  "status": 'primary'
+                }
+              ]
+            }
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <originInfo displayLabel="Acquisition date">
+              <dateOther keyDate="yes" encoding="w3cdtf">1970-11-23</dateOther>
+            </originInfo>
+          </mods>
+        XML
+      end
     end
   end
 

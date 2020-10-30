@@ -143,7 +143,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       end
     end
 
-    describe 'without type attribute' do
+    describe 'without type attribute, with displayLabel' do
       let(:xml) do
         <<~XML
           <originInfo displayLabel="Acquisition date">
@@ -155,6 +155,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       it 'builds the cocina data structure' do
         expect(build).to eq [
           {
+            "displayLabel": 'Acquisition date',
             "date": [
               {
                 "value": '1970-11-23',
