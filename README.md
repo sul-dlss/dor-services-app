@@ -173,11 +173,11 @@ ssh deploy@sdr-deploy.stanford.edu
 cd /opt/app/deploy/dor-services-app
 git branch # see if you are on master, which shows likely not in use
 git fetch
-git sw YOUR_BRANCH_NAME
+git switch YOUR_BRANCH_NAME
 bin/validate-to-cocina 350000
 ```
 
-When done, you many to fetch the `results.txt` to your local drive (it is written to the root folder of dor-services-app)
+When done, you may want to fetch the `results.txt` to your local drive (it is written to the root folder of dor-services-app)
 and look for errors.
 
 ```
