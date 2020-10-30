@@ -17,8 +17,7 @@ ignore_errors = ['Cocina::Mapper::MissingTitle', 'Missing item']
 
 druids = File.read('druids.txt').split
 
-results = Parallel.map_with_index(druids.take(sample_size), in_processes: 4) do |druid, index|
-  puts "#{druid} (#{index + 1})\n"
+results = Parallel.map(druids.take(sample_size), in_processes: 4, progress: 'Testing') do |druid|
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: cache.label(druid))
   desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: cache.descmd_xml(druid))
   Cocina::Models::Description.new(desc_props)
