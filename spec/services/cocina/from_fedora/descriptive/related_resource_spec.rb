@@ -88,7 +88,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
           "type": 'has version'
         }
       ]
-      expect(Honeybadger).to have_received(:notify).with('Notice: Invalid related resource type (Other version)')
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Invalid related resource type (Other version)', { tags: 'data_error' })
     end
   end
 

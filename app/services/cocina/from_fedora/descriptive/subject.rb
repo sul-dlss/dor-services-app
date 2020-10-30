@@ -88,7 +88,7 @@ module Cocina
             if node[:type]
               attrs[:type] = Contributor::ROLES.fetch(node[:type])
             else
-              Honeybadger.notify('Notice: Subject has <name> with no type attribute within <subject>')
+              Honeybadger.notify('[DATA ERROR] Subject has <name> with no type attribute within <subject>', { tags: 'data_error' })
             end
             Contributor.name_parts(node, add_default_type: true).first.merge(attrs)
           when 'titleInfo'

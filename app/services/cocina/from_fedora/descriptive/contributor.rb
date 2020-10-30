@@ -138,7 +138,7 @@ module Cocina
         end
 
         def type_for(type)
-          Honeybadger.notify('Notice: Contributor type incorrectly capitalized') if type.downcase != type
+          Honeybadger.notify('[DATA ERROR] Contributor type incorrectly capitalized', { tags: 'data_error' }) if type.downcase != type
           ROLES.fetch(type.downcase)
         end
       end

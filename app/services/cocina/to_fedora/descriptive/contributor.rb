@@ -90,7 +90,7 @@ module Cocina
             when 'description'
               xml.description note.value
             else
-              Honeybadger.notify('Notice: Unknown contributor note type')
+              Honeybadger.notify('[DATA ERROR] Unknown contributor note type', { tags: 'data_error' })
             end
           end
         end
