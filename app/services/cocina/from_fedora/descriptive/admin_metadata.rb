@@ -33,15 +33,15 @@ module Cocina
         def build_event
           return unless creation_event
 
+          event_code = creation_event['encoding']
+          encoding = { code: event_code } if event_code
           [{
             type: 'creation',
             date: [
               {
                 value: creation_event.text,
-                encoding: {
-                  code: creation_event['encoding']
-                }
-              }
+                encoding: encoding
+              }.compact
             ]
           }]
         end
@@ -116,7 +116,8 @@ module Cocina
           script_text_term = language_of_cataloging.xpath('mods:scriptTerm[@type="text"]', mods: DESC_METADATA_NS).first
           if script_text_term
             script_code_term = language_of_cataloging.xpath('mods:scriptTerm[@type="code"]', mods: DESC_METADATA_NS).first
-            language[:script] = { value: script_text_term.text, code: script_code_term.text, source: { code: script_code_term[:authority] } }
+            script_term_source = { code: script_code_term['authority'] } if script_code_term['authority']
+            language[:script] = { value: script_text_term.text, code: script_code_term.text, source: script_term_source }.compact
           end
           [language.compact]
         end

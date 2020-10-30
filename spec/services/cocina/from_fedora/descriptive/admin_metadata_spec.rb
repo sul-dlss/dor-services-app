@@ -89,6 +89,41 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
     end
   end
 
+  context 'with no authority listed for scriptTerm code' do
+    let(:xml) do
+      <<~XML
+        <recordInfo>
+          <languageOfCataloging usage="primary">
+            <languageTerm type="text" authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2/" valueURI="http://id.loc.gov/vocabulary/iso639-2/eng">English</languageTerm>
+            <languageTerm type="code" authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2/" valueURI="http://id.loc.gov/vocabulary/iso639-2/eng">eng</languageTerm>
+            <scriptTerm type="text">Latin</scriptTerm>
+            <scriptTerm type="code">Latn</scriptTerm>
+          </languageOfCataloging>
+        </recordInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure and does not add a scriptTerm source instead of setting to nil' do
+      expect(build).to eq(
+        "language": [
+          {
+            "value": 'English',
+            "code": 'eng',
+            "uri": 'http://id.loc.gov/vocabulary/iso639-2/eng',
+            "source": {
+              "code": 'iso639-2b',
+              "uri": 'http://id.loc.gov/vocabulary/iso639-2/'
+            },
+            "script": {
+              "value": 'Latin',
+              "code": 'Latn'
+            }
+          }
+        ]
+      )
+    end
+  end
+
   context 'with multiple languages' do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_recordInfo.txt#L70'
   end
@@ -245,6 +280,33 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
                 value: 'Data Provider Digital Object Identifier'
               },
               value: '36105033329140'
+            }
+          ]
+        }
+      )
+    end
+  end
+
+  context 'when there is no encoding for the recordCreationDate' do
+    let(:xml) do
+      <<~XML
+        <recordInfo>
+          <recordCreationDate>2011-02-08T20:00:27.321-08:00</recordCreationDate>
+        </recordInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure leaving the code off instead of setting to nil' do
+      expect(build).to eq(
+        {
+          event: [
+            {
+              date: [
+                {
+                  value: '2011-02-08T20:00:27.321-08:00'
+                }
+              ],
+              type: 'creation'
             }
           ]
         }
