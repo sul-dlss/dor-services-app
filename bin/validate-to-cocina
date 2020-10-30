@@ -47,7 +47,9 @@ aggregated_error_results.reverse!
 
 error_count = results.size
 
-puts "\n#{error_count} of #{sample_size} (#{100 * error_count.to_f / sample_size}%)\n"
+summary_line = "#{error_count} of #{sample_size} (#{100 * error_count.to_f / sample_size}%)"
+
+puts "\n#{summary_line}%)\n"
 
 aggregated_error_results.each do |error_result|
   puts "Error: #{error_result[0]} (#{error_result[1].size} errors)\n"
@@ -55,6 +57,7 @@ aggregated_error_results.each do |error_result|
 end
 
 File.open('results.txt', 'w') do |file|
+  file.write("#{summary_line}\n")
   aggregated_error_results.each do |error_result|
     file.write("Error: #{error_result[0]} (#{error_result[1].size} errors)\n")
     error_result[1].each { |druid| file.write("#{druid}\n") }
