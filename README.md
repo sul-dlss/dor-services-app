@@ -163,18 +163,25 @@ Note that the validation is parallelized, so it is much faster than the other pr
 
 ### Running the validation on sdr-deploy
 
-Get on VPN, ssh into the sdr-deploy server, check out your branch, run the validation.
+First indicate in the #dlss-infrastructure slack channel you will be running validation.
+Then, get on VPN, ssh into the sdr-deploy server, check out your branch, and run the validation.
 
 Note that you should ensure nobody else is currently running a validation, as you will be checking out a branch
-in a common directory.  As a best practice, re check-out master branch to indicate it is not in use.
+in a common directory.  As a best practice, re check-out the master branch when done to indicate it is not in use.
 
 ```
 ssh deploy@sdr-deploy.stanford.edu
 cd /opt/app/deploy/dor-services-app
 git branch # see if you are on master, which shows likely not in use
 git fetch
-git switch YOUR_BRANCH_NAME
+git checkout YOUR_BRANCH_NAME
 bin/validate-to-cocina 350000
+```
+
+When done, delete your branch and change back to master:
+```
+git checkout master
+git branch -d YOUR_BRANCH_NAME
 ```
 
 When done, you may want to fetch the `results.txt` to your local drive (it is written to the root folder of dor-services-app)
