@@ -70,6 +70,39 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
       end
     end
 
+    context 'when it is a uniform title with multiple namePart subelements' do
+      # xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L243'
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            { structuredValue: [{ type: 'surname', value: 'Saint-Saëns' },
+                                { type: 'forename', value: 'Camille' },
+                                { type: 'life dates', value: '1835-1921' },
+                                { type: 'title', value: 'Princesse jaune. Vocal score' }],
+              type: 'uniform',
+              status: 'primary' }
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo type="uniform" usage="primary" nameTitleGroup="1">
+              <title>Princesse jaune. Vocal score</title>
+            </titleInfo>
+            <name type="personal" usage="primary" nameTitleGroup="1">
+              <namePart type="family">Saint-Sa&#xEB;ns</namePart>
+              <namePart type="given">Camille</namePart>
+              <namePart type="date">1835-1921</namePart>
+            </name>
+          </mods>
+        XML
+      end
+    end
+
     context 'when it has an alternative' do
       let(:titles) do
         [
@@ -237,19 +270,15 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
             <titleInfo usage="primary">
               <title>Hamlet</title>
             </titleInfo>
-            <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="1">
+            <titleInfo type="uniform" nameTitleGroup="1" valueURI="http://id.loc.gov/authorities/names/n80008522" authorityURI="http://id.loc.gov/authorities/names/" authority="naf">
               <title>Hamlet</title>
             </titleInfo>
-            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="1">
+            <name type="personal" nameTitleGroup="1" valueURI="http://id.loc.gov/authorities/names/n78095332" authorityURI="http://id.loc.gov/authorities/names/" authority="naf">
               <namePart>Shakespeare, William, 1564-1616</namePart>
             </name>
           </mods>
         XML
       end
-    end
-
-    context 'when it is a uniform title with multiple namePart subelements' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L243'
     end
 
     context 'when it is supplied' do

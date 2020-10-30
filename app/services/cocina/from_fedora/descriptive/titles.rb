@@ -10,10 +10,16 @@ module Cocina
           'title' => 'main title',
           'subTitle' => 'subtitle',
           'partNumber' => 'part number',
-          'partName' => 'part name'
+          'partName' => 'part name',
+          'date' => 'life dates',
+          'given' => 'forename',
+          'family' => 'surname',
+          'uniform title' => 'title'
         }.freeze
 
         PERSON_TYPE = 'person'
+
+        NAME_TYPES = ['person', 'forename', 'surname', 'life dates'].freeze
 
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
         # @return [Hash] a hash that can be mapped to a cocina model
