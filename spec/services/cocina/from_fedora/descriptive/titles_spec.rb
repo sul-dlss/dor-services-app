@@ -404,6 +404,44 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
     end
 
+    context 'when there is a missing nameTitleGroup' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="0">
+              <title>Hamlet</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      before do
+        allow(Honeybadger).to receive(:notify)
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
+      it 'creates value from the authority record and Honeybadger notifies' do
+        expect(build).to eq [
+          {
+            "structuredValue": [
+              {
+                "value": 'Hamlet',
+                "type": 'title'
+              }
+            ],
+            "type": 'uniform',
+            "uri": 'http://id.loc.gov/authorities/names/n80008522'
+          }
+        ]
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Name not found for title group', { tags: 'data_error' })
+      end
+    end
+
     context 'when there are supplied titles' do
       let(:ng_xml) do
         Nokogiri::XML <<~XML

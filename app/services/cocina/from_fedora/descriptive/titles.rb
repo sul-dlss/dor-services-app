@@ -90,11 +90,15 @@ module Cocina
         end
 
         def structured_name(node:, name_title_group:, title:)
-          # Derefernce the name in a nameTitleGroup to create the value
+          # Dereference the name in a nameTitleGroup to create the value
           parts = node.xpath("//mods:name[@nameTitleGroup='#{name_title_group}']/mods:namePart", mods: DESC_METADATA_NS)
-          raise "name not found for #{name_title_group}" if parts.blank?
 
-          vals = parts.map { |part| { value: part.text, type: Contributor::NAME_PART.fetch(part['type'], PERSON_TYPE) } }
+          vals = if parts.blank?
+                   Honeybadger.notify('[DATA ERROR] Name not found for title group', { tags: 'data_error' })
+                   []
+                 else
+                   parts.map { |part| { value: part.text, type: Contributor::NAME_PART.fetch(part['type'], PERSON_TYPE) } }
+                 end
 
           with_attributes({ structuredValue: vals + [{ value: title, type: 'title' }] },
                           node,
