@@ -524,28 +524,27 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
 
     context 'when role without namepart value' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L324'
-      # let(:xml) do
-      #   <<~XML
-      #     <name>
-      #       <namePart/>
-      #       <role>
-      #         <roleTerm authority="marcrelator" type="text">author</roleTerm>
-      #       </role>
-      #     </name>
-      #   XML
-      # end
-      #
-      # it 'builds empty cocina data structure and does not raise error' do
-      #   expect(build).to eq [{}]
-      # end
-      #
-      # it 'notifies Honeybadger namePart is empty' do
-      #   allow(Honeybadger).to receive(:notify).exactly(1).times
-      #   build
-      #   expect(Honeybadger).to have_received(:notify)
-      #     .with('Data Error: name/namePart missing value', tags: 'data_error')
-      # end
+      let(:xml) do
+        <<~XML
+          <name>
+            <namePart/>
+            <role>
+              <roleTerm authority="marcrelator" type="text">author</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds empty cocina data structure and does not raise error' do
+        expect(build).to eq [{}]
+      end
+
+      it 'notifies Honeybadger namePart is empty' do
+        allow(Honeybadger).to receive(:notify).exactly(1).times
+        build
+        expect(Honeybadger).to have_received(:notify)
+          .with('Data Error: name/namePart missing value', tags: 'data_error')
+      end
     end
 
     context 'when roleTerm with no value and no namepart' do
@@ -680,7 +679,53 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
   end
 
   context 'with multiple names, no primary' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L410'
+    let(:xml) do
+      <<~XML
+        <name type="personal">
+          <namePart>Gaiman, Neil</namePart>
+          <role>
+            <roleTerm type="text">author</roleTerm>
+          </role>
+        </name>
+        <name type="personal">
+          <namePart>Pratchett, Terry</namePart>
+          <role>
+            <roleTerm type="text">author</roleTerm>
+          </role>
+        </name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "name": [
+            {
+              "value": "Gaiman, Neil"
+            }
+          ],
+          "type": "person",
+          "role": [
+            {
+              "value": "author"
+            }
+          ]
+        },
+        {
+          "name": [
+            {
+              "value": "Pratchett, Terry"
+            }
+          ],
+          "type": "person",
+          "role": [
+            {
+              "value": "author"
+            }
+          ]
+        }
+      ]
+    end
   end
 
   context 'with single name, no primary (pseudonym)' do

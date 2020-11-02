@@ -39,7 +39,7 @@ module Cocina
                 contributor_hash[:type] = type_for(name['type']) if name['type']
                 contributor_hash[:status] = name['usage'] if name['usage']
                 roles = [roles_for(name)]
-                contributor_hash[:role] = roles unless roles.flatten.empty?
+                contributor_hash[:role] = roles unless roles.flatten.empty? || contributor_hash[:name].blank?
                 contributor_hash[:note] = notes_for(name)
                 contributor_hash[:identifier] = identifier_for(name)
               end.reject { |_k, v| v.blank? } # it can be an empty array, so can't use .compact
