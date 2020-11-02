@@ -140,6 +140,70 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  context 'with namePart with empty type attribute' do
+    context 'without role' do
+      let(:xml) do
+        <<~XML
+          <name type="personal" authority="local">
+            <namePart type="">Burke, Andy</namePart>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Burke, Andy'
+              }
+            ],
+            "type": 'person'
+          }
+        ]
+      end
+
+      it 'notifies Honeybadger' do
+        allow(Honeybadger).to receive(:notify).once
+        build
+        expect(Honeybadger).to have_received(:notify).with('Data Error: name/namePart type attribute set to ""', { tags: 'data_error' })
+      end
+    end
+
+    context 'with empty roleTerm' do
+      let(:xml) do
+        <<~XML
+          <name type="personal" authority="local">
+            <namePart type="">Burke, Andy</namePart>
+            <role>
+              <roleTerm authority="marcrelator" type="text"/>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Burke, Andy'
+              }
+            ],
+            "type": 'person'
+          }
+        ]
+      end
+
+      it 'notifies Honeybadger' do
+        allow(Honeybadger).to receive(:notify).twice
+        build
+        expect(Honeybadger).to have_received(:notify).with('Data Error: name/namePart type attribute set to ""', { tags: 'data_error' })
+        expect(Honeybadger).to have_received(:notify).with('Data Error: name/role/roleTerm missing value', { tags: 'data_error' })
+      end
+    end
+  end
+
   context 'with additional subelements' do
     let(:xml) do
       <<~XML

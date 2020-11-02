@@ -72,9 +72,11 @@ module Cocina
           end
 
           { value: name_part_node.content }.tap do |name_part|
+            Honeybadger.notify('Data Error: name/namePart type attribute set to ""', { tags: 'data_error' }) if name_part_node['type'] == ''
+
             type = if add_default_type
                      NAME_PART.fetch(name_part_node['type'], 'name')
-                   elsif name_part_node['type']
+                   elsif name_part_node['type'].present?
                      NAME_PART.fetch(name_part_node['type'])
                    end
             name_part[:type] = type if type
