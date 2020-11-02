@@ -459,45 +459,54 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L292'
     end
 
-    context 'when role but no namepart' do
+    context 'when role without namepart value' do
       xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L324'
+      # let(:xml) do
+      #   <<~XML
+      #     <name>
+      #       <namePart/>
+      #       <role>
+      #         <roleTerm authority="marcrelator" type="text">author</roleTerm>
+      #       </role>
+      #     </name>
+      #   XML
+      # end
+      #
+      # it 'builds empty cocina data structure and does not raise error' do
+      #   expect(build).to eq [{}]
+      # end
+      #
+      # it 'notifies Honeybadger namePart is empty' do
+      #   allow(Honeybadger).to receive(:notify).exactly(1).times
+      #   build
+      #   expect(Honeybadger).to have_received(:notify)
+      #     .with('Data Error: name/namePart missing value', tags: 'data_error')
+      # end
     end
 
     context 'when roleTerm with no value and no namepart' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L333'
-    end
-
-    context 'when roleTerm element is present but namePart is blank' do
-      # FIXME:  this should not have a cocina model at all, per https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L324
       let(:xml) do
         <<~XML
           <name>
             <namePart/>
             <role>
-              <roleTerm authority="marcreleator" type="text"/>
+              <roleTerm authority="marcrelator" type="text"/>
             </role>
           </name>
         XML
       end
 
-      it 'builds the (valueless) cocina data structure' do
-        expect(build).to eq [
-          {
-            "name": [
-              {
-                "value": ''
-              }
-            ],
-            "role": [
-              {
-                "source":
-                  {
-                    "code": 'marcreleator'
-                  }
-              }
-            ]
-          }
-        ]
+      it 'builds empty cocina data structure and does not raise error' do
+        expect(build).to eq [{}]
+      end
+
+      it 'notifies Honeybadger namePart and roleTerm are empty' do
+        allow(Honeybadger).to receive(:notify).twice
+        build
+        expect(Honeybadger).to have_received(:notify)
+          .with('Data Error: name/role/roleTerm missing value', tags: 'data_error')
+        expect(Honeybadger).to have_received(:notify)
+          .with('Data Error: name/namePart missing value', tags: 'data_error')
       end
     end
   end
