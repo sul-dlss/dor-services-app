@@ -35,6 +35,7 @@ module Cocina
         def build
           [].tap do |contributors|
             names.each do |name|
+              # rubocop:disable Style/MultilineBlockChain
               contributors << { name: self.class.name_parts(name) }.tap do |contributor_hash|
                 contributor_hash[:type] = type_for(name['type']) if name['type']
                 contributor_hash[:status] = name['usage'] if name['usage']
@@ -43,6 +44,7 @@ module Cocina
                 contributor_hash[:note] = notes_for(name)
                 contributor_hash[:identifier] = identifier_for(name)
               end.reject { |_k, v| v.blank? } # it can be an empty array, so can't use .compact
+              # rubocop:enable Style/MultilineBlockChain
             end
           end
         end

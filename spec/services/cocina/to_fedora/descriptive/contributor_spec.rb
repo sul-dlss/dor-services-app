@@ -310,7 +310,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
       let(:contributors) do
         [
-          Cocina::Models::Contributor.new()
+          Cocina::Models::Contributor.new
         ]
       end
 
@@ -603,28 +603,28 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
         Cocina::Models::Contributor.new(
           "name": [
             {
-              "value": "Gaiman, Neil"
+              "value": 'Gaiman, Neil'
             }
           ],
-          "type": "person",
+          "type": 'person',
           "role": [
             {
-              "value": "author"
+              "value": 'author'
             }
           ]
         ),
         Cocina::Models::Contributor.new(
           "name": [
-             {
-               "value": "Pratchett, Terry"
-             }
-           ],
-           "type": "person",
-           "role": [
-             {
-               "value": "author"
-             }
-           ]
+            {
+              "value": 'Pratchett, Terry'
+            }
+          ],
+          "type": 'person',
+          "role": [
+            {
+              "value": 'author'
+            }
+          ]
         )
       ]
     end

@@ -22,6 +22,7 @@ module Cocina
         def write
           Array(contributors).each_with_index do |contributor, _alt_rep_group|
             next unless contributor.name
+
             xml.name name_attributes(contributor) do
               contributor.name.each do |name|
                 write_structured(name) if name&.structuredValue

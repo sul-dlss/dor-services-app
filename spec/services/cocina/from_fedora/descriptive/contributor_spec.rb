@@ -540,7 +540,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
 
       it 'notifies Honeybadger namePart is empty' do
-        allow(Honeybadger).to receive(:notify).exactly(1).times
+        allow(Honeybadger).to receive(:notify).once
         build
         expect(Honeybadger).to have_received(:notify)
           .with('Data Error: name/namePart missing value', tags: 'data_error')
@@ -701,26 +701,26 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         {
           "name": [
             {
-              "value": "Gaiman, Neil"
+              "value": 'Gaiman, Neil'
             }
           ],
-          "type": "person",
+          "type": 'person',
           "role": [
             {
-              "value": "author"
+              "value": 'author'
             }
           ]
         },
         {
           "name": [
             {
-              "value": "Pratchett, Terry"
+              "value": 'Pratchett, Terry'
             }
           ],
-          "type": "person",
+          "type": 'person',
           "role": [
             {
-              "value": "author"
+              "value": 'author'
             }
           ]
         }
