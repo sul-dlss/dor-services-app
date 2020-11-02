@@ -35,9 +35,11 @@ module Cocina
         def build
           [].tap do |contributors|
             names.each do |name|
+              Honeybadger.notify('Data Error: name type attribute is set to ""', { tags: 'data_error' }) if name['type'] == ''
+
               # rubocop:disable Style/MultilineBlockChain
               contributors << { name: self.class.name_parts(name) }.tap do |contributor_hash|
-                contributor_hash[:type] = type_for(name['type']) if name['type']
+                contributor_hash[:type] = type_for(name['type']) if name['type'].present?
                 contributor_hash[:status] = name['usage'] if name['usage']
                 roles = [roles_for(name)]
                 contributor_hash[:role] = roles unless roles.flatten.empty? || contributor_hash[:name].blank?

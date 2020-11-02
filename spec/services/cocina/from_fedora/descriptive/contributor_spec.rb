@@ -140,6 +140,31 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  context 'with empty type attribute and other empty goodness' do
+    let(:xml) do
+      <<~XML
+        <name type="">
+            <namePart/>
+            <role>
+              <roleTerm authority="marcrelator" type="code" valueURI=""/>
+            <role>
+        </name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [{}]
+    end
+
+    it 'notifies Honeybadger' do
+      allow(Honeybadger).to receive(:notify).exactly(3).times
+      build
+      expect(Honeybadger).to have_received(:notify).with('Data Error: name type attribute is set to ""', { tags: 'data_error' })
+      expect(Honeybadger).to have_received(:notify).with('Data Error: name/role/roleTerm missing value', { tags: 'data_error' })
+      expect(Honeybadger).to have_received(:notify).with('Data Error: name/namePart missing value', { tags: 'data_error' })
+    end
+  end
+
   context 'with namePart with empty type attribute' do
     context 'without role' do
       let(:xml) do
