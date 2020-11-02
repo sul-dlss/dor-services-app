@@ -49,6 +49,7 @@ module Cocina
         end
 
         def write_basic(event, attributes)
+          attributes[:displayLabel] = event.displayLabel if event.displayLabel
           xml.originInfo attributes do
             Array(event.date).each do |date|
               basic_date(date, event.type)
@@ -124,7 +125,7 @@ module Cocina
           attributes[:encoding] = date.encoding.code if date.encoding
           attributes[:qualifier] = date.qualifier if date.qualifier
           attributes[:keyDate] = 'yes' if date.status == 'primary'
-          attributes[:type] = date.note.find { |note| note.type == 'date type' }.value if tag == :dateOther
+          attributes[:type] = date.note.find { |note| note.type == 'date type' }.value if tag == :dateOther && date.note
 
           xml.public_send(tag, value, attributes)
         end
