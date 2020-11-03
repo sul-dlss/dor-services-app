@@ -15,6 +15,36 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     XML
   end
 
+  context 'with invalid subelement <Topic>' do
+    let(:xml) do
+      <<~XML
+        <subject authority="topic" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh85028356">
+          <Topic>College students</Topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure (as if it was <topic> lowercase)' do
+      expect(build).to eq [
+        {
+          "value": 'College students',
+          "type": 'topic',
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85028356',
+          "source": {
+            "code": 'topic',
+            "uri": 'http://id.loc.gov/authorities/subjects'
+          }
+        }
+      ]
+    end
+
+    it 'notifies Honeybadger' do
+      allow(Honeybadger).to receive(:notify).once
+      build
+      expect(Honeybadger).to have_received(:notify).with('Data error: <subject> has <Topic>; normalized to "topic"', tags: 'data_error')
+    end
+  end
+
   context 'with a single-term topic subject' do
     let(:xml) do
       <<~XML
