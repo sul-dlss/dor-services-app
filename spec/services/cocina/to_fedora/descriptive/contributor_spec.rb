@@ -261,8 +261,15 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
       end
     end
 
+    context 'when role has valueURI as the only authority attribute' do
+      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L263'
+    end
+
+    context 'when role has authority as the only authority attribute' do
+      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L292'
+    end
+
     context 'when role and name elements are empty' do
-      # FIXME: there should be no model in this case!
       let(:contributors) do
         [
           Cocina::Models::Contributor.new(
@@ -283,7 +290,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
         ]
       end
 
-      it 'builds the (empty) xml' do
+      it 'builds the (empty) name elements in the xml' do
         expect(xml).to be_equivalent_to <<~XML
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.loc.gov/mods/v3" version="3.6"
@@ -297,20 +304,24 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
       end
     end
 
-    context 'when role has valueURI as the only authority attribute' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L263'
-    end
+    context 'when contributor model is empty' do
+      # NOTE for https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L324'
+      #   from_fedora builds a null structure ... so we're not going to get roleTerm back
 
-    context 'when role has authority as the only authority attribute' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L292'
-    end
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new
+        ]
+      end
 
-    context 'when role but no namepart' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L324'
-    end
-
-    context 'when roleTerm with no value and no namepart' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L333'
+      it 'builds the (empty) xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          </mods>
+        XML
+      end
     end
   end
 
@@ -479,7 +490,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
   end
 
   context 'with multiple names, one primary' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L365'
     let(:contributors) do
       [
         Cocina::Models::Contributor.new(
@@ -588,7 +598,57 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
   end
 
   context 'with multiple names, no primary' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L410'
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          "name": [
+            {
+              "value": 'Gaiman, Neil'
+            }
+          ],
+          "type": 'person',
+          "role": [
+            {
+              "value": 'author'
+            }
+          ]
+        ),
+        Cocina::Models::Contributor.new(
+          "name": [
+            {
+              "value": 'Pratchett, Terry'
+            }
+          ],
+          "type": 'person',
+          "role": [
+            {
+              "value": 'author'
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <name type="personal">
+            <namePart>Gaiman, Neil</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+          <name type="personal">
+            <namePart>Pratchett, Terry</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+        </mods>
+      XML
+    end
   end
 
   context 'with single name, no primary (pseudonym)' do
