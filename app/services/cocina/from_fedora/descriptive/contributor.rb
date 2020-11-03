@@ -37,16 +37,7 @@ module Cocina
             names.each do |name|
               Honeybadger.notify('Data Error: name type attribute is set to ""', { tags: 'data_error' }) if name['type'] == ''
 
-              # rubocop:disable Style/MultilineBlockChain
-              contributors << { name: self.class.name_parts(name) }.tap do |contributor_hash|
-                contributor_hash[:type] = type_for(name['type']) if name['type'].present?
-                contributor_hash[:status] = name['usage'] if name['usage']
-                roles = [roles_for(name)]
-                contributor_hash[:role] = roles unless roles.flatten.empty? || contributor_hash[:name].blank?
-                contributor_hash[:note] = notes_for(name)
-                contributor_hash[:identifier] = identifier_for(name)
-              end.reject { |_k, v| v.blank? } # it can be an empty array, so can't use .compact
-              # rubocop:enable Style/MultilineBlockChain
+              contributors << build_contributor_hash(name).reject { |_k, v| v.blank? } # name: can be an empty array, so can't use .compact
             end
           end
         end
@@ -90,6 +81,17 @@ module Cocina
         private
 
         attr_reader :ng_xml
+
+        def build_contributor_hash(name)
+          { name: self.class.name_parts(name) }.tap do |contributor_hash|
+            contributor_hash[:type] = type_for(name['type']) if name['type'].present?
+            contributor_hash[:status] = name['usage'] if name['usage']
+            roles = [roles_for(name)]
+            contributor_hash[:role] = roles unless roles.flatten.empty? || contributor_hash[:name].blank?
+            contributor_hash[:note] = notes_for(name)
+            contributor_hash[:identifier] = identifier_for(name)
+          end
+        end
 
         def identifier_for(name)
           identifier = name.xpath('mods:nameIdentifier', mods: DESC_METADATA_NS).first
@@ -142,7 +144,7 @@ module Cocina
             role[:code] = role_code.content if role_code&.content.present?
             role[:value] = role_text.content if role_text&.content.present?
             role[:uri] = role_authority_value.content if role_authority_value&.content.present?
-            unless role[:code] || role[:value]
+            if !role[:code] && !role[:value]
               Honeybadger.notify('Data Error: name/role/roleTerm missing value', { tags: 'data_error' })
               return []
             end
