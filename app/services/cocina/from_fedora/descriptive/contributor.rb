@@ -155,7 +155,12 @@ module Cocina
         end
 
         def type_for(type)
+          unless Contributor::ROLES.keys.include?(type.downcase)
+            Honeybadger.notify("[DATA ERROR] Contributor type unrecognized '#{type}'", { tags: 'data_error' })
+            return
+          end
           Honeybadger.notify('[DATA ERROR] Contributor type incorrectly capitalized', { tags: 'data_error' }) if type.downcase != type
+
           ROLES.fetch(type.downcase)
         end
       end
