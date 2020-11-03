@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 module Cocina
   module FromFedora
     class Descriptive
@@ -167,3 +168,4 @@ module Cocina
     end
   end
 end
+# rubocop:enable Metrics/ClassLength
