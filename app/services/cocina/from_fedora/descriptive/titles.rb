@@ -69,9 +69,11 @@ module Cocina
         # @param [Nokogiri::XML::Element] title_info the titleInfo node
         def title_info_to_simple_or_structured(title_info, display_types:)
           # Find all the child nodes that have text
+          return nil if title_info.children.empty?
+
           children = title_info.xpath('./*[child::node()[self::text()]]')
           if children.empty?
-            Honeybadger.notify('[DATA ERROR] Missing title', { tags: 'data_error' })
+            Honeybadger.notify('[DATA ERROR] Empty title node', { tags: 'data_error' })
             return nil
           end
 

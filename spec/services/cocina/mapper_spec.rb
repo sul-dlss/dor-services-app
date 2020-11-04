@@ -132,6 +132,32 @@ RSpec.describe Cocina::Mapper do
         expect(cocina_model.description.note.first.type).to eq('summary')
       end
     end
+
+    context 'when item has a data error' do
+      before do
+        item.descMetadata.title_info.main_title = nil
+        allow(Honeybadger).to receive(:notify)
+      end
+
+      it 'raises and Honeybadger notifies' do
+        expect { cocina_model }.to raise_error(Cocina::Mapper::MissingTitle)
+        expect(Honeybadger).to have_received(:notify).with(instance_of(Cocina::Mapper::MissingTitle), { error_message: '[DATA ERROR] Missing title', tags: 'data_error' })
+      end
+    end
+
+    context 'when item has a build error' do
+      let(:error) { StandardError.new('Mapping mixup') }
+
+      before do
+        allow(Cocina::FromFedora::DRO).to receive(:props).and_raise(error)
+        allow(Honeybadger).to receive(:notify)
+      end
+
+      it 'raises and Honeybadger notifies' do
+        expect { cocina_model }.to raise_error(Cocina::Mapper::UnexpectedBuildError)
+        expect(Honeybadger).to have_received(:notify).with(error)
+      end
+    end
   end
 
   context 'when item is an Etd' do
