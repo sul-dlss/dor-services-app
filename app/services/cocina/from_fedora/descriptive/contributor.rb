@@ -52,7 +52,7 @@ module Cocina
                 parts << name_part(name_part, add_default_type: add_default_type)
               end
             else
-              vals = query.map { |name_part| name_part(name_part, add_default_type: add_default_type) }
+              vals = query.map { |name_part| name_part(name_part, add_default_type: add_default_type) }.compact
               parts << { structuredValue: vals }
             end
 

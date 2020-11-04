@@ -579,7 +579,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L292'
     end
 
-    context 'when role without namepart value' do
+    context 'when role without namePart value' do
       let(:xml) do
         <<~XML
           <name>
@@ -627,6 +627,32 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         expect(Honeybadger).to have_received(:notify)
           .with('Data Error: name/namePart missing value', tags: 'data_error')
       end
+    end
+  end
+
+  context 'when namePart with type but no value' do
+    let(:xml) do
+      <<~XML
+        <name type="personal">
+          <namePart>Kielmansegg, Erich Ludwig Friedrich Christian</namePart>
+          <namePart type="termsOfAddress">Graf von</namePart>
+          <namePart type="date">1847-1923</namePart>
+          <namePart type="date"/>
+        </name>
+      XML
+    end
+
+    before do
+      allow(Honeybadger).to receive(:notify).once
+    end
+
+    it 'ignores the namePart with no value and Honeybadger notifies' do
+      expect(build).to eq [{ name: [{ structuredValue: [{ value: 'Kielmansegg, Erich Ludwig Friedrich Christian' },
+                                                        { type: 'term of address', value: 'Graf von' },
+                                                        { type: 'life dates', value: '1847-1923' }] }],
+                             type: 'person' }]
+      expect(Honeybadger).to have_received(:notify)
+        .with('Data Error: name/namePart missing value', tags: 'data_error')
     end
   end
 
