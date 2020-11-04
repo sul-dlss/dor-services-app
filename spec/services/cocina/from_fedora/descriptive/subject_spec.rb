@@ -592,6 +592,27 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       end
     end
 
+    context 'with an empty namePart' do
+      let(:xml) do
+        <<~XML
+          <subject authority="lcsh">
+            <name type="corporate">
+              <namePart/>
+            </name>
+          </subject>
+        XML
+      end
+
+      before do
+        allow(Honeybadger).to receive(:notify)
+      end
+
+      it 'ignores the subject and Honeybadger notifies' do
+        expect(build).to eq []
+        expect(Honeybadger).to have_received(:notify).with('Data Error: name/namePart missing value', { tags: 'data_error' })
+      end
+    end
+
     context 'with invalid subject-name "#N/A" type' do
       let(:xml) do
         <<~XML
