@@ -60,6 +60,37 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
         }
       ]
     end
+
+    context 'when type is mis-capitalized isReferencedBy' do
+      let(:xml) do
+        <<~XML
+          <relatedItem displayLabel="Original James Record" type="isReferencedby">
+            <titleInfo>
+              <title>https://stacks.stanford.edu/file/druid:mf281cz1275/MS_296.pdf</title>
+            </titleInfo>
+          </relatedItem>
+        XML
+      end
+
+      before do
+        allow(Honeybadger).to receive(:notify)
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            'displayLabel': 'Original James Record',
+            'title': [
+              {
+                'value': 'https://stacks.stanford.edu/file/druid:mf281cz1275/MS_296.pdf'
+              }
+            ],
+            'type': 'referenced by'
+          }
+        ]
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Invalid related resource type (isReferencedby)', { tags: 'data_error' })
+      end
+    end
   end
 
   context 'with Other version type data error' do
