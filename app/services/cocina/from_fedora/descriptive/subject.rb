@@ -104,7 +104,10 @@ module Cocina
             else
               Honeybadger.notify('[DATA ERROR] Subject has <name> with no type attribute within <subject>', { tags: 'data_error' })
             end
-            Contributor.name_parts(node, add_default_type: true).first.merge(attrs)
+            name_parts = Contributor.name_parts(node, add_default_type: true).first
+            return nil if name_parts.nil?
+
+            name_parts.merge(attrs)
           when 'titleInfo'
             query = node.xpath('mods:title', mods: DESC_METADATA_NS)
             attrs.merge(value: query.first.text, type: 'title')
