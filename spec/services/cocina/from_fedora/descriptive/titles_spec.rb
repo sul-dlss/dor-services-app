@@ -109,7 +109,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         expect(build).to eq [
           { status: 'primary', value: 'Five red herrings' }
         ]
-        expect(Honeybadger).to have_received(:notify).at_least(:once).with('[DATA ERROR] Missing title', { tags: 'data_error' })
+        expect(Honeybadger).to have_received(:notify).at_least(:once).with('[DATA ERROR] Empty title node', { tags: 'data_error' })
       end
     end
 
