@@ -94,20 +94,8 @@ module Cocina
           attrs = source_attrs(node, attrs)
           case node.name
           when 'name'
-            if node[:type]
-              if node[:type] == '#N/A'
-                Honeybadger.notify('[DATA ERROR] Subject has <name> with an invalid type attribute "#N/A"',
-                                   tags: 'data_error')
-              else
-                attrs[:type] = Contributor::ROLES.fetch(node[:type])
-              end
-            else
-              Honeybadger.notify('[DATA ERROR] Subject has <name> with no type attribute within <subject>', { tags: 'data_error' })
-            end
-            name_parts = Contributor.name_parts(node, add_default_type: true).first
-            return nil if name_parts.nil?
-
-            name_parts.merge(attrs)
+            attrs[:type] = name_type_for_subject(node[:type])
+            Contributor.name_parts(node, add_default_type: true)&.first&.merge(attrs)
           when 'titleInfo'
             query = node.xpath('mods:title', mods: DESC_METADATA_NS)
             attrs.merge(value: query.first.text, type: 'title')
@@ -124,6 +112,23 @@ module Cocina
           else
             attrs.merge(value: node.text, type: NODE_TYPE.fetch(node.name))
           end
+        end
+
+        def name_type_for_subject(name_type)
+          unless name_type
+            Honeybadger.notify('[DATA ERROR] Subject contains a <name> element without a type attribute',
+                               tags: 'data_error')
+            return 'name'
+          end
+          unless Contributor::ROLES.keys.include?(name_type)
+            Honeybadger.notify("[DATA ERROR] Subject has <name> with an invalid type attribute '#{name_type}'",
+                               tags: 'data_error')
+            return 'topic' if name_type.downcase == 'topic'
+
+            return 'name'
+          end
+
+          Contributor::ROLES.fetch(name_type) if Contributor::ROLES.keys.include?(name_type)
         end
 
         def subjects
