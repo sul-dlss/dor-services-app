@@ -111,32 +111,63 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
-  context 'with miscapitalized type' do
-    let(:xml) do
-      <<~XML
-        <name type="Personal" usage="primary">
-          <namePart>Dunnett, Dorothy</namePart>
-        </name>
-      XML
+  context 'with an invalid type' do
+    context 'when miscapitalized' do
+      let(:xml) do
+        <<~XML
+          <name type="Personal" usage="primary">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Dunnett, Dorothy'
+              }
+            ],
+            "type": 'person',
+            "status": 'primary'
+          }
+        ]
+      end
+
+      it 'notifies Honeybadger' do
+        allow(Honeybadger).to receive(:notify).once
+        build
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Contributor type incorrectly capitalized', { tags: 'data_error' })
+      end
     end
 
-    before do
-      allow(Honeybadger).to receive(:notify)
-    end
+    context 'when unrecognied' do
+      let(:xml) do
+        <<~XML
+          <name type="primary">
+            <namePart>Vickery, Claire</namePart>
+          </name>
+        XML
+      end
 
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "name": [
-            {
-              "value": 'Dunnett, Dorothy'
-            }
-          ],
-          "type": 'person',
-          "status": 'primary'
-        }
-      ]
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Contributor type incorrectly capitalized', { tags: 'data_error' })
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Vickery, Claire'
+              }
+            ]
+          }
+        ]
+      end
+
+      it 'notifies Honeybadger' do
+        allow(Honeybadger).to receive(:notify).once
+        build
+        expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Contributor type unrecognized 'primary'", { tags: 'data_error' })
+      end
     end
   end
 
