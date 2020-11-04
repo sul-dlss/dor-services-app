@@ -107,7 +107,7 @@ module Cocina
 
             attrs.merge(value: coords.text, type: 'map coordinates', encoding: { value: 'DMS' })
           when 'Topic'
-            Honeybadger.notify('Data error: <subject> has <Topic>; normalized to "topic"', tags: 'data_error')
+            Honeybadger.notify('[DATA ERROR] <subject> has <Topic>; normalized to "topic"', tags: 'data_error')
             attrs.merge(value: node.text, type: 'topic')
           else
             attrs.merge(value: node.text, type: NODE_TYPE.fetch(node.name))

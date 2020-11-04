@@ -41,7 +41,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'notifies Honeybadger' do
       allow(Honeybadger).to receive(:notify).once
       build
-      expect(Honeybadger).to have_received(:notify).with('Data error: <subject> has <Topic>; normalized to "topic"', tags: 'data_error')
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] <subject> has <Topic>; normalized to "topic"', tags: 'data_error')
     end
   end
 
@@ -639,7 +639,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
 
       it 'ignores the subject and Honeybadger notifies' do
         expect(build).to eq []
-        expect(Honeybadger).to have_received(:notify).with('Data Error: name/namePart missing value', { tags: 'data_error' })
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart missing value', { tags: 'data_error' })
       end
     end
 

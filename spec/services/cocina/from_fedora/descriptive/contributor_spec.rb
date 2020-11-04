@@ -190,9 +190,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     it 'notifies Honeybadger' do
       allow(Honeybadger).to receive(:notify).exactly(3).times
       build
-      expect(Honeybadger).to have_received(:notify).with('Data Error: name type attribute is set to ""', { tags: 'data_error' })
-      expect(Honeybadger).to have_received(:notify).with('Data Error: name/role/roleTerm missing value', { tags: 'data_error' })
-      expect(Honeybadger).to have_received(:notify).with('Data Error: name/namePart missing value', { tags: 'data_error' })
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name type attribute is set to ""', { tags: 'data_error' })
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/role/roleTerm missing value', { tags: 'data_error' })
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart missing value', { tags: 'data_error' })
     end
   end
 
@@ -222,7 +222,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       it 'notifies Honeybadger' do
         allow(Honeybadger).to receive(:notify).once
         build
-        expect(Honeybadger).to have_received(:notify).with('Data Error: name/namePart type attribute set to ""', { tags: 'data_error' })
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart type attribute set to ""', { tags: 'data_error' })
       end
     end
 
@@ -254,8 +254,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       it 'notifies Honeybadger' do
         allow(Honeybadger).to receive(:notify).twice
         build
-        expect(Honeybadger).to have_received(:notify).with('Data Error: name/namePart type attribute set to ""', { tags: 'data_error' })
-        expect(Honeybadger).to have_received(:notify).with('Data Error: name/role/roleTerm missing value', { tags: 'data_error' })
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart type attribute set to ""', { tags: 'data_error' })
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/role/roleTerm missing value', { tags: 'data_error' })
       end
     end
   end
@@ -599,7 +599,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         allow(Honeybadger).to receive(:notify).once
         build
         expect(Honeybadger).to have_received(:notify)
-          .with('Data Error: name/namePart missing value', tags: 'data_error')
+          .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
       end
     end
 
@@ -623,9 +623,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         allow(Honeybadger).to receive(:notify).twice
         build
         expect(Honeybadger).to have_received(:notify)
-          .with('Data Error: name/role/roleTerm missing value', tags: 'data_error')
+          .with('[DATA ERROR] name/role/roleTerm missing value', tags: 'data_error')
         expect(Honeybadger).to have_received(:notify)
-          .with('Data Error: name/namePart missing value', tags: 'data_error')
+          .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
       end
     end
   end
@@ -652,7 +652,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
                                                         { type: 'life dates', value: '1847-1923' }] }],
                              type: 'person' }]
       expect(Honeybadger).to have_received(:notify)
-        .with('Data Error: name/namePart missing value', tags: 'data_error')
+        .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
     end
   end
 
