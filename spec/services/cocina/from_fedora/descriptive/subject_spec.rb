@@ -45,6 +45,20 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with invalid subelement <corporate>' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh">
+          <corporate authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/no89003525">Mooseheart (School)</corporate>
+        </subject>
+      XML
+    end
+
+    it 'raises InvalidDescMetadata' do
+      expect { build }.to raise_error(Cocina::Mapper::InvalidDescMetadata, 'Unexpected node type for subject')
+    end
+  end
+
   context 'with a single-term topic subject' do
     let(:xml) do
       <<~XML
