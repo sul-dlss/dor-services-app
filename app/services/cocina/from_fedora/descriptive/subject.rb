@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 module Cocina
   module FromFedora
     class Descriptive
@@ -110,14 +111,17 @@ module Cocina
             Honeybadger.notify('[DATA ERROR] <subject> has <Topic>; normalized to "topic"', tags: 'data_error')
             attrs.merge(value: node.text, type: 'topic')
           else
-            attrs.merge(value: node.text, type: node_type_for(node))
+            node_type = node_type_for(node)
+            attrs.merge(value: node.text, type: node_type) if node_type
           end
         end
 
         def node_type_for(node)
           return NODE_TYPE.fetch(node.name) if NODE_TYPE.keys.include?(node.name)
 
-          raise Cocina::Mapper::InvalidDescMetadata, 'Unexpected node type for subject'
+          Honeybadger.notify("[DATA ERROR] Unexpected node type for subject: '#{node.name}'",
+                             tags: 'data_error')
+          nil
         end
 
         def name_type_for_subject(name_type)
@@ -155,3 +159,4 @@ module Cocina
     end
   end
 end
+# rubocop:enable Metrics/ClassLength
