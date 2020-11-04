@@ -72,8 +72,10 @@ module Cocina
 
             type = if add_default_type
                      NAME_PART.fetch(name_part_node['type'], 'name')
-                   elsif name_part_node['type'].present?
+                   elsif NAME_PART.key? name_part_node['type']
                      NAME_PART.fetch(name_part_node['type'])
+                   elsif name_part_node['type'].present?
+                     Honeybadger.notify("[DATA ERROR] namePart has unknown type assigned to it: '#{name_part_node['type']}'", { tags: 'data_error' })
                    end
             name_part[:type] = type if type
           end

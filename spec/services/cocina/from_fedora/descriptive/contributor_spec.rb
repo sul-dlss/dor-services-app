@@ -39,6 +39,28 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  context 'with an invalid type on the namePart node' do
+    let(:xml) do
+      <<~XML
+        <name>
+          <namePart type="personal">Dunnett, Dorothy</namePart>
+        </name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "name": [
+            {
+              "value": 'Dunnett, Dorothy'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
   context 'with a corporate name' do
     let(:xml) do
       <<~XML
