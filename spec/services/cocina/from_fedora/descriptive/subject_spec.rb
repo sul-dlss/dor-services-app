@@ -15,6 +15,36 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     XML
   end
 
+  context 'with invalid subelement <Topic>' do
+    let(:xml) do
+      <<~XML
+        <subject authority="topic" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh85028356">
+          <Topic>College students</Topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure (as if it was <topic> lowercase)' do
+      expect(build).to eq [
+        {
+          "value": 'College students',
+          "type": 'topic',
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85028356',
+          "source": {
+            "code": 'topic',
+            "uri": 'http://id.loc.gov/authorities/subjects'
+          }
+        }
+      ]
+    end
+
+    it 'notifies Honeybadger' do
+      allow(Honeybadger).to receive(:notify).once
+      build
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] <subject> has <Topic>; normalized to "topic"', tags: 'data_error')
+    end
+  end
+
   context 'with a single-term topic subject' do
     let(:xml) do
       <<~XML
@@ -588,7 +618,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
 
       it 'notifies honeybadger' do
         build
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has <name> with no type attribute within <subject>', { tags: 'data_error' })
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject contains a <name> element without a type attribute', { tags: 'data_error' })
       end
     end
 
@@ -609,7 +639,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
 
       it 'ignores the subject and Honeybadger notifies' do
         expect(build).to eq []
-        expect(Honeybadger).to have_received(:notify).with('Data Error: name/namePart missing value', { tags: 'data_error' })
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart missing value', { tags: 'data_error' })
       end
     end
 
@@ -632,7 +662,39 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
             uri: '#N/A',
             value: 'Hoveyda, Fereydoun' }
         ]
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has <name> with an invalid type attribute "#N/A"', tags: 'data_error')
+        expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Subject has <name> with an invalid type attribute '#N/A'", tags: 'data_error')
+      end
+    end
+
+    context 'with invalid subject-name "topic" type' do
+      let(:xml) do
+        <<~XML
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85129276">
+            <name type="topic">
+              <namePart>Student movements</namePart>
+            </name>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure as if subject topic' do
+        expect(build).to eq [
+          {
+            "value": 'Student movements',
+            "type": 'topic',
+            "uri": 'http://id.loc.gov/authorities/subjects/sh85129276',
+            "source": {
+              "code": 'lcsh',
+              "uri": 'http://id.loc.gov/authorities/subjects/'
+            }
+          }
+        ]
+      end
+
+      it 'notifies Honeybadger' do
+        allow(Honeybadger).to receive(:notify).once
+        build
+        expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Subject has <name> with an invalid type attribute 'topic'", tags: 'data_error')
       end
     end
   end

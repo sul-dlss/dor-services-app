@@ -146,7 +146,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
         allow(Honeybadger).to receive(:notify)
         build
         expect(Honeybadger).to have_received(:notify)
-          .with('Data Error: originInfo/dateOther missing eventType', tags: 'data_error')
+          .with('[DATA ERROR] originInfo/dateOther missing eventType', tags: 'data_error')
       end
     end
 
@@ -180,7 +180,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
         allow(Honeybadger).to receive(:notify)
         build
         expect(Honeybadger).to have_received(:notify)
-          .with('Data Error: originInfo/dateOther missing eventType', tags: 'data_error')
+          .with('[DATA ERROR] originInfo/dateOther missing eventType', tags: 'data_error')
       end
     end
   end

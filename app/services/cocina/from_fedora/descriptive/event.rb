@@ -159,7 +159,7 @@ module Cocina
           { date: dates }.tap do |event|
             event[:displayLabel] = display_label if display_label
             event[:type] = type if type
-            Honeybadger.notify('Data Error: originInfo/dateOther missing eventType', { tags: 'data_error' }) unless event[:type]
+            Honeybadger.notify('[DATA ERROR] originInfo/dateOther missing eventType', { tags: 'data_error' }) unless event[:type]
           end
         end
 
