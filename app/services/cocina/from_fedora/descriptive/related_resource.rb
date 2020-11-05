@@ -74,7 +74,7 @@ module Cocina
         def type_for(type)
           normalized_type = normalized_type_for(type)
 
-          Honeybadger.notify("[DATA ERROR] Invalid related resource type (#{type})", { tags: 'data_error' }) if normalized_type != type
+          Honeybadger.notify("[DATA ERROR] Invalid related resource type (#{type})", { tags: 'data_error' }) if normalized_type.blank?
 
           normalized_type
         end
@@ -85,7 +85,7 @@ module Cocina
             TYPES['otherVersion']
           elsif type.downcase == 'isreferencedby'
             TYPES['isReferencedBy']
-          else
+          elsif TYPES.key?(type)
             TYPES.fetch(type)
           end
         end
