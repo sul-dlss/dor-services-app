@@ -24,7 +24,7 @@ module Cocina
               item[:contributor] = build_contributors(related_item)
               item[:access] = build_access(related_item)
               item[:form] = build_form(related_item)
-              item[:type] = type_for(related_item['type']) if related_item['type']
+              item[:type] = normalized_type_for(related_item['type']) if related_item['type']
               item[:displayLabel] = related_item['displayLabel']
             end.compact
           end
@@ -71,23 +71,18 @@ module Cocina
           ng_xml.xpath('//mods:mods/mods:relatedItem', mods: DESC_METADATA_NS)
         end
 
-        def type_for(type)
-          normalized_type = normalized_type_for(type)
-
-          Honeybadger.notify("[DATA ERROR] Invalid related resource type (#{type})", { tags: 'data_error' }) if normalized_type.blank?
-
-          normalized_type
-        end
-
-        # Normalize type so we can tolerate certain known data errors.
+        # Normalize type so we can tolerate certain known data errors, but report anything that is not found or not an exact match
         def normalized_type_for(type)
-          if type.downcase == 'other version'
-            TYPES['otherVersion']
-          elsif type.downcase == 'isreferencedby'
-            TYPES['isReferencedBy']
-          elsif TYPES.key?(type)
-            TYPES.fetch(type)
-          end
+          return TYPES.fetch(type) if TYPES.key?(type)
+
+          normalized_type = if type.downcase == 'other version'
+                              TYPES['otherVersion']
+                            elsif type.downcase == 'isreferencedby'
+                              TYPES['isReferencedBy']
+                            end
+
+          Honeybadger.notify("[DATA ERROR] Invalid related resource type (#{type})", { tags: 'data_error' })
+          normalized_type
         end
       end
     end
