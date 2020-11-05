@@ -72,6 +72,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
         XML
       end
 
+      before do
+        allow(Honeybadger).to receive(:notify)
+      end
+
       it 'builds the cocina data structure' do
         expect(build).to eq [
           {
@@ -84,6 +88,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
             'type': 'referenced by'
           }
         ]
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Invalid related resource type (isReferencedby)', { tags: 'data_error' })
       end
     end
   end
@@ -99,6 +104,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
       XML
     end
 
+    before do
+      allow(Honeybadger).to receive(:notify)
+    end
+
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
@@ -110,6 +119,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
           "type": 'has version'
         }
       ]
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Invalid related resource type (Other version)', { tags: 'data_error' })
     end
   end
 
