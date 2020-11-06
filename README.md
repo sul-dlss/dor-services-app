@@ -135,10 +135,12 @@ Note that the druids are unique.
 
 ### Seed the cache
 ```
-bin/generate-cache 100000
+bin/generate-cache 100000 false
 ```
 
 Using the druids from `druids.txt`, this will retrieve the item from Fedora and store the objects, datastreams, and disseminations in the `cache` directory.
+
+Provide `true` as the second argument to overwrite the existing cache entries.
 
 ### Validate mapping to Cocina from Fedora
 ```
@@ -160,6 +162,25 @@ Examples: druid:vx162kw9911, druid:rh979yv1005, druid:qb797px1044, druid:fq225gc
 A complete set of results will be written to `results.txt`.
 
 Note that the validation is parallelized, so it is much faster than the other processes.
+
+### Validate roundtrip mapping (to Cocina from Fedora then to Fedora from Cocina)
+```
+bin/validate-cocina-roundtrip 100 true
+```
+
+Using the druids from `druids.txt` and the cache, this will compare the differences between the original MODS (Fedora descriptive metadata) and the roundtripped MODS.
+
+Provide `false` as the second argument to select druids as ordered in `druids.txt` rather than random order.
+
+Errors totals are summarized. For example:
+```
+Status (n=100):
+  Success:   11 (11.0%)
+  Different: 81 (81.0%)
+  Error:     7 (7.0%)
+```
+
+In addition, detailed results for each item with a difference are provided in an individual file in `results/`.
 
 ### Running the validation on sdr-deploy
 
@@ -191,3 +212,4 @@ and look for errors.
 scp deploy@sdr-deploy.stanford.edu:~/dor-services-app/results.txt results-oct30.txt
 grep Error results-oct30.txt # shows the unique errors
 ```
+

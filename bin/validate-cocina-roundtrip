@@ -2,47 +2,167 @@
 # frozen_string_literal: true
 
 require_relative '../config/environment'
+require_relative '../lib/fedora_cache'
+require 'set'
 
-def round_tripped_xml(item)
-  title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
-  desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml)
+if ARGV.length != 2
+  puts 'Usage: bin/validate-cocina-roundtrip <SAMPLE_SIZE> <SHUFFLE: true/false>'
+  exit(false)
+end
+
+sample_size = Integer(ARGV[0])
+shuffle = ARGV[1] == 'true'
+
+cache = FedoraCache.new
+
+# Additional ignore selectors can be added.
+@ignore_selectors = [
+  '/mods/@version',
+  '/mods/@xsi:schemaLocation'
+]
+
+def round_tripped_xml(xml, label)
+  title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: label)
+  desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: xml)
   cocina = Cocina::Models::Description.new(desc_props)
   Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina).to_xml)
 end
 
-def normalized(ng_xml)
-  ng_xml.root.delete('version')
-  ng_xml.root.delete('xmlns:xsi')
-  ng_xml
+def ignore_node?(node)
+  @ignore_selectors.each { |selector| return true if node.matches?(selector) }
+  false
 end
 
-SAMPLE_SIZE = 10
+# rubocop:disable Metrics/ParameterLists
+def write_result(druid, original_xml, result_xml, error_nodes, unmatched_original_nodes, unmatched_result_nodes)
+  File.open("#{@results_path}/#{druid}.txt", 'w') do |file|
+    file.write("Expected XML:\n#{original_xml.to_xml}\n")
+    file.write("Received XML:\n#{result_xml.to_xml}\n\n")
 
-OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
-results = ActiveFedora::SolrService.query('*:*', sort: 'random asc', fl: 'id', rows: SAMPLE_SIZE)
-druids = results.map { |r| r['id'] }
-counts = { different: 0, success: 0, error: 0 }
-druids.each do |druid|
-  item = Dor.find(druid)
-  original_xml = normalized(item.descMetadata.ng_xml)
-  print druid
-  result_xml = normalized(round_tripped_xml(item))
+    error_nodes.each do |node_pair|
+      result_node = node_pair[0]
+      original_node = node_pair[1]
 
-  if !EquivalentXml.equivalent?(result_xml, original_xml)
-    puts ' is different:'
-    puts "Expected: #{original_xml.to_xml}\n"
-    puts "Received: #{result_xml.to_xml}\n\n\n"
-    counts[:different] += 1
-  else
-    puts " successfully round tripped.\n\n"
-    counts[:success] += 1
+      write_count_mismatch(file, original_node, result_node) if original_node.element? && original_node.elements.length != result_node.elements.length
+    end
+
+    unmatched_original_nodes.each { |node| file.write("Unmatched original:\n#{node}\n") }
+    unmatched_result_nodes.each { |node| file.write("Unmatched result:\n#{node}\n") }
   end
-rescue StandardError => e
-  puts " error. #{e.message}\n\n"
-  counts[:error] += 1
+end
+# rubocop:enable Metrics/ParameterLists
+
+def write_count_mismatch(file, original_node, result_node)
+  file.write("Element count mismatch between expected and received.\n")
+  file.write("Expected node:\n#{original_node}\n")
+  file.write("Received node:\n#{result_node}\n\n")
+  write_missing(file, original_node, result_node, 'Missing from received or unmatched in received')
+  write_missing(file, result_node, original_node, 'Extra or unmatched in received')
+  file.write("\n")
 end
 
-puts "\nStatus (n=#{SAMPLE_SIZE}):"
-puts "  Success:   #{counts[:success]} (#{100 * counts[:success].to_f / SAMPLE_SIZE}%)"
-puts "  Different: #{counts[:different]} (#{100 * counts[:different].to_f / SAMPLE_SIZE}%)"
-puts "  Error:     #{counts[:error]} (#{100 * counts[:error].to_f / SAMPLE_SIZE}%)"
+def write_missing(file, node1, node2, label)
+  missing_nodes = diff_nodeset(node1.elements, node2.elements)
+  return if missing_nodes.empty?
+
+  missing_nodes.each do |node|
+    file.write("#{label}:\n")
+    file.write("#{node}\n")
+    possible_matches = possible_matches_for(node, node2.elements)
+    unless possible_matches.empty?
+      file.write("Possible match:\n")
+      possible_matches.each { |possible_node| file.write("#{possible_node}\n") }
+    end
+    file.write("\n")
+  end
+end
+
+def diff_nodeset(nodeset1, nodeset2)
+  matched_nodeset1 = Set.new
+  nodeset1.each do |node1|
+    nodeset2.each do |node2|
+      matched_nodeset1 << node1 if EquivalentXml.equivalent?(node1, node2)
+    end
+  end
+  Set.new(nodeset1) - matched_nodeset1
+end
+
+def possible_matches_for(node, nodeset)
+  nodeset.select { |check_node| node.name == check_node.name }
+end
+
+def check_equivalent(result_xml, original_xml)
+  all_original_nodes = Set.new
+  matched_original_nodes = Set.new
+  all_result_nodes = Set.new
+  matched_result_nodes = Set.new
+  error_nodes = []
+
+  equiv = EquivalentXml.equivalent?(result_xml, original_xml) do |result_node, original_node, equivalent|
+    all_original_nodes << original_node unless original_node.xml?
+    all_result_nodes << result_node unless result_node.xml?
+    if equivalent
+      matched_original_nodes << original_node
+      matched_result_nodes << result_node
+
+      nil
+    elsif original_node.xml?
+      nil
+    elsif ignore_node?(original_node)
+      true
+    elsif original_node.element? && original_node.name == result_node.name && original_node.elements.length != result_node.elements.length
+      matched_original_nodes << original_node
+      original_node.ancestors.each { |node| matched_original_nodes << node }
+      matched_result_nodes << result_node
+      result_node.ancestors.each { |node| matched_result_nodes << node }
+
+      error_nodes << [result_node, original_node]
+      nil
+    end
+  end
+  [equiv, error_nodes, all_original_nodes - matched_original_nodes, all_result_nodes - matched_result_nodes]
+end
+
+counts = { different: 0, success: 0, error: 0 }
+
+@results_path = "results/#{Time.now.iso8601}"
+FileUtils.mkdir_p(@results_path)
+
+druids = File.read('druids.txt').split
+druids.shuffle! if shuffle
+
+druids.take(sample_size).each_with_index do |druid, index|
+  print "#{druid} (#{index + 1})"
+
+  begin
+    original_xml = cache.descmd_xml(druid)
+    label = cache.label(druid)
+  rescue StandardError
+    puts " missing from cache.\n"
+    next
+  end
+
+  begin
+    result_xml = round_tripped_xml(original_xml, label)
+  rescue StandardError => e
+    puts " error. #{e.message}\n"
+    counts[:error] += 1
+    next
+  end
+
+  equiv, error_nodes, unmatched_original_nodes, unmatched_result_nodes = check_equivalent(result_xml, original_xml)
+
+  if equiv
+    puts ' successfully round tripped.'
+    counts[:success] += 1
+  else
+    puts ' is different.'
+    counts[:different] += 1
+    write_result(druid, original_xml, result_xml, error_nodes, unmatched_original_nodes, unmatched_result_nodes)
+  end
+end
+
+puts "\nStatus (n=#{sample_size}):"
+puts "  Success:   #{counts[:success]} (#{100 * counts[:success].to_f / sample_size}%)"
+puts "  Different: #{counts[:different]} (#{100 * counts[:different].to_f / sample_size}%)"
+puts "  Error:     #{counts[:error]} (#{100 * counts[:error].to_f / sample_size}%)"
