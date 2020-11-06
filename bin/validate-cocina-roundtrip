@@ -4,14 +4,20 @@
 require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
 require 'set'
+require 'optparse'
 
-if ARGV.length != 2
-  puts 'Usage: bin/validate-cocina-roundtrip <SAMPLE_SIZE> <RANDOM: true/false>'
-  exit(false)
+options = { random: false }
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/validate-cocina-roundtrip [options]'
+
+  option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
+  option_parser.on('-r', '--random', 'Select random druids.')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
 end
-
-sample_size = Integer(ARGV[0])
-random = ARGV[1] == 'true'
+parser.parse!(into: options)
 
 cache = FedoraCache.new
 
@@ -129,9 +135,10 @@ counts = { different: 0, success: 0, error: 0 }
 FileUtils.mkdir_p(@results_path)
 
 druids = File.read('druids.txt').split
-druids.shuffle! if random
+druids.shuffle! if options[:random]
+druids = druids.take(options[:sample]) if options[:sample]
 
-druids.take(sample_size).each_with_index do |druid, index|
+druids.each_with_index do |druid, index|
   print "#{druid} (#{index + 1})"
 
   begin
@@ -162,7 +169,7 @@ druids.take(sample_size).each_with_index do |druid, index|
   end
 end
 
-puts "\nStatus (n=#{sample_size}):"
-puts "  Success:   #{counts[:success]} (#{100 * counts[:success].to_f / sample_size}%)"
-puts "  Different: #{counts[:different]} (#{100 * counts[:different].to_f / sample_size}%)"
-puts "  Error:     #{counts[:error]} (#{100 * counts[:error].to_f / sample_size}%)"
+puts "\nStatus (n=#{druids.size}):"
+puts "  Success:   #{counts[:success]} (#{100 * counts[:success].to_f / druids.size}%)"
+puts "  Different: #{counts[:different]} (#{100 * counts[:different].to_f / druids.size}%)"
+puts "  Error:     #{counts[:error]} (#{100 * counts[:error].to_f / druids.size}%)"

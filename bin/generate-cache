@@ -3,22 +3,29 @@
 
 require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
+require 'optparse'
 
-if ARGV.length != 3
-  puts 'Usage: bin/generate-cache <SAMPLE_SIZE> <OVERWRITE: true/false> <RANDOM: true/false>'
-  exit(false)
+options = { overwrite: false, random: false }
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/generate-cache [options]'
+
+  option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
+  option_parser.on('-o', '--overwrite', 'Overwrite cache for item if exists.')
+  option_parser.on('-r', '--random', 'Select random druids.')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
 end
+parser.parse!(into: options)
 
-sample_size = Integer(ARGV[0])
-overwrite = ARGV[1] == 'true'
-random = ARGV[2] == 'true'
-
-cache = FedoraCache.new(overwrite: overwrite)
+cache = FedoraCache.new(overwrite: options[:overwrite])
 
 druids = File.read('druids.txt').split
-druids.shuffle! if random
+druids.shuffle! if options[:random]
+druids = druids.take(options[:sample]) if options[:sample]
 
-druids.take(sample_size).each_with_index do |druid, index|
+druids.each_with_index do |druid, index|
   puts "#{druid} (#{index + 1})\n"
   cache.cache_object(druid)
   cache.cache_descmd(druid)

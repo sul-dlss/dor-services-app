@@ -3,13 +3,19 @@
 
 require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
+require 'optparse'
 
-if ARGV.length != 1
-  puts 'Usage: bin/validate-to-cocina <SAMPLE_SIZE>'
-  exit(false)
+options = { overwrite: false, random: false }
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/validate-to-cocina [options]'
+
+  option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
 end
-
-@sample_size = Integer(ARGV[0])
+parser.parse!(into: options)
 
 cache = FedoraCache.new
 
@@ -47,10 +53,12 @@ def summary_line_for(results, label)
 end
 
 druids = File.read('druids.txt').split
+druids = druids.take(options[:sample]) if options[:sample]
+@sample_size = druids.size
 
 Result = Struct.new(:druid, :msg, :is_data_error)
 
-results = Parallel.map(druids.take(@sample_size), in_processes: 4, progress: 'Testing') do |druid|
+results = Parallel.map(druids, in_processes: 4, progress: 'Testing') do |druid|
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: cache.label(druid))
   desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: cache.descmd_xml(druid))
   Cocina::Models::Description.new(desc_props)
