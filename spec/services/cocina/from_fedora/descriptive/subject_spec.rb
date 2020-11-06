@@ -45,17 +45,76 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
-  context 'with invalid subelement <corporate>' do
+  context 'with a single invalid subelement <corporate>' do
     let(:xml) do
       <<~XML
-        <subject authority="lcsh">
-          <corporate authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/no89003525">Mooseheart (School)</corporate>
+        <subject>
+          <corporate>Some bogus value for this bogus element</corporate>
         </subject>
       XML
     end
 
-    it 'raises InvalidDescMetadata' do
-      expect { build }.to raise_error(Cocina::Mapper::InvalidDescMetadata, 'Unexpected node type for subject')
+    it 'does not build subject element at all' do
+      allow(Honeybadger).to receive(:notify)
+      expect(build).to eq []
+      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Unexpected node type for subject: 'corporate'", tags: 'data_error')
+    end
+  end
+
+  context 'with a valid element plus an invalid subelement <corporate>' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <topic>Cats</topic>
+          <corporate>Some bogus value for this bogus element</corporate>
+        </subject>
+      XML
+    end
+
+    it 'drops the invalid subelement' do
+      allow(Honeybadger).to receive(:notify)
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Cats',
+              "type": 'topic'
+            }
+          ]
+        }
+      ]
+      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Unexpected node type for subject: 'corporate'", tags: 'data_error')
+    end
+  end
+
+  context 'with multiple valid element plus an invalid subelement <corporate>' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <topic>Cats</topic>
+          <topic>Dogs</topic>
+          <corporate>Some bogus value for this bogus element</corporate>
+        </subject>
+      XML
+    end
+
+    it 'drops the invalid subelement' do
+      allow(Honeybadger).to receive(:notify)
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Cats',
+              "type": 'topic'
+            },
+            {
+              "value": 'Dogs',
+              "type": 'topic'
+            }
+          ]
+        }
+      ]
+      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Unexpected node type for subject: 'corporate'", tags: 'data_error')
     end
   end
 
