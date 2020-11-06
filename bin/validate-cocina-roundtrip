@@ -6,12 +6,12 @@ require_relative '../lib/fedora_cache'
 require 'set'
 
 if ARGV.length != 2
-  puts 'Usage: bin/validate-cocina-roundtrip <SAMPLE_SIZE> <SHUFFLE: true/false>'
+  puts 'Usage: bin/validate-cocina-roundtrip <SAMPLE_SIZE> <RANDOM: true/false>'
   exit(false)
 end
 
 sample_size = Integer(ARGV[0])
-shuffle = ARGV[1] == 'true'
+random = ARGV[1] == 'true'
 
 cache = FedoraCache.new
 
@@ -129,7 +129,7 @@ counts = { different: 0, success: 0, error: 0 }
 FileUtils.mkdir_p(@results_path)
 
 druids = File.read('druids.txt').split
-druids.shuffle! if shuffle
+druids.shuffle! if random
 
 druids.take(sample_size).each_with_index do |druid, index|
   print "#{druid} (#{index + 1})"
