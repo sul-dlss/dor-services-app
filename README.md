@@ -140,6 +140,7 @@ Usage: bin/generate-cache [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -o, --overwrite                  Overwrite cache for item if exists.
     -r, --random                     Select random druids.
+    -a, --auto                       Automatically choose sample based on 14 day cycle.
     -h, --help                       Displays help.
         
 $ bin/generate-cache
