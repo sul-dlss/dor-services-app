@@ -6,6 +6,10 @@ require 'active_support/gzip'
 class FedoraCache
   include Rubydora::FedoraUrlHelpers
 
+  def initialize(overwrite: false)
+    @overwrite = overwrite
+  end
+
   def connection
     @connection ||= Faraday::Connection.new(
       url: Settings.fedora_url,
@@ -19,7 +23,7 @@ class FedoraCache
 
   def cache_object(druid)
     cache_id = cache_id_for_object(druid)
-    return if cached?(cache_id)
+    return if cached?(cache_id) && !overwrite
 
     resp = connection.get(object_url(druid, { format: 'xml' }))
     return if resp.status == 404
@@ -36,7 +40,7 @@ class FedoraCache
 
   def cache_descmd(druid)
     cache_id = cache_id_for_descmd(druid)
-    return if cached?(cache_id)
+    return if cached?(cache_id) && !overwrite
 
     resp = connection.get(datastream_content_url(druid, 'descMetadata', { format: 'xml' }))
     return if resp.status == 404
@@ -61,6 +65,8 @@ class FedoraCache
   end
 
   private
+
+  attr_reader :overwrite
 
   def cache_id_for_object(druid)
     "#{druid}-object"

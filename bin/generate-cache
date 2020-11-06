@@ -4,14 +4,15 @@
 require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
 
-if ARGV.length != 1
-  puts 'Usage: bin/generate-cache <SAMPLE_SIZE>'
+if ARGV.length != 2
+  puts 'Usage: bin/generate-cache <SAMPLE_SIZE> <OVERWRITE: true/false>'
   exit(false)
 end
 
 sample_size = Integer(ARGV[0])
+overwrite = ARGV[1] == 'true'
 
-cache = FedoraCache.new
+cache = FedoraCache.new(overwrite: overwrite)
 
 druids = File.read('druids.txt').split
 druids.take(sample_size).each_with_index do |druid, index|

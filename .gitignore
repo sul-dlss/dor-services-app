@@ -31,3 +31,5 @@ coverage/*
 /tls
 druids.txt
 config/settings.local.yml
+results.txt
+/results
