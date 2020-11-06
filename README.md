@@ -135,18 +135,30 @@ Note that the druids are unique.
 
 ### Seed the cache
 ```
-bin/generate-cache 100000 false false
+$ bin/generate-cache -h
+Usage: bin/generate-cache [options]
+    -s, --sample SAMPLE              Sample size, otherwise all druids.
+    -o, --overwrite                  Overwrite cache for item if exists.
+    -r, --random                     Select random druids.
+    -h, --help                       Displays help.
+        
+$ bin/generate-cache
 ```
 
 Using the druids from `druids.txt`, this will retrieve the item from Fedora and store the objects, datastreams, and disseminations in the `cache` directory.
 
-Provide `true` as the second argument to overwrite the existing cache entries.
-
-Provide `true` as the third argument to select druids from `druids.txt` in a random order.
-
 ### Validate mapping to Cocina from Fedora
 ```
-bin/validate-to-cocina 100000
+$ bin/validate-to-cocina -h
+Usage: bin/validate-to-cocina [options]
+    -s, --sample SAMPLE              Sample size, otherwise all druids.
+    -h, --help                       Displays help.
+    
+$ bin/validate-to-cocina -s 10
+Testing |Time: 00:00:00 | ===================================================================== | Time: 00:00:00
+
+Error: 0 of 10 (0.0%)%)
+Data error: 0 of 10 (0.0%)%)
 ```
 
 Using the druids from `druids.txt` and the cache, this will map the Fedora item to the Cocina model and record any errors.
@@ -167,12 +179,16 @@ Note that the validation is parallelized, so it is much faster than the other pr
 
 ### Validate roundtrip mapping (to Cocina from Fedora then to Fedora from Cocina)
 ```
-bin/validate-cocina-roundtrip 100 true
+$ bin/validate-cocina-roundtrip -h
+Usage: bin/validate-cocina-roundtrip [options]
+    -s, --sample SAMPLE              Sample size, otherwise all druids.
+    -r, --random                     Select random druids.
+    -h, --help                       Displays help.
+
+$ bin/validate-cocina-roundtrip -s 10 -r
 ```
 
 Using the druids from `druids.txt` and the cache, this will compare the differences between the original MODS (Fedora descriptive metadata) and the roundtripped MODS.
-
-Provide `false` as the second argument to select druids as ordered in `druids.txt` rather than random order.
 
 Errors totals are summarized. For example:
 ```
