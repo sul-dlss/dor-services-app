@@ -9,56 +9,80 @@ if ARGV.length != 1
   exit(false)
 end
 
-sample_size = Integer(ARGV[0])
+@sample_size = Integer(ARGV[0])
 
 cache = FedoraCache.new
 
-ignore_errors = ['Cocina::Mapper::MissingTitle', 'Missing item']
+def aggregated_errors_for(results_by)
+  aggregated_error_results = results_by.to_a
+  aggregated_error_results.sort_by! { |result| result[1].size }
+  aggregated_error_results.reverse
+end
+
+def results_by(results)
+  results_by = {}
+  results.each do |result|
+    results_by[result.msg] = [] unless results_by.key?(result.msg)
+    results_by[result.msg] << result.druid
+  end
+  results_by
+end
+
+def print_results(aggregated_error_results, label)
+  aggregated_error_results.each do |error_result|
+    puts "#{label}: #{error_result[0]} (#{error_result[1].size} errors)\n"
+    puts "Examples: #{error_result[1].take(10).join(', ')}"
+  end
+end
+
+def write_results(file, aggregated_error_results, label)
+  aggregated_error_results.each do |error_result|
+    file.write("#{label}: #{error_result[0]} (#{error_result[1].size} errors)\n")
+    error_result[1].each { |druid| file.write("#{druid}\n") }
+  end
+end
+
+def summary_line_for(results, label)
+  "#{label}: #{results.size} of #{@sample_size} (#{100 * results.size.to_f / @sample_size}%)"
+end
 
 druids = File.read('druids.txt').split
 
-results = Parallel.map(druids.take(sample_size), in_processes: 4, progress: 'Testing') do |druid|
+Result = Struct.new(:druid, :msg, :is_data_error)
+
+results = Parallel.map(druids.take(@sample_size), in_processes: 4, progress: 'Testing') do |druid|
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: cache.label(druid))
   desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: cache.descmd_xml(druid))
   Cocina::Models::Description.new(desc_props)
   nil
+rescue Cocina::Mapper::DataError => e
+  Result.new(druid, e.message, true)
 rescue StandardError => e
-  if ignore_errors.include?(e.message)
-    puts " ignoring. #{e.message.gsub('\n', ' ')}\n\n"
+  if e.message == 'Missing item'
     nil
   else
-    puts " error. #{e.message.gsub('\n', ' ')}\n\n"
-    [e.message.gsub('\n', ' '), druid]
+    Result.new(druid, e.message.gsub('\n', ' '), false)
   end
 end.compact
 
-results_by_error = {}
-results.each do |result|
-  error = result[0]
-  druid = result[1]
-  results_by_error[error] = [] unless results_by_error.key?(error)
-  results_by_error[error] << druid
-end
+error_results = results.reject(&:is_data_error)
+data_error_results = results.select(&:is_data_error)
 
-aggregated_error_results = results_by_error.to_a
-aggregated_error_results.sort_by! { |result| result[1].size }
-aggregated_error_results.reverse!
+results_by_error = results_by(error_results)
+results_by_data_error = results_by(data_error_results)
 
-error_count = results.size
+aggregated_error_results = aggregated_errors_for(results_by_error)
+aggregated_data_error_results = aggregated_errors_for(results_by_data_error)
 
-summary_line = "#{error_count} of #{sample_size} (#{100 * error_count.to_f / sample_size}%)"
+puts "\n#{summary_line_for(results_by_error, 'Error')}%)\n"
+puts "#{summary_line_for(results_by_data_error, 'Data error')}%)\n"
 
-puts "\n#{summary_line}%)\n"
-
-aggregated_error_results.each do |error_result|
-  puts "Error: #{error_result[0]} (#{error_result[1].size} errors)\n"
-  puts "Examples: #{error_result[1].take(10).join(', ')}"
-end
+print_results(aggregated_error_results, 'Error')
+print_results(aggregated_data_error_results, 'Data error')
 
 File.open('results.txt', 'w') do |file|
-  file.write("#{summary_line}\n")
-  aggregated_error_results.each do |error_result|
-    file.write("Error: #{error_result[0]} (#{error_result[1].size} errors)\n")
-    error_result[1].each { |druid| file.write("#{druid}\n") }
-  end
+  file.write("#{summary_line_for(results_by_error, 'Error')}\n")
+  file.write("#{summary_line_for(results_by_data_error, 'Data error')}\n\n")
+  write_results(file, aggregated_error_results, 'Error')
+  write_results(file, aggregated_data_error_results, 'Data error')
 end
