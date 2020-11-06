@@ -18,7 +18,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
   context 'with invalid subelement <Topic>' do
     let(:xml) do
       <<~XML
-        <subject authority="topic" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh85028356">
+        <subject authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh85028356">
           <Topic>College students</Topic>
         </subject>
       XML
@@ -31,7 +31,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           "type": 'topic',
           "uri": 'http://id.loc.gov/authorities/subjects/sh85028356',
           "source": {
-            "code": 'topic',
             "uri": 'http://id.loc.gov/authorities/subjects'
           }
         }
@@ -42,6 +41,59 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       allow(Honeybadger).to receive(:notify).once
       build
       expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] <subject> has <Topic>; normalized to "topic"', tags: 'data_error')
+    end
+  end
+
+  context 'with invalid authority code and an authorityURI' do
+    let(:xml) do
+      <<~XML
+        <subject authority="topic" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh85028356">
+          <topic>College students</Topic>
+        </subject>
+      XML
+    end
+
+    before do
+      allow(Honeybadger).to receive(:notify).once
+    end
+
+    it 'ignores the invalid code and Honeybadger notifies' do
+      expect(build).to eq [
+        {
+          "value": 'College students',
+          "type": 'topic',
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85028356',
+          "source": {
+            "uri": 'http://id.loc.gov/authorities/subjects'
+          }
+        }
+      ]
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has unknown authority code', tags: 'data_error')
+    end
+  end
+
+  context 'with invalid authority code and no authorityURI' do
+    let(:xml) do
+      <<~XML
+        <subject authority="topic" valueURI="http://id.loc.gov/authorities/subjects/sh85028356">
+          <topic>College students</Topic>
+        </subject>
+      XML
+    end
+
+    before do
+      allow(Honeybadger).to receive(:notify).once
+    end
+
+    it 'omits source and Honeybadger notifies' do
+      expect(build).to eq [
+        {
+          "value": 'College students',
+          "type": 'topic',
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85028356'
+        }
+      ]
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has unknown authority code', tags: 'data_error')
     end
   end
 
@@ -730,12 +782,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       it 'builds the cocina data structure and logs an error' do
         allow(Honeybadger).to receive(:notify)
         expect(build).to eq [
-          { source: { code: '#N/A', uri: '#N/A' },
+          { source: { uri: '#N/A' },
             type: 'name',
             uri: '#N/A',
             value: 'Hoveyda, Fereydoun' }
         ]
         expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Subject has <name> with an invalid type attribute '#N/A'", tags: 'data_error')
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has unknown authority code', tags: 'data_error')
       end
     end
 

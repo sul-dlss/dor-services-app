@@ -55,15 +55,26 @@ module Cocina
 
         def source_attrs(subject, attrs = {})
           if subject[:valueURI]
-            attrs[:source] = { code: subject[:authority], uri: subject[:authorityURI] }.compact
+            source = { code: code_for(subject), uri: subject[:authorityURI] }.compact
+            attrs[:source] = source unless source.empty?
             attrs[:uri] = subject[:valueURI]
           elsif subject[:authority]
-            attrs[:source] = {}.tap do |source|
-              source[:code] = subject[:authority]
-              source[:version] = format_edition(subject[:edition]) if subject[:edition]
-            end
+            source = { code: code_for(subject), version: edition_for(subject) }.compact
+            attrs[:source] = source unless source.empty?
           end
-          attrs
+          attrs.compact
+        end
+
+        def code_for(subject)
+          code = subject[:authority]
+          return nil if code.nil?
+
+          unless SubjectAuthorityCodes::SUBJECT_AUTHORITY_CODES.include?(code)
+            Honeybadger.notify('[DATA ERROR] Subject has unknown authority code', tags: 'data_error')
+            return nil
+          end
+
+          code
         end
 
         def structured_value(node_set, attrs)
@@ -152,8 +163,10 @@ module Cocina
           ng_xml.xpath('//mods:classification', mods: DESC_METADATA_NS).first
         end
 
-        def format_edition(edition)
-          "#{edition.to_i.ordinalize} edition"
+        def edition_for(subject)
+          return nil if subject[:edition].nil?
+
+          "#{subject[:edition].to_i.ordinalize} edition"
         end
       end
     end
