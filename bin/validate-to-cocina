@@ -74,15 +74,15 @@ results_by_data_error = results_by(data_error_results)
 aggregated_error_results = aggregated_errors_for(results_by_error)
 aggregated_data_error_results = aggregated_errors_for(results_by_data_error)
 
-puts "\n#{summary_line_for(results_by_error, 'Error')}%)\n"
-puts "#{summary_line_for(results_by_data_error, 'Data error')}%)\n"
+puts "\n#{summary_line_for(error_results, 'Error')}%)\n"
+puts "#{summary_line_for(data_error_results, 'Data error')}%)\n"
 
 print_results(aggregated_error_results, 'Error')
 print_results(aggregated_data_error_results, 'Data error')
 
 File.open('results.txt', 'w') do |file|
-  file.write("#{summary_line_for(results_by_error, 'Error')}\n")
-  file.write("#{summary_line_for(results_by_data_error, 'Data error')}\n\n")
+  file.write("#{summary_line_for(error_results, 'Error')}\n")
+  file.write("#{summary_line_for(data_error_results, 'Data error')}\n\n")
   write_results(file, aggregated_error_results, 'Error')
   write_results(file, aggregated_data_error_results, 'Data error')
 end
