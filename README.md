@@ -135,12 +135,14 @@ Note that the druids are unique.
 
 ### Seed the cache
 ```
-bin/generate-cache 100000 false
+bin/generate-cache 100000 false false
 ```
 
 Using the druids from `druids.txt`, this will retrieve the item from Fedora and store the objects, datastreams, and disseminations in the `cache` directory.
 
 Provide `true` as the second argument to overwrite the existing cache entries.
+
+Provide `true` as the third argument to select druids from `druids.txt` in a random order.
 
 ### Validate mapping to Cocina from Fedora
 ```
