@@ -128,6 +128,7 @@ module Cocina
 
         # rubocop:disable Metrics/AbcSize
         # rubocop:disable Metrics/CyclomaticComplexity
+        # rubocop:disable Metrics/PerceivedComplexity
         def roles_for(name)
           role_code = name.xpath(ROLE_CODE_XPATH, mods: DESC_METADATA_NS).first
           role_text = name.xpath(ROLE_TEXT_XPATH, mods: DESC_METADATA_NS).first
@@ -153,6 +154,7 @@ module Cocina
               return []
             end
           end
+          # rubocop:enable Metrics/PerceivedComplexity
           # rubocop:enable Metrics/AbcSize
           # rubocop:enable Metrics/CyclomaticComplexity
         end

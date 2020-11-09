@@ -46,7 +46,7 @@ Metrics/MethodLength:
 # Offense count: 16
 # Configuration parameters: IgnoredMethods.
 Metrics/PerceivedComplexity:
-  Max: 15
+  Max: 13
 
 # Offense count: 10
 Naming/AccessorMethodName:
