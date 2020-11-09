@@ -296,7 +296,7 @@ RSpec.describe 'Get the object' do
             <name valueURI="corporate">
               <namePart>Selective Service System</namePart>
               <role>
-                <roleTerm type="code">isb</roleTerm>
+                <roleTerm type="code">isbx</roleTerm>
               </role>
             </name>
           </mods>
@@ -305,7 +305,7 @@ RSpec.describe 'Get the object' do
 
       let(:expected) do
         {
-          errors: [{ detail: './mods:role/mods:roleTerm[@type="code"] is missing required authority attribute', status: '422', title: 'Invalid descMetadata' }]
+          errors: [{ detail: 'Contributor role code is missing and has unexpected value: isbx', status: '422', title: 'Invalid descMetadata' }]
         }
       end
 
