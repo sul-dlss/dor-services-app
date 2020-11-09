@@ -127,8 +127,6 @@ module Cocina
         ROLE_AUTHORITY_VALUE_XPATH = './mods:role/mods:roleTerm/@valueURI'
 
         # rubocop:disable Metrics/AbcSize
-        # rubocop:disable Metrics/CyclomaticComplexity
-        # rubocop:disable Metrics/PerceivedComplexity
         def roles_for(name)
           role_code = name.xpath(ROLE_CODE_XPATH, mods: DESC_METADATA_NS).first
           role_text = name.xpath(ROLE_TEXT_XPATH, mods: DESC_METADATA_NS).first
@@ -146,17 +144,16 @@ module Cocina
               role[:source][:uri] = role_authority_uri.content if role_authority_uri&.content.present?
             end
 
-            role[:code] = role_code.content if role_code&.content.present?
-            role[:value] = role_text.content if role_text&.content.present?
-            role[:uri] = role_authority_value.content if role_authority_value&.content.present?
-            if !role[:code] && !role[:value]
+            role[:code] = role_code&.content
+            role[:value] = role_text&.content
+            role[:uri] = role_authority_value&.content
+
+            if role[:code].blank? && role[:value].blank?
               Honeybadger.notify('[DATA ERROR] name/role/roleTerm missing value', { tags: 'data_error' })
               return []
             end
-          end
-          # rubocop:enable Metrics/PerceivedComplexity
+          end.compact
           # rubocop:enable Metrics/AbcSize
-          # rubocop:enable Metrics/CyclomaticComplexity
         end
 
         def type_for(type)
