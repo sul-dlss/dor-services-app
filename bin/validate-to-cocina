@@ -59,10 +59,18 @@ druids = druids.take(options[:sample]) if options[:sample]
 Result = Struct.new(:druid, :msg, :is_data_error)
 
 results = Parallel.map(druids, in_processes: 4, progress: 'Testing') do |druid|
+  hb_result = nil
+  # Doing this here instead of globally due to process isolation.
+  Honeybadger.configure do |config|
+    config.before_notify do |notice|
+      hb_result = Result.new(druid, notice.error_message, true)
+    end
+  end
+
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: cache.label(druid))
   desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: cache.descmd_xml(druid))
   Cocina::Models::Description.new(desc_props)
-  nil
+  hb_result
 rescue Cocina::Mapper::DataError => e
   Result.new(druid, e.message, true)
 rescue StandardError => e
