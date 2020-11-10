@@ -6,12 +6,13 @@ require_relative '../lib/fedora_cache'
 require 'set'
 require 'optparse'
 
-options = { random: false }
+options = { random: false, druids: [] }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-cocina-roundtrip [options]'
 
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
   option_parser.on('-r', '--random', 'Select random druids.')
+  option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -27,11 +28,14 @@ cache = FedoraCache.new
   '/mods/@xsi:schemaLocation'
 ]
 
-def round_tripped_xml(xml, label)
+def round_tripped_xml(cocina)
+  Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina).to_xml)
+end
+
+def cocina_model(xml, label)
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: label)
   desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: xml)
-  cocina = Cocina::Models::Description.new(desc_props)
-  Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina).to_xml)
+  Cocina::Models::Description.new(desc_props)
 end
 
 def ignore_node?(node)
@@ -83,6 +87,16 @@ def write_missing(file, node1, node2, label)
   end
 end
 
+def write_error(druid, original_xml, cocina, error)
+  File.open("#{@results_path}/#{druid}.txt", 'w') do |file|
+    file.write("Error: #{error}\n\n")
+    file.write("Expected XML:\n#{original_xml.to_xml}\n\n")
+    file.write("Cocina:\n#{JSON.pretty_generate(cocina.to_h)}\n\n")
+    file.write("Backtrace:\n")
+    file.write(error.backtrace.join("\n"))
+  end
+end
+
 def diff_nodeset(nodeset1, nodeset2)
   matched_nodeset1 = Set.new
   nodeset1.each do |node1|
@@ -129,15 +143,20 @@ def check_equivalent(result_xml, original_xml)
   [equiv, error_nodes, all_original_nodes - matched_original_nodes, all_result_nodes - matched_result_nodes]
 end
 
-counts = { different: 0, success: 0, error: 0 }
+counts = { different: 0, success: 0, to_cocina_error: 0, to_fedora_error: 0 }
 
 @results_path = "results/#{Time.now.iso8601}"
 FileUtils.mkdir_p(@results_path)
 
-druids = File.read('druids.txt').split
-druids.shuffle! if options[:random]
-druids = druids.take(options[:sample]) if options[:sample]
+if options[:druids].empty?
+  druids = File.read('druids.txt').split
+  druids.shuffle! if options[:random]
+  druids = druids.take(options[:sample]) if options[:sample]
+else
+  druids = options[:druids]
+end
 
+# rubocop:disable Metrics/BlockLength
 druids.each_with_index do |druid, index|
   print "#{druid} (#{index + 1})"
 
@@ -150,10 +169,19 @@ druids.each_with_index do |druid, index|
   end
 
   begin
-    result_xml = round_tripped_xml(original_xml, label)
+    cocina = cocina_model(original_xml, label)
   rescue StandardError => e
-    puts " error. #{e.message}\n"
-    counts[:error] += 1
+    puts " to cocina error. #{e.message}\n"
+    counts[:to_cocina_error] += 1
+    next
+  end
+
+  begin
+    result_xml = round_tripped_xml(cocina)
+  rescue StandardError => e
+    puts " to fedora error. #{e.message}\n"
+    counts[:to_fedora_error] += 1
+    write_error(druid, original_xml, cocina, e)
     next
   end
 
@@ -168,8 +196,10 @@ druids.each_with_index do |druid, index|
     write_result(druid, original_xml, result_xml, error_nodes, unmatched_original_nodes, unmatched_result_nodes)
   end
 end
+# rubocop:enable Metrics/BlockLength
 
 puts "\nStatus (n=#{druids.size}):"
 puts "  Success:   #{counts[:success]} (#{100 * counts[:success].to_f / druids.size}%)"
 puts "  Different: #{counts[:different]} (#{100 * counts[:different].to_f / druids.size}%)"
-puts "  Error:     #{counts[:error]} (#{100 * counts[:error].to_f / druids.size}%)"
+puts "  To Cocina error:     #{counts[:to_cocina_error]} (#{100 * counts[:to_cocina_error].to_f / druids.size}%)"
+puts "  To Fedora error:     #{counts[:to_fedora_error]} (#{100 * counts[:to_fedora_error].to_f / druids.size}%)"

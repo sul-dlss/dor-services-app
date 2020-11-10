@@ -184,6 +184,7 @@ $ bin/validate-cocina-roundtrip -h
 Usage: bin/validate-cocina-roundtrip [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -r, --random                     Select random druids.
+    -d, --druids DRUIDS              List of druids (instead of druids.txt).
     -h, --help                       Displays help.
 
 $ bin/validate-cocina-roundtrip -s 10 -r
