@@ -45,7 +45,7 @@ end
 
 # rubocop:disable Metrics/ParameterLists
 def write_result(druid, original_xml, result_xml, error_nodes, unmatched_original_nodes, unmatched_result_nodes)
-  File.open("#{@results_path}/#{druid}.txt", 'w') do |file|
+  File.open("results/#{druid}.txt", 'w') do |file|
     file.write("Expected XML:\n#{original_xml.to_xml}\n")
     file.write("Received XML:\n#{result_xml.to_xml}\n\n")
 
@@ -88,7 +88,7 @@ def write_missing(file, node1, node2, label)
 end
 
 def write_error(druid, original_xml, cocina, error)
-  File.open("#{@results_path}/#{druid}.txt", 'w') do |file|
+  File.open("results/#{druid}.txt", 'w') do |file|
     file.write("Error: #{error}\n\n")
     file.write("Expected XML:\n#{original_xml.to_xml}\n\n")
     file.write("Cocina:\n#{JSON.pretty_generate(cocina.to_h)}\n\n")
@@ -143,10 +143,38 @@ def check_equivalent(result_xml, original_xml)
   [equiv, error_nodes, all_original_nodes - matched_original_nodes, all_result_nodes - matched_result_nodes]
 end
 
-counts = { different: 0, success: 0, to_cocina_error: 0, to_fedora_error: 0 }
+def validate_druid(druid, cache)
+  begin
+    original_xml = cache.descmd_xml(druid)
+    label = cache.label(druid)
+  rescue StandardError
+    return :missing
+  end
 
-@results_path = "results/#{Time.now.iso8601}"
-FileUtils.mkdir_p(@results_path)
+  begin
+    cocina = cocina_model(original_xml, label)
+  rescue StandardError
+    return :to_cocina_error
+  end
+
+  begin
+    result_xml = round_tripped_xml(cocina)
+  rescue StandardError => e
+    write_error(druid, original_xml, cocina, e)
+    return :to_fedora_error
+  end
+
+  equiv, error_nodes, unmatched_original_nodes, unmatched_result_nodes = check_equivalent(result_xml, original_xml)
+
+  unless equiv
+    write_result(druid, original_xml, result_xml, error_nodes, unmatched_original_nodes, unmatched_result_nodes)
+    return :different
+  end
+  :success
+end
+
+FileUtils.rm_rf('results')
+FileUtils.mkdir_p('results')
 
 if options[:druids].empty?
   druids = File.read('druids.txt').split
@@ -156,50 +184,15 @@ else
   druids = options[:druids]
 end
 
-# rubocop:disable Metrics/BlockLength
-druids.each_with_index do |druid, index|
-  print "#{druid} (#{index + 1})"
-
-  begin
-    original_xml = cache.descmd_xml(druid)
-    label = cache.label(druid)
-  rescue StandardError
-    puts " missing from cache.\n"
-    next
-  end
-
-  begin
-    cocina = cocina_model(original_xml, label)
-  rescue StandardError => e
-    puts " to cocina error. #{e.message}\n"
-    counts[:to_cocina_error] += 1
-    next
-  end
-
-  begin
-    result_xml = round_tripped_xml(cocina)
-  rescue StandardError => e
-    puts " to fedora error. #{e.message}\n"
-    counts[:to_fedora_error] += 1
-    write_error(druid, original_xml, cocina, e)
-    next
-  end
-
-  equiv, error_nodes, unmatched_original_nodes, unmatched_result_nodes = check_equivalent(result_xml, original_xml)
-
-  if equiv
-    puts ' successfully round tripped.'
-    counts[:success] += 1
-  else
-    puts ' is different.'
-    counts[:different] += 1
-    write_result(druid, original_xml, result_xml, error_nodes, unmatched_original_nodes, unmatched_result_nodes)
-  end
+results = Parallel.map(druids, progress: 'Testing') do |druid|
+  validate_druid(druid, cache)
 end
-# rubocop:enable Metrics/BlockLength
+counts = { different: 0, success: 0, to_cocina_error: 0, to_fedora_error: 0, missing: 0 }
+results.each { |result| counts[result] += 1 }
 
-puts "\nStatus (n=#{druids.size}):"
+puts "Status (n=#{druids.size}):"
 puts "  Success:   #{counts[:success]} (#{100 * counts[:success].to_f / druids.size}%)"
 puts "  Different: #{counts[:different]} (#{100 * counts[:different].to_f / druids.size}%)"
 puts "  To Cocina error:     #{counts[:to_cocina_error]} (#{100 * counts[:to_cocina_error].to_f / druids.size}%)"
 puts "  To Fedora error:     #{counts[:to_fedora_error]} (#{100 * counts[:to_fedora_error].to_f / druids.size}%)"
+puts "  Missing:     #{counts[:missing]} (#{100 * counts[:missing].to_f / druids.size}%)"
