@@ -1024,6 +1024,59 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  context 'with multiple events and missing event type' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          "type": 'creation',
+          "date": [
+            {
+              "value": '1899'
+            }
+          ],
+          "location": [
+            {
+              "value": 'York'
+            }
+          ]
+        ),
+        Cocina::Models::Event.new(
+          "date": [
+            {
+              "value": '1901'
+            }
+          ],
+          "location": [
+            {
+              "value": 'London'
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo eventType="production">
+            <dateCreated>1899</dateCreated>
+            <place>
+              <placeTerm type="text">York</placeTerm>
+            </place>
+          </originInfo>
+          <originInfo>
+            <dateOther>1901</dateOther>
+            <place>
+              <placeTerm type="text">London</placeTerm>
+            </place>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
   context 'with event represented in multiple languages' do
     let(:events) do
       [
