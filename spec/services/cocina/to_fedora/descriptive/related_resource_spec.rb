@@ -215,4 +215,46 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
       XML
     end
   end
+
+  context 'when it has a related item with a contributor without a type' do
+    let(:resources) do
+      [
+        Cocina::Models::RelatedResource.new(
+          {
+            "title": [
+              {
+                "value": 'Lymond chronicles'
+              }
+            ],
+            "contributor": [
+              {
+                "name": [
+                  {
+                    "value": 'Dunnett, Dorothy'
+                  }
+                ]
+              }
+            ]
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <relatedItem>
+            <titleInfo>
+              <title>Lymond chronicles</title>
+            </titleInfo>
+            <name>
+              <namePart>Dunnett, Dorothy</namePart>
+            </name>
+          </relatedItem>
+        </mods>
+      XML
+    end
+  end
 end
