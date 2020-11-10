@@ -3,10 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ObjectCreator do
-  subject(:item) { described_class.create(request, persister: persister) }
+  subject(:result) { described_class.create(request, persister: persister) }
 
   let(:apo) { 'druid:bz845pv2292' }
   let(:persister) { class_double(Cocina::ActiveFedoraPersister, store: nil) }
+  let(:request) { Cocina::Models.build_request(params) }
 
   before do
     allow(Dor::SearchService).to receive(:query_by_id).and_return([])
@@ -18,9 +19,7 @@ RSpec.describe Cocina::ObjectCreator do
     allow(SynchronousIndexer).to receive(:reindex_remotely)
   end
 
-  context 'when item is a Dor::Item' do
-    let(:request) { Cocina::Models.build_request(params) }
-
+  context 'when Cocina::Models::RequestDRO is received' do
     context 'when the access is dark' do
       let(:params) do
         {
@@ -40,7 +39,11 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'creates dark access' do
-        expect(item.access.access).to eq 'dark'
+        expect(result.access.access).to eq 'dark'
+      end
+
+      it 'title is set to result of RefreshMetadataAction' do
+        expect(result.description.title.first.value).to eq 'foo'
       end
     end
 
@@ -69,7 +72,53 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'raises an error' do
-        expect { item }.to raise_error Cocina::ValidationError
+        expect { result }.to raise_error Cocina::ValidationError
+      end
+    end
+  end
+
+  context 'when Cocina::Models::RequestCollection is received' do
+    let(:request) { Cocina::Models.build_request(params) }
+
+    context 'when there is a note of type summary' do
+      # NOTE:  Argo registers collections with an abstract, modelled in cocina as a note of type summary
+      let(:params) do
+        {
+          'type' => 'http://cocina.sul.stanford.edu/models/collection.jsonld',
+          'label' => 'collection label',
+          'version' => 1,
+          'access' => { 'access' => 'world' },
+          'administrative' => {
+            'hasAdminPolicy' => apo
+          },
+          'description' => {
+            'title' => [
+              {
+                'value' => 'collection title'
+              }
+            ],
+            'note' => [
+              {
+                # NOTE: current mappings require that this is the first note
+                'value' => 'I am an abstract',
+                'type' => 'summary'
+              },
+              {
+                'value' => 'I am not an abstract',
+                'type' => 'other'
+              },
+            ]
+          }
+        }
+      end
+
+      it 'collection title is set to params title' do
+        expect(result.description.title.first.value).to eq 'collection title'
+      end
+
+      it 'collection abstract (note of type summary) is set' do
+        summary_note = result.description.note.select { |note| note.type == 'summary' }.first
+        expect(summary_note.value).to eq 'I am an abstract'
       end
     end
   end
