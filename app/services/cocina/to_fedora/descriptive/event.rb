@@ -13,6 +13,7 @@ module Cocina
         }.freeze
 
         EVENT_TYPE = {
+          'copyright' => 'copyright notice',
           'creation' => 'production',
           'publication' => 'publication'
         }.freeze
