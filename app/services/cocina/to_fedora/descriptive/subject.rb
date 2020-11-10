@@ -155,8 +155,10 @@ module Cocina
         def cartographics(xml, subject)
           xml.cartographics do
             xml.coordinates subject.value
-            xml.scale forms.find { |form| form.type == 'map scale' }.value
-            xml.projection forms.find { |form| form.type == 'map projection' }.value
+            scale = forms.find { |form| form.type == 'map scale' }
+            xml.scale scale.value if scale
+            projection = forms.find { |form| form.type == 'map projection' }
+            xml.projection projection.value if projection
           end
         end
 
