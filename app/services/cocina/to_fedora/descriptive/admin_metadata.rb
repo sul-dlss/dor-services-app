@@ -64,7 +64,9 @@ module Cocina
 
         def build_identifier
           Array(admin_metadata.identifier).each do |identifier|
-            xml.recordIdentifier identifier.value, source: identifier.source.value
+            attrs = {}
+            attrs[:source] = identifier.source.value if identifier.source
+            xml.recordIdentifier identifier.value, attrs
           end
         end
 
