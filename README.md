@@ -216,7 +216,7 @@ cd /opt/app/deploy/dor-services-app
 git branch # see if you are on master, which shows likely not in use
 git fetch
 git checkout YOUR_BRANCH_NAME
-bin/validate-to-cocina 350000
+bin/validate-to-cocina -s 350000
 ```
 
 When done, delete your branch and change back to master:
