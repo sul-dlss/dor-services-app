@@ -58,7 +58,7 @@ druids = druids.take(options[:sample]) if options[:sample]
 
 Result = Struct.new(:druid, :msg, :is_data_error)
 
-results = Parallel.map(druids, in_processes: 4, progress: 'Testing') do |druid|
+results = Parallel.map(druids, progress: 'Testing') do |druid|
   hb_result = nil
   # Doing this here instead of globally due to process isolation.
   Honeybadger.configure do |config|
