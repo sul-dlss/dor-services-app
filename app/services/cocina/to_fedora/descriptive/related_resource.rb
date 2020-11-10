@@ -65,7 +65,9 @@ module Cocina
 
         def add_contributors(contributors)
           contributors.each do |contributor|
-            xml.name type: Contributor::NAME_TYPE.fetch(contributor.type) do
+            attributes = {}
+            attributes[:type] = Contributor::NAME_TYPE.fetch(contributor.type) if contributor.type
+            xml.name attributes do
               contributor.name.each do |name|
                 xml.namePart name.value
               end
