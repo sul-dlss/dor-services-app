@@ -108,6 +108,8 @@ module Cocina
       obj.identification&.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
     end
 
+    # @param [Dor::[Item|Collection|APO]] item
+    # @param [Cocina:Models::Request[DOR|Collection|xxx]] obj
     # @raises SymphonyReader::ResponseError if symphony connection failed
     def add_description(item, obj)
       # Hydrus doesn't set description. See https://github.com/sul-dlss/hydrus/issues/421
@@ -120,13 +122,11 @@ module Cocina
         item.label = truncate_label(label)
         item.objectLabel = label
       elsif obj.description
-        item.descMetadata.mods_title = obj.description.title.first.value
+        item.descMetadata.content = Cocina::ToFedora::Descriptive.transform(obj.description).to_xml
+        item.descMetadata.content_will_change!
       else
         item.descMetadata.mods_title = obj.label
       end
-
-      # collections registered via Argo have abstracts, which appear here as note of type summary
-      item.descMetadata.abstract = obj.description.note.first.value if obj.description&.note&.first&.type == 'summary'
     end
 
     def add_dro_tags(pid, obj)

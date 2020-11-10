@@ -20,13 +20,159 @@ RSpec.describe Cocina::ObjectCreator do
   end
 
   context 'when Cocina::Models::RequestDRO is received' do
+    context 'when no description is supplied but there is a identification.catalogLink' do
+      let(:params) do
+        {
+          'type' => 'http://cocina.sul.stanford.edu/models/media.jsonld',
+          'label' => ':auto',
+          'access' => { 'access' => 'world' },
+          'version' => 1,
+          'structural' => {},
+          'administrative' => {
+            'hasAdminPolicy' => apo
+          },
+          'identification' => {
+            'sourceId' => 'sul:8.559351',
+            'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }]
+          }
+        }
+      end
+
+      it 'title is set to result of RefreshMetadataAction when there is a catalogLink' do
+        expect(result.description.title.first.value).to eq 'foo'
+      end
+    end
+
+    context 'when no description is supplied (no title, but label)' do
+      let(:params) do
+        {
+          'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
+          'label' => 'label value',
+          'access' => { 'access' => 'world' },
+          'version' => 1,
+          'structural' => {},
+          'administrative' => {
+            'hasAdminPolicy' => apo
+          },
+          'identification' => {
+            'sourceId' => 'donot:care'
+          }
+        }
+      end
+
+      it 'title is set to label' do
+        expect(result.description.title.first.value).to eq 'label value'
+      end
+    end
+
+    context 'when description is supplied' do
+      let(:params) do
+        {
+          'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
+          'label' => 'contributor mapping test',
+          'access' => { 'access' => 'world' },
+          'version' => 1,
+          'structural' => {},
+          'administrative' => {
+            'hasAdminPolicy' => apo
+          },
+          'identification' => {
+            'sourceId' => 'donot:care'
+          },
+          "description": {
+            "note": [
+              {
+                "type": 'summary',
+                "value": 'I am an abstract'
+              },
+              {
+                "type": 'contact',
+                "value": 'marypoppins@umbrellas.org',
+                "displayLabel": 'Contact'
+              }
+            ],
+            "title": [
+              {
+                "value": 'more desc mappings'
+              }
+            ],
+            "subject": [
+              {
+                "type": 'topic',
+                "value": 'I am a keyword'
+              }
+            ],
+            "contributor": [
+              {
+                "name": [
+                  {
+                    "value": 'Miss Piggy'
+                  }
+                ],
+                "role": [
+                  {
+                    "value": 'Creator'
+                  }
+                ],
+                "type": 'person'
+              },
+              {
+                "name": [
+                  {
+                    "value": 'funder.example.org'
+                  }
+                ],
+                "role": [
+                  {
+                    "value": 'Funder'
+                  }
+                ],
+                "type": 'organization'
+              }
+            ]
+          }
+        }
+      end
+
+      it 'title is set to value passed in' do
+        expect(result.description.title.first.value).to eq 'more desc mappings'
+      end
+
+      it 'contributors are set' do
+        expect(result.description.contributor.first.type).to eq 'person'
+        expect(result.description.contributor.first.name.first.value).to eq 'Miss Piggy'
+        expect(result.description.contributor.first.role.first.value).to eq 'Creator'
+        expect(result.description.contributor.last.type).to eq 'organization'
+        expect(result.description.contributor.last.name.first.value).to eq 'funder.example.org'
+        expect(result.description.contributor.last.role.first.value).to eq 'Funder'
+      end
+
+      it 'subjets are set' do
+        expect(result.description.subject.first.type).to eq 'topic'
+        expect(result.description.subject.first.value).to eq 'I am a keyword'
+      end
+
+      it 'abstract (note of type summary) is set' do
+        summary_note = result.description.note.select { |note| note.type == 'summary' }.first
+        expect(summary_note.value).to eq 'I am an abstract'
+      end
+
+      it 'contact (note of type contact) is set' do
+        contact_note = result.description.note.select { |note| note.type == 'contact' }.first
+        expect(contact_note.value).to eq 'marypoppins@umbrellas.org'
+        skip 'TODO: need ToFedora map of displayLabel for note'
+        # expect(contact_note.displayLabel).to eq 'Contact'
+      end
+    end
+
     context 'when the access is dark' do
       let(:params) do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/media.jsonld',
           'label' => ':auto',
           'access' => { 'access' => 'dark', 'download' => 'none' },
-          'version' => 1, 'structural' => {},
+          'version' => 1,
+          'structural' => {},
           'administrative' => {
             'partOfProject' => 'Naxos : 2009',
             'hasAdminPolicy' => apo
@@ -40,10 +186,6 @@ RSpec.describe Cocina::ObjectCreator do
 
       it 'creates dark access' do
         expect(result.access.access).to eq 'dark'
-      end
-
-      it 'title is set to result of RefreshMetadataAction' do
-        expect(result.description.title.first.value).to eq 'foo'
       end
     end
 
@@ -81,7 +223,6 @@ RSpec.describe Cocina::ObjectCreator do
     let(:request) { Cocina::Models.build_request(params) }
 
     context 'when there is a note of type summary' do
-      # NOTE:  Argo registers collections with an abstract, modelled in cocina as a note of type summary
       let(:params) do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/collection.jsonld',
@@ -106,7 +247,7 @@ RSpec.describe Cocina::ObjectCreator do
               {
                 'value' => 'I am not an abstract',
                 'type' => 'other'
-              },
+              }
             ]
           }
         }
