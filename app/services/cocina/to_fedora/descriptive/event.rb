@@ -70,7 +70,7 @@ module Cocina
 
         def note(note)
           attributes = {}
-          attributes[:authority] = note.source.code if note.source&.code
+          attributes[:authority] = note.source.code if note&.source&.code
           xml.send(note.type, note.value, attributes)
         end
 
@@ -87,29 +87,38 @@ module Cocina
 
         def location(location)
           if location.code
-            xml.place do
-              xml.placeTerm location.value, type: 'text', authority: location.source.code, authorityURI: location.source.uri, valueURI: location.uri if location.value
-              attributes = { type: 'code', authority: location.source.code }
-              if location.uri
-                attributes[:valueURI] = location.uri
-                attributes[:authorityURI] = location.source.uri
-              end
-              xml.placeTerm location.code, attributes
-            end
+            location_code(location)
           elsif location.value
             location_text_value(location)
           end
         end
 
+        def location_code(location)
+          xml.place do
+            placeterm_attrs = { type: 'text' }
+            placeterm_attrs[:authority] = location.source.code if location.source&.code
+            placeterm_attrs[:authorityURI] = location.source.uri if location.source&.uri
+            placeterm_attrs[:valueURI] = location.uri if location.uri
+            xml.placeTerm location.value, placeterm_attrs if location.value
+            attributes = { type: 'code' }
+            attributes[:authority] = location.source.code if location.source&.code
+            if location.uri
+              attributes[:valueURI] = location.uri
+              attributes[:authorityURI] = location.source.uri if location.source&.uri
+            end
+            xml.placeTerm location.code, attributes
+          end
+        end
+
         def location_text_value(location)
-          attributes = {}
+          attributes = { type: 'text' }
           if location.uri
-            attributes[:authority] = location.source.code
-            attributes[:authorityURI] = location.source.uri
+            attributes[:authority] = location.source.code if location.source&.code
+            attributes[:authorityURI] = location.source.uri if location.source&.uri
             attributes[:valueURI] = location.uri
           end
-          xml.place attributes do
-            xml.placeTerm location.value, type: 'text'
+          xml.place do
+            xml.placeTerm location.value, attributes
           end
         end
 
