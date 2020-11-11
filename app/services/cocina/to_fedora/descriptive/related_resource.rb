@@ -14,6 +14,7 @@ module Cocina
           'in series' => 'series',
           'part of' => 'host',
           'preceded by' => 'preceding',
+          'related to' => nil, # 'related to' is a null type by design
           'reviewed by' => 'reviewOf',
           'referenced by' => 'isReferencedBy',
           'references' => 'references',
@@ -35,7 +36,7 @@ module Cocina
             attributes = {}
             attributes[:type] = TYPES.fetch(related.type) if related.type
             attributes[:displayLabel] = related.displayLabel if related.displayLabel
-            xml.relatedItem attributes do
+            xml.relatedItem attributes.compact do
               add_titles(Array(related.title))
               add_location(related.access)
               add_contributors(Array(related.contributor))

@@ -117,6 +117,71 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
     end
   end
 
+  context 'when it has a related item with the generic "related to" type (related link from H2)' do
+    let(:resources) do
+      [
+        Cocina::Models::RelatedResource.new(
+          "title": [
+            {
+              "value": 'Supplement'
+            }
+          ],
+          "access": {
+            "url": [
+              "value": 'https://example.com/paper.html'
+            ]
+          },
+          "type": 'related to'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <relatedItem>
+            <titleInfo>
+              <title>Supplement</title>
+            </titleInfo>
+            <location>
+              <url>https://example.com/paper.html</url>
+            </location>
+          </relatedItem>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has a related item with the generic "related to" type (related work from H2)' do
+    let(:resources) do
+      [
+        Cocina::Models::RelatedResource.new(
+          "note": [
+            {
+              "value": 'Stanford University (Stanford, CA.). (2020)',
+              "type": 'preferred citation'
+            }
+          ],
+          "type": 'related to'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <relatedItem>
+            <note type="preferred citation">Stanford University (Stanford, CA.). (2020)</note>
+          </relatedItem>
+        </mods>
+      XML
+    end
+  end
+
   context 'when it has a related item without title' do
     let(:resources) do
       [
