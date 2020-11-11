@@ -23,6 +23,10 @@ Metrics/BlockLength:
     - 'config/routes.rb'
     - 'config/initializers/dor_config.rb'
 
+Metrics/ClassLength:
+  Exclude:
+    - 'app/services/cocina/to_fedora/descriptive/event.rb'
+
 RSpec/DescribeClass:
   Exclude:
     - 'spec/requests/**/*'
