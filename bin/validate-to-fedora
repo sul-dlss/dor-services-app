@@ -1,0 +1,109 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+require_relative '../lib/fedora_cache'
+require 'optparse'
+
+options = { overwrite: false, random: false }
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/validate-to-fedora [options]'
+
+  option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+parser.parse!(into: options)
+
+cache = FedoraCache.new
+
+def aggregated_errors_for(results_by)
+  aggregated_error_results = results_by.to_a
+  aggregated_error_results.sort_by! { |result| result[1].size }
+  aggregated_error_results.reverse
+end
+
+def results_by(results)
+  results_by = {}
+  results.each do |result|
+    results_by[result.msg] = [] unless results_by.key?(result.msg)
+    results_by[result.msg] << result.druid
+  end
+  results_by
+end
+
+def print_results(aggregated_error_results, label)
+  aggregated_error_results.each do |error_result|
+    puts "#{label}: #{error_result[0]} (#{error_result[1].size} errors)\n"
+    puts "Examples: #{error_result[1].take(10).join(', ')}"
+  end
+end
+
+def write_results(file, aggregated_error_results, label)
+  aggregated_error_results.each do |error_result|
+    file.write("#{label}: #{error_result[0]} (#{error_result[1].size} errors)\n")
+    error_result[1].each { |druid| file.write("#{druid}\n") }
+  end
+end
+
+def summary_line_for(label, count)
+  "#{label}: #{count} of #{@sample_size} (#{100 * count.to_f / @sample_size}%)\n"
+end
+
+def validate_druid(druid, cache)
+  begin
+    title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: cache.label(druid))
+    desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: cache.descmd_xml(druid))
+    cocina = Cocina::Models::Description.new(desc_props)
+  rescue Cocina::Mapper::DataError => e
+    return Result.new(druid, e.message, :data_error)
+  rescue StandardError => e
+    return Result.new(druid, e.message, :missing) if e.message == 'Missing item'
+
+    return Result.new(druid, e.message.gsub('\n', ' '), :to_cocina_error)
+  end
+
+  begin
+    Cocina::ToFedora::Descriptive.transform(cocina)
+  rescue StandardError => e
+    return Result.new(druid, e.message.gsub('\n', ' '), :to_fedora_error)
+  end
+
+  nil
+end
+
+druids = File.read('druids.txt').split
+druids = druids.take(options[:sample]) if options[:sample]
+@sample_size = druids.size
+
+Result = Struct.new(:druid, :msg, :error_type)
+
+results = Parallel.map(druids, progress: 'Testing') do |druid|
+  validate_druid(druid, cache)
+end.compact
+
+counts = { to_cocina_error: 0, to_fedora_error: 0, missing: 0, data_error: 0 }
+results.each { |result| counts[result.error_type] += 1 }
+
+puts summary_line_for('To Fedora error', counts[:to_fedora_error])
+puts summary_line_for('To Cocina error', counts[:to_cocina_error])
+puts summary_line_for('Data error', counts[:data_error])
+puts summary_line_for('Missing', counts[:missing])
+puts "\n"
+
+error_results = results.select { |result| result.error_type == :to_fedora_error }
+results_by_error = results_by(error_results)
+aggregated_error_results = aggregated_errors_for(results_by_error)
+
+print_results(aggregated_error_results, 'To Fedora error')
+
+File.open('results.txt', 'w') do |file|
+  file.write(summary_line_for('To Fedora error', counts[:to_fedora_error]))
+  file.write(summary_line_for('To Cocina error', counts[:to_cocina_error]))
+  file.write(summary_line_for('Data error', counts[:data_error]))
+  file.write(summary_line_for('Missing', counts[:missing]))
+  file.write("\n")
+  write_results(file, aggregated_error_results, 'To Fedora error')
+end

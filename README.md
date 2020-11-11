@@ -176,7 +176,22 @@ Examples: druid:vx162kw9911, druid:rh979yv1005, druid:qb797px1044, druid:fq225gc
 
 A complete set of results will be written to `results.txt`.
 
-Note that the validation is parallelized, so it is much faster than the other processes.
+### Validate mapping to Fedora from Cocina
+```
+$ bin/validate-to-fedora -h
+Usage: bin/validate-to-fedora [options]
+    -s, --sample SAMPLE              Sample size, otherwise all druids.
+    -h, --help                       Displays help.
+    
+$ bin/validate-to-fedora
+Testing |Time: 00:00:06 | ============================================================= | Time: 00:00:06
+To Fedora error: 21 of 7500 (0.28%)
+To Cocina error: 0 of 7500 (0.0%)
+Data error: 4 of 7500 (0.05333333333333334%)
+Missing: 26 of 7500 (0.3466666666666667%)
+```
+
+This is similar to `bin/validate-to-cocina` but reports errors raised when mapping to Fedora.
 
 ### Validate roundtrip mapping (to Cocina from Fedora then to Fedora from Cocina)
 ```
