@@ -70,6 +70,9 @@ results = Parallel.map(druids, progress: 'Testing') do |druid|
   end
   # rubocop:enable Style/TrivialAccessors
 
+  # Clear previous
+  Honeybadger.notify(nil)
+
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: cache.label(druid))
   desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: cache.descmd_xml(druid))
   Cocina::Models::Description.new(desc_props)
