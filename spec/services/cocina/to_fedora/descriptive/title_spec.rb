@@ -78,7 +78,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
             { structuredValue: [{ type: 'surname', value: 'Saint-Saëns' },
                                 { type: 'forename', value: 'Camille' },
                                 { type: 'life dates', value: '1835-1921' },
-                                { type: 'title', value: 'Princesse jaune. Vocal score' }],
+                                { type: 'title', value: 'Princesse jaune. Vocal score' },
+                                { type: 'term of address', value: 'Princess' }],
               type: 'uniform',
               status: 'primary' }
           )
@@ -97,6 +98,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
               <namePart type="family">Saint-Sa&#xEB;ns</namePart>
               <namePart type="given">Camille</namePart>
               <namePart type="date">1835-1921</namePart>
+              <namePart type="termsOfAddress">Princess</namePart>
             </name>
           </mods>
         XML

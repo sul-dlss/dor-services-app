@@ -6,7 +6,8 @@ module Cocina
       # Maps titles from cocina to MODS XML
       class Title
         TAG_NAME = FromFedora::Descriptive::Titles::TYPES.invert.freeze
-        NAME_TYPES = ['person', 'forename', 'surname', 'life dates'].freeze
+        NAME_TAG_NAME = FromFedora::Descriptive::Contributor::NAME_PART.invert.freeze
+        NAME_TYPES = ['person', 'forename', 'surname', 'life dates', 'term of address'].freeze
 
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValueRequired>] titles
@@ -66,7 +67,7 @@ module Cocina
 
         def write_structured
           xml.titleInfo(with_uri_info(title, title_attrs)) do
-            sturctured_titles.each do |title|
+            structured_titles.each do |title|
               title_type = TAG_NAME.fetch(title.type, nil)
               if title_type == 'uniform title'
                 title_type = 'title'
@@ -87,7 +88,7 @@ module Cocina
         end
 
         def format_name(name)
-          name_type = TAG_NAME.fetch(name[:type], nil)
+          name_type = NAME_TAG_NAME.fetch(name[:type], nil)
           name_attr = {}
           name_attr[:type] = name_type if name_type
           xml.namePart name[:value], name_attr
@@ -131,7 +132,7 @@ module Cocina
           end
         end
 
-        def sturctured_titles
+        def structured_titles
           components[false]
         end
 
