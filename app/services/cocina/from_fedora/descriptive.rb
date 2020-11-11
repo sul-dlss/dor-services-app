@@ -15,7 +15,8 @@ module Cocina
         form: Form,
         identifier: Identifier,
         adminMetadata: AdminMetadata,
-        relatedResource: RelatedResource
+        relatedResource: RelatedResource,
+        geographic: Geographic
       }.freeze
 
       # @param [#build] title_builder
