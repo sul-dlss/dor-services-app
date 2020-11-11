@@ -141,12 +141,19 @@ Usage: bin/generate-cache [options]
     -o, --overwrite                  Overwrite cache for item if exists.
     -r, --random                     Select random druids.
     -a, --auto                       Automatically choose sample based on 14 day cycle.
+    -d, --druids DRUIDS              List of druids (instead of druids.txt).
     -h, --help                       Displays help.
         
 $ bin/generate-cache
 ```
 
 Using the druids from `druids.txt`, this will retrieve the item from Fedora and store the objects, datastreams, and disseminations in the `cache` directory.
+
+Alternatively, to get a single druid:
+```
+$ bin/generate-cache -d druid:bh164hd2167
+druid:bh164hd2167 (1)
+```
 
 ### Validate mapping to Cocina from Fedora
 ```
@@ -206,6 +213,11 @@ $ bin/validate-cocina-roundtrip -s 10 -r
 ```
 
 Using the druids from `druids.txt` and the cache, this will compare the differences between the original MODS (Fedora descriptive metadata) and the roundtripped MODS.
+
+Alternatively, to map a single druid:
+```
+$ bin/validate-cocina-roundtrip -d druid:bh164hd2167
+```
 
 Errors totals are summarized. For example:
 ```
