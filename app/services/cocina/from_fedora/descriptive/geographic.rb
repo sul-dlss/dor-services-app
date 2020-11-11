@@ -6,6 +6,11 @@ module Cocina
       # Maps MODS extension displayLabel geo to cocina descriptive extension
       # rubocop:disable Metrics/ClassLength
       class Geographic
+        DUBLIN_CORE_NS = 'http://purl.org/dc/elements/1.1/'
+        RDF_NS = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+        GMD_NS = 'http://www.isotc211.org/2005/gmd'
+        GML_NS = 'http://www.opengis.net/gml/3.2/'
+
         NAMESPACE = {
           'mods' => DESC_METADATA_NS,
           'dc' => DUBLIN_CORE_NS,

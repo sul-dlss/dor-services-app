@@ -5,10 +5,6 @@ module Cocina
     # Creates Cocina Descriptive objects from Fedora objects
     class Descriptive
       DESC_METADATA_NS = Dor::DescMetadataDS::MODS_NS
-      DUBLIN_CORE_NS = 'http://purl.org/dc/elements/1.1/'
-      RDF_NS = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-      GMD_NS = 'http://www.isotc211.org/2005/gmd'
-      GML_NS = 'http://www.opengis.net/gml/3.2/'
 
       BUILDERS = {
         note: Notes,
