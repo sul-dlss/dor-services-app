@@ -5,7 +5,7 @@ require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
 require 'optparse'
 
-options = { overwrite: false, random: false, auto: false }
+options = { overwrite: false, random: false, auto: false, druids: [] }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/generate-cache [options]'
 
@@ -13,6 +13,7 @@ parser = OptionParser.new do |option_parser|
   option_parser.on('-o', '--overwrite', 'Overwrite cache for item if exists.')
   option_parser.on('-r', '--random', 'Select random druids.')
   option_parser.on('-a', '--auto', 'Automatically choose sample based on 14 day cycle.')
+  option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -22,17 +23,20 @@ parser.parse!(into: options)
 
 cache = FedoraCache.new(overwrite: options[:overwrite])
 
-druids = File.read('druids.txt').split
-
-if options[:auto]
-  sample = Time.zone.today.yday % 14 # 0-13
-  sample_size = (druids.size / 14.to_f).ceil
-  start = sample * sample_size
-  druids = druids.slice(start, sample_size)
-  puts "Using druids #{start} to #{start + sample_size} of a total of #{druids.size}"
+if options[:druids].empty?
+  druids = File.read('druids.txt').split
+  if options[:auto]
+    sample = Time.zone.today.yday % 14 # 0-13
+    sample_size = (druids.size / 14.to_f).ceil
+    start = sample * sample_size
+    druids = druids.slice(start, sample_size)
+    puts "Using druids #{start} to #{start + sample_size} of a total of #{druids.size}"
+  else
+    druids.shuffle! if options[:random]
+    druids = druids.take(options[:sample]) if options[:sample]
+  end
 else
-  druids.shuffle! if options[:random]
-  druids = druids.take(options[:sample]) if options[:sample]
+  druids = options[:druids]
 end
 
 druids.each_with_index do |druid, index|
