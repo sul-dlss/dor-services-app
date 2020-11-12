@@ -82,7 +82,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       expect(descriptive[:note]).to match_array [
         {
           value: 'http://ennejah.info/',
-          type: 'system details'
+          type: 'system details',
+          displayLabel: 'Original site'
         },
         {
           type: 'summary',
@@ -100,7 +101,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           value: 'Archived by Stanford University Libraries, Humanities and Area Studies Resource Group'
         },
         {
-          value: 'California Digital Library Web Archiving Service'
+          value: 'California Digital Library Web Archiving Service',
+          displayLabel: 'Web archiving service'
         }
       ]
       expect(descriptive[:language]).to match_array [
