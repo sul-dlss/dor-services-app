@@ -164,8 +164,12 @@ module Cocina
 
         def hierarchical_geographic(xml, subject)
           xml.hierarchicalGeographic do
-            xml.country subject.structuredValue.find { |geo| geo.type == 'country' }.value
-            xml.city subject.structuredValue.find { |geo| geo.type == 'city' }.value
+            continent = subject.structuredValue.find { |geo| geo.type == 'continent' }&.value
+            xml.continent continent if continent
+            country = subject.structuredValue.find { |geo| geo.type == 'country' }&.value
+            xml.country country if country
+            city = subject.structuredValue.find { |geo| geo.type == 'city' }&.value
+            xml.city city if city
           end
         end
 
