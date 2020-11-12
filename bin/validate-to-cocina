@@ -96,8 +96,8 @@ results_by_data_error = results_by(data_error_results)
 aggregated_error_results = aggregated_errors_for(results_by_error)
 aggregated_data_error_results = aggregated_errors_for(results_by_data_error)
 
-puts "\n#{summary_line_for(error_results, 'Error')}%)\n"
-puts "#{summary_line_for(data_error_results, 'Data error')}%)\n"
+puts "\n#{summary_line_for(error_results, 'Error')}\n"
+puts "#{summary_line_for(data_error_results, 'Data error')}\n"
 
 print_results(aggregated_error_results, 'Error')
 print_results(aggregated_data_error_results, 'Data error')
