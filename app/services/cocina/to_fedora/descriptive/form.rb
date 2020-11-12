@@ -5,6 +5,7 @@ module Cocina
     class Descriptive
       # Maps forms from cocina to MODS XML
       class Form
+        H2_SOURCE_LABEL = 'Stanford self-deposit resource types'
         PHYSICAL_DESCRIPTION_TAG = {
           'reformatting quality' => :reformattingQuality,
           'form' => :form,
@@ -12,6 +13,7 @@ module Cocina
           'extent' => :extent,
           'digital origin' => :digitalOrigin
         }.freeze
+
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] forms
         def self.write(xml:, forms:)
@@ -25,7 +27,13 @@ module Cocina
 
         def write
           in_physical_description = Array(forms).group_by { |form| physical_description_member?(form) }
-          Array(in_physical_description[false]).each { |form| write_basic(form) }
+          Array(in_physical_description[false]).each do |form|
+            if form.structuredValue
+              write_structured(form)
+            elsif form.value
+              write_basic(form)
+            end
+          end
           write_physical_description(in_physical_description[true])
         end
 
@@ -69,6 +77,16 @@ module Cocina
             xml.genre form.value, with_uri_info(form, attributes)
           else
             xml.genre form.value, with_uri_info(form, attributes.merge(type: form.type))
+          end
+        end
+
+        def write_structured(form)
+          # The only use case we're supporting for structured forms at the
+          # moment is for H2. Short-circuit if that's not what we get.
+          return if form.source.value != H2_SOURCE_LABEL
+
+          form.structuredValue.each do |genre|
+            xml.genre genre.value, type: "H2 #{genre.type}"
           end
         end
 
