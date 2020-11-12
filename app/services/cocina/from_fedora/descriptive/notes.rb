@@ -31,10 +31,11 @@ module Cocina
         end
 
         def notes
-          set = ng_xml.xpath('//mods:note', mods: DESC_METADATA_NS)
+          set = ng_xml.xpath('//mods:note', mods: DESC_METADATA_NS).select { |node| node.text.present? }
           set.map do |node|
             { value: node.text }.tap do |attributes|
               attributes[:type] = node[:type] if node[:type]
+              attributes[:displayLabel] = node[:displayLabel] if node[:displayLabel]
             end
           end
         end
