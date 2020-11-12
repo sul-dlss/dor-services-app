@@ -33,6 +33,8 @@ module Cocina
 
         def add_subject_cartographics(forms)
           cartographic_scale.each do |scale|
+            next if scale.text.blank?
+
             forms << {
               value: scale.text,
               type: 'map scale'
@@ -40,6 +42,8 @@ module Cocina
           end
 
           cartographic_projection.each do |projection|
+            next if projection.text.blank?
+
             forms << {
               value: projection.text,
               type: 'map projection'

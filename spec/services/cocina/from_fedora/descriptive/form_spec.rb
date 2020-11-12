@@ -203,6 +203,24 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       end
     end
 
+    context 'when there is a subject/cartographics node with empty elements' do
+      let(:xml) do
+        <<~XML
+          <subject>
+            <cartographics>
+              <coordinates>E 72°--E 148°/N 13°--N 18°</coordinates>
+              <scale />
+              <projection />
+            </cartographics>
+          </subject>
+        XML
+      end
+
+      it 'ignores empty elements' do
+        expect(build).to eq []
+      end
+    end
+
     context 'when there is a subject/genre node' do
       let(:xml) do
         <<~XML
