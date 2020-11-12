@@ -37,7 +37,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
             "value": 'text',
             "type": 'resource type',
             "source": {
-              "value": 'MODS resource type'
+              "value": 'MODS resource types'
             }
           )
         ]
@@ -452,6 +452,39 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
             <genre authority="aat" valueURI="http://vocab.getty.edu/aat/300026413">technical manuals</genre>
             <typeOfResource>software, multimedia</typeOfResource>
             <typeOfResource>text</typeOfResource>
+          </mods>
+        XML
+      end
+    end
+
+    context 'with other / dance notation' do
+      let(:forms) do
+        [
+          Cocina::Models::DescriptiveValue.new(
+            structuredValue: [
+              {
+                value: 'Other',
+                type: 'type'
+              },
+              {
+                value: 'Dance notation',
+                type: 'subtype'
+              }
+            ],
+            source: {
+              value: 'Stanford self-deposit resource types'
+            },
+            type: 'resource type'
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <?xml version="1.0"?>
+          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <genre type="H2 type">Other</genre>
+            <genre type="H2 subtype">Dance notation</genre>
           </mods>
         XML
       end
