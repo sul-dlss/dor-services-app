@@ -12,29 +12,31 @@ module Cocina
         DATA_FORMAT_REGEX = /^data format$/.freeze
 
         # @params [Nokogiri::XML::Builder] xml
-        # @params [Array<Cocina::Models::DescriptiveValue>] geo
-        def self.write(xml:, geo:)
-          new(xml: xml, geo: geo).write
+        # @params [Array<Cocina::Models::DescriptiveValue>] geos
+        def self.write(xml:, geos:)
+          new(xml: xml, geos: geos).write
         end
 
-        def initialize(xml:, geo:)
+        def initialize(xml:, geos:)
           @xml = xml
-          @geo = geo
+          @geos = geos
         end
 
         def write
-          return if geo.nil?
+          return if geos.blank?
 
-          attributes = {}
-          attributes[:displayLabel] = 'geo'
-          xml.extension attributes do
-            xml['rdf'].RDF(format_namespace(geo[:subject].first[:type])) do
-              # REVIST: Need the druid to include rdf:about
-              # xml['rdf'].Description('rdf:about' => 'http://www.stanford.edu/kk138ps4721') do
-              xml['rdf'].Description do
-                add_format(extract_format)
-                add_type(extract_type)
-                add_content
+          geos.map do |geo|
+            attributes = {}
+            attributes[:displayLabel] = 'geo'
+            xml.extension attributes do
+              xml['rdf'].RDF(format_namespace(geo.subject.first.type)) do
+                # REVIST: Need the druid to include rdf:about
+                # xml['rdf'].Description('rdf:about' => 'http://www.stanford.edu/kk138ps4721') do
+                xml['rdf'].Description do
+                  add_format(extract_format(geo))
+                  add_type(extract_type(geo))
+                  add_content(geo)
+                end
               end
             end
           end
@@ -42,7 +44,7 @@ module Cocina
 
         private
 
-        attr_reader :xml, :geo
+        attr_reader :xml, :geos
 
         def format_namespace(type)
           namespace = {
@@ -55,16 +57,16 @@ module Cocina
           namespace
         end
 
-        def extract_format
-          media_type = geo[:form].find { |form| form[:type].match(MEDIA_REGEX) }
-          data_format = geo[:form].find { |form| form[:type].match(DATA_FORMAT_REGEX) }
+        def extract_format(geo)
+          media_type = geo.form.find { |form| form.type.match(MEDIA_REGEX) }
+          data_format = geo.form.find { |form| form.type.match(DATA_FORMAT_REGEX) }
 
-          return "#{media_type[:value]}; format=#{data_format[:value]}" if data_format
+          return "#{media_type.value}; format=#{data_format.value}" if data_format
 
           DEFAULT_FORMAT
         end
 
-        def extract_type
+        def extract_type(geo)
           type = geo[:form].find { |form| form[:type].match(TYPE_REGEX) }
           return type[:value] if type
 
@@ -79,20 +81,20 @@ module Cocina
           xml['dc'].type type
         end
 
-        def add_content
-          type = geo[:subject].first[:type]
+        def add_content(geo)
+          type = geo.subject.first.type
           case type
           when 'point coordinates'
-            add_centerpoint
+            add_centerpoint(geo)
           when 'bounding box coordinates'
-            add_bounding_box
-            add_coverage
+            add_bounding_box(geo)
+            add_coverage(geo)
           end
         end
 
-        def add_centerpoint
-          lat = geo[:subject].first[:structuredValue].find { |point| point[:type].include? 'latitude' }[:value]
-          long = geo[:subject].first[:structuredValue].find { |point| point[:type].include? 'longitude' }[:value]
+        def add_centerpoint(geo)
+          lat = geo.subject.first.structuredValue.find { |point| point.type.include? 'latitude' }.value
+          long = geo.subject.first.structuredValue.find { |point| point.type.include? 'longitude' }.value
           xml['gmd'].centerPoint do
             xml['gml'].Point('gml:id' => 'ID') do
               xml['gml'].pos "#{lat} #{long}"
@@ -100,36 +102,36 @@ module Cocina
           end
         end
 
-        def add_bounding_box
+        def add_bounding_box(geo)
           standard_tag = {}
-          standard = geo[:subject].first[:standard]
+          standard = geo.subject.first.standard
           standard_tag = { 'gml:srsName' => standard[:code] } if standard
           xml['gml'].boundedBy do
             xml['gml'].Envelope(standard_tag) do
+              bounding_box_coordinates = bounding_box_coordinates_for(geo)
               xml['gml'].lowerCorner "#{bounding_box_coordinates[:west]} #{bounding_box_coordinates[:south]}"
               xml['gml'].upperCorner "#{bounding_box_coordinates[:east]} #{bounding_box_coordinates[:north]}"
             end
           end
         end
 
-        def bounding_box_coordinates
-          @bounding_box_coordinates ||= {}.tap do |coords|
-            geo[:subject].first[:structuredValue].each do |direction|
-              coords[direction[:type].to_sym] = direction[:value]
+        def bounding_box_coordinates_for(geo)
+          {}.tap do |coords|
+            geo.subject.first.structuredValue.each do |direction|
+              coords[direction.type.to_sym] = direction.value
             end
           end
         end
 
-        def add_coverage
+        def add_coverage(geo)
           coverage = geo[:subject].find_all { |sub| sub[:type].include? 'coverage' }
           return nil if coverage.empty?
 
           coverage.map do |data|
-            coverage_attributes = {
-              'rdf:resource' => data[:uri],
-              'dc:language' => data[:valueLanguage][:code],
-              'dc:title' => data[:value]
-            }
+            coverage_attributes = {}
+            coverage_attributes['rdf:resource'] = data.uri if data.uri
+            coverage_attributes['dc:language'] = data.valueLanguage.code if data.valueLanguage&.code
+            coverage_attributes['dc:title'] = data.value if data.value
             xml['dc'].coverage coverage_attributes
           end
         end

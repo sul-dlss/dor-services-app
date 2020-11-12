@@ -19,6 +19,7 @@ module Cocina
         Nokogiri::XML::Builder.new do |xml|
           xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
                    'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+                   'xmlns:rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
                    'version' => '3.6',
                    'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
             Descriptive::Title.write(xml: xml, titles: descriptive.title)
@@ -31,7 +32,7 @@ module Cocina
             Descriptive::Identifier.write(xml: xml, identifiers: descriptive.identifier)
             Descriptive::AdminMetadata.write(xml: xml, admin_metadata: descriptive.adminMetadata)
             Descriptive::RelatedResource.write(xml: xml, related_resources: descriptive.relatedResource)
-            Descriptive::Geographic.write(xml: xml, geo: descriptive.geographic)
+            Descriptive::Geographic.write(xml: xml, geos: descriptive.geographic)
           end
         end
       end

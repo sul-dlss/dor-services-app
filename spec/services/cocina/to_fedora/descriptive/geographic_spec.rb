@@ -5,6 +5,8 @@ require 'rails_helper'
 RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
   subject(:xml) { writer.to_xml }
 
+  let(:geos) { [geo] }
+
   let(:writer) do
     Nokogiri::XML::Builder.new do |xml|
       xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
@@ -12,13 +14,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
                'version' => '3.6',
                'xmlns:rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, geo: geo)
+        described_class.write(xml: xml, geos: geos)
       end
     end
   end
 
   context 'when geo is nil' do
-    let(:geo) { nil }
+    let(:geos) { nil }
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
@@ -33,7 +35,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
 
   context 'when it has a geographic center point item' do
     let(:geo) do
-      {
+      Cocina::Models::DescriptiveGeographicMetadata.new(
         "form": [
           {
             "value": 'image/jpeg',
@@ -68,7 +70,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
             }
           }
         ]
-      }
+      )
     end
 
     it 'builds the xml' do
@@ -98,7 +100,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
 
   context 'with a basic bounding box' do
     let(:geo) do
-      {
+      Cocina::Models::DescriptiveGeographicMetadata.new(
         form: [
           {
             value: 'image/jpeg',
@@ -141,7 +143,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
             }
           }
         ]
-      }
+      )
     end
 
     it 'builds the xml' do
@@ -173,23 +175,24 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
   # 3. Bounding box for polygon shapefile converted from ISO 19139
   context 'with a bounding box from a polygon shapefile converted from ISO 19139' do
     let(:geo) do
-      { form: [
-        {
-          "value": 'application/x-esri-shapefile',
-          "type": 'media type',
-          "source": {
-            "value": 'IANA media type terms'
+      Cocina::Models::DescriptiveGeographicMetadata.new(
+        form: [
+          {
+            "value": 'application/x-esri-shapefile',
+            "type": 'media type',
+            "source": {
+              "value": 'IANA media type terms'
+            }
+          },
+          {
+            "value": 'Shapefile',
+            "type": 'data format'
+          },
+          {
+            "value": 'Dataset#Polygon',
+            "type": 'type'
           }
-        },
-        {
-          "value": 'Shapefile',
-          "type": 'data format'
-        },
-        {
-          "value": 'Dataset#Polygon',
-          "type": 'type'
-        }
-      ],
+        ],
         "subject": [
           {
             "structuredValue": [
@@ -226,7 +229,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
             },
             "uri": 'http://sws.geonames.org/6255152/'
           }
-        ] }
+        ]
+      )
     end
 
     it 'builds the cocina data structure' do
@@ -255,26 +259,110 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
     end
   end
 
+  context 'with a bounding box from a polygon shapefile converted from ISO 19139 missing standard' do
+    let(:geo) do
+      Cocina::Models::DescriptiveGeographicMetadata.new(
+        form: [
+          {
+            "value": 'application/x-esri-shapefile',
+            "type": 'media type',
+            "source": {
+              "value": 'IANA media type terms'
+            }
+          },
+          {
+            "value": 'Shapefile',
+            "type": 'data format'
+          },
+          {
+            "value": 'Dataset#Polygon',
+            "type": 'type'
+          }
+        ],
+        "subject": [
+          {
+            "structuredValue": [
+              {
+                "value": '-119.667',
+                "type": 'west'
+              },
+              {
+                "value": '-89.8842',
+                "type": 'south'
+              },
+              {
+                "value": '168.463',
+                "type": 'east'
+              },
+              {
+                "value": '-66.6497',
+                "type": 'north'
+              }
+            ],
+            "type": 'bounding box coordinates',
+            "encoding": {
+              "value": 'decimal'
+            }
+          },
+          {
+            "value": 'Antarctica',
+            "type": 'coverage',
+            "valueLanguage": {
+              "code": 'eng'
+            },
+            "uri": 'http://sws.geonames.org/6255152/'
+          }
+        ]
+      )
+    end
+
+    it 'builds the cocina data structure' do
+      # TODO:  rdf:about="http://purl.stanford.edu/xy581jd9710"
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <extension displayLabel="geo">
+            <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+              <rdf:Description>
+                <dc:format>application/x-esri-shapefile; format=Shapefile</dc:format>
+                <dc:type>Dataset#Polygon</dc:type>
+                <gml:boundedBy>
+                  <gml:Envelope>
+                    <gml:lowerCorner>-119.667 -89.8842</gml:lowerCorner>
+                    <gml:upperCorner>168.463 -66.6497</gml:upperCorner>
+                  </gml:Envelope>
+                </gml:boundedBy>
+                <dc:coverage rdf:resource="http://sws.geonames.org/6255152/" dc:language="eng" dc:title="Antarctica"/>
+              </rdf:Description>
+            </rdf:RDF>
+          </extension>
+      XML
+    end
+  end
+
   # 4. Bounding box for point shapefile converted from ISO 19139
   context 'with a bounding box from a point shapefile converted from ISO 19139' do
     let(:geo) do
-      { "form": [
-        {
-          "value": 'application/x-esri-shapefile',
-          "type": 'media type',
-          "source": {
-            "value": 'IANA media type terms'
+      Cocina::Models::DescriptiveGeographicMetadata.new(
+        "form": [
+          {
+            "value": 'application/x-esri-shapefile',
+            "type": 'media type',
+            "source": {
+              "value": 'IANA media type terms'
+            }
+          },
+          {
+            "value": 'Shapefile',
+            "type": 'data format'
+          },
+          {
+            "value": 'Dataset#Point',
+            "type": 'type'
           }
-        },
-        {
-          "value": 'Shapefile',
-          "type": 'data format'
-        },
-        {
-          "value": 'Dataset#Point',
-          "type": 'type'
-        }
-      ],
+        ],
         "subject": [
           {
             "structuredValue": [
@@ -303,7 +391,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
               "code": 'EPSG:4326'
             }
           }
-        ] }
+        ]
+      )
     end
 
     it 'builds the xml' do
@@ -334,23 +423,24 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
   # 5. Bounding box for line shapefile converted from ISO 19139
   context 'with a bounding box from a line shapefile converted from ISO 19139' do
     let(:geo) do
-      { "form": [
-        {
-          "value": 'application/x-esri-shapefile',
-          "type": 'media type',
-          "source": {
-            "value": 'IANA media type terms'
+      Cocina::Models::DescriptiveGeographicMetadata.new(
+        "form": [
+          {
+            "value": 'application/x-esri-shapefile',
+            "type": 'media type',
+            "source": {
+              "value": 'IANA media type terms'
+            }
+          },
+          {
+            "value": 'Shapefile',
+            "type": 'data format'
+          },
+          {
+            "value": 'Dataset#LineString',
+            "type": 'type'
           }
-        },
-        {
-          "value": 'Shapefile',
-          "type": 'data format'
-        },
-        {
-          "value": 'Dataset#LineString',
-          "type": 'type'
-        }
-      ],
+        ],
         "subject": [
           {
             "structuredValue": [
@@ -379,7 +469,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
               "code": 'EPSG:4326'
             }
           }
-        ] }
+        ]
+      )
     end
 
     it 'builds the xml' do
@@ -410,7 +501,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
   # 6. Raster image converted from ISO 19139
   context 'with a raster image converteed from ISO 19139' do
     let(:geo) do
-      {
+      Cocina::Models::DescriptiveGeographicMetadata.new(
         "form": [
           {
             "value": 'image/tiff',
@@ -457,7 +548,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
             }
           }
         ]
-      }
+      )
     end
 
     it 'builds the xml' do
@@ -488,23 +579,24 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
   # 7. Geonames and unauthorized subject terms
   context 'with geonames and unauthorized subject terms' do
     let(:geo) do
-      { "form": [
-        {
-          "value": 'application/x-esri-shapefile',
-          "type": 'media type',
-          "source": {
-            "value": 'IANA media type terms'
+      Cocina::Models::DescriptiveGeographicMetadata.new(
+        "form": [
+          {
+            "value": 'application/x-esri-shapefile',
+            "type": 'media type',
+            "source": {
+              "value": 'IANA media type terms'
+            }
+          },
+          {
+            "value": 'Shapefile',
+            "type": 'data format'
+          },
+          {
+            "value": 'Dataset#Polygon',
+            "type": 'type'
           }
-        },
-        {
-          "value": 'Shapefile',
-          "type": 'data format'
-        },
-        {
-          "value": 'Dataset#Polygon',
-          "type": 'type'
-        }
-      ],
+        ],
         "subject": [
           {
             "structuredValue": [
@@ -555,7 +647,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
             },
             "uri": 'http://sws.geonames.org/5372163/'
           }
-        ] }
+        ]
+      )
     end
 
     it 'builds the xml' do
@@ -576,8 +669,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
                     <gml:upperCorner>-123.458655 39.433878</gml:upperCorner>
                   </gml:Envelope>
                 </gml:boundedBy>
-                <dc:coverage rdf:resource="" dc:language="eng" dc:title="California, Northern"/>
-                <dc:coverage rdf:resource="" dc:language="eng" dc:title="Jackson Demonstration State Forest (Calif.)"/>
+                <dc:coverage dc:language="eng" dc:title="California, Northern"/>
+                <dc:coverage dc:language="eng" dc:title="Jackson Demonstration State Forest (Calif.)"/>
                 <dc:coverage rdf:resource="http://sws.geonames.org/5372163/" dc:language="eng" dc:title="Mendocino County (Calif.)"/>
               </rdf:Description>
             </rdf:RDF>

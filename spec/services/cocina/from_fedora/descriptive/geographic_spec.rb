@@ -72,6 +72,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
                               }
                             ]
                           }])
+      build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
     end
   end
 
@@ -144,6 +145,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
           }
         ]
       )
+
+      build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
     end
   end
 
@@ -226,6 +229,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
                               }
                             ]
                           }])
+      build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
     end
   end
 
@@ -299,6 +303,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
                               }
                             ]
                           }])
+      build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
     end
   end
 
@@ -372,6 +377,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
                               }
                             ]
                           }])
+      build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
     end
   end
 
@@ -445,6 +451,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
                               }
                             ]
                           }])
+      build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
     end
   end
 
@@ -543,6 +550,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
                               }
                             ]
                           }])
+      build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
     end
   end
 end
