@@ -48,15 +48,15 @@ def write_results(file, aggregated_error_results, label)
   end
 end
 
-def summary_line_for(results, label)
-  "#{label}: #{results.size} of #{@sample_size} (#{100 * results.size.to_f / @sample_size}%)"
+def summary_line_for(label, count)
+  "#{label}: #{count} of #{@sample_size} (#{100 * count.to_f / @sample_size}%)\n"
 end
 
 druids = File.read('druids.txt').split
 druids = druids.take(options[:sample]) if options[:sample]
 @sample_size = druids.size
 
-Result = Struct.new(:druid, :msg, :is_data_error)
+Result = Struct.new(:druid, :msg, :error_type)
 
 results = Parallel.map(druids, progress: 'Testing') do |druid|
   # Monkeypatching Honeybadger
@@ -76,19 +76,27 @@ results = Parallel.map(druids, progress: 'Testing') do |druid|
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: cache.label(druid))
   desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: cache.descmd_xml(druid))
   Cocina::Models::Description.new(desc_props)
-  Honeybadger.exception ? Result.new(druid, Honeybadger.exception, true) : nil
+  Honeybadger.exception ? Result.new(druid, Honeybadger.exception, :data_error) : nil
 rescue Cocina::Mapper::DataError => e
-  Result.new(druid, e.message, true)
+  Result.new(druid, e.message, :data_error)
 rescue StandardError => e
   if e.message == 'Missing item'
-    nil
+    Result.new(druid, e.message, :missing)
   else
-    Result.new(druid, e.message.gsub('\n', ' '), false)
+    Result.new(druid, e.message.gsub('\n', ' '), :to_cocina_error)
   end
 end.compact
 
-error_results = results.reject(&:is_data_error)
-data_error_results = results.select(&:is_data_error)
+error_results = results.select { |result| result.error_type == :to_cocina_error }
+data_error_results = results.select { |result| result.error_type == :data_error }
+
+counts = { to_cocina_error: 0, missing: 0, data_error: 0 }
+results.each { |result| counts[result.error_type] += 1 }
+
+puts summary_line_for('To Cocina error', counts[:to_cocina_error])
+puts summary_line_for('Data error', counts[:data_error])
+puts summary_line_for('Missing', counts[:missing])
+puts "\n"
 
 results_by_error = results_by(error_results)
 results_by_data_error = results_by(data_error_results)
@@ -96,15 +104,14 @@ results_by_data_error = results_by(data_error_results)
 aggregated_error_results = aggregated_errors_for(results_by_error)
 aggregated_data_error_results = aggregated_errors_for(results_by_data_error)
 
-puts "\n#{summary_line_for(error_results, 'Error')}\n"
-puts "#{summary_line_for(data_error_results, 'Data error')}\n"
-
 print_results(aggregated_error_results, 'Error')
 print_results(aggregated_data_error_results, 'Data error')
 
 File.open('results.txt', 'w') do |file|
-  file.write("#{summary_line_for(error_results, 'Error')}\n")
-  file.write("#{summary_line_for(data_error_results, 'Data error')}\n\n")
+  file.write(summary_line_for('To Cocina error', counts[:to_cocina_error]))
+  file.write(summary_line_for('Data error', counts[:data_error]))
+  file.write(summary_line_for('Missing', counts[:missing]))
+  file.write("\n")
   write_results(file, aggregated_error_results, 'Error')
   write_results(file, aggregated_data_error_results, 'Data error')
 end
