@@ -75,8 +75,7 @@ module Cocina
         end
 
         def about(druid)
-          id = druid.sub(/^druid:/, '')
-          "#{ABOUT_URI_PREFIX}#{id}"
+          "#{ABOUT_URI_PREFIX}#{druid.delete_prefix('druid:')}"
         end
 
         def add_format(data)
