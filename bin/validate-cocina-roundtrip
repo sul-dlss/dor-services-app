@@ -22,11 +22,12 @@ parser.parse!(into: options)
 
 cache = FedoraCache.new
 
-# Additional ignore selectors can be added.
-@ignore_selectors = [
-  '/mods/@version',
-  '/mods/@xsi:schemaLocation'
-]
+# Changes to the original XML to help with matching.
+def normalize_xml(ng_xml)
+  ng_xml.root['version'] = '3.6'
+  ng_xml.root['xsi:schemaLocation'] = 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd'
+  ng_xml
+end
 
 def round_tripped_xml(cocina)
   Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina).to_xml)
@@ -36,11 +37,6 @@ def cocina_model(xml, label)
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: label)
   desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: xml)
   Cocina::Models::Description.new(desc_props)
-end
-
-def ignore_node?(node)
-  @ignore_selectors.each { |selector| return true if node.matches?(selector) }
-  false
 end
 
 # rubocop:disable Metrics/ParameterLists
@@ -130,8 +126,6 @@ def check_equivalent(result_xml, original_xml)
       nil
     elsif original_node.xml?
       nil
-    elsif ignore_node?(original_node)
-      true
     elsif original_node.element? && original_node.name == result_node.name && original_node.elements.length != result_node.elements.length
       matched_original_nodes << original_node
       original_node.ancestors.each { |node| matched_original_nodes << node }
@@ -158,6 +152,9 @@ def validate_druid(druid, cache)
   rescue StandardError
     return :to_cocina_error
   end
+
+  # Changes to support better matching.
+  normalize_xml(original_xml)
 
   begin
     result_xml = round_tripped_xml(cocina)
