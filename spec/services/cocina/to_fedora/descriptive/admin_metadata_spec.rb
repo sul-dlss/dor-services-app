@@ -144,6 +144,17 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
                 }
               }
             ]
+          },
+          {
+            "type": 'modification',
+            "date": [
+              {
+                "value": '20200718050001.0',
+                "encoding": {
+                  "code": 'iso8601'
+                }
+              }
+            ]
           }
         ],
         "standard": {
@@ -184,6 +195,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
             <descriptionStandard>aacr</descriptionStandard>
             <recordContentSource authority="marcorg">CSt</recordContentSource>
             <recordCreationDate encoding="marc">180305</recordCreationDate>
+            <recordChangeDate encoding='iso8601'>20200718050001.0</recordChangeDate>
             <recordIdentifier source="SIRSI">a12374669</recordIdentifier>
             <recordOrigin>Converted from MARCXML to MODS version 3.6 using MARC21slim2MODS3-6_SDR.xsl (SUL version 1 2018/06/13; LC Revision 1.118 2018/01/31)</recordOrigin>
             <languageOfCataloging usage="primary">

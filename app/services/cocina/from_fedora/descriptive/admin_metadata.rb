@@ -22,7 +22,7 @@ module Cocina
             admin_metadata[:standard] = build_standard
             admin_metadata[:note] = build_note
             admin_metadata[:identifier] = build_identifier
-            admin_metadata[:event] = build_event
+            admin_metadata[:event] = build_events
           end.compact
         end
 
@@ -30,20 +30,28 @@ module Cocina
 
         attr_reader :ng_xml
 
-        def build_event
-          return unless creation_event
+        def build_events
+          events = []
+          events << build_event_for(creation_event, 'creation') if creation_event
+          events << build_event_for(modification_event, 'modification') if modification_event
 
-          event_code = creation_event['encoding']
+          return nil if events.empty?
+
+          events
+        end
+
+        def build_event_for(node, type)
+          event_code = node['encoding']
           encoding = { code: event_code } if event_code
-          [{
-            type: 'creation',
+          {
+            type: type,
             date: [
               {
-                value: creation_event.text,
+                value: node.text,
                 encoding: encoding
               }.compact
             ]
-          }]
+          }
         end
 
         def build_identifier
@@ -144,6 +152,10 @@ module Cocina
 
         def creation_event
           @creation_event ||= ng_xml.xpath('//mods:mods/mods:recordInfo/mods:recordCreationDate', mods: DESC_METADATA_NS).first
+        end
+
+        def modification_event
+          @modification_event ||= ng_xml.xpath('//mods:mods/mods:recordInfo/mods:recordChangeDate', mods: DESC_METADATA_NS).first
         end
       end
     end
