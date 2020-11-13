@@ -29,7 +29,7 @@ module Cocina
             attributes = {}
             attributes[:displayLabel] = 'geo'
             xml.extension attributes do
-              xml['rdf'].RDF(format_namespace(geo.subject.first.type)) do
+              xml['rdf'].RDF(format_namespace(geo)) do
                 # REVIST: Need the druid to include rdf:about
                 # xml['rdf'].Description('rdf:about' => 'http://www.stanford.edu/kk138ps4721') do
                 xml['rdf'].Description do
@@ -46,13 +46,13 @@ module Cocina
 
         attr_reader :xml, :geos
 
-        def format_namespace(type)
+        def format_namespace(geo)
           namespace = {
             'xmlns:gml' => 'http://www.opengis.net/gml/3.2/',
             'xmlns:dc' => 'http://purl.org/dc/elements/1.1/'
           }
 
-          namespace['xmlns:gmd'] = 'http://www.isotc211.org/2005/gmd' if type.include? 'point coordinates'
+          namespace['xmlns:gmd'] = 'http://www.isotc211.org/2005/gmd' if geo.subject&.first&.type&.include? 'point coordinates'
 
           namespace
         end
@@ -82,7 +82,7 @@ module Cocina
         end
 
         def add_content(geo)
-          type = geo.subject.first.type
+          type = geo.subject&.first&.type
           case type
           when 'point coordinates'
             add_centerpoint(geo)
