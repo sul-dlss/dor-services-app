@@ -72,7 +72,7 @@ module Cocina
             events << build_event('capture', date_captured, display_label) if date_captured.present?
 
             date_other = origin.xpath('mods:dateOther', mods: DESC_METADATA_NS)
-            events << build_event(nil, date_other, display_label) if date_other.present?
+            events << build_event(origin.attr('eventType'), date_other, display_label) if date_other.present?
           end
         end
 
