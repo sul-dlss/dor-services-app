@@ -98,6 +98,7 @@ RSpec.describe Cocina::ToFedora::Descriptive do
   end
 
   context 'with a MODS version specified in note' do
+    let(:druid) { 'druid:aa666bb1234' }
     let(:descriptive) do
       Cocina::Models::Description.new(
         title: [

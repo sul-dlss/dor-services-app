@@ -7,12 +7,13 @@ module Cocina
     class Descriptive
       # @param [Cocina::Models::Description] descriptive
       # @return [Nokogiri::XML::Document]
-      def self.transform(descriptive)
-        new(descriptive).transform
+      def self.transform(descriptive, druid)
+        new(descriptive, druid).transform
       end
 
-      def initialize(descriptive)
+      def initialize(descriptive, druid)
         @descriptive = descriptive
+        @druid = druid
       end
 
       # rubocop:disable Metrics/AbcSize
@@ -29,7 +30,7 @@ module Cocina
             Descriptive::Identifier.write(xml: xml, identifiers: descriptive.identifier)
             Descriptive::AdminMetadata.write(xml: xml, admin_metadata: descriptive.adminMetadata)
             Descriptive::RelatedResource.write(xml: xml, related_resources: descriptive.relatedResource)
-            Descriptive::Geographic.write(xml: xml, geos: descriptive.geographic)
+            Descriptive::Geographic.write(xml: xml, geos: descriptive.geographic, druid: druid)
           end
         end
       end
@@ -37,7 +38,7 @@ module Cocina
 
       private
 
-      attr_reader :descriptive
+      attr_reader :descriptive, :druid
 
       def mods_version
         @mods_version ||= begin
