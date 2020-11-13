@@ -33,7 +33,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
   end
 
   # 2. Classification with edition
-  context 'when given a classification with authority' do
+  context 'when given a classification with edition' do
     let(:xml) { '<classification authority="ddc" edition="11">683</classification>' }
 
     it 'builds the cocina data structure' do
@@ -64,6 +64,37 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
             "code": 'lcc'
           }
         }
+      ]
+    end
+  end
+
+  context 'when given multiple classifications' do
+    let(:xml) do
+      <<~XML
+        <classification authority="ddc" edition="11">683</classification>
+        <classification authority="ddc" edition="12">684</classification>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'classification',
+          "value": '683',
+          "source": {
+            "code": 'ddc',
+            "version": '11th edition'
+          }
+        },
+        {
+          "type": 'classification',
+          "value": '684',
+          "source": {
+            "code": 'ddc',
+            "version": '12th edition'
+          }
+        }
+
       ]
     end
   end

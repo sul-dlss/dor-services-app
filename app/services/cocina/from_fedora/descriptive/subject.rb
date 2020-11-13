@@ -153,14 +153,7 @@ module Cocina
         end
 
         def subjects
-          subject_node = ng_xml.xpath('//mods:subject', mods: DESC_METADATA_NS)
-          return subject_node unless classification
-
-          subject_node << classification
-        end
-
-        def classification
-          ng_xml.xpath('//mods:classification', mods: DESC_METADATA_NS).first
+          ng_xml.xpath('//mods:subject', mods: DESC_METADATA_NS) + ng_xml.xpath('//mods:classification', mods: DESC_METADATA_NS)
         end
 
         def edition_for(subject)
