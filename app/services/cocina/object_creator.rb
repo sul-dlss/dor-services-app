@@ -122,7 +122,7 @@ module Cocina
         item.label = truncate_label(label)
         item.objectLabel = label
       elsif obj.description
-        item.descMetadata.content = Cocina::ToFedora::Descriptive.transform(obj.description).to_xml
+        item.descMetadata.content = Cocina::ToFedora::Descriptive.transform(obj.description, item.pid).to_xml
         item.descMetadata.content_will_change!
       else
         item.descMetadata.mods_title = obj.label

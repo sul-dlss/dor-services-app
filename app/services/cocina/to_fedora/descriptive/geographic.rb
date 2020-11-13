@@ -11,15 +11,18 @@ module Cocina
         MEDIA_REGEX = /^media type$/.freeze
         DATA_FORMAT_REGEX = /^data format$/.freeze
 
+        ABOUT_URI_PREFIX = 'http://purl.stanford.edu/'
+
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] geos
-        def self.write(xml:, geos:)
-          new(xml: xml, geos: geos).write
+        def self.write(xml:, geos:, druid:)
+          new(xml: xml, geos: geos, druid: druid).write
         end
 
-        def initialize(xml:, geos:)
+        def initialize(xml:, geos:, druid:)
           @xml = xml
           @geos = geos
+          @druid = druid
         end
 
         def write
@@ -30,9 +33,7 @@ module Cocina
             attributes[:displayLabel] = 'geo'
             xml.extension attributes do
               xml['rdf'].RDF(format_namespace(geo)) do
-                # REVIST: Need the druid to include rdf:about
-                # xml['rdf'].Description('rdf:about' => 'http://www.stanford.edu/kk138ps4721') do
-                xml['rdf'].Description do
+                xml['rdf'].Description('rdf:about' => about(druid)) do
                   add_format(extract_format(geo))
                   add_type(extract_type(geo))
                   add_content(geo)
@@ -44,7 +45,7 @@ module Cocina
 
         private
 
-        attr_reader :xml, :geos
+        attr_reader :xml, :geos, :druid
 
         def format_namespace(geo)
           namespace = {
@@ -71,6 +72,11 @@ module Cocina
           return type[:value] if type
 
           DEFAULT_TYPE
+        end
+
+        def about(druid)
+          id = druid.sub(/^druid:/, '')
+          "#{ABOUT_URI_PREFIX}#{id}"
         end
 
         def add_format(data)
