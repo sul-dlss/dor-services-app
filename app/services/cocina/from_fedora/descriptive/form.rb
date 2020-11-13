@@ -6,6 +6,8 @@ module Cocina
       # Maps relevant MODS physicalDescription, typeOfResource and genre from descMetadata to cocina form
       # rubocop:disable Metrics/ClassLength
       class Form
+        # NOTE: H2 is the first case of structured form (genre/typeOfResource) values we're implementing
+        H2_GENRE_TYPE_PREFIX = 'H2 '
         PHYSICAL_DESCRIPTION_XPATH = '//mods:physicalDescription'
 
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
@@ -52,10 +54,12 @@ module Cocina
         end
 
         def add_genre(forms)
-          genre.each do |type|
+          add_structured_genre(forms) if structured_genre.any?
+
+          basic_genre.each do |type|
             forms << {
-              "value": type.text,
-              "type": type['type'] || 'genre'
+              value: type.text,
+              type: type['type'] || 'genre'
             }.tap do |item|
               if type[:valueURI]
                 item[:uri] = type[:valueURI]
@@ -67,13 +71,30 @@ module Cocina
           end
         end
 
+        def add_structured_genre(forms)
+          # The only use case we're supporting for structured forms at the
+          # moment is for H2. Assume these are H2 values.
+          forms << {
+            type: 'resource type',
+            source: {
+              value: Cocina::ToFedora::Descriptive::Form::H2_SOURCE_LABEL
+            },
+            structuredValue: structured_genre.map do |genre|
+              {
+                value: genre.text,
+                type: genre.attributes['type'].value.delete_prefix(H2_GENRE_TYPE_PREFIX)
+              }
+            end
+          }
+        end
+
         def add_types(forms)
           type_of_resource.each do |type|
             forms << {
               "value": type.text,
               "type": 'resource type',
               "source": {
-                "value": 'MODS resource type'
+                "value": 'MODS resource types'
               }
             }
           end
@@ -157,9 +178,14 @@ module Cocina
           ng_xml.xpath('//mods:typeOfResource', mods: DESC_METADATA_NS)
         end
 
-        # returns genre at the root and inside subjects
-        def genre
-          ng_xml.xpath('//mods:genre', mods: DESC_METADATA_NS)
+        # returns genre at the root and inside subjects excluding structured genres
+        def basic_genre
+          ng_xml.xpath("//mods:genre[not(@type) or not(starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}'))]", mods: DESC_METADATA_NS)
+        end
+
+        # returns structured genres at the root and inside subjects, which are combined to form a single, structured Cocina element
+        def structured_genre
+          ng_xml.xpath("//mods:genre[@type and starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}')]", mods: DESC_METADATA_NS)
         end
 
         def cartographic_scale
