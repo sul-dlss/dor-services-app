@@ -55,9 +55,14 @@ module Cocina
         end
 
         def build_event
-          Array(admin_metadata.event).select { |note| note.type == 'creation' }.each do |event|
+          build_event_for('creation', 'recordCreationDate')
+          build_event_for('modification', 'recordChangeDate')
+        end
+
+        def build_event_for(type, tag)
+          Array(admin_metadata.event).select { |note| note.type == type }.each do |event|
             event.date.each do |date|
-              xml.recordCreationDate date.value, encoding: date.encoding.code
+              xml.public_send(tag, date.value, encoding: date.encoding.code)
             end
           end
         end
