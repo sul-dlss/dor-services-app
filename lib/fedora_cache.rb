@@ -77,7 +77,11 @@ class FedoraCache
   end
 
   def cachepath_for(cache_id)
-    "cache/#{cache_id[6..8]}/#{cache_id[9..11]}/#{cache_id}.gz"
+    "#{cache_dir}/#{cache_id[6..8]}/#{cache_id[9..11]}/#{cache_id}.gz"
+  end
+
+  def cache_dir
+    @cache_dir ||= ENV['FEDORA_CACHE'] || 'cache'
   end
 
   def put_cache(cache_id, body)

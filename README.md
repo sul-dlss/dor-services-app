@@ -193,6 +193,8 @@ Examples: druid:vx162kw9911, druid:rh979yv1005, druid:qb797px1044, druid:fq225gc
 
 A complete set of results will be written to `results.txt`.
 
+Note that the location of the cache can be set with `FEDORA_CACHE` environment variable.
+
 ### Validate mapping to Fedora from Cocina
 ```
 $ bin/validate-to-fedora -h
@@ -209,6 +211,8 @@ Missing: 26 of 7500 (0.3466666666666667%)
 ```
 
 This is similar to `bin/validate-to-cocina` but reports errors raised when mapping to Fedora.
+
+Note that the location of the cache can be set with `FEDORA_CACHE` environment variable.
 
 ### Validate roundtrip mapping (to Cocina from Fedora then to Fedora from Cocina)
 ```
@@ -239,34 +243,46 @@ Status (n=100):
 
 In addition, detailed results for each item with a difference are provided in an individual file in `results/`.
 
+Note that the location of the cache can be set with `FEDORA_CACHE` environment variable.
+
 ### Running the validation on sdr-deploy
 
-First indicate in the #dlss-infrastructure slack channel you will be running validation.
-Then, get on VPN, ssh into the sdr-deploy server, check out your branch, and run the validation.
-
-Note that you should ensure nobody else is currently running a validation, as you will be checking out a branch
-in a common directory.  As a best practice, re check-out the master branch when done to indicate it is not in use.
-
+All of these directions required that you be sshed into sdr-deploy server.
 ```
-ssh deploy@sdr-deploy.stanford.edu
-cd /opt/app/deploy/dor-services-app
-git branch # see if you are on master, which shows likely not in use
-git fetch
-git checkout YOUR_BRANCH_NAME
-bin/validate-to-cocina -s 350000
+$ ssh deploy@sdr-deploy.stanford.edu
 ```
 
-When done, delete your branch and change back to master:
+To setup an environment for testing, clone your own copy of the repo as shown below:
 ```
-git checkout master
-git branch -d YOUR_BRANCH_NAME
+$ mkdir jlit
+$ cd jlit
+$ git clone https://github.com/sul-dlss/dor-services-app.git
+$ cd dor-services-app
+$ cp ../../dor-services-app/druids.txt .
+```
+
+Note that all environments share a cache by default:
+```
+$ echo $FEDORA_CACHE
+/opt/app/deploy/dor-services-app/cache
+```
+
+If testing a mapping to cocina, test with `bin/validate-to-cocina`. If testing a mapping to fedora, test with `bin/validate-to-fedora`.
+
+In both cases, compare results from master against your branch. The sample size to you is up to you; biggers samples are recommended for more complex changes.
+
+```
+$ git checkout master
+$ git pull
+$ bin/validate-to-cocina -s 350000
+$ git checkout YOUR_BRANCH_NAME
+$ bin/validate-to-cocina -s 350000
 ```
 
 When done, you may want to fetch the `results.txt` to your local drive (it is written to the root folder of dor-services-app)
 and look for errors.
 
 ```
-scp deploy@sdr-deploy.stanford.edu:~/dor-services-app/results.txt results-oct30.txt
-grep Error results-oct30.txt # shows the unique errors
+$ scp deploy@sdr-deploy.stanford.edu:~/jlit/dor-services-app/results.txt results-oct30.txt
+$ grep Error results-oct30.txt # shows the unique errors
 ```
-
