@@ -91,7 +91,7 @@ module Cocina
 
           case subject.type
           when 'classification'
-            subject_attributes[:authority] = subject.source.code
+            subject_attributes[:authority] = subject.source.code if subject.source&.code
             write_classification(subject.value, subject_attributes)
           else
             xml.subject(subject_attributes) do
