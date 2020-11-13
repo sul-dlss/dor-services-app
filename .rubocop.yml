@@ -27,6 +27,7 @@ Metrics/ClassLength:
   Exclude:
     - 'app/services/cocina/to_fedora/descriptive/event.rb'
     - 'app/services/cocina/from_fedora/descriptive/admin_metadata.rb'
+    - 'app/services/cocina/to_fedora/descriptive/title.rb'
 
 RSpec/DescribeClass:
   Exclude:

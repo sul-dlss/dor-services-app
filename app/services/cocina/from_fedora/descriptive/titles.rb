@@ -14,10 +14,10 @@ module Cocina
           'date' => 'life dates',
           'given' => 'forename',
           'family' => 'surname',
-          'uniform title' => 'title'
+          'uniform' => 'title'
         }.freeze
 
-        PERSON_TYPE = 'person'
+        PERSON_TYPE = 'name'
 
         NAME_TYPES = ['person', 'forename', 'surname', 'life dates'].freeze
 
@@ -52,14 +52,26 @@ module Cocina
 
         # @param [Nokogiri::XML::NodeSet] node_set the titleInfo elements in the parallel grouping
         def parallel(node_set)
-          display_types = !node_set.all? { |node| node['type'] == 'translated' }
-          { parallelValue: simple_or_structured(node_set, display_types: display_types) }.tap do |result|
-            # If none of these nodes are marked as primary, set the type to parallel
-            unless node_set.any? { |node| node['usage'] }
-              result[:type] = 'parallel'
-              result[:status] = 'primary'
-            end
+          { parallelValue: simple_or_structured(node_set, display_types: display_types?(node_set)) }.tap do |result|
+            type = parallel_type(node_set)
+            result[:type] = type if type
           end
+        end
+
+        def display_types?(node_set)
+          return false if node_set.all? { |node| node['type'] == 'translated' }
+          return false if node_set.all? { |node| node['type'] == 'uniform' }
+
+          true
+        end
+
+        def parallel_type(node_set)
+          # If both uniform, then uniform
+          return 'uniform' if node_set.all? { |node| node[:type] == 'uniform' }
+          # If none of these nodes are marked as primary, set the type to parallel
+          return 'parallel' unless node_set.any? { |node| node['usage'] }
+
+          nil
         end
 
         def simple_or_structured(node_set, display_types: true)
@@ -92,14 +104,14 @@ module Cocina
         # @param [Bool] display_types this is set to false in the case that it's a parallelValue and all are translations
         def simple_value(node, display_types:)
           value = node.xpath('./mods:title', mods: DESC_METADATA_NS).text
-          return structured_name(node: node, name_title_group: node['nameTitleGroup'], title: value) if node['nameTitleGroup']
+          return structured_name(node: node, title: value, display_types: display_types) if node['nameTitleGroup']
 
           with_attributes({ value: value }, node, display_types: display_types)
         end
 
-        def structured_name(node:, name_title_group:, title:)
+        def structured_name(node:, title:, display_types: true)
           # Dereference the name in a nameTitleGroup to create the value
-          parts = node.xpath("//mods:name[@nameTitleGroup='#{name_title_group}']/mods:namePart", mods: DESC_METADATA_NS)
+          parts = node.xpath("//mods:name[@nameTitleGroup='#{node['nameTitleGroup']}']/mods:namePart", mods: DESC_METADATA_NS)
 
           vals = if parts.blank?
                    Honeybadger.notify('[DATA ERROR] Name not found for title group', { tags: 'data_error' })
@@ -110,7 +122,7 @@ module Cocina
 
           with_attributes({ structuredValue: vals + [{ value: title, type: 'title' }] },
                           node,
-                          display_types: true)
+                          display_types: display_types)
         end
 
         # @param [Hash<Symbol,String>] value

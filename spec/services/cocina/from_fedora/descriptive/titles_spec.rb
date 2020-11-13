@@ -297,7 +297,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             "structuredValue": [
               {
                 "value": 'Shakespeare, William, 1564-1616',
-                "type": 'person'
+                "type": 'name'
               },
               {
                 "value": 'Hamlet',
@@ -387,7 +387,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             "structuredValue": [
               {
                 "value": 'Spinoza, Benedictus de',
-                "type": 'person'
+                "type": 'name'
               },
               {
                 "value": '1632-1677',
@@ -399,6 +399,98 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
               }
             ],
             "type": 'uniform'
+          }
+        ]
+      end
+    end
+
+    context 'when there is a multilingual uniform title' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+              <titleInfo>
+                <title>Mishnah berurah</title>
+                <subTitle>the classic commentary to Shulchan aruch Orach chayim, comprising the laws of daily Jewish conduct</subTitle>
+              </titleInfo>
+              <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="01">
+                <title>Mishnah berurah. English and Hebrew</title>
+              </titleInfo>
+              <name type="personal" usage="primary" altRepGroup="02" nameTitleGroup="1">
+                <namePart>Israel Meir</namePart>
+                <namePart type="termsOfAddress">ha-Kohen</namePart>
+                <namePart type="date">1838-1933</namePart>
+              </name>
+              <name type="personal" usage="primary" altRepGroup="02" script="" nameTitleGroup="2">
+                <namePart>Israel Meir in Hebrew characters</namePart>
+                <namePart type="date">1838-1933</namePart>
+              </name>
+              <titleInfo type="uniform" nameTitleGroup="2" altRepGroup="01" script="">
+                <title>Mishnah berurah in Hebrew characters</title>
+              </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
+      it 'builds cocina structure' do
+        expect(build).to eq [
+          {
+            "parallelValue": [
+              {
+                "structuredValue": [
+                  {
+                    "value": 'Israel Meir',
+                    "type": 'name'
+                  },
+                  {
+                    "value": 'ha-Kohen',
+                    "type": 'term of address'
+                  },
+                  {
+                    "value": '1838-1933',
+                    "type": 'life dates'
+                  },
+                  {
+                    "value": 'Mishnah berurah. English and Hebrew',
+                    "type": 'title'
+                  }
+                ]
+              },
+              {
+                "structuredValue": [
+                  {
+                    "value": 'Israel Meir in Hebrew characters',
+                    "type": 'name'
+                  },
+                  {
+                    "value": '1838-1933',
+                    "type": 'life dates'
+                  },
+                  {
+                    "value": 'Mishnah berurah in Hebrew characters',
+                    "type": 'title'
+                  }
+                ]
+              }
+            ],
+            "type": 'uniform'
+          },
+          {
+            "structuredValue": [
+              {
+                "value": 'Mishnah berurah',
+                "type": 'main title'
+              },
+              {
+                "value": 'the classic commentary to Shulchan aruch Orach chayim, comprising the laws of daily Jewish conduct',
+                "type": 'subtitle'
+              }
+            ]
           }
         ]
       end
@@ -595,8 +687,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
                 }
               }
             ],
-            "type": 'parallel',
-            "status": 'primary'
+            "type": 'parallel'
           }
         ]
       end

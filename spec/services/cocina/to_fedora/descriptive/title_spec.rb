@@ -105,6 +105,93 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
       end
     end
 
+    context 'when it is a multilingual uniform title' do
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            "structuredValue": [
+              {
+                "value": 'Mishnah berurah',
+                "type": 'main title'
+              },
+              {
+                "value": 'the classic commentary to Shulchan aruch Orach chayim, comprising the laws of daily Jewish conduct',
+                "type": 'subtitle'
+              }
+            ]
+          ),
+          Cocina::Models::Title.new(
+            "parallelValue": [
+              {
+                "structuredValue": [
+                  {
+                    "value": 'Israel Meir',
+                    "type": 'name'
+                  },
+                  {
+                    "value": 'ha-Kohen',
+                    "type": 'term of address'
+                  },
+                  {
+                    "value": '1838-1933',
+                    "type": 'life dates'
+                  },
+                  {
+                    "value": 'Mishnah berurah. English and Hebrew',
+                    "type": 'title'
+                  }
+                ]
+              },
+              {
+                "structuredValue": [
+                  {
+                    "value": 'Israel Meir in Hebrew characters',
+                    "type": 'name'
+                  },
+                  {
+                    "value": '1838-1933',
+                    "type": 'life dates'
+                  },
+                  {
+                    "value": 'Mishnah berurah in Hebrew characters',
+                    "type": 'title'
+                  }
+                ]
+              }
+            ],
+            "type": 'uniform'
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title>Mishnah berurah</title>
+              <subTitle>the classic commentary to Shulchan aruch Orach chayim, comprising the laws of daily Jewish conduct</subTitle>
+            </titleInfo>
+            <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="1">
+              <title>Mishnah berurah. English and Hebrew</title>
+            </titleInfo>
+            <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="1">
+              <namePart>Israel Meir</namePart>
+              <namePart type="termsOfAddress">ha-Kohen</namePart>
+              <namePart type="date">1838-1933</namePart>
+            </name>
+            <titleInfo type="uniform" nameTitleGroup="2" altRepGroup="1">
+              <title>Mishnah berurah in Hebrew characters</title>
+            </titleInfo>
+            <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="2">
+              <namePart>Israel Meir in Hebrew characters</namePart>
+              <namePart type="date">1838-1933</namePart>
+            </name>
+        XML
+      end
+    end
+
     context 'when it has an alternative' do
       let(:titles) do
         [
@@ -214,11 +301,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.loc.gov/mods/v3" version="3.6"
             xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <titleInfo usage="primary" lang="fre" altRepGroup="0">
+            <titleInfo usage="primary" lang="fre" altRepGroup="1">
               <nonSort>Les</nonSort>
               <title>mis&#xE9;rables</title>
             </titleInfo>
-            <titleInfo type="translated" lang="eng" altRepGroup="0">
+            <titleInfo type="translated" lang="eng" altRepGroup="1">
               <nonSort>The</nonSort>
               <title>wretched</title>
             </titleInfo>
@@ -242,7 +329,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
             "structuredValue": [
               {
                 "value": 'Shakespeare, William, 1564-1616',
-                "type": 'person',
+                "type": 'name',
                 "uri": 'http://id.loc.gov/authorities/names/n78095332',
                 "source": {
                   "uri": 'http://id.loc.gov/authorities/names/',
@@ -293,6 +380,39 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
 
     context 'when it is parallel title' do
       xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L316'
+    end
+
+    context 'when it is a parallel title without type' do
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            "parallelValue": [
+              {
+                "value": 'Zi yuan wei yuan hui yue kan'
+              },
+              {
+                "value": '資源委員會月刊'
+              }
+            ],
+            "type": 'parallel'
+          )
+        ]
+      end
+
+      it 'creates the equivalent MODS' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+               <titleInfo altRepGroup="1">
+                  <title>Zi yuan wei yuan hui yue kan</title>
+               </titleInfo>
+               <titleInfo altRepGroup="1">
+                  <title>&#x8CC7;&#x6E90;&#x59D4;&#x54E1;&#x6703;&#x6708;&#x520A;</title>
+               </titleInfo>
+          </mods>
+        XML
+      end
     end
 
     context 'when it is multiple untyped titles without primary' do
