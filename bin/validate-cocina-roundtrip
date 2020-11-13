@@ -44,10 +44,12 @@ def ignore_node?(node)
 end
 
 # rubocop:disable Metrics/ParameterLists
-def write_result(druid, original_xml, result_xml, error_nodes, unmatched_original_nodes, unmatched_result_nodes)
+def write_result(druid, original_xml, result_xml, cocina, error_nodes, unmatched_original_nodes, unmatched_result_nodes)
   File.open("results/#{druid}.txt", 'w') do |file|
+    file.write("Druid: #{druid}\n")
     file.write("Expected XML:\n#{original_xml.to_xml}\n")
-    file.write("Received XML:\n#{result_xml.to_xml}\n\n")
+    file.write("Received XML:\n#{result_xml.to_xml}\n")
+    file.write("Cocina:\n#{JSON.pretty_generate(cocina.to_h)}\n\n")
 
     error_nodes.each do |node_pair|
       result_node = node_pair[0]
@@ -167,7 +169,7 @@ def validate_druid(druid, cache)
   equiv, error_nodes, unmatched_original_nodes, unmatched_result_nodes = check_equivalent(result_xml, original_xml)
 
   unless equiv
-    write_result(druid, original_xml, result_xml, error_nodes, unmatched_original_nodes, unmatched_result_nodes)
+    write_result(druid, original_xml, result_xml, cocina, error_nodes, unmatched_original_nodes, unmatched_result_nodes)
     return :different
   end
   :success
