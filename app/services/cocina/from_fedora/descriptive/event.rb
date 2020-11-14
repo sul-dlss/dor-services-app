@@ -72,7 +72,7 @@ module Cocina
             events << build_event('capture', date_captured, display_label) if date_captured.present?
 
             date_other = origin.xpath('mods:dateOther', mods: DESC_METADATA_NS)
-            events << build_event(origin.attr('eventType'), date_other, display_label) if date_other.present?
+            events << build_event(date_other_event_type(origin), date_other, display_label) if date_other.present?
           end
         end
 
@@ -191,9 +191,22 @@ module Cocina
             date[:qualifier] = node[:qualifier] if node[:qualifier]
             date[:encoding] = { code: node['encoding'] } if node['encoding']
             date[:status] = 'primary' if node['keyDate']
-            date[:note] = [{ value: node['type'], type: 'date type' }] if !event_type && node['type']
+            if (!event_type || event_type == 'creation') && (node['type'] || node['calendar'])
+              date[:note] = [
+                {
+                  value: (node['type'] || node['calendar']),
+                  type: node['type'] ? 'date type' : 'calendar'
+                }
+              ]
+            end
             date[:type] = node['point'] if node['point']
           end
+        end
+
+        def date_other_event_type(origin)
+          return 'creation' if origin['eventType'] == 'production'
+
+          origin['eventType']
         end
 
         def origin_info
