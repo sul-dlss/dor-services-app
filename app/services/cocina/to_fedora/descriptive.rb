@@ -15,13 +15,10 @@ module Cocina
         @descriptive = descriptive
       end
 
+      # rubocop:disable Metrics/AbcSize
       def transform
         Nokogiri::XML::Builder.new do |xml|
-          xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
-                   'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-                   'xmlns:rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-                   'version' => '3.6',
-                   'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
+          xml.mods(namespaces) do
             Descriptive::Title.write(xml: xml, titles: descriptive.title)
             Descriptive::Contributor.write(xml: xml, contributors: descriptive.contributor)
             Descriptive::Form.write(xml: xml, forms: descriptive.form)
@@ -36,10 +33,32 @@ module Cocina
           end
         end
       end
+      # rubocop:enable Metrics/AbcSize
 
       private
 
       attr_reader :descriptive
+
+      def mods_version
+        @mods_version ||= begin
+          notes = descriptive.adminMetadata&.note || []
+          notes.select { |note| note.type == 'record origin' }.each do |note|
+            match = /MODS version (\d\.\d)/.match(note.value)
+            return match[1] if match
+          end
+          '3.6'
+        end
+      end
+
+      def namespaces
+        {
+          'xmlns' => 'http://www.loc.gov/mods/v3',
+          'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+          'xmlns:rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+          'version' => mods_version,
+          'xsi:schemaLocation' => "http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-#{mods_version.sub('.', '-')}.xsd"
+        }
+      end
     end
   end
 end
