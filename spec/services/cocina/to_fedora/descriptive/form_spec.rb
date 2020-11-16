@@ -531,6 +531,20 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
                 "displayLabel": 'Condition'
               }
             ]
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'unmediated',
+            "type": 'media',
+            "source": {
+              "code": 'rdamedia'
+            }
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'volume',
+            "type": 'carrier',
+            "source": {
+              "code": 'rdacarrier'
+            }
           )
         ]
       end
@@ -547,6 +561,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
               <extent>1 sheet</extent>
               <digitalOrigin>reformatted digital</digitalOrigin>
               <note displayLabel="Condition">Small tear at top right corner.</note>
+              <form type="media" authority="rdamedia">unmediated</form>
+              <form type="carrier" authority="rdacarrier">volume</form>
             </physicalDescription>
           </mods>
         XML

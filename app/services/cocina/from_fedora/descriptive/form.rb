@@ -180,12 +180,12 @@ module Cocina
 
         # returns genre at the root and inside subjects excluding structured genres
         def basic_genre
-          ng_xml.xpath("//mods:genre[not(@type) or not(starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}'))]", mods: DESC_METADATA_NS)
+          ng_xml.xpath("//mods:mods/mods:genre[not(@type) or not(starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}'))]", mods: DESC_METADATA_NS)
         end
 
         # returns structured genres at the root and inside subjects, which are combined to form a single, structured Cocina element
         def structured_genre
-          ng_xml.xpath("//mods:genre[@type and starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}')]", mods: DESC_METADATA_NS)
+          ng_xml.xpath("//mods:mods/mods:genre[@type and starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}')]", mods: DESC_METADATA_NS)
         end
 
         def cartographic_scale

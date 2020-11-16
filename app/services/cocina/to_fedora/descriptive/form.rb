@@ -12,7 +12,9 @@ module Cocina
           'form' => :form,
           'media type' => :internetMediaType,
           'extent' => :extent,
-          'digital origin' => :digitalOrigin
+          'digital origin' => :digitalOrigin,
+          'media' => :form,
+          'carrier' => :form
         }.freeze
 
         # @params [Nokogiri::XML::Builder] xml
@@ -58,7 +60,9 @@ module Cocina
                   xml.note val.value, attributes.compact
                 end
               else
-                xml.public_send PHYSICAL_DESCRIPTION_TAG.fetch(form.type), form.value, with_uri_info(form, {})
+                attributes = {}
+                attributes[:type] = form.type if PHYSICAL_DESCRIPTION_TAG.fetch(form.type) == :form && form.type != 'form'
+                xml.public_send PHYSICAL_DESCRIPTION_TAG.fetch(form.type), form.value, with_uri_info(form, attributes)
               end
             end
           end

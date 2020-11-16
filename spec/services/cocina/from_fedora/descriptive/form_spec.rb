@@ -236,13 +236,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
         XML
       end
 
-      it 'builds the cocina data structure' do
-        expect(build).to eq [
-          {
-            "value": 'Bibliographies',
-            "type": 'genre'
-          }
-        ]
+      it 'ignores the genre node' do
+        expect(build).to eq []
       end
     end
   end
