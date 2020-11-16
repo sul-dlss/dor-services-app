@@ -665,7 +665,38 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
   end
 
   context 'with issuance and frequency - authorized term' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L1054'
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <issuance>multipart monograph</issuance>
+          <frequency authority="marcfrequency">Annual</frequency>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "note": [
+            {
+              "value": 'multipart monograph',
+              "type": 'issuance',
+              "source": {
+                "value": 'MODS issuance terms'
+              }
+            },
+            {
+              "value": 'Annual',
+              "type": 'frequency',
+              "source": {
+                "code": 'marcfrequency'
+              }
+            }
+          ]
+        }
+      ]
+    end
   end
 
   context 'with multiple originInfo elements for different events' do

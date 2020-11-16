@@ -98,55 +98,64 @@ module Cocina
         end
 
         def add_issuance_info(event, set)
-          return if set.blank?
+          return if set.empty?
 
           event[:note] ||= []
-          event[:note] << {
-            source: { value: 'MODS issuance terms' },
-            type: 'issuance',
-            value: set.text
-          }
+          set.each do |issuance|
+            event[:note] << {
+              source: { value: 'MODS issuance terms' },
+              type: 'issuance',
+              value: issuance.text
+            }
+          end
         end
 
         def add_frequency_info(event, set)
-          return if set.blank?
+          return if set.empty?
 
           event[:note] ||= []
-          event[:note] << {
-            type: 'frequency',
-            value: set.text
-          }
+          set.each do |frequency|
+            note = {
+              type: 'frequency',
+              value: frequency.text
+            }
+            event[:note] << with_uri_info(note, frequency)
+          end
         end
 
         def add_edition_info(event, set)
-          return if set.blank?
+          return if set.empty?
 
           event[:note] ||= []
-          event[:note] << {
-            type: 'edition',
-            value: set.text
-          }
+          set.each do |edition|
+            event[:note] << {
+              type: 'edition',
+              value: edition.text
+            }
+          end
         end
 
         def add_publisher_info(event, set)
-          return if set.blank?
+          return if set.empty?
 
           event[:contributor] ||= []
-          event[:contributor] << {
-            name: [{ value: set.text }],
-            type: 'organization',
-            role: [
-              {
-                "value": 'publisher',
-                "code": 'pbl',
-                "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                "source": {
-                  "code": 'marcrelator',
-                  "uri": 'http://id.loc.gov/vocabulary/relators/'
+          set.each do |publisher|
+            event[:contributor] << {
+              name: [{ value: publisher.text }],
+              type: 'organization',
+              role: [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
                 }
-              }
-            ]
-          }
+              ]
+            }
+          end
         end
 
         def build_event(type, node_set, display_label = nil)
