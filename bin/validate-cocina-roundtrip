@@ -33,8 +33,8 @@ def normalize_xml(ng_xml)
   ng_xml
 end
 
-def round_tripped_xml(cocina)
-  Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina).to_xml)
+def round_tripped_xml(cocina, druid)
+  Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina, druid).to_xml)
 end
 
 def cocina_model(xml, label)
@@ -161,7 +161,7 @@ def validate_druid(druid, cache)
   normalize_xml(original_xml)
 
   begin
-    result_xml = round_tripped_xml(cocina)
+    result_xml = round_tripped_xml(cocina, druid)
   rescue StandardError => e
     write_error(druid, original_xml, cocina, e)
     return :to_fedora_error

@@ -3,9 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ToFedora::Descriptive do
-  subject(:xml) { described_class.transform(descriptive).to_xml }
+  subject(:xml) { described_class.transform(descriptive, druid).to_xml }
 
   context 'with a minimal description' do
+    let(:druid) { 'druid:aa666bb1234' }
     let(:descriptive) do
       Cocina::Models::Description.new(
         title: [
@@ -28,6 +29,7 @@ RSpec.describe Cocina::ToFedora::Descriptive do
   end
 
   context 'when it has an abstract' do
+    let(:druid) { 'druid:aa666bb1234' }
     let(:descriptive) do
       Cocina::Models::Description.new(
         title: [
@@ -96,6 +98,7 @@ RSpec.describe Cocina::ToFedora::Descriptive do
   end
 
   context 'with a MODS version specified in note' do
+    let(:druid) { 'druid:aa666bb1234' }
     let(:descriptive) do
       Cocina::Models::Description.new(
         title: [

@@ -6,6 +6,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
   subject(:xml) { writer.to_xml }
 
   let(:geos) { [geo] }
+  let(:druid) { 'druid:aa666bb1234' }
 
   let(:writer) do
     Nokogiri::XML::Builder.new do |xml|
@@ -14,7 +15,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
                'version' => '3.6',
                'xmlns:rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, geos: geos)
+        described_class.write(xml: xml, geos: geos, druid: druid)
       end
     end
   end
@@ -82,7 +83,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gmd="http://www.isotc211.org/2005/gmd">
-              <rdf:Description>
+              <rdf:Description rdf:about="http://purl.stanford.edu/aa666bb1234">
                 <dc:format>image/jpeg</dc:format>
                 <dc:type>Image</dc:type>
                 <gmd:centerPoint>
@@ -155,7 +156,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
-              <rdf:Description>
+              <rdf:Description rdf:about="http://purl.stanford.edu/aa666bb1234">
                 <dc:format>image/jpeg</dc:format>
                 <dc:type>Image</dc:type>
                 <gml:boundedBy>
@@ -242,7 +243,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
-              <rdf:Description>
+              <rdf:Description rdf:about="http://purl.stanford.edu/aa666bb1234">
                 <dc:format>application/x-esri-shapefile; format=Shapefile</dc:format>
                 <dc:type>Dataset#Polygon</dc:type>
                 <gml:boundedBy>
@@ -325,7 +326,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
-              <rdf:Description>
+              <rdf:Description rdf:about="http://purl.stanford.edu/aa666bb1234">
                 <dc:format>application/x-esri-shapefile; format=Shapefile</dc:format>
                 <dc:type>Dataset#Polygon</dc:type>
                 <gml:boundedBy>
@@ -374,7 +375,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
-              <rdf:Description>
+              <rdf:Description rdf:about="http://purl.stanford.edu/aa666bb1234">
                 <dc:format>application/x-esri-shapefile; format=Shapefile</dc:format>
                 <dc:type>Dataset#Polygon</dc:type>
               </rdf:Description>
@@ -446,7 +447,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
-              <rdf:Description>
+              <rdf:Description rdf:about="http://purl.stanford.edu/aa666bb1234">
                 <dc:format>application/x-esri-shapefile; format=Shapefile</dc:format>
                 <dc:type>Dataset#Point</dc:type>
                 <gml:boundedBy>
@@ -524,7 +525,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
-              <rdf:Description>
+              <rdf:Description rdf:about="http://purl.stanford.edu/aa666bb1234">
                 <dc:format>application/x-esri-shapefile; format=Shapefile</dc:format>
                 <dc:type>Dataset#LineString</dc:type>
                 <gml:boundedBy>
@@ -602,7 +603,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
-              <rdf:Description>
+              <rdf:Description rdf:about="http://purl.stanford.edu/aa666bb1234">
                 <dc:format>image/tiff; format=GeoTIFF</dc:format>
                 <dc:type>Dataset#Raster</dc:type>
                 <gml:boundedBy>
@@ -702,7 +703,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
-              <rdf:Description>
+              <rdf:Description rdf:about="http://purl.stanford.edu/aa666bb1234">
                 <dc:format>application/x-esri-shapefile; format=Shapefile</dc:format>
                 <dc:type>Dataset#Polygon</dc:type>
                 <gml:boundedBy>
