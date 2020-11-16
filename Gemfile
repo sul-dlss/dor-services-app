@@ -8,12 +8,6 @@ gem 'rails', '~> 5.2.0'
 # Use Puma as the app server
 gem 'puma', '~> 3.12'
 
-group :development, :test do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platform: :mri
-  gem 'pry-byebug'
-end
-
 group :development do
   gem 'listen', '~> 3.0.5'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
@@ -56,9 +50,12 @@ gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'
 gem 'preservation-client', '>= 3.0' # 3.x or greater is needed for token auth
 
 group :test, :development do
+  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  gem 'byebug', platform: :mri
   gem 'equivalent-xml'
   gem 'factory_bot_rails'
   gem 'parallel' # used for validating cocina tools
+  gem 'pry-byebug'
   gem 'rack-console'
   gem 'rspec_junit_formatter'
   gem 'rspec-rails'
@@ -66,6 +63,7 @@ group :test, :development do
   gem 'rubocop-rails'
   gem 'rubocop-rspec', '~> 1.32.0'
   gem 'simplecov', '~> 0.17.1' # https://github.com/codeclimate/test-reporter/issues/413
+  gem 'super_diff'
   gem 'webmock'
 end
 

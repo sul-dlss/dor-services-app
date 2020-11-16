@@ -63,6 +63,7 @@ GEM
       sshkit (>= 1.6.1, != 1.7.0)
     arel (9.0.0)
     ast (2.4.1)
+    attr_extras (6.2.4)
     builder (3.2.4)
     bundler-audit (0.7.0.1)
       bundler (>= 1.2.0, < 3)
@@ -289,6 +290,8 @@ GEM
     parallel (1.20.0)
     parser (2.7.2.0)
       ast (~> 2.4.1)
+    patience_diff (1.1.0)
+      trollop (~> 1.16)
     pg (1.2.3)
     preservation-client (3.3.0)
       activesupport (>= 4.2, < 7)
@@ -460,10 +463,15 @@ GEM
     stanford-mods-normalizer (0.1.0)
       nokogiri (~> 1.8)
     stomp (1.4.10)
+    super_diff (0.5.2)
+      attr_extras (>= 6.2.4)
+      diff-lcs
+      patience_diff
     temple (0.8.2)
     thor (1.0.1)
     thread_safe (0.3.6)
     tilt (2.0.10)
+    trollop (1.16.2)
     tzinfo (1.2.8)
       thread_safe (~> 0.1)
     uber (0.0.15)
@@ -536,6 +544,7 @@ DEPENDENCIES
   simplecov (~> 0.17.1)
   spring
   spring-watcher-listen (~> 2.0.0)
+  super_diff
   uuidtools (~> 2.1.4)
   webmock
   whenever

@@ -10,6 +10,7 @@ require 'spec_helper'
 require 'equivalent-xml/rspec_matchers'
 require 'rspec/matchers'
 require 'rspec/rails'
+require "super_diff/rspec-rails"
 require 'support/foxml_helper'
 require 'support/factory_bot'
 
