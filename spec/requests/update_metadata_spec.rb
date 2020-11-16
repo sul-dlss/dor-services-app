@@ -114,6 +114,55 @@ RSpec.describe 'Update object' do
     expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
   end
 
+  context 'when update_descriptive is true' do
+    let(:description) do
+      {
+        title: [{ value: title }],
+        subject: [
+          { type: 'topic', value: 'MyString' }
+        ],
+        note: [
+          { type: 'summary', value: 'test abstract' },
+          { type: 'preferred citation', value: 'test citation' },
+          { displayLabel: 'Contact', type: 'contact', value: 'io@io.io' }
+        ]
+      }
+    end
+
+    let(:expected) do
+      Cocina::Models::DRO.new(externalIdentifier: druid,
+                              type: Cocina::Models::Vocab.book,
+                              label: expected_label,
+                              version: 1,
+                              access: {
+                                access: access,
+                                download: 'world',
+                                copyright: 'All rights reserved unless otherwise indicated.',
+                                useAndReproductionStatement: 'Property rights reside with the repository...'
+                              },
+                              description: description,
+                              administrative: {
+                                hasAdminPolicy: apo_druid,
+                                partOfProject: 'Google Books'
+                              },
+                              identification: identification,
+                              structural: structural)
+    end
+
+    before do
+      allow(Settings.enabled_features).to receive(:update_descriptive).and_return(true)
+    end
+
+    it 'updates the descriptive metadata' do
+      patch "/v1/objects/#{druid}",
+            params: data,
+            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+      expect(response.status).to eq(200)
+      expect(item).to have_received(:save!)
+      expect(response.body).to eq expected.to_json
+    end
+  end
+
   context 'with a structured title that has nonsorting characters' do
     # This tests the problem found in https://github.com/sul-dlss/argo/issues/2253
     # where an integer value in a string field was being detected as invalid data.
