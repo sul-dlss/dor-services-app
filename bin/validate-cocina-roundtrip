@@ -24,8 +24,12 @@ cache = FedoraCache.new
 
 # Changes to the original XML to help with matching.
 def normalize_xml(ng_xml)
-  ng_xml.root['version'] = '3.6'
-  ng_xml.root['xsi:schemaLocation'] = 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd'
+  # Only normalize version when version isn't mapped.
+  unless /MODS version (\d\.\d)/.match(ng_xml.root.at('//mods:recordInfo/mods:recordOrigin',
+                                                      mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)&.content)
+    ng_xml.root['version'] = '3.6'
+    ng_xml.root['xsi:schemaLocation'] = 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd'
+  end
   ng_xml
 end
 
