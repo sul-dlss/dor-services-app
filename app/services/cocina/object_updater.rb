@@ -6,8 +6,8 @@ module Cocina
   class ObjectUpdater
     class NotImplemented < StandardError; end
 
-    # @param [ActiveFedora::Base] item
-    # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj the cocina model
+    # @param [ActiveFedora::Base] item the object to update
+    # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj the cocina model provided by the client
     # @param [#create] event_factory creates events
     def self.run(item, obj, event_factory: EventFactory)
       new(item, obj).run(event_factory: event_factory)
@@ -33,6 +33,8 @@ module Cocina
       else
         raise "unsupported type #{obj.type}"
       end
+
+      update_descriptive if update_descriptive?
 
       item.save!
 
@@ -98,6 +100,11 @@ module Cocina
       end
     end
 
+    def update_descriptive
+      item.descMetadata.content = Cocina::ToFedora::Descriptive.transform(obj.description).to_xml
+      item.descMetadata.content_will_change!
+    end
+
     def validate
       validator = ValidateDarkService.new(obj)
       raise ValidationError, validator.error unless validator.valid?
@@ -107,12 +114,19 @@ module Cocina
       validator = Cocina::ApoExistenceValidator.new(obj)
       raise ValidationError, validator.error unless validator.valid?
 
+      raise NotImplemented, 'Updating descriptive metadata not supported' if !update_descriptive? && client_attempted_metadata_update?
+    end
+
+    def update_descriptive?
+      Settings.enabled_features.update_descriptive
+    end
+
+    def client_attempted_metadata_update?
       title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
-      # Can't currently roundtrip desc metadata, including title.
-      # Note that title is the only desc metadata field handled by the mapper. However, the mapped title is composed from
-      # several MODS fields which makes writing back to the MODS problematic.
-      raise NotImplemented, 'Updating descriptive metadata not supported' if
-        obj.description.title != FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml).fetch(:title).map { |value| Cocina::Models::Title.new(value) }
+
+      descriptive = FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml)
+
+      obj.description.title != descriptive.fetch(:title).map { |value| Cocina::Models::Title.new(value) }
     end
 
     # TODO: duplicate from ObjectCreator
