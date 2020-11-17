@@ -46,6 +46,13 @@ module Cocina
 
           { type: NAME_TYPE.fetch(contributor.type) }.tap do |attributes|
             attributes[:usage] = 'primary' if contributor.status == 'primary'
+            value_uri = contributor.name.first&.uri
+            if value_uri
+              attributes[:valueURI] = value_uri
+              source = contributor.name.first&.source
+              attributes[:authority] = source.code if source&.code
+              attributes[:authorityURI] = source.uri if source&.uri
+            end
           end
         end
 
