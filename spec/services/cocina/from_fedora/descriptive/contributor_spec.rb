@@ -501,6 +501,53 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
+    context 'when roleTerm for type text is incorrectly capitalized' do
+      let(:xml) do
+        <<~XML
+          <name type="corporate" usage="primary">
+            <namePart>Stanford University. School of Engineering</namePart>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/spn">Sponsor</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      before do
+        allow(Honeybadger).to receive(:notify)
+      end
+
+      it 'builds the cocina data structure with downcased role' do
+        expect(build).to eq [
+          {
+            name: [
+              {
+                value: 'Stanford University. School of Engineering'
+              }
+            ],
+            status: 'primary',
+            type: 'organization',
+            role: [
+              {
+                value: 'sponsor',
+                code: 'spn',
+                uri: 'http://id.loc.gov/vocabulary/relators/spn',
+                source: {
+                  code: 'marcrelator',
+                  uri: 'http://id.loc.gov/vocabulary/relators'
+                }
+              }
+            ]
+          }
+        ]
+      end
+
+      it 'does not notify Honeybadger' do
+        expect(Honeybadger).not_to have_received(:notify)
+      end
+    end
+
     context 'when roleTerm is type code' do
       let(:xml) do
         <<~XML
