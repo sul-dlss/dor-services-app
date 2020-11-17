@@ -241,6 +241,28 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with a single-term topic subject with non-lcsh authority on the subject' do
+    let(:xml) do
+      <<~XML
+        <subject authority="mesh">
+          <topic>Cats</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'Cats',
+          "type": 'topic',
+          "source": {
+            "code": 'mesh'
+          }
+        }
+      ]
+    end
+  end
+
   context 'with invalid subject "#N/A" authority' do
     let(:xml) do
       <<~XML
