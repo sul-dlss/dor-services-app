@@ -120,6 +120,7 @@ module Cocina
           @names ||= ng_xml.xpath(NAME_XPATH, mods: DESC_METADATA_NS)
         end
 
+        ROLE_XPATH = './mods:role'
         ROLE_CODE_XPATH = './mods:role/mods:roleTerm[@type="code"]'
         ROLE_TEXT_XPATH = './mods:role/mods:roleTerm[@type="text"]'
         ROLE_AUTHORITY_XPATH = './mods:role/mods:roleTerm/@authority'
@@ -145,7 +146,7 @@ module Cocina
             end
 
             role[:code] = role_code&.content
-            role[:value] = role_text&.content
+            role[:value] = normalized_role_value(name.xpath(ROLE_XPATH, mods: DESC_METADATA_NS).first)
             role[:uri] = role_authority_value&.content
 
             if role[:code].blank? && role[:value].blank?
@@ -175,6 +176,28 @@ module Cocina
           end
 
           raise Cocina::Mapper::InvalidDescMetadata, "Contributor role code is missing and has unexpected value: #{role_code.content}"
+        end
+
+        # ensure value is downcased if it's a marcrelator value
+        def normalized_role_value(role)
+          role_text = role.xpath('./mods:roleTerm[@type="text"]', mods: DESC_METADATA_NS).first
+          value = role_text&.content
+          return unless value
+
+          value = value.downcase if marc_relator_role?(role)
+          value
+        end
+
+        MARC_RELATOR_PREFIX = 'http://id.loc.gov/vocabulary/relators'
+
+        def marc_relator_role?(role)
+          role_authority = role.xpath('./mods:roleTerm/@authority', mods: DESC_METADATA_NS).first
+          role_authority_uri = role.xpath('./mods:roleTerm/@authorityURI', mods: DESC_METADATA_NS).first
+          role_authority_value = role.xpath('./mods:roleTerm/@valueURI', mods: DESC_METADATA_NS).first
+
+          role_authority&.content == 'marcrelator' ||
+            role_authority_uri&.content&.include?(MARC_RELATOR_PREFIX) ||
+            role_authority_value&.content&.include?(MARC_RELATOR_PREFIX)
         end
       end
     end
