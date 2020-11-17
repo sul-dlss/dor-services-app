@@ -47,7 +47,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
               "source": {
                 "code": 'iso15924'
               }
-            }
+            },
+            "status": 'primary'
           }
         ],
         "contributor": [
@@ -186,7 +187,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
     end
 
     it 'builds the xml' do
-      # TODO: XML may need adjustment when https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/75 is resolved
       expect(xml).to be_equivalent_to <<~XML
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
@@ -198,7 +198,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
             <recordChangeDate encoding='iso8601'>20200718050001.0</recordChangeDate>
             <recordIdentifier source="SIRSI">a12374669</recordIdentifier>
             <recordOrigin>Converted from MARCXML to MODS version 3.6 using MARC21slim2MODS3-6_SDR.xsl (SUL version 1 2018/06/13; LC Revision 1.118 2018/01/31)</recordOrigin>
-            <languageOfCataloging usage="primary">
+            <languageOfCataloging>
               <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
             </languageOfCataloging>
           </recordInfo>
