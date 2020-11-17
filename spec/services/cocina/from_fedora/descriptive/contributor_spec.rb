@@ -699,11 +699,76 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
 
     context 'when role has valueURI as the only authority attribute' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L263'
+      let(:xml) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              <roleTerm type="code" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            name: [
+              {
+                value: 'Dunnett, Dorothy'
+              }
+            ],
+            status: 'primary',
+            type: 'person',
+            role: [
+              {
+                value: 'author',
+                code: 'aut',
+                uri: 'http://id.loc.gov/vocabulary/relators/aut'
+              }
+            ]
+          }
+        ]
+      end
     end
 
     context 'when role has authority as the only authority attribute' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L292'
+      let(:xml) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator">author</roleTerm>
+              <roleTerm type="code" authority="marcrelator">aut</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            name: [
+              {
+                value: 'Dunnett, Dorothy'
+              }
+            ],
+            status: 'primary',
+            type: 'person',
+            role: [
+              {
+                value: 'author',
+                code: 'aut',
+                source: {
+                  code: 'marcrelator',
+                  uri: 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          }
+        ]
+      end
     end
 
     context 'when role without namePart value' do
