@@ -53,17 +53,17 @@ module Cocina
           Array(contributor.role).each do |role|
             xml.role do
               attributes = {}
-              if role.value.present?
-                attributes[:type] = 'text'
-                value = role.value
-              elsif role.code.present?
-                attributes[:type] = 'code'
-                value = role.code
-              end
               attributes[:valueURI] = role.uri if role.uri
               attributes[:authority] = role.source.code if role.source&.code
               attributes[:authorityURI] = role.source.uri if role.source&.uri
-              xml.roleTerm value, attributes if value
+              if role.value.present?
+                attributes[:type] = 'text'
+                xml.roleTerm role.value, attributes
+              end
+              if role.code.present?
+                attributes[:type] = 'code'
+                xml.roleTerm role.code, attributes
+              end
             end
           end
         end
