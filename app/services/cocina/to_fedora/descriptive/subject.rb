@@ -85,19 +85,30 @@ module Cocina
 
         def write_basic(subject)
           subject_attributes = {}
-          subject_attributes[:authority] = 'lcsh' if subject.source && subject.type != 'place'
+          authority = authority_for(subject)
+          subject_attributes[:authority] = authority if authority
           subject_attributes[:displayLabel] = subject.displayLabel if subject.displayLabel
           subject_attributes[:edition] = edition(subject.source.version) if subject.source&.version
 
           case subject.type
           when 'classification'
-            subject_attributes[:authority] = subject.source.code if subject.source&.code
             write_classification(subject.value, subject_attributes)
           else
             xml.subject(subject_attributes) do
               write_topic(subject)
             end
           end
+        end
+
+        def authority_for(subject)
+          # Authority for place is on the geographicCode, not the subject.
+          # See "Geographic code subject" example.
+          return nil if subject.type == 'place'
+
+          # Both lcsh and naf map for lcsh for the subject.
+          return 'lcsh' if %w[lcsh naf].include?(subject.source&.code)
+
+          subject.source&.code
         end
 
         def write_classification(value, attrs)
