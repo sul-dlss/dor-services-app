@@ -82,4 +82,43 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
       expect(build).to eq []
     end
   end
+
+  context 'with a single abstract' do
+    let(:xml) do
+      <<~XML
+        <abstract>This is an abstract.</abstract>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+
+        {
+          "value": 'This is an abstract.',
+          "type": 'summary'
+        }
+
+      ]
+    end
+  end
+
+  context 'with a single abstract with a displayLabel' do
+    let(:xml) do
+      <<~XML
+        <abstract displayLabel="Synopsis">This is a synopsis.</abstract>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+
+        {
+          "value": 'This is a synopsis.',
+          "type": 'summary',
+          "displayLabel": 'Synopsis'
+        }
+
+      ]
+    end
+  end
 end
