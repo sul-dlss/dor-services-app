@@ -262,7 +262,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       expect(descriptive[:note]).to match_array [
         {
           type: 'summary',
-          value: 'Blah blah blah, I believe in science!'
+          value: 'Blah blah blah, I believe in science!',
+          displayLabel: 'Abstract'
         },
         {
           value: 'John Doe Jr.',

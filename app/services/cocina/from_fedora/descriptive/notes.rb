@@ -25,8 +25,10 @@ module Cocina
 
         def abstract
           set = ng_xml.xpath('//mods:abstract', mods: DESC_METADATA_NS)
-          set.map do |val|
-            { type: 'summary', value: val.content }
+          set.map do |node|
+            { type: 'summary', value: node.content }.tap do |attributes|
+              attributes[:displayLabel] = node[:displayLabel] if node[:displayLabel]
+            end
           end
         end
 
