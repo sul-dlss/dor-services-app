@@ -77,7 +77,9 @@ module Cocina
 
         def build_language
           Array(admin_metadata.language).each do |language|
-            xml.languageOfCataloging usage: 'primary' do
+            language_of_cataloging_attrs = {}
+            language_of_cataloging_attrs[:usage] = language.status if language.status
+            xml.languageOfCataloging language_of_cataloging_attrs do
               language_attrs = with_uri_info(language, {})
               xml.languageTerm language.value, language_attrs.merge(type: 'text') if language.value
               xml.languageTerm language.code, language_attrs.merge(type: 'code')
