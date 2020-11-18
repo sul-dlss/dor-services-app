@@ -128,6 +128,7 @@ module Cocina
         # @param [Hash<Symbol,String>] value
         # @param [Nokogiri::XML::Element] title_info the titleInfo node
         # @param [Bool] display_types this is set to false in the case that it's a parallelValue and all are translations
+        # rubocop:disable Metrics/CyclomaticComplexity
         def with_attributes(value, title_info, display_types: true)
           value.tap do |result|
             result[:status] = 'primary' if title_info['usage'] == 'primary'
@@ -138,15 +139,20 @@ module Cocina
             result[:source] = { code: title_info[:authority] } if title_info['type'] == 'abbreviated' && title_info[:authority]
             result[:uri] = title_info[:valueURI] if title_info['valueURI']
 
-            result[:valueLanguage] = language(title_info) if title_info['lang']
+            result[:valueLanguage] = language(title_info) if title_info['lang'].present? || title_info['script'].present?
             result[:standard] = { value: title_info['transliteration'] } if title_info['transliteration']
             result[:displayLabel] = title_info['displayLabel'] if title_info['displayLabel']
           end
         end
+        # rubocop:enable Metrics/CyclomaticComplexity
 
         def language(title_info)
-          { code: title_info['lang'], source: { code: 'iso639-2b' } }.tap do |result|
-            result[:valueScript] = { code: title_info['script'], source: { code: 'iso15924' } } if title_info['script']
+          {}.tap do |value_language|
+            if title_info['lang'].present?
+              value_language[:code] = title_info['lang']
+              value_language[:source] = { code: 'iso639-2b' }
+            end
+            value_language[:valueScript] = { code: title_info['script'], source: { code: 'iso15924' } } if title_info['script'].present?
           end
         end
 
