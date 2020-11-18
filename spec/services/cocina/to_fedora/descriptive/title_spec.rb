@@ -318,6 +318,36 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
       xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L157'
     end
 
+    context 'when there is a title with script but no lang' do
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            "value": 'Война и миръ',
+            "valueLanguage": {
+              "valueScript": {
+                "code": 'Cyrl',
+                "source": {
+                  "code": 'iso15924'
+                }
+              }
+            }
+          )
+        ]
+      end
+
+      it 'creates the equivalent MODS' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo script="Cyrl">
+              <title>&#x412;&#x43E;&#x439;&#x43D;&#x430; &#x438; &#x43C;&#x438;&#x440;&#x44A;</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+    end
+
     context 'when it is a uniform title with authority' do
       let(:titles) do
         [

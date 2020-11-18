@@ -264,6 +264,66 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
     end
 
+    context 'when there is a title with script but no lang' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo script="Cyrl">
+              <title>Война и миръ</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
+      it 'creates model' do
+        expect(build).to eq [
+          {
+            "value": 'Война и миръ',
+            "valueLanguage": {
+              "valueScript": {
+                "code": 'Cyrl',
+                "source": {
+                  "code": 'iso15924'
+                }
+              }
+            }
+          }
+        ]
+      end
+    end
+
+    context 'when there is a title with empty script' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo script="">
+              <title>Война и миръ</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
+      it 'creates model' do
+        expect(build).to eq [
+          {
+            "value": 'Война и миръ'
+          }
+        ]
+      end
+    end
+
     context 'when there are uniform titles with authority' do
       let(:ng_xml) do
         Nokogiri::XML <<~XML

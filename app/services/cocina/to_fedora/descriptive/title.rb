@@ -47,10 +47,7 @@ module Cocina
         end
 
         def write_basic(title:, title_info_attrs: {})
-          title_info_attrs = {}.tap do |attrs|
-            attrs[:usage] = 'primary' if title.status == 'primary'
-            attrs[:type] = title.type if title.type
-          end.merge(title_info_attrs)
+          title_info_attrs = title_info_attrs_for(title).merge(title_info_attrs)
 
           xml.titleInfo(title_info_attrs) do
             xml.title(title.value)
@@ -98,7 +95,7 @@ module Cocina
           title_names = title.structuredValue.select { |structured_title| NAME_TYPES.include?(structured_title.type) }
           name_title_group = next_name_title_group if title_names.present?
 
-          title_info_attrs = title_info_attrs_for(title, name_title_group).merge(title_info_attrs)
+          title_info_attrs = title_info_attrs_for(title, name_title_group: name_title_group).merge(title_info_attrs)
 
           xml.titleInfo(with_uri_info(title, title_info_attrs)) do
             title.structuredValue.reject { |structured_title| NAME_TYPES.include?(structured_title.type) }.each do |title_part|
@@ -150,11 +147,12 @@ module Cocina
           TAG_NAME.fetch(title_part.type, nil)
         end
 
-        def title_info_attrs_for(title, name_title_group)
+        def title_info_attrs_for(title, name_title_group: nil)
           {}.tap do |attrs|
-            attrs[:type] = title.type
-            attrs[:usage] = title.status
+            attrs[:type] = title.type if title.type
+            attrs[:usage] = title.status if title.status
             attrs[:nameTitleGroup] = name_title_group if name_title_group
+            attrs[:script] = title.valueLanguage.valueScript.code if title.valueLanguage&.valueScript&.code
           end
         end
       end
