@@ -672,6 +672,31 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       end
     end
 
+    context 'when physical description elsewhere in record' do
+      let(:xml) do
+        <<~XML
+          <relatedItem type="original">
+              <physicalDescription>
+                 <form authority="marcform">print</form>
+                 <extent>v. ; 24 cm.</extent>
+              </physicalDescription>
+           </relatedItem>        
+          <physicalDescription>
+            <form>mezzotints (prints)</form>
+          </physicalDescription>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'mezzotints (prints)',
+            "type": 'form'
+          }
+        ]
+      end
+    end
+
     context 'when it has displayLabel' do
       xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_physicalDescription.txt#L107'
     end
