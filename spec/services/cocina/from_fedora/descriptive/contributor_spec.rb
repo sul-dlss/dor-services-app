@@ -656,7 +656,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     context 'when the role code is missing the authority and length is 3' do
       let(:xml) do
         <<~XML
-          <name valueURI="corporate">
+          <name>
             <namePart>Selective Service System</namePart>
             <role>
               <roleTerm type="code">isb</roleTerm>
@@ -784,7 +784,32 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
   end
 
   context 'with authority' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L342'
+    let(:xml) do
+      <<~XML
+        <name type="personal" usage="primary" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79046044">
+          <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
+        </name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          name: [
+            {
+              value: 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
+              uri: 'http://id.loc.gov/authorities/names/n79046044',
+              source: {
+                code: 'naf',
+                uri: 'http://id.loc.gov/authorities/names/'
+              }
+            }
+          ],
+          status: 'primary',
+          type: 'person'
+        }
+      ]
+    end
   end
 
   context 'with multiple names, one primary' do

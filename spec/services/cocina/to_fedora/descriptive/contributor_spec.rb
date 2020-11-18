@@ -560,7 +560,36 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
   end
 
   context 'with authority' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L342'
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          name: [
+            {
+              value: 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
+              uri: 'http://id.loc.gov/authorities/names/n79046044',
+              source: {
+                code: 'naf',
+                uri: 'http://id.loc.gov/authorities/names/'
+              }
+            }
+          ],
+          status: 'primary',
+          type: 'person'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <name type="personal" usage="primary" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79046044">
+            <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
+          </name>
+        </mods>
+      XML
+    end
   end
 
   context 'with multiple names, one primary' do

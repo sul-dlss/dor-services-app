@@ -87,6 +87,7 @@ module Cocina
 
         def build_contributor_hash(name)
           { name: self.class.name_parts(name) }.tap do |contributor_hash|
+            contributor_hash = name_authority_uri(name, contributor_hash)
             contributor_hash[:type] = type_for(name['type']) if name['type'].present?
             contributor_hash[:status] = name['usage'] if name['usage']
             roles = [roles_for(name)]
@@ -94,6 +95,26 @@ module Cocina
             contributor_hash[:note] = notes_for(name)
             contributor_hash[:identifier] = identifier_for(name)
           end
+        end
+
+        def name_authority_uri(name_el, contributor_hash)
+          value_uri = name_el.xpath('@valueURI', mods: DESC_METADATA_NS).first
+          if value_uri&.content
+            name_hash = contributor_hash[:name].first
+            name_hash[:uri] = value_uri.content
+            code = name_el.xpath('@authority', mods: DESC_METADATA_NS)&.first&.content
+            source_uri = name_el.xpath('@authorityURI', mods: DESC_METADATA_NS)&.first&.content
+            name_hash[:source] = name_authority_source(code, source_uri) if code || source_uri
+          end
+          contributor_hash
+        end
+
+        def name_authority_source(code, uri)
+          source = {
+            code: code,
+            uri: uri
+          }.compact
+          source.presence
         end
 
         def identifier_for(name)
