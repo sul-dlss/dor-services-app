@@ -163,7 +163,11 @@ module Cocina
           {}.tap do |role|
             if role_authority&.content.present?
               role[:source] = { code: role_authority.content }
-              role[:source][:uri] = role_authority_uri.content if role_authority_uri&.content.present?
+              if role_authority_uri&.content.present?
+                role[:source][:uri] = role_authority_uri.content
+              elsif role_authority.content == 'marcrelator'
+                role[:source][:uri] = 'http://id.loc.gov/vocabulary/relators/'
+              end
             end
 
             role[:code] = role_code&.content
@@ -175,8 +179,8 @@ module Cocina
               return []
             end
           end.compact
-          # rubocop:enable Metrics/AbcSize
         end
+        # rubocop:enable Metrics/AbcSize
 
         def type_for(type)
           unless Contributor::ROLES.keys.include?(type.downcase)

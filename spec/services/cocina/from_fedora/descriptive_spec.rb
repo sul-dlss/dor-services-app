@@ -305,7 +305,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
             value: 'degree supervisor',
             code: 'ths',
             source: {
-              code: 'marcrelator'
+              code: 'marcrelator',
+              uri: 'http://id.loc.gov/vocabulary/relators/'
             }
           }]
         },
@@ -318,7 +319,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
             value: 'degree committee member',
             code: 'ths',
             source: {
-              code: 'marcrelator'
+              code: 'marcrelator',
+              uri: 'http://id.loc.gov/vocabulary/relators/'
             }
           }]
         },
@@ -331,7 +333,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
             value: 'degree committee member',
             code: 'ths',
             source: {
-              code: 'marcrelator'
+              code: 'marcrelator',
+              uri: 'http://id.loc.gov/vocabulary/relators/'
             }
           }]
         },
