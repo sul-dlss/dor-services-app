@@ -20,7 +20,7 @@ module Cocina
         end
 
         def write
-          Array(contributors).each_with_index do |contributor, _alt_rep_group|
+          Array(contributors).each do |contributor|
             next unless contributor.name
 
             xml.name name_attributes(contributor) do

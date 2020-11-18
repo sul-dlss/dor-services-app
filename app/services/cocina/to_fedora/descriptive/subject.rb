@@ -26,11 +26,11 @@ module Cocina
         end
 
         def write
-          subjects.each_with_index do |subject, alt_rep_group|
+          subjects.each_with_index do |subject, index|
             if subject.structuredValue
               write_structured(subject)
             elsif subject.parallelValue
-              write_parallel(subject, alt_rep_group: alt_rep_group)
+              write_parallel(subject, alt_rep_group: index)
             else
               write_basic(subject)
             end

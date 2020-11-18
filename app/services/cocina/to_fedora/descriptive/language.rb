@@ -17,7 +17,7 @@ module Cocina
         end
 
         def write
-          Array(languages).each_with_index do |language, _alt_rep_group|
+          Array(languages).each do |language|
             write_basic(language)
           end
         end
