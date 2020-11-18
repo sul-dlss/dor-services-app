@@ -8,7 +8,6 @@ module Cocina
       class Form
         # NOTE: H2 is the first case of structured form (genre/typeOfResource) values we're implementing
         H2_GENRE_TYPE_PREFIX = 'H2 '
-        PHYSICAL_DESCRIPTION_XPATH = '//mods:physicalDescription'
 
         # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
         # @return [Hash] a hash that can be mapped to a cocina model
@@ -167,7 +166,7 @@ module Cocina
         end
 
         def physical_descriptions
-          ng_xml.xpath('//mods:physicalDescription', mods: DESC_METADATA_NS)
+          ng_xml.xpath('//mods:mods/mods:physicalDescription', mods: DESC_METADATA_NS)
         end
 
         def source_for(form)
