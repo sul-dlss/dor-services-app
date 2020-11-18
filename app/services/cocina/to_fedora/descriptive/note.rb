@@ -8,9 +8,9 @@ module Cocina
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] notes
         def self.write(xml:, notes:)
-          Array(notes).each_with_index do |note, alt_rep_group|
+          Array(notes).each_with_index do |note, index|
             if note.parallelValue
-              write_parallel(xml, note, alt_rep_group: alt_rep_group)
+              write_parallel(xml, note, alt_rep_group: index)
             else
               write_basic(xml, note)
             end
