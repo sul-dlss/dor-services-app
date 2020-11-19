@@ -22,13 +22,15 @@ module Cocina
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] related_resources
-        def self.write(xml:, related_resources:)
-          new(xml: xml, related_resources: related_resources).write
+        # @param [string] druid
+        def self.write(xml:, related_resources:, druid:)
+          new(xml: xml, related_resources: related_resources, druid: druid).write
         end
 
-        def initialize(xml:, related_resources:)
+        def initialize(xml:, related_resources:, druid:)
           @xml = xml
           @related_resources = related_resources
+          @druid = druid
         end
 
         def write
@@ -37,62 +39,14 @@ module Cocina
             attributes[:type] = TYPES.fetch(related.type) if related.type
             attributes[:displayLabel] = related.displayLabel if related.displayLabel
             xml.relatedItem attributes.compact do
-              add_titles(Array(related.title))
-              add_location(related.access)
-              add_contributors(Array(related.contributor))
-              add_physical_description(Array(related.form))
-              add_notes(Array(related.note))
+              DescriptiveWriter.write(xml: xml, descriptive: related, druid: druid)
             end
           end
         end
 
         private
 
-        attr_reader :xml, :related_resources
-
-        def add_notes(notes)
-          notes.each do |note|
-            Note.write_basic(xml, note)
-          end
-        end
-
-        def add_physical_description(forms)
-          forms.each do |form|
-            xml.physicalDescription do
-              xml.public_send form.type, form.value
-            end
-          end
-        end
-
-        def add_contributors(contributors)
-          contributors.each do |contributor|
-            attributes = {}
-            attributes[:type] = Contributor::NAME_TYPE.fetch(contributor.type) if contributor.type
-            xml.name attributes do
-              contributor.name.each do |name|
-                xml.namePart name.value
-              end
-            end
-          end
-        end
-
-        def add_location(access)
-          return unless access
-
-          access.url.each do |url|
-            xml.location do
-              xml.url url.value
-            end
-          end
-        end
-
-        def add_titles(titles)
-          titles.each do |title|
-            xml.titleInfo do
-              xml.title title.value
-            end
-          end
-        end
+        attr_reader :xml, :related_resources, :druid
       end
     end
   end
