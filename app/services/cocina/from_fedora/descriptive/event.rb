@@ -78,13 +78,18 @@ module Cocina
 
         def add_place_info(event, place_set)
           event[:location] = place_set.map do |place|
-            place_term = place.xpath('mods:placeTerm', mods: DESC_METADATA_NS).first
-            if place_term['type'] == 'code'
-              with_uri_info({ code: place_term.text }, place_term)
-            else
-              with_uri_info({ value: place_term.text }, place)
-            end
-          end
+            text_place_term = place.xpath("mods:placeTerm[@type='text']", mods: DESC_METADATA_NS).first
+            code_place_term = place.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
+
+            return nil unless text_place_term || code_place_term
+
+            location = with_uri_info({}, text_place_term || code_place_term)
+
+            location[:code] = code_place_term.text if code_place_term
+            location[:value] = text_place_term.text if text_place_term
+
+            location
+          end.compact
         end
 
         def with_uri_info(cocina, xml_node)
