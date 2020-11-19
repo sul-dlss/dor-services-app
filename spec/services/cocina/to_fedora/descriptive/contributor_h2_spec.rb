@@ -352,13 +352,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     let(:descriptive) { Cocina::Models::Description.new({ contributor: contributors, form: forms }, false, false) }
 
     it 'builds the expected xml' do
+      # NOTE: conference does NOT get a role because 'conference' is a MODS name type
       result_xml = Cocina::ToFedora::Descriptive.transform(descriptive, druid).to_xml
       expect(result_xml).to be_equivalent_to <<~XML
         #{mods_element_open}
         <name type="conference" usage="primary">
           <namePart>LDCX</namePart>
         </name>
-        <genre type="resource types">Event</genre>
         #{mods_element_close}
       XML
     end
@@ -396,13 +396,16 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     let(:descriptive) { Cocina::Models::Description.new({ contributor: contributors, form: forms }, false, false) }
 
     it 'builds the expected xml' do
+      # NOTE: event does get a role because 'event' is NOT a MODS name type
       result_xml = Cocina::ToFedora::Descriptive.transform(descriptive, druid).to_xml
       expect(result_xml).to be_equivalent_to <<~XML
         #{mods_element_open}
         <name type="corporate" usage="primary">
           <namePart>San Francisco Symphony Concert</namePart>
+          <role>
+            <roleTerm type="text">Event</roleTerm>
+          </role>
         </name>
-        <genre type="resource types">Event</genre>
         #{mods_element_close}
       XML
     end

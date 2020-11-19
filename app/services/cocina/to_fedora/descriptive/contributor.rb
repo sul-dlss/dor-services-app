@@ -5,7 +5,8 @@ module Cocina
     class Descriptive
       # Maps contributors from cocina to MODS XML
       class Contributor
-        NAME_TYPE = FromFedora::Descriptive::Contributor::ROLES.invert.freeze
+        # one way mapping:  MODS 'corporate' already maps to Cocina 'organization'
+        NAME_TYPE = Cocina::FromFedora::Descriptive::Contributor::ROLES.invert.merge('event' => 'corporate').freeze
         NAME_PART = FromFedora::Descriptive::Contributor::NAME_PART.invert.freeze
 
         # @params [Nokogiri::XML::Builder] xml
@@ -61,14 +62,14 @@ module Cocina
           mr_roles_xml = marcrelator_roles_xml(contributor)
           return mr_roles_xml if mr_roles_xml.present?
 
-          Array(contributor.role).each { |role| xml_role(role) }
+          contributor.role.each { |role| xml_role(role) unless role.value&.match?(/conference/i) }
         end
 
         MARC_RELATOR_PIECE = 'id.loc.gov/vocabulary/relators'
 
         def marcrelator_roles_xml(contributor)
           result = []
-          contributor.role.select do |role|
+          contributor.role.each do |role|
             next unless role.source&.code == 'marcrelator' ||
                         role.source&.uri&.include?(MARC_RELATOR_PIECE) ||
                         role.uri&.include?(MARC_RELATOR_PIECE)

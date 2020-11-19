@@ -6,12 +6,12 @@ module Cocina
     class Descriptive
       # Maps contributors
       class Contributor
+        # key: MODS, value: cocina
         ROLES = {
           'personal' => 'person',
           'corporate' => 'organization',
           'family' => 'family',
-          'conference' => 'conference',
-          'event' => 'event'
+          'conference' => 'conference'
         }.freeze
 
         NAME_PART = {
@@ -171,9 +171,8 @@ module Cocina
           authority = ng_role.xpath(ROLE_AUTHORITY_XPATH, mods: DESC_METADATA_NS).first
           authority_uri = ng_role.xpath(ROLE_AUTHORITY_URI_XPATH, mods: DESC_METADATA_NS).first
           authority_value = ng_role.xpath(ROLE_AUTHORITY_VALUE_XPATH, mods: DESC_METADATA_NS).first
-          marcrelator = marc_relator_role?(authority, authority_uri, authority_value)
 
-          check_code(code, authority)
+          check_role_code(code, authority)
 
           {}.tap do |role|
             if authority&.content.present?
@@ -187,6 +186,7 @@ module Cocina
 
             role[:uri] = authority_value&.content
             role[:code] = code&.content
+            marcrelator = marc_relator_role?(authority, authority_uri, authority_value)
             role[:value] = normalized_role_value(text.content, marcrelator) if text
 
             if role[:code].blank? && role[:value].blank?
@@ -209,7 +209,7 @@ module Cocina
           ROLES.fetch(type.downcase)
         end
 
-        def check_code(role_code, role_authority)
+        def check_role_code(role_code, role_authority)
           return if role_code.nil? || role_authority
 
           if role_code.content.present? && role_code.content.size == 3

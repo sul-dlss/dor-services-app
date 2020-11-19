@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
   # h2 mapping specification examples
   # from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/h2_cocina_mappings/h2_to_cocina_contributor.txt
-  subject(:build) { described_class.build(ng_xml) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -218,28 +218,15 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     it 'builds the expected cocina data structure' do
       expect(build).to eq [
         {
-          contributors: [
-            {
-              name: [{ value: 'LDCX' }],
-              type: 'conference',
-              status: 'primary'
-            }
-          ],
-          forms: [
-            {
-              value: 'Event',
-              type: 'resource types',
-              source: {
-                value: 'DataCite resource types'
-              }
-            }
-          ]
+          name: [{ value: 'LDCX' }],
+          type: 'conference',
+          status: 'primary'
         }
       ]
     end
   end
 
-  # example 6 from h2_to_cocina_contributor.txt
+  # old example 6 from h2_to_cocina_contributor.txt
   context 'with event as contributor' do
     let(:xml) do
       <<~XML
@@ -253,8 +240,34 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       expect(build).to eq [
         {
           name: [{ value: 'San Francisco Symphony Concert' }],
-          type: 'event',
+          type: 'organization',
           status: 'primary'
+        }
+      ]
+    end
+  end
+
+  # example 6 from h2_to_cocina_contributor.txt
+  context 'with event as contributor with role' do
+    let(:xml) do
+      <<~XML
+        <name type="corporate" usage="primary">
+          <namePart>San Francisco Symphony Concert</namePart>
+          <role>
+            <roleTerm type="text">Event</roleTerm>
+          </role>
+        </name>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      # NOTE: from the DSA app, there is not enough context to make the cocina type "event" (?)
+      expect(build).to eq [
+        {
+          name: [{ value: 'San Francisco Symphony Concert' }],
+          type: 'organization',
+          status: 'primary',
+          role: [{ value: 'Event' }]
         }
       ]
     end
