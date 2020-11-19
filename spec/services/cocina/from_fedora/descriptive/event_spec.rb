@@ -460,8 +460,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     let(:xml) do
       <<~XML
         <originInfo>
-        <place authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">
-          <placeTerm type="text">Stanford (Calif.)</placeTerm>
+        <place>
+          <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
         </place>
         </originInfo>
       XML
@@ -515,7 +515,34 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
   end
 
   context 'with place text and code for same place' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L746'
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <place>
+            <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/" valueURI="http://id.loc.gov/vocabulary/countries/cau">California</placeTerm>
+            <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/" valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "location": [
+            {
+              "value": 'California',
+              "code": 'cau',
+              "uri": 'http://id.loc.gov/vocabulary/countries/cau',
+              "source": {
+                "code": 'marccountry',
+                "uri": 'http://id.loc.gov/vocabulary/countries/'
+              }
+            }
+          ]
+        }
+      ]
+    end
   end
 
   context 'with place code and text for different places' do

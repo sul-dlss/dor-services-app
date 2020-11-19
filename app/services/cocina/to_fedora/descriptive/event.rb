@@ -86,39 +86,17 @@ module Cocina
         end
 
         def location(location)
-          if location.code
-            location_code(location)
-          elsif location.value
-            location_text_value(location)
-          end
-        end
-
-        def location_code(location)
           xml.place do
             placeterm_attrs = { type: 'text' }
             placeterm_attrs[:authority] = location.source.code if location.source&.code
             placeterm_attrs[:authorityURI] = location.source.uri if location.source&.uri
             placeterm_attrs[:valueURI] = location.uri if location.uri
-            xml.placeTerm location.value, placeterm_attrs if location.value
-            attributes = { type: 'code' }
-            attributes[:authority] = location.source.code if location.source&.code
-            if location.uri
-              attributes[:valueURI] = location.uri
-              attributes[:authorityURI] = location.source.uri if location.source&.uri
-            end
-            xml.placeTerm location.code, attributes
-          end
-        end
 
-        def location_text_value(location)
-          attributes = { type: 'text' }
-          if location.uri
-            attributes[:authority] = location.source.code if location.source&.code
-            attributes[:authorityURI] = location.source.uri if location.source&.uri
-            attributes[:valueURI] = location.uri
-          end
-          xml.place do
-            xml.placeTerm location.value, attributes
+            placeterm_text_attrs = placeterm_attrs.merge({ type: 'text' })
+            xml.placeTerm location.value, placeterm_text_attrs if location.value
+
+            placeterm_code_attrs = placeterm_attrs.merge({ type: 'code' })
+            xml.placeTerm location.code, placeterm_code_attrs if location.code
           end
         end
 
