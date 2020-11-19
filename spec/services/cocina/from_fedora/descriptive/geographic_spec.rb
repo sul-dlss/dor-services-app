@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
-  subject(:build) { described_class.build(ng_xml) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML

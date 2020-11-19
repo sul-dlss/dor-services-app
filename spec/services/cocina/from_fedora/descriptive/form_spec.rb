@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive::Form do
-  subject(:build) { described_class.build(ng_xml) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -247,13 +247,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     context 'with text / article' do
       let(:xml) do
         <<~XML
-          <?xml version="1.0"?>
-          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <genre type="H2 type">Text</genre>
-            <genre type="H2 subtype">Article</genre>
-            <genre valueURI="http://vocab.getty.edu/aat/300048715" authority="aat">articles</genre>
-            <typeOfResource>text</typeOfResource>
-          </mods>
+          <genre type="H2 type">Text</genre>
+          <genre type="H2 subtype">Article</genre>
+          <genre valueURI="http://vocab.getty.edu/aat/300048715" authority="aat">articles</genre>
+          <typeOfResource>text</typeOfResource>
         XML
       end
 
@@ -297,13 +294,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     context 'with text / essay' do
       let(:xml) do
         <<~XML
-          <?xml version="1.0"?>
-          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <genre type="H2 type">Text</genre>
-            <genre type="H2 subtype">Essay</genre>
-            <genre valueURI="http://id.loc.gov/authorities/genreForms/gf2014026094" authority="lcgft">Essays</genre>
-            <typeOfResource>text</typeOfResource>
-          </mods>
+          <genre type="H2 type">Text</genre>
+          <genre type="H2 subtype">Essay</genre>
+          <genre valueURI="http://id.loc.gov/authorities/genreForms/gf2014026094" authority="lcgft">Essays</genre>
+          <typeOfResource>text</typeOfResource>
         XML
       end
 
@@ -347,13 +341,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     context 'with data / 3d model' do
       let(:xml) do
         <<~XML
-          <?xml version="1.0"?>
-          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <genre type="H2 type">Data</genre>
-            <genre type="H2 subtype">3D model</genre>
-            <genre>Three dimensional scan</genre>
-            <typeOfResource>three dimensional object</typeOfResource>
-          </mods>
+          <genre type="H2 type">Data</genre>
+          <genre type="H2 subtype">3D model</genre>
+          <genre>Three dimensional scan</genre>
+          <typeOfResource>three dimensional object</typeOfResource>
         XML
       end
 
@@ -393,14 +384,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     context 'with data / GIS' do
       let(:xml) do
         <<~XML
-          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <genre type="H2 type">Data</genre>
-            <genre type="H2 subtype">GIS</genre>
-            <genre authority="lcgft" valueURI="http://id.loc.gov/authorities/genreForms/gf2011026294">Geographic information systems</genre>
-            <genre>dataset</genre>
-            <typeOfResource>cartographic</typeOfResource>
-            <typeOfResource>software, multimedia</typeOfResource>
-          </mods>
+          <genre type="H2 type">Data</genre>
+          <genre type="H2 subtype">GIS</genre>
+          <genre authority="lcgft" valueURI="http://id.loc.gov/authorities/genreForms/gf2011026294">Geographic information systems</genre>
+          <genre>dataset</genre>
+          <typeOfResource>cartographic</typeOfResource>
+          <typeOfResource>software, multimedia</typeOfResource>
         XML
       end
 
@@ -455,16 +444,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     context 'with software / code, documentation' do
       let(:xml) do
         <<~XML
-          <?xml version="1.0"?>
-          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <genre type="H2 type">Software</genre>
-            <genre type="H2 subtype">Code</genre>
-            <genre type="H2 subtype">Documentation</genre>
-            <genre authority="aat" valueURI="http://vocab.getty.edu/aat/300312188">programs (computer)</genre>
-            <genre authority="aat" valueURI="http://vocab.getty.edu/aat/300026413">technical manuals</genre>
-            <typeOfResource>software, multimedia</typeOfResource>
-            <typeOfResource>text</typeOfResource>
-          </mods>
+          <genre type="H2 type">Software</genre>
+          <genre type="H2 subtype">Code</genre>
+          <genre type="H2 subtype">Documentation</genre>
+          <genre authority="aat" valueURI="http://vocab.getty.edu/aat/300312188">programs (computer)</genre>
+          <genre authority="aat" valueURI="http://vocab.getty.edu/aat/300026413">technical manuals</genre>
+          <typeOfResource>software, multimedia</typeOfResource>
+          <typeOfResource>text</typeOfResource>
         XML
       end
 
@@ -528,11 +514,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     context 'with other / dance notation' do
       let(:xml) do
         <<~XML
-          <?xml version="1.0"?>
-          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <genre type="H2 type">Other</genre>
-            <genre type="H2 subtype">Dance notation</genre>
-          </mods>
+          <genre type="H2 type">Other</genre>
+          <genre type="H2 subtype">Dance notation</genre>
         XML
       end
 

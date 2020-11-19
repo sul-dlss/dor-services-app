@@ -9,14 +9,15 @@ module Cocina
         # NOTE: H2 is the first case of structured form (genre/typeOfResource) values we're implementing
         H2_GENRE_TYPE_PREFIX = 'H2 '
 
-        # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
+        # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
+        # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(ng_xml)
-          new(ng_xml).build
+        def self.build(resource_element:, descriptive_builder: nil)
+          new(resource_element: resource_element).build
         end
 
-        def initialize(ng_xml)
-          @ng_xml = ng_xml
+        def initialize(resource_element:)
+          @resource_element = resource_element
         end
 
         def build
@@ -30,7 +31,7 @@ module Cocina
 
         private
 
-        attr_reader :ng_xml
+        attr_reader :resource_element
 
         def add_subject_cartographics(forms)
           cartographic_scale.each do |scale|
@@ -166,7 +167,7 @@ module Cocina
         end
 
         def physical_descriptions
-          ng_xml.xpath('//mods:mods/mods:physicalDescription', mods: DESC_METADATA_NS)
+          resource_element.xpath('mods:physicalDescription', mods: DESC_METADATA_NS)
         end
 
         def source_for(form)
@@ -174,25 +175,25 @@ module Cocina
         end
 
         def type_of_resource
-          ng_xml.xpath('//mods:typeOfResource', mods: DESC_METADATA_NS)
+          resource_element.xpath('mods:typeOfResource', mods: DESC_METADATA_NS)
         end
 
         # returns genre at the root and inside subjects excluding structured genres
         def basic_genre
-          ng_xml.xpath("//mods:mods/mods:genre[not(@type) or not(starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}'))]", mods: DESC_METADATA_NS)
+          resource_element.xpath("mods:genre[not(@type) or not(starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}'))]", mods: DESC_METADATA_NS)
         end
 
         # returns structured genres at the root and inside subjects, which are combined to form a single, structured Cocina element
         def structured_genre
-          ng_xml.xpath("//mods:mods/mods:genre[@type and starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}')]", mods: DESC_METADATA_NS)
+          resource_element.xpath("mods:genre[@type and starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}')]", mods: DESC_METADATA_NS)
         end
 
         def cartographic_scale
-          ng_xml.xpath('//mods:subject/mods:cartographics/mods:scale', mods: DESC_METADATA_NS)
+          resource_element.xpath('mods:subject/mods:cartographics/mods:scale', mods: DESC_METADATA_NS)
         end
 
         def cartographic_projection
-          ng_xml.xpath('//mods:subject/mods:cartographics/mods:projection', mods: DESC_METADATA_NS)
+          resource_element.xpath('mods:subject/mods:cartographics/mods:projection', mods: DESC_METADATA_NS)
         end
       end
       # rubocop:enable Metrics/ClassLength

@@ -7,23 +7,21 @@ module Cocina
       class RelatedResource
         TYPES = ToFedora::Descriptive::RelatedResource::TYPES.invert.freeze
 
-        # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
+        # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
+        # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(ng_xml)
-          new(ng_xml).build
+        def self.build(resource_element:, descriptive_builder:)
+          new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
         end
 
-        def initialize(ng_xml)
-          @ng_xml = ng_xml
+        def initialize(resource_element:, descriptive_builder:)
+          @resource_element = resource_element
+          @descriptive_builder = descriptive_builder
         end
 
         def build
           related_items.map do |related_item|
-            {}.tap do |item|
-              item[:title] = build_titles(related_item)
-              item[:contributor] = build_contributors(related_item)
-              item[:access] = build_access(related_item)
-              item[:form] = build_form(related_item)
+            descriptive_builder.build(resource_element: related_item, require_title: false).tap do |item|
               item[:type] = normalized_type_for(related_item['type']) if related_item['type']
               item[:displayLabel] = related_item['displayLabel']
             end.compact
@@ -32,43 +30,10 @@ module Cocina
 
         private
 
-        attr_reader :ng_xml
-
-        def build_form(related_item)
-          extents = related_item.xpath('mods:physicalDescription/mods:extent', mods: DESC_METADATA_NS)
-          return if extents.blank?
-
-          extents.map { |extent| { type: 'extent', value: extent.text } }
-        end
-
-        def build_access(related_item)
-          urls = related_item.xpath('mods:location/mods:url', mods: DESC_METADATA_NS)
-          return if urls.blank?
-
-          { url: urls.map { |url| { value: url.text } } }
-        end
-
-        def build_titles(related_item)
-          titles = related_item.xpath('mods:titleInfo/mods:title', mods: DESC_METADATA_NS)
-          return if titles.blank?
-
-          titles.map { |title| { value: title.text } }
-        end
-
-        def build_contributors(related_item)
-          names = related_item.xpath('mods:name', mods: DESC_METADATA_NS)
-          return if names.blank?
-
-          names.map do |name|
-            name_parts = name.xpath('mods:namePart', mods: DESC_METADATA_NS)
-            { name: name_parts.map { |part| { value: part.text } } }.tap do |result|
-              result[:type] = Contributor::ROLES.fetch(name['type']) if name['type']
-            end
-          end
-        end
+        attr_reader :resource_element, :descriptive_builder
 
         def related_items
-          ng_xml.xpath('//mods:mods/mods:relatedItem', mods: DESC_METADATA_NS)
+          resource_element.xpath('mods:relatedItem', mods: DESC_METADATA_NS)
         end
 
         # Normalize type so we can tolerate certain known data errors, but report anything that is not found or not an exact match

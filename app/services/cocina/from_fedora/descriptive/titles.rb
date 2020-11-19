@@ -21,34 +21,35 @@ module Cocina
 
         NAME_TYPES = ['person', 'forename', 'surname', 'life dates'].freeze
 
-        # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
+        # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
+        # @param [boolean] require_title raise Cocina::Mapper::MissingTitle if true and title is missing.
         # @return [Hash] a hash that can be mapped to a cocina model
         # @raises [Mapper::MissingTitle]
-        def self.build(ng_xml)
-          new(ng_xml).build
+        def self.build(resource_element:, require_title: true)
+          new(resource_element: resource_element).build(require_title: require_title)
         end
 
-        def initialize(ng_xml)
-          @ng_xml = ng_xml
+        def initialize(resource_element:)
+          @resource_element = resource_element
         end
 
-        def build
-          title_infos_with_groups = ng_xml.xpath('//mods:mods/mods:titleInfo[@altRepGroup]', mods: DESC_METADATA_NS)
+        def build(require_title: true)
+          title_infos_with_groups = resource_element.xpath('mods:titleInfo[@altRepGroup]', mods: DESC_METADATA_NS)
           grouped_title_infos = title_infos_with_groups.group_by { |node| node['altRepGroup'] }
 
           result = grouped_title_infos.map { |_k, node_set| parallel(node_set) }
 
-          title_infos_without_groups = ng_xml.xpath('//mods:mods/mods:titleInfo[not(@altRepGroup)]', mods: DESC_METADATA_NS)
+          title_infos_without_groups = resource_element.xpath('mods:titleInfo[not(@altRepGroup)]', mods: DESC_METADATA_NS)
           result += simple_or_structured(title_infos_without_groups)
 
-          raise Cocina::Mapper::MissingTitle if result.empty?
+          raise Cocina::Mapper::MissingTitle if result.empty? && require_title
 
           result
         end
 
         private
 
-        attr_reader :ng_xml
+        attr_reader :resource_element
 
         # @param [Nokogiri::XML::NodeSet] node_set the titleInfo elements in the parallel grouping
         def parallel(node_set)
