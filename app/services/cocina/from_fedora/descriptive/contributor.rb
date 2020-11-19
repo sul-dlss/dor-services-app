@@ -10,7 +10,8 @@ module Cocina
           'personal' => 'person',
           'corporate' => 'organization',
           'family' => 'family',
-          'conference' => 'conference'
+          'conference' => 'conference',
+          'event' => 'event'
         }.freeze
 
         NAME_PART = {
@@ -91,7 +92,7 @@ module Cocina
             contributor_hash = name_authority_uri(name, contributor_hash)
             contributor_hash[:type] = type_for(name['type']) if name['type'].present?
             contributor_hash[:status] = name['usage'] if name['usage']
-            roles = [roles_for(name)]
+            roles = roles_for(name)
             contributor_hash[:role] = roles unless roles.flatten.empty? || contributor_hash[:name].blank?
             contributor_hash[:note] = notes_for(name)
             contributor_hash[:identifier] = identifier_for(name)
@@ -143,44 +144,59 @@ module Cocina
         end
 
         ROLE_XPATH = './mods:role'
-        ROLE_CODE_XPATH = './mods:role/mods:roleTerm[@type="code"]'
-        ROLE_TEXT_XPATH = './mods:role/mods:roleTerm[@type="text"]'
-        ROLE_AUTHORITY_XPATH = './mods:role/mods:roleTerm/@authority'
-        ROLE_AUTHORITY_URI_XPATH = './mods:role/mods:roleTerm/@authorityURI'
-        ROLE_AUTHORITY_VALUE_XPATH = './mods:role/mods:roleTerm/@valueURI'
 
-        # rubocop:disable Metrics/AbcSize
         def roles_for(name)
-          role_code = name.xpath(ROLE_CODE_XPATH, mods: DESC_METADATA_NS).first
-          role_text = name.xpath(ROLE_TEXT_XPATH, mods: DESC_METADATA_NS).first
-          return [] if role_code.nil? && role_text.nil?
+          ng_roles = name.xpath(ROLE_XPATH, mods: DESC_METADATA_NS)
+          ng_roles.map do |ng_role|
+            role_hash(ng_role)
+          end.compact
+        end
 
-          role_authority = name.xpath(ROLE_AUTHORITY_XPATH, mods: DESC_METADATA_NS).first
-          role_authority_uri = name.xpath(ROLE_AUTHORITY_URI_XPATH, mods: DESC_METADATA_NS).first
-          role_authority_value = name.xpath(ROLE_AUTHORITY_VALUE_XPATH, mods: DESC_METADATA_NS).first
+        ROLE_CODE_XPATH = './mods:roleTerm[@type="code"]'
+        ROLE_TEXT_XPATH = './mods:roleTerm[@type="text"]'
+        ROLE_AUTHORITY_XPATH = './mods:roleTerm/@authority'
+        ROLE_AUTHORITY_URI_XPATH = './mods:roleTerm/@authorityURI'
+        ROLE_AUTHORITY_VALUE_XPATH = './mods:roleTerm/@valueURI'
+        MARC_RELATOR_PIECE = 'id.loc.gov/vocabulary/relators'
 
-          check_code(role_code, role_authority)
+        # shameless green
+        # rubocop:disable Metrics/AbcSize
+        # rubocop:disable Metrics/CyclomaticComplexity
+        # rubocop:disable Metrics/PerceivedComplexity
+        def role_hash(ng_role)
+          code = ng_role.xpath(ROLE_CODE_XPATH, mods: DESC_METADATA_NS).first
+          text = ng_role.xpath(ROLE_TEXT_XPATH, mods: DESC_METADATA_NS).first
+          return if code.nil? && text.nil?
+
+          authority = ng_role.xpath(ROLE_AUTHORITY_XPATH, mods: DESC_METADATA_NS).first
+          authority_uri = ng_role.xpath(ROLE_AUTHORITY_URI_XPATH, mods: DESC_METADATA_NS).first
+          authority_value = ng_role.xpath(ROLE_AUTHORITY_VALUE_XPATH, mods: DESC_METADATA_NS).first
+          marcrelator = marc_relator_role?(authority, authority_uri, authority_value)
+
+          check_code(code, authority)
 
           {}.tap do |role|
-            if role_authority&.content.present?
-              role[:source] = { code: role_authority.content }
-              if role_authority_uri&.content.present?
-                role[:source][:uri] = role_authority_uri.content
-              elsif role_authority.content == 'marcrelator'
-                role[:source][:uri] = 'http://id.loc.gov/vocabulary/relators/'
+            if authority&.content.present?
+              role[:source] = { code: authority.content }
+              if authority_uri&.content.present?
+                role[:source][:uri] = authority_uri.content
+              elsif authority.content == 'marcrelator'
+                role[:source][:uri] = "http://#{MARC_RELATOR_PIECE}/"
               end
             end
 
-            role[:code] = role_code&.content
-            role[:value] = normalized_role_value(name.xpath(ROLE_XPATH, mods: DESC_METADATA_NS).first)
-            role[:uri] = role_authority_value&.content
+            role[:uri] = authority_value&.content
+            role[:code] = code&.content
+            role[:value] = normalized_role_value(text.content, marcrelator) if text
 
             if role[:code].blank? && role[:value].blank?
               Honeybadger.notify('[DATA ERROR] name/role/roleTerm missing value', { tags: 'data_error' })
-              return []
+              return nil
             end
           end.compact
         end
+        # rubocop:enable Metrics/PerceivedComplexity
+        # rubocop:enable Metrics/CyclomaticComplexity
         # rubocop:enable Metrics/AbcSize
 
         def type_for(type)
@@ -205,25 +221,14 @@ module Cocina
         end
 
         # ensure value is downcased if it's a marcrelator value
-        def normalized_role_value(role)
-          role_text = role.xpath('./mods:roleTerm[@type="text"]', mods: DESC_METADATA_NS).first
-          value = role_text&.content
-          return unless value
-
-          value = value.downcase if marc_relator_role?(role)
-          value
+        def normalized_role_value(value, marc_relator)
+          marc_relator ? value.downcase : value
         end
 
-        MARC_RELATOR_PREFIX = 'http://id.loc.gov/vocabulary/relators'
-
-        def marc_relator_role?(role)
-          role_authority = role.xpath('./mods:roleTerm/@authority', mods: DESC_METADATA_NS).first
-          role_authority_uri = role.xpath('./mods:roleTerm/@authorityURI', mods: DESC_METADATA_NS).first
-          role_authority_value = role.xpath('./mods:roleTerm/@valueURI', mods: DESC_METADATA_NS).first
-
+        def marc_relator_role?(role_authority, role_authority_uri, role_authority_value)
           role_authority&.content == 'marcrelator' ||
-            role_authority_uri&.content&.include?(MARC_RELATOR_PREFIX) ||
-            role_authority_value&.content&.include?(MARC_RELATOR_PREFIX)
+            role_authority_uri&.content&.include?(MARC_RELATOR_PIECE) ||
+            role_authority_value&.content&.include?(MARC_RELATOR_PIECE)
         end
       end
     end

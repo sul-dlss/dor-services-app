@@ -56,21 +56,41 @@ module Cocina
           end
         end
 
+        # return marcrelator roles only if any are present, otherwise return other roles
         def write_roles(contributor)
-          Array(contributor.role).each do |role|
-            xml.role do
-              attributes = {}
-              attributes[:valueURI] = role.uri if role.uri
-              attributes[:authority] = role.source.code if role.source&.code
-              attributes[:authorityURI] = role.source.uri if role.source&.uri
-              if role.value.present?
-                attributes[:type] = 'text'
-                xml.roleTerm role.value, attributes
-              end
-              if role.code.present?
-                attributes[:type] = 'code'
-                xml.roleTerm role.code, attributes
-              end
+          mr_roles_xml = marcrelator_roles_xml(contributor)
+          return mr_roles_xml if mr_roles_xml.present?
+
+          Array(contributor.role).each { |role| xml_role(role) }
+        end
+
+        MARC_RELATOR_PIECE = 'id.loc.gov/vocabulary/relators'
+
+        def marcrelator_roles_xml(contributor)
+          result = []
+          contributor.role.select do |role|
+            next unless role.source&.code == 'marcrelator' ||
+                        role.source&.uri&.include?(MARC_RELATOR_PIECE) ||
+                        role.uri&.include?(MARC_RELATOR_PIECE)
+
+            result << xml_role(role)
+          end
+          result
+        end
+
+        def xml_role(role)
+          xml.role do
+            attributes = {}
+            attributes[:valueURI] = role.uri if role.uri
+            attributes[:authority] = role.source.code if role.source&.code
+            attributes[:authorityURI] = role.source.uri if role.source&.uri
+            if role.value.present?
+              attributes[:type] = 'text'
+              xml.roleTerm role.value, attributes
+            end
+            if role.code.present?
+              attributes[:type] = 'code'
+              xml.roleTerm role.code, attributes
             end
           end
         end
