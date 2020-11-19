@@ -3,7 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
-  subject(:build) { described_class.build(ng_xml) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+
+  let(:descriptive_builder) { Cocina::FromFedora::Descriptive::DescriptiveBuilder.new }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -164,18 +166,30 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
       XML
     end
 
-    xit 'TODO: Justin is in discussion with Arcadia about how this should look.'
-    # https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_relatedItem.txt#L52-L66
-    # appears to be incorrect
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "title": [
+            {
+              "value": 'Supplement'
+            }
+          ],
+          "note": [
+            {
+              "value": 'Additional data.',
+              "type": 'summary'
+            }
+          ]
+        }
+      ]
+    end
   end
 
   context 'without title' do
     let(:xml) do
       <<~XML
         <relatedItem>
-          <location>
-            <url>https://www.example.com</url>
-          </location>
+          <abstract>Additional data.</abstract>
         </relatedItem>
       XML
     end
@@ -183,13 +197,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "access": {
-            "url": [
-              {
-                "value": 'https://www.example.com'
-              }
-            ]
-          }
+          "note": [
+            {
+              "value": 'Additional data.',
+              "type": 'summary'
+            }
+          ]
         }
       ]
     end

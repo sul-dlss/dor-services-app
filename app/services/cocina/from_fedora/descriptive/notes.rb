@@ -5,14 +5,15 @@ module Cocina
     class Descriptive
       # Maps notes
       class Notes
-        # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
+        # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
+        # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(ng_xml)
-          new(ng_xml).build
+        def self.build(resource_element:, descriptive_builder: nil)
+          new(resource_element: resource_element).build
         end
 
-        def initialize(ng_xml)
-          @ng_xml = ng_xml
+        def initialize(resource_element:)
+          @resource_element = resource_element
         end
 
         def build
@@ -21,10 +22,10 @@ module Cocina
 
         private
 
-        attr_reader :ng_xml
+        attr_reader :resource_element
 
         def abstract
-          set = ng_xml.xpath('//mods:abstract', mods: DESC_METADATA_NS)
+          set = resource_element.xpath('mods:abstract', mods: DESC_METADATA_NS)
           set.map do |node|
             { type: 'summary', value: node.content }.tap do |attributes|
               attributes[:displayLabel] = node[:displayLabel] if node[:displayLabel]
@@ -33,7 +34,7 @@ module Cocina
         end
 
         def notes
-          set = ng_xml.xpath('//mods:note', mods: DESC_METADATA_NS).select { |node| node.text.present? }
+          set = resource_element.xpath('mods:note', mods: DESC_METADATA_NS).select { |node| node.text.present? }
           set.map do |node|
             { value: node.text }.tap do |attributes|
               attributes[:type] = node[:type] if node[:type]

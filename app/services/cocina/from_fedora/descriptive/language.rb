@@ -5,12 +5,12 @@ module Cocina
     class Descriptive
       # Maps languages
       class Language
-        LANG_XPATH = '//mods:language'
+        LANG_XPATH = 'mods:language'
         LANG_STATUS_XPATH = './@status'
         OBJECT_PART_XPATH = './@objectPart'
         DISPLAY_LABEL_XPATH = './@displayLabel'
-        LANGUAGE_TERM_XPATH = "#{LANG_XPATH}/mods:languageTerm"
-        SCRIPT_TERM_XPATH = "#{LANG_XPATH}/mods:scriptTerm"
+        LANGUAGE_TERM_XPATH = 'mods:languageTerm'
+        SCRIPT_TERM_XPATH = 'mods:scriptTerm'
         LANG_TERM_TEXT_XPATH = './mods:languageTerm[@type="text"]/text()'
         LANG_TERM_CODE_XPATH = './mods:languageTerm[@type="code"]/text()'
         LANG_TERM_CODE_AUTHORITY_XPATH = './mods:languageTerm[@type="code"]/@authority'
@@ -18,14 +18,15 @@ module Cocina
         TEXT_AUTHORITY_URI_XPATH = './*[@type="text"]/@authorityURI' # can be for languageTerm or scriptTerm
         TEXT_VALUE_URI_XPATH = './*[@type="text"]/@valueURI' # can be for languageTerm or scriptTerm
 
-        # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
+        # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
+        # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(ng_xml)
-          new(ng_xml).build
+        def self.build(resource_element:, descriptive_builder: nil)
+          new(resource_element: resource_element).build
         end
 
-        def initialize(ng_xml)
-          @ng_xml = ng_xml
+        def initialize(resource_element:)
+          @resource_element = resource_element
         end
 
         def build
@@ -35,7 +36,6 @@ module Cocina
               attribs = lang_term_attributes_for(lang) if language_term?(lang)
               attribs[:status] = language_status_for(lang) if language_status_for(lang).present?
               attribs[:script] = script_term_attributes_for(script_term_nodes(lang)) if script_term?(lang)
-
               langs << attribs
             end
           end
@@ -43,7 +43,7 @@ module Cocina
 
         private
 
-        attr_reader :ng_xml
+        attr_reader :resource_element
 
         def lang_term_attributes_for(lang)
           {
@@ -74,7 +74,7 @@ module Cocina
         end
 
         def languages
-          @languages ||= ng_xml.xpath(LANG_XPATH, mods: DESC_METADATA_NS)
+          @languages ||= resource_element.xpath(LANG_XPATH, mods: DESC_METADATA_NS)
         end
 
         def language_code_for(lang)

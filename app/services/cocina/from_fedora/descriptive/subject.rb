@@ -15,14 +15,15 @@ module Cocina
           'topic' => 'topic'
         }.freeze
 
-        # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
+        # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
+        # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(ng_xml)
-          new(ng_xml).build
+        def self.build(resource_element:, descriptive_builder: nil)
+          new(resource_element: resource_element).build
         end
 
-        def initialize(ng_xml)
-          @ng_xml = ng_xml
+        def initialize(resource_element:)
+          @resource_element = resource_element
         end
 
         def build
@@ -43,7 +44,7 @@ module Cocina
 
         private
 
-        attr_reader :ng_xml
+        attr_reader :resource_element
 
         def check_valid_authority(subject)
           return unless subject['authority'] == '#N/A'
@@ -153,7 +154,7 @@ module Cocina
         end
 
         def subjects
-          ng_xml.xpath('//mods:subject', mods: DESC_METADATA_NS) + ng_xml.xpath('//mods:classification', mods: DESC_METADATA_NS)
+          resource_element.xpath('mods:subject', mods: DESC_METADATA_NS) + resource_element.xpath('mods:classification', mods: DESC_METADATA_NS)
         end
 
         def edition_for(subject)

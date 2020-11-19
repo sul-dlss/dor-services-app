@@ -20,17 +20,18 @@ module Cocina
           'date' => 'life dates'
         }.freeze
 
-        NAME_XPATH = '/mods:mods/mods:name'
+        NAME_XPATH = 'mods:name'
         NAME_PART_XPATH = './mods:namePart'
 
-        # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
+        # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
+        # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(ng_xml)
-          new(ng_xml).build
+        def self.build(resource_element:, descriptive_builder: nil)
+          new(resource_element: resource_element).build
         end
 
-        def initialize(ng_xml)
-          @ng_xml = ng_xml
+        def initialize(resource_element:)
+          @resource_element = resource_element
         end
 
         def build
@@ -83,7 +84,7 @@ module Cocina
 
         private
 
-        attr_reader :ng_xml
+        attr_reader :resource_element
 
         def build_contributor_hash(name)
           { name: self.class.name_parts(name) }.tap do |contributor_hash|
@@ -138,7 +139,7 @@ module Cocina
         end
 
         def names
-          @names ||= ng_xml.xpath(NAME_XPATH, mods: DESC_METADATA_NS)
+          @names ||= resource_element.xpath(NAME_XPATH, mods: DESC_METADATA_NS)
         end
 
         ROLE_XPATH = './mods:role'

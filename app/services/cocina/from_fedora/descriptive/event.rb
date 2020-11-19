@@ -6,16 +6,17 @@ module Cocina
       # Maps originInfo to cocina events
       # rubocop:disable Metrics/ClassLength
       class Event
-        ORIGININFO_XPATH = '/mods:mods/mods:originInfo'
+        ORIGININFO_XPATH = 'mods:originInfo'
 
-        # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
+        # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
+        # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(ng_xml)
-          new(ng_xml).build
+        def self.build(resource_element:, descriptive_builder: nil)
+          new(resource_element: resource_element).build
         end
 
-        def initialize(ng_xml)
-          @ng_xml = ng_xml
+        def initialize(resource_element:)
+          @resource_element = resource_element
         end
 
         def build
@@ -44,7 +45,7 @@ module Cocina
 
         private
 
-        attr_reader :ng_xml
+        attr_reader :resource_element
 
         def find_or_create_publication_event(events)
           publication_event = events.find { |e| e[:type] == 'publication' }
@@ -191,7 +192,7 @@ module Cocina
         end
 
         def origin_info
-          @origin_info ||= ng_xml.xpath(ORIGININFO_XPATH, mods: DESC_METADATA_NS)
+          @origin_info ||= resource_element.xpath(ORIGININFO_XPATH, mods: DESC_METADATA_NS)
         end
       end
       # rubocop:enable Metrics/ClassLength

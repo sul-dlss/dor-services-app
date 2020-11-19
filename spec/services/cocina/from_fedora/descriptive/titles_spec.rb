@@ -6,13 +6,25 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
   let(:object) { Dor::Item.new }
 
   describe '.build' do
-    subject(:build) { described_class.build(ng_xml) }
+    subject(:build) { described_class.build(resource_element: ng_xml.root, require_title: require_title) }
+
+    let(:require_title) { true }
 
     context 'when the object has no title' do
       let(:ng_xml) { Dor::Item.new.descMetadata.ng_xml }
 
       it 'raises and error' do
         expect { build }.to raise_error Cocina::Mapper::MissingTitle
+      end
+    end
+
+    context 'when the object has no title and not required' do
+      let(:ng_xml) { Dor::Item.new.descMetadata.ng_xml }
+
+      let(:require_title) { false }
+
+      it 'raises and error' do
+        expect(build).to eq([])
       end
     end
 

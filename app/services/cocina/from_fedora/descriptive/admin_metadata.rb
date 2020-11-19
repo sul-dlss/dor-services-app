@@ -5,14 +5,15 @@ module Cocina
     class Descriptive
       # Maps MODS recordInfo to cocina
       class AdminMetadata
-        # @param [Nokogiri::XML::Document] ng_xml the descriptive metadata XML
+        # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
+        # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(ng_xml)
-          new(ng_xml).build
+        def self.build(resource_element:, descriptive_builder: nil)
+          new(resource_element: resource_element).build
         end
 
-        def initialize(ng_xml)
-          @ng_xml = ng_xml
+        def initialize(resource_element:)
+          @resource_element = resource_element
         end
 
         def build
@@ -28,7 +29,7 @@ module Cocina
 
         private
 
-        attr_reader :ng_xml
+        attr_reader :resource_element
 
         def build_events
           events = []
@@ -131,31 +132,31 @@ module Cocina
         end
 
         def language_of_cataloging
-          @language_of_cataloging ||= ng_xml.xpath('//mods:mods/mods:recordInfo/mods:languageOfCataloging', mods: DESC_METADATA_NS).first
+          @language_of_cataloging ||= resource_element.xpath('mods:recordInfo/mods:languageOfCataloging', mods: DESC_METADATA_NS).first
         end
 
         def record_content_source
-          @record_content_source ||= ng_xml.xpath('//mods:mods/mods:recordInfo/mods:recordContentSource', mods: DESC_METADATA_NS).first
+          @record_content_source ||= resource_element.xpath('mods:recordInfo/mods:recordContentSource', mods: DESC_METADATA_NS).first
         end
 
         def description_standard
-          @description_standard ||= ng_xml.xpath('//mods:mods/mods:recordInfo/mods:descriptionStandard', mods: DESC_METADATA_NS).first
+          @description_standard ||= resource_element.xpath('mods:recordInfo/mods:descriptionStandard', mods: DESC_METADATA_NS).first
         end
 
         def record_origin
-          @record_origin ||= ng_xml.xpath('//mods:mods/mods:recordInfo/mods:recordOrigin', mods: DESC_METADATA_NS).first
+          @record_origin ||= resource_element.xpath('mods:recordInfo/mods:recordOrigin', mods: DESC_METADATA_NS).first
         end
 
         def identifier
-          @identifier ||= ng_xml.xpath('//mods:mods/mods:recordInfo/mods:recordIdentifier', mods: DESC_METADATA_NS).first
+          @identifier ||= resource_element.xpath('mods:recordInfo/mods:recordIdentifier', mods: DESC_METADATA_NS).first
         end
 
         def creation_event
-          @creation_event ||= ng_xml.xpath('//mods:mods/mods:recordInfo/mods:recordCreationDate', mods: DESC_METADATA_NS).first
+          @creation_event ||= resource_element.xpath('mods:recordInfo/mods:recordCreationDate', mods: DESC_METADATA_NS).first
         end
 
         def modification_event
-          @modification_event ||= ng_xml.xpath('//mods:mods/mods:recordInfo/mods:recordChangeDate', mods: DESC_METADATA_NS).first
+          @modification_event ||= resource_element.xpath('mods:recordInfo/mods:recordChangeDate', mods: DESC_METADATA_NS).first
         end
       end
     end
