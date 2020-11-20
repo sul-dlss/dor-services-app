@@ -61,13 +61,10 @@ module Cocina
               value: type.text,
               type: type['type'] || 'genre'
             }.tap do |item|
-              if type[:valueURI]
-                item[:uri] = type[:valueURI]
-                item[:source] = { code: type[:authority], uri: type[:authorityURI] }.compact
-              elsif type[:authority]
-                item[:source] = { code: type[:authority] }
-              end
-            end
+              item[:uri] = type[:valueURI]
+              source = { code: type[:authority], uri: type[:authorityURI] }.compact
+              item[:source] = source if source.present?
+            end.compact
           end
         end
 
