@@ -128,6 +128,8 @@ module Cocina
             script_term_source = { code: script_code_term['authority'] } if script_code_term['authority']
             language[:script] = { value: script_text_term.text, code: script_code_term.text, source: script_term_source }.compact
           end
+          language[:status] = language_of_cataloging[:usage]
+
           [language.compact]
         end
 

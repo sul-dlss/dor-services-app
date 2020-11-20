@@ -37,6 +37,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
         "language": [
           {
             "value": 'English',
+            "status": 'primary',
             "code": 'eng',
             "uri": 'http://id.loc.gov/vocabulary/iso639-2/eng',
             "source": {
@@ -93,7 +94,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
     let(:xml) do
       <<~XML
         <recordInfo>
-          <languageOfCataloging usage="primary">
+          <languageOfCataloging>
             <languageTerm type="text" authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2/" valueURI="http://id.loc.gov/vocabulary/iso639-2/eng">English</languageTerm>
             <languageTerm type="code" authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2/" valueURI="http://id.loc.gov/vocabulary/iso639-2/eng">eng</languageTerm>
             <scriptTerm type="text">Latin</scriptTerm>
