@@ -24,13 +24,32 @@ cache = FedoraCache.new
 
 # Changes to the original XML to help with matching.
 def normalize_xml(ng_xml)
+  normalize_version(ng_xml)
+  normalize_topics(ng_xml)
+  ng_xml
+end
+
+def normalize_version(ng_xml)
   # Only normalize version when version isn't mapped.
   unless /MODS version (\d\.\d)/.match(ng_xml.root.at('//mods:recordInfo/mods:recordOrigin',
                                                       mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)&.content)
     ng_xml.root['version'] = '3.6'
     ng_xml.root['xsi:schemaLocation'] = 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd'
   end
-  ng_xml
+end
+
+def normalize_topics(ng_xml)
+  ng_xml.root.xpath('mods:subject[count(mods:topic) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
+    topic_node = subject_node.xpath('mods:topic', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).first
+    # If subject has authority and topic doesn't, copy to topic.
+    topic_node[:authority] = subject_node[:authority] if subject_node[:authority] && !topic_node[:authority]
+    # If subject has authorityURI and topic doesn't, move to topic.
+    topic_node[:authorityURI] = subject_node[:authorityURI] if subject_node[:authorityURI] && !topic_node[:authorityURI]
+    subject_node.delete('authorityURI')
+    # If subject has valueURI and topic doesn't, move to topic.
+    topic_node[:valueURI] = subject_node[:valueURI] if subject_node[:valueURI] && !topic_node[:valueURI]
+    subject_node.delete('valueURI')
+  end
 end
 
 def round_tripped_xml(cocina, druid)
