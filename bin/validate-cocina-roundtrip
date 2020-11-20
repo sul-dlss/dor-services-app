@@ -181,8 +181,6 @@ def validate_druid(druid, cache)
   # Changes to support better matching.
   normalize_xml(original_xml)
 
-  puts original_xml.to_s
-
   begin
     result_xml = round_tripped_xml(cocina, druid)
   rescue StandardError => e
