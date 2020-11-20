@@ -41,6 +41,8 @@ end
 def normalize_topics(ng_xml)
   ng_xml.root.xpath('mods:subject[count(mods:topic) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
     topic_node = subject_node.xpath('mods:topic', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).first
+    next unless subject_node[:authorityURI] || subject_node[:valueURI]
+
     # If subject has authority and topic doesn't, copy to topic.
     topic_node[:authority] = subject_node[:authority] if subject_node[:authority] && !topic_node[:authority]
     # If subject has authorityURI and topic doesn't, move to topic.
@@ -178,6 +180,8 @@ def validate_druid(druid, cache)
 
   # Changes to support better matching.
   normalize_xml(original_xml)
+
+  puts original_xml.to_s
 
   begin
     result_xml = round_tripped_xml(cocina, druid)
