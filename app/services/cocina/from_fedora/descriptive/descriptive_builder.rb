@@ -15,7 +15,8 @@ module Cocina
           identifier: Identifier,
           adminMetadata: AdminMetadata,
           relatedResource: RelatedResource,
-          geographic: Geographic
+          geographic: Geographic,
+          access: Location
         }.freeze
 
         # @param [#build] title_builder
@@ -35,6 +36,9 @@ module Cocina
           title_result = @title_builder.build(resource_element: resource_element, require_title: require_title)
           cocina_description[:title] = title_result if title_result.present?
 
+          purl = purl_from(resource_element)
+          cocina_description[:purl] = purl if purl
+
           BUILDERS.each do |descriptive_property, builder|
             # This is a temporary fix pending https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/138
             # and https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/162
@@ -44,6 +48,15 @@ module Cocina
             cocina_description.merge!(descriptive_property => result) if result.present?
           end
           cocina_description
+        end
+
+        private
+
+        def purl_from(resource_element)
+          purl_elem = resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS).find { |url_node| Location::PURL_REGEX.match(url_node.text) }
+          return nil if purl_elem.nil?
+
+          purl_elem.text
         end
       end
     end
