@@ -98,7 +98,7 @@ module Cocina
           # Is this a basic title or a title with parts
           return simple_value(title_info, display_types: display_types) if children.map(&:name) == ['title']
 
-          with_attributes({ structuredValue: structured_value(children) }, title_info, display_types: display_types)
+          with_attributes({ structuredValue: structured_value(children), note: note(children) }.compact, title_info, display_types: display_types)
         end
 
         # @param [Nokogiri::XML::Element] node the titleInfo node
@@ -159,27 +159,23 @@ module Cocina
 
         # @param [Nokogiri::XML::NodeSet] child_nodes the children of the titleInfo
         def structured_value(child_nodes)
-          new_nodes = child_nodes.map do |node|
+          child_nodes.map do |node|
             { value: node.text, type: TYPES[node.name] }
           end
+        end
 
+        def note(child_nodes)
           unsortable = child_nodes.select { |node| node.name == 'nonSort' }
-          if unsortable.any?
-            count = unsortable.sum do |node|
-              add = node.text.end_with?('-') || node.text.end_with?("'") ? 0 : 1
-              node.text.size + add
-            end
-            new_nodes << {
-              "note": [
-                {
-                  "value": count.to_s,  # cast to String until cocina-models 0.40.0 is used. See https://github.com/sul-dlss/cocina-models/pull/146
-                  "type": 'nonsorting character count'
-                }
-              ]
-            }
-          end
+          return nil if unsortable.empty?
 
-          new_nodes
+          count = unsortable.sum do |node|
+            add = node.text.end_with?('-') || node.text.end_with?("'") ? 0 : 1
+            node.text.size + add
+          end
+          [{
+            "value": count.to_s,  # cast to String until cocina-models 0.40.0 is used. See https://github.com/sul-dlss/cocina-models/pull/146
+            "type": 'nonsorting character count'
+          }]
         end
       end
     end
