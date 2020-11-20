@@ -128,9 +128,20 @@ module Cocina
             script_term_source = { code: script_code_term['authority'] } if script_code_term['authority']
             language[:script] = { value: script_text_term.text, code: script_code_term.text, source: script_term_source }.compact
           end
-          language[:status] = language_of_cataloging[:usage]
+          language[:status] = status(language_of_cataloging)
 
           [language.compact]
+        end
+
+        def status(language_of_cataloging)
+          return unless language_of_cataloging[:usage]
+
+          language_of_cataloging[:usage].downcase.tap do |value|
+            if language_of_cataloging[:usage] != value
+              Honeybadger.notify("[DATA ERROR] languageOfCataloging usage attribute is set to \"#{language_of_cataloging[:usage]}\"",
+                                 { tags: 'data_error' })
+            end
+          end
         end
 
         def language_of_cataloging
