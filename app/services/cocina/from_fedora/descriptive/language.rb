@@ -5,19 +5,6 @@ module Cocina
     class Descriptive
       # Maps languages
       class Language
-        LANG_XPATH = 'mods:language'
-        LANG_STATUS_XPATH = './@status'
-        OBJECT_PART_XPATH = './@objectPart'
-        DISPLAY_LABEL_XPATH = './@displayLabel'
-        LANGUAGE_TERM_XPATH = 'mods:languageTerm'
-        SCRIPT_TERM_XPATH = 'mods:scriptTerm'
-        LANG_TERM_TEXT_XPATH = './mods:languageTerm[@type="text"]/text()'
-        LANG_TERM_CODE_XPATH = './mods:languageTerm[@type="code"]/text()'
-        LANG_TERM_CODE_AUTHORITY_XPATH = './mods:languageTerm[@type="code"]/@authority'
-        LANG_TERM_TEXT_AUTHORITY_XPATH = './mods:languageTerm[@type="text"]/@authority'
-        TEXT_AUTHORITY_URI_XPATH = './*[@type="text"]/@authorityURI' # can be for languageTerm or scriptTerm
-        TEXT_VALUE_URI_XPATH = './*[@type="text"]/@valueURI' # can be for languageTerm or scriptTerm
-
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
@@ -32,11 +19,10 @@ module Cocina
         def build
           [].tap do |langs|
             languages.each do |lang|
-              attribs = {}
-              attribs = lang_term_attributes_for(lang) if language_term?(lang)
-              attribs[:status] = language_status_for(lang) if language_status_for(lang).present?
-              attribs[:script] = script_term_attributes_for(script_term_nodes(lang)) if script_term?(lang)
-              langs << attribs
+              attribs = lang_term_attributes_for(lang)
+              attribs[:status] = lang['status']
+              attribs[:script] = script_term_attributes_for(lang)
+              langs << attribs.compact
             end
           end
         end
@@ -47,16 +33,18 @@ module Cocina
 
         def lang_term_attributes_for(lang)
           {
-            code: language_code_for(lang),
-            value: language_text_for(lang),
+            code: lang.xpath('./mods:languageTerm[@type="code"]/text()', mods: DESC_METADATA_NS).to_s,
+            value: lang.xpath('./mods:languageTerm[@type="text"]/text()', mods: DESC_METADATA_NS).to_s,
             uri: language_value_uri_for(lang),
             appliesTo: language_applies_to(lang),
-            displayLabel: language_display_label(lang),
+            displayLabel: lang['displayLabel'],
             source: language_source_for(lang)
           }.reject { |_k, v| v.blank? }
         end
 
-        def script_term_attributes_for(script_term_nodes)
+        def script_term_attributes_for(lang)
+          script_term_nodes = lang.xpath('mods:scriptTerm', mods: DESC_METADATA_NS)
+
           return if script_term_nodes.blank?
 
           code, value, authority = nil
@@ -74,60 +62,33 @@ module Cocina
         end
 
         def languages
-          @languages ||= resource_element.xpath(LANG_XPATH, mods: DESC_METADATA_NS)
-        end
-
-        def language_code_for(lang)
-          lang.xpath(LANG_TERM_CODE_XPATH, mods: DESC_METADATA_NS).to_s if language_term?(lang)
-        end
-
-        def language_text_for(lang)
-          lang.xpath(LANG_TERM_TEXT_XPATH, mods: DESC_METADATA_NS).to_s if language_term?(lang)
+          @languages ||= resource_element.xpath('mods:language', mods: DESC_METADATA_NS)
         end
 
         # this can be present for type text and/or code, but we only want one.
         def language_value_uri_for(lang)
-          result = lang.xpath(TEXT_VALUE_URI_XPATH, mods: DESC_METADATA_NS).to_s
+          # can be for languageTerm or scriptTerm
+          result = lang.xpath('./*[@type="text"]/@valueURI', mods: DESC_METADATA_NS).to_s
           result = lang.xpath('./*/@valueURI', mods: DESC_METADATA_NS).to_s if result.blank?
           result
         end
 
         def language_applies_to(lang)
-          value = lang.xpath(OBJECT_PART_XPATH, mods: DESC_METADATA_NS).to_s
+          value = lang['objectPart']
           [value: value] if value.present?
         end
 
-        def language_display_label(lang)
-          lang.xpath(DISPLAY_LABEL_XPATH, mods: DESC_METADATA_NS).to_s
-        end
-
-        def language_status_for(lang)
-          lang.xpath(LANG_STATUS_XPATH, mods: DESC_METADATA_NS).to_s
-        end
-
         def language_source_for(lang)
-          code = lang.xpath(LANG_TERM_CODE_AUTHORITY_XPATH, mods: DESC_METADATA_NS).to_s if language_term?(lang)
+          code = lang.xpath('./mods:languageTerm[@type="code"]/@authority', mods: DESC_METADATA_NS).to_s
           # in case there is only a text node
-          code = lang.xpath(LANG_TERM_TEXT_AUTHORITY_XPATH, mods: DESC_METADATA_NS).to_s if code.blank? && language_term?(lang)
-          # this can be present for type text and/or code, but we only want one.
-          uri = lang.xpath(TEXT_AUTHORITY_URI_XPATH, mods: DESC_METADATA_NS).to_s
+          code = lang.xpath('./mods:languageTerm[@type="text"]/@authority', mods: DESC_METADATA_NS).to_s if code.blank?
+          # this can be present on a languageTerm or a scriptTerm for type text and/or code, but we only want one.
+          uri = lang.xpath('./*[@type="text"]/@authorityURI', mods: DESC_METADATA_NS).to_s
           uri = lang.xpath('./*/@authorityURI', mods: DESC_METADATA_NS).to_s if uri.blank?
           {
             code: code,
             uri: uri
           }.reject { |_k, v| v.blank? }
-        end
-
-        def language_term?(lang)
-          lang.xpath(LANGUAGE_TERM_XPATH, mods: DESC_METADATA_NS).to_s.present?
-        end
-
-        def script_term?(lang)
-          script_term_nodes(lang).to_s.present?
-        end
-
-        def script_term_nodes(lang)
-          lang.xpath(SCRIPT_TERM_XPATH, mods: DESC_METADATA_NS)
         end
       end
     end
