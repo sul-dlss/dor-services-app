@@ -29,6 +29,7 @@ def normalize_original(ng_xml)
   normalize_subject_name(ng_xml)
   normalize_authority_uris(ng_xml)
   normalize_subject_authority(ng_xml)
+  normalize_origin_info_event_types(ng_xml)
   ng_xml
 end
 
@@ -81,6 +82,28 @@ def normalize_subject_authority(ng_xml)
   ng_xml.root.xpath("mods:subject[@authority='naf']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
     subject_node[:authority] = 'lcsh'
   end
+end
+
+# change original xml to have the event type that will be output
+def normalize_origin_info_event_types(ng_xml)
+  # code
+  ng_xml.root.xpath('mods:originInfo', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |origin_info_node|
+    date_issued_nodes = origin_info_node.xpath('mods:dateIssued', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+    add_event_type('publication', origin_info_node) && break if date_issued_nodes.present?
+
+    copyright_date_nodes = origin_info_node.xpath('mods:copyrightDate', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+    add_event_type('copyright notice', origin_info_node) && break if copyright_date_nodes.present?
+
+    date_created_nodes = origin_info_node.xpath('mods:dateCreated', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+    add_event_type('production', origin_info_node) && break if date_created_nodes.present?
+
+    date_captured_nodes = origin_info_node.xpath('mods:dateCaptured', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+    add_event_type('capture', origin_info_node) && break if date_captured_nodes.present?
+  end
+end
+
+def add_event_type(value, origin_info_node)
+  origin_info_node['eventType'] = value if origin_info_node[:eventType].blank?
 end
 
 def round_tripped_ng_xml(cocina, druid)
