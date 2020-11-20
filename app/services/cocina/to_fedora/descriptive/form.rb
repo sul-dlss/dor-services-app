@@ -69,6 +69,7 @@ module Cocina
         end
 
         def write_basic(form)
+          return nil if form.source&.value&.match?(/DataCite/i)
           return note(form) if form.note
 
           attributes = {}

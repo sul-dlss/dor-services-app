@@ -5,7 +5,8 @@ module Cocina
     class Descriptive
       # Maps contributors from cocina to MODS XML
       class Contributor
-        NAME_TYPE = FromFedora::Descriptive::Contributor::ROLES.invert.freeze
+        # one way mapping:  MODS 'corporate' already maps to Cocina 'organization'
+        NAME_TYPE = Cocina::FromFedora::Descriptive::Contributor::ROLES.invert.merge('event' => 'corporate').freeze
         NAME_PART = FromFedora::Descriptive::Contributor::NAME_PART.invert.freeze
 
         # @params [Nokogiri::XML::Builder] xml
@@ -56,21 +57,41 @@ module Cocina
           end
         end
 
+        # return marcrelator roles only if any are present, otherwise return other roles
         def write_roles(contributor)
-          Array(contributor.role).each do |role|
-            xml.role do
-              attributes = {}
-              attributes[:valueURI] = role.uri if role.uri
-              attributes[:authority] = role.source.code if role.source&.code
-              attributes[:authorityURI] = role.source.uri if role.source&.uri
-              if role.value.present?
-                attributes[:type] = 'text'
-                xml.roleTerm role.value, attributes
-              end
-              if role.code.present?
-                attributes[:type] = 'code'
-                xml.roleTerm role.code, attributes
-              end
+          mr_roles_xml = marcrelator_roles_xml(contributor)
+          return mr_roles_xml if mr_roles_xml.present?
+
+          contributor.role.each { |role| xml_role(role) unless role.value&.match?(/conference/i) }
+        end
+
+        MARC_RELATOR_PIECE = 'id.loc.gov/vocabulary/relators'
+
+        def marcrelator_roles_xml(contributor)
+          result = []
+          contributor.role.each do |role|
+            next unless role.source&.code == 'marcrelator' ||
+                        role.source&.uri&.include?(MARC_RELATOR_PIECE) ||
+                        role.uri&.include?(MARC_RELATOR_PIECE)
+
+            result << xml_role(role)
+          end
+          result
+        end
+
+        def xml_role(role)
+          xml.role do
+            attributes = {}
+            attributes[:valueURI] = role.uri if role.uri
+            attributes[:authority] = role.source.code if role.source&.code
+            attributes[:authorityURI] = role.source.uri if role.source&.uri
+            if role.value.present?
+              attributes[:type] = 'text'
+              xml.roleTerm role.value, attributes
+            end
+            if role.code.present?
+              attributes[:type] = 'code'
+              xml.roleTerm role.code, attributes
             end
           end
         end

@@ -302,42 +302,48 @@ RSpec.describe Cocina::FromFedora::Descriptive do
             value: 'Doe, John Sr.'
           }],
           type: 'person',
-          role: [{
-            value: 'degree supervisor',
-            code: 'ths',
-            source: {
-              code: 'marcrelator',
-              uri: 'http://id.loc.gov/vocabulary/relators/'
+          role: [
+            { value: 'degree supervisor' },
+            {
+              code: 'ths',
+              source: {
+                code: 'marcrelator',
+                uri: 'http://id.loc.gov/vocabulary/relators/'
+              }
             }
-          }]
+          ]
         },
         {
           name: [{
             value: 'Doe, Jane'
           }],
           type: 'person',
-          role: [{
-            value: 'degree committee member',
-            code: 'ths',
-            source: {
-              code: 'marcrelator',
-              uri: 'http://id.loc.gov/vocabulary/relators/'
+          role: [
+            { value: 'degree committee member' },
+            {
+              code: 'ths',
+              source: {
+                code: 'marcrelator',
+                uri: 'http://id.loc.gov/vocabulary/relators/'
+              }
             }
-          }]
+          ]
         },
         {
           name: [{
             value: 'Majors, Brad'
           }],
           type: 'person',
-          role: [{
-            value: 'degree committee member',
-            code: 'ths',
-            source: {
-              code: 'marcrelator',
-              uri: 'http://id.loc.gov/vocabulary/relators/'
+          role: [
+            { value: 'degree committee member' },
+            {
+              code: 'ths',
+              source: {
+                code: 'marcrelator',
+                uri: 'http://id.loc.gov/vocabulary/relators/'
+              }
             }
-          }]
+          ]
         },
         {
           name: [{
