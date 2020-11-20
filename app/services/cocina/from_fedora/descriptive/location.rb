@@ -71,7 +71,8 @@ module Cocina
               end
               source = { code: node[:authority], uri: node[:authorityURI] }.compact
               attrs[:source] = source unless source.empty?
-            end
+              attrs[:type] = node[:type]
+            end.compact
           end
         end
       end

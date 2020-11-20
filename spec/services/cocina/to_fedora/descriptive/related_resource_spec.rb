@@ -136,8 +136,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
       ]
     end
 
-    # Re-enable as part of https://github.com/sul-dlss/dor-services-app/issues/1412
-    xit 'builds the xml' do
+    it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
@@ -198,8 +197,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
       ]
     end
 
-    # Re-enable as part of https://github.com/sul-dlss/dor-services-app/issues/1412
-    xit 'builds the xml' do
+    it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
