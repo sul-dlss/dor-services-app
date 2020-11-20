@@ -692,7 +692,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
               role: publisher_roles
             }
           ],
-          date: [{ encoding: { code: 'edtf' }, value: '2020-02-14' }]
+          date: [
+            {
+              encoding: { code: 'w3cdtf' },
+              value: '2020-02-14',
+              status: 'primary'
+            }
+          ]
         )
       ]
     end
@@ -700,7 +706,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     let(:descriptive) { Cocina::Models::Description.new({ event: events }, false, false) }
 
     it 'builds the expected xml' do
-      skip('TODO: changes to originInfo mappings for h2 coming shortly')
       result_xml = Cocina::ToFedora::Descriptive.transform(descriptive, druid).to_xml
       expect(result_xml).to be_equivalent_to <<~XML
         #{mods_element_open}
@@ -733,7 +738,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     let(:descriptive) { Cocina::Models::Description.new({ event: events }, false, false) }
 
     it 'builds the expected xml' do
-      skip('TODO: changes to originInfo mappings for h2 coming shortly')
       result_xml = Cocina::ToFedora::Descriptive.transform(descriptive, druid).to_xml
       expect(result_xml).to be_equivalent_to <<~XML
         #{mods_element_open}
