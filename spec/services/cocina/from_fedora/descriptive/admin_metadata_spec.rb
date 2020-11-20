@@ -90,6 +90,44 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
     end
   end
 
+  context 'when languageOfCataloging has an capitalized (invalid) usage' do
+    let(:xml) do
+      <<~XML
+        <recordInfo>
+          <languageOfCataloging usage="Primary">
+            <languageTerm type="text" authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2" valueURI="http://id.loc.gov/vocabulary/iso639-2/eng">English</languageTerm>
+            <languageTerm type="code" authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2" valueURI="http://id.loc.gov/vocabulary/iso639-2/eng">eng</languageTerm>
+          </languageOfCataloging>
+        </recordInfo>
+      XML
+    end
+
+    before do
+      allow(Honeybadger).to receive(:notify)
+    end
+
+    it 'builds the cocina data structure and logs the error' do
+      expect(build).to eq(
+        "language": [
+          {
+            "value": 'English',
+            "status": 'primary',
+            "code": 'eng',
+            "uri": 'http://id.loc.gov/vocabulary/iso639-2/eng',
+            "source": {
+              "code": 'iso639-2b',
+              "uri": 'http://id.loc.gov/vocabulary/iso639-2'
+            }
+          }
+        ]
+      )
+      expect(Honeybadger).to have_received(:notify).with(
+        '[DATA ERROR] languageOfCataloging usage attribute is set to "Primary"',
+        { tags: 'data_error' }
+      )
+    end
+  end
+
   context 'with no authority listed for scriptTerm code' do
     let(:xml) do
       <<~XML
