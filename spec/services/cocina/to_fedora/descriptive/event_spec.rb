@@ -690,6 +690,40 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  context 'when it has a publisher that is not marcrelator' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          type: 'publication',
+          contributor: [
+            {
+              name: [{ value: 'Stanford University Press' }],
+              type: 'organization',
+              role: [
+                {
+                  value: 'Publisher',
+                  source: { value: 'Stanford self-deposit contributor types' }
+                }
+              ]
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the expected xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo eventType="publication">
+            <publisher>Stanford University Press</publisher>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
   context 'when it has a publisher that is transliterated' do
     let(:events) do
       [

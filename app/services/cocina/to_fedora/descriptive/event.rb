@@ -74,7 +74,10 @@ module Cocina
           xml.send(note.type, note.value, attributes)
         end
 
+        # the only contributors legal for MODS are ones with role publisher
         def contributor(contributor)
+          return unless contributor_role_publisher?(contributor)
+
           attributes = {}
           name = contributor.name.first
           if name.valueLanguage
@@ -82,7 +85,8 @@ module Cocina
             attributes[:script] = name.valueLanguage.valueScript.code
             attributes[:transliteration] = name.standard.value if name.standard
           end
-          xml.send(contributor.role.first.value, name.value, attributes)
+
+          xml.publisher(name.value, attributes)
         end
 
         def location(location)
@@ -123,6 +127,21 @@ module Cocina
           dates.each do |date|
             date_tag(date, event_type, point: date.type)
           end
+        end
+
+        MARC_RELATOR_PIECE = 'id.loc.gov/vocabulary/relators'
+
+        # prefer marcrelator publisher role
+        def contributor_role_publisher?(contributor)
+          return true if contributor.role.any? { |role| role.value.match?(/publisher/i) && role_is_marcrelator?(role) }
+
+          contributor.role.any? { |role| role.value&.match?(/publisher/i) }
+        end
+
+        def role_is_marcrelator?(role)
+          role.source&.code == 'marcrelator' ||
+            role.source&.uri&.include?(MARC_RELATOR_PIECE) ||
+            role.uri&.include?(MARC_RELATOR_PIECE)
         end
       end
     end
