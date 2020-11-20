@@ -141,6 +141,27 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       end
     end
 
+    context 'without valueURI' do
+      let(:xml) do
+        <<~XML
+          <genre authority="lcgft" authorityURI="http://id.loc.gov/authorities/genreForms/">Photographs</genre>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'Photographs',
+            "type": 'genre',
+            "source": {
+              "code": 'lcgft',
+              "uri": 'http://id.loc.gov/authorities/genreForms/'
+            }
+          }
+        ]
+      end
+    end
+
     context 'with authority missing authorityURI' do
       let(:xml) do
         <<~XML
