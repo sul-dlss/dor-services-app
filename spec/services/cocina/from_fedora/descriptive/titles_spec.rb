@@ -50,11 +50,17 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
 
       it 'is a structured value' do
         expect(build).to eq [
-          { structuredValue: [{ type: 'nonsorting characters', value: 'The' },
-                              { type: 'main title', value: 'journal of stuff' },
-                              { type: 'part number', value: 'volume 5' },
-                              { type: 'part name', value: 'special issue' },
-                              { note: [{ type: 'nonsorting character count', value: '4' }] }] }
+          {
+            structuredValue: [
+              { type: 'nonsorting characters', value: 'The' },
+              { type: 'main title', value: 'journal of stuff' },
+              { type: 'part number', value: 'volume 5' },
+              { type: 'part name', value: 'special issue' }
+            ],
+            note: [
+              { type: 'nonsorting character count', value: '4' }
+            ]
+          }
         ]
       end
     end
@@ -160,14 +166,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
                   {
                     "value": 'misérables',
                     "type": 'main title'
-                  },
+                  }
+                ],
+                "note": [
                   {
-                    "note": [
-                      {
-                        "value": '4',
-                        "type": 'nonsorting character count'
-                      }
-                    ]
+                    "value": '4',
+                    "type": 'nonsorting character count'
                   }
                 ],
                 "status": 'primary',
@@ -187,14 +191,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
                   {
                     "value": 'wretched',
                     "type": 'main title'
-                  },
+                  }
+                ],
+                "note": [
                   {
-                    "note": [
-                      {
-                        "value": '4',
-                        "type": 'nonsorting character count'
-                      }
-                    ]
+                    "value": '4',
+                    "type": 'nonsorting character count'
                   }
                 ],
                 "type": 'translated',
