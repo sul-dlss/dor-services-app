@@ -8,14 +8,16 @@ module Cocina
         # @params [Nokogiri::XML::Builder] xml
         # @params [Cocina::Models::Event] event
         # @params [Integer] count
-        def self.write(xml:, event:, count:)
-          new(xml: xml, event: event, count: count).write
+        # @params [String] event_type - see Cocina::ToFedora::Descriptive::Event::EVENT_TYPE
+        def self.write(xml:, event:, count:, event_type:)
+          new(xml: xml, event: event, count: count, event_type: event_type).write
         end
 
-        def initialize(xml:, event:, count:)
+        def initialize(xml:, event:, count:, event_type:)
           @xml = xml
           @event = event
           @count = count
+          @event_type = event_type
           @groups = {}
         end
 
@@ -24,7 +26,12 @@ module Cocina
           group_contributors
 
           groups.each do |script, origin|
-            xml.originInfo script: script, altRepGroup: count do
+            attributes = {
+              script: script,
+              altRepGroup: count,
+              eventType: event_type
+            }
+            xml.originInfo attributes do
               origin[:place].each do |place|
                 xml.place do
                   if place[:text]
@@ -43,7 +50,7 @@ module Cocina
 
         private
 
-        attr_reader :xml, :event, :count, :groups
+        attr_reader :xml, :event, :count, :event_type, :groups
 
         def initialize_translation(key)
           groups[key] ||= { place: [], publisher: [] }

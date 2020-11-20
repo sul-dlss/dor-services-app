@@ -32,9 +32,9 @@ module Cocina
         def write
           Array(events).each_with_index do |event, count|
             attributes = {}
-            attributes[:eventType] = EVENT_TYPE.fetch(event.type) if events.size > 1 && event.type
+            attributes[:eventType] = EVENT_TYPE.fetch(event.type) if event.type
             if translated?(event)
-              TranslatedEvent.write(xml: xml, event: event, count: count)
+              TranslatedEvent.write(xml: xml, event: event, count: count, event_type: event.type)
             else
               write_basic(event, attributes)
             end

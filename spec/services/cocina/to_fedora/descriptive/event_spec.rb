@@ -48,7 +48,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="production">
             <dateCreated>1980</dateCreated>
           </originInfo>
         </mods>
@@ -80,7 +80,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="publication">
             <dateIssued encoding="w3cdtf">1928</dateIssued>
           </originInfo>
         </mods>
@@ -109,7 +109,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="copyright notice">
             <copyrightDate>1930</copyrightDate>
           </originInfo>
         </mods>
@@ -142,7 +142,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="capture">
             <dateCaptured keyDate="yes" encoding="iso8601">20131012231249</dateCaptured>
           </originInfo>
         </mods>
@@ -250,7 +250,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="production">
             <dateCreated keyDate="yes" point="start">1920</dateCreated>
             <dateCreated point="end">1925</dateCreated>
           </originInfo>
@@ -281,7 +281,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="production">
             <dateCreated qualifier="approximate">1940</dateCreated>
           </originInfo>
         </mods>
@@ -322,9 +322,9 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
-          <dateCreated keyDate="yes" point="start" qualifier="approximate">1940</dateCreated>
-          <dateCreated point="end" qualifier="approximate">1945</dateCreated>
+          <originInfo eventType="production">
+            <dateCreated keyDate="yes" point="start" qualifier="approximate">1940</dateCreated>
+            <dateCreated point="end" qualifier="approximate">1945</dateCreated>
           </originInfo>
         </mods>
       XML
@@ -353,7 +353,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="production">
             <dateCreated qualifier="inferred">1940</dateCreated>
           </originInfo>
         </mods>
@@ -383,7 +383,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="production">
             <dateCreated qualifier="questionable">1940</dateCreated>
           </originInfo>
         </mods>
@@ -425,7 +425,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="publication">
             <dateIssued keyDate="yes" point="start">1940</dateIssued>
             <dateIssued point="end">1945</dateIssued>
             <dateIssued>1948</dateIssued>
@@ -460,7 +460,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="publication">
             <dateIssued keyDate="yes">1940</dateIssued>
             <dateIssued>1942</dateIssued>
           </originInfo>
@@ -493,7 +493,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="production">
             <dateCreated encoding="edtf">-0499</dateCreated>
           </originInfo>
         </mods>
@@ -682,7 +682,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="publication">
             <publisher>Virago</publisher>
           </originInfo>
         </mods>
@@ -741,7 +741,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="publication">
             <publisher lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
           </originInfo>
         </mods>
@@ -796,7 +796,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="publication">
             <publisher lang="rus" script="Cyrl">СФУ</publisher>
           </originInfo>
         </mods>
@@ -858,7 +858,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="publication">
             <publisher>Ardis</publisher>
             <publisher>Commonplace Books</publisher>
           </originInfo>
@@ -887,7 +887,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="publication">
             <edition>1st ed.</edition>
           </originInfo>
         </mods>
@@ -922,7 +922,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="publication">
             <issuance>serial</issuance>
             <frequency>every full moon</frequency>
           </originInfo>
@@ -961,7 +961,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
+          <originInfo eventType="publication">
             <issuance>multipart monograph</issuance>
             <frequency authority="marcfrequency">Annual</frequency>
           </originInfo>
@@ -1169,7 +1169,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo script="Latn" altRepGroup="0">
+          <originInfo eventType="publication" script="Latn" altRepGroup="0">
             <place>
               <placeTerm type="code" authority="marccountry">ja</placeTerm>
             </place>
@@ -1178,7 +1178,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
             </place>
             <publisher>Rinsen Shoten</publisher>
           </originInfo>
-          <originInfo script="Hani" altRepGroup="0">
+          <originInfo eventType="publication" script="Hani" altRepGroup="0">
             <place>
               <placeTerm type="text">京都市</placeTerm>
             </place>

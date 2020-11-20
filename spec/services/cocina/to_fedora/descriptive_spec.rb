@@ -89,7 +89,7 @@ RSpec.describe Cocina::ToFedora::Descriptive do
               <projection>Conic proj</projection>
             </cartographics>
           </subject>
-          <originInfo>
+          <originInfo eventType="production">
             <dateCreated>1980</dateCreated>
           </originInfo>
         </mods>
