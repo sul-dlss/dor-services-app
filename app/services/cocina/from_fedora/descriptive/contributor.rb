@@ -217,7 +217,7 @@ module Cocina
             return
           end
 
-          raise Cocina::Mapper::InvalidDescMetadata, "Contributor role code is missing and has unexpected value: #{role_code.content}"
+          raise Cocina::Mapper::InvalidDescMetadata, "Contributor role code has unexpected value: #{role_code.content}"
         end
 
         # ensure value is downcased if it's a marcrelator value

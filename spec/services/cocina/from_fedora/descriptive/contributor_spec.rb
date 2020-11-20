@@ -694,7 +694,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
 
       it 'raises an error' do
-        expect { build }.to raise_error Cocina::Mapper::InvalidDescMetadata, 'Contributor role code is missing and has unexpected value: isbx'
+        expect { build }.to raise_error Cocina::Mapper::InvalidDescMetadata, 'Contributor role code has unexpected value: isbx'
       end
     end
 

@@ -305,7 +305,7 @@ RSpec.describe 'Get the object' do
 
       let(:expected) do
         {
-          errors: [{ detail: 'Contributor role code is missing and has unexpected value: isbx', status: '422', title: 'Invalid descMetadata' }]
+          errors: [{ detail: 'Contributor role code has unexpected value: isbx', status: '422', title: 'Invalid descMetadata' }]
         }
       end
 
