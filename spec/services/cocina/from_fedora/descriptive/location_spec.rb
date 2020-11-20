@@ -81,6 +81,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
         "accessContact": [
           {
             "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
+            "type": 'repository',
             "uri": 'http://id.loc.gov/authorities/names/no2014019980',
             "source": {
               "code": 'naf'
@@ -163,6 +164,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
           "accessContact": [
             {
               "value": 'Stanford University. Libraries',
+              "type": 'repository',
               "uri": 'http://id.loc.gov/authorities/names/n81070667',
               "source": {
                 "code": 'naf'
