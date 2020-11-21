@@ -79,6 +79,22 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
       expect(build).to eq([expected_hash])
       build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
     end
+
+    context 'when dc:type does not have the expected capitalization' do
+      let(:dc_type) { 'image' }
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq([expected_hash])
+        build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
+      end
+
+      it 'sends a warning about the data error via Honeybadger' do
+        allow(Honeybadger).to receive(:notify)
+        build
+        err_msg = '[DATA ERROR] <dc:type>image</dc:type> normalized to <dc:type>Image</dc:type>'
+        expect(Honeybadger).to have_received(:notify).with(err_msg, { tags: 'data_error' })
+      end
+    end
   end
 
   context 'with a basic bounding box' do
@@ -152,6 +168,22 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
     it 'builds the cocina data structure' do
       expect(build).to eq([expected_hash])
       build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
+    end
+
+    context 'when dc:type does not have the expected capitalization' do
+      let(:dc_type) { 'image' }
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq([expected_hash])
+        build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
+      end
+
+      it 'sends a warning about the data error via Honeybadger' do
+        allow(Honeybadger).to receive(:notify)
+        build
+        err_msg = '[DATA ERROR] <dc:type>image</dc:type> normalized to <dc:type>Image</dc:type>'
+        expect(Honeybadger).to have_received(:notify).with(err_msg, { tags: 'data_error' })
+      end
     end
   end
 
