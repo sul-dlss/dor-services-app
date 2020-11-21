@@ -72,9 +72,18 @@ module Cocina
         end
 
         def build_type
-          return { value: type, type: MEDIA_TYPE, source: DCMI_VOCAB } if type == 'Image'
+          type_section =
+            if type == 'Image'
+              { value: type, type: MEDIA_TYPE, source: DCMI_VOCAB }
+            else
+              { value: type, type: TYPE }
+            end
 
-          [{ value: format[:format], type: DATA_FORMAT }, { value: type, type: TYPE }]
+          if format[:format].present?
+            [{ value: format[:format], type: DATA_FORMAT }, type_section]
+          else
+            type_section
+          end
         end
 
         def build_subject
