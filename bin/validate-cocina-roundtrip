@@ -23,7 +23,7 @@ parser.parse!(into: options)
 cache = FedoraCache.new
 
 # Changes to the original XML to help with matching.
-def normalize_xml(ng_xml)
+def normalize_original(ng_xml)
   normalize_version(ng_xml)
   normalize_topics(ng_xml)
   ng_xml
@@ -54,43 +54,43 @@ def normalize_topics(ng_xml)
   end
 end
 
-def round_tripped_xml(cocina, druid)
+def round_tripped_ng_xml(cocina, druid)
   Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina, druid).to_xml)
 end
 
-def cocina_model(xml, label)
+def cocina_model(ng_xml, label)
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: label)
-  desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: xml)
+  desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: ng_xml)
   Cocina::Models::Description.new(desc_props)
 end
 
 # rubocop:disable Metrics/ParameterLists
-def write_result(druid, original_xml, result_xml, cocina, error_nodes, unmatched_original_nodes, unmatched_result_nodes)
+def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, error_nodes, unmatched_original_nodes, unmatched_roundtrip_nodes)
   File.open("results/#{druid}.txt", 'w') do |file|
     file.write("Druid: #{druid}\n")
-    file.write("Expected XML:\n#{original_xml.to_xml}\n")
-    file.write("Received XML:\n#{result_xml.to_xml}\n")
+    file.write("Original XML:\n#{original_ng_xml.to_xml}\n")
+    file.write("Roundtripped XML:\n#{roundtrip_ng_xml.to_xml}\n")
     file.write("Cocina:\n#{JSON.pretty_generate(cocina.to_h)}\n\n")
 
     error_nodes.each do |node_pair|
-      result_node = node_pair[0]
+      roundtrip_node = node_pair[0]
       original_node = node_pair[1]
 
-      write_count_mismatch(file, original_node, result_node) if original_node.element? && original_node.elements.length != result_node.elements.length
+      write_count_mismatch(file, original_node, roundtrip_node) if original_node.element? && original_node.elements.length != roundtrip_node.elements.length
     end
 
     unmatched_original_nodes.each { |node| file.write("Unmatched original:\n#{node}\n") }
-    unmatched_result_nodes.each { |node| file.write("Unmatched result:\n#{node}\n") }
+    unmatched_roundtrip_nodes.each { |node| file.write("Unmatched roundtripped:\n#{node}\n") }
   end
 end
 # rubocop:enable Metrics/ParameterLists
 
-def write_count_mismatch(file, original_node, result_node)
-  file.write("Element count mismatch between expected and received.\n")
-  file.write("Expected node:\n#{original_node}\n")
-  file.write("Received node:\n#{result_node}\n\n")
-  write_missing(file, original_node, result_node, 'Missing from received or unmatched in received')
-  write_missing(file, result_node, original_node, 'Extra or unmatched in received')
+def write_count_mismatch(file, original_node, roundtrip_node)
+  file.write("Element count mismatch between original and roundtripped.\n")
+  file.write("Original node:\n#{original_node}\n")
+  file.write("Roundtripped node:\n#{roundtrip_node}\n\n")
+  write_missing(file, original_node, roundtrip_node, 'Missing from roundtripped or unmatched in roundtripped')
+  write_missing(file, roundtrip_node, original_node, 'Extra or unmatched in roundtripped')
   file.write("\n")
 end
 
@@ -110,10 +110,10 @@ def write_missing(file, node1, node2, label)
   end
 end
 
-def write_error(druid, original_xml, cocina, error)
+def write_error(druid, original_ng_xml, cocina, error)
   File.open("results/#{druid}.txt", 'w') do |file|
     file.write("Error: #{error}\n\n")
-    file.write("Expected XML:\n#{original_xml.to_xml}\n\n")
+    file.write("Expected XML:\n#{original_ng_xml.to_xml}\n\n")
     file.write("Cocina:\n#{JSON.pretty_generate(cocina.to_h)}\n\n")
     file.write("Backtrace:\n")
     file.write(error.backtrace.join("\n"))
@@ -134,64 +134,63 @@ def possible_matches_for(node, nodeset)
   nodeset.select { |check_node| node.name == check_node.name }
 end
 
-def check_equivalent(result_xml, original_xml)
+def check_equivalent(roundtrip_ng_xml, original_ng_xml)
   all_original_nodes = Set.new
   matched_original_nodes = Set.new
-  all_result_nodes = Set.new
-  matched_result_nodes = Set.new
+  all_roundtrip_nodes = Set.new
+  matched_roundtrip_nodes = Set.new
   error_nodes = []
 
-  equiv = EquivalentXml.equivalent?(result_xml, original_xml) do |result_node, original_node, equivalent|
+  equiv = EquivalentXml.equivalent?(roundtrip_ng_xml, original_ng_xml) do |roundtrip_node, original_node, equivalent|
     all_original_nodes << original_node unless original_node.xml?
-    all_result_nodes << result_node unless result_node.xml?
+    all_roundtrip_nodes << roundtrip_node unless roundtrip_node.xml?
     if equivalent
       matched_original_nodes << original_node
-      matched_result_nodes << result_node
-
+      matched_roundtrip_nodes << roundtrip_node
       nil
     elsif original_node.xml?
       nil
-    elsif original_node.element? && original_node.name == result_node.name && original_node.elements.length != result_node.elements.length
+    elsif original_node.element? && original_node.name == roundtrip_node.name && original_node.elements.length != roundtrip_node.elements.length
       matched_original_nodes << original_node
       original_node.ancestors.each { |node| matched_original_nodes << node }
-      matched_result_nodes << result_node
-      result_node.ancestors.each { |node| matched_result_nodes << node }
+      matched_roundtrip_nodes << roundtrip_node
+      roundtrip_node.ancestors.each { |node| matched_roundtrip_nodes << node }
 
-      error_nodes << [result_node, original_node]
+      error_nodes << [roundtrip_node, original_node]
       nil
     end
   end
-  [equiv, error_nodes, all_original_nodes - matched_original_nodes, all_result_nodes - matched_result_nodes]
+  [equiv, error_nodes, all_original_nodes - matched_original_nodes, all_roundtrip_nodes - matched_roundtrip_nodes]
 end
 
 def validate_druid(druid, cache)
   begin
-    original_xml = cache.descmd_xml(druid)
+    original_ng_xml = cache.descmd_xml(druid)
     label = cache.label(druid)
   rescue StandardError
     return :missing
   end
 
   begin
-    cocina = cocina_model(original_xml, label)
+    cocina = cocina_model(original_ng_xml, label)
   rescue StandardError
     return :to_cocina_error
   end
 
   # Changes to support better matching.
-  normalize_xml(original_xml)
+  normalize_original(original_ng_xml)
 
   begin
-    result_xml = round_tripped_xml(cocina, druid)
+    roundtrip_ng_xml = round_tripped_ng_xml(cocina, druid)
   rescue StandardError => e
-    write_error(druid, original_xml, cocina, e)
+    write_error(druid, original_ng_xml, cocina, e)
     return :to_fedora_error
   end
 
-  equiv, error_nodes, unmatched_original_nodes, unmatched_result_nodes = check_equivalent(result_xml, original_xml)
+  equiv, error_nodes, unmatched_original_nodes, unmatched_roundtrip_nodes = check_equivalent(roundtrip_ng_xml, original_ng_xml)
 
   unless equiv
-    write_result(druid, original_xml, result_xml, cocina, error_nodes, unmatched_original_nodes, unmatched_result_nodes)
+    write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, error_nodes, unmatched_original_nodes, unmatched_roundtrip_nodes)
     return :different
   end
   :success
