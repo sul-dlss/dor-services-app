@@ -180,7 +180,16 @@ module Cocina
         end
 
         def type
-          @type = description.xpath('//dc:type', NAMESPACE).text
+          @type ||= normalize_type_text(description.xpath('//dc:type', NAMESPACE).text)
+        end
+
+        def normalize_type_text(text)
+          if text.downcase == 'image' && text != 'Image'
+            Honeybadger.notify("[DATA ERROR] <dc:type>#{text}</dc:type> normalized to <dc:type>Image</dc:type>", { tags: 'data_error' })
+            'Image'
+          else
+            text
+          end
         end
       end
       # rubocop:enable Metrics/ClassLength

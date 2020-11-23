@@ -17,13 +17,14 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
   end
 
   context 'with point coordinates' do
+    let(:dc_type) { 'Image' }
     let(:xml) do
       <<~XML
         <extension displayLabel="geo">
           <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gmd="http://www.isotc211.org/2005/gmd">
             <rdf:Description rdf:about="http://www.stanford.edu/kk138ps4721">
               <dc:format>image/jpeg</dc:format>
-              <dc:type>Image</dc:type>
+              <dc:type>#{dc_type}</dc:type>
               <gmd:centerPoint>
                 <gml:Point gml:id="ID">
                   <gml:pos>41.893367 12.483736</gml:pos>
@@ -35,55 +36,76 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
       XML
     end
 
+    let(:expected_hash) do
+      {
+        "form": [
+          {
+            "value": 'image/jpeg',
+            "type": 'media type',
+            "source": {
+              "value": 'IANA media type terms'
+            }
+          },
+          {
+            "value": 'Image',
+            "type": 'media type',
+            "source": {
+              "value": 'DCMI Type Vocabulary'
+            }
+          }
+        ],
+        "subject": [
+          {
+            "structuredValue": [
+              {
+                "value": '41.893367',
+                "type": 'latitude'
+              },
+              {
+                "value": '12.483736',
+                "type": 'longitude'
+              }
+            ],
+            "type": 'point coordinates',
+            "encoding": {
+              "value": 'decimal'
+            }
+          }
+        ]
+      }
+    end
+
     it 'builds the cocina data structure' do
-      expect(build).to eq([{
-                            "form": [
-                              {
-                                "value": 'image/jpeg',
-                                "type": 'media type',
-                                "source": {
-                                  "value": 'IANA media type terms'
-                                }
-                              },
-                              {
-                                "value": 'Image',
-                                "type": 'media type',
-                                "source": {
-                                  "value": 'DCMI Type Vocabulary'
-                                }
-                              }
-                            ],
-                            "subject": [
-                              {
-                                "structuredValue": [
-                                  {
-                                    "value": '41.893367',
-                                    "type": 'latitude'
-                                  },
-                                  {
-                                    "value": '12.483736',
-                                    "type": 'longitude'
-                                  }
-                                ],
-                                "type": 'point coordinates',
-                                "encoding": {
-                                  "value": 'decimal'
-                                }
-                              }
-                            ]
-                          }])
+      expect(build).to eq([expected_hash])
       build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
+    end
+
+    context 'when dc:type does not have the expected capitalization' do
+      let(:dc_type) { 'image' }
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq([expected_hash])
+        build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
+      end
+
+      it 'sends a warning about the data error via Honeybadger' do
+        allow(Honeybadger).to receive(:notify)
+        build
+        err_msg = '[DATA ERROR] <dc:type>image</dc:type> normalized to <dc:type>Image</dc:type>'
+        expect(Honeybadger).to have_received(:notify).with(err_msg, { tags: 'data_error' })
+      end
     end
   end
 
   context 'with a basic bounding box' do
+    let(:dc_type) { 'Image' }
     let(:xml) do
       <<~XML
         <extension displayLabel="geo">
           <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
             <rdf:Description rdf:about="http://purl.stanford.edu/cw222pt0426">
               <dc:format>image/jpeg</dc:format>
-              <dc:type>Image</dc:type>
+              <dc:type>#{dc_type}</dc:type>
               <gml:boundedBy>
                 <gml:Envelope>
                   <gml:lowerCorner>-122.191292 37.4063388</gml:lowerCorner>
@@ -96,57 +118,72 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
       XML
     end
 
-    it 'builds the cocina data structure' do
-      expect(build).to eq(
-        [
+    let(:expected_hash) do
+      {
+        form: [
           {
-            form: [
+            value: 'image/jpeg',
+            type: 'media type',
+            source: {
+              value: 'IANA media type terms'
+            }
+          },
+          {
+            value: 'Image',
+            type: 'media type',
+            source: {
+              value: 'DCMI Type Vocabulary'
+            }
+          }
+        ],
+        subject: [
+          {
+            structuredValue: [
               {
-                value: 'image/jpeg',
-                type: 'media type',
-                source: {
-                  value: 'IANA media type terms'
-                }
+                value: '-122.191292',
+                type: 'west'
               },
               {
-                value: 'Image',
-                type: 'media type',
-                source: {
-                  value: 'DCMI Type Vocabulary'
-                }
+                value: '37.4063388',
+                type: 'south'
+              },
+              {
+                value: '-122.149475',
+                type: 'east'
+              },
+              {
+                value: '37.4435369',
+                type: 'north'
               }
             ],
-            subject: [
-              {
-                structuredValue: [
-                  {
-                    value: '-122.191292',
-                    type: 'west'
-                  },
-                  {
-                    value: '37.4063388',
-                    type: 'south'
-                  },
-                  {
-                    value: '-122.149475',
-                    type: 'east'
-                  },
-                  {
-                    value: '37.4435369',
-                    type: 'north'
-                  }
-                ],
-                type: 'bounding box coordinates',
-                encoding: {
-                  value: 'decimal'
-                }
-              }
-            ]
+            type: 'bounding box coordinates',
+            encoding: {
+              value: 'decimal'
+            }
           }
         ]
-      )
+      }
+    end
 
+    it 'builds the cocina data structure' do
+      expect(build).to eq([expected_hash])
       build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
+    end
+
+    context 'when dc:type does not have the expected capitalization' do
+      let(:dc_type) { 'image' }
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq([expected_hash])
+        build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
+      end
+
+      it 'sends a warning about the data error via Honeybadger' do
+        allow(Honeybadger).to receive(:notify)
+        build
+        err_msg = '[DATA ERROR] <dc:type>image</dc:type> normalized to <dc:type>Image</dc:type>'
+        expect(Honeybadger).to have_received(:notify).with(err_msg, { tags: 'data_error' })
+      end
     end
   end
 
