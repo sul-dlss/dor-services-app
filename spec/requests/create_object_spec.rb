@@ -448,7 +448,7 @@ RSpec.describe 'Create object' do
                     filename: '00001.jp2',
                     size: 0, version: 1,
                     hasMimeType: 'image/jp2', hasMessageDigests: [],
-                    access: { access: 'world', download: 'none' },
+                    access: { access: 'world', download: 'world' },
                     administrative: { sdrPreserve: true, shelve: true }
                   }
                 ]
@@ -465,7 +465,7 @@ RSpec.describe 'Create object' do
                     label: '00002.html', filename: '00002.html', size: 0,
                     version: 1, hasMimeType: 'text/html',
                     hasMessageDigests: [],
-                    access: { access: 'world', download: 'none' },
+                    access: { access: 'world', download: 'world' },
                     administrative: { sdrPreserve: true, shelve: false }
                   }, {
                     type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
@@ -475,7 +475,7 @@ RSpec.describe 'Create object' do
                     size: 0, version: 1,
                     hasMimeType: 'image/jp2',
                     hasMessageDigests: [],
-                    access: { access: 'world', download: 'none' },
+                    access: { access: 'world', download: 'world' },
                     administrative: { sdrPreserve: true, shelve: true }
                   }
                 ]

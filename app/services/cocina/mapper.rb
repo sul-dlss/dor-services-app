@@ -61,7 +61,7 @@ module Cocina
       raise
     rescue StandardError => e
       Honeybadger.notify(e)
-      raise UnexpectedBuildError # wrap unexpected StandardError, caller will probably want to look at #cause
+      raise UnexpectedBuildError, e # wrap unexpected StandardError, caller will probably want to look at #cause
     end
 
     private
