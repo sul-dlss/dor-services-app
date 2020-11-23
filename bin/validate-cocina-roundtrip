@@ -26,6 +26,9 @@ cache = FedoraCache.new
 def normalize_original(ng_xml)
   normalize_version(ng_xml)
   normalize_topics(ng_xml)
+  normalize_subject_name(ng_xml)
+  normalize_authority_uris(ng_xml)
+  normalize_subject_authority(ng_xml)
   ng_xml
 end
 
@@ -41,16 +44,42 @@ end
 def normalize_topics(ng_xml)
   ng_xml.root.xpath('mods:subject[count(mods:topic) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
     topic_node = subject_node.xpath('mods:topic', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).first
-    next unless subject_node[:authorityURI] || subject_node[:valueURI]
+    normalize_subject(subject_node, topic_node)
+  end
+end
 
-    # If subject has authority and topic doesn't, copy to topic.
-    topic_node[:authority] = subject_node[:authority] if subject_node[:authority] && !topic_node[:authority]
-    # If subject has authorityURI and topic doesn't, move to topic.
-    topic_node[:authorityURI] = subject_node[:authorityURI] if subject_node[:authorityURI] && !topic_node[:authorityURI]
-    subject_node.delete('authorityURI')
-    # If subject has valueURI and topic doesn't, move to topic.
-    topic_node[:valueURI] = subject_node[:valueURI] if subject_node[:valueURI] && !topic_node[:valueURI]
-    subject_node.delete('valueURI')
+def normalize_authority_uris(ng_xml)
+  ng_xml.root.xpath("mods:*[@authorityURI='http://id.loc.gov/authorities/names']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+    node[:authorityURI] = 'http://id.loc.gov/authorities/names/'
+  end
+  ng_xml.root.xpath("mods:*[@authorityURI='http://id.loc.gov/authorities/subjects']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+    node[:authorityURI] = 'http://id.loc.gov/authorities/subjects/'
+  end
+end
+
+def normalize_subject_name(ng_xml)
+  ng_xml.root.xpath('mods:subject[count(mods:name) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
+    name_node = subject_node.xpath('mods:name', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).first
+    normalize_subject(subject_node, name_node)
+  end
+end
+
+def normalize_subject(subject_node, child_node)
+  return unless subject_node[:authorityURI] || subject_node[:valueURI]
+
+  # If subject has authority and child doesn't, copy to child.
+  child_node[:authority] = subject_node[:authority] if subject_node[:authority] && !child_node[:authority]
+  # If subject has authorityURI and child doesn't, move to child.
+  child_node[:authorityURI] = subject_node[:authorityURI] if subject_node[:authorityURI] && !child_node[:authorityURI]
+  subject_node.delete('authorityURI')
+  # If subject has valueURI and child doesn't, move to child.
+  child_node[:valueURI] = subject_node[:valueURI] if subject_node[:valueURI] && !child_node[:valueURI]
+  subject_node.delete('valueURI')
+end
+
+def normalize_subject_authority(ng_xml)
+  ng_xml.root.xpath("mods:subject[@authority='naf']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
+    subject_node[:authority] = 'lcsh'
   end
 end
 
