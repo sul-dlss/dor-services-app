@@ -52,6 +52,7 @@ gem 'preservation-client', '>= 3.0' # 3.x or greater is needed for token auth
 group :test, :development do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
+  gem 'diffy'
   gem 'equivalent-xml'
   gem 'factory_bot_rails'
   gem 'parallel' # used for validating cocina tools
@@ -64,6 +65,7 @@ group :test, :development do
   gem 'rubocop-rspec', '~> 1.32.0'
   gem 'simplecov', '~> 0.17.1' # https://github.com/codeclimate/test-reporter/issues/413
   gem 'super_diff'
+  gem 'text'
   gem 'webmock'
 end
 

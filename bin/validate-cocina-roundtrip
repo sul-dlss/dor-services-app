@@ -5,6 +5,8 @@ require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
 require 'set'
 require 'optparse'
+require 'text'
+require 'diffy'
 
 options = { random: false, druids: [] }
 parser = OptionParser.new do |option_parser|
@@ -24,13 +26,24 @@ cache = FedoraCache.new
 
 # Changes to the original XML to help with matching.
 def normalize_original(ng_xml)
-  normalize_version(ng_xml)
-  normalize_topics(ng_xml)
-  normalize_subject_name(ng_xml)
-  normalize_authority_uris(ng_xml)
-  normalize_subject_authority(ng_xml)
-  normalize_origin_info_event_types(ng_xml)
-  ng_xml
+  new_ng_xml = ng_xml.dup
+  new_ng_xml = normalize_default_namespace(new_ng_xml)
+  new_ng_xml = normalize_version(new_ng_xml)
+  new_ng_xml = normalize_topics(new_ng_xml)
+  new_ng_xml = normalize_subject_name(new_ng_xml)
+  new_ng_xml = normalize_authority_uris(new_ng_xml)
+  new_ng_xml = normalize_origin_info_event_types(new_ng_xml)
+  normalize_subject_authority(new_ng_xml)
+end
+
+def normalize_default_namespace(ng_xml)
+  xml = ng_xml.to_s
+
+  unless xml.include?('xmlns="http://www.loc.gov/mods/v3"')
+    xml.sub!('mods:mods', 'mods:mods xmlns="http://www.loc.gov/mods/v3"')
+    xml.gsub!('mods:', '')
+  end
+  Nokogiri::XML(xml) { |config| config.default_xml.noblanks }
 end
 
 def normalize_version(ng_xml)
@@ -40,29 +53,33 @@ def normalize_version(ng_xml)
     ng_xml.root['version'] = '3.6'
     ng_xml.root['xsi:schemaLocation'] = 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd'
   end
+  ng_xml
 end
 
 def normalize_topics(ng_xml)
-  ng_xml.root.xpath('mods:subject[count(mods:topic) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
+  ng_xml.root.xpath('//mods:subject[count(mods:topic) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
     topic_node = subject_node.xpath('mods:topic', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).first
     normalize_subject(subject_node, topic_node)
   end
+  ng_xml
 end
 
 def normalize_authority_uris(ng_xml)
-  ng_xml.root.xpath("mods:*[@authorityURI='http://id.loc.gov/authorities/names']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+  ng_xml.root.xpath("//mods:*[@authorityURI='http://id.loc.gov/authorities/names']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
     node[:authorityURI] = 'http://id.loc.gov/authorities/names/'
   end
-  ng_xml.root.xpath("mods:*[@authorityURI='http://id.loc.gov/authorities/subjects']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+  ng_xml.root.xpath("//mods:*[@authorityURI='http://id.loc.gov/authorities/subjects']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
     node[:authorityURI] = 'http://id.loc.gov/authorities/subjects/'
   end
+  ng_xml
 end
 
 def normalize_subject_name(ng_xml)
-  ng_xml.root.xpath('mods:subject[count(mods:name) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
+  ng_xml.root.xpath('//mods:subject[count(mods:name) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
     name_node = subject_node.xpath('mods:name', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).first
     normalize_subject(subject_node, name_node)
   end
+  ng_xml
 end
 
 def normalize_subject(subject_node, child_node)
@@ -79,9 +96,10 @@ def normalize_subject(subject_node, child_node)
 end
 
 def normalize_subject_authority(ng_xml)
-  ng_xml.root.xpath("mods:subject[@authority='naf']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
+  ng_xml.root.xpath("//mods:subject[@authority='naf']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
     subject_node[:authority] = 'lcsh'
   end
+  ng_xml
 end
 
 # change original xml to have the event type that will be output
@@ -100,6 +118,7 @@ def normalize_origin_info_event_types(ng_xml)
     date_captured_nodes = origin_info_node.xpath('mods:dateCaptured', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
     add_event_type('capture', origin_info_node) && break if date_captured_nodes.present?
   end
+  ng_xml
 end
 
 def add_event_type(value, origin_info_node)
@@ -107,7 +126,7 @@ def add_event_type(value, origin_info_node)
 end
 
 def round_tripped_ng_xml(cocina, druid)
-  Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina, druid).to_xml)
+  Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina, druid).to_xml) { |config| config.default_xml.noblanks }
 end
 
 def cocina_model(ng_xml, label)
@@ -116,54 +135,30 @@ def cocina_model(ng_xml, label)
   Cocina::Models::Description.new(desc_props)
 end
 
-# rubocop:disable Metrics/ParameterLists
-def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, error_nodes, unmatched_original_nodes, unmatched_roundtrip_nodes)
+def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, differences)
   File.open("results/#{druid}.txt", 'w') do |file|
-    file.write("Druid: #{druid}\n")
-    file.write("Original XML:\n#{original_ng_xml.to_xml}\n")
+    file.write("Druid: #{druid}\n\n")
+
+    differences.each_with_index do |difference, index|
+      file.write("Differences #{index + 1}\n")
+      file.write("Original node:\n#{difference.original}\n")
+      if difference.roundtrip
+        file.write("Best guess roundtripped node:\n#{difference.roundtrip}\n")
+        file.write("Difference:\n#{Diffy::Diff.new("#{difference.original}\n", "#{difference.roundtrip}\n")}\n")
+      else
+        file.write("Could not find similar roundtripped node.\n")
+      end
+    end
+
+    file.write("\nOriginal XML:\n#{original_ng_xml.to_xml}\n")
     file.write("Roundtripped XML:\n#{roundtrip_ng_xml.to_xml}\n")
     file.write("Cocina:\n#{JSON.pretty_generate(cocina.to_h)}\n\n")
-
-    error_nodes.each do |node_pair|
-      roundtrip_node = node_pair[0]
-      original_node = node_pair[1]
-
-      write_count_mismatch(file, original_node, roundtrip_node) if original_node.element? && original_node.elements.length != roundtrip_node.elements.length
-    end
-
-    unmatched_original_nodes.each { |node| file.write("Unmatched original:\n#{node}\n") }
-    unmatched_roundtrip_nodes.each { |node| file.write("Unmatched roundtripped:\n#{node}\n") }
-  end
-end
-# rubocop:enable Metrics/ParameterLists
-
-def write_count_mismatch(file, original_node, roundtrip_node)
-  file.write("Element count mismatch between original and roundtripped.\n")
-  file.write("Original node:\n#{original_node}\n")
-  file.write("Roundtripped node:\n#{roundtrip_node}\n\n")
-  write_missing(file, original_node, roundtrip_node, 'Missing from roundtripped or unmatched in roundtripped')
-  write_missing(file, roundtrip_node, original_node, 'Extra or unmatched in roundtripped')
-  file.write("\n")
-end
-
-def write_missing(file, node1, node2, label)
-  missing_nodes = diff_nodeset(node1.elements, node2.elements)
-  return if missing_nodes.empty?
-
-  missing_nodes.each do |node|
-    file.write("#{label}:\n")
-    file.write("#{node}\n")
-    possible_matches = possible_matches_for(node, node2.elements)
-    unless possible_matches.empty?
-      file.write("Possible match:\n")
-      possible_matches.each { |possible_node| file.write("#{possible_node}\n") }
-    end
-    file.write("\n")
   end
 end
 
 def write_error(druid, original_ng_xml, cocina, error)
   File.open("results/#{druid}.txt", 'w') do |file|
+    file.write("Druid: #{druid}\n\n")
     file.write("Error: #{error}\n\n")
     file.write("Expected XML:\n#{original_ng_xml.to_xml}\n\n")
     file.write("Cocina:\n#{JSON.pretty_generate(cocina.to_h)}\n\n")
@@ -172,47 +167,37 @@ def write_error(druid, original_ng_xml, cocina, error)
   end
 end
 
-def diff_nodeset(nodeset1, nodeset2)
-  matched_nodeset1 = Set.new
-  nodeset1.each do |node1|
-    nodeset2.each do |node2|
-      matched_nodeset1 << node1 if EquivalentXml.equivalent?(node1, node2)
-    end
-  end
-  Set.new(nodeset1) - matched_nodeset1
-end
-
 def possible_matches_for(node, nodeset)
   nodeset.select { |check_node| node.name == check_node.name }
 end
 
-def check_equivalent(roundtrip_ng_xml, original_ng_xml)
-  all_original_nodes = Set.new
-  matched_original_nodes = Set.new
-  all_roundtrip_nodes = Set.new
-  matched_roundtrip_nodes = Set.new
-  error_nodes = []
+Difference = Struct.new(:original, :roundtrip)
 
-  equiv = EquivalentXml.equivalent?(roundtrip_ng_xml, original_ng_xml) do |roundtrip_node, original_node, equivalent|
-    all_original_nodes << original_node unless original_node.xml?
-    all_roundtrip_nodes << roundtrip_node unless roundtrip_node.xml?
-    if equivalent
-      matched_original_nodes << original_node
-      matched_roundtrip_nodes << roundtrip_node
-      nil
-    elsif original_node.xml?
-      nil
-    elsif original_node.element? && original_node.name == roundtrip_node.name && original_node.elements.length != roundtrip_node.elements.length
-      matched_original_nodes << original_node
-      original_node.ancestors.each { |node| matched_original_nodes << node }
-      matched_roundtrip_nodes << roundtrip_node
-      roundtrip_node.ancestors.each { |node| matched_roundtrip_nodes << node }
+def diff(roundtrip_ng_xml, original_ng_xml)
+  roundtrip_nodes = roundtrip_ng_xml.root.xpath('mods:*', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+  original_nodes = original_ng_xml.root.xpath('mods:*', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
 
-      error_nodes << [roundtrip_node, original_node]
-      nil
-    end
-  end
-  [equiv, error_nodes, all_original_nodes - matched_original_nodes, all_roundtrip_nodes - matched_roundtrip_nodes]
+  original_nodes.map do |original_node|
+    next nil if has_equivalent_node?(original_node, roundtrip_nodes)
+
+    Difference.new(original_node.to_s, find_closest_node(original_node, roundtrip_nodes).to_s)
+  end.compact
+end
+
+def has_equivalent_node?(node, candidate_nodes)
+  candidate_nodes.any? { |candidate_node| EquivalentXml.equivalent?(node, candidate_node) }
+end
+
+def find_closest_node(node, candidate_nodes)
+  candidate_nodes_with_same_tag = candidate_nodes.select { |candidate_node| candidate_node.name == node.name }
+
+  return nil if candidate_nodes_with_same_tag.empty?
+  return candidate_nodes_with_same_tag.first if candidate_nodes_with_same_tag.size == 1
+
+  distances = {}
+  candidate_nodes_with_same_tag.each { |candidate_node| distances[Text::Levenshtein.distance(node.to_s, candidate_node.to_s)] = candidate_node }
+
+  distances[distances.keys.min]
 end
 
 def validate_druid(druid, cache)
@@ -230,7 +215,7 @@ def validate_druid(druid, cache)
   end
 
   # Changes to support better matching.
-  normalize_original(original_ng_xml)
+  norm_original_ng_xml = normalize_original(original_ng_xml)
 
   begin
     roundtrip_ng_xml = round_tripped_ng_xml(cocina, druid)
@@ -239,10 +224,11 @@ def validate_druid(druid, cache)
     return :to_fedora_error
   end
 
-  equiv, error_nodes, unmatched_original_nodes, unmatched_roundtrip_nodes = check_equivalent(roundtrip_ng_xml, original_ng_xml)
+  equiv = EquivalentXml.equivalent?(roundtrip_ng_xml, norm_original_ng_xml)
 
   unless equiv
-    write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, error_nodes, unmatched_original_nodes, unmatched_roundtrip_nodes)
+    differences = diff(roundtrip_ng_xml, norm_original_ng_xml)
+    write_result(druid, norm_original_ng_xml, roundtrip_ng_xml, cocina, differences)
     return :different
   end
   :success
