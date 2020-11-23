@@ -759,8 +759,13 @@ module Cocina
           marcgac
         ].freeze
 
+        ISO_CODES = %w[
+          ISO19115TopicCategory
+        ].freeze
+
         SUBJECT_AUTHORITY_CODES = SUBJECT_CODES + CLASSIFICATION_CODES + GENRE_CODES + NAME_TITLE_CODES \
-          + CARTOGRAPHIC_CODES + OCCUPATION_CODES + COUNTRY_CODES + GEOGRAPHIC_CODES + ['wikidata']
+          + CARTOGRAPHIC_CODES + OCCUPATION_CODES + COUNTRY_CODES + GEOGRAPHIC_CODES \
+          + ISO_CODES + ['wikidata']
       end
     end
   end
