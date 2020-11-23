@@ -58,41 +58,54 @@ module Cocina
         end
 
         def write_structured(subject)
-          subject_attributes = {}
-          if subject.source
-            subject_attributes[:authority] = subject.source.code
-            subject_attributes[:authorityURI] = subject.source.uri if subject.source.uri
-          elsif subject.structuredValue&.first&.source
-            subject_attributes[:authority] = subject.structuredValue.first.source.code
-          end
-          subject_attributes[:valueURI] = subject.uri if subject.uri
-
-          xml.subject(subject_attributes) do
-            case subject.type
-            when 'place'
+          xml.subject(structured_attributes_for(subject)) do
+            if subject.type == 'place'
               hierarchical_geographic(xml, subject)
-            when 'time'
+            elsif subject.type == 'time'
               time_range(xml, subject)
-            when 'person'
-              person(xml, subject)
+            elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(subject.type)
+              structured_person(xml, subject)
             else
               subject.structuredValue&.each do |component|
-                write_topic(component)
+                if FromFedora::Descriptive::Contributor::ROLES.values.include?(component.type)
+                  if component.structuredValue
+                    structured_person(xml, component)
+                  else
+                    person(xml, component)
+                  end
+                else
+                  write_topic(component)
+                end
               end
             end
           end
         end
 
-        def write_basic(subject)
-          subject_attributes = {}
-          authority = authority_for(subject)
-          subject_attributes[:authority] = authority if authority
-          subject_attributes[:displayLabel] = subject.displayLabel if subject.displayLabel
-          subject_attributes[:edition] = edition(subject.source.version) if subject.source&.version
+        def structured_attributes_for(subject)
+          {}.tap do |attrs|
+            if subject.source
+              attrs[:authority] = authority_for(subject)
+              attrs[:authorityURI] = subject.source.uri
+            elsif subject.structuredValue&.first&.source
+              attrs[:authority] = authority_for(subject.structuredValue.first)
+            end
+            attrs[:valueURI] = subject.uri
+          end.compact
+        end
 
-          case subject.type
-          when 'classification'
+        def write_basic(subject)
+          subject_attributes = {}.tap do |attrs|
+            attrs[:authority] = authority_for(subject)
+            attrs[:displayLabel] = subject.displayLabel
+            attrs[:edition] = edition(subject.source.version) if subject.source&.version
+          end.compact
+
+          if subject.type == 'classification'
             write_classification(subject.value, subject_attributes)
+          elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(subject.type)
+            xml.subject(subject_attributes) do
+              person(xml, subject)
+            end
           else
             xml.subject(subject_attributes) do
               write_topic(subject)
@@ -105,7 +118,7 @@ module Cocina
           # See "Geographic code subject" example.
           return nil if subject.type == 'place'
 
-          # Both lcsh and naf map for lcsh for the subject.
+          # Both lcsh and naf map to lcsh for the subject.
           return 'lcsh' if %w[lcsh naf].include?(subject.source&.code)
 
           subject.source&.code
@@ -185,13 +198,32 @@ module Cocina
         end
 
         def person(xml, subject)
-          xml.name type: 'personal' do
+          subject_attributes = {}.tap do |attrs|
+            attrs[:type] = name_type_for(subject)
+            if subject.source
+              attrs[:authority] = subject.source.code
+              attrs[:authorityURI] = subject.source.uri
+            end
+            attrs[:valueURI] = subject.uri
+          end.compact
+
+          xml.name subject_attributes do
+            xml.namePart subject.value
+          end
+        end
+
+        def structured_person(xml, subject)
+          xml.name type: name_type_for(subject) do
             subject.structuredValue.each do |point|
               attributes = {}
-              attributes[:type] = FromFedora::Descriptive::Contributor::NAME_PART.invert.fetch(point.type) if point.type != 'name'
+              attributes[:type] = FromFedora::Descriptive::Contributor::NAME_PART.invert.fetch(point.type) unless ['name', 'inverted full name'].include?(point.type)
               xml.namePart point.value, attributes
             end
           end
+        end
+
+        def name_type_for(subject)
+          FromFedora::Descriptive::Contributor::ROLES.invert.fetch(subject.type)
         end
 
         def edition(version)

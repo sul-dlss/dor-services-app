@@ -56,7 +56,7 @@ module Cocina
 
         def source_attrs(subject, attrs = {})
           if subject[:valueURI]
-            source = { code: code_for(subject), uri: subject[:authorityURI] }.compact
+            source = { code: code_for(subject), uri: uri_for(subject[:authorityURI]) }.compact
             attrs[:source] = source unless source.empty?
             attrs[:uri] = subject[:valueURI]
           elsif subject[:authority]
@@ -64,6 +64,12 @@ module Cocina
             attrs[:source] = source unless source.empty?
           end
           attrs.compact
+        end
+
+        def uri_for(authority_uri)
+          return "#{authority_uri}/" if ['http://id.loc.gov/authorities/names', 'http://id.loc.gov/authorities/subjects'].include?(authority_uri)
+
+          authority_uri
         end
 
         def code_for(subject)
@@ -80,7 +86,25 @@ module Cocina
 
         def structured_value(node_set, attrs)
           values = node_set.map { |node| simple_item(node) }.compact
-          attrs.merge(structuredValue: values) if values.present?
+          if values.present?
+            attrs = attrs.merge(structuredValue: values)
+            # Remove source if no source uri and all values have source and all are same type
+            attrs.delete(:source) if remove_source?(attrs)
+          end
+          # Authority should be 'naf', not 'lcsh'
+          attrs[:source][:code] = 'naf' if attrs.dig(:source, :uri) == 'http://id.loc.gov/authorities/names/'
+          attrs.presence
+        end
+
+        def remove_source?(attrs)
+          # Remove source if no source uri and all values have source and all are not same type
+          return false if attrs.dig(:source, :uri)
+          return false if attrs[:structuredValue].any? { |value| value[:source].nil? }
+
+          types = attrs[:structuredValue].pluck(:type)
+          return false unless types.any? { |type| type != types.first }
+
+          true
         end
 
         def hierarchical_geographic(hierarchical_geographic_node, attrs)
