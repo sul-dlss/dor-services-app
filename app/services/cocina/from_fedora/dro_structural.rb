@@ -121,7 +121,7 @@ module Cocina
             size: node['size'].to_i,
             version: version,
             hasMessageDigests: digests(node),
-            access: { access: node['publish'] == 'yes' ? 'world' : 'dark' },
+            access: access(node),
             administrative: {
               sdrPreserve: node['preserve'] == 'yes',
               shelve: node['shelve'] == 'yes'
@@ -132,6 +132,14 @@ module Cocina
             attrs[:presentation] = { height: height, width: width } if height && width
             attrs[:use] = use if use
           end
+        end
+      end
+
+      def access(node)
+        if node['publish'] == 'yes'
+          { access: 'world', download: 'world' }
+        else
+          { access: 'dark', download: 'none' }
         end
       end
     end
