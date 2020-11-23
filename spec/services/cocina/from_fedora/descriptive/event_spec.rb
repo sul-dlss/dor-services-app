@@ -115,7 +115,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
   end
 
   context 'with a single dateOther' do
-    describe 'with type attribute' do
+    describe 'with type attribute on the dateOther element' do
       let(:xml) do
         <<~XML
           <originInfo>
@@ -150,7 +150,110 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       end
     end
 
-    describe 'without type attribute, with displayLabel' do
+    describe 'with eventType attribute at the originInfo level' do
+      let(:xml) do
+        <<~XML
+          <originInfo eventType="acquisition" displayLabel="Acquisition date">
+            <dateOther encoding="w3cdtf">1992</dateOther>
+          </originInfo>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "type": 'acquisition',
+            "displayLabel": 'Acquisition date',
+            "date": [
+              {
+                "value": '1992',
+                "encoding": {
+                  "code": 'w3cdtf'
+                }
+              }
+            ]
+          }
+        ]
+      end
+
+      it 'does not notify Honeybadger' do
+        allow(Honeybadger).to receive(:notify)
+        build
+        expect(Honeybadger).not_to have_received(:notify)
+      end
+
+      describe 'with eventType="production" dateOther type="Julian" (MODS 3.6 and before)' do
+        let(:xml) do
+          <<~XML
+            <originInfo eventType="production">
+              <dateOther type="Julian">1544-02-02</dateOther>
+            </originInfo>
+          XML
+        end
+
+        it 'builds the cocina data structure' do
+          expect(build).to eq [
+            {
+              "type": 'creation',
+              "date": [
+                {
+                  "value": '1544-02-02',
+                  "note": [
+                    {
+                      "value": 'Julian',
+                      "type": 'date type'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        end
+
+        it 'does not notify Honeybadger' do
+          allow(Honeybadger).to receive(:notify)
+          build
+          expect(Honeybadger).not_to have_received(:notify)
+        end
+      end
+
+      describe 'with eventType="production" dateCreated calendar="Julian" (MODS 3.7)' do
+        let(:xml) do
+          <<~XML
+            <originInfo eventType="production">
+              <dateCreated calendar="Julian">1544-02-02</dateCreated>
+            </originInfo>
+          XML
+        end
+
+        it 'builds the cocina data structure' do
+          expect(build).to eq [
+            {
+              "type": 'creation',
+              "date": [
+                {
+                  "value": '1544-02-02',
+                  "note": [
+                    {
+                      "value": 'Julian',
+                      "type": 'calendar'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        end
+
+        it 'does not notify Honeybadger' do
+          allow(Honeybadger).to receive(:notify)
+          build
+          expect(Honeybadger).not_to have_received(:notify)
+        end
+      end
+    end
+
+    describe 'without any type attribute, with displayLabel' do
       let(:xml) do
         <<~XML
           <originInfo displayLabel="Acquisition date">
