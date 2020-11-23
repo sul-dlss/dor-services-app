@@ -1035,6 +1035,31 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with a ISO19115TopicCategory subject' do
+    let(:xml) do
+      <<~XML
+        <subject>
+         <topic authority="ISO19115TopicCategory"
+            authorityURI="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_TopicCategoryCode" valueURI="farming">Farming</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "source": {
+            "code": 'ISO19115TopicCategory',
+            "uri": 'http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_TopicCategoryCode'
+          },
+          "uri": 'farming',
+          "value": 'Farming',
+          "type": 'topic'
+        }
+      ]
+    end
+  end
+
   context 'with a geographic code subject' do
     let(:xml) do
       <<~XML
