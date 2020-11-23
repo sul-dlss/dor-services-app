@@ -696,11 +696,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
-  context 'with a geographic code and term' do
+  context 'with geographic code and term' do
     let(:xml) do
       <<~XML
         <subject>
           <geographic authority="lcsh">United States</geographic>
+          <geographicCode authority="iso3166">us</geographicCode>
         </subject>
       XML
     end
@@ -708,10 +709,20 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "source": {
-            "code": 'lcsh'
-          },
-          "value": 'United States',
+          "parallelValue": [
+            {
+              "value": 'United States',
+              "source": {
+                "code": 'lcsh'
+              }
+            },
+            {
+              "code": 'us',
+              "source": {
+                "code": 'iso3166'
+              }
+            }
+          ],
           "type": 'place'
         }
       ]
