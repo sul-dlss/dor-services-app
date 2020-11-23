@@ -18,13 +18,26 @@ module Cocina
         end
 
         def self.tag_name(type)
-          type == 'summary' ? :abstract : :note
+          # type == 'summary' ? :abstract : :note
+          case type
+          when 'summary'
+            :abstract
+          when 'table of contents'
+            :tableOfContents
+          else
+            :note
+          end
         end
         private_class_method :tag_name
 
         def self.tag(xml, note, tag_name, attributes)
-          attributes[:type] = note.type if note.type && tag_name != :abstract
-          xml.public_send tag_name, note.value, attributes
+          attributes[:type] = note.type if note.type && [:abstract, :tableOfContents].exclude?(tag_name)
+          value = if note.structuredValue
+                    note.structuredValue.map(&:value).join(' -- ')
+                  else
+                    note.value
+                  end
+          xml.public_send tag_name, value, attributes
         end
         private_class_method :tag
 

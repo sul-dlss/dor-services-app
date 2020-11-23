@@ -121,4 +121,76 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
       ]
     end
   end
+
+  context 'with a simple table of contents' do
+    let(:xml) do
+      <<~XML
+        <tableOfContents>Chapter 1. Chapter 2. Chapter 3.</tableOfContents>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+
+        {
+          "value": 'Chapter 1. Chapter 2. Chapter 3.',
+          "type": 'table of contents'
+        }
+
+      ]
+    end
+  end
+
+  context 'with a structured table of contents' do
+    let(:xml) do
+      <<~XML
+        <tableOfContents>Chapter 1. -- Chapter 2. -- Chapter 3.</tableOfContents>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+
+        {
+          "structuredValue": [
+            {
+              "value": 'Chapter 1.'
+            },
+            {
+              "value": 'Chapter 2.'
+            },
+            {
+              "value": 'Chapter 3.'
+            }
+          ],
+          "type": 'table of contents'
+        }
+
+      ]
+    end
+  end
+
+  context 'with a multilingual table of contents' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_tableOfContents.txt#L33'
+  end
+
+  context 'with a table of contents with a display label' do
+    let(:xml) do
+      <<~XML
+        <tableOfContents displayLabel="Contents">Content 1. Content 2.</tableOfContents>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+
+        {
+          "value": 'Content 1. Content 2.',
+          "type": 'table of contents',
+          "displayLabel": 'Contents'
+        }
+
+      ]
+    end
+  end
 end
