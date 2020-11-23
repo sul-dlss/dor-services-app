@@ -232,4 +232,88 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
       XML
     end
   end
+
+  context 'when a simple table of contents' do
+    let(:notes) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": 'Chapter 1. Chapter 2. Chapter 3.',
+            "type": 'table of contents'
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <tableOfContents>Chapter 1. Chapter 2. Chapter 3.</tableOfContents>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when a structured table of contents' do
+    let(:notes) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "structuredValue": [
+              {
+                "value": 'Chapter 1.'
+              },
+              {
+                "value": 'Chapter 2.'
+              },
+              {
+                "value": 'Chapter 3.'
+              }
+            ],
+            "type": 'table of contents'
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <tableOfContents>Chapter 1. -- Chapter 2. -- Chapter 3.</tableOfContents>
+        </mods>
+      XML
+    end
+  end
+
+  context 'with a multilingual table of contents' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_tableOfContents.txt#L33'
+  end
+
+  context 'when a table of contents with a display label' do
+    let(:notes) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": 'Content 1. Content 2.',
+            "type": 'table of contents',
+            "displayLabel": 'Contents'
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <tableOfContents displayLabel="Contents">Content 1. Content 2.</tableOfContents>
+        </mods>
+      XML
+    end
+  end
 end

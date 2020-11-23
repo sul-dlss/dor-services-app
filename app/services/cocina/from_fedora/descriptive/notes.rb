@@ -17,7 +17,7 @@ module Cocina
         end
 
         def build
-          abstract + notes
+          abstract + notes + table_of_contents
         end
 
         private
@@ -39,6 +39,21 @@ module Cocina
             { value: node.text }.tap do |attributes|
               attributes[:type] = node[:type] if node[:type]
               attributes[:displayLabel] = node[:displayLabel] if node[:displayLabel]
+            end
+          end
+        end
+
+        def table_of_contents
+          set = resource_element.xpath('mods:tableOfContents', mods: DESC_METADATA_NS)
+          set.map do |node|
+            { type: 'table of contents' }.tap do |attributes|
+              attributes[:displayLabel] = node[:displayLabel] if node[:displayLabel]
+              value_parts = node.content.split(' -- ')
+              if value_parts.size == 1
+                attributes[:value] = node.content
+              else
+                attributes[:structuredValue] = value_parts.map { |value_part| { value: value_part } }
+              end
             end
           end
         end
