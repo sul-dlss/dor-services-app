@@ -1209,7 +1209,6 @@ components:
           description: Status of the contributor relative to other parallel contributors
             (e.g. the primary author among a group of contributors).
           type: string
-          # type: integer
         role:
           description: Relationships of the contributor to the resource or to an event
             in its history.
@@ -1226,6 +1225,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DescriptiveValue"
+        order:
+          description: Place of contributor in order of authorship for resource.
+          type: integer
     Description:
       type: object
       additionalProperties: false
@@ -1253,6 +1255,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DescriptiveValue"
+        geographic:
+          description: Geographic description for items with coordinates or bounding boxes.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveGeographicMetadata"
         language:
           description: Languages, scripts, symbolic systems, and notations used in all or
             part of a resource.
@@ -1384,7 +1391,6 @@ components:
               description: Status of the descriptive element value relative to other instances
                 of the element.
               type: string
-              # type: integer (uncomment when issue #154 is resolved)
             code:
               description: Code value of the descriptive element.
               type: string
@@ -1418,6 +1424,20 @@ components:
                 $ref: "#/components/schemas/DescriptiveValue"
             valueLanguage:
               $ref: "#/components/schemas/DescriptiveValueLanguage"
+    DescriptiveGeographicMetadata:
+      description: Value model for mods geographic extension metadata
+      type: object
+      additionalProperties: false
+      properties:
+        form:
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        subject:
+          description: Terms associated with the intellectual content of the related resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
     DescriptiveParallelValue:
       description: Value model for multiple representations of the same information (e.g. in different languages).
       type: object
@@ -1862,8 +1882,7 @@ components:
         source:
           $ref: "#/components/schemas/Source"
         status:
-          description: Status of the contributor relative to other parallel contributors
-            (e.g. the primary author among a group of contributors).
+          description: Status of the language relative to other parallel language elements (e.g. the primary language)
           type: string
           enum:
             - primary
@@ -1897,7 +1916,7 @@ components:
             - md5
             - sha1
         digest:
-          description: The digest value Base64 encoded
+          description: The digest value hexidecimal encoded
           type: string
       required:
         - type
@@ -1924,7 +1943,6 @@ components:
         status:
           description: Status of the related resource relative to other related resources.
           type: string
-          # type: integer
         displayLabel:
           description: The preferred display label to use for the related resource in access systems.
           type: string
@@ -1980,9 +1998,19 @@ components:
           format: uri
         access:
           $ref: "#/components/schemas/DescriptiveAccessMetadata"
+        relatedResource:
+          description: Other resources associated with the related resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/RelatedResource"
+        adminMetadata:
+          $ref: "#/components/schemas/DescriptiveAdminMetadata"
         version:
           description: The version of the related resource.
           type: string
+        order:
+          description: The order of the related resource in a series of related resources.
+          type: integer
     ReleaseTag:
       description: A tag that indicates the item or collection should be released.
       type: object

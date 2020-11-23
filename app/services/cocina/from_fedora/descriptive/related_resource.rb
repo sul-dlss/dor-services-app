@@ -21,7 +21,7 @@ module Cocina
 
         def build
           related_items.map do |related_item|
-            descriptive_builder.build(resource_element: related_item, require_title: false, omit_builders: [:adminMetadata, :relatedResource]).tap do |item|
+            descriptive_builder.build(resource_element: related_item, require_title: false).tap do |item|
               item[:type] = normalized_type_for(related_item['type']) if related_item['type']
               item[:displayLabel] = related_item['displayLabel']
             end.compact
