@@ -22,6 +22,7 @@ module Cocina
       normalize_authority_uris
       normalize_origin_info_event_types
       normalize_subject_authority
+      normalize_text_role_term
       ng_xml
     end
 
@@ -110,6 +111,12 @@ module Cocina
 
     def add_event_type(value, origin_info_node)
       origin_info_node['eventType'] = value if origin_info_node[:eventType].blank?
+    end
+
+    def normalize_text_role_term
+      ng_xml.root.xpath("//mods:roleTerm[@type='text']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |role_term_node|
+        role_term_node.content = role_term_node.content.downcase
+      end
     end
   end
 end
