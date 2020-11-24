@@ -696,8 +696,37 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
-  context 'with a geographic code and term' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L652'
+  context 'with geographic code and term' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <geographic authority="lcsh">United States</geographic>
+          <geographicCode authority="iso3166">us</geographicCode>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "parallelValue": [
+            {
+              "value": 'United States',
+              "source": {
+                "code": 'lcsh'
+              }
+            },
+            {
+              "code": 'us',
+              "source": {
+                "code": 'iso3166'
+              }
+            }
+          ],
+          "type": 'place'
+        }
+      ]
+    end
   end
 
   context 'with a temporal subject with encoding' do

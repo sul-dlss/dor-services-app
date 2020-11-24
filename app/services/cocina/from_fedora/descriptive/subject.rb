@@ -33,7 +33,11 @@ module Cocina
             node_set = subject.xpath('*')
             next subject_classification(subject, attrs) if subject.name == 'classification'
 
-            next structured_value(node_set, attrs) if node_set.size != 1
+            is_geo_code = node_set.any? { |node| node.name == 'geographicCode' }
+
+            next geo_code_and_terms(node_set, attrs) if node_set.size != 1 && is_geo_code
+
+            next structured_value(node_set, attrs) if node_set.size != 1 && !is_geo_code
 
             node = node_set.first
             next hierarchical_geographic(node, attrs) if node.name == 'hierarchicalGeographic'
@@ -93,6 +97,17 @@ module Cocina
           end
           # Authority should be 'naf', not 'lcsh'
           attrs[:source][:code] = 'naf' if attrs.dig(:source, :uri) == 'http://id.loc.gov/authorities/names/'
+          attrs.presence
+        end
+
+        def geo_code_and_terms(node_set, attrs)
+          values = node_set.map { |node| simple_item(node) }.compact
+          if values.present?
+            # Removes type from values
+            values.each { |value| value.delete(:type) }
+            attrs = attrs.merge(parallelValue: values)
+          end
+          attrs[:type] = 'place'
           attrs.presence
         end
 
