@@ -761,11 +761,20 @@ module Cocina
 
         ISO_CODES = %w[
           ISO19115TopicCategory
+          iso639-2b
+          iso639-3
+        ].freeze
+
+        MARC_CODES = %w[
+          marcfrequency
+          marcorg
+          marcrelator
+          marctarget
         ].freeze
 
         SUBJECT_AUTHORITY_CODES = SUBJECT_CODES + CLASSIFICATION_CODES + GENRE_CODES + NAME_TITLE_CODES \
           + CARTOGRAPHIC_CODES + OCCUPATION_CODES + COUNTRY_CODES + GEOGRAPHIC_CODES \
-          + ISO_CODES + ['wikidata', 'marcrelator', 'iso639-2b', 'iso639-3', 'marcfrequency', 'marcorg', 'marctarget', 'EPSG']
+          + ISO_CODES + MARC_CODES + %w[wikidata EPSG]
       end
     end
   end
