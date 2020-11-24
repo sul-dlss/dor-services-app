@@ -509,9 +509,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     let(:descriptive) { Cocina::FromFedora::Descriptive.props(mods: ng_xml) }
 
     it 'builds the expected cocina data structure' do
-      skip('TODO: changes to originInfo mappings for h2 coming shortly')
-      # expect(descriptive[:events]).to match_array [
-
       expect(descriptive).to eq(
         {
           title: [{ value: 'Foo' }],
@@ -525,7 +522,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
                   role: publisher_roles
                 }
               ],
-              date: [{ encoding: { code: 'w3cdtf' }, value: '2020-02-14' }]
+              date: [
+                {
+                  encoding: { code: 'w3cdtf' },
+                  value: '2020-02-14',
+                  status: 'primary'
+                }
+              ]
             }
           ]
         }
