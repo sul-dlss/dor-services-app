@@ -19,7 +19,9 @@ end
 gem 'committee' # validates Open API spec (OAS)
 gem 'config'
 gem 'deprecation'
+gem 'dry-monads'
 gem 'dry-schema', '~> 1.4'
+gem 'equivalent-xml' # for diffing MODS
 gem 'faraday', '~> 1.0'
 gem 'faraday_middleware', '~> 1.0.0.rc1' # dependency of dor-workflow-client. remove when release > 0.14.0
 gem 'honeybadger'
@@ -37,6 +39,7 @@ gem 'retries' # for ReleaseTags::PurlClient and Goobi
 gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq', '~> 6.0'
 gem 'sidekiq-statistic'
+gem 'text' # for determine Levenstein distance when diffing MODS
 gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
 
@@ -53,7 +56,6 @@ group :test, :development do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
   gem 'diffy'
-  gem 'equivalent-xml'
   gem 'factory_bot_rails'
   gem 'parallel' # used for validating cocina tools
   gem 'pry-byebug'
@@ -65,7 +67,6 @@ group :test, :development do
   gem 'rubocop-rspec', '~> 1.32.0'
   gem 'simplecov', '~> 0.17.1' # https://github.com/codeclimate/test-reporter/issues/413
   gem 'super_diff'
-  gem 'text'
   gem 'webmock'
 end
 
