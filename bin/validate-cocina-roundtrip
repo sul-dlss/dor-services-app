@@ -5,7 +5,6 @@ require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
 require 'set'
 require 'optparse'
-require 'text'
 require 'diffy'
 
 options = { random: false, druids: [] }
@@ -141,10 +140,10 @@ def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, differences)
 
     differences.each_with_index do |difference, index|
       file.write("Differences #{index + 1}\n")
-      file.write("Original node:\n#{difference.original}\n")
-      if difference.roundtrip
-        file.write("Best guess roundtripped node:\n#{difference.roundtrip}\n")
-        file.write("Difference:\n#{Diffy::Diff.new("#{difference.original}\n", "#{difference.roundtrip}\n")}\n")
+      file.write("Original node:\n#{difference.mods_node1}\n")
+      if difference.mods_node2
+        file.write("Best guess roundtripped node:\n#{difference.mods_node2}\n")
+        file.write("Difference:\n#{Diffy::Diff.new("#{difference.mods_node1}\n", "#{difference.mods_node2}\n")}\n")
       else
         file.write("Could not find similar roundtripped node.\n")
       end
@@ -165,39 +164,6 @@ def write_error(druid, original_ng_xml, cocina, error)
     file.write("Backtrace:\n")
     file.write(error.backtrace.join("\n"))
   end
-end
-
-def possible_matches_for(node, nodeset)
-  nodeset.select { |check_node| node.name == check_node.name }
-end
-
-Difference = Struct.new(:original, :roundtrip)
-
-def diff(roundtrip_ng_xml, original_ng_xml)
-  roundtrip_nodes = roundtrip_ng_xml.root.xpath('mods:*', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
-  original_nodes = original_ng_xml.root.xpath('mods:*', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
-
-  original_nodes.map do |original_node|
-    next nil if has_equivalent_node?(original_node, roundtrip_nodes)
-
-    Difference.new(original_node.to_s, find_closest_node(original_node, roundtrip_nodes).to_s)
-  end.compact
-end
-
-def has_equivalent_node?(node, candidate_nodes)
-  candidate_nodes.any? { |candidate_node| EquivalentXml.equivalent?(node, candidate_node) }
-end
-
-def find_closest_node(node, candidate_nodes)
-  candidate_nodes_with_same_tag = candidate_nodes.select { |candidate_node| candidate_node.name == node.name }
-
-  return nil if candidate_nodes_with_same_tag.empty?
-  return candidate_nodes_with_same_tag.first if candidate_nodes_with_same_tag.size == 1
-
-  distances = {}
-  candidate_nodes_with_same_tag.each { |candidate_node| distances[Text::Levenshtein.distance(node.to_s, candidate_node.to_s)] = candidate_node }
-
-  distances[distances.keys.min]
 end
 
 def validate_druid(druid, cache)
@@ -224,14 +190,12 @@ def validate_druid(druid, cache)
     return :to_fedora_error
   end
 
-  equiv = EquivalentXml.equivalent?(roundtrip_ng_xml, norm_original_ng_xml)
+  equiv = ModsEquivalentService.equivalent?(norm_original_ng_xml, roundtrip_ng_xml)
 
-  unless equiv
-    differences = diff(roundtrip_ng_xml, norm_original_ng_xml)
-    write_result(druid, norm_original_ng_xml, roundtrip_ng_xml, cocina, differences)
-    return :different
-  end
-  :success
+  return :success if equiv.success?
+
+  write_result(druid, norm_original_ng_xml, roundtrip_ng_xml, cocina, equiv.failure)
+  :different
 end
 
 FileUtils.rm_rf('results')
