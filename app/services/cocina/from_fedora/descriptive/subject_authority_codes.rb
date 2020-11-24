@@ -765,7 +765,7 @@ module Cocina
 
         SUBJECT_AUTHORITY_CODES = SUBJECT_CODES + CLASSIFICATION_CODES + GENRE_CODES + NAME_TITLE_CODES \
           + CARTOGRAPHIC_CODES + OCCUPATION_CODES + COUNTRY_CODES + GEOGRAPHIC_CODES \
-          + ISO_CODES + ['wikidata']
+          + ISO_CODES + ['wikidata', 'marcrelator', 'iso639-2b', 'iso639-3', 'marcfrequency', 'marcorg', 'marctarget', 'EPSG']
       end
     end
   end
