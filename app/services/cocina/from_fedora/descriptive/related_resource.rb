@@ -21,9 +21,20 @@ module Cocina
 
         def build
           related_items.map do |related_item|
+            check_other_type(related_item)
             descriptive_builder.build(resource_element: related_item, require_title: false).tap do |item|
-              item[:type] = normalized_type_for(related_item['type']) if related_item['type']
               item[:displayLabel] = related_item['displayLabel']
+              if related_item['type']
+                item[:type] = normalized_type_for(related_item['type'])
+              elsif related_item['otherType']
+                item[:type] = 'related to'
+                item[:note] = [
+                  { type: 'other relation type', value: related_item['otherType'] }.tap do |note|
+                    note[:uri] = related_item['otherTypeURI'] if related_item['otherTypeURI']
+                    note[:source] = { value: related_item['otherTypeAuth'] } if related_item['otherTypeAuth']
+                  end
+                ]
+              end
             end.compact
           end
         end
@@ -48,6 +59,12 @@ module Cocina
 
           Honeybadger.notify("[DATA ERROR] Invalid related resource type (#{type})", { tags: 'data_error' })
           normalized_type
+        end
+
+        def check_other_type(related_item)
+          return unless related_item['type'] && related_item['otherType']
+
+          Honeybadger.notify('[DATA ERROR] Related resource has type and otherType', { tags: 'data_error' })
         end
       end
     end

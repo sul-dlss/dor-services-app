@@ -35,11 +35,28 @@ module Cocina
 
         def write
           Array(related_resources).each do |related|
-            attributes = {}
-            attributes[:type] = TYPES.fetch(related.type) if related.type
-            attributes[:displayLabel] = related.displayLabel if related.displayLabel
-            xml.relatedItem attributes.compact do
-              DescriptiveWriter.write(xml: xml, descriptive: related, druid: druid)
+            other_type_note = other_type_note_for(related)
+            attributes = {}.tap do |attrs|
+              attrs[:type] = TYPES.fetch(related.type) if related.type
+              attrs[:displayLabel] = related.displayLabel
+
+              if other_type_note
+                attrs[:otherType] = other_type_note.value
+                attrs[:otherTypeURI] = other_type_note.uri
+                attrs[:otherTypeAuth] = other_type_note.source&.value
+              end
+            end.compact
+
+            # Filter out "other relation type"
+            related_hash = related.to_h
+            if other_type_note
+              new_notes = related_hash.fetch(:note, []).reject { |note| note[:type] == 'other relation type' }
+              related_hash[:note] = new_notes.empty? ? nil : new_notes
+            end
+            new_related = Cocina::Models::RelatedResource.new(related_hash.compact)
+
+            xml.relatedItem attributes do
+              DescriptiveWriter.write(xml: xml, descriptive: new_related, druid: druid)
             end
           end
         end
@@ -47,6 +64,12 @@ module Cocina
         private
 
         attr_reader :xml, :related_resources, :druid
+
+        def other_type_note_for(related)
+          return nil if related.note.nil?
+
+          related.note.find { |note| note.type == 'other relation type' }
+        end
       end
     end
   end
