@@ -39,7 +39,6 @@ gem 'retries' # for ReleaseTags::PurlClient and Goobi
 gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq', '~> 6.0'
 gem 'sidekiq-statistic'
-gem 'text' # for determine Levenstein distance when diffing MODS
 gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
 

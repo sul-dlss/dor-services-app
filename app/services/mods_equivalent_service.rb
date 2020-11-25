@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'equivalent-xml'
-require 'text'
+require 'set'
 
 # Determines if MODS documents are equivalent.
 class ModsEquivalentService
@@ -64,13 +64,14 @@ class ModsEquivalentService
     return mods_nodes2_with_same_tag.first if mods_nodes2_with_same_tag.size == 1
 
     distances = {}
-    mods_nodes2_with_same_tag.each { |mods_node2| distances[Text::Levenshtein.distance(content_for(mods_node1), content_for(mods_node2))] = mods_node2 }
+    mods_nodes2_with_same_tag.each { |mods_node2| distances[distance(mods_node1, mods_node2)] = mods_node2 }
 
     distances[distances.keys.min]
   end
 
-  def content_for(node)
-    # By reducing the text, distance runs faster.
-    node.content.split(' ').sort.join(' ')
+  def distance(mods_node1, mods_node2)
+    set1 = Set.new(mods_node1.content.split(' '))
+    set2 = Set.new((mods_node2.content.split(' ')))
+    set1.difference(set2).size + set2.difference(set1).size
   end
 end
