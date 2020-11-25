@@ -24,6 +24,7 @@ module Cocina
       normalize_subject_authority
       normalize_text_role_term
       normalize_role_term_authority
+      normalize_purl
       ng_xml
     end
 
@@ -126,6 +127,15 @@ module Cocina
     def normalize_role_term_authority
       ng_xml.root.xpath("//mods:roleTerm[@authority='marcrelator']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |role_term_node|
         role_term_node['authorityURI'] = 'http://id.loc.gov/vocabulary/relators/'
+      end
+    end
+
+    def normalize_purl
+      ng_xml.root.xpath('//mods:location', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |location_node|
+        url_nodes = location_node.xpath('mods:url', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+        purl_node = url_nodes.find { |url_node| Cocina::FromFedora::Descriptive::Location::PURL_REGEX.match(url_node.text) }
+        has_primary_usage = url_nodes.any? { |url_node| url_node[:usage] == 'primary display' }
+        purl_node[:usage] = 'primary display' unless has_primary_usage
       end
     end
   end
