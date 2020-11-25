@@ -535,7 +535,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
                 uri: 'http://id.loc.gov/vocabulary/relators/spn',
                 source: {
                   code: 'marcrelator',
-                  uri: 'http://id.loc.gov/vocabulary/relators'
+                  uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
               }
             ]

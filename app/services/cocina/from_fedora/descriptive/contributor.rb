@@ -177,10 +177,10 @@ module Cocina
           {}.tap do |role|
             if authority&.content.present?
               role[:source] = { code: authority.content }
-              if authority_uri&.content.present?
-                role[:source][:uri] = authority_uri.content
-              elsif authority.content == 'marcrelator'
+              if authority.content == 'marcrelator'
                 role[:source][:uri] = "http://#{MARC_RELATOR_PIECE}/"
+              elsif authority_uri&.content.present?
+                role[:source][:uri] = authority_uri.content
               end
             end
 
