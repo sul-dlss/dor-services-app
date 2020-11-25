@@ -25,6 +25,7 @@ module Cocina
       normalize_text_role_term
       normalize_role_term_authority
       normalize_purl
+      normalize_related_item_other_type
       ng_xml
     end
 
@@ -136,6 +137,14 @@ module Cocina
         purl_node = url_nodes.find { |url_node| Cocina::FromFedora::Descriptive::Location::PURL_REGEX.match(url_node.text) }
         has_primary_usage = url_nodes.any? { |url_node| url_node[:usage] == 'primary display' }
         purl_node[:usage] = 'primary display' if purl_node && !has_primary_usage
+      end
+    end
+
+    def normalize_related_item_other_type
+      ng_xml.root.xpath('//mods:relatedItem[@type and @otherType]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |related_node|
+        related_node.delete('otherType')
+        related_node.delete('otherTypeURI')
+        related_node.delete('otherTypeAuth')
       end
     end
   end
