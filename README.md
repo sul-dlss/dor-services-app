@@ -220,6 +220,7 @@ $ bin/validate-cocina-roundtrip -h
 Usage: bin/validate-cocina-roundtrip [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -r, --random                     Select random druids.
+    -f, --fast                       Do not write results files.    
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
     -h, --help                       Displays help.
 
@@ -236,9 +237,11 @@ $ bin/validate-cocina-roundtrip -d druid:bh164hd2167
 Errors totals are summarized. For example:
 ```
 Status (n=100):
-  Success:   11 (11.0%)
-  Different: 81 (81.0%)
-  Error:     7 (7.0%)
+  Success:   54 (54.0%)
+  Different: 45 (45.0%)
+  To Cocina error:     0 (0.0%)
+  To Fedora error:     0 (0.0%)
+  Missing:     1 (1.0%)
 ```
 
 In addition, detailed results for each item with a difference are provided in an individual file in `results/`.
@@ -267,19 +270,17 @@ $ echo $FEDORA_CACHE
 /opt/app/deploy/dor-services-app/cache
 ```
 
-If testing a mapping to cocina, test with `bin/validate-to-cocina`. If testing a mapping to fedora, test with `bin/validate-to-fedora`.
-
-In both cases, compare results from master against your branch. The sample size to you is up to you; biggers samples are recommended for more complex changes.
+Test with `bin/validate-cocina-roundtrip`, comparing results from master against your branch. The sample size to you is up to you; biggers samples are recommended for more complex changes.
 
 ```
 $ git checkout master
 $ git pull
-$ bin/validate-to-cocina -s 350000
+$ bin/validate-cocina-roundtrip -s 350000 -f
 $ git checkout YOUR_BRANCH_NAME
-$ bin/validate-to-cocina -s 350000
+$ bin/validate-cocina-roundtrip -s 350000 -f
 ```
 
-When done, you may want to fetch the `results.txt` to your local drive (it is written to the root folder of dor-services-app)
+When running `bin/validate-to-cocina` or `bin/validate-to-feodora`, you may want to fetch the `results.txt` to your local drive (it is written to the root folder of dor-services-app)
 and look for errors.
 
 ```

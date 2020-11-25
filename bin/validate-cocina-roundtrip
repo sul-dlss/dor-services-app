@@ -7,12 +7,13 @@ require 'set'
 require 'optparse'
 require 'diffy'
 
-options = { random: false, druids: [] }
+options = { random: false, druids: [], fast: false }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-cocina-roundtrip [options]'
 
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
   option_parser.on('-r', '--random', 'Select random druids.')
+  option_parser.on('-f', '--fast', 'Do not write results files.')
   option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
@@ -65,7 +66,7 @@ def write_error(druid, original_ng_xml, cocina, error)
   end
 end
 
-def validate_druid(druid, cache)
+def validate_druid(druid, cache, fast: false)
   begin
     original_ng_xml = cache.descmd_xml(druid)
     label = cache.label(druid)
@@ -89,6 +90,10 @@ def validate_druid(druid, cache)
     return :to_fedora_error
   end
 
+  if fast
+    return EquivalentXml.equivalent?(norm_original_ng_xml, roundtrip_ng_xml) ? :success : :different
+  end
+
   equiv = ModsEquivalentService.equivalent?(norm_original_ng_xml, roundtrip_ng_xml)
 
   return :success if equiv.success?
@@ -97,8 +102,10 @@ def validate_druid(druid, cache)
   :different
 end
 
-FileUtils.rm_rf('results')
-FileUtils.mkdir_p('results')
+unless options[:fast]
+  FileUtils.rm_rf('results')
+  FileUtils.mkdir_p('results')
+end
 
 if options[:druids].empty?
   druids = File.read('druids.txt').split
@@ -109,7 +116,7 @@ else
 end
 
 results = Parallel.map(druids, progress: 'Testing') do |druid|
-  validate_druid(druid, cache)
+  validate_druid(druid, cache, fast: options[:fast])
 end
 counts = { different: 0, success: 0, to_cocina_error: 0, to_fedora_error: 0, missing: 0 }
 results.each { |result| counts[result] += 1 }

@@ -64,8 +64,13 @@ class ModsEquivalentService
     return mods_nodes2_with_same_tag.first if mods_nodes2_with_same_tag.size == 1
 
     distances = {}
-    mods_nodes2_with_same_tag.each { |mods_node2| distances[Text::Levenshtein.distance(mods_node1.to_s, mods_node2.to_s)] = mods_node2 }
+    mods_nodes2_with_same_tag.each { |mods_node2| distances[Text::Levenshtein.distance(content_for(mods_node1), content_for(mods_node2))] = mods_node2 }
 
     distances[distances.keys.min]
+  end
+
+  def content_for(node)
+    # By reducing the text, distance runs faster.
+    node.content.split(' ').sort.join(' ')
   end
 end
