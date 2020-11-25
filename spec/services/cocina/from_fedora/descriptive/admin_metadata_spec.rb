@@ -338,6 +338,41 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
     end
   end
 
+  # <mods:recordIdentifier source="SUL catalog key">6766105</mods:recordIdentifier>
+  #        <mods:recordIdentifier source="oclc">3888071</mods:recordIdentifier>
+
+  context 'when there are multiple recordIdentifiers' do
+    let(:xml) do
+      <<~XML
+        <recordInfo>
+          <recordIdentifier source="SUL catalog key">6766105</recordIdentifier>
+          <recordIdentifier source="oclc">3888071</recordIdentifier>
+        </recordInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq(
+        {
+          identifier: [
+            {
+              source: {
+                value: 'SUL catalog key'
+              },
+              value: '6766105'
+            },
+            {
+              source: {
+                value: 'oclc'
+              },
+              value: '3888071'
+            }
+          ]
+        }
+      )
+    end
+  end
+
   context 'when there is no encoding for the recordCreationDate' do
     let(:xml) do
       <<~XML

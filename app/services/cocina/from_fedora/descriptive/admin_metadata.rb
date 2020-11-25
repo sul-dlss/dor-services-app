@@ -56,13 +56,15 @@ module Cocina
         end
 
         def build_identifier
-          return unless identifier
+          return if identifiers.empty?
 
-          [{
-            value: identifier.text
-          }.tap do |model|
-            model[:source] = { value: identifier['source'] } if identifier['source']
-          end]
+          identifiers.map do |identifier|
+            {
+              value: identifier.text
+            }.tap do |model|
+              model[:source] = { value: identifier['source'] } if identifier['source']
+            end
+          end
         end
 
         def build_note
@@ -160,8 +162,8 @@ module Cocina
           @record_origin ||= resource_element.xpath('mods:recordInfo/mods:recordOrigin', mods: DESC_METADATA_NS).first
         end
 
-        def identifier
-          @identifier ||= resource_element.xpath('mods:recordInfo/mods:recordIdentifier', mods: DESC_METADATA_NS).first
+        def identifiers
+          @identifiers ||= resource_element.xpath('mods:recordInfo/mods:recordIdentifier', mods: DESC_METADATA_NS)
         end
 
         def creation_event
