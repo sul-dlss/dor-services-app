@@ -19,7 +19,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     let(:xml) do
       <<~XML
         <location>
-          <physicalLocation authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/nb2006009317">British Broadcasting Corporation. Sound Effects Library</physicalLocation>
+          <physicalLocation authority="lcsh" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/nb2006009317">British Broadcasting Corporation. Sound Effects Library</physicalLocation>
         </location>
       XML
     end

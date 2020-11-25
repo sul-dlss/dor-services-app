@@ -564,7 +564,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       <<~XML
         <originInfo>
         <place>
-          <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+          <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
         </place>
         </originInfo>
       XML
@@ -593,7 +593,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       <<~XML
         <originInfo>
           <place>
-            <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/" valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+            <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries" valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
           <place>
         </originInfo>
       XML

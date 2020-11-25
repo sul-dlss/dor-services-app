@@ -69,7 +69,7 @@ module Cocina
               else
                 attrs[:code] = node.text
               end
-              source = { code: node[:authority], uri: node[:authorityURI] }.compact
+              source = { code: node[:authority], uri: AuthorityUri.normalize(node[:authorityURI]) }.compact
               attrs[:source] = source unless source.empty?
               attrs[:type] = node[:type]
             end.compact
