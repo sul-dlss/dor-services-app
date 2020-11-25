@@ -116,6 +116,47 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
     end
   end
 
+  context 'when it is a physical repository with language and script' do
+    let(:access) do
+      Cocina::Models::DescriptiveAccessMetadata.new(
+        "accessContact": [
+          {
+            "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
+            "valueLanguage": {
+              "code": 'eng',
+              "source": {
+                "code": 'iso639-2b'
+              },
+              "valueScript": {
+                "code": 'Latn',
+                "source": {
+                  "code": 'iso15924'
+                }
+              }
+            },
+            "type": 'repository',
+            "uri": 'http://id.loc.gov/authorities/names/no2014019980',
+            "source": {
+              "code": 'naf'
+            }
+          }
+        ]
+      )
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <location>
+            <physicalLocation type="repository" authority="naf" valueURI="http://id.loc.gov/authorities/names/no2014019980" lang="eng" script="Latn">Stanford University. Libraries. Department of Special Collections and University Archives</physicalLocation>
+          </location>
+        </mods>
+      XML
+    end
+  end
+
   context 'when it is a URL (with usage)' do
     let(:access) do
       Cocina::Models::DescriptiveAccessMetadata.new(

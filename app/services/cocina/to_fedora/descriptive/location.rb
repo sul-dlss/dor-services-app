@@ -37,11 +37,11 @@ module Cocina
 
         def write_physical_locations
           Array(access.physicalLocation).reject { |physical_location| shelf_locator?(physical_location) }.each do |physical_location|
-            xml.physicalLocation physical_location.value || physical_location.code, with_uri_info(physical_location, {})
+            xml.physicalLocation physical_location.value || physical_location.code, descriptive_attrs(physical_location)
           end
 
           Array(access.accessContact).each do |access_contact|
-            xml.physicalLocation access_contact.value, with_uri_info(access_contact, { type: 'repository' })
+            xml.physicalLocation access_contact.value, { type: 'repository' }.merge(descriptive_attrs(access_contact))
           end
         end
 
@@ -65,11 +65,14 @@ module Cocina
           xml.url purl, { usage: 'primary display' }
         end
 
-        def with_uri_info(cocina, xml_attrs)
-          xml_attrs[:valueURI] = cocina.uri
-          xml_attrs[:authorityURI] = cocina.source&.uri
-          xml_attrs[:authority] = cocina.source&.code
-          xml_attrs.compact
+        def descriptive_attrs(cocina)
+          {}.tap do |attrs|
+            attrs[:valueURI] = cocina.uri
+            attrs[:authorityURI] = cocina.source&.uri
+            attrs[:authority] = cocina.source&.code
+            attrs[:script] = cocina.valueLanguage&.valueScript&.code
+            attrs[:lang] = cocina.valueLanguage&.code
+          end.compact
         end
 
         def shelf_locator?(physical_location)

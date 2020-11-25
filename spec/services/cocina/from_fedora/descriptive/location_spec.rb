@@ -92,6 +92,43 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
+  context 'with a physical repository with language and script' do
+    let(:xml) do
+      <<~XML
+        <location>
+          <physicalLocation type="repository" authority="naf" valueURI="http://id.loc.gov/authorities/names/no2014019980" lang="eng" script="Latn">Stanford University. Libraries. Department of Special Collections and University Archives</physicalLocation>
+        </location>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq(
+        "accessContact": [
+          {
+            "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
+            "valueLanguage": {
+              "code": 'eng',
+              "source": {
+                "code": 'iso639-2b'
+              },
+              "valueScript": {
+                "code": 'Latn',
+                "source": {
+                  "code": 'iso15924'
+                }
+              }
+            },
+            "uri": 'http://id.loc.gov/authorities/names/no2014019980',
+            "type": 'repository',
+            "source": {
+              "code": 'naf'
+            }
+          }
+        ]
+      )
+    end
+  end
+
   context 'with a URL (with usage)' do
     let(:xml) do
       <<~XML
