@@ -19,7 +19,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     let(:xml) do
       <<~XML
         <location>
-          <physicalLocation authority="lcsh" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/nb2006009317">British Broadcasting Corporation. Sound Effects Library</physicalLocation>
+          <physicalLocation authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/nb2006009317">British Broadcasting Corporation. Sound Effects Library</physicalLocation>
         </location>
       XML
     end
@@ -181,6 +181,32 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
 
     it 'ignores' do
       expect(build).to eq({})
+    end
+  end
+
+  context 'with a URL with note' do
+    let(:xml) do
+      <<~XML
+        <location>
+          <url displayLabel="Coverage: V. 1 (Jan. 1922)-" note="Online table of contents from PCI available to Stanford-affiliated users:">https://stanford.idm.oclc.org/login</url>
+        </location>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq(
+        "url": [
+          {
+            "value": 'https://stanford.idm.oclc.org/login',
+            "displayLabel": 'Coverage: V. 1 (Jan. 1922)-',
+            "note": [
+              {
+                "value": 'Online table of contents from PCI available to Stanford-affiliated users:'
+              }
+            ]
+          }
+        ]
+      )
     end
   end
 

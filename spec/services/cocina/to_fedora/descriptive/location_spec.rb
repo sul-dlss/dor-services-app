@@ -182,6 +182,36 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
     end
   end
 
+  context 'when it is a URL with note' do
+    let(:access) do
+      Cocina::Models::DescriptiveAccessMetadata.new(
+        "url": [
+          {
+            "value": 'https://stanford.idm.oclc.org/login',
+            "displayLabel": 'Coverage: V. 1 (Jan. 1922)-',
+            "note": [
+              {
+                "value": 'Online table of contents from PCI available to Stanford-affiliated users:'
+              }
+            ]
+          }
+        ]
+      )
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <location>
+            <url displayLabel="Coverage: V. 1 (Jan. 1922)-" note="Online table of contents from PCI available to Stanford-affiliated users:">https://stanford.idm.oclc.org/login</url>
+          </location>
+        </mods>
+      XML
+    end
+  end
+
   context 'when it is a PURL' do
     let(:purl) { 'http://purl.stanford.edu/ys701qw6956' }
 
