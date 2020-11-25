@@ -43,9 +43,7 @@ module Cocina
         attr_reader :xml, :contributors
 
         def name_attributes(contributor)
-          return {} if contributor.type.nil?
-
-          { type: NAME_TYPE.fetch(contributor.type) }.tap do |attributes|
+          { type: NAME_TYPE[contributor.type] }.tap do |attributes|
             attributes[:usage] = 'primary' if contributor.status == 'primary'
             value_uri = contributor.name.first&.uri
             if value_uri
@@ -54,7 +52,7 @@ module Cocina
               attributes[:authority] = source.code if source&.code
               attributes[:authorityURI] = source.uri if source&.uri
             end
-          end
+          end.compact
         end
 
         # return marcrelator roles only if any are present, otherwise return other roles
