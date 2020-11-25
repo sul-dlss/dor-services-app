@@ -56,6 +56,7 @@ module Cocina
             { value: url_value }.tap do |attrs|
               attrs[:status] = 'primary' if url_elem[:usage] == 'primary display'
               attrs[:displayLabel] = url_elem[:displayLabel] if url_elem[:displayLabel]
+              attrs[:note] = [{ value: url_elem[:note] }] if url_elem[:note]
             end
           end.compact
         end
