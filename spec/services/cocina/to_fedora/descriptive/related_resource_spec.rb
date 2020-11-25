@@ -322,4 +322,43 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
       XML
     end
   end
+
+  context 'when it has an otherType' do
+    let(:resources) do
+      [
+        Cocina::Models::RelatedResource.new(
+          "type": 'related to',
+          "title": [
+            {
+              "value": 'A related resource'
+            }
+          ],
+          "note": [
+            {
+              "type": 'other relation type',
+              "value": 'has part',
+              "uri": 'http://purl.org/dc/terms/hasPart',
+              "source": {
+                "value": 'DCMI'
+              }
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <relatedItem otherType="has part" otherTypeURI="http://purl.org/dc/terms/hasPart" otherTypeAuth="DCMI">
+            <titleInfo>
+              <title>A related resource</title>
+            </titleInfo>
+          </relatedItem>
+        </mods>
+      XML
+    end
+  end
 end

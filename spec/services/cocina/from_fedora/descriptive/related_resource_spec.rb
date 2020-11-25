@@ -268,4 +268,70 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
       ]
     end
   end
+
+  context 'with type and otherType (invalid)' do
+    let(:xml) do
+      <<~XML
+        <relatedItem type="otherFormat" otherType="Online version:" displayLabel="Online version:">
+          <titleInfo>
+            <title>Sitzungsberichte der Kaiserlichen Akademie der Wissenschaften.</title>
+          </titleInfo>
+        </relatedItem>
+      XML
+    end
+
+    before do
+      allow(Honeybadger).to receive(:notify)
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "title": [
+            {
+              "value": 'Sitzungsberichte der Kaiserlichen Akademie der Wissenschaften.'
+            }
+          ],
+          "type": 'has other format',
+          "displayLabel": 'Online version:'
+        }
+      ]
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Related resource has type and otherType', { tags: 'data_error' })
+    end
+  end
+
+  context 'with otherType' do
+    let(:xml) do
+      <<~XML
+        <relatedItem otherType="has part" otherTypeURI="http://purl.org/dc/terms/hasPart" otherTypeAuth="DCMI">
+          <titleInfo>
+            <title>A related resource</title>
+          </titleInfo>
+        </relatedItem>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'related to',
+          "title": [
+            {
+              "value": 'A related resource'
+            }
+          ],
+          "note": [
+            {
+              "type": 'other relation type',
+              "value": 'has part',
+              "uri": 'http://purl.org/dc/terms/hasPart',
+              "source": {
+                "value": 'DCMI'
+              }
+            }
+          ]
+        }
+      ]
+    end
+  end
 end
