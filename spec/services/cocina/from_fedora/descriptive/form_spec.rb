@@ -121,7 +121,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     context 'with authority' do
       let(:xml) do
         <<~XML
-          <genre authority="lcgft" authorityURI="http://id.loc.gov/authorities/genreForms/"
+          <genre authority="lcgft" authorityURI="http://id.loc.gov/authorities/genreForms"
             valueURI="http://id.loc.gov/authorities/genreForms/gf2017027249">Photographs</genre>
         XML
       end
@@ -245,7 +245,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     context 'when there is a subject/genre node' do
       let(:xml) do
         <<~XML
-          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
             <name type="personal">
               <namePart>Shakespeare, William, 1564-1616</namePart>
             </name>

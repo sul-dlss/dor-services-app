@@ -105,7 +105,7 @@ module Cocina
             name_hash = contributor_hash[:name].first
             name_hash[:uri] = value_uri.content
             code = name_el.xpath('@authority', mods: DESC_METADATA_NS)&.first&.content
-            source_uri = name_el.xpath('@authorityURI', mods: DESC_METADATA_NS)&.first&.content
+            source_uri = AuthorityUri.normalize(name_el.xpath('@authorityURI', mods: DESC_METADATA_NS)&.first&.content)
             name_hash[:source] = name_authority_source(code, source_uri) if code || source_uri
           end
           contributor_hash
@@ -180,7 +180,7 @@ module Cocina
               if authority.content == 'marcrelator'
                 role[:source][:uri] = "http://#{MARC_RELATOR_PIECE}/"
               elsif authority_uri&.content.present?
-                role[:source][:uri] = authority_uri.content
+                role[:source][:uri] = AuthorityUri.normalize(authority_uri.content)
               end
             end
 

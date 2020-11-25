@@ -60,7 +60,7 @@ module Cocina
 
         def source_attrs(subject, attrs = {})
           if subject[:valueURI]
-            source = { code: code_for(subject), uri: uri_for(subject[:authorityURI]) }.compact
+            source = { code: code_for(subject), uri: AuthorityUri.normalize(subject[:authorityURI]) }.compact
             attrs[:source] = source unless source.empty?
             attrs[:uri] = subject[:valueURI]
           elsif subject[:authority]
@@ -68,12 +68,6 @@ module Cocina
             attrs[:source] = source unless source.empty?
           end
           attrs.compact
-        end
-
-        def uri_for(authority_uri)
-          return "#{authority_uri}/" if ['http://id.loc.gov/authorities/names', 'http://id.loc.gov/authorities/subjects'].include?(authority_uri)
-
-          authority_uri
         end
 
         def code_for(subject)

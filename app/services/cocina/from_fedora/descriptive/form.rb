@@ -62,7 +62,7 @@ module Cocina
               type: type['type'] || 'genre'
             }.tap do |item|
               item[:uri] = type[:valueURI]
-              source = { code: type[:authority], uri: type[:authorityURI] }.compact
+              source = { code: type[:authority], uri: AuthorityUri.normalize(type[:authorityURI]) }.compact
               item[:source] = source if source.present?
             end.compact
           end
@@ -168,7 +168,7 @@ module Cocina
         end
 
         def source_for(form)
-          { code: form['authority'], uri: form['authorityURI'] }.compact
+          { code: form['authority'], uri: AuthorityUri.normalize(form['authorityURI']) }.compact
         end
 
         def type_of_resource

@@ -851,7 +851,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
   context 'with authority' do
     let(:xml) do
       <<~XML
-        <name type="personal" usage="primary" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79046044">
+        <name type="personal" usage="primary" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n79046044">
           <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
         </name>
       XML
