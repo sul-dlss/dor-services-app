@@ -65,4 +65,22 @@ RSpec.describe Cocina::FromFedora::Descriptive::Identifier do
       ]
     end
   end
+
+  context 'with invalid identifier' do
+    let(:xml) do
+      <<~XML
+        <identifier type="isbn" invalid="yes">1234 5678 9203</identifier>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": '1234 5678 9203',
+          "status": 'invalid',
+          "type": 'ISBN'
+        }
+      ]
+    end
+  end
 end
