@@ -23,6 +23,7 @@ module Cocina
       normalize_origin_info_event_types
       normalize_subject_authority
       normalize_text_role_term
+      normalize_role_term_authority
       ng_xml
     end
 
@@ -62,6 +63,9 @@ module Cocina
       end
       ng_xml.root.xpath("//mods:*[@authorityURI='http://id.loc.gov/authorities/subjects']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
         node[:authorityURI] = 'http://id.loc.gov/authorities/subjects/'
+      end
+      ng_xml.root.xpath("//mods:*[@authorityURI='http://id.loc.gov/vocabulary/relators']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        node[:authorityURI] = 'http://id.loc.gov/vocabulary/relators/'
       end
     end
 
@@ -116,6 +120,12 @@ module Cocina
     def normalize_text_role_term
       ng_xml.root.xpath("//mods:roleTerm[@type='text']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |role_term_node|
         role_term_node.content = role_term_node.content.downcase
+      end
+    end
+
+    def normalize_role_term_authority
+      ng_xml.root.xpath("//mods:roleTerm[@authority='marcrelator']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |role_term_node|
+        role_term_node['authorityURI'] = 'http://id.loc.gov/vocabulary/relators/'
       end
     end
   end

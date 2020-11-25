@@ -137,7 +137,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           uri: 'http://id.loc.gov/vocabulary/relators/col',
           source: {
             code: 'marcrelator',
-            uri: 'http://id.loc.gov/vocabulary/relators'
+            uri: 'http://id.loc.gov/vocabulary/relators/'
           }
         }]
       }, {
