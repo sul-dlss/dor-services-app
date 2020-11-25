@@ -135,7 +135,7 @@ module Cocina
         url_nodes = location_node.xpath('mods:url', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
         purl_node = url_nodes.find { |url_node| Cocina::FromFedora::Descriptive::Location::PURL_REGEX.match(url_node.text) }
         has_primary_usage = url_nodes.any? { |url_node| url_node[:usage] == 'primary display' }
-        purl_node[:usage] = 'primary display' unless has_primary_usage
+        purl_node[:usage] = 'primary display' if purl_node && !has_primary_usage
       end
     end
   end
