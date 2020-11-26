@@ -447,6 +447,55 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
       end
     end
 
+    context 'when it is a parallel title with script but no lang' do
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            "parallelValue": [
+              {
+                "value": '[Chosen] Gomanbunnnoichi Chikeizu',
+                "valueLanguage": {
+                  "valueScript": {
+                    "code": 'Latn',
+                    "source": {
+                      "code": 'iso15924'
+                    }
+                  }
+                }
+              },
+              {
+                "value": '[朝鮮] 五万分一地形圖',
+                "valueLanguage": {
+                  "valueScript": {
+                    "code": 'Latn',
+                    "source": {
+                      "code": 'iso15924'
+                    }
+                  }
+                }
+              }
+            ],
+            "type": 'parallel'
+          )
+        ]
+      end
+
+      it 'creates the equivalent MODS' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo script="Latn" altRepGroup="1">
+              <title>[Chosen] Gomanbunnnoichi Chikeizu</title>
+            </titleInfo>
+            <titleInfo script="Latn" altRepGroup="1">
+              <title>[&#x671D;&#x9BAE;] &#x4E94;&#x4E07;&#x5206;&#x4E00;&#x5730;&#x5F62;&#x5716;</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+    end
+
     context 'when it is multiple untyped titles without primary' do
       xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L365'
     end

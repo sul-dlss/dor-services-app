@@ -61,7 +61,7 @@ module Cocina
 
           title.parallelValue.each do |parallel_title|
             title_info_attrs = { altRepGroup: title_alt_rep_group }
-            title_info_attrs[:lang] = parallel_title.valueLanguage.code if parallel_title.valueLanguage
+            title_info_attrs[:lang] = parallel_title.valueLanguage.code if parallel_title.valueLanguage&.code
             if title.type == 'translated'
               if title.status == 'primary'
                 title_info_attrs[:usage] = 'primary'
