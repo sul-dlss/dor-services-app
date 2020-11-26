@@ -64,12 +64,12 @@ module Cocina
         def descriptive_value_for(nodes)
           nodes.map do |node|
             {}.tap do |attrs|
-              if node[:valueURI]
-                attrs[:value] = node.text
-                attrs[:uri] = node[:valueURI]
-              else
+              if node[:authority] && !node[:valueURI]
                 attrs[:code] = node.text
+              else
+                attrs[:value] = node.text
               end
+              attrs[:uri] = node[:valueURI]
               source = { code: node[:authority], uri: AuthorityUri.normalize(node[:authorityURI]) }.compact
               attrs[:source] = source unless source.empty?
               attrs[:type] = node[:type]
