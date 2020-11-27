@@ -32,14 +32,23 @@ module Cocina
         attr_reader :resource_element
 
         def lang_term_attributes_for(lang)
+          code_language_term = lang.xpath('./mods:languageTerm[@type="code"]', mods: DESC_METADATA_NS).first
+          text_language_term = lang.xpath('./mods:languageTerm[@type="text"]', mods: DESC_METADATA_NS).first
+          if code_language_term.nil? && text_language_term.nil?
+            Honeybadger.notify('[DATA ERROR] languageTerm missing type', { tags: 'data_error' })
+            code_language_term = lang.xpath('./mods:languageTerm', mods: DESC_METADATA_NS).first
+          end
+
           {
-            code: lang.xpath('./mods:languageTerm[@type="code"]/text()', mods: DESC_METADATA_NS).to_s,
-            value: lang.xpath('./mods:languageTerm[@type="text"]/text()', mods: DESC_METADATA_NS).to_s,
-            uri: language_value_uri_for(lang),
+            code: code_language_term&.text,
+            value: text_language_term&.text,
+            uri: language_value_uri_for(code_language_term, text_language_term),
             appliesTo: language_applies_to(lang),
-            displayLabel: lang['displayLabel'],
-            source: language_source_for(lang)
-          }.reject { |_k, v| v.blank? }
+            displayLabel: lang['displayLabel']
+          }.tap do |attrs|
+            source = language_source_for(code_language_term, text_language_term)
+            attrs[:source] = source if source.present?
+          end
         end
 
         def script_term_attributes_for(lang)
@@ -66,11 +75,8 @@ module Cocina
         end
 
         # this can be present for type text and/or code, but we only want one.
-        def language_value_uri_for(lang)
-          # can be for languageTerm or scriptTerm
-          result = lang.xpath('./*[@type="text"]/@valueURI', mods: DESC_METADATA_NS).to_s
-          result = lang.xpath('./*/@valueURI', mods: DESC_METADATA_NS).to_s if result.blank?
-          result
+        def language_value_uri_for(code_language_term, text_language_term)
+          code_language_term&.attribute('valueURI')&.to_s || text_language_term&.attribute('valueURI')&.to_s
         end
 
         def language_applies_to(lang)
@@ -78,17 +84,12 @@ module Cocina
           [value: value] if value.present?
         end
 
-        def language_source_for(lang)
-          code = lang.xpath('./mods:languageTerm[@type="code"]/@authority', mods: DESC_METADATA_NS).to_s
-          # in case there is only a text node
-          code = lang.xpath('./mods:languageTerm[@type="text"]/@authority', mods: DESC_METADATA_NS).to_s if code.blank?
-          # this can be present on a languageTerm or a scriptTerm for type text and/or code, but we only want one.
-          uri = lang.xpath('./*[@type="text"]/@authorityURI', mods: DESC_METADATA_NS).to_s
-          uri = lang.xpath('./*/@authorityURI', mods: DESC_METADATA_NS).to_s if uri.blank?
+        def language_source_for(code_language_term, text_language_term)
           {
-            code: code,
-            uri: uri
-          }.reject { |_k, v| v.blank? }
+            code: code_language_term&.attribute('authority')&.to_s || text_language_term&.attribute('authority')&.to_s,
+            uri: code_language_term&.attribute('authorityURI')&.to_s || text_language_term&.attribute('authorityURI')&.to_s
+
+          }.compact
         end
       end
     end
