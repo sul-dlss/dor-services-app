@@ -17,6 +17,7 @@ module Cocina
     def normalize
       normalize_default_namespace
       normalize_version
+      normalize_empty_attributes
       normalize_topics
       normalize_subject_name
       normalize_authority_uris
@@ -166,6 +167,12 @@ module Cocina
         next unless nodes.size == 1
 
         nodes.first.delete('altRepGroup')
+      end
+    end
+
+    def normalize_empty_attributes
+      ng_xml.root.xpath('//mods:*[@*=""]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        node.each { |attr_name, attr_value| node.delete(attr_name) if attr_value.blank? }
       end
     end
   end
