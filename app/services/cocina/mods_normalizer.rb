@@ -27,6 +27,7 @@ module Cocina
       normalize_purl
       normalize_related_item_other_type
       normalize_empty_notes
+      normalize_unmatched_altrepgroup
       ng_xml
     end
 
@@ -151,6 +152,21 @@ module Cocina
 
     def normalize_empty_notes
       ng_xml.root.xpath('//mods:note[not(text())]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each(&:remove)
+    end
+
+    def normalize_unmatched_altrepgroup
+      altrepgroups = {}
+      ng_xml.root.xpath('//mods:*[@altRepGroup]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        altrepgroup = node['altRepGroup']
+        altrepgroups[altrepgroup] = [] unless altrepgroups.include?(altrepgroup)
+        altrepgroups[altrepgroup] << node
+      end
+
+      altrepgroups.each do |_altrepgroup, nodes|
+        next unless nodes.size == 1
+
+        nodes.first.delete('altRepGroup')
+      end
     end
   end
 end
