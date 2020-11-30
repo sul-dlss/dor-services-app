@@ -474,4 +474,35 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing xml:space' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo>
+            <nonSort xml:space="preserve">The</nonSort>
+            <title>registers of the parish church of Adel, in the county of York, from 1606 to 1812</title>
+            <subTitle>and monumental inscriptions</subTitle>
+          </titleInfo>
+        </mods>
+      XML
+    end
+
+    it 'removes xml:space' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <?xml version="1.0"?>
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo>
+            <nonSort>The</nonSort>
+            <title>registers of the parish church of Adel, in the county of York, from 1606 to 1812</title>
+            <subTitle>and monumental inscriptions</subTitle>
+          </titleInfo>
+        </mods>
+      XML
+    end
+  end
 end

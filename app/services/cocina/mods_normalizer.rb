@@ -29,6 +29,7 @@ module Cocina
       normalize_related_item_other_type
       normalize_empty_notes
       normalize_unmatched_altrepgroup
+      normalize_xml_space
       ng_xml
     end
 
@@ -169,6 +170,12 @@ module Cocina
     def normalize_empty_attributes
       ng_xml.root.xpath('//mods:*[@*=""]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
         node.each { |attr_name, attr_value| node.delete(attr_name) if attr_value.blank? }
+      end
+    end
+
+    def normalize_xml_space
+      ng_xml.root.xpath('//mods:*[@xml:space]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        node.delete('space')
       end
     end
   end
