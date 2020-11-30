@@ -79,6 +79,32 @@ RSpec.describe Cocina::FromFedora::Descriptive::Language do
     end
   end
 
+  context 'with language code only missing type' do
+    let(:xml) do
+      <<~XML
+        <language>
+          <languageTerm authority="iso639-2b">eng</languageTerm>
+        </language>
+      XML
+    end
+
+    before do
+      allow(Honeybadger).to receive(:notify)
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "code": 'eng',
+          "source": {
+            "code": 'iso639-2b'
+          }
+        }
+      ]
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] languageTerm missing type', { tags: 'data_error' })
+    end
+  end
+
   context 'with multiple languages' do
     let(:xml) do
       <<~XML
