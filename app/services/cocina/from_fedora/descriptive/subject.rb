@@ -59,12 +59,11 @@ module Cocina
         end
 
         def source_attrs(subject, attrs = {})
+          source = { code: code_for(subject), uri: AuthorityUri.normalize(subject[:authorityURI]), version: edition_for(subject) }.compact
           if subject[:valueURI]
-            source = { code: code_for(subject), uri: AuthorityUri.normalize(subject[:authorityURI]) }.compact
             attrs[:source] = source unless source.empty?
             attrs[:uri] = subject[:valueURI]
           elsif subject[:authority]
-            source = { code: code_for(subject), version: edition_for(subject) }.compact
             attrs[:source] = source unless source.empty?
           end
           attrs.compact
