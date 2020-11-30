@@ -412,4 +412,43 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing unmatches altRepGroups' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject altRepGroup='1'>
+            <topic>Marine biology</topic>
+          </subject>
+          <subject altRepGroup='1'>
+            <topic>Biología marina</topic>
+          </subject>
+          <subject altRepGroup='2'>
+            <topic>Vulcanology</topic>
+          </subject>
+        </mods>
+      XML
+    end
+
+    it 'removes unmatched' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <?xml version="1.0"?>
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject altRepGroup='1'>
+            <topic>Marine biology</topic>
+          </subject>
+          <subject altRepGroup='1'>
+            <topic>Biología marina</topic>
+          </subject>
+          <subject>
+            <topic>Vulcanology</topic>
+          </subject>
+        </mods>
+      XML
+    end
+  end
 end
