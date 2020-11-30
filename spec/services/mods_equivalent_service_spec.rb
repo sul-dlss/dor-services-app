@@ -195,6 +195,8 @@ RSpec.describe ModsEquivalentService do
 
     it 'returns diff' do
       expect(result.failure.size).to eq(2)
+      expect(result.failure.first.mods_node1.to_s).to eq('<note lang="eng" altRepGroup="1">This is a note.</note>')
+      expect(result.failure.first.mods_node2.to_s).to eq('<note lang="eng">This is a note.</note>')
     end
 
     it 'returns false' do
@@ -317,6 +319,8 @@ RSpec.describe ModsEquivalentService do
 
     it 'returns diff' do
       expect(result.failure.size).to eq(2)
+      expect(result.failure.first.mods_node1.to_s).to eq("<titleInfo nameTitleGroup=\"0\">\n    <title>Hamlet</title>\n  </titleInfo>")
+      expect(result.failure.first.mods_node2.to_s).to eq("<titleInfo>\n    <title>Hamlet</title>\n  </titleInfo>")
     end
 
     it 'returns false' do
