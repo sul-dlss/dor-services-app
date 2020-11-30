@@ -53,7 +53,7 @@ module Cocina
     end
 
     def normalize_topics
-      ng_xml.root.xpath('//mods:subject[count(mods:topic) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
+      ng_xml.root.xpath('//mods:subject[count(mods:topic) = 1 and count(mods:*) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
         topic_node = subject_node.xpath('mods:topic', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).first
         normalize_subject(subject_node, topic_node)
       end
@@ -72,7 +72,7 @@ module Cocina
     end
 
     def normalize_subject_name
-      ng_xml.root.xpath('//mods:subject[count(mods:name) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
+      ng_xml.root.xpath('//mods:subject[count(mods:name) = 1 and count(mods:*) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
         name_node = subject_node.xpath('mods:name', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).first
         normalize_subject(subject_node, name_node)
       end
