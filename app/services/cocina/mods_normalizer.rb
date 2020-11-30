@@ -63,14 +63,10 @@ module Cocina
     end
 
     def normalize_authority_uris
-      ng_xml.root.xpath("//mods:*[@authorityURI='http://id.loc.gov/authorities/names']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
-        node[:authorityURI] = 'http://id.loc.gov/authorities/names/'
-      end
-      ng_xml.root.xpath("//mods:*[@authorityURI='http://id.loc.gov/authorities/subjects']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
-        node[:authorityURI] = 'http://id.loc.gov/authorities/subjects/'
-      end
-      ng_xml.root.xpath("//mods:*[@authorityURI='http://id.loc.gov/vocabulary/relators']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
-        node[:authorityURI] = 'http://id.loc.gov/vocabulary/relators/'
+      Cocina::FromFedora::Descriptive::AuthorityUri::NORMALIZE_AUTHORITY_URIS.each do |authority_uri|
+        ng_xml.root.xpath("//mods:*[@authorityURI='#{authority_uri}']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+          node[:authorityURI] = "#{authority_uri}/"
+        end
       end
     end
 
