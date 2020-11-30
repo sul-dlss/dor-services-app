@@ -91,10 +91,10 @@ def validate_druid(druid, cache, fast: false)
   end
 
   if fast
-    return EquivalentXml.equivalent?(norm_original_ng_xml, roundtrip_ng_xml) ? :success : :different
+    return ModsEquivalentService.equivalent?(norm_original_ng_xml, roundtrip_ng_xml) ? :success : :different
   end
 
-  equiv = ModsEquivalentService.equivalent?(norm_original_ng_xml, roundtrip_ng_xml)
+  equiv = ModsEquivalentService.equivalent_with_result?(norm_original_ng_xml, roundtrip_ng_xml)
 
   return :success if equiv.success?
 
