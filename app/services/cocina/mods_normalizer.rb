@@ -26,6 +26,7 @@ module Cocina
       normalize_role_term_authority
       normalize_purl
       normalize_related_item_other_type
+      normalize_empty_notes
       ng_xml
     end
 
@@ -146,6 +147,10 @@ module Cocina
         related_node.delete('otherTypeURI')
         related_node.delete('otherTypeAuth')
       end
+    end
+
+    def normalize_empty_notes
+      ng_xml.root.xpath('//mods:note[not(text())]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each(&:remove)
     end
   end
 end
