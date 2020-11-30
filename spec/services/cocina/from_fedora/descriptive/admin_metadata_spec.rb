@@ -399,4 +399,29 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
       )
     end
   end
+
+  context 'with languageTerm missing type' do
+    let(:xml) do
+      <<~XML
+        <recordInfo>
+          <languageOfCataloging>
+            <languageTerm authority="iso639-2b">eng</languageTerm>
+          </languageOfCataloging>
+        </recordInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq(
+        "language": [
+          {
+            "code": 'eng',
+            "source": {
+              "code": 'iso639-2b'
+            }
+          }
+        ]
+      )
+    end
+  end
 end

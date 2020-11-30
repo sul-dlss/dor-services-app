@@ -112,42 +112,13 @@ module Cocina
         end
 
         def build_language
-          return unless language_of_cataloging
+          return if language_of_cataloging.empty?
 
-          language = {}
-          lang_text_term = language_of_cataloging.xpath('mods:languageTerm[@type="text"]', mods: DESC_METADATA_NS).first
-          language[:value] = lang_text_term.text if lang_text_term
-          lang_code_term = language_of_cataloging.xpath('mods:languageTerm[@type="code"]', mods: DESC_METADATA_NS).first
-          if lang_code_term
-            language[:code] = lang_code_term.text
-            language[:uri] = lang_code_term['valueURI']
-            language[:source] = { code: lang_code_term['authority'], uri: lang_code_term['authorityURI'] }.compact
-          end
-
-          script_text_term = language_of_cataloging.xpath('mods:scriptTerm[@type="text"]', mods: DESC_METADATA_NS).first
-          if script_text_term
-            script_code_term = language_of_cataloging.xpath('mods:scriptTerm[@type="code"]', mods: DESC_METADATA_NS).first
-            script_term_source = { code: script_code_term['authority'] } if script_code_term['authority']
-            language[:script] = { value: script_text_term.text, code: script_code_term.text, source: script_term_source }.compact
-          end
-          language[:status] = status(language_of_cataloging)
-
-          [language.compact]
-        end
-
-        def status(language_of_cataloging)
-          return unless language_of_cataloging[:usage]
-
-          language_of_cataloging[:usage].downcase.tap do |value|
-            if language_of_cataloging[:usage] != value
-              Honeybadger.notify("[DATA ERROR] languageOfCataloging usage attribute is set to \"#{language_of_cataloging[:usage]}\"",
-                                 { tags: 'data_error' })
-            end
-          end
+          language_of_cataloging.map { |lang_node| Cocina::FromFedora::Descriptive::LanguageTerm.build(language_element: lang_node) }
         end
 
         def language_of_cataloging
-          @language_of_cataloging ||= resource_element.xpath('mods:recordInfo/mods:languageOfCataloging', mods: DESC_METADATA_NS).first
+          @language_of_cataloging ||= resource_element.xpath('mods:recordInfo/mods:languageOfCataloging', mods: DESC_METADATA_NS)
         end
 
         def record_content_source
