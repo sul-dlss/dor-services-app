@@ -12,6 +12,13 @@ class ModsEquivalentService
   # @param [Nokogiri::Document] mods_ng_xml1 MODS to be compared against (expected)
   # @param [Nokogiri::Document] mods_ng_xml2 MODS to be compared (actual)
   # @return [Result] Success if equivalent, Failure (including diffs) if not
+  def self.equivalent_with_result?(mods_ng_xml1, mods_ng_xml2)
+    ModsEquivalentService.new(mods_ng_xml1, mods_ng_xml2).equivalent_with_result?
+  end
+
+  # @param [Nokogiri::Document] mods_ng_xml1 MODS to be compared against (expected)
+  # @param [Nokogiri::Document] mods_ng_xml2 MODS to be compared (actual)
+  # @return [Boolean] True if equivalent, False if not
   def self.equivalent?(mods_ng_xml1, mods_ng_xml2)
     ModsEquivalentService.new(mods_ng_xml1, mods_ng_xml2).equivalent?
   end
@@ -19,17 +26,82 @@ class ModsEquivalentService
   def initialize(mods_ng_xml1, mods_ng_xml2)
     @mods_ng_xml1 = mods_ng_xml1
     @mods_ng_xml2 = mods_ng_xml2
+    # Map of altRepGroup ids from mods_ng_xml1 to mods_ng_xml2
+    @altrepgroup_ids = {}
+    # Map of equivalent nodes with altRepGroup attributes.
+    @altrepgroup_nodes = {}
+    # Map of nameTitleGroup ids from mods_ng_xml1 to mods_ng_xml2
+    @nametitlegroup_ids = {}
+    # Map of equivalent nodes with nameTitleGroup attributes.
+    @nametitlegroup_nodes = {}
+  end
+
+  def equivalent_with_result?
+    return Failure(diff) unless xml_equivalent?
+
+    # Checks equivalence of altRepGroup attributes.
+    return Failure(altrepgroup_diff) if altrepgroup_diff.present?
+
+    # Checks equivalence of nameTitleGroup attributes.
+    return Failure(nametitlegroup_diff) if nametitlegroup_diff.present?
+
+    Success()
   end
 
   def equivalent?
-    return Success() if EquivalentXml.equivalent?(mods_ng_xml1, mods_ng_xml2)
+    return false unless xml_equivalent?
 
-    Failure(diff)
+    # Checks equivalence of altRepGroup attributes.
+    return false if altrepgroup_diff.present?
+
+    # Checks equivalence of nameTitleGroup attributes.
+    return false if nametitlegroup_diff.present?
+
+    true
   end
 
   private
 
-  attr_reader :mods_ng_xml1, :mods_ng_xml2
+  attr_reader :mods_ng_xml1, :mods_ng_xml2, :altrepgroup_ids, :altrepgroup_nodes, :nametitlegroup_ids, :nametitlegroup_nodes
+
+  def xml_equivalent?
+    @xml_equivalent ||= EquivalentXml.equivalent?(mods_ng_xml1, mods_ng_xml2) do |node1, node2|
+      # Checks equivalence ignoring the nameTitleGroup and altRepGroup attributes.
+      nodes_equivalent?(node1, node2)
+    end
+  end
+
+  def nodes_equivalent?(node1, node2)
+    norm_node1 = node1.dup
+    norm_node2 = node2.dup
+    if node1['altRepGroup'] && node2['altRepGroup']
+      altrepgroup1 = norm_node1.delete('altRepGroup')
+      altrepgroup2 = norm_node2.delete('altRepGroup')
+    end
+
+    if node1['nameTitleGroup'] && node2['nameTitleGroup']
+      nametitlegroup1 = norm_node1.delete('nameTitleGroup')
+      nametitlegroup2 = norm_node2.delete('nameTitleGroup')
+    end
+
+    # Returning nil means leave the equivalent result unchanged.
+    # Returning if neither altRepGroup or nameTitleGroup attribute.
+    return nil unless altrepgroup1 || nametitlegroup1
+
+    # Check equiv without the altRepGroup and nameTitleGroup attributes.
+    equiv = EquivalentXml.equivalent?(norm_node1, norm_node2)
+    if equiv
+      if altrepgroup1
+        altrepgroup_ids[altrepgroup1.value] = altrepgroup2.value
+        altrepgroup_nodes[node1] = node2
+      end
+      if nametitlegroup1
+        nametitlegroup_ids[nametitlegroup1.value] = nametitlegroup2.value
+        nametitlegroup_nodes[node1] = node2
+      end
+    end
+    equiv
+  end
 
   def diff
     mods_nodes1.map do |mods_node1|
@@ -73,5 +145,31 @@ class ModsEquivalentService
     set1 = Set.new(mods_node1.content.split(' '))
     set2 = Set.new((mods_node2.content.split(' ')))
     set1.difference(set2).size + set2.difference(set1).size
+  end
+
+  def altrepgroup_diff
+    @altrepgroup_diff ||= altrepgroup_nodes.keys.map do |node1|
+      node1_altrepgroup = node1['altRepGroup']
+      node2 = altrepgroup_nodes[node1]
+      node2_altrepgroup = node2['altRepGroup']
+      expected_node2_altrepgroup = altrepgroup_ids[node1_altrepgroup]
+
+      next nil if expected_node2_altrepgroup == node2_altrepgroup
+
+      Difference.new(node1, node2)
+    end.compact
+  end
+
+  def nametitlegroup_diff
+    @nametitlegroup_diff ||= nametitlegroup_nodes.keys.map do |node1|
+      node1_nametitlegroup = node1['nameTitleGroup']
+      node2 = nametitlegroup_nodes[node1]
+      node2_nametitlegroup = node2['nameTitleGroup']
+      expected_node2_nametitlegroup = nametitlegroup_ids[node1_nametitlegroup]
+
+      next nil if expected_node2_nametitlegroup == node2_nametitlegroup
+
+      Difference.new(node1, node2)
+    end.compact
   end
 end
