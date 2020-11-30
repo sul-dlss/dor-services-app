@@ -74,12 +74,12 @@ class ModsEquivalentService
   def nodes_equivalent?(node1, node2)
     norm_node1 = node1.dup
     norm_node2 = node2.dup
-    if node1['altRepGroup'] && node2['altRepGroup']
+    if node1['altRepGroup']
       altrepgroup1 = norm_node1.delete('altRepGroup')
       altrepgroup2 = norm_node2.delete('altRepGroup')
     end
 
-    if node1['nameTitleGroup'] && node2['nameTitleGroup']
+    if node1['nameTitleGroup']
       nametitlegroup1 = norm_node1.delete('nameTitleGroup')
       nametitlegroup2 = norm_node2.delete('nameTitleGroup')
     end
@@ -92,11 +92,11 @@ class ModsEquivalentService
     equiv = EquivalentXml.equivalent?(norm_node1, norm_node2)
     if equiv
       if altrepgroup1
-        altrepgroup_ids[altrepgroup1.value] = altrepgroup2.value
+        altrepgroup_ids[altrepgroup1.value] = altrepgroup2.value if altrepgroup2
         altrepgroup_nodes[node1] = node2
       end
       if nametitlegroup1
-        nametitlegroup_ids[nametitlegroup1.value] = nametitlegroup2.value
+        nametitlegroup_ids[nametitlegroup1.value] = nametitlegroup2.value if nametitlegroup2
         nametitlegroup_nodes[node1] = node2
       end
     end
@@ -119,6 +119,17 @@ class ModsEquivalentService
     @mods_nodes2 ||= mods_ng_xml2.root.xpath('mods:*', mods: Dor::DescMetadataDS::MODS_NS)
   end
 
+  def norm_mods_nodes2
+    @norm_mods_nodes2 ||= mods_ng_xml2.root.xpath('mods:*', mods: Dor::DescMetadataDS::MODS_NS).map { |node| norm_node(node) }
+  end
+
+  def norm_node(node)
+    new_node = node.deep_dup
+    new_node.delete('altRepGroup')
+    new_node.delete('nameTitleGroup')
+    new_node
+  end
+
   def mods_nodes2_without_equivalent
     @mods_nodes2_without_equivalent ||= mods_nodes2.select do |mods_node2|
       mods_nodes1.none? { |mods_node1| EquivalentXml.equivalent?(mods_node1, mods_node2) }
@@ -126,7 +137,8 @@ class ModsEquivalentService
   end
 
   def has_equivalent_node?(mods_node1)
-    mods_nodes2.any? { |mods_node2| EquivalentXml.equivalent?(mods_node1, mods_node2) }
+    norm_mods_node1 = norm_node(mods_node1)
+    norm_mods_nodes2.any? { |mods_node2| EquivalentXml.equivalent?(norm_mods_node1, mods_node2) }
   end
 
   def find_closest_node(mods_node1)
@@ -151,10 +163,10 @@ class ModsEquivalentService
     @altrepgroup_diff ||= altrepgroup_nodes.keys.map do |node1|
       node1_altrepgroup = node1['altRepGroup']
       node2 = altrepgroup_nodes[node1]
-      node2_altrepgroup = node2['altRepGroup']
+      node2_altrepgroup = node2 ? node2['altRepGroup'] : nil
       expected_node2_altrepgroup = altrepgroup_ids[node1_altrepgroup]
 
-      next nil if expected_node2_altrepgroup == node2_altrepgroup
+      next nil if expected_node2_altrepgroup && expected_node2_altrepgroup == node2_altrepgroup
 
       Difference.new(node1, node2)
     end.compact
@@ -164,10 +176,10 @@ class ModsEquivalentService
     @nametitlegroup_diff ||= nametitlegroup_nodes.keys.map do |node1|
       node1_nametitlegroup = node1['nameTitleGroup']
       node2 = nametitlegroup_nodes[node1]
-      node2_nametitlegroup = node2['nameTitleGroup']
+      node2_nametitlegroup = node2 ? node2['nameTitleGroup'] : nil
       expected_node2_nametitlegroup = nametitlegroup_ids[node1_nametitlegroup]
 
-      next nil if expected_node2_nametitlegroup == node2_nametitlegroup
+      next nil if expected_node2_nametitlegroup && expected_node2_nametitlegroup == node2_nametitlegroup
 
       Difference.new(node1, node2)
     end.compact
