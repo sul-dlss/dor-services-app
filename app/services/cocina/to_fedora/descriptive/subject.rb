@@ -97,10 +97,7 @@ module Cocina
         end
 
         def all_same_authority?(structured_value)
-          return nil if structured_value.nil?
-          return nil unless Set.new(structured_value.map { |value| authority_for(value) }).size == 1
-
-          authority_for(structured_value.first)
+          Array(structured_value).map { |value| authority_for(value) }.uniq.size == 1
         end
 
         def write_basic(subject)
