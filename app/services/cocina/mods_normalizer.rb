@@ -134,12 +134,25 @@ module Cocina
     end
 
     def normalize_purl
-      ng_xml.root.xpath('//mods:location', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |location_node|
-        url_nodes = location_node.xpath('mods:url', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
-        purl_node = url_nodes.find { |url_node| Cocina::FromFedora::Descriptive::Location::PURL_REGEX.match(url_node.text) }
-        has_primary_usage = url_nodes.any? { |url_node| url_node[:usage] == 'primary display' }
-        purl_node[:usage] = 'primary display' if purl_node && !has_primary_usage
+      any_url_primary_usage = location_nodes(ng_xml).any? { |location_node| has_primary_usage?(url_nodes(location_node)) }
+
+      location_nodes(ng_xml).each do |location_node|
+        location_url_nodes = url_nodes(location_node)
+        purl_node = location_url_nodes.find { |url_node| Cocina::FromFedora::Descriptive::Location::PURL_REGEX.match(url_node.text) }
+        purl_node[:usage] = 'primary display' if purl_node && !has_primary_usage?(location_url_nodes) && !any_url_primary_usage
       end
+    end
+
+    def location_nodes(ng_xml)
+      ng_xml.root.xpath('//mods:location', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+    end
+
+    def url_nodes(location_node)
+      location_node.xpath('mods:url', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+    end
+
+    def has_primary_usage?(url_nodes)
+      url_nodes.any? { |url_node| url_node[:usage] == 'primary display' }
     end
 
     def normalize_related_item_other_type
