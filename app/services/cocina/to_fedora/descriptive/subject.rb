@@ -158,13 +158,11 @@ module Cocina
 
         def topic_attributes_for(subject)
           {}.tap do |topic_attributes|
-            if subject.source&.uri
-              topic_attributes[:authority] = subject.source.code
-              topic_attributes[:authorityURI] = subject.source.uri
-            end
-            topic_attributes[:encoding] = subject.encoding.code if subject.encoding
-            topic_attributes[:valueURI] = subject.uri if subject.uri
-          end
+            topic_attributes[:authority] = subject.source&.code if subject.source&.uri || subject.uri
+            topic_attributes[:authorityURI] = subject.source&.uri
+            topic_attributes[:encoding] = subject.encoding&.code
+            topic_attributes[:valueURI] = subject.uri
+          end.compact
         end
 
         def geographic(subject)
