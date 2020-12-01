@@ -259,7 +259,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <location>
             <physicalLocation type="repository" authority="naf" valueURI="http://id.loc.gov/authorities/names/n81070667">Stanford University. Libraries</physicalLocation>
+          </location>
+          <location>
             <url usage="primary display">http://purl.stanford.edu/hf898mn6942</url>
+          </location>
+          <location>
             <url displayLabel="Archived website">https://swap.stanford.edu/20171107174354/https://www.le.ac.uk/english/em1060to1220/index.html</url>
           </location>
         </mods>
@@ -286,6 +290,56 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <location>
             <shelfLocator>SC080</shelfLocator>
+          </location>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has multiple URLs' do
+    let(:purl) { 'http://purl.stanford.edu/cy979mw6316' }
+    let(:access) do
+      Cocina::Models::DescriptiveAccessMetadata.new(
+        "url": [
+          {
+            "value": 'http://infoweb.newsbank.com/?db=SERIAL',
+            "status": 'primary'
+          },
+          {
+            "value": 'http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps&srcboxes=SerialSet'
+          },
+          {
+            "value": 'http://purl.access.gpo.gov/GPO/LPS839'
+          }
+        ],
+        "physicalLocation": [
+          {
+            "code": 'Stanford University Libraries'
+          }
+        ]
+      )
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <?xml version=\"1.0\"?>
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <location>
+            <physicalLocation>Stanford University Libraries</physicalLocation>
+          </location>
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/cy979mw6316</url>
+          </location>
+          <location>
+            <url>http://infoweb.newsbank.com/?db=SERIAL</url>
+          </location>
+          <location>
+            <url>http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps&amp;srcboxes=SerialSet</url>
+          </location>
+          <location>
+            <url>http://purl.access.gpo.gov/GPO/LPS839</url>
           </location>
         </mods>
       XML

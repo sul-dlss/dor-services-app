@@ -19,19 +19,28 @@ module Cocina
         end
 
         def write
-          return if access.nil? && purl.nil?
+          write_purl unless purl.nil?
+          return if access.nil?
 
           write_access_conditions if access
 
-          return unless purl || access && (access.physicalLocation.present? || access.accessContact.present? || access.url.present?)
+          Array(access.url).each do |url|
+            xml.location do
+              write_url(url)
+            end
+          end
 
-          xml.location do
-            if access
+          if access.physicalLocation
+            xml.location do
               write_physical_locations
               write_shelf_locators
-              write_urls
             end
-            write_purl if purl
+          end
+
+          return unless access.accessContact
+
+          xml.location do
+            write_access_contact_locations
           end
         end
 
@@ -43,7 +52,9 @@ module Cocina
           Array(access.physicalLocation).reject { |physical_location| shelf_locator?(physical_location) }.each do |physical_location|
             xml.physicalLocation physical_location.value || physical_location.code, descriptive_attrs(physical_location)
           end
+        end
 
+        def write_access_contact_locations
           Array(access.accessContact).each do |access_contact|
             xml.physicalLocation access_contact.value, { type: 'repository' }.merge(descriptive_attrs(access_contact))
           end
@@ -55,15 +66,13 @@ module Cocina
           end
         end
 
-        def write_urls
-          Array(access.url).each do |url|
-            url_attrs = {}.tap do |attrs|
-              attrs[:usage] = 'primary display' if url.status == 'primary'
-              attrs[:displayLabel] = url.displayLabel
-              attrs[:note] = url.note.first.value unless url.note.nil?
-            end.compact
-            xml.url url.value, url_attrs
-          end
+        def write_url(url)
+          url_attrs = {}.tap do |attrs|
+            attrs[:usage] = 'primary display' if url.status == 'primary'
+            attrs[:displayLabel] = url.displayLabel
+            attrs[:note] = url.note.first.value unless url.note.nil?
+          end.compact
+          xml.url url.value, url_attrs
         end
 
         def write_purl
