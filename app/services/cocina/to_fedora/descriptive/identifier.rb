@@ -21,6 +21,7 @@ module Cocina
             attributes = {}
             attributes[:type] = identifier.type.downcase if identifier.type
             attributes[:displayLabel] = identifier.displayLabel if identifier.displayLabel
+            attributes[:invalid] = 'yes' if identifier.status == 'invalid'
             xml.identifier identifier.value, attributes
           end
         end

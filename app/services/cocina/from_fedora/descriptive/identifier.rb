@@ -20,6 +20,7 @@ module Cocina
           identifiers.map do |id|
             { value: id.text }.tap do |item|
               item[:type] = id['type'].upcase if id['type']
+              item[:status] = 'invalid' if id['invalid'] == 'yes'
               item[:displayLabel] = id['displayLabel'] if id['displayLabel']
             end
           end
