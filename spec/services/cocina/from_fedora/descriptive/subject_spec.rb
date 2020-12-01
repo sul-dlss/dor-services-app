@@ -766,7 +766,22 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
   end
 
   context 'with a display label' do
-    # See https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/51
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L770'
+    let(:xml) do
+      <<~XML
+        <subject displayLabel="This is about">
+          <topic>Stuff</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'Stuff',
+          "type": 'topic',
+          "displayLabel": 'This is about'
+        }
+      ]
+    end
   end
 end
