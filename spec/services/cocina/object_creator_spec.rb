@@ -89,6 +89,10 @@ RSpec.describe Cocina::ObjectCreator do
                 "type": 'contact',
                 "value": 'marypoppins@umbrellas.org',
                 "displayLabel": 'Contact'
+              },
+              {
+                "type": 'preferred citation',
+                "value": 'Zappa, F. (2013) :link:'
               }
             ],
             "title": [
@@ -147,21 +151,26 @@ RSpec.describe Cocina::ObjectCreator do
         expect(result.description.contributor.last.role.first.value).to eq 'Funder'
       end
 
-      it 'subjets are set' do
+      it 'subjects are set' do
         expect(result.description.subject.first.type).to eq 'topic'
         expect(result.description.subject.first.value).to eq 'I am a keyword'
       end
 
       it 'abstract (note of type summary) is set' do
-        summary_note = result.description.note.select { |note| note.type == 'summary' }.first
+        summary_note = result.description.note.find { |note| note.type == 'summary' }
         expect(summary_note.value).to eq 'I am an abstract'
       end
 
       it 'contact (note of type contact) is set' do
-        contact_note = result.description.note.select { |note| note.type == 'contact' }.first
+        contact_note = result.description.note.find { |note| note.type == 'contact' }
         expect(contact_note.value).to eq 'marypoppins@umbrellas.org'
         skip 'TODO: need ToFedora map of displayLabel for note'
         # expect(contact_note.displayLabel).to eq 'Contact'
+      end
+
+      it 'preferred citation is set with the link placeholder replaced' do
+        contact_note = result.description.note.find { |note| note.type == 'preferred citation' }
+        expect(contact_note.value).to eq 'Zappa, F. (2013) http://purl.stanford.edu/mb046vj7485'
       end
     end
 
