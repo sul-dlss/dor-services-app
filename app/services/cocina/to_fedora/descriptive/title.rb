@@ -149,11 +149,12 @@ module Cocina
 
         def title_info_attrs_for(title, name_title_group: nil)
           {}.tap do |attrs|
-            attrs[:type] = title.type if title.type
-            attrs[:usage] = title.status if title.status
-            attrs[:nameTitleGroup] = name_title_group if name_title_group
-            attrs[:script] = title.valueLanguage.valueScript.code if title.valueLanguage&.valueScript&.code
-          end
+            attrs[:type] = title.type
+            attrs[:usage] = title.status
+            attrs[:nameTitleGroup] = name_title_group
+            attrs[:script] = title.valueLanguage&.valueScript&.code
+            attrs[:displayLabel] = title.displayLabel
+          end.compact
         end
       end
     end

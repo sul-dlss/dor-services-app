@@ -505,7 +505,38 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
     end
 
     context 'when it has a display label' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L402'
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            {
+              "value": 'Unnatural death',
+              "status": 'primary'
+            }
+          ),
+          Cocina::Models::Title.new(
+            {
+              "value": 'The Dawson pedigree',
+              "type": 'alternative',
+              "displayLabel": 'Original U.S. title'
+            }
+          )
+        ]
+      end
+
+      it 'creates the equivalent MODS' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo usage="primary">
+              <title>Unnatural death</title>
+            </titleInfo>
+            <titleInfo type="alternative" displayLabel="Original U.S. title">
+              <title>The Dawson pedigree</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
     end
   end
 end
