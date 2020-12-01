@@ -23,6 +23,8 @@ module Cocina
           @xml = xml
           @subjects = Array(subjects)
           @forms = forms
+          # Used to determine if need to write form only cartographics
+          @wrote_cartographic = false
         end
 
         def write
@@ -35,11 +37,12 @@ module Cocina
               write_basic(subject)
             end
           end
+          write_form_only_cartographic
         end
 
         private
 
-        attr_reader :xml, :subjects, :forms
+        attr_reader :xml, :subjects, :forms, :wrote_cartographic
 
         def write_parallel(subject, alt_rep_group:)
           if subject.type == 'place'
@@ -176,14 +179,30 @@ module Cocina
           end
         end
 
-        def cartographics(xml, subject)
+        def cartographics(xml, subject = nil)
           xml.cartographics do
-            xml.coordinates subject.value
-            scale = forms.find { |form| form.type == 'map scale' }
-            xml.scale scale.value if scale
-            projection = forms.find { |form| form.type == 'map projection' }
-            xml.projection projection.value if projection
+            xml.coordinates subject.value if subject
+            xml.scale scale_form.value if scale_form
+            xml.projection projection_form.value if projection_form
           end
+          @wrote_cartographic = true
+        end
+
+        def write_form_only_cartographic
+          return if wrote_cartographic
+          return unless scale_form || projection_form
+
+          xml.subject do
+            cartographics(xml)
+          end
+        end
+
+        def scale_form
+          @scale_form ||= forms&.find { |form| form.type == 'map scale' }
+        end
+
+        def projection_form
+          @projection_form ||= forms&.find { |form| form.type == 'map projection' }
         end
 
         def hierarchical_geographic(xml, subject)
