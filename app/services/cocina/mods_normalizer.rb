@@ -30,6 +30,7 @@ module Cocina
       normalize_empty_notes
       normalize_unmatched_altrepgroup
       normalize_xml_space
+      normalize_language_term_type
       ng_xml
     end
 
@@ -176,6 +177,12 @@ module Cocina
     def normalize_xml_space
       ng_xml.root.xpath('//mods:*[@xml:space]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
         node.delete('space')
+      end
+    end
+
+    def normalize_language_term_type
+      ng_xml.root.xpath('//mods:languageTerm[not(@type)]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        node['type'] = 'code'
       end
     end
   end
