@@ -29,7 +29,7 @@ module Cocina
         def build
           subjects.map do |subject|
             check_valid_authority(subject)
-            attrs = source_attrs(subject)
+            attrs = common_attrs(subject)
             node_set = subject.xpath('*')
             next subject_classification(subject, attrs) if subject.name == 'classification'
 
@@ -58,15 +58,18 @@ module Cocina
                              tags: 'data_error')
         end
 
-        def source_attrs(subject, attrs = {})
-          source = { code: code_for(subject), uri: AuthorityUri.normalize(subject[:authorityURI]), version: edition_for(subject) }.compact
-          if subject[:valueURI]
-            attrs[:source] = source unless source.empty?
-            attrs[:uri] = subject[:valueURI]
-          elsif subject[:authority]
-            attrs[:source] = source unless source.empty?
-          end
-          attrs.compact
+        def common_attrs(subject)
+          {
+            displayLabel: subject[:displayLabel]
+          }.tap do |attrs|
+            source = { code: code_for(subject), uri: AuthorityUri.normalize(subject[:authorityURI]), version: edition_for(subject) }.compact
+            if subject[:valueURI]
+              attrs[:source] = source unless source.empty?
+              attrs[:uri] = subject[:valueURI]
+            elsif subject[:authority]
+              attrs[:source] = source unless source.empty?
+            end
+          end.compact
         end
 
         def code_for(subject)
@@ -136,7 +139,7 @@ module Cocina
         end
 
         def simple_item(node, attrs = {})
-          attrs = source_attrs(node, attrs)
+          attrs = attrs.merge(common_attrs(node))
           case node.name
           when 'name'
             attrs[:type] = name_type_for_subject(node[:type])
