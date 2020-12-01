@@ -192,7 +192,21 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     end
 
     context 'with display label' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_genre.txt#L125'
+      let(:xml) do
+        <<~XML
+          <genre displayLabel="Style">Art deco</genre>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'Art deco',
+            "type": 'genre',
+            "displayLabel": 'Style'
+          }
+        ]
+      end
     end
   end
 

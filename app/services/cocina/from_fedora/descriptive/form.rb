@@ -59,9 +59,10 @@ module Cocina
           basic_genre.each do |type|
             forms << {
               value: type.text,
-              type: type['type'] || 'genre'
+              type: type['type'] || 'genre',
+              uri: type[:valueURI],
+              displayLabel: type[:displayLabel]
             }.tap do |item|
-              item[:uri] = type[:valueURI]
               source = { code: type[:authority], uri: AuthorityUri.normalize(type[:authorityURI]) }.compact
               item[:source] = source if source.present?
             end.compact
