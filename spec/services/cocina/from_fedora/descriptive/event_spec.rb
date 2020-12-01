@@ -884,28 +884,28 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
   end
 
   context 'with displayLabel' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L1282'
-    # let(:xml) do
-    #   <<~XML
-    #     <originInfo displayLabel="Origin">
-    #       <place>
-    #         <placeTerm type="text">Stanford (Calif.)</placeTerm>
-    #       <place>
-    #     </originInfo>
-    #   XML
-    # end
-    #
-    # it 'builds the cocina data structure' do
-    #   expect(build).to eq [
-    #     {
-    #       "displayLabel": 'Origin',
-    #       "location": [
-    #         {
-    #           "value": 'Stanford (Calif.)'
-    #         }
-    #       ]
-    #     }
-    #   ]
-    # end
+    let(:xml) do
+      <<~XML
+        <originInfo displayLabel="Origin" eventType="production">
+          <place>
+            <placeTerm type="text">Stanford (Calif.)</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'creation',
+          "displayLabel": 'Origin',
+          "location": [
+            {
+              "value": 'Stanford (Calif.)'
+            }
+          ]
+        }
+      ]
+    end
   end
 end
