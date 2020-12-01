@@ -23,6 +23,7 @@ module Cocina
       normalize_authority_uris
       normalize_origin_info_event_types
       normalize_subject_authority
+      normalize_subject_authority_naf
       normalize_text_role_term
       normalize_role_term_authority
       normalize_purl
@@ -92,7 +93,7 @@ module Cocina
       subject_node.delete('valueURI')
     end
 
-    def normalize_subject_authority
+    def normalize_subject_authority_naf
       ng_xml.root.xpath("//mods:subject[@authority='naf']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
         subject_node[:authority] = 'lcsh'
       end
@@ -183,6 +184,13 @@ module Cocina
     def normalize_language_term_type
       ng_xml.root.xpath('//mods:languageTerm[not(@type)]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
         node['type'] = 'code'
+      end
+    end
+
+    def normalize_subject_authority
+      ng_xml.root.xpath('//mods:subject[not(@authority) and count(mods:*) = 1 and not(mods:geographicCode)]/mods:*[@authority]',
+                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        node.parent['authority'] = node['authority']
       end
     end
   end
