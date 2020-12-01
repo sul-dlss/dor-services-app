@@ -86,11 +86,18 @@ module Cocina
             if subject.source
               attrs[:authority] = authority_for(subject)
               attrs[:authorityURI] = subject.source.uri
-            elsif subject.structuredValue&.first&.source
+            elsif all_same_authority?(subject.structuredValue)
               attrs[:authority] = authority_for(subject.structuredValue.first)
             end
             attrs[:valueURI] = subject.uri
           end.compact
+        end
+
+        def all_same_authority?(structured_value)
+          return nil if structured_value.nil?
+          return nil unless Set.new(structured_value.map { |value| authority_for(value) }).size == 1
+
+          authority_for(structured_value.first)
         end
 
         def write_basic(subject)
