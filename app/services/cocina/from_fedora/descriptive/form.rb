@@ -63,7 +63,10 @@ module Cocina
               uri: type[:valueURI],
               displayLabel: type[:displayLabel]
             }.tap do |item|
-              source = { code: type[:authority], uri: AuthorityUri.normalize(type[:authorityURI]) }.compact
+              source = {
+                code: type[:authority].presence,
+                uri: AuthorityUri.normalize(type[:authorityURI])
+              }.compact
               item[:source] = source if source.present?
             end.compact
           end

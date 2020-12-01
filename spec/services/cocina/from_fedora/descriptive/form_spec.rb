@@ -183,6 +183,23 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       end
     end
 
+    context 'with empty authority' do
+      let(:xml) do
+        <<~XML
+          <genre authority="">Photographs</genre>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'Photographs',
+            "type": 'genre'
+          }
+        ]
+      end
+    end
+
     context 'with usage' do
       xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_genre.txt#L57'
     end
