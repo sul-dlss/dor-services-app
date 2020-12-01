@@ -177,9 +177,11 @@ RSpec.describe Cocina::ModsNormalizer do
           <originInfo>
             <dateCreated>1932</dateCreated>
           </originInfo>
-          <originInfo>
-            <dateCaptured>1932</dateCaptured>
-          </originInfo>
+          <relatedItem>
+            <originInfo>
+              <dateCaptured>1932</dateCaptured>
+            </originInfo>
+          </relatedItem>
         </mods>
       XML
     end
@@ -199,9 +201,11 @@ RSpec.describe Cocina::ModsNormalizer do
           <originInfo eventType="production">
             <dateCreated>1932</dateCreated>
           </originInfo>
-          <originInfo eventType="capture">
-            <dateCaptured>1932</dateCaptured>
-          </originInfo>
+          <relatedItem>
+            <originInfo eventType="capture">
+              <dateCaptured>1932</dateCaptured>
+            </originInfo>
+          </relatedItem>
         </mods>
       XML
     end
