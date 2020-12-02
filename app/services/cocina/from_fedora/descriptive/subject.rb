@@ -69,6 +69,7 @@ module Cocina
             elsif subject[:authority]
               attrs[:source] = source unless source.empty?
             end
+            attrs[:encoding] = { code: subject[:encoding] } if subject[:encoding]
           end.compact
         end
 
