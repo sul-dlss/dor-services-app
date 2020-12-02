@@ -3,6 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ToFedora::Descriptive::Event do
+  # mapping specification examples
+  # from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt
+
   subject(:xml) { writer.to_xml }
 
   let(:writer) do
@@ -29,6 +32,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 1 from mods_to_cocina_originInfo.txt
   context 'when it has a single dateCreated' do
     let(:events) do
       [
@@ -56,6 +60,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 2 from mods_to_cocina_originInfo.txt
   context 'when it has a single dateIssued (with encoding)' do
     let(:events) do
       [
@@ -88,6 +93,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 3 from mods_to_cocina_originInfo.txt
   context 'when it has a single copyrightDate' do
     let(:events) do
       [
@@ -117,6 +123,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 4 from mods_to_cocina_originInfo.txt
   context 'when it has a single dateCaptured (ISO 8601 encoding, keyDate)' do
     let(:events) do
       [
@@ -150,6 +157,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 5 from mods_to_cocina_originInfo.txt
   context 'when it has a single dateOther' do
     describe 'with note' do
       let(:events) do
@@ -253,6 +261,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 5b from mods_to_cocina_originInfo.txt
+  context 'when it has a single dateOther in Gregorian calendar' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L101'
+  end
+
+  # example 6 from mods_to_cocina_originInfo.txt
   context 'when it has a date range' do
     let(:events) do
       [
@@ -293,6 +307,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 7 from mods_to_cocina_originInfo.txt
   context 'when it has an approximate qualifer' do
     let(:events) do
       [
@@ -323,6 +338,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 8 from mods_to_cocina_originInfo.txt
   context 'when it has an approximate date range' do
     let(:events) do
       [
@@ -365,6 +381,17 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 9 from mods_to_cocina_originInfo.txt
+  context 'when it has an approximate start date only' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L199'
+  end
+
+  # example 10 from mods_to_cocina_originInfo.txt
+  context 'when it has an approximate end date only' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L228'
+  end
+
+  # example 11 from mods_to_cocina_originInfo.txt
   context 'when it has an inferred qualifer' do
     let(:events) do
       [
@@ -395,6 +422,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 12 from mods_to_cocina_originInfo.txt
   context 'when it has an questionable qualifer' do
     let(:events) do
       [
@@ -425,6 +453,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 13 from mods_to_cocina_originInfo.txt
   context 'when it has a date range and another date' do
     let(:events) do
       [
@@ -469,6 +498,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 14 from mods_to_cocina_originInfo.txt
   context 'when it has multiple single dates' do
     let(:events) do
       [
@@ -503,6 +533,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 15 from mods_to_cocina_originInfo.txt
   context 'when it has a BCE date' do
     let(:events) do
       [
@@ -535,6 +566,72 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 16 from mods_to_cocina_originInfo.txt
+  context 'when it has a BCE date range' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L367'
+  end
+
+  # example 17 from mods_to_cocina_originInfo.txt
+  context 'when it has a CE date' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L400'
+  end
+
+  # example 18 from mods_to_cocina_originInfo.txt
+  context 'when it has a CE date range' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L420'
+  end
+
+  # example 19 from mods_to_cocina_originInfo.txt
+  context 'when it has multiple date types' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L453'
+  end
+
+  # example 20 from mods_to_cocina_originInfo.txt
+  context 'when it has Julian calendar (MODS 3.6 and before)' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L485'
+  end
+
+  # example 20 from mods_to_cocina_originInfo.txt
+  context 'when it has Julian calendar (MODS 3.7 and beyond)' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L508'
+  end
+
+  # example 21 from mods_to_cocina_originInfo.txt
+  context 'when it has date range no start point' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L531'
+  end
+
+  # example 22 from mods_to_cocina_originInfo.txt
+  context 'when it has date range no end point' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L549'
+  end
+
+  # example 23 from mods_to_cocina_originInfo.txt
+  context 'when it has uncertain date MARC encoded' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L567'
+  end
+
+  # example 24 from mods_to_cocina_originInfo.txt
+  context 'when it has unencoded date' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L587'
+  end
+
+  # example 25 from mods_to_cocina_originInfo.txt
+  context 'when eventType matches date type' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L604'
+  end
+
+  # example 26 from mods_to_cocina_originInfo.txt
+  context 'when eventType differs from date type' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L621'
+  end
+
+  # example 26b from mods_to_cocina_originInfo.txt
+  context 'when eventType differs from date type, converted from MARC record with multiple 264s' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L634'
+  end
+
+  # example 27 from mods_to_cocina_originInfo.txt
   context 'when it has place text (authorized)' do
     let(:events) do
       [
@@ -570,6 +667,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 28 from mods_to_cocina_originInfo.txt
   context 'when it has place code' do
     let(:events) do
       [
@@ -605,6 +703,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 29 from mods_to_cocina_originInfo.txt
   context 'when it has text and code for same place' do
     let(:events) do
       [
@@ -642,6 +741,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 30 from mods_to_cocina_originInfo.txt
   context 'when it has text and code for different places' do
     let(:events) do
       [
@@ -681,6 +781,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 31 from mods_to_cocina_originInfo.txt
   context 'when it has a publisher' do
     let(:events) do
       [
@@ -758,6 +859,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 32 from mods_to_cocina_originInfo.txt
   context 'when it has a publisher that is transliterated' do
     let(:events) do
       [
@@ -817,6 +919,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 33 from mods_to_cocina_originInfo.txt
   context 'when it has a publisher in a different language' do
     let(:events) do
       [
@@ -872,6 +975,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 34 from mods_to_cocina_originInfo.txt
   context 'when it has multiple publishers' do
     let(:events) do
       [
@@ -935,6 +1039,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 35 from mods_to_cocina_originInfo.txt
   context 'with edition' do
     let(:events) do
       [
@@ -963,6 +1068,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 36 from mods_to_cocina_originInfo.txt
   context 'with issuance and frequency' do
     let(:events) do
       [
@@ -999,6 +1105,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 37 from mods_to_cocina_originInfo.txt
   context 'with issuance and frequency for authorized terms' do
     let(:events) do
       [
@@ -1038,6 +1145,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 38 from mods_to_cocina_originInfo.txt
   context 'with multiple events' do
     let(:events) do
       [
@@ -1145,6 +1253,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 39 from mods_to_cocina_originInfo.txt
   context 'with event represented in multiple languages' do
     let(:events) do
       [
@@ -1343,6 +1452,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
   end
 
+  # example 40 from mods_to_cocina_originInfo.txt
   context 'when it has a displayLabel' do
     let(:events) do
       [
