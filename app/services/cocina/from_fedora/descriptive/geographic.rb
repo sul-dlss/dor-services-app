@@ -52,6 +52,8 @@ module Cocina
         def build
           return unless description
 
+          check_purl
+
           [{}.tap do |extension|
             extension[:form] = build_form.flatten if build_form
             extension[:subject] = build_subject
@@ -199,6 +201,12 @@ module Cocina
           else
             text
           end
+        end
+
+        def check_purl
+          return if description['rdf:about']&.start_with?('http://purl.stanford.edu/')
+
+          Honeybadger.notify('[DATA ERROR] rdf:about does not contain a correctly formatted PURL', { tags: 'data_error' })
         end
       end
       # rubocop:enable Metrics/ClassLength

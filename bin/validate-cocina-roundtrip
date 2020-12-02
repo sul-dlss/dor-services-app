@@ -87,7 +87,7 @@ def validate_druid(druid, cache, fast: false)
   end
 
   # Changes to support better matching.
-  norm_original_ng_xml = Cocina::ModsNormalizer.normalize(original_ng_xml)
+  norm_original_ng_xml = Cocina::ModsNormalizer.normalize(mods_ng_xml: original_ng_xml, druid: druid)
 
   begin
     roundtrip_ng_xml = round_tripped_ng_xml(cocina, druid)
