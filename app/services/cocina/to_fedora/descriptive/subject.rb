@@ -105,6 +105,10 @@ module Cocina
             attrs[:authority] = authority_for(subject)
             attrs[:displayLabel] = subject.displayLabel
             attrs[:edition] = edition(subject.source.version) if subject.source&.version
+            if subject.type == 'map coordinates'
+              attrs[:authorityURI] = subject.source&.uri
+              attrs[:valueURI] = subject.uri
+            end
           end.compact
 
           if subject.type == 'classification'
