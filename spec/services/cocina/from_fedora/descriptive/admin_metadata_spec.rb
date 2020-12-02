@@ -235,9 +235,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
         "identifier": [
           {
             "value": 'a12374669',
-            "source": {
-              "value": 'SIRSI'
-            }
+            "type": 'SIRSI'
           }
         ],
         "note": [
@@ -300,8 +298,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
             {
               name: [
                 {
-                  code: 'DOR_MARC2MODS3-3.xsl Revision 1.1',
-                  source: {}
+                  code: 'DOR_MARC2MODS3-3.xsl Revision 1.1'
                 }
               ],
               role: [
@@ -327,9 +324,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
           ],
           identifier: [
             {
-              source: {
-                value: 'Data Provider Digital Object Identifier'
-              },
+              type: 'Data Provider Digital Object Identifier',
               value: '36105033329140'
             }
           ]
@@ -337,9 +332,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
       )
     end
   end
-
-  # <mods:recordIdentifier source="SUL catalog key">6766105</mods:recordIdentifier>
-  #        <mods:recordIdentifier source="oclc">3888071</mods:recordIdentifier>
 
   context 'when there are multiple recordIdentifiers' do
     let(:xml) do
@@ -356,15 +348,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
         {
           identifier: [
             {
-              source: {
-                value: 'SUL catalog key'
-              },
+              type: 'SUL catalog key',
               value: '6766105'
             },
             {
-              source: {
-                value: 'oclc'
-              },
+              type: 'OCLC',
               value: '3888071'
             }
           ]

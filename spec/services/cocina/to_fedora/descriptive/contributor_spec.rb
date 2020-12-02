@@ -534,10 +534,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
           "identifier": [
             {
               "value": 'https://www.wikidata.org/wiki/Q7704207',
-              "type": 'URI',
-              "source": {
-                "code": 'wikidata'
-              }
+              "type": 'Wikidata'
             }
           ],
           "note": [

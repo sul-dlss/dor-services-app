@@ -35,6 +35,7 @@ module Cocina
       normalize_language_term_type
       normalize_geo_purl
       normalize_access_condition
+      normalize_identifier_type
       ng_xml
     end
 
@@ -227,6 +228,29 @@ module Cocina
                         mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
         node['type'] = 'use and reproduction'
       end
+    end
+
+    def normalize_identifier_type
+      ng_xml.root.xpath('//mods:identifier[@type]',
+                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        node['type'] = normalized_identifier_type_for(node['type'])
+      end
+      ng_xml.root.xpath('//mods:nameIdentifier[@type]',
+                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        node['type'] = normalized_identifier_type_for(node['type'])
+      end
+      ng_xml.root.xpath('//mods:recordIdentifier[@source]',
+                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        node['source'] = normalized_identifier_type_for(node['source'])
+      end
+    end
+
+    def normalized_identifier_type_for(type)
+      cocina_type, _mods_type, identifier_source = Cocina::FromFedora::Descriptive::IdentifierType.cocina_type_for_mods_type(type)
+
+      return Cocina::FromFedora::Descriptive::IdentifierType.mods_type_for_cocina_type(cocina_type) if identifier_source
+
+      type
     end
   end
 end

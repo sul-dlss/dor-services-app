@@ -31,9 +31,9 @@ module Cocina
                   name&.type == 'display' ? write_display_form(name) : write_basic(name)
                 end
               end
-              write_identifier(contributor) if contributor&.identifier
-              write_note(contributor) if contributor&.note
-              write_roles(contributor) if contributor&.role
+              write_identifier(contributor) if contributor.identifier
+              write_note(contributor) if contributor.note
+              write_roles(contributor) if contributor.role
             end
           end
         end
@@ -124,8 +124,14 @@ module Cocina
         end
 
         def write_identifier(contributor)
-          contributor.identifier.each do |ident|
-            xml.nameIdentifier ident.value, type: ident.source.code
+          contributor.identifier.each do |identifier|
+            id_attributes = {
+              displayLabel: identifier.displayLabel,
+              type: identifier.uri ? 'uri' : FromFedora::Descriptive::IdentifierType.mods_type_for_cocina_type(identifier.type)
+            }.tap do |attrs|
+              attrs[:invalid] = 'yes' if identifier.status == 'invalid'
+            end.compact
+            xml.nameIdentifier identifier.value || identifier.uri, id_attributes
           end
         end
 

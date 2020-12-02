@@ -120,13 +120,7 @@ module Cocina
         end
 
         def identifier_for(name)
-          identifier = name.xpath('mods:nameIdentifier', mods: DESC_METADATA_NS).first
-          return unless identifier
-
-          identifier_type = identifier['type']
-          source = { code: identifier_type } if identifier_type
-          type = 'URI' if URI::DEFAULT_PARSER.make_regexp.match?(identifier.text)
-          [{ value: identifier.text, type: type, source: source }.compact]
+          name.xpath('mods:nameIdentifier', mods: DESC_METADATA_NS).map { |identifier| IdentifierBuilder.build_from_name_identifier(identifier_element: identifier) }
         end
 
         def notes_for(name)

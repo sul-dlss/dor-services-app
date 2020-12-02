@@ -755,4 +755,61 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing identifiers' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3"
+          version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <identifier type="Isbn">1234 5678 9203</identifier>
+          <identifier type="Ark">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
+          <identifier type="Oclc">123456789203</identifier>
+          <identifier type="Xyz">123456789203</identifier>
+          <identifier type="stock number">123456789203</identifier>
+          <name>
+            <nameIdentifier type="iSbn">1234 5678 9203</identifier>
+            <nameIdentifier type="aRk">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
+            <nameIdentifier type="oClc">123456789203</identifier>
+            <nameIdentifier type="xYz">123456789203</identifier>
+          </name>
+          <recordInfo>
+            <recordIdentifier source="isBn">1234 5678 9203</identifier>
+            <recordIdentifier source="arK">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
+            <recordIdentifier source="ocLc">123456789203</identifier>
+            <recordIdentifier source="xyZ">123456789203</identifier>
+          </recordInfo>
+        </mods>
+      XML
+    end
+
+    it 'fixes capitalization' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <?xml version="1.0"?>
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3"
+          version="3.6"          
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <identifier type="isbn">1234 5678 9203</identifier>
+          <identifier type="ark">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
+          <identifier type="OCLC">123456789203</identifier>
+          <identifier type="Xyz">123456789203</identifier>
+          <identifier type="stock-number">123456789203</identifier>
+          <name>
+            <nameIdentifier type="isbn">1234 5678 9203</identifier>
+            <nameIdentifier type="ark">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
+            <nameIdentifier type="OCLC">123456789203</identifier>
+            <nameIdentifier type="xYz">123456789203</identifier>
+          </name>
+          <recordInfo>
+            <recordIdentifier source="isbn">1234 5678 9203</identifier>
+            <recordIdentifier source="ark">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
+            <recordIdentifier source="OCLC">123456789203</identifier>
+            <recordIdentifier source="xyZ">123456789203</identifier>
+          </recordInfo>
+        </mods>
+      XML
+    end
+  end
 end

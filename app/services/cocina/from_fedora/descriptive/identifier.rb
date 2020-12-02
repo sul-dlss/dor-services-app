@@ -17,13 +17,7 @@ module Cocina
         end
 
         def build
-          identifiers.map do |id|
-            { value: id.text }.tap do |item|
-              item[:type] = id['type'].upcase if id['type']
-              item[:status] = 'invalid' if id['invalid'] == 'yes'
-              item[:displayLabel] = id['displayLabel'] if id['displayLabel']
-            end
-          end
+          identifiers.map { |id_element| IdentifierBuilder.build_from_identifier(identifier_element: id_element) }.compact
         end
 
         private
@@ -31,7 +25,7 @@ module Cocina
         attr_reader :resource_element
 
         def identifiers
-          resource_element.xpath('mods:identifier', mods: DESC_METADATA_NS)
+          resource_element.xpath('mods:identifier', mods: DESC_METADATA_NS) + resource_element.xpath('mods:recordIdentifier', mods: DESC_METADATA_NS)
         end
       end
     end
