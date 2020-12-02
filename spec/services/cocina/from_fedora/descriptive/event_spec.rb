@@ -829,6 +829,43 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     end
   end
 
+  context 'with issuance for a creation event' do
+    let(:xml) do
+      <<~XML
+        <originInfo eventType="production">
+          <dateCreated encoding="w3cdtf" keyDate="yes">1988-08-03</dateCreated>
+          <issuance>monographic</issuance>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'creation',
+          "date": [
+            {
+              "value": '1988-08-03',
+              "status": 'primary',
+              "encoding": {
+                "code": 'w3cdtf'
+              }
+            }
+          ],
+          "note": [
+            {
+              "value": 'monographic',
+              "type": 'issuance',
+              "source": {
+                "value": 'MODS issuance terms'
+              }
+            }
+          ]
+        }
+      ]
+    end
+  end
+
   context 'with multiple originInfo elements for different events' do
     let(:xml) do
       <<~XML
