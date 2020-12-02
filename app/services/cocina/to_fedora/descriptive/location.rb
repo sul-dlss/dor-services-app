@@ -21,8 +21,12 @@ module Cocina
         def write
           return if access.nil? && purl.nil?
 
+          write_access_conditions if access
+
+          return unless purl || access && (access.physicalLocation.present? || access.accessContact.present? || access.url.present?)
+
           xml.location do
-            if access.present?
+            if access
               write_physical_locations
               write_shelf_locators
               write_urls
@@ -78,6 +82,13 @@ module Cocina
 
         def shelf_locator?(physical_location)
           physical_location.type == 'shelf locator'
+        end
+
+        def write_access_conditions
+          Array(access.note).each do |note|
+            type = note.type == 'access restriction' ? 'restriction on access' : note.type
+            xml.accessCondition note.value, type: type
+          end
         end
       end
     end
