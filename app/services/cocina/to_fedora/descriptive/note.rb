@@ -51,9 +51,9 @@ module Cocina
           note.parallelValue.each do |descriptive_value|
             attributes = {
               altRepGroup: alt_rep_group,
-              lang: descriptive_value.valueLanguage.code
-            }
-            attributes[:script] = descriptive_value.valueLanguage.valueScript.code if descriptive_value.valueLanguage.valueScript
+              lang: descriptive_value.valueLanguage&.code,
+              script: descriptive_value.valueLanguage&.valueScript&.code
+            }.compact
 
             tag(xml, descriptive_value, tag_name(note.type), attributes)
           end

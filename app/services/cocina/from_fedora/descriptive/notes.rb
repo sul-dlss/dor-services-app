@@ -17,7 +17,7 @@ module Cocina
         end
 
         def build
-          abstract + notes + table_of_contents
+          abstract + simple_notes + parallel_notes + table_of_contents
         end
 
         private
@@ -33,14 +33,37 @@ module Cocina
           end
         end
 
-        def notes
-          set = resource_element.xpath('mods:note', mods: DESC_METADATA_NS).select { |node| node.text.present? }
-          set.map do |node|
-            { value: node.text }.tap do |attributes|
-              attributes[:type] = node[:type] if node[:type]
-              attributes[:displayLabel] = node[:displayLabel] if node[:displayLabel]
-            end
+        def simple_notes
+          # Using all of the notes that have no altRepGroup or only one instance with an altRepGroup id.
+          note_nodes = resource_element.xpath('mods:note[not(@altRepGroup)]', mods: DESC_METADATA_NS).select { |node| node.text.present? } \
+            + grouped_note_nodes.select { |parallel_note_nodes| parallel_note_nodes.size == 1 }.map(&:first)
+          note_nodes.map { |note_node| note_for(note_node) }
+        end
+
+        def parallel_notes
+          # Using all of the notes that have at least two instances with an altRepGroup id.
+          grouped_note_nodes.reject { |parallel_note_nodes| parallel_note_nodes.size == 1 }.map { |parallel_note_nodes| parallel_note_for(parallel_note_nodes) }
+        end
+
+        def grouped_note_nodes
+          @grouped_note_nodes ||= begin
+            note_nodes = resource_element.xpath('mods:note[@altRepGroup]', mods: DESC_METADATA_NS).select { |node| node.text.present? }
+            note_nodes.group_by { |node| node['altRepGroup'] }.values
           end
+        end
+
+        def parallel_note_for(note_nodes)
+          {
+            parallelValue: note_nodes.map { |note_node| note_for(note_node) }
+          }
+        end
+
+        def note_for(note_node)
+          { value: note_node.text }.tap do |attributes|
+            attributes[:type] = note_node[:type]
+            attributes[:displayLabel] = note_node[:displayLabel]
+            attributes[:valueLanguage] = { code: note_node[:lang], source: { code: 'iso639-2b' } } if note_node[:lang]
+          end.compact
         end
 
         def table_of_contents
