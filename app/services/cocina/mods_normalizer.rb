@@ -4,14 +4,15 @@ module Cocina
   # Normalizes a Fedora MODS document, accounting for differences between Fedora MODS and MODS generated from Cocina.
   class ModsNormalizer
     # @param [Nokogiri::Document] mods_ng_xml MODS to be normalized
-    # @param [Nokogiri::Document] mods_ng_xml2 MODS to be compared (actual)
+    # @param [String] druid
     # @return [Nokogiri::Document] normalized MODS
-    def self.normalize(mods_ng_xml)
-      ModsNormalizer.new(mods_ng_xml).normalize
+    def self.normalize(mods_ng_xml:, druid:)
+      ModsNormalizer.new(mods_ng_xml: mods_ng_xml, druid: druid).normalize
     end
 
-    def initialize(mods_ng_xml)
+    def initialize(mods_ng_xml:, druid:)
       @ng_xml = mods_ng_xml.dup
+      @druid = druid
     end
 
     def normalize
@@ -32,12 +33,13 @@ module Cocina
       normalize_unmatched_altrepgroup
       normalize_xml_space
       normalize_language_term_type
+      normalize_geo_purl
       ng_xml
     end
 
     private
 
-    attr_reader :ng_xml
+    attr_reader :ng_xml, :druid
 
     def normalize_default_namespace
       xml = ng_xml.to_s
@@ -204,6 +206,14 @@ module Cocina
       ng_xml.root.xpath('//mods:subject[not(@authority) and count(mods:*) = 1 and not(mods:geographicCode)]/mods:*[@authority]',
                         mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
         node.parent['authority'] = node['authority']
+      end
+    end
+
+    def normalize_geo_purl
+      ng_xml.root.xpath('//mods:extension[@displayLabel="geo"]//rdf:Description/@rdf:about',
+                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS,
+                        rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#').each do |attr|
+        attr.value = "http://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
       end
     end
   end

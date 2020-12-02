@@ -22,7 +22,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
       <<~XML
         <extension displayLabel="geo">
           <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gmd="http://www.isotc211.org/2005/gmd">
-            <rdf:Description rdf:about="http://www.stanford.edu/kk138ps4721">
+            <rdf:Description rdf:about="http://purl.stanford.edu/kk138ps4721">
               <dc:format>image/jpeg</dc:format>
               <dc:type>#{dc_type}</dc:type>
               <gmd:centerPoint>
@@ -75,9 +75,14 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
       }
     end
 
+    before do
+      allow(Honeybadger).to receive(:notify)
+    end
+
     it 'builds the cocina data structure' do
       expect(build).to eq([expected_hash])
       build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
+      expect(Honeybadger).not_to have_received(:notify)
     end
 
     context 'when dc:type does not have the expected capitalization' do
@@ -588,6 +593,31 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
                             ]
                           }])
       build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
+    end
+  end
+
+  context 'with a bad PURL' do
+    let(:dc_type) { 'Image' }
+    let(:xml) do
+      <<~XML
+        <extension displayLabel="geo">
+          <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gmd="http://www.isotc211.org/2005/gmd">
+            <rdf:Description rdf:about="http://www.stanford.edu/kk138ps4721">
+              <dc:format>image/jpeg</dc:format>
+              <dc:type>#{dc_type}</dc:type>
+            </rdf:Description>
+          </rdf:RDF>
+        </extension>
+      XML
+    end
+
+    before do
+      allow(Honeybadger).to receive(:notify)
+    end
+
+    it 'notifies' do
+      build
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] rdf:about does not contain a correctly formatted PURL', { tags: 'data_error' })
     end
   end
 end
