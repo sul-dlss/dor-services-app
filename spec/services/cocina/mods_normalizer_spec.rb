@@ -331,7 +331,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
-  context 'when normalizing PURL but existing primary display' do
+  context 'when normalizing PURL but existing primary display in same <location> node' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -354,6 +354,39 @@ RSpec.describe Cocina::ModsNormalizer do
           <location>
             <url>http://purl.stanford.edu/bw502ns3302</url>
             <url usage="primary display">http://www.stanford.edu</url>
+          </location>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing PURL but existing primary display in different <location> node' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <location>
+            <url>http://purl.stanford.edu/bw502ns3302</url>
+          </location>
+          <location>
+            <url usage="primary display" note="Available to Stanford-affiliated users at READEX:">http://infoweb.newsbank.com/?db=SERIAL</url>
+          </location>
+        </mods>
+      XML
+    end
+
+    it 'does not add usage' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <?xml version="1.0"?>
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <location>
+            <url>http://purl.stanford.edu/bw502ns3302</url>
+          </location>
+          <location>
+            <url usage="primary display" note="Available to Stanford-affiliated users at READEX:">http://infoweb.newsbank.com/?db=SERIAL</url>
           </location>
         </mods>
       XML
