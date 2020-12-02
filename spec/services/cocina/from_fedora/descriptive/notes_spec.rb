@@ -71,6 +71,44 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
     end
   end
 
+  context 'with a multilingual note' do
+    let(:xml) do
+      <<~XML
+        <note lang="eng" altRepGroup="1">This is a note.</note>
+        <note lang="fre" altRepGroup="1">C'est une note.</note>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+
+        {
+          "parallelValue": [
+            {
+              "value": 'This is a note.',
+              "valueLanguage": {
+                "code": 'eng',
+                "source": {
+                  "code": 'iso639-2b'
+                }
+              }
+            },
+            {
+              "value": "C'est une note.",
+              "valueLanguage": {
+                "code": 'fre',
+                "source": {
+                  "code": 'iso639-2b'
+                }
+              }
+            }
+          ]
+        }
+
+      ]
+    end
+  end
+
   context 'with an empty note' do
     let(:xml) do
       <<~XML
