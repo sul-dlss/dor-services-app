@@ -48,13 +48,13 @@ module Cocina
           if subject.type == 'place'
             xml.subject do
               subject.parallelValue.each do |geo|
-                geographic(geo)
+                geographic(geo, is_parallel: true)
               end
             end
           else
             subject.parallelValue.each do |val|
               xml.subject lang: val.valueLanguage.code, altRepGroup: alt_rep_group do
-                write_topic(val)
+                write_topic(val, is_parallel: true)
               end
             end
           end
@@ -127,7 +127,7 @@ module Cocina
         def authority_for(subject)
           # Authority for place is on the geographicCode, not the subject.
           # See "Geographic code subject" example.
-          return nil if subject.type == 'place'
+          return nil if subject.type == 'place' && subject.source&.code == 'marcgac'
 
           # Both lcsh and naf map to lcsh for the subject.
           return 'lcsh' if %w[lcsh naf].include?(subject.source&.code)
@@ -139,43 +139,42 @@ module Cocina
           xml.classification value, attrs
         end
 
-        def write_topic(subject)
+        def write_topic(subject, is_parallel: false)
           case subject.type
           when 'person'
-            xml.name topic_attributes_for(subject).merge(type: 'personal') do
+            xml.name topic_attributes_for(subject, is_parallel: is_parallel).merge(type: 'personal') do
               xml.namePart subject.value
             end
           when 'title'
-            xml.titleInfo topic_attributes_for(subject) do
+            xml.titleInfo topic_attributes_for(subject, is_parallel: is_parallel) do
               xml.title subject.value
             end
           when 'map coordinates'
             cartographics(xml, subject)
           when 'place'
-            geographic(subject)
+            geographic(subject, is_parallel: is_parallel)
           else
             xml.public_send(TAG_NAME.fetch(subject.type, :topic),
                             subject.value,
-                            topic_attributes_for(subject))
+                            topic_attributes_for(subject, is_parallel: is_parallel))
           end
         end
 
-        def topic_attributes_for(subject)
+        def topic_attributes_for(subject, is_parallel: false)
           {}.tap do |topic_attributes|
-            topic_attributes[:authority] = subject.source&.code if subject.source&.uri || subject.uri
+            topic_attributes[:authority] = subject.source&.code if subject.source&.uri || subject.uri || is_parallel
             topic_attributes[:authorityURI] = subject.source&.uri
             topic_attributes[:encoding] = subject.encoding&.code
             topic_attributes[:valueURI] = subject.uri
+            topic_attributes[:lang] = subject.valueLanguage&.code unless is_parallel
           end.compact
         end
 
-        def geographic(subject)
+        def geographic(subject, is_parallel: false)
           if subject.code
             xml.geographicCode subject.code, authority: subject.source.code
           else
-            attrs = {}
-            attrs[:authority] = subject.source.code if subject.source
-            xml.geographic subject.value, attrs
+            xml.geographic subject.value, topic_attributes_for(subject, is_parallel: is_parallel)
           end
         end
 
