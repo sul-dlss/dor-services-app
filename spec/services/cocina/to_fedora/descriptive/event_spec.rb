@@ -185,6 +185,40 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       end
     end
 
+    describe 'with eventType="acquisition"' do
+      let(:events) do
+        [
+          Cocina::Models::Event.new(
+            {
+              type: 'acquisition',
+              date: [
+                {
+                  value: '1970-11-23',
+                  status: 'primary',
+                  encoding:
+                    {
+                      code: 'w3cdtf'
+                    }
+                }
+              ]
+            }
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <originInfo eventType="acquisition">
+              <dateOther keyDate="yes" encoding="w3cdtf">1970-11-23</dateOther>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
     describe 'without note, with displayLabel' do
       let(:events) do
         [
