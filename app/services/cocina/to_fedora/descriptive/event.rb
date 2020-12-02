@@ -16,7 +16,8 @@ module Cocina
           'capture' => 'capture',
           'copyright' => 'copyright notice',
           'creation' => 'production',
-          'publication' => 'publication'
+          'publication' => 'publication',
+          'acquisition' => 'acquisition'
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::Event>] events
