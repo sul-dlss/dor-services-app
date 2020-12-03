@@ -43,6 +43,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
               "uri": 'http://id.loc.gov/authorities/names/'
             }
           }
+        ],
+        "digitalRepository": [
+          {
+            "value": 'Stanford Digital Repository'
+          }
         ]
       )
     end
@@ -53,7 +58,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <location>
-            <physicalLocation authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/nb2006009317">British Broadcasting Corporation. Sound Effects Library</physicalLocation>
+            <physicalLocation authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/nb2006009317" authority="lcsh">British Broadcasting Corporation. Sound Effects Library</physicalLocation>
           </location>
         </mods>
       XML
@@ -69,6 +74,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
             "source": {
               "code": 'marcorg'
             }
+          }
+        ],
+        "digitalRepository": [
+          {
+            "value": 'Stanford Digital Repository'
           }
         ]
       )
@@ -98,6 +108,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
             "source": {
               "code": 'naf'
             }
+          }
+        ],
+        "digitalRepository": [
+          {
+            "value": 'Stanford Digital Repository'
           }
         ]
       )
@@ -165,6 +180,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
             "value": 'https://www.davidrumsey.com/luna/servlet/view/search?q=pub_list_no=%2211728.000',
             "status": 'primary'
           }
+        ],
+        "digitalRepository": [
+          {
+            "value": 'Stanford Digital Repository'
+          }
         ]
       )
     end
@@ -194,6 +214,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
                 "value": 'Online table of contents from PCI available to Stanford-affiliated users:'
               }
             ]
+          }
+        ],
+        "digitalRepository": [
+          {
+            "value": 'Stanford Digital Repository'
           }
         ]
       )
@@ -246,6 +271,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
             "value": 'https://swap.stanford.edu/20171107174354/https://www.le.ac.uk/english/em1060to1220/index.html',
             "displayLabel": 'Archived website'
           }
+        ],
+        "digitalRepository": [
+          {
+            "value": 'Stanford Digital Repository'
+          }
         ]
       )
     end
@@ -279,6 +309,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
             "value": 'SC080',
             "type": 'shelf locator'
           }
+        ],
+        "digitalRepository": [
+          {
+            "value": 'Stanford Digital Repository'
+          }
         ]
       )
     end
@@ -297,24 +332,32 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
   end
 
   context 'when it has multiple URLs' do
-    let(:purl) { 'http://purl.stanford.edu/cy979mw6316' }
     let(:access) do
       Cocina::Models::DescriptiveAccessMetadata.new(
-        "url": [
+        "accessContact": [
           {
-            "value": 'http://infoweb.newsbank.com/?db=SERIAL',
-            "status": 'primary'
-          },
-          {
-            "value": 'http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps&srcboxes=SerialSet'
-          },
-          {
-            "value": 'http://purl.access.gpo.gov/GPO/LPS839'
+            "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
+            "type": 'repository',
+            "uri": 'http://id.loc.gov/authorities/names/no2014019980',
+            "source": {
+              "code": 'naf',
+              "uri": 'http://id.loc.gov/authorities/names/'
+            }
           }
         ],
         "physicalLocation": [
           {
-            "code": 'Stanford University Libraries'
+            "value": 'Box: 20, Folder: Engineering laboratories -- exterior -- #1',
+            "type": 'location'
+          },
+          {
+            "value": 'SC1071',
+            "type": 'shelf locator'
+          }
+        ],
+        "digitalRepository": [
+          {
+            "value": 'Stanford Digital Repository'
           }
         ]
       )
@@ -327,19 +370,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <location>
-            <physicalLocation>Stanford University Libraries</physicalLocation>
+            <physicalLocation>Box: 20, Folder: Engineering laboratories -- exterior -- #1</physicalLocation>
           </location>
           <location>
-            <url usage="primary display">http://purl.stanford.edu/cy979mw6316</url>
+            <shelfLocator>SC1071</shelfLocator>
           </location>
           <location>
-            <url>http://infoweb.newsbank.com/?db=SERIAL</url>
-          </location>
-          <location>
-            <url>http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps&amp;srcboxes=SerialSet</url>
-          </location>
-          <location>
-            <url>http://purl.access.gpo.gov/GPO/LPS839</url>
+            <physicalLocation type="repository" valueURI="http://id.loc.gov/authorities/names/no2014019980" authorityURI="http://id.loc.gov/authorities/names/" authority="naf">Stanford University. Libraries. Department of Special Collections and University Archives</physicalLocation>
           </location>
         </mods>
       XML

@@ -30,18 +30,9 @@ module Cocina
             end
           end
 
-          if access.physicalLocation
-            xml.location do
-              write_physical_locations
-              write_shelf_locators
-            end
-          end
-
-          return unless access.accessContact
-
-          xml.location do
-            write_access_contact_locations
-          end
+          write_physical_locations
+          write_shelf_locators
+          write_access_contact_locations
         end
 
         private
@@ -50,19 +41,25 @@ module Cocina
 
         def write_physical_locations
           Array(access.physicalLocation).reject { |physical_location| shelf_locator?(physical_location) }.each do |physical_location|
-            xml.physicalLocation physical_location.value || physical_location.code, descriptive_attrs(physical_location)
+            xml.location do
+              xml.physicalLocation physical_location.value || physical_location.code, descriptive_attrs(physical_location)
+            end
           end
         end
 
         def write_access_contact_locations
           Array(access.accessContact).each do |access_contact|
-            xml.physicalLocation access_contact.value, { type: 'repository' }.merge(descriptive_attrs(access_contact))
+            xml.location do
+              xml.physicalLocation access_contact.value, { type: 'repository' }.merge(descriptive_attrs(access_contact))
+            end
           end
         end
 
         def write_shelf_locators
           Array(access.physicalLocation).select { |physical_location| shelf_locator?(physical_location) }.each do |physical_location|
-            xml.shelfLocator physical_location.value
+            xml.location do
+              xml.shelfLocator physical_location.value
+            end
           end
         end
 
@@ -76,7 +73,9 @@ module Cocina
         end
 
         def write_purl
-          xml.url purl, { usage: 'primary display' }
+          xml.location do
+            xml.url purl, { usage: 'primary display' }
+          end
         end
 
         def descriptive_attrs(cocina)
