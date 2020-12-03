@@ -34,6 +34,7 @@ module Cocina
       normalize_xml_space
       normalize_language_term_type
       normalize_geo_purl
+      normalize_access_condition
       ng_xml
     end
 
@@ -214,6 +215,17 @@ module Cocina
                         mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS,
                         rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#').each do |attr|
         attr.value = "http://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+      end
+    end
+
+    def normalize_access_condition
+      ng_xml.root.xpath('//mods:accessCondition[@type="restrictionOnAccess"]',
+                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        node['type'] = 'restriction on access'
+      end
+      ng_xml.root.xpath('//mods:accessCondition[@type="useAndReproduction"]',
+                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        node['type'] = 'use and reproduction'
       end
     end
   end

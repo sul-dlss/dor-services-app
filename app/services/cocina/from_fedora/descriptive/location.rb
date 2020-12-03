@@ -7,6 +7,12 @@ module Cocina
       class Location
         PURL_REGEX = %r{^https?://purl.stanford.edu/}.freeze
 
+        ACCESS_CONDITION_TYPES = {
+          'restriction on access' => 'access restriction',
+          'restrictionOnAccess' => 'access restriction',
+          'useAndReproduction' => 'use and reproduction'
+        }.freeze
+
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
@@ -24,6 +30,7 @@ module Cocina
             access[:physicalLocation] = physical_locations if physical_locations.present?
             access[:accessContact] = access_contact if access_contact.present?
             access[:url] = url if url.present?
+            access[:note] = note if note.present?
           end
         end
 
@@ -59,6 +66,15 @@ module Cocina
               attrs[:note] = [{ value: url_elem[:note] }] if url_elem[:note]
             end
           end.compact
+        end
+
+        def note
+          @note ||= resource_element.xpath('mods:accessCondition', mods: DESC_METADATA_NS).map do |access_elem|
+            {
+              value: access_elem.text,
+              type: ACCESS_CONDITION_TYPES.fetch(access_elem['type'], access_elem['type'])
+            }
+          end
         end
 
         def descriptive_value_for(nodes)

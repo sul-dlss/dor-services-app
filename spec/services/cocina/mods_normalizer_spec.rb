@@ -705,4 +705,54 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing restriction on access without spaces' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3"
+          version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <accessCondition type="restrictionOnAccess">Available to Stanford researchers only.</accessCondition>
+        </mods>
+      XML
+    end
+
+    it 'adds spaces' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <?xml version="1.0"?>
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3"
+          version="3.6"          
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <accessCondition type="restriction on access">Available to Stanford researchers only.</accessCondition>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing restriction on use and reproduction without spaces' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3"
+          version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <accessCondition type="useAndReproduction">User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.</accessCondition>
+        </mods>
+      XML
+    end
+
+    it 'adds spaces' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <?xml version="1.0"?>
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3"
+          version="3.6"          
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <accessCondition type="use and reproduction">User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.</accessCondition>
+        </mods>
+      XML
+    end
+  end
 end
