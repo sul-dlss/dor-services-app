@@ -70,6 +70,14 @@ module Cocina
               attrs[:source] = source unless source.empty?
             end
             attrs[:encoding] = { code: subject[:encoding] } if subject[:encoding]
+            if subject[:lang]
+              attrs[:valueLanguage] = {
+                code: subject[:lang],
+                "source": {
+                  "code": 'iso639-2b'
+                }
+              }
+            end
           end.compact
         end
 

@@ -485,65 +485,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
-  context 'with a geographic subject subdivision' do
-    let(:xml) do
-      <<~XML
-        <subject>
-          <topic>Cats</topic>
-          <geographic>Europe</geographic>
-        </subject>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "structuredValue": [
-            {
-              "value": 'Cats',
-              "type": 'topic'
-            },
-            {
-              "value": 'Europe',
-              "type": 'place'
-            }
-          ]
-        }
-      ]
-    end
-  end
-
-  context 'with a hierarchical geographic subject subdivision' do
-    let(:xml) do
-      <<~XML
-          <subject>
-            <hierarchicalGeographic>
-              <country>Austria</country>
-              <city>Vienna</city>
-            </hierarchicalGeographic>
-        </subject>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "structuredValue": [
-            {
-              "value": 'Austria',
-              "type": 'country'
-            },
-            {
-              "value": 'Vienna',
-              "type": 'city'
-            }
-          ],
-          "type": 'place'
-        }
-      ]
-    end
-  end
-
   context 'with a cartographic subject' do
     let(:xml) do
       <<~XML
@@ -669,61 +610,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           "uri": 'farming',
           "value": 'Farming',
           "type": 'topic'
-        }
-      ]
-    end
-  end
-
-  context 'with a geographic code subject' do
-    let(:xml) do
-      <<~XML
-        <subject>
-          <geographicCode authority="marcgac">n-us-md</geographicCode>
-        </subject>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "code": 'n-us-md',
-          "type": 'place',
-          "source": {
-            "code": 'marcgac'
-          }
-        }
-      ]
-    end
-  end
-
-  context 'with geographic code and term' do
-    let(:xml) do
-      <<~XML
-        <subject>
-          <geographic authority="lcsh">United States</geographic>
-          <geographicCode authority="iso3166">us</geographicCode>
-        </subject>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "parallelValue": [
-            {
-              "value": 'United States',
-              "source": {
-                "code": 'lcsh'
-              }
-            },
-            {
-              "code": 'us',
-              "source": {
-                "code": 'iso3166'
-              }
-            }
-          ],
-          "type": 'place'
         }
       ]
     end
