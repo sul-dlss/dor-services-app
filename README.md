@@ -170,6 +170,7 @@ druid:bh164hd2167 (1)
 $ bin/validate-to-cocina -h
 Usage: bin/validate-to-cocina [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
+    -u, --unique-filename            Result file named for branch and runtime
     -h, --help                       Displays help.
     
 $ bin/validate-to-cocina -s 10
@@ -200,6 +201,7 @@ Note that the location of the cache can be set with `FEDORA_CACHE` environment v
 $ bin/validate-to-fedora -h
 Usage: bin/validate-to-fedora [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
+    -u, --unique-filename            Result file named for branch and runtime
     -h, --help                       Displays help.
     
 $ bin/validate-to-fedora

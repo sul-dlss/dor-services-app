@@ -5,11 +5,12 @@ require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
 require 'optparse'
 
-options = { overwrite: false, random: false }
+options = { overwrite: false, random: false, unique_filename: false }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-to-fedora [options]'
 
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
+  option_parser.on('-u', '--unique-filename', 'Result file named for branch and runtime') { options[:unique_filename] = true }
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -74,6 +75,24 @@ def validate_druid(druid, cache)
   nil
 end
 
+def branch_name
+  `git rev-parse --abbrev-ref HEAD`.strip
+end
+
+def short_commit_hash
+  `git rev-parse --short HEAD`.strip
+end
+
+def now_str
+  DateTime.now.utc.iso8601.to_s.gsub(':', '-')
+end
+
+def results_file_name(use_unique_filename)
+  return 'results.txt' unless use_unique_filename
+
+  "results_to-fedora_#{now_str}_#{branch_name}_#{short_commit_hash}.txt"
+end
+
 druids = File.read('druids.txt').split
 druids = druids.take(options[:sample]) if options[:sample]
 @sample_size = druids.size
@@ -99,7 +118,7 @@ aggregated_error_results = aggregated_errors_for(results_by_error)
 
 print_results(aggregated_error_results, 'To Fedora error')
 
-File.open('results.txt', 'w') do |file|
+File.open(results_file_name(options[:unique_filename]), 'w') do |file|
   file.write(summary_line_for('To Fedora error', counts[:to_fedora_error]))
   file.write(summary_line_for('To Cocina error', counts[:to_cocina_error]))
   file.write(summary_line_for('Data error', counts[:data_error]))
