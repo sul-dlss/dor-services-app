@@ -478,6 +478,52 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
       end
     end
 
+    context 'when multiple roles' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            name: [
+              {
+                value: 'Dunnett, Dorothy'
+              }
+            ],
+            status: 'primary',
+            type: 'person',
+            role: [
+              {
+                value: 'primary advisor'
+              },
+              {
+                source: {
+                  code: 'marcrelator',
+                  uri: 'http://id.loc.gov/vocabulary/relators/'
+                },
+                code: 'ths'
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <name type="personal" usage="primary">
+              <namePart>Dunnett, Dorothy</namePart>
+                <role>
+                  <roleTerm type="text">primary advisor</roleTerm>
+                </role>
+                <role>
+                  <roleTerm authority="marcrelator" type="code" authorityURI="http://id.loc.gov/vocabulary/relators/">ths</roleTerm>
+                </role>
+            </name>
+          </mods>
+        XML
+      end
+    end
+
     context 'when contributor model is empty' do
       # NOTE for https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L324'
       #   from_fedora builds a null structure ... so we're not going to get roleTerm back

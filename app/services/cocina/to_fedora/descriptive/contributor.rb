@@ -32,8 +32,8 @@ module Cocina
                 end
               end
               write_identifier(contributor) if contributor.identifier
-              write_note(contributor) if contributor.note
-              write_roles(contributor) if contributor.role
+              write_note(contributor)
+              write_roles(contributor)
             end
           end
         end
@@ -55,43 +55,35 @@ module Cocina
           end.compact
         end
 
-        # return marcrelator roles only if any are present, otherwise return other roles
         def write_roles(contributor)
-          mr_roles_xml = marcrelator_roles_xml(contributor)
-          return mr_roles_xml if mr_roles_xml.present?
-
-          contributor.role.each { |role| xml_role(role) unless role.value&.match?(/conference/i) }
-        end
-
-        MARC_RELATOR_PIECE = 'id.loc.gov/vocabulary/relators'
-
-        def marcrelator_roles_xml(contributor)
-          result = []
-          contributor.role.each do |role|
-            next unless role.source&.code == 'marcrelator' ||
-                        role.source&.uri&.include?(MARC_RELATOR_PIECE) ||
-                        role.uri&.include?(MARC_RELATOR_PIECE)
-
-            result << xml_role(role)
-          end
-          result
-        end
-
-        def xml_role(role)
-          xml.role do
-            attributes = {}
-            attributes[:valueURI] = role.uri if role.uri
-            attributes[:authority] = role.source.code if role.source&.code
-            attributes[:authorityURI] = role.source.uri if role.source&.uri
-            if role.value.present?
-              attributes[:type] = 'text'
-              xml.roleTerm role.value, attributes
-            end
-            if role.code.present?
-              attributes[:type] = 'code'
-              xml.roleTerm role.code, attributes
+          Array(contributor.role).reject { |role| filtered_role?(role, contributor.type) }.each do |role|
+            xml.role do
+              attributes = {
+                valueURI: role.uri,
+                authority: role.source&.code,
+                authorityURI: role.source&.uri
+              }.compact
+              if role.value.present?
+                attributes[:type] = 'text'
+                xml.roleTerm role.value, attributes
+              end
+              if role.code.present?
+                attributes[:type] = 'code'
+                xml.roleTerm role.code, attributes
+              end
             end
           end
+        end
+
+        def filtered_role?(role, contributor_type)
+          return true if role.value&.match?(/conference/i)
+          return true if [
+            'Stanford self-deposit contributor types',
+            'DataCite contributor types',
+            'DataCite properties'
+          ].include?(role.source&.value) && Cocina::FromFedora::Descriptive::Contributor::ROLES.values.include?(contributor_type)
+
+          false
         end
 
         def write_basic(name)
@@ -111,7 +103,7 @@ module Cocina
         end
 
         def write_note(contributor)
-          contributor.note.each do |note|
+          Array(contributor.note).each do |note|
             case note.type
             when 'affiliation'
               xml.affiliation note.value

@@ -137,10 +137,8 @@ module Cocina
           @names ||= resource_element.xpath(NAME_XPATH, mods: DESC_METADATA_NS)
         end
 
-        ROLE_XPATH = './mods:role'
-
         def roles_for(name)
-          ng_roles = name.xpath(ROLE_XPATH, mods: DESC_METADATA_NS)
+          ng_roles = name.xpath('mods:role', mods: DESC_METADATA_NS)
           ng_roles.map do |ng_role|
             role_hash(ng_role)
           end.compact

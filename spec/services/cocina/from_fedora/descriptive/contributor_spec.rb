@@ -767,6 +767,48 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
+    context 'when multiple roles' do
+      let(:xml) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Dunnett, Dorothy</namePart>
+              <role>
+                <roleTerm type="text">primary advisor</roleTerm>
+              </role>
+              <role>
+                <roleTerm authority="marcrelator" type="code" authorityURI="http://id.loc.gov/vocabulary/relators/">ths</roleTerm>
+              </role>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            name: [
+              {
+                value: 'Dunnett, Dorothy'
+              }
+            ],
+            status: 'primary',
+            type: 'person',
+            role: [
+              {
+                value: 'primary advisor'
+              },
+              {
+                source: {
+                  code: 'marcrelator',
+                  uri: 'http://id.loc.gov/vocabulary/relators/'
+                },
+                code: 'ths'
+              }
+            ]
+          }
+        ]
+      end
+    end
+
     context 'when role without namePart value' do
       let(:xml) do
         <<~XML
