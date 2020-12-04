@@ -3049,6 +3049,8 @@
 				<xsl:value-of select="."/>-->
 								</namePart>
 							</xsl:for-each>
+							<!-- SUL edit 20201204 issue #1482 -->
+							<xsl:if test="marc:subfield[@code = 'c'] or marc:subfield[@code = 'd'] or marc:subfield[@code = 'n']">
 							<namePart>
 								<!-- SUL edit 20200828 issue #1017 -->
 								<xsl:call-template name="chopPunctuation">
@@ -3065,6 +3067,7 @@
 									</xsl:with-param>
 								</xsl:call-template>
 							</namePart>
+							</xsl:if>
 							<xsl:call-template name="role"/>
 						</name>
 						<xsl:call-template name="relatedForm"/>
