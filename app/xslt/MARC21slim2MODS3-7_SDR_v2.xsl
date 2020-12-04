@@ -7059,12 +7059,15 @@
 			<location>
 				<!-- 1.121 -->
 				<xsl:call-template name="xxx880"/>
-				<url displayLabel="electronic resource">
+				<!-- SUL edit 20201204 issue #1612
+				<url displayLabel="electronic resource"> -->
+				<url>
 					<!-- 1.41 tmee AQ1.9 added choice protocol for @usage="primary display" -->
 					<xsl:variable name="primary">
 						<xsl:choose>
 							<!-- SUL edit 20201204 issue #125 and #1559 -->
 							<xsl:when test="marc:subfield[@code = 'x'] = 'SDR-PURL'">true</xsl:when>
+							<!--
 							<xsl:when
 								test="@ind2 = 0 and count(preceding-sibling::marc:datafield[@tag = 856][@ind2 = 0]) = 0"
 								>true</xsl:when>
@@ -7076,7 +7079,7 @@
 							<xsl:when
 								test="@ind2 != 1 and @ind2 != 0 and @ind2 != 2 and count(ancestor::marc:record//marc:datafield[@tag = 856 and @ind2 = 0]) = 0 and count(ancestor::marc:record//marc:datafield[@tag = 856 and @ind2 = 1]) = 0 and count(preceding-sibling::marc:datafield[@tag = 856][@ind2]) = 0"
 								>true</xsl:when>
-							<xsl:otherwise>false</xsl:otherwise>
+							<xsl:otherwise>false</xsl:otherwise> -->
 						</xsl:choose>
 					</xsl:variable>
 					<xsl:if test="$primary = 'true'">
