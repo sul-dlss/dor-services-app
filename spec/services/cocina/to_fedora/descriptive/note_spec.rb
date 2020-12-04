@@ -81,6 +81,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
                 "code": 'eng',
                 "source": {
                   "code": 'iso639-2b'
+                },
+                "valueScript": {
+                  "code": 'Latn',
+                  "source": {
+                    "code": 'iso15924'
+                  }
                 }
               }
             },
@@ -103,7 +109,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <note lang="eng" altRepGroup="0">This is a note.</note>
+          <note lang="eng" script="Latn" altRepGroup="0">This is a note.</note>
           <note lang="fre" altRepGroup="0">C'est une note.</note>
         </mods>
       XML

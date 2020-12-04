@@ -74,7 +74,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
   context 'with a multilingual note' do
     let(:xml) do
       <<~XML
-        <note lang="eng" altRepGroup="1">This is a note.</note>
+        <note lang="eng" altRepGroup="1" script="Latn">This is a note.</note>
         <note lang="fre" altRepGroup="1">C'est une note.</note>
       XML
     end
@@ -90,6 +90,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
                 "code": 'eng',
                 "source": {
                   "code": 'iso639-2b'
+                },
+                "valueScript": {
+                  "code": 'Latn',
+                  "source": {
+                    "code": 'iso15924'
+                  }
                 }
               }
             },

@@ -8,17 +8,29 @@ module Cocina
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] notes
         def self.write(xml:, notes:)
+          new(xml: xml, notes: notes).write
+        end
+
+        def initialize(xml:, notes:)
+          @xml = xml
+          @notes = notes
+        end
+
+        def write
           Array(notes).each_with_index do |note, index|
             if note.parallelValue
-              write_parallel(xml, note, alt_rep_group: index)
+              write_parallel(note, alt_rep_group: index)
             else
-              write_basic(xml, note)
+              write_basic(note)
             end
           end
         end
 
-        def self.tag_name(type)
-          # type == 'summary' ? :abstract : :note
+        private
+
+        attr_reader :xml, :notes
+
+        def tag_name(type)
           case type
           when 'summary'
             :abstract
@@ -28,9 +40,8 @@ module Cocina
             :note
           end
         end
-        private_class_method :tag_name
 
-        def self.tag(xml, note, tag_name, attributes)
+        def tag(note, tag_name, attributes)
           attributes[:type] = note.type if note.type && [:abstract, :tableOfContents].exclude?(tag_name)
           value = if note.structuredValue
                     note.structuredValue.map(&:value).join(' -- ')
@@ -39,26 +50,26 @@ module Cocina
                   end
           xml.public_send tag_name, value, attributes
         end
-        private_class_method :tag
 
-        def self.write_basic(xml, note)
-          attributes = {}
-          attributes[:displayLabel] = note.displayLabel if note.displayLabel
-          tag(xml, note, tag_name(note.type), attributes)
+        def write_basic(note)
+          tag(note, tag_name(note.type), note_attributes(note))
         end
 
-        def self.write_parallel(xml, note, alt_rep_group:)
-          note.parallelValue.each do |descriptive_value|
-            attributes = {
-              altRepGroup: alt_rep_group,
-              lang: descriptive_value.valueLanguage&.code,
-              script: descriptive_value.valueLanguage&.valueScript&.code
-            }.compact
+        def write_parallel(note, alt_rep_group:)
+          note.parallelValue.each do |parallel_note|
+            attributes = { altRepGroup: alt_rep_group }.merge(note_attributes(parallel_note))
 
-            tag(xml, descriptive_value, tag_name(note.type), attributes)
+            tag(parallel_note, tag_name(note.type), attributes)
           end
         end
-        private_class_method :write_parallel
+
+        def note_attributes(note)
+          {
+            lang: note.valueLanguage&.code,
+            script: note.valueLanguage&.valueScript&.code,
+            displayLabel: note.displayLabel
+          }.compact
+        end
       end
     end
   end
