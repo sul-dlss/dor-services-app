@@ -64,8 +64,8 @@ module Cocina
               displayLabel: type[:displayLabel]
             }.tap do |item|
               source = {
-                code: type[:authority].presence,
-                uri: AuthorityUri.normalize(type[:authorityURI])
+                code: Authority.normalize_code(type[:authority]),
+                uri: Authority.normalize_uri(type[:authorityURI])
               }.compact
               item[:source] = source if source.present?
             end.compact
@@ -172,7 +172,10 @@ module Cocina
         end
 
         def source_for(form)
-          { code: form['authority'], uri: AuthorityUri.normalize(form['authorityURI']) }.compact
+          {
+            code: Authority.normalize_code(form['authority']),
+            uri: Authority.normalize_uri(form['authorityURI'])
+          }.compact
         end
 
         def type_of_resource

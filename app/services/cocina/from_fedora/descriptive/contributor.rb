@@ -105,7 +105,7 @@ module Cocina
             name_hash = contributor_hash[:name].first
             name_hash[:uri] = value_uri.content
             code = name_el.xpath('@authority', mods: DESC_METADATA_NS)&.first&.content
-            source_uri = AuthorityUri.normalize(name_el.xpath('@authorityURI', mods: DESC_METADATA_NS)&.first&.content)
+            source_uri = name_el.xpath('@authorityURI', mods: DESC_METADATA_NS)&.first&.content
             name_hash[:source] = name_authority_source(code, source_uri) if code || source_uri
           end
           contributor_hash
@@ -113,8 +113,8 @@ module Cocina
 
         def name_authority_source(code, uri)
           source = {
-            code: code,
-            uri: uri
+            code: Authority.normalize_code(code),
+            uri: Authority.normalize_uri(uri)
           }.compact
           source.presence
         end
@@ -153,30 +153,25 @@ module Cocina
 
         # shameless green
         # rubocop:disable Metrics/AbcSize
-        # rubocop:disable Metrics/CyclomaticComplexity
-        # rubocop:disable Metrics/PerceivedComplexity
         def role_hash(ng_role)
           code = ng_role.xpath(ROLE_CODE_XPATH, mods: DESC_METADATA_NS).first
           text = ng_role.xpath(ROLE_TEXT_XPATH, mods: DESC_METADATA_NS).first
           return if code.nil? && text.nil?
 
-          authority = ng_role.xpath(ROLE_AUTHORITY_XPATH, mods: DESC_METADATA_NS).first
-          authority_uri = ng_role.xpath(ROLE_AUTHORITY_URI_XPATH, mods: DESC_METADATA_NS).first
-          authority_value = ng_role.xpath(ROLE_AUTHORITY_VALUE_XPATH, mods: DESC_METADATA_NS).first
+          authority = ng_role.xpath(ROLE_AUTHORITY_XPATH, mods: DESC_METADATA_NS).first&.content
+          authority_uri = ng_role.xpath(ROLE_AUTHORITY_URI_XPATH, mods: DESC_METADATA_NS).first&.content
+          authority_value = ng_role.xpath(ROLE_AUTHORITY_VALUE_XPATH, mods: DESC_METADATA_NS).first&.content
 
           check_role_code(code, authority)
 
           {}.tap do |role|
-            if authority&.content.present?
-              role[:source] = { code: authority.content }
-              if authority.content == 'marcrelator'
-                role[:source][:uri] = "http://#{MARC_RELATOR_PIECE}/"
-              elsif authority_uri&.content.present?
-                role[:source][:uri] = AuthorityUri.normalize(authority_uri.content)
-              end
-            end
+            source = {
+              code: Authority.normalize_code(authority),
+              uri: authority == 'marcrelator' ? "http://#{MARC_RELATOR_PIECE}/" : Authority.normalize_uri(authority_uri)
+            }.compact
+            role[:source] = source if source.present?
 
-            role[:uri] = authority_value&.content
+            role[:uri] = authority_value
             role[:code] = code&.content
             marcrelator = marc_relator_role?(authority, authority_uri, authority_value)
             role[:value] = normalized_role_value(text.content, marcrelator) if text
@@ -187,8 +182,6 @@ module Cocina
             end
           end.compact
         end
-        # rubocop:enable Metrics/PerceivedComplexity
-        # rubocop:enable Metrics/CyclomaticComplexity
         # rubocop:enable Metrics/AbcSize
 
         def type_for(type)
@@ -218,9 +211,9 @@ module Cocina
         end
 
         def marc_relator_role?(role_authority, role_authority_uri, role_authority_value)
-          role_authority&.content == 'marcrelator' ||
-            role_authority_uri&.content&.include?(MARC_RELATOR_PIECE) ||
-            role_authority_value&.content&.include?(MARC_RELATOR_PIECE)
+          role_authority == 'marcrelator' ||
+            role_authority_uri&.include?(MARC_RELATOR_PIECE) ||
+            role_authority_value&.include?(MARC_RELATOR_PIECE)
         end
       end
     end

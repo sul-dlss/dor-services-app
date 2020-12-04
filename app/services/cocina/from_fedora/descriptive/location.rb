@@ -86,11 +86,13 @@ module Cocina
                 attrs[:value] = node.text
               end
               attrs[:uri] = node[:valueURI]
-              source = { code: node[:authority], uri: AuthorityUri.normalize(node[:authorityURI]) }.compact
+              source = {
+                code: Authority.normalize_code(node[:authority]),
+                uri: Authority.normalize_uri(node[:authorityURI])
+              }.compact
               attrs[:source] = source unless source.empty?
               attrs[:type] = node[:type]
-              value_language = LanguageScript.build(node: node)
-              attrs[:valueLanguage] = value_language if value_language
+              attrs[:valueLanguage] = LanguageScript.build(node: node)
             end.compact
           end
         end

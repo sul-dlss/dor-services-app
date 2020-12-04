@@ -28,7 +28,6 @@ module Cocina
 
         def build
           subjects.map do |subject|
-            check_valid_authority(subject)
             attrs = common_attrs(subject)
             node_set = subject.xpath('*')
             next subject_classification(subject, attrs) if subject.name == 'classification'
@@ -50,19 +49,15 @@ module Cocina
 
         attr_reader :resource_element
 
-        def check_valid_authority(subject)
-          return unless subject['authority'] == '#N/A'
-
-          # This is not a fatal problem. Just warn.
-          Honeybadger.notify('[DATA ERROR] Subject has authority attribute "#N/A"',
-                             tags: 'data_error')
-        end
-
         def common_attrs(subject)
           {
             displayLabel: subject[:displayLabel]
           }.tap do |attrs|
-            source = { code: code_for(subject), uri: AuthorityUri.normalize(subject[:authorityURI]), version: edition_for(subject) }.compact
+            source = {
+              code: code_for(subject),
+              uri: Authority.normalize_uri(subject[:authorityURI]),
+              version: edition_for(subject)
+            }.compact
             if subject[:valueURI]
               attrs[:source] = source unless source.empty?
               attrs[:uri] = subject[:valueURI]
@@ -82,7 +77,8 @@ module Cocina
         end
 
         def code_for(subject)
-          code = subject[:authority]
+          code = Authority.normalize_code(subject[:authority])
+
           return nil if code.nil?
 
           unless SubjectAuthorityCodes::SUBJECT_AUTHORITY_CODES.include?(code)

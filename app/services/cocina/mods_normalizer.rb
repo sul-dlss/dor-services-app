@@ -24,6 +24,7 @@ module Cocina
       normalize_authority_uris
       normalize_origin_info_event_types
       normalize_subject_authority
+      normalize_subject_authority_lcnaf
       normalize_subject_authority_naf
       normalize_text_role_term
       normalize_role_term_authority
@@ -70,7 +71,7 @@ module Cocina
     end
 
     def normalize_authority_uris
-      Cocina::FromFedora::Descriptive::AuthorityUri::NORMALIZE_AUTHORITY_URIS.each do |authority_uri|
+      Cocina::FromFedora::Descriptive::Authority::NORMALIZE_AUTHORITY_URIS.each do |authority_uri|
         ng_xml.root.xpath("//mods:*[@authorityURI='#{authority_uri}']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
           node[:authorityURI] = "#{authority_uri}/"
         end
@@ -251,6 +252,12 @@ module Cocina
       return Cocina::FromFedora::Descriptive::IdentifierType.mods_type_for_cocina_type(cocina_type) if identifier_source
 
       type
+    end
+
+    def normalize_subject_authority_lcnaf
+      ng_xml.root.xpath("//mods:*[@authority='lcnaf']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        node[:authority] = 'naf'
+      end
     end
   end
 end

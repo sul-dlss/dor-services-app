@@ -97,6 +97,34 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with lcnaf authority code' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcnaf" valueURI="http://id.loc.gov/authorities/subjects/sh85028356">
+          <topic>College students</Topic>
+        </subject>
+      XML
+    end
+
+    before do
+      allow(Honeybadger).to receive(:notify).once
+    end
+
+    it 'changes to naf and Honeybadger notifies' do
+      expect(build).to eq [
+        {
+          "value": 'College students',
+          "type": 'topic',
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85028356',
+          "source": {
+            "code": 'naf'
+          }
+        }
+      ]
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] lcnaf authority code', tags: 'data_error')
+    end
+  end
+
   context 'with a single invalid subelement <corporate>' do
     let(:xml) do
       <<~XML
@@ -285,7 +313,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           }
         }
       ]
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has authority attribute "#N/A"', tags: 'data_error')
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] "#N/A" authority code', tags: 'data_error')
     end
   end
 

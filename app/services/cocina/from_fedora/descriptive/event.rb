@@ -97,8 +97,8 @@ module Cocina
           cocina[:uri] = xml_node['valueURI'] if xml_node['valueURI']
           if xml_node['authority']
             cocina[:source] = {
-              code: xml_node['authority'],
-              uri: AuthorityUri.normalize(xml_node['authorityURI'])
+              code: Authority.normalize_code(xml_node['authority']),
+              uri: Authority.normalize_uri(xml_node['authorityURI'])
             }.compact
           end
           cocina

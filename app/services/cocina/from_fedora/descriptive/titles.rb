@@ -136,7 +136,10 @@ module Cocina
             result[:type] = 'transliterated' if title_info['transliteration']
             result[:type] = 'supplied' if title_info['supplied'] == 'yes'
 
-            result[:source] = { code: title_info[:authority] } if title_info['type'] == 'abbreviated' && title_info[:authority]
+            source = {
+              code: Authority.normalize_code(title_info[:authority])
+            }.compact
+            result[:source] = source if title_info['type'] == 'abbreviated' && source.present?
             result[:uri] = title_info[:valueURI] if title_info['valueURI']
 
             value_language = LanguageScript.build(node: title_info)
