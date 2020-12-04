@@ -62,8 +62,26 @@ module Cocina
           { value: note_node.text }.tap do |attributes|
             attributes[:type] = note_node[:type]
             attributes[:displayLabel] = note_node[:displayLabel]
-            attributes[:valueLanguage] = { code: note_node[:lang], source: { code: 'iso639-2b' } } if note_node[:lang]
+            attributes[:valueLanguage] = value_language_for(note_node)
           end.compact
+        end
+
+        def value_language_for(note_node)
+          value_language_attrs = {}.tap do |attrs|
+            if note_node[:lang].present?
+              attrs[:code] = note_node[:lang]
+              attrs[:source] = { code: 'iso639-2b' }
+            end
+            if note_node[:script].present?
+              attrs[:valueScript] = {
+                "code": note_node[:script],
+                "source": {
+                  "code": 'iso15924'
+                }
+              }
+            end
+          end
+          value_language_attrs.empty? ? nil : value_language_attrs
         end
 
         def table_of_contents
