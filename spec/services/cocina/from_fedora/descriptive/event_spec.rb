@@ -967,7 +967,156 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
 
   # example 39 from mods_to_cocina_originInfo.txt
   context 'with multilingual' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L1128'
+    let(:xml) do
+      <<~XML
+        <originInfo script="Latn" altRepGroup="1">
+          <place>
+            <placeTerm type="code" authority="marccountry">ja</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Kyōto-shi</placeTerm>
+          </place>
+          <publisher>Rinsen Shoten</publisher>
+          <dateIssued>Heisei 8 [1996]</dateIssued>
+          <dateIssued encoding="marc">1996</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo script="Hani" altRepGroup="1">
+          <place>
+            <placeTerm type="text">京都市</placeTerm>
+          </place>
+          <publisher>臨川書店</publisher>
+          <dateIssued>平成 8 [1996]</dateIssued>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          type: 'publication',
+          location: [
+            {
+              parallelValue: [
+                {
+                  value: 'Kyōto-shi',
+                  valueLanguage: {
+                    valueScript: {
+                      code: 'Latn',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                },
+                {
+                  value: '京都市',
+                  valueLanguage: {
+                    valueScript: {
+                      code: 'Hani',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              code: 'ja',
+              source: {
+                code: 'marccountry'
+              }
+            }
+          ],
+          contributor: [
+            {
+              type: 'organization',
+              name: [
+                {
+                  parallelValue: [
+                    {
+                      value: 'Rinsen Shoten',
+                      valueLanguage: {
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
+                          }
+                        }
+                      }
+                    },
+                    {
+                      value: '臨川書店',
+                      valueLanguage: {
+                        valueScript: {
+                          code: 'Hani',
+                          source: {
+                            code: 'iso15924'
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ],
+              role: [
+                {
+                  value: 'publisher',
+                  code: 'pbl',
+                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          date: [
+            {
+              parallelValue: [
+                {
+                  value: 'Heisei 8 [1996]',
+                  valueLanguage: {
+                    valueScript: {
+                      code: 'Latn',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                },
+                {
+                  value: '平成 8 [1996]',
+                  valueLanguage: {
+                    valueScript: {
+                      code: 'Hani',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                },
+                {
+                  value: '1996',
+                  encoding: {
+                    code: 'marc'
+                  }
+                }
+              ]
+            }
+          ],
+          note: [
+            {
+              value: 'monographic',
+              type: 'issuance',
+              source: { value: 'MODS issuance terms' }
+            }
+          ]
+        }
+      ]
+    end
   end
 
   # example 40 from mods_to_cocina_originInfo.txt
@@ -995,5 +1144,142 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
         }
       ]
     end
+  end
+
+  # example 41 from mods_to_cocina_originInfo.txt
+  context 'with multiscript originInfo with eventType production' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L1351'
+    # let(:xml) do
+    #   <<~XML
+    #     <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="1">
+    #       <dateCreated keyDate="yes" encoding="w3cdtf">1999-09-09</dateCreated>
+    #       <place>
+    #         <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
+    #       </place>
+    #     </originInfo>
+    #     <originInfo eventType="production" lang="rus" script="Cyrl" altRepGroup="1">
+    #     <place>
+    #       <placeTerm>Москва</placeTerm>
+    #     </place>
+    #     </originInfo>
+    #   XML
+    # end
+    #
+    # it 'builds the expected cocina data structure' do
+    #   expect(build).to eq [
+    #     {
+    #       "type": "creation",
+    #       "date": [
+    #         {
+    #           "value": "1999-09-09",
+    #           "status": "primary",
+    #           "encoding": {
+    #             "code": "w3cdtf"
+    #           }
+    #         }
+    #       ],
+    #       "location": [
+    #         {
+    #           "parallelValue": [
+    #             {
+    #               "value": "Moscow",
+    #               "uri": "http://id.loc.gov/authorities/names/n79076156",
+    #               "source": {
+    #                 "uri": "http://id.loc.gov/authorities/names/"
+    #               },
+    #               "valueLanguage": {
+    #                 "code": "eng",
+    #                 "source": {
+    #                   "code": "iso639-2b"
+    #                 },
+    #                 "valueScript": {
+    #                   "code": "Latn",
+    #                   "source": {
+    #                     "code": "iso15924"
+    #                   }
+    #                 }
+    #               }
+    #             },
+    #             {
+    #               "value": "Москва",
+    #               "valueLanguage": {
+    #                 "code": "rus",
+    #                 "source": {
+    #                   "code": "iso639-2b"
+    #                 },
+    #                 "valueScript": {
+    #                   "code": "Cyrl",
+    #                   "source": {
+    #                     "code": "iso15924"
+    #                   }
+    #                 }
+    #               }
+    #             }
+    #           ]
+    #         }
+    #       ]
+    #     }
+    #   ]
+    # end
+  end
+
+  # example 42 from mods_to_cocina_originInfo.txt
+  context 'with multiscript originInfo with eventType production' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L1420'
+    # let(:xml) do
+    #   <<~XML
+    #     <originInfo eventType="publication" lang="eng" script="Latn" altRepGroup="1">
+    #       <edition>First edition</edition>
+    #     </originInfo>
+    #     <originInfo eventType="publication" lang="rus" script="Cyrl" altRepGroup="1">
+    #       <edition>Первое издание</edition>
+    #     </originInfo>
+    #   XML
+    # end
+    #
+    # it 'builds the expected cocina data structure' do
+    #   expect(build).to eq [
+    #     {
+    #       "type": "publication",
+    #       "note": [
+    #         {
+    #           "type": "edition",
+    #           "parallelValue": [
+    #             {
+    #               "value": "First edition",
+    #               "valueLanguage": {
+    #                 "code": "eng",
+    #                 "source": {
+    #                   "code": "iso639-2b"
+    #                 },
+    #                 "valueScript": {
+    #                   "code": "Latn",
+    #                   "source": {
+    #                     "code": "iso15924"
+    #                   }
+    #                 }
+    #               }
+    #             },
+    #             {
+    #               "value": "Первое издание",
+    #               "valueLanguage": {
+    #                 "code": "rus",
+    #                 "source": {
+    #                   "code": "iso639-2b"
+    #                 },
+    #                 "valueScript": {
+    #                   "code": "Cyrl",
+    #                   "source": {
+    #                     "code": "iso15924"
+    #                   }
+    #                 }
+    #               }
+    #             }
+    #           ]
+    #         }
+    #       ]
+    #     }
+    #   ]
+    # end
   end
 end
