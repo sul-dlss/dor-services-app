@@ -18,11 +18,13 @@ module Cocina
 
         def write
           Array(identifiers).each do |identifier|
-            attributes = {}
-            attributes[:type] = identifier.type.downcase if identifier.type
-            attributes[:displayLabel] = identifier.displayLabel if identifier.displayLabel
-            attributes[:invalid] = 'yes' if identifier.status == 'invalid'
-            xml.identifier identifier.value, attributes
+            id_attributes = {
+              displayLabel: identifier.displayLabel,
+              type: identifier.uri ? 'uri' : FromFedora::Descriptive::IdentifierType.mods_type_for_cocina_type(identifier.type)
+            }.tap do |attrs|
+              attrs[:invalid] = 'yes' if identifier.status == 'invalid'
+            end.compact
+            xml.identifier identifier.value || identifier.uri, id_attributes
           end
         end
 

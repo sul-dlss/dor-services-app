@@ -17,6 +17,8 @@ module Cocina
         end
 
         def build
+          return nil if record_info.nil?
+
           {}.tap do |admin_metadata|
             admin_metadata[:language] = build_language
             admin_metadata[:contributor] = build_contributor
@@ -56,15 +58,11 @@ module Cocina
         end
 
         def build_identifier
-          return if identifiers.empty?
+          identifiers = record_identifiers.map { |identifier| IdentifierBuilder.build_from_record_identifier(identifier_element: identifier) }
 
-          identifiers.map do |identifier|
-            {
-              value: identifier.text
-            }.tap do |model|
-              model[:source] = { value: identifier['source'] } if identifier['source']
-            end
-          end
+          return nil if identifiers.empty?
+
+          identifiers
         end
 
         def build_note
@@ -95,12 +93,14 @@ module Cocina
             "name": [
               {
                 "code": record_content_source.text,
-                "uri": record_content_source['valueURI'],
-                "source": {
+                "uri": record_content_source['valueURI']
+              }.tap do |name_attrs|
+                source = {
                   code: record_content_source['authority'],
                   uri: record_content_source['authorityURI']
                 }.compact
-              }.compact
+                name_attrs[:source] = source unless source.empty?
+              end.compact
             ],
             "type": 'organization',
             "role": [
@@ -117,32 +117,36 @@ module Cocina
           language_of_cataloging.map { |lang_node| Cocina::FromFedora::Descriptive::LanguageTerm.build(language_element: lang_node) }
         end
 
+        def record_info
+          @record_info ||= resource_element.xpath('mods:recordInfo[1]', mods: DESC_METADATA_NS).first
+        end
+
         def language_of_cataloging
-          @language_of_cataloging ||= resource_element.xpath('mods:recordInfo/mods:languageOfCataloging', mods: DESC_METADATA_NS)
+          @language_of_cataloging ||= record_info.xpath('mods:languageOfCataloging', mods: DESC_METADATA_NS)
         end
 
         def record_content_source
-          @record_content_source ||= resource_element.xpath('mods:recordInfo/mods:recordContentSource', mods: DESC_METADATA_NS).first
+          @record_content_source ||= record_info.xpath('mods:recordContentSource', mods: DESC_METADATA_NS).first
         end
 
         def description_standard
-          @description_standard ||= resource_element.xpath('mods:recordInfo/mods:descriptionStandard', mods: DESC_METADATA_NS).first
+          @description_standard ||= record_info.xpath('mods:descriptionStandard', mods: DESC_METADATA_NS).first
         end
 
         def record_origin
-          @record_origin ||= resource_element.xpath('mods:recordInfo/mods:recordOrigin', mods: DESC_METADATA_NS).first
-        end
-
-        def identifiers
-          @identifiers ||= resource_element.xpath('mods:recordInfo/mods:recordIdentifier', mods: DESC_METADATA_NS)
+          @record_origin ||= record_info.xpath('mods:recordOrigin', mods: DESC_METADATA_NS).first
         end
 
         def creation_event
-          @creation_event ||= resource_element.xpath('mods:recordInfo/mods:recordCreationDate', mods: DESC_METADATA_NS).first
+          @creation_event ||= record_info.xpath('mods:recordCreationDate', mods: DESC_METADATA_NS).first
         end
 
         def modification_event
-          @modification_event ||= resource_element.xpath('mods:recordInfo/mods:recordChangeDate', mods: DESC_METADATA_NS).first
+          @modification_event ||= record_info.xpath('mods:recordChangeDate', mods: DESC_METADATA_NS).first
+        end
+
+        def record_identifiers
+          @record_identifiers ||= record_info.xpath('mods:recordIdentifier', mods: DESC_METADATA_NS)
         end
       end
     end

@@ -332,10 +332,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
           "identifier": [
             {
               "value": 'https://www.wikidata.org/wiki/Q7704207',
-              "type": 'URI',
-              "source": {
-                "code": 'wikidata'
-              }
+              "type": 'Wikidata'
             }
           ],
           "note": [
@@ -368,7 +365,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         {
           identifier: [
             {
-              type: 'URI',
               value: 'https://orcid.org/0000-0001-5126-5568'
             }
           ],

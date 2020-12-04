@@ -69,9 +69,13 @@ module Cocina
 
         def build_identifier
           Array(admin_metadata.identifier).each do |identifier|
-            attrs = {}
-            attrs[:source] = identifier.source.value if identifier.source
-            xml.recordIdentifier identifier.value, attrs
+            id_attributes = {
+              displayLabel: identifier.displayLabel,
+              source: identifier.uri ? 'uri' : FromFedora::Descriptive::IdentifierType.mods_type_for_cocina_type(identifier.type)
+            }.tap do |attrs|
+              attrs[:invalid] = 'yes' if identifier.status == 'invalid'
+            end.compact
+            xml.recordIdentifier identifier.value || identifier.uri, id_attributes
           end
         end
 

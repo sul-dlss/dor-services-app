@@ -164,9 +164,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
         "identifier": [
           {
             "value": 'a12374669',
-            "source": {
-              "value": 'SIRSI'
-            }
+            "type": 'SIRSI'
           }
         ],
         "note": [
@@ -246,9 +244,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
           ],
           identifier: [
             {
-              source: {
-                value: 'Data Provider Digital Object Identifier'
-              },
+              type: 'Data Provider Digital Object Identifier',
               value: '36105033329140'
             }
           ]
