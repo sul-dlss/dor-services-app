@@ -11,10 +11,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
                'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                'version' => '3.6',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, titles: titles)
+        described_class.write(xml: xml, titles: titles, contributors: contributors, id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
   end
+
+  let(:contributors) { [] }
 
   describe 'title' do
     context 'when it is a basic value' do
@@ -77,17 +79,64 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
     end
 
     context 'when it is a uniform title with multiple namePart subelements' do
-      # xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L243'
       let(:titles) do
         [
           Cocina::Models::Title.new(
-            { structuredValue: [{ type: 'surname', value: 'Saint-Saëns' },
-                                { type: 'forename', value: 'Camille' },
-                                { type: 'life dates', value: '1835-1921' },
-                                { type: 'title', value: 'Princesse jaune. Vocal score' },
-                                { type: 'term of address', value: 'Princess' }],
-              type: 'uniform',
-              status: 'primary' }
+            {
+              "structuredValue": [
+                {
+                  "structuredValue": [
+                    {
+                      "value": 'Saint-Saëns',
+                      "type": 'surname'
+                    },
+                    {
+                      "value": 'Camille',
+                      "type": 'forename'
+                    },
+                    {
+                      "value": '1835-1921',
+                      "type": 'life dates'
+                    }
+                  ],
+                  "type": 'name'
+                },
+                {
+                  "value": 'Princesse jaune. Vocal score',
+                  "type": 'title'
+                }
+              ],
+              "type": 'uniform'
+            }
+          )
+        ]
+      end
+
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            {
+              "name": [
+                {
+                  "structuredValue": [
+                    {
+                      "value": 'Saint-Saëns',
+                      "type": 'surname'
+                    },
+                    {
+                      "value": 'Camille',
+                      "type": 'forename'
+                    },
+                    {
+                      "value": '1835-1921',
+                      "type": 'life dates'
+                    }
+                  ]
+                }
+              ],
+              "type": 'person',
+              "status": 'primary'
+            }
           )
         ]
       end
@@ -97,14 +146,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.loc.gov/mods/v3" version="3.6"
             xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <titleInfo type="uniform" usage="primary" nameTitleGroup="1">
+            <titleInfo type="uniform" nameTitleGroup="1">
               <title>Princesse jaune. Vocal score</title>
             </titleInfo>
             <name type="personal" usage="primary" nameTitleGroup="1">
               <namePart type="family">Saint-Sa&#xEB;ns</namePart>
               <namePart type="given">Camille</namePart>
               <namePart type="date">1835-1921</namePart>
-              <namePart type="termsOfAddress">Princess</namePart>
             </name>
           </mods>
         XML
@@ -131,16 +179,21 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
               {
                 "structuredValue": [
                   {
-                    "value": 'Israel Meir',
+                    "structuredValue": [
+                      {
+                        "value": 'Israel Meir',
+                        "type": 'name'
+                      },
+                      {
+                        "value": 'ha-Kohen',
+                        "type": 'term of address'
+                      },
+                      {
+                        "value": '1838-1933',
+                        "type": 'life dates'
+                      }
+                    ],
                     "type": 'name'
-                  },
-                  {
-                    "value": 'ha-Kohen',
-                    "type": 'term of address'
-                  },
-                  {
-                    "value": '1838-1933',
-                    "type": 'life dates'
                   },
                   {
                     "value": 'Mishnah berurah. English and Hebrew',
@@ -151,12 +204,17 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
               {
                 "structuredValue": [
                   {
-                    "value": 'Israel Meir in Hebrew characters',
+                    "structuredValue": [
+                      {
+                        "value": 'Israel Meir in Hebrew characters',
+                        "type": 'name'
+                      },
+                      {
+                        "value": '1838-1933',
+                        "type": 'life dates'
+                      }
+                    ],
                     "type": 'name'
-                  },
-                  {
-                    "value": '1838-1933',
-                    "type": 'life dates'
                   },
                   {
                     "value": 'Mishnah berurah in Hebrew characters',
@@ -166,6 +224,51 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
               }
             ],
             "type": 'uniform'
+          )
+        ]
+      end
+
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            {
+              "type": 'person',
+              "status": 'primary',
+              "name": [
+                {
+                  "parallelValue": [
+                    {
+                      "structuredValue": [
+                        {
+                          "value": 'Israel Meir',
+                          "type": 'name'
+                        },
+                        {
+                          "value": 'ha-Kohen',
+                          "type": 'term of address'
+                        },
+                        {
+                          "value": '1838-1933',
+                          "type": 'life dates'
+                        }
+                      ]
+                    },
+                    {
+                      "structuredValue": [
+                        {
+                          "value": 'Israel Meir in Hebrew characters',
+                          "type": 'name'
+                        },
+                        {
+                          "value": '1838-1933',
+                          "type": 'life dates'
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
           )
         ]
       end
@@ -182,18 +285,19 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
             <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="1">
               <title>Mishnah berurah. English and Hebrew</title>
             </titleInfo>
+            <titleInfo type="uniform" nameTitleGroup="2" altRepGroup="1">
+              <title>Mishnah berurah in Hebrew characters</title>
+            </titleInfo>
             <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="1">
               <namePart>Israel Meir</namePart>
               <namePart type="termsOfAddress">ha-Kohen</namePart>
               <namePart type="date">1838-1933</namePart>
             </name>
-            <titleInfo type="uniform" nameTitleGroup="2" altRepGroup="1">
-              <title>Mishnah berurah in Hebrew characters</title>
-            </titleInfo>
             <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="2">
               <namePart>Israel Meir in Hebrew characters</namePart>
               <namePart type="date">1838-1933</namePart>
             </name>
+          </mods>
         XML
       end
     end
@@ -370,7 +474,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
               },
               {
                 "value": 'Hamlet',
-                "type": 'main title'
+                "type": 'title'
               }
             ],
             "type": 'uniform',
@@ -378,6 +482,27 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
             "source": {
               "uri": 'http://id.loc.gov/authorities/names/',
               "code": 'naf'
+            }
+          )
+        ]
+      end
+
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            {
+              "name": [
+                {
+                  "value": 'Shakespeare, William, 1564-1616',
+                  "type": 'person',
+                  "status": 'primary',
+                  "uri": 'http://id.loc.gov/authorities/names/n78095332',
+                  "source": {
+                    "uri": 'http://id.loc.gov/authorities/names/',
+                    "code": 'naf'
+                  }
+                }
+              ]
             }
           )
         ]
@@ -391,10 +516,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
             <titleInfo usage="primary">
               <title>Hamlet</title>
             </titleInfo>
-            <titleInfo type="uniform" nameTitleGroup="1" valueURI="http://id.loc.gov/authorities/names/n80008522" authorityURI="http://id.loc.gov/authorities/names/" authority="naf">
+            <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="1">
               <title>Hamlet</title>
             </titleInfo>
-            <name type="personal" nameTitleGroup="1" valueURI="http://id.loc.gov/authorities/names/n78095332" authorityURI="http://id.loc.gov/authorities/names/" authority="naf">
+            <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="1">
               <namePart>Shakespeare, William, 1564-1616</namePart>
             </name>
           </mods>

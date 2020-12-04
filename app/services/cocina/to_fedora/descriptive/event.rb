@@ -19,23 +19,26 @@ module Cocina
           'publication' => 'publication',
           'acquisition' => 'acquisition'
         }.freeze
+
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::Event>] events
-        def self.write(xml:, events:)
-          new(xml: xml, events: events).write
+        # @params [IdGenerator] id_generator
+        def self.write(xml:, events:, id_generator:)
+          new(xml: xml, events: events, id_generator: id_generator).write
         end
 
-        def initialize(xml:, events:)
+        def initialize(xml:, events:, id_generator:)
           @xml = xml
           @events = events
+          @id_generator = id_generator
         end
 
         def write
-          Array(events).each_with_index do |event, count|
+          Array(events).each do |event|
             attributes = {}
             attributes[:eventType] = EVENT_TYPE.fetch(event.type) if event.type
             if translated?(event)
-              TranslatedEvent.write(xml: xml, event: event, count: count, event_type: event.type)
+              TranslatedEvent.write(xml: xml, event: event, alt_rep_group: id_generator.next_altrepgroup, event_type: event.type)
             else
               write_basic(event, attributes)
             end
@@ -44,7 +47,7 @@ module Cocina
 
         private
 
-        attr_reader :xml, :events
+        attr_reader :xml, :events, :id_generator
 
         def translated?(event)
           Array(event.location).any?(&:parallelValue) &&

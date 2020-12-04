@@ -147,8 +147,10 @@ module Cocina
           attrs = attrs.merge(common_attrs(node))
           case node.name
           when 'name'
-            attrs[:type] = name_type_for_subject(node[:type])
-            Contributor.name_parts(node, add_default_type: true)&.first&.merge(attrs)
+            name_type = name_type_for_subject(node[:type])
+            attrs[:type] = name_type if name_type
+            name_attrs = NameBuilder.build(name_element: node, add_default_type: true)[:name]&.first
+            name_attrs&.merge(attrs)
           when 'titleInfo'
             query = node.xpath('mods:title', mods: DESC_METADATA_NS)
             attrs.merge(value: query.first.text, type: 'title')
@@ -182,13 +184,8 @@ module Cocina
                                tags: 'data_error')
             return 'name'
           end
-          unless Contributor::ROLES.keys.include?(name_type)
-            Honeybadger.notify("[DATA ERROR] Subject has <name> with an invalid type attribute '#{name_type}'",
-                               tags: 'data_error')
-            return 'topic' if name_type.downcase == 'topic'
 
-            return 'name'
-          end
+          return 'topic' if name_type.downcase == 'topic'
 
           Contributor::ROLES.fetch(name_type) if Contributor::ROLES.keys.include?(name_type)
         end

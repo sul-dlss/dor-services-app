@@ -11,10 +11,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
                'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                'version' => '3.6',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, contributors: contributors)
+        described_class.write(xml: xml, contributors: contributors, titles: titles, id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
   end
+
+  let(:titles) { nil }
 
   context 'when contributors is nil' do
     let(:contributors) { nil }
@@ -891,6 +893,77 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
             <role>
               <roleTerm type="text">author</roleTerm>
             </role>
+          </name>
+        </mods>
+      XML
+    end
+  end
+
+  context 'with a personal name part of name title group' do
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          "name": [
+            {
+              "value": 'Peele, Gregory'
+            }
+          ],
+          "type": 'person'
+        ),
+        Cocina::Models::Contributor.new(
+          {
+            "name": [
+              {
+                "value": 'Shakespeare, William, 1564-1616',
+                "type": 'person',
+                "status": 'primary',
+                "uri": 'http://id.loc.gov/authorities/names/n78095332',
+                "source": {
+                  "uri": 'http://id.loc.gov/authorities/names/',
+                  "code": 'naf'
+                }
+              }
+            ]
+          }
+        )
+      ]
+    end
+
+    let(:titles) do
+      [
+        Cocina::Models::Title.new(
+          "structuredValue": [
+            {
+              "value": 'Shakespeare, William, 1564-1616',
+              "type": 'name',
+              "uri": 'http://id.loc.gov/authorities/names/n78095332',
+              "source": {
+                "uri": 'http://id.loc.gov/authorities/names/',
+                "code": 'naf'
+              }
+            },
+            {
+              "value": 'Hamlet',
+              "type": 'title'
+            }
+          ],
+          "type": 'uniform',
+          "uri": 'http://id.loc.gov/authorities/names/n80008522',
+          "source": {
+            "uri": 'http://id.loc.gov/authorities/names/',
+            "code": 'naf'
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <name type="personal">
+            <namePart>Peele, Gregory</namePart>
           </name>
         </mods>
       XML

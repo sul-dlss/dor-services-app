@@ -11,7 +11,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
                'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                'version' => '3.6',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, notes: notes)
+        described_class.write(xml: xml, notes: notes, id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
   end
@@ -109,8 +109,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <note lang="eng" script="Latn" altRepGroup="0">This is a note.</note>
-          <note lang="fre" altRepGroup="0">C'est une note.</note>
+          <note lang="eng" script="Latn" altRepGroup="1">This is a note.</note>
+          <note lang="fre" altRepGroup="1">C'est une note.</note>
         </mods>
       XML
     end
@@ -208,8 +208,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <abstract lang="eng" script="Latn" altRepGroup="0">This is an abstract.</abstract>
-          <abstract lang="rus" script="Cyrl" altRepGroup="0">&#x42D;&#x442;&#x43E; &#x430;&#x43D;&#x43D;&#x43E;&#x442;&#x430;&#x446;&#x438;&#x44F;.</abstract>
+          <abstract lang="eng" script="Latn" altRepGroup="1">This is an abstract.</abstract>
+          <abstract lang="rus" script="Cyrl" altRepGroup="1">&#x42D;&#x442;&#x43E; &#x430;&#x43D;&#x43D;&#x43E;&#x442;&#x430;&#x446;&#x438;&#x44F;.</abstract>
         </mods>
       XML
     end
