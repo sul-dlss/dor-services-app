@@ -1258,28 +1258,28 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     let(:events) do
       [
         Cocina::Models::Event.new(
-          "type": 'publication',
-          "location": [
+          type: 'publication',
+          location: [
             {
-              "parallelValue": [
+              parallelValue: [
                 {
-                  "value": 'Kyōto-shi',
-                  "valueLanguage": {
-                    "valueScript": {
-                      "code": 'Latn',
-                      "source": {
-                        "code": 'iso15924'
+                  value: 'Kyōto-shi',
+                  valueLanguage: {
+                    valueScript: {
+                      code: 'Latn',
+                      source: {
+                        code: 'iso15924'
                       }
                     }
                   }
                 },
                 {
-                  "value": '京都市',
-                  "valueLanguage": {
-                    "valueScript": {
-                      "code": 'Hani',
-                      "source": {
-                        "code": 'iso15924'
+                  value: '京都市',
+                  valueLanguage: {
+                    valueScript: {
+                      code: 'Hani',
+                      source: {
+                        code: 'iso15924'
                       }
                     }
                   }
@@ -1287,36 +1287,36 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
               ]
             },
             {
-              "code": 'ja',
-              "source": {
-                "code": 'marccountry'
+              code: 'ja',
+              source: {
+                code: 'marccountry'
               }
             }
           ],
-          "contributor": [
+          contributor: [
             {
-              "type": 'organization',
-              "name": [
+              type: 'organization',
+              name: [
                 {
-                  "parallelValue": [
+                  parallelValue: [
                     {
-                      "value": 'Rinsen Shoten',
-                      "valueLanguage": {
-                        "valueScript": {
-                          "code": 'Latn',
-                          "source": {
-                            "code": 'iso15924'
+                      value: 'Rinsen Shoten',
+                      valueLanguage: {
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
                           }
                         }
                       }
                     },
                     {
-                      "value": '臨川書店',
-                      "valueLanguage": {
-                        "valueScript": {
-                          "code": 'Hani',
-                          "source": {
-                            "code": 'iso15924'
+                      value: '臨川書店',
+                      valueLanguage: {
+                        valueScript: {
+                          code: 'Hani',
+                          source: {
+                            code: 'iso15924'
                           }
                         }
                       }
@@ -1324,17 +1324,58 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
                   ]
                 }
               ],
-              "role": [
+              role: [
                 {
-                  "value": 'publisher',
-                  "code": 'pbl',
-                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                  "source": {
-                    "code": 'marcrelator',
-                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  value: 'publisher',
+                  code: 'pbl',
+                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
                 }
               ]
+            }
+          ],
+          date: [
+            {
+              parallelValue: [
+                {
+                  value: 'Heisei 8 [1996]',
+                  valueLanguage: {
+                    valueScript: {
+                      code: 'Latn',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                },
+                {
+                  value: '平成 8 [1996]',
+                  valueLanguage: {
+                    valueScript: {
+                      code: 'Hani',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                },
+                {
+                  value: '1996',
+                  encoding: {
+                    code: 'marc'
+                  }
+                }
+              ]
+            }
+          ],
+          note: [
+            {
+              value: 'monographic',
+              type: 'issuance',
+              source: { value: 'MODS issuance terms' }
             }
           ]
         )
@@ -1346,7 +1387,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication" script="Latn" altRepGroup="1">
+          <originInfo script="Latn" altRepGroup="0" eventType="publication">
             <place>
               <placeTerm type="code" authority="marccountry">ja</placeTerm>
             </place>
@@ -1354,12 +1395,16 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
               <placeTerm type="text">Kyōto-shi</placeTerm>
             </place>
             <publisher>Rinsen Shoten</publisher>
+            <dateIssued>Heisei 8 [1996]</dateIssued>
+            <dateIssued encoding="marc">1996</dateIssued>
+            <issuance>monographic</issuance>
           </originInfo>
-          <originInfo eventType="publication" script="Hani" altRepGroup="1">
+          <originInfo script="Hani" altRepGroup="0" eventType="publication">
             <place>
               <placeTerm type="text">京都市</placeTerm>
             </place>
             <publisher>臨川書店</publisher>
+            <dateIssued>平成 8 [1996]</dateIssued>
           </originInfo>
         </mods>
       XML

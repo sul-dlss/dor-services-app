@@ -24,6 +24,7 @@ module Cocina
         def write
           group_locations
           group_contributors
+          group_dates
 
           groups.each do |script, origin|
             attributes = {
@@ -44,6 +45,10 @@ module Cocina
               origin[:publisher].each do |publisher|
                 xml.publisher publisher[:text]
               end
+              origin[:dateIssued].each do |date_issued|
+                xml.dateIssued date_issued[:text], date_issued[:attributes]
+              end
+              write_notes if script == 'Latn'
             end
           end
         end
@@ -53,7 +58,7 @@ module Cocina
         attr_reader :xml, :event, :alt_rep_group, :event_type, :groups
 
         def initialize_translation(key)
-          groups[key] ||= { place: [], publisher: [] }
+          groups[key] ||= { place: [], publisher: [], dateIssued: [] }
         end
 
         def group_locations
@@ -80,6 +85,38 @@ module Cocina
               initialize_translation(key)
               groups[key][:publisher] << { text: val.value }
             end
+          end
+        end
+
+        def group_dates
+          Array(event.date).each do |date|
+            tag = Cocina::ToFedora::Descriptive::Event::TAG_NAME.fetch(event.type, :dateOther)
+            if date.parallelValue
+              date.parallelValue.each do |val|
+                key = val.valueLanguage&.valueScript&.code || 'Latn'
+                initialize_translation(key)
+                groups[key][tag] << group_date_value(val, tag)
+              end
+            else
+              initialize_translation('Latn')
+              groups['Latn'][tag] << group_date_value(date, tag)
+            end
+          end
+        end
+
+        def group_date_value(desc_value, tag)
+          attributes = {}
+          attributes[:encoding] = desc_value.encoding.code if desc_value.encoding
+          attributes[:qualifier] = desc_value.qualifier if desc_value.qualifier
+          attributes[:keyDate] = 'yes' if desc_value.status == 'primary'
+          attributes[:type] = desc_value.note.find { |note| note.type == 'date type' }.value if tag == :dateOther && desc_value.note
+
+          { text: desc_value.value, attributes: attributes }
+        end
+
+        def write_notes
+          Array(event.note).each do |note|
+            xml.issuance(note.value) if note.type == 'issuance'
           end
         end
       end
