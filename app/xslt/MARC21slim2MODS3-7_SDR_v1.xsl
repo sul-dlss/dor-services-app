@@ -2225,7 +2225,9 @@
 		<!-- 1.120 - @510$ind1 -->
 		<!-- 1.121 -->
 		<xsl:for-each
-			select="marc:datafield[@tag = 510][@ind1 = '0' or @ind1 = ' '] | marc:datafield[@tag = '880'][@ind1 = '0' or @ind1 = ' '][starts-with(marc:subfield[@code = '6'], '510')]">
+			select="marc:datafield[@tag = 510] | marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '510')]">
+			<!-- SUL edit 20201204 issue #1504
+			select="marc:datafield[@tag = 510][@ind1 = '0' or @ind1 = ' '] | marc:datafield[@tag = '880'][@ind1 = '0' or @ind1 = ' '][starts-with(marc:subfield[@code = '6'], '510')]"> -->
 			<xsl:variable name="s6"
 				select="substring(normalize-space(marc:subfield[@code = '6']), 5, 2)"/>
 			<xsl:if
@@ -2249,20 +2251,26 @@
 								</dateOther>
 							</originInfo>
 						</xsl:for-each>
+						<!-- SUL edit 20201204 issue #1611 -->
+						<xsl:for-each select="marc:subfield[@code = 'c']">
 						<part>
 							<xsl:call-template name="xxx880"/>
 							<detail type="part">
 								<number>
 									<xsl:call-template name="chopPunctuation">
 										<xsl:with-param name="chopString">
-											<xsl:call-template name="subfieldSelect">
-												<xsl:with-param name="codes">c</xsl:with-param>
-											</xsl:call-template>
+											<!-- SUL edit 20201204 issue #1611 -->
+											<xsl:value-of select="."/>
 										</xsl:with-param>
 									</xsl:call-template>
 								</number>
 							</detail>
 						</part>
+						</xsl:for-each>
+						<!-- SUL edit 20201204 issue #1504 -->
+						<xsl:for-each select="marc:subfield[@code = 'x']">
+						<identifier type="issn"><xsl:value-of select="."/></identifier>
+						</xsl:for-each>
 					</xsl:for-each>
 				</relatedItem>
 			</xsl:if>
