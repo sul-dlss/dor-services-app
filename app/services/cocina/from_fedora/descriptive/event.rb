@@ -97,8 +97,7 @@ module Cocina
           when 'publisher'
             add_parallel_contributor(events, child_el, orig_script, parallel_script)
           when 'edition'
-            puts 'TODO: implement parallelValues for edition'
-            # add_parallel_edition_shit(events, child_el, orig_script, parallel_script)
+            add_parallel_edition(events, child_el, orig_script, parallel_script, orig_lang_code, parallel_lang_code)
           when 'issuance', 'frequency'
             errmsg = "originInfo #{child_el_name} has unanticipated parallelValue - needs code"
             Honeybadger.notify(errmsg)
@@ -192,7 +191,7 @@ module Cocina
             parallel_value = add_to_parallel_value(parallel_value, additional_values) if additional_values.present?
           end
           orig_w_value = first_with_value(orig_locations)
-          add_parallel_location_lang_info(parallel_value, orig_w_value, orig_lang_code, parallel_lang_code)
+          add_parallel_lang_info(parallel_value, orig_w_value, orig_lang_code, parallel_lang_code)
           event[:location] = [parallel_value]
 
           addl_locations = orig_locations.reject { |location| location[:value].present? }
@@ -200,7 +199,7 @@ module Cocina
         end
         # rubocop:enable Metrics/ParameterLists
 
-        def add_parallel_location_lang_info(parallel_value, orig_w_value, orig_lang_code, parallel_lang_code)
+        def add_parallel_lang_info(parallel_value, orig_w_value, orig_lang_code, parallel_lang_code)
           parallel_value[:parallelValue].first[:uri] = orig_w_value[:uri] if orig_w_value[:uri]
           parallel_value[:parallelValue].first[:source] = orig_w_value[:source] if orig_w_value[:source]
           if orig_lang_code
@@ -275,6 +274,28 @@ module Cocina
             }
           end
         end
+
+        # rubocop:disable Metrics/ParameterLists
+        def add_parallel_edition(events, parallel_xml_node, orig_script, parallel_script, orig_lang_code, parallel_lang_code)
+          parallel_edition_value = parallel_xml_node&.content
+          return nil unless parallel_edition_value
+
+          publication_event = events.find { |event| event[:type] == 'publication' }
+          note_desc_value_array = publication_event[:note]
+          note_desc_value_array.each do |desc_value|
+            next if desc_value[:type].blank? || desc_value[:type] != 'edition'
+
+            orig_edition_value = desc_value[:value]
+            next if orig_edition_value.blank?
+
+            parallel_value = parallel_value(orig_edition_value, parallel_edition_value, orig_script, parallel_script)
+            add_parallel_lang_info(parallel_value, desc_value, orig_lang_code, parallel_lang_code)
+
+            desc_value[:parallelValue] = parallel_value[:parallelValue]
+            desc_value.delete(:value)
+          end
+        end
+        # rubocop:enable Metrics/ParameterLists
 
         def add_publisher_info(event, set)
           return if set.empty?

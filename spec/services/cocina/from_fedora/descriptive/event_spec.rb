@@ -1223,62 +1223,61 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
   end
 
   # example 42 from mods_to_cocina_originInfo.txt
-  context 'with multiscript originInfo with eventType production' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L1420'
-    # let(:xml) do
-    #   <<~XML
-    #     <originInfo eventType="publication" lang="eng" script="Latn" altRepGroup="1">
-    #       <edition>First edition</edition>
-    #     </originInfo>
-    #     <originInfo eventType="publication" lang="rus" script="Cyrl" altRepGroup="1">
-    #       <edition>Первое издание</edition>
-    #     </originInfo>
-    #   XML
-    # end
-    #
-    # it 'builds the expected cocina data structure' do
-    #   expect(build).to eq [
-    #     {
-    #       "type: "publication",
-    #       "note: [
-    #         {
-    #           "type: "edition",
-    #           "parallelValue: [
-    #             {
-    #               "value: "First edition",
-    #               "valueLanguage: {
-    #                 "code: "eng",
-    #                 "source: {
-    #                   "code: "iso639-2b"
-    #                 },
-    #                 "valueScript: {
-    #                   "code: "Latn",
-    #                   "source: {
-    #                     "code: "iso15924"
-    #                   }
-    #                 }
-    #               }
-    #             },
-    #             {
-    #               "value: "Первое издание",
-    #               "valueLanguage: {
-    #                 "code: "rus",
-    #                 "source: {
-    #                   "code: "iso639-2b"
-    #                 },
-    #                 "valueScript: {
-    #                   "code: "Cyrl",
-    #                   "source: {
-    #                     "code: "iso15924"
-    #                   }
-    #                 }
-    #               }
-    #             }
-    #           ]
-    #         }
-    #       ]
-    #     }
-    #   ]
-    # end
+  context 'with multilingual edition' do
+    let(:xml) do
+      <<~XML
+        <originInfo eventType="publication" lang="eng" script="Latn" altRepGroup="1">
+          <edition>First edition</edition>
+        </originInfo>
+        <originInfo eventType="publication" lang="rus" script="Cyrl" altRepGroup="1">
+          <edition>Первое издание</edition>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          type: 'publication',
+          note: [
+            {
+              type: 'edition',
+              parallelValue: [
+                {
+                  value: 'First edition',
+                  valueLanguage: {
+                    code: 'eng',
+                    source: {
+                      code: 'iso639-2b'
+                    },
+                    valueScript: {
+                      code: 'Latn',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                },
+                {
+                  value: 'Первое издание',
+                  valueLanguage: {
+                    code: 'rus',
+                    source: {
+                      code: 'iso639-2b'
+                    },
+                    valueScript: {
+                      code: 'Cyrl',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    end
   end
 end

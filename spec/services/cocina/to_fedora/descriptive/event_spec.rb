@@ -1614,67 +1614,66 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
 
   # example 42 from mods_to_cocina_originInfo.txt
   context 'with multilingual edition' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L1420'
-    # let(:events) do
-    #   [
-    #     Cocina::Models::Event.new(
-    #       {
-    #         type: 'publication',
-    #         note: [
-    #           {
-    #             type: 'edition',
-    #             parallelValue: [
-    #               {
-    #                 value: 'First edition',
-    #                 valueLanguage: {
-    #                   code: 'eng',
-    #                   source: {
-    #                     code: 'iso639-2b'
-    #                   },
-    #                   valueScript: {
-    #                     code: 'Latn',
-    #                     source: {
-    #                       code: 'iso15924'
-    #                     }
-    #                   }
-    #                 }
-    #               },
-    #               {
-    #                 value: 'Первое издание',
-    #                 valueLanguage: {
-    #                   code: 'rus',
-    #                   source: {
-    #                     code: 'iso639-2b'
-    #                   },
-    #                   valueScript: {
-    #                     code: 'Cyrl',
-    #                     source: {
-    #                       code: 'iso15924'
-    #                     }
-    #                   }
-    #                 }
-    #               }
-    #             ]
-    #           }
-    #         ]
-    #       }
-    #     )
-    #   ]
-    # end
-    #
-    # it 'builds the expected xml' do
-    #   expect(xml).to be_equivalent_to <<~XML
-    #     <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    #       xmlns="http://www.loc.gov/mods/v3" version="3.6"
-    #       xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-    #       <originInfo eventType="publication" lang="eng" script="Latn" altRepGroup="1">
-    #         <edition>First edition</edition>
-    #       </originInfo>
-    #       <originInfo eventType="publication" lang="rus" script="Cyrl" altRepGroup="1">
-    #         <edition>Первое издание</edition>
-    #       </originInfo>
-    #     </mods>
-    #   XML
-    # end
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          {
+            type: 'publication',
+            note: [
+              {
+                type: 'edition',
+                parallelValue: [
+                  {
+                    value: 'First edition',
+                    valueLanguage: {
+                      code: 'eng',
+                      source: {
+                        code: 'iso639-2b'
+                      },
+                      valueScript: {
+                        code: 'Latn',
+                        source: {
+                          code: 'iso15924'
+                        }
+                      }
+                    }
+                  },
+                  {
+                    value: 'Первое издание',
+                    valueLanguage: {
+                      code: 'rus',
+                      source: {
+                        code: 'iso639-2b'
+                      },
+                      valueScript: {
+                        code: 'Cyrl',
+                        source: {
+                          code: 'iso15924'
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        )
+      ]
+    end
+
+    it 'builds the expected xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo eventType="publication" lang="eng" script="Latn" altRepGroup="0">
+            <edition>First edition</edition>
+          </originInfo>
+          <originInfo eventType="publication" lang="rus" script="Cyrl" altRepGroup="0">
+            <edition>Первое издание</edition>
+          </originInfo>
+        </mods>
+      XML
+    end
   end
 end

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 module Cocina
   module ToFedora
     class Descriptive
@@ -27,6 +28,7 @@ module Cocina
           group_locations
           group_contributors
           group_dates
+          group_edition_notes
 
           groups.each do |script, origin|
             attributes = {
@@ -55,6 +57,9 @@ module Cocina
               origin[:dateCreated].each do |date_created|
                 xml.dateCreated date_created[:text], date_created[:attributes]
               end
+              origin[:edition].each do |edition|
+                xml.edition edition[:text]
+              end
               write_notes if script == 'Latn'
             end
           end
@@ -67,7 +72,7 @@ module Cocina
         attr_reader :xml, :event, :alt_rep_group, :event_type, :groups
 
         def initialize_translation(key)
-          groups[key] ||= { place: [], publisher: [], dateIssued: [], dateCreated: [], lang_code: [] }
+          groups[key] ||= { place: [], publisher: [], dateIssued: [], dateCreated: [], edition: [], lang_code: [] }
         end
 
         def group_locations
@@ -133,6 +138,25 @@ module Cocina
           { text: desc_value.value, attributes: attributes }
         end
 
+        def group_edition_notes
+          Array(event.note).each do |note_desc_value|
+            next if note_desc_value.type != 'edition'
+
+            if note_desc_value.parallelValue
+              note_desc_value.parallelValue.each do |desc_value|
+                key = desc_value.valueLanguage.valueScript.code || 'Latn'
+                initialize_translation(key)
+
+                groups[key][:edition] << { text: desc_value.value }
+                groups[key][:lang_code] = desc_value.valueLanguage.code if desc_value.valueLanguage&.code
+              end
+            else
+              initialize_translation('Latn')
+              groups['Latn'][:edition] << { text: note_desc_value.value }
+            end
+          end
+        end
+
         def write_notes
           Array(event.note).each do |note|
             xml.issuance(note.value) if note.type == 'issuance'
@@ -142,3 +166,4 @@ module Cocina
     end
   end
 end
+# rubocop:enable Metrics/ClassLength
