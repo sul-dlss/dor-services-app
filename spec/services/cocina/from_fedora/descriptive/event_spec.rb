@@ -1148,79 +1148,78 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
 
   # example 41 from mods_to_cocina_originInfo.txt
   context 'with multiscript originInfo with eventType production' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L1351'
-    # let(:xml) do
-    #   <<~XML
-    #     <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="1">
-    #       <dateCreated keyDate="yes" encoding="w3cdtf">1999-09-09</dateCreated>
-    #       <place>
-    #         <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
-    #       </place>
-    #     </originInfo>
-    #     <originInfo eventType="production" lang="rus" script="Cyrl" altRepGroup="1">
-    #     <place>
-    #       <placeTerm>Москва</placeTerm>
-    #     </place>
-    #     </originInfo>
-    #   XML
-    # end
-    #
-    # it 'builds the expected cocina data structure' do
-    #   expect(build).to eq [
-    #     {
-    #       "type": "creation",
-    #       "date": [
-    #         {
-    #           "value": "1999-09-09",
-    #           "status": "primary",
-    #           "encoding": {
-    #             "code": "w3cdtf"
-    #           }
-    #         }
-    #       ],
-    #       "location": [
-    #         {
-    #           "parallelValue": [
-    #             {
-    #               "value": "Moscow",
-    #               "uri": "http://id.loc.gov/authorities/names/n79076156",
-    #               "source": {
-    #                 "uri": "http://id.loc.gov/authorities/names/"
-    #               },
-    #               "valueLanguage": {
-    #                 "code": "eng",
-    #                 "source": {
-    #                   "code": "iso639-2b"
-    #                 },
-    #                 "valueScript": {
-    #                   "code": "Latn",
-    #                   "source": {
-    #                     "code": "iso15924"
-    #                   }
-    #                 }
-    #               }
-    #             },
-    #             {
-    #               "value": "Москва",
-    #               "valueLanguage": {
-    #                 "code": "rus",
-    #                 "source": {
-    #                   "code": "iso639-2b"
-    #                 },
-    #                 "valueScript": {
-    #                   "code": "Cyrl",
-    #                   "source": {
-    #                     "code": "iso15924"
-    #                   }
-    #                 }
-    #               }
-    #             }
-    #           ]
-    #         }
-    #       ]
-    #     }
-    #   ]
-    # end
+    let(:xml) do
+      <<~XML
+        <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="1">
+          <dateCreated keyDate="yes" encoding="w3cdtf">1999-09-09</dateCreated>
+          <place>
+            <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
+          </place>
+        </originInfo>
+        <originInfo eventType="production" lang="rus" script="Cyrl" altRepGroup="1">
+        <place>
+          <placeTerm>Москва</placeTerm>
+        </place>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          type: 'creation',
+          date: [
+            {
+              value: '1999-09-09',
+              status: 'primary',
+              encoding: {
+                code: 'w3cdtf'
+              }
+            }
+          ],
+          location: [
+            {
+              parallelValue: [
+                {
+                  value: 'Moscow',
+                  uri: 'http://id.loc.gov/authorities/names/n79076156',
+                  source: {
+                    uri: 'http://id.loc.gov/authorities/names/'
+                  },
+                  valueLanguage: {
+                    code: 'eng',
+                    source: {
+                      code: 'iso639-2b'
+                    },
+                    valueScript: {
+                      code: 'Latn',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                },
+                {
+                  value: 'Москва',
+                  valueLanguage: {
+                    code: 'rus',
+                    source: {
+                      code: 'iso639-2b'
+                    },
+                    valueScript: {
+                      code: 'Cyrl',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    end
   end
 
   # example 42 from mods_to_cocina_originInfo.txt
@@ -1240,37 +1239,37 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     # it 'builds the expected cocina data structure' do
     #   expect(build).to eq [
     #     {
-    #       "type": "publication",
-    #       "note": [
+    #       "type: "publication",
+    #       "note: [
     #         {
-    #           "type": "edition",
-    #           "parallelValue": [
+    #           "type: "edition",
+    #           "parallelValue: [
     #             {
-    #               "value": "First edition",
-    #               "valueLanguage": {
-    #                 "code": "eng",
-    #                 "source": {
-    #                   "code": "iso639-2b"
+    #               "value: "First edition",
+    #               "valueLanguage: {
+    #                 "code: "eng",
+    #                 "source: {
+    #                   "code: "iso639-2b"
     #                 },
-    #                 "valueScript": {
-    #                   "code": "Latn",
-    #                   "source": {
-    #                     "code": "iso15924"
+    #                 "valueScript: {
+    #                   "code: "Latn",
+    #                   "source: {
+    #                     "code: "iso15924"
     #                   }
     #                 }
     #               }
     #             },
     #             {
-    #               "value": "Первое издание",
-    #               "valueLanguage": {
-    #                 "code": "rus",
-    #                 "source": {
-    #                   "code": "iso639-2b"
+    #               "value: "Первое издание",
+    #               "valueLanguage: {
+    #                 "code: "rus",
+    #                 "source: {
+    #                   "code: "iso639-2b"
     #                 },
-    #                 "valueScript": {
-    #                   "code": "Cyrl",
-    #                   "source": {
-    #                     "code": "iso15924"
+    #                 "valueScript: {
+    #                   "code: "Cyrl",
+    #                   "source: {
+    #                     "code: "iso15924"
     #                   }
     #                 }
     #               }

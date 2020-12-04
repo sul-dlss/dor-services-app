@@ -35,8 +35,10 @@ module Cocina
 
         def write
           Array(events).each do |event|
+            event_type = EVENT_TYPE.fetch(event.type) if event.type
             attributes = {}
-            attributes[:eventType] = EVENT_TYPE.fetch(event.type) if event.type
+            attributes[:eventType] = event_type if event_type
+
             if translated?(event)
               TranslatedEvent.write(xml: xml, event: event, alt_rep_group: id_generator.next_altrepgroup, event_type: event.type)
             else
@@ -51,7 +53,8 @@ module Cocina
 
         def translated?(event)
           Array(event.location).any?(&:parallelValue) &&
-            Array(event.contributor).flat_map(&:name).all?(&:parallelValue)
+            Array(event.contributor).flat_map(&:name).all?(&:parallelValue) ||
+            Array(event.note).any?(&:parallelValue)
         end
 
         def write_basic(event, attributes)

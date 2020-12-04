@@ -21,6 +21,8 @@ module Cocina
           @groups = {}
         end
 
+        # rubocop:disable Metrics/AbcSize
+        # rubocop:disable Metrics/BlockLength
         def write
           group_locations
           group_contributors
@@ -32,11 +34,13 @@ module Cocina
               altRepGroup: alt_rep_group,
               eventType: event_type
             }
+            attributes[:lang] = origin[:lang_code] if origin[:lang_code].present?
+
             xml.originInfo attributes do
               origin[:place].each do |place|
                 xml.place do
                   if place[:text]
-                    xml.placeTerm place[:text], type: 'text'
+                    xml.placeTerm place[:text], place[:attributes].merge(type: 'text')
                   else
                     xml.placeTerm place[:code], type: 'code', authority: place[:authority]
                   end
@@ -48,32 +52,47 @@ module Cocina
               origin[:dateIssued].each do |date_issued|
                 xml.dateIssued date_issued[:text], date_issued[:attributes]
               end
+              origin[:dateCreated].each do |date_created|
+                xml.dateCreated date_created[:text], date_created[:attributes]
+              end
               write_notes if script == 'Latn'
             end
           end
         end
+        # rubocop:enable Metrics/AbcSize
+        # rubocop:enable Metrics/BlockLength
 
         private
 
         attr_reader :xml, :event, :alt_rep_group, :event_type, :groups
 
         def initialize_translation(key)
-          groups[key] ||= { place: [], publisher: [], dateIssued: [] }
+          groups[key] ||= { place: [], publisher: [], dateIssued: [], dateCreated: [], lang_code: [] }
         end
 
         def group_locations
-          Array(event.location.reverse).each do |loc|
+          Array(event.location).each do |loc|
             if loc.parallelValue
-              loc.parallelValue.each do |val|
-                key = val.valueLanguage.valueScript.code
+              loc.parallelValue.each do |desc_value|
+                key = desc_value.valueLanguage.valueScript.code
                 initialize_translation(key)
-                groups[key][:place] << { text: val.value }
+
+                groups[key][:lang_code] = desc_value.valueLanguage.code if desc_value.valueLanguage&.code
+                groups[key][:place] << group_location_value(desc_value)
               end
             else
               initialize_translation('Latn')
               groups['Latn'][:place] << { code: loc.code, authority: loc.source.code }
             end
           end
+        end
+
+        def group_location_value(desc_value)
+          attributes = {}
+          attributes[:valueURI] = desc_value.uri if desc_value.uri
+          attributes[:authorityURI] = desc_value.source.uri if desc_value.source&.uri
+
+          { text: desc_value.value, attributes: attributes }
         end
 
         def group_contributors

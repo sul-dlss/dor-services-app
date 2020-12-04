@@ -1529,4 +1529,152 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       XML
     end
   end
+
+  # example 41 from mods_to_cocina_originInfo.txt
+  context 'with multiscript originInfo with eventType production' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          {
+            type: 'creation',
+            date: [
+              {
+                value: '1999-09-09',
+                status: 'primary',
+                encoding: {
+                  code: 'w3cdtf'
+                }
+              }
+            ],
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Moscow',
+                    uri: 'http://id.loc.gov/authorities/names/n79076156',
+                    source: {
+                      uri: 'http://id.loc.gov/authorities/names/'
+                    },
+                    valueLanguage: {
+                      code: 'eng',
+                      source: {
+                        code: 'iso639-2b'
+                      },
+                      valueScript: {
+                        code: 'Latn',
+                        source: {
+                          code: 'iso15924'
+                        }
+                      }
+                    }
+                  },
+                  {
+                    value: 'Москва',
+                    valueLanguage: {
+                      code: 'rus',
+                      source: {
+                        code: 'iso639-2b'
+                      },
+                      valueScript: {
+                        code: 'Cyrl',
+                        source: {
+                          code: 'iso15924'
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        )
+      ]
+    end
+
+    it 'builds the expected xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="0">
+            <place>
+              <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79076156" type="text">Moscow</placeTerm>
+            </place>
+            <dateCreated keyDate="yes" encoding="w3cdtf">1999-09-09</dateCreated>
+          </originInfo>
+          <originInfo eventType="production" lang="rus" script="Cyrl" altRepGroup="0">
+            <place>
+              <placeTerm type="text">Москва</placeTerm>
+            </place>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  # example 42 from mods_to_cocina_originInfo.txt
+  context 'with multilingual edition' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L1420'
+    # let(:events) do
+    #   [
+    #     Cocina::Models::Event.new(
+    #       {
+    #         type: 'publication',
+    #         note: [
+    #           {
+    #             type: 'edition',
+    #             parallelValue: [
+    #               {
+    #                 value: 'First edition',
+    #                 valueLanguage: {
+    #                   code: 'eng',
+    #                   source: {
+    #                     code: 'iso639-2b'
+    #                   },
+    #                   valueScript: {
+    #                     code: 'Latn',
+    #                     source: {
+    #                       code: 'iso15924'
+    #                     }
+    #                   }
+    #                 }
+    #               },
+    #               {
+    #                 value: 'Первое издание',
+    #                 valueLanguage: {
+    #                   code: 'rus',
+    #                   source: {
+    #                     code: 'iso639-2b'
+    #                   },
+    #                   valueScript: {
+    #                     code: 'Cyrl',
+    #                     source: {
+    #                       code: 'iso15924'
+    #                     }
+    #                   }
+    #                 }
+    #               }
+    #             ]
+    #           }
+    #         ]
+    #       }
+    #     )
+    #   ]
+    # end
+    #
+    # it 'builds the expected xml' do
+    #   expect(xml).to be_equivalent_to <<~XML
+    #     <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    #       xmlns="http://www.loc.gov/mods/v3" version="3.6"
+    #       xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+    #       <originInfo eventType="publication" lang="eng" script="Latn" altRepGroup="1">
+    #         <edition>First edition</edition>
+    #       </originInfo>
+    #       <originInfo eventType="publication" lang="rus" script="Cyrl" altRepGroup="1">
+    #         <edition>Первое издание</edition>
+    #       </originInfo>
+    #     </mods>
+    #   XML
+    # end
+  end
 end
