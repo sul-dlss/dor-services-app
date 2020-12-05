@@ -345,19 +345,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
             }
           }
         ],
-        "physicalLocation": [
+        "url": [
           {
-            "value": 'Box: 20, Folder: Engineering laboratories -- exterior -- #1',
-            "type": 'location'
+            "value": 'https://swap.stanford.edu/20171107174354/https://www.le.ac.uk/english/em1060to1220/index.html',
+            "displayLabel": 'Archived website'
           },
           {
-            "value": 'SC1071',
-            "type": 'shelf locator'
-          }
-        ],
-        "digitalRepository": [
-          {
-            "value": 'Stanford Digital Repository'
+            "value": 'https://second.swap.stanford.edu/20171107174354/https://www.le.ac.uk/english/em1060to1220/index.html',
+            "displayLabel": 'Second Archived website'
           }
         ]
       )
@@ -370,13 +365,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <location>
-            <physicalLocation>Box: 20, Folder: Engineering laboratories -- exterior -- #1</physicalLocation>
-          </location>
-          <location>
-            <shelfLocator>SC1071</shelfLocator>
-          </location>
-          <location>
             <physicalLocation type="repository" valueURI="http://id.loc.gov/authorities/names/no2014019980" authorityURI="http://id.loc.gov/authorities/names/" authority="naf">Stanford University. Libraries. Department of Special Collections and University Archives</physicalLocation>
+          </location>
+          <location>
+            <url displayLabel="Archived website">https://swap.stanford.edu/20171107174354/https://www.le.ac.uk/english/em1060to1220/index.html</url>
+          </location>
+          <location>
+            <url displayLabel="Second Archived website">https://second.swap.stanford.edu/20171107174354/https://www.le.ac.uk/english/em1060to1220/index.html</url>
           </location>
         </mods>
       XML

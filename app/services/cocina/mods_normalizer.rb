@@ -28,15 +28,16 @@ module Cocina
       normalize_subject_authority_naf
       normalize_text_role_term
       normalize_role_term_authority
-      normalize_purl
       normalize_related_item_other_type
-      normalize_empty_notes
       normalize_unmatched_altrepgroup
       normalize_xml_space
       normalize_language_term_type
       normalize_geo_purl
       normalize_access_condition
       normalize_identifier_type
+      normalize_location_physical_location
+      normalize_purl
+      normalize_empty_notes
       ng_xml
     end
 
@@ -257,6 +258,17 @@ module Cocina
     def normalize_subject_authority_lcnaf
       ng_xml.root.xpath("//mods:*[@authority='lcnaf']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
         node[:authority] = 'naf'
+      end
+    end
+
+    def normalize_location_physical_location
+      location_nodes(ng_xml).each do |location_node|
+        location_node.xpath('mods:physicalLocation|mods:url|mods:shelfLocator', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+          new_location = Nokogiri::XML::Node.new('location', Nokogiri::XML(nil))
+          new_location << node
+          ng_xml.root << new_location
+        end
+        location_node.remove
       end
     end
   end

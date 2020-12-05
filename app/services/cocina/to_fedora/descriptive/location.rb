@@ -85,6 +85,7 @@ module Cocina
             attrs[:authority] = cocina.source&.code
             attrs[:script] = cocina.valueLanguage&.valueScript&.code
             attrs[:lang] = cocina.valueLanguage&.code
+            attrs[:type] = cocina.type
           end.compact
         end
 
