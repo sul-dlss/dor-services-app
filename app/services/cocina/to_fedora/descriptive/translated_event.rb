@@ -37,6 +37,7 @@ module Cocina
               eventType: event_type
             }
             attributes[:lang] = origin[:lang_code] if origin[:lang_code].present?
+            attributes.delete(:script) if attributes[:script].blank?
 
             xml.originInfo attributes do
               origin[:place].each do |place|
@@ -60,7 +61,7 @@ module Cocina
               origin[:edition].each do |edition|
                 xml.edition edition[:text]
               end
-              write_notes if script == 'Latn'
+              write_notes if ['Latn', ''].include?(script)
             end
           end
         end
@@ -75,22 +76,29 @@ module Cocina
           groups[key] ||= { place: [], publisher: [], dateIssued: [], dateCreated: [], edition: [], lang_code: [] }
         end
 
+        # rubocop:disable Metrics/AbcSize
         def group_locations
           Array(event.location).each do |loc|
             if loc.parallelValue
               loc.parallelValue.each do |desc_value|
-                key = desc_value.valueLanguage.valueScript.code
-                initialize_translation(key)
+                if desc_value.valueLanguage.blank?
+                  initialize_translation('')
+                  groups[''][:place] << { code: desc_value&.code, authority: desc_value&.source&.code }
+                else
+                  key = desc_value.valueLanguage.valueScript.code
+                  initialize_translation(key)
 
-                groups[key][:lang_code] = desc_value.valueLanguage.code if desc_value.valueLanguage&.code
-                groups[key][:place] << group_location_value(desc_value)
+                  groups[key][:lang_code] = desc_value.valueLanguage.code if desc_value.valueLanguage&.code
+                  groups[key][:place] << group_location_value(desc_value)
+                end
               end
             else
-              initialize_translation('Latn')
-              groups['Latn'][:place] << { code: loc.code, authority: loc.source.code }
+              initialize_translation('')
+              groups[''][:place] << { code: loc.code, authority: loc.source.code }
             end
           end
         end
+        # rubocop:enable Metrics/AbcSize
 
         def group_location_value(desc_value)
           attributes = {}
@@ -105,7 +113,7 @@ module Cocina
             next unless contrib.name.first.parallelValue
 
             contrib.name.first.parallelValue.each do |val|
-              key = val.valueLanguage.valueScript.code
+              key = val.valueLanguage.blank? ? '' : val.valueLanguage.valueScript.code
               initialize_translation(key)
               groups[key][:publisher] << { text: val.value }
             end
@@ -117,13 +125,13 @@ module Cocina
             tag = Cocina::ToFedora::Descriptive::Event::TAG_NAME.fetch(event.type, :dateOther)
             if date.parallelValue
               date.parallelValue.each do |val|
-                key = val.valueLanguage&.valueScript&.code || 'Latn'
+                key = val.valueLanguage&.valueScript&.code || ''
                 initialize_translation(key)
                 groups[key][tag] << group_date_value(val, tag)
               end
             else
-              initialize_translation('Latn')
-              groups['Latn'][tag] << group_date_value(date, tag)
+              initialize_translation('')
+              groups[''][tag] << group_date_value(date, tag)
             end
           end
         end
@@ -144,15 +152,15 @@ module Cocina
 
             if note_desc_value.parallelValue
               note_desc_value.parallelValue.each do |desc_value|
-                key = desc_value.valueLanguage.valueScript.code || 'Latn'
+                key = desc_value.valueLanguage&.valueScript&.code || ''
                 initialize_translation(key)
 
                 groups[key][:edition] << { text: desc_value.value }
                 groups[key][:lang_code] = desc_value.valueLanguage.code if desc_value.valueLanguage&.code
               end
             else
-              initialize_translation('Latn')
-              groups['Latn'][:edition] << { text: note_desc_value.value }
+              initialize_translation('')
+              groups[''][:edition] << { text: note_desc_value.value }
             end
           end
         end

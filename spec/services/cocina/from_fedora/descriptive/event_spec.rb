@@ -966,7 +966,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
   end
 
   # example 39 from mods_to_cocina_originInfo.txt
-  context 'with multilingual' do
+  context 'with multilingual publication location, publisher, dateIssued' do
     let(:xml) do
       <<~XML
         <originInfo script="Latn" altRepGroup="1">

@@ -36,79 +36,77 @@ module Cocina
 
         # @param [Hash[String, Array[Nokogiri::XML::NodeSet]]] grouped_origin_infos hash of key altRepGroup, value Array of NodeSets for originInfo elements in the grouping
         def build_grouped_origin_infos(grouped_origin_infos)
-          grouped_origin_infos.map do |_k, node_set_array|
-            events = build_ungrouped_origin_infos([node_set_array.first])
-            first_attribs = node_set_array.first&.attributes
-            first_script = first_attribs['script']&.value
-            first_lang_code = first_attribs['lang']&.value
-            event_type = first_attribs['eventType']&.value || 'publication'
-            el_names_in_common = child_element_names_in_common(node_set_array)
-            build_parallel_values(events, node_set_array.drop(1), el_names_in_common, first_script, first_lang_code, event_type)
+          grouped_origin_infos.values.map do |nodeset|
+            origin_info_element = nodeset.first
+            events = build_ungrouped_origin_infos([origin_info_element])
+            event_type = origin_info_element['eventType'] || 'publication'
+            scripts_langs_hash = {
+              orig_script: origin_info_element['script'],
+              orig_lang_code: origin_info_element['lang']
+            }
+            # element names in common:
+            # cocina events are created from MODS <originInfo> based on the flavor of date field (e.g. dateIssued, dateCreated)
+            # and therefore we have to match the parallel values from "altRepGroup" attributes into the cocina event after
+            # the event has been created.  To do this, we need to know which element names are common across multiple originInfo nodes
+            el_names_in_common = child_element_names_in_common(nodeset)
+            build_parallel_values(events, nodeset.drop(1), el_names_in_common, event_type, scripts_langs_hash)
             events.reject(&:blank?)
           end.flatten
         end
 
-        def child_element_names_in_common(node_set_array)
-          candidates = node_set_array.first.element_children.map(&:name).uniq
-          node_set_array.each do |node_set|
+        # return element in are common across multiple originInfo nodes
+        def child_element_names_in_common(nodeset)
+          candidates = nodeset.first.element_children.map(&:name).uniq
+          nodeset.each do |node_set|
             # set intersection to the rescue!
             candidates &= node_set.element_children.map(&:name).uniq
           end
           candidates
         end
 
-        # rubocop:disable Metrics/ParameterLists
-        def build_parallel_values(events, node_set_array, el_names_in_common, first_script, first_lang_code, event_type)
-          node_set_array.each do |origin_info_node_set|
+        def build_parallel_values(events, nodeset, el_names_in_common, event_type, scripts_langs_hash)
+          nodeset.each do |origin_info_node_set|
             parallel_attribs = origin_info_node_set&.attributes
-            parallel_script = parallel_attribs['script']&.value
-            parallel_lang_code = parallel_attribs['lang']&.value
+            scripts_langs_hash[:parallel_script] = parallel_attribs['script']&.value
+            scripts_langs_hash[:parallel_lang_code] = parallel_attribs['lang']&.value
             origin_info_node_set.element_children.each do |child_el|
               child_el_name = child_el.name
               if el_names_in_common.include?(child_el_name)
-                build_parallel_value(events, child_el, first_script, parallel_script, first_lang_code, parallel_lang_code, event_type)
+                build_parallel_value(events, child_el, event_type, scripts_langs_hash)
               else
                 errmsg = "problem building event parallel values due to unmatched originInfo element #{child_el_name}"
-                Honeybadger.notify(errmsg)
-                logger.error(errmsg)
+                Honeybadger.notify("[DATA ERROR] #{errmsg}", { tags: 'data_error' })
               end
             end
           end
         end
-        # rubocop:enable Metrics/ParameterLists
 
-        # rubocop:disable Metrics/ParameterLists
-        def build_parallel_value(events, child_el, orig_script, parallel_script, orig_lang_code, parallel_lang_code, event_type)
+        def build_parallel_value(events, child_el, event_type, scripts_langs_hash)
           child_el_name = child_el.name
           case child_el_name
           when 'dateIssued'
-            add_parallel_publication_date(events, child_el, orig_script, parallel_script)
+            add_parallel_publication_date(events, child_el, scripts_langs_hash)
           when /date/i
-            errmsg = "originInfo date flavor #{child_el_name} has unanticipated parallelValue - needs code"
-            Honeybadger.notify(errmsg)
-            logger.error(errmsg)
+            errmsg = "originInfo date flavor #{child_el_name} has unanticipated parallelValue - not yet implemented"
+            Honeybadger.notify("[DATA ERROR] #{errmsg}", { tags: 'data_error' })
           when 'place'
             parallel_place_term = child_el.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).first
             parallel_place_value = parallel_place_term&.content
             return if parallel_place_value.blank?
 
             event = events.find { |e| e[:type] == Cocina::ToFedora::Descriptive::Event::EVENT_TYPE.key(event_type) }
-            add_parallel_location(event, parallel_place_value, orig_script, parallel_script, orig_lang_code, parallel_lang_code)
+            add_parallel_location(event, parallel_place_value, scripts_langs_hash)
           when 'publisher'
-            add_parallel_contributor(events, child_el, orig_script, parallel_script)
+            add_parallel_contributor(events, child_el, scripts_langs_hash)
           when 'edition'
-            add_parallel_edition(events, child_el, orig_script, parallel_script, orig_lang_code, parallel_lang_code)
+            add_parallel_edition(events, child_el, scripts_langs_hash)
           when 'issuance', 'frequency'
-            errmsg = "originInfo #{child_el_name} has unanticipated parallelValue - needs code"
-            Honeybadger.notify(errmsg)
-            logger.error(errmsg)
-          else
-            errmsg = "originInfo has unexpected child node #{child_el_name}"
+            errmsg = "originInfo #{child_el_name} has unanticipated parallelValue - not yet implemented"
             Honeybadger.notify("[DATA ERROR] #{errmsg}", { tags: 'data_error' })
-            logger.error("DATA ERROR: #{errmsg}")
+          else
+            Honeybadger.notify("[DATA ERROR] originInfo has unexpected child node #{child_el_name}", { tags: 'data_error' })
           end
         end
-        # rubocop:enable Metrics/ParameterLists
 
         def build_ungrouped_origin_infos(origin_infos)
           origin_infos.flat_map do |origin_info|
@@ -179,37 +177,35 @@ module Cocina
           end.compact
         end
 
-        # rubocop:disable Metrics/ParameterLists
-        def add_parallel_location(event, parallel_place_value, orig_script, parallel_script, orig_lang_code, parallel_lang_code)
+        def add_parallel_location(event, parallel_place_value, scripts_langs_hash)
           orig_locations = event[:location]
           orig_location_value = first_value(orig_locations)
           return nil unless orig_location_value
 
-          parallel_value = parallel_value(orig_location_value, parallel_place_value, orig_script, parallel_script)
+          parallel_value = parallel_value(orig_location_value, parallel_place_value, scripts_langs_hash)
           if orig_locations.size > 1
             additional_values = orig_locations.select { |location| location[:value].present? && location[:value] != orig_location_value }
             parallel_value = add_to_parallel_value(parallel_value, additional_values) if additional_values.present?
           end
-          orig_w_value = first_with_value(orig_locations)
-          add_parallel_lang_info(parallel_value, orig_w_value, orig_lang_code, parallel_lang_code)
+          original_with_value = first_with_value(orig_locations)
+          add_parallel_lang_info(parallel_value, original_with_value, scripts_langs_hash)
           event[:location] = [parallel_value]
 
           addl_locations = orig_locations.reject { |location| location[:value].present? }
           addl_locations.each { |location_val| event[:location] << location_val }
         end
-        # rubocop:enable Metrics/ParameterLists
 
-        def add_parallel_lang_info(parallel_value, orig_w_value, orig_lang_code, parallel_lang_code)
-          parallel_value[:parallelValue].first[:uri] = orig_w_value[:uri] if orig_w_value[:uri]
-          parallel_value[:parallelValue].first[:source] = orig_w_value[:source] if orig_w_value[:source]
-          if orig_lang_code
-            parallel_value[:parallelValue].first[:valueLanguage][:code] = orig_lang_code
+        def add_parallel_lang_info(parallel_value, original_with_value, scripts_langs_hash)
+          parallel_value[:parallelValue].first[:uri] = original_with_value[:uri] if original_with_value[:uri]
+          parallel_value[:parallelValue].first[:source] = original_with_value[:source] if original_with_value[:source]
+          if scripts_langs_hash[:orig_lang_code]
+            parallel_value[:parallelValue].first[:valueLanguage][:code] = scripts_langs_hash[:orig_lang_code]
             parallel_value[:parallelValue].first[:valueLanguage][:source] = { code: 'iso639-2b' }
           end
 
-          return if parallel_lang_code.blank?
+          return if scripts_langs_hash[:parallel_lang_code].blank?
 
-          parallel_value[:parallelValue].second[:valueLanguage][:code] = parallel_lang_code
+          parallel_value[:parallelValue].second[:valueLanguage][:code] = scripts_langs_hash[:parallel_lang_code]
           parallel_value[:parallelValue].second[:valueLanguage][:source] = { code: 'iso639-2b' }
         end
 
@@ -218,22 +214,21 @@ module Cocina
         end
 
         def first_value(desc_value_array)
-          first_with_value(desc_value_array)[:value]
+          if desc_value_array&.size == 1 && desc_value_array.first[:structuredValue]
+            msg = '[DATA ERROR] originInfo/dates are a structuredValue but also have altRepGroup for parallelValue'
+            Honeybadger.notify(msg, { tags: 'data_error' })
+            return nil
+          end
+          first_with_value(desc_value_array)[:value] if first_with_value(desc_value_array)
         end
 
         def with_uri_info(cocina, xml_node)
           cocina[:uri] = xml_node['valueURI'] if xml_node['valueURI']
-          if xml_node['authority']
-            cocina[:source] = {
-              code: Authority.normalize_code(xml_node['authority']),
-              uri: Authority.normalize_uri(xml_node['authorityURI'])
-            }.compact
-          elsif xml_node['authorityURI'] # used for originInfo placeTermn
-            cocina[:source] = {
-              # code: xml_node['authorityURI'],
-              uri: AuthorityUri.normalize(xml_node['authorityURI'])
-            }.compact
-          end
+          source = {
+            code: Authority.normalize_code(xml_node['authority']),
+            uri: Authority.normalize_uri(xml_node['authorityURI'])
+          }.compact
+          cocina[:source] = source if source.present?
           cocina
         end
 
@@ -275,8 +270,7 @@ module Cocina
           end
         end
 
-        # rubocop:disable Metrics/ParameterLists
-        def add_parallel_edition(events, parallel_xml_node, orig_script, parallel_script, orig_lang_code, parallel_lang_code)
+        def add_parallel_edition(events, parallel_xml_node, scripts_langs_hash)
           parallel_edition_value = parallel_xml_node&.content
           return nil unless parallel_edition_value
 
@@ -288,14 +282,13 @@ module Cocina
             orig_edition_value = desc_value[:value]
             next if orig_edition_value.blank?
 
-            parallel_value = parallel_value(orig_edition_value, parallel_edition_value, orig_script, parallel_script)
-            add_parallel_lang_info(parallel_value, desc_value, orig_lang_code, parallel_lang_code)
+            parallel_value = parallel_value(orig_edition_value, parallel_edition_value, scripts_langs_hash)
+            add_parallel_lang_info(parallel_value, desc_value, scripts_langs_hash)
 
             desc_value[:parallelValue] = parallel_value[:parallelValue]
             desc_value.delete(:value)
           end
         end
-        # rubocop:enable Metrics/ParameterLists
 
         def add_publisher_info(event, set)
           return if set.empty?
@@ -320,7 +313,7 @@ module Cocina
           end
         end
 
-        def add_parallel_contributor(events, parallel_xml_node, orig_script, parallel_script)
+        def add_parallel_contributor(events, parallel_xml_node, scripts_langs_hash)
           parallel_contrib_value = parallel_xml_node&.content
           return nil unless parallel_contrib_value
 
@@ -330,13 +323,7 @@ module Cocina
           orig_contrib_name_value = first_contrib_name_value(orig_contributors)
           return nil unless orig_contrib_name_value
 
-          parallel_value = parallel_value(orig_contrib_name_value, parallel_contrib_value, orig_script, parallel_script)
-          if orig_contributors.size > 1
-            additional_values = orig_contributors.select do |contrib|
-              contrib[:name].first[:value].present? && contrib[:name].first[:value] != orig_contrib_name_value
-            end
-            parallel_value = add_to_parallel_value(parallel_value, additional_values) if additional_values.present?
-          end
+          parallel_value = parallel_value(orig_contrib_name_value, parallel_contrib_value, scripts_langs_hash)
           publication_event[:contributor].first[:name] = [parallel_value]
 
           addl_contributors = orig_contributors.reject { |contrib| contrib[:name].present? }
@@ -344,11 +331,11 @@ module Cocina
         end
 
         def first_contrib_name_value(orig_contributors)
-          orig_contrib_name_w_value = orig_contributors&.find do |contrib|
+          orig_contrib_name_with_value = orig_contributors&.find do |contrib|
             first_contrib_name = contrib[:name]&.first
             first_contrib_name[:value].present?
           end
-          orig_contrib_name_w_value[:name].first[:value] if orig_contrib_name_w_value
+          orig_contrib_name_with_value[:name].first[:value] if orig_contrib_name_with_value
         end
 
         def build_event(type, node_set, display_label = nil)
@@ -373,7 +360,7 @@ module Cocina
           [{ structuredValue: dates }]
         end
 
-        def add_parallel_publication_date(events, parallel_xml_node, orig_script, parallel_script)
+        def add_parallel_publication_date(events, parallel_xml_node, scripts_langs_hash)
           parallel_date_value = parallel_xml_node&.content
           return nil unless parallel_date_value
 
@@ -383,7 +370,7 @@ module Cocina
           orig_pub_date_value = first_value(orig_pub_dates)
           return nil unless orig_pub_date_value
 
-          parallel_value = parallel_value(orig_pub_date_value, parallel_date_value, orig_script, parallel_script)
+          parallel_value = parallel_value(orig_pub_date_value, parallel_date_value, scripts_langs_hash)
           additional_values = orig_pub_dates.reject { |date| date[:value] == orig_pub_date_value } if orig_pub_dates.size > 1
           parallel_value = add_to_parallel_value(parallel_value, additional_values) if additional_values.present?
           publication_event[:date] = [parallel_value]
@@ -420,29 +407,37 @@ module Cocina
           @origin_info ||= resource_element.xpath(ORIGININFO_XPATH, mods: DESC_METADATA_NS)
         end
 
-        def parallel_value(first_value, second_value, first_script, second_script)
-          {
-            parallelValue: [
-              {
-                value: first_value,
-                valueLanguage: {
-                  valueScript: {
-                    code: first_script,
-                    source: { code: 'iso15924' }
-                  }
+        def parallel_value(orig_value, parallel_value, scripts_langs_hash)
+          result =
+            {
+              parallelValue: [
+                {
+                  value: orig_value
+                },
+                {
+                  value: parallel_value
                 }
-              },
+              ]
+            }
+          if scripts_langs_hash[:orig_script].present?
+            result[:parallelValue].first[:valueLanguage] =
               {
-                value: second_value,
-                valueLanguage: {
-                  valueScript: {
-                    code: second_script,
-                    source: { code: 'iso15924' }
-                  }
+                valueScript: {
+                  code: scripts_langs_hash[:orig_script],
+                  source: { code: 'iso15924' }
                 }
               }
-            ]
-          }
+          end
+          if scripts_langs_hash[:parallel_script].present?
+            result[:parallelValue].last[:valueLanguage] =
+              {
+                valueScript: {
+                  code: scripts_langs_hash[:parallel_script],
+                  source: { code: 'iso15924' }
+                }
+              }
+          end
+          result
         end
 
         def add_to_parallel_value(parallel_value_struct, additional_values)
