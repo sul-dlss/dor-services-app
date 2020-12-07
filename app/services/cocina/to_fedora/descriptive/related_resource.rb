@@ -23,14 +23,16 @@ module Cocina
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] related_resources
         # @param [string] druid
-        def self.write(xml:, related_resources:, druid:)
-          new(xml: xml, related_resources: related_resources, druid: druid).write
+        # @param [IdGenerator] id_generator
+        def self.write(xml:, related_resources:, druid:, id_generator:)
+          new(xml: xml, related_resources: related_resources, druid: druid, id_generator: id_generator).write
         end
 
-        def initialize(xml:, related_resources:, druid:)
+        def initialize(xml:, related_resources:, druid:, id_generator:)
           @xml = xml
           @related_resources = related_resources
           @druid = druid
+          @id_generator = id_generator
         end
 
         def write
@@ -56,14 +58,14 @@ module Cocina
             new_related = Cocina::Models::RelatedResource.new(related_hash.compact)
 
             xml.relatedItem attributes do
-              DescriptiveWriter.write(xml: xml, descriptive: new_related, druid: druid)
+              DescriptiveWriter.write(xml: xml, descriptive: new_related, druid: druid, id_generator: id_generator)
             end
           end
         end
 
         private
 
-        attr_reader :xml, :related_resources, :druid
+        attr_reader :xml, :related_resources, :druid, :id_generator
 
         def other_type_note_for(related)
           return nil if related.note.nil?

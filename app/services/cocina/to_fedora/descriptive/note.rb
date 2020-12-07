@@ -7,19 +7,21 @@ module Cocina
       class Note
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] notes
-        def self.write(xml:, notes:)
-          new(xml: xml, notes: notes).write
+        # @params [IdGenerator] id_generator
+        def self.write(xml:, notes:, id_generator:)
+          new(xml: xml, notes: notes, id_generator: id_generator).write
         end
 
-        def initialize(xml:, notes:)
+        def initialize(xml:, notes:, id_generator:)
           @xml = xml
           @notes = notes
+          @id_generator = id_generator
         end
 
         def write
-          Array(notes).each_with_index do |note, index|
+          Array(notes).each do |note|
             if note.parallelValue
-              write_parallel(note, alt_rep_group: index)
+              write_parallel(note)
             else
               write_basic(note)
             end
@@ -28,7 +30,7 @@ module Cocina
 
         private
 
-        attr_reader :xml, :notes
+        attr_reader :xml, :notes, :id_generator
 
         def tag_name(type)
           case type
@@ -55,7 +57,8 @@ module Cocina
           tag(note, tag_name(note.type), note_attributes(note))
         end
 
-        def write_parallel(note, alt_rep_group:)
+        def write_parallel(note)
+          alt_rep_group = id_generator.next_altrepgroup
           note.parallelValue.each do |parallel_note|
             attributes = { altRepGroup: alt_rep_group }.merge(note_attributes(parallel_note))
 

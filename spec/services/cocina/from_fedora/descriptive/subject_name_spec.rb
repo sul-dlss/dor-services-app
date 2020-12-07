@@ -623,7 +623,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           uri: '#N/A',
           value: 'Hoveyda, Fereydoun' }
       ]
-      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Subject has <name> with an invalid type attribute '#N/A'", tags: 'data_error')
+      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Name type unrecognized '#N/A'", tags: 'data_error')
       expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has unknown authority code', tags: 'data_error')
     end
   end
@@ -656,7 +656,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'notifies Honeybadger' do
       allow(Honeybadger).to receive(:notify).once
       build
-      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Subject has <name> with an invalid type attribute 'topic'", tags: 'data_error')
+      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Name type unrecognized 'topic'", tags: 'data_error')
     end
   end
 end

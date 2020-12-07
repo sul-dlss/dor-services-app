@@ -11,7 +11,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
                'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                'version' => '3.6',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, events: events)
+        described_class.write(xml: xml, events: events, id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
   end
@@ -1237,7 +1237,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication" script="Latn" altRepGroup="0">
+          <originInfo eventType="publication" script="Latn" altRepGroup="1">
             <place>
               <placeTerm type="code" authority="marccountry">ja</placeTerm>
             </place>
@@ -1246,7 +1246,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
             </place>
             <publisher>Rinsen Shoten</publisher>
           </originInfo>
-          <originInfo eventType="publication" script="Hani" altRepGroup="0">
+          <originInfo eventType="publication" script="Hani" altRepGroup="1">
             <place>
               <placeTerm type="text">京都市</placeTerm>
             </place>

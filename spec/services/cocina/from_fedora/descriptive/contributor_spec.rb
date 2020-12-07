@@ -160,7 +160,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       it 'notifies Honeybadger' do
         allow(Honeybadger).to receive(:notify).once
         build
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Contributor type incorrectly capitalized', { tags: 'data_error' })
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Name type incorrectly capitalized', { tags: 'data_error' })
       end
     end
 
@@ -188,7 +188,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       it 'notifies Honeybadger' do
         allow(Honeybadger).to receive(:notify).once
         build
-        expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Contributor type unrecognized 'primary'", { tags: 'data_error' })
+        expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Name type unrecognized 'primary'", { tags: 'data_error' })
       end
     end
   end
@@ -233,7 +233,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
           {
             "name": [
               {
-                "value": 'Burke, Andy'
+                "value": 'Burke, Andy',
+                "source": {
+                  "code": 'local'
+                }
               }
             ],
             "type": 'person'
@@ -265,7 +268,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
           {
             "name": [
               {
-                "value": 'Burke, Andy'
+                "value": 'Burke, Andy',
+                "source": {
+                  "code": 'local'
+                }
               }
             ],
             "type": 'person'
