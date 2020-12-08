@@ -19,20 +19,20 @@ module Cocina
         end
 
         def write
-          return if access.nil? && purl.nil?
+          write_purl unless purl.nil?
+          return if access.nil?
 
           write_access_conditions if access
 
-          return unless purl || access && (access.physicalLocation.present? || access.accessContact.present? || access.url.present?)
-
-          xml.location do
-            if access
-              write_physical_locations
-              write_shelf_locators
-              write_urls
+          Array(access.url).each do |url|
+            xml.location do
+              write_url(url)
             end
-            write_purl if purl
           end
+
+          write_physical_locations
+          write_shelf_locators
+          write_access_contact_locations
         end
 
         private
@@ -41,33 +41,41 @@ module Cocina
 
         def write_physical_locations
           Array(access.physicalLocation).reject { |physical_location| shelf_locator?(physical_location) }.each do |physical_location|
-            xml.physicalLocation physical_location.value || physical_location.code, descriptive_attrs(physical_location)
+            xml.location do
+              xml.physicalLocation physical_location.value || physical_location.code, descriptive_attrs(physical_location)
+            end
           end
+        end
 
+        def write_access_contact_locations
           Array(access.accessContact).each do |access_contact|
-            xml.physicalLocation access_contact.value, { type: 'repository' }.merge(descriptive_attrs(access_contact))
+            xml.location do
+              xml.physicalLocation access_contact.value, { type: 'repository' }.merge(descriptive_attrs(access_contact))
+            end
           end
         end
 
         def write_shelf_locators
           Array(access.physicalLocation).select { |physical_location| shelf_locator?(physical_location) }.each do |physical_location|
-            xml.shelfLocator physical_location.value
+            xml.location do
+              xml.shelfLocator physical_location.value
+            end
           end
         end
 
-        def write_urls
-          Array(access.url).each do |url|
-            url_attrs = {}.tap do |attrs|
-              attrs[:usage] = 'primary display' if url.status == 'primary'
-              attrs[:displayLabel] = url.displayLabel
-              attrs[:note] = url.note.first.value unless url.note.nil?
-            end.compact
-            xml.url url.value, url_attrs
-          end
+        def write_url(url)
+          url_attrs = {}.tap do |attrs|
+            attrs[:usage] = 'primary display' if url.status == 'primary'
+            attrs[:displayLabel] = url.displayLabel
+            attrs[:note] = url.note.first.value unless url.note.nil?
+          end.compact
+          xml.url url.value, url_attrs
         end
 
         def write_purl
-          xml.url purl, { usage: 'primary display' }
+          xml.location do
+            xml.url purl, { usage: 'primary display' }
+          end
         end
 
         def descriptive_attrs(cocina)
@@ -77,6 +85,7 @@ module Cocina
             attrs[:authority] = cocina.source&.code
             attrs[:script] = cocina.valueLanguage&.valueScript&.code
             attrs[:lang] = cocina.valueLanguage&.code
+            attrs[:type] = cocina.type
           end.compact
         end
 
