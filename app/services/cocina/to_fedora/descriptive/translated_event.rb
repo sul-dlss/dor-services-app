@@ -29,6 +29,7 @@ module Cocina
           group_contributors
           group_dates
           group_edition_notes
+          normalize_groups
 
           groups.each do |script, origin|
             attributes = {
@@ -75,6 +76,25 @@ module Cocina
         def initialize_translation(key)
           groups[key] ||= { place: [], publisher: [], dateIssued: [], dateCreated: [], edition: [], lang_code: [] }
         end
+
+        # to be called after the group keys and values have been set up
+        #  if there is a key of '', those values should be merged to Latn script or eng language
+        # see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#1202
+        # rubocop:disable Metrics/AbcSize
+        def normalize_groups
+          # we must have '' and Latn groups to do anything useful
+          #  unless we want to look through all the groups for lang_code 'eng' and muck about
+          return if !groups.key?('') || !groups.key?('Latn')
+
+          groups['Latn'][:place] += groups[''][:place]
+          groups['Latn'][:publisher] += groups[''][:publisher]
+          groups['Latn'][:dateIssued] += groups[''][:dateIssued]
+          groups['Latn'][:dateCreated] += groups[''][:dateCreated]
+          groups['Latn'][:edition] += groups[''][:edition]
+          groups['Latn'][:lang_code] ||= groups[''][:lang_code]
+          groups.delete('')
+        end
+        # rubocop:enable Metrics/AbcSize
 
         # rubocop:disable Metrics/AbcSize
         def group_locations

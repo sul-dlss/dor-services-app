@@ -1387,7 +1387,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo script="Latn" altRepGroup="0" eventType="publication">
+          <originInfo script="Latn" altRepGroup="1" eventType="publication">
             <place>
               <placeTerm type="code" authority="marccountry">ja</placeTerm>
             </place>
@@ -1399,7 +1399,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
             <dateIssued encoding="marc">1996</dateIssued>
             <issuance>monographic</issuance>
           </originInfo>
-          <originInfo script="Hani" altRepGroup="0" eventType="publication">
+          <originInfo script="Hani" altRepGroup="1" eventType="publication">
             <place>
               <placeTerm type="text">京都市</placeTerm>
             </place>
@@ -1596,13 +1596,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="0">
+          <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="1">
+            <dateCreated keyDate="yes" encoding="w3cdtf">1999-09-09</dateCreated>
             <place>
               <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79076156" type="text">Moscow</placeTerm>
             </place>
-            <dateCreated keyDate="yes" encoding="w3cdtf">1999-09-09</dateCreated>
           </originInfo>
-          <originInfo eventType="production" lang="rus" script="Cyrl" altRepGroup="0">
+          <originInfo eventType="production" lang="rus" script="Cyrl" altRepGroup="1">
             <place>
               <placeTerm type="text">Москва</placeTerm>
             </place>
@@ -1666,10 +1666,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication" lang="eng" script="Latn" altRepGroup="0">
+          <originInfo eventType="publication" lang="eng" script="Latn" altRepGroup="1">
             <edition>First edition</edition>
           </originInfo>
-          <originInfo eventType="publication" lang="rus" script="Cyrl" altRepGroup="0">
+          <originInfo eventType="publication" lang="rus" script="Cyrl" altRepGroup="1">
             <edition>Первое издание</edition>
           </originInfo>
         </mods>

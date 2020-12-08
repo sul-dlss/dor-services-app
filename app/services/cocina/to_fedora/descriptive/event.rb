@@ -40,7 +40,7 @@ module Cocina
             attributes[:eventType] = event_type if event_type
 
             if translated?(event)
-              TranslatedEvent.write(xml: xml, event: event, alt_rep_group: id_generator.next_altrepgroup, event_type: event.type)
+              TranslatedEvent.write(xml: xml, event: event, alt_rep_group: id_generator.next_altrepgroup, event_type: event_type)
             else
               write_basic(event, attributes)
             end
