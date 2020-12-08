@@ -854,6 +854,13 @@ RSpec.describe Cocina::ModsNormalizer do
             <physicalLocation>Stanford University Libraries</physicalLocation>
             <shelfLocator>Who Wants Shelves</shelfLocator>
           </location>
+          <relatedItem>
+            <location>
+              <url usage="primary display">http://purl.stanford.edu/fy479mw7313</url>
+              <physicalLocation>Palo Alto Public Library</physicalLocation>
+              <shelfLocator>I Wants Shelves</shelfLocator>
+            </location>
+          </relatedItem>
         </mods>
       XML
     end
@@ -874,6 +881,17 @@ RSpec.describe Cocina::ModsNormalizer do
           <location>
             <shelfLocator>Who Wants Shelves</shelfLocator>
           </location>
+          <relatedItem>
+            <location>
+              <url usage="primary display">http://purl.stanford.edu/fy479mw7313</url>
+            </location>
+            <location>
+              <physicalLocation>Palo Alto Public Library</physicalLocation>
+            </location>
+            <location>
+              <shelfLocator>I Wants Shelves</shelfLocator>
+            </location>
+          </relatedItem>
         </mods>
       XML
     end

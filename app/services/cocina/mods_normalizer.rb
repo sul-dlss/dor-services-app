@@ -266,7 +266,7 @@ module Cocina
         location_node.xpath('mods:physicalLocation|mods:url|mods:shelfLocator', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
           new_location = Nokogiri::XML::Node.new('location', Nokogiri::XML(nil))
           new_location << node
-          ng_xml.root << new_location
+          location_node.parent << new_location
         end
         location_node.remove
       end
