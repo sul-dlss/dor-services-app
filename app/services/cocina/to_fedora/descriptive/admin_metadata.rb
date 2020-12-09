@@ -62,7 +62,11 @@ module Cocina
         def build_event_for(type, tag)
           Array(admin_metadata.event).select { |note| note.type == type }.each do |event|
             event.date.each do |date|
-              xml.public_send(tag, date.value, encoding: date.encoding.code)
+              attributes = {}.tap do |attrs|
+                attrs[:encoding] = date.encoding&.code
+              end.compact
+
+              xml.public_send(tag, date.value, attributes)
             end
           end
         end
