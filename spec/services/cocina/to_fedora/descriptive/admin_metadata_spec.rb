@@ -292,4 +292,35 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
       XML
     end
   end
+
+  context 'when event is missing date' do
+    let(:admin_metadata) do
+      Cocina::Models::DescriptiveAdminMetadata.new(
+        {
+          event: [
+            {
+              type: 'creation',
+              date: [
+                {
+                  "value": '2011-09-27T12:58:15.677+02:00'
+                }
+              ]
+            }
+          ]
+        }
+      )
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <recordInfo>
+            <recordCreationDate>2011-09-27T12:58:15.677+02:00</recordCreationDate>
+          </recordInfo>
+        </mods>
+      XML
+    end
+  end
 end
