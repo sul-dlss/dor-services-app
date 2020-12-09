@@ -44,8 +44,31 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L39'
     end
 
+    # Example 4
     context 'with a manuscript' do
-      xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L62'
+      let(:xml) do
+        <<~XML
+          <typeOfResource manuscript="yes">mixed material</typeOfResource>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'mixed material',
+            "type": 'resource type',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          },
+          {
+            "value": 'manuscript',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          }
+        ]
+      end
     end
 
     context 'with an attribute without a value' do

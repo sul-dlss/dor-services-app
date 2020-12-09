@@ -92,10 +92,18 @@ module Cocina
         def add_types(forms)
           type_of_resource.each do |type|
             forms << {
-              "value": type.text,
-              "type": 'resource type',
-              "source": {
-                "value": 'MODS resource types'
+              value: type.text,
+              type: 'resource type',
+              source: {
+                value: 'MODS resource types'
+              }
+            }
+            next unless type[:manuscript] == 'yes'
+
+            forms << {
+              value: 'manuscript',
+              source: {
+                value: 'MODS resource types'
               }
             }
           end
