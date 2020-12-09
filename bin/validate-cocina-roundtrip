@@ -28,10 +28,9 @@ def round_tripped_ng_xml(cocina, druid)
   Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina, druid).to_xml) { |config| config.default_xml.noblanks }
 end
 
-def cocina_model(ng_xml, label)
+def cocina_props(ng_xml, label)
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: label)
-  desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: ng_xml)
-  Cocina::Models::Description.new(desc_props)
+  Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: ng_xml)
 end
 
 def node_count_match?(ng_xml1, ng_xml2)
@@ -57,7 +56,7 @@ def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, differences)
 
     file.write("\nOriginal XML:\n#{original_ng_xml.to_xml}\n")
     file.write("Roundtripped XML:\n#{roundtrip_ng_xml.to_xml}\n")
-    file.write("Cocina:\n#{JSON.pretty_generate(cocina.to_h)}\n\n")
+    file.write("Cocina:\n#{JSON.pretty_generate(cocina)}\n\n")
   end
 end
 
@@ -66,7 +65,7 @@ def write_error(druid, original_ng_xml, cocina, error)
     file.write("Druid: #{druid}\n\n")
     file.write("Error: #{error}\n\n")
     file.write("Expected XML:\n#{original_ng_xml.to_xml}\n\n")
-    file.write("Cocina:\n#{JSON.pretty_generate(cocina.to_h)}\n\n")
+    file.write("Cocina:\n#{JSON.pretty_generate(cocina)}\n\n") if cocina
     file.write("Backtrace:\n")
     file.write(error.backtrace.join("\n"))
   end
@@ -81,8 +80,10 @@ def validate_druid(druid, cache, fast: false)
   end
 
   begin
-    cocina = cocina_model(original_ng_xml, label)
-  rescue StandardError
+    cocina_props = cocina_props(original_ng_xml, label)
+    cocina = Cocina::Models::Description.new(cocina_props)
+  rescue StandardError => e
+    write_error(druid, original_ng_xml, cocina_props, e)
     return :to_cocina_error
   end
 
@@ -92,7 +93,7 @@ def validate_druid(druid, cache, fast: false)
   begin
     roundtrip_ng_xml = round_tripped_ng_xml(cocina, druid)
   rescue StandardError => e
-    write_error(druid, original_ng_xml, cocina, e)
+    write_error(druid, original_ng_xml, cocina_props, e)
     return :to_fedora_error
   end
 
@@ -104,7 +105,7 @@ def validate_druid(druid, cache, fast: false)
 
   return :success if equiv.success?
 
-  write_result(druid, norm_original_ng_xml, roundtrip_ng_xml, cocina, equiv.failure)
+  write_result(druid, norm_original_ng_xml, roundtrip_ng_xml, cocina_props, equiv.failure)
   :different
 end
 
