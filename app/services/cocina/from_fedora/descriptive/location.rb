@@ -92,6 +92,7 @@ module Cocina
               }.compact
               attrs[:source] = source unless source.empty?
               attrs[:type] = node[:type]
+              attrs[:displayLabel] = node[:displayLabel]
               attrs[:valueLanguage] = LanguageScript.build(node: node)
             end.compact
           end
