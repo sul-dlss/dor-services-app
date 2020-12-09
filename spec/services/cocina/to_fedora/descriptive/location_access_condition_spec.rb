@@ -29,6 +29,9 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
     end
   end
 
+  # examples from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_accessCondition.txt
+
+  # example 1 from mods_to_cocina_accessCondition.txt
   context 'when it is a restriction on access' do
     let(:access) do
       Cocina::Models::DescriptiveAccessMetadata.new(
@@ -52,6 +55,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
     end
   end
 
+  # example 2 from mods_to_cocina_accessCondition.txt
   context 'when it is a restriction on use and reproduction' do
     let(:access) do
       Cocina::Models::DescriptiveAccessMetadata.new(
@@ -75,6 +79,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
     end
   end
 
+  # example 3 from mods_to_cocina_accessCondition.txt
   context 'when it is a license' do
     let(:access) do
       Cocina::Models::DescriptiveAccessMetadata.new(

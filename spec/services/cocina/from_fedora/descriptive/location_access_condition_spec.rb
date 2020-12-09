@@ -15,6 +15,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     XML
   end
 
+  # examples from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_accessCondition.txt
+
+  # example 1A from mods_to_cocina_accessCondition.txt
   context 'with a restriction on access' do
     let(:xml) do
       <<~XML
@@ -36,6 +39,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
+  # example 1B from mods_to_cocina_accessCondition.txt
   context 'with a restriction on access without spaces' do
     let(:xml) do
       <<~XML
@@ -57,6 +61,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
+  # example 2A from mods_to_cocina_accessCondition.txt
   context 'with a restriction on use and reproduction' do
     let(:xml) do
       <<~XML
@@ -78,6 +83,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
+  # example 2B from mods_to_cocina_accessCondition.txt
   context 'with a restriction on use and reproduction without spaces' do
     let(:xml) do
       <<~XML
@@ -99,6 +105,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
+  # example 3 from mods_to_cocina_accessCondition.txt
   context 'with a license' do
     let(:xml) do
       <<~XML
