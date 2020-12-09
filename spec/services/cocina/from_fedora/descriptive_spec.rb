@@ -5,6 +5,10 @@ require 'rails_helper'
 RSpec.describe Cocina::FromFedora::Descriptive do
   subject(:descriptive) { described_class.props(mods: Nokogiri::XML(desc_metadata)) }
 
+  before do
+    allow(Honeybadger).to receive(:notify)
+  end
+
   context 'when the item is a was-seed' do
     let(:desc_metadata) do
       <<~XML
@@ -389,6 +393,111 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         },
         { value: '1 online resource.', type: 'extent' }
       ]
+    end
+  end
+
+  context 'when altRepGroup have different lang' do
+    let(:desc_metadata) do
+      <<~XML
+        <?xml version="1.0"?>
+        <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.loc.gov/mods/v3" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+          <titleInfo usage="primary" lang="fre" altRepGroup="0">
+            <title>Les misérables</title>
+          </titleInfo>
+          <titleInfo type="translated" lang="eng" altRepGroup="0">
+            <title>The wretched</title>
+          </titleInfo>
+        </mods>
+      XML
+    end
+
+    it 'does not notify' do
+      descriptive
+      expect(Honeybadger).not_to have_received(:notify)
+    end
+  end
+
+  context 'when altRepGroup have different script' do
+    let(:desc_metadata) do
+      <<~XML
+        <?xml version="1.0"?>
+        <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.loc.gov/mods/v3" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+          <titleInfo usage="primary" lang="rus" script="Cyrl" altRepGroup="0">
+            <title>Война и миръ</title>
+          </titleInfo>
+          <titleInfo type="translated" lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="0">
+            <title>Voĭna i mir</title>
+          </titleInfo>
+        </mods>
+      XML
+    end
+
+    it 'does not notify' do
+      descriptive
+      expect(Honeybadger).not_to have_received(:notify)
+    end
+  end
+
+  context 'when altRepGroup without lang or script' do
+    let(:desc_metadata) do
+      <<~XML
+        <?xml version="1.0"?>
+        <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.loc.gov/mods/v3" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+          <titleInfo usage="primary" altRepGroup="0">
+            <title>Война и миръ</title>
+          </titleInfo>
+          <titleInfo type="translated" transliteration="ALA-LC Romanization Tables" altRepGroup="0">
+            <title>Voĭna i mir</title>
+          </titleInfo>
+        </mods>
+      XML
+    end
+
+    it 'notifies' do
+      descriptive
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Bad altRepGroup', { tags: 'data_error' })
+    end
+  end
+
+  context 'when altRepGroup with same lang and script' do
+    let(:desc_metadata) do
+      <<~XML
+        <?xml version="1.0"?>
+        <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.loc.gov/mods/v3" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+          <titleInfo usage="primary" lang="rus" script="Latn" altRepGroup="0">
+            <title>Война и миръ</title>
+          </titleInfo>
+          <titleInfo type="translated" lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="0">
+            <title>Voĭna i mir</title>
+          </titleInfo>
+        </mods>
+      XML
+    end
+
+    it 'does not notifies' do
+      descriptive
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Bad altRepGroup', { tags: 'data_error' })
+    end
+  end
+
+  context 'when altRepGroup have different tags' do
+    let(:desc_metadata) do
+      <<~XML
+        <?xml version="1.0"?>
+        <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.loc.gov/mods/v3" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+          <titleInfo usage="primary" lang="rus" script="Cyrl" altRepGroup="0">
+            <title>Война и миръ</title>
+          </titleInfo>
+          <name type="personal" usage="primary" lang="rus" script="Latn" altRepGroup="0">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+        </mods>
+      XML
+    end
+
+    it 'notifies' do
+      descriptive
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Bad altRepGroup', { tags: 'data_error' })
     end
   end
 end

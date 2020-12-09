@@ -20,7 +20,32 @@ module Cocina
       end
 
       def props
-        DescriptiveBuilder.build(title_builder: @title_builder, resource_element: @ng_xml.root)
+        check_altrepgroups
+        DescriptiveBuilder.build(title_builder: title_builder, resource_element: ng_xml.root)
+      end
+
+      private
+
+      attr_reader :title_builder, :ng_xml
+
+      def check_altrepgroups
+        ng_xml.xpath('//mods:*[@altRepGroup]', mods: DESC_METADATA_NS)
+              .group_by { |node| node['altRepGroup'] }
+              .values
+              .select { |nodes| nodes.size > 1 }
+              .each do |nodes|
+          Honeybadger.notify('[DATA ERROR] Bad altRepGroup', { tags: 'data_error' }) if altrepgroup_error?(nodes)
+        end
+      end
+
+      def altrepgroup_error?(nodes)
+        return true if nodes.map(&:name).uniq.size != 1
+
+        scripts = nodes.map { |node| node['script'] }.uniq
+        langs = nodes.map { |node| node['lang'] }.uniq
+        return false if scripts.size == nodes.size || langs.size == nodes.size
+
+        true
       end
     end
   end
