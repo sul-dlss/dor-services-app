@@ -33,6 +33,7 @@ module Cocina
       normalize_xml_space
       normalize_language_term_type
       normalize_geo_purl
+      normalize_dc_image
       normalize_access_condition
       normalize_identifier_type
       normalize_location_physical_location
@@ -218,6 +219,14 @@ module Cocina
                         mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS,
                         rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#').each do |attr|
         attr.value = "http://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+      end
+    end
+
+    def normalize_dc_image
+      ng_xml.root.xpath('//mods:extension[@displayLabel="geo"]//dc:type[text() = "image"]',
+                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS,
+                        dc: 'http://purl.org/dc/elements/1.1/').each do |node|
+        node.content = 'Image'
       end
     end
 

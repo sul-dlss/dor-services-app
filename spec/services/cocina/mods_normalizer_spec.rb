@@ -896,4 +896,88 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing dc:type image' do
+    context 'when image (lowercase I)' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3"
+            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+            version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <extension displayLabel="geo">
+              <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+                <rdf:Description rdf:about="https://www.stanford.edu/pf694bk4862">
+                  <dc:format>image/jpeg</dc:format>
+                  <dc:type>image</dc:type>
+                </rdf:Description>
+              </rdf:RDF>
+            </extension>
+          </mods>
+        XML
+      end
+
+      it 'fix capitalization (capitalizes I)' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <?xml version="1.0"?>
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3"
+            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+            version="3.6"          
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <extension displayLabel="geo">
+              <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+                <rdf:Description rdf:about="http://purl.stanford.edu/pf694bk4862">
+                  <dc:format>image/jpeg</dc:format>
+                  <dc:type>Image</dc:type>
+                </rdf:Description>
+              </rdf:RDF>
+            </extension>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when Image (uppercase I)' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3"
+            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+            version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <extension displayLabel="geo">
+              <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+                <rdf:Description rdf:about="https://www.stanford.edu/pf694bk4862">
+                  <dc:format>image/jpeg</dc:format>
+                  <dc:type>Image</dc:type>
+                </rdf:Description>
+              </rdf:RDF>
+            </extension>
+          </mods>
+        XML
+      end
+
+      it 'leaves capitalization' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <?xml version="1.0"?>
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3"
+            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+            version="3.6"          
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <extension displayLabel="geo">
+              <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+                <rdf:Description rdf:about="http://purl.stanford.edu/pf694bk4862">
+                  <dc:format>image/jpeg</dc:format>
+                  <dc:type>Image</dc:type>
+                </rdf:Description>
+              </rdf:RDF>
+            </extension>
+          </mods>
+        XML
+      end
+    end
+  end
 end
