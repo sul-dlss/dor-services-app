@@ -68,7 +68,7 @@ module Cocina
           return unless format
 
           [].tap do |form|
-            form << { value: format[:text], type: MEDIA_TYPE, source: IANA_TERMS }
+            form << { value: format[:text], type: MEDIA_TYPE, source: IANA_TERMS } if format[:text]
             form << build_type
           end
         end

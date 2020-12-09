@@ -620,4 +620,60 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
       expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] rdf:about does not contain a correctly formatted PURL', { tags: 'data_error' })
     end
   end
+
+  context 'without dc:format' do
+    let(:dc_type) { 'Image' }
+    let(:xml) do
+      <<~XML
+        <extension displayLabel="geo">
+          <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gmd="http://www.isotc211.org/2005/gmd">
+            <rdf:Description rdf:about="http://purl.stanford.edu/kk138ps4721">
+              <dc:type>Image</dc:type>
+              <gmd:centerPoint>
+                <gml:Point gml:id="ID">
+                  <gml:pos>41.893367 12.483736</gml:pos>
+                </gml:Point>
+              </gmd:centerPoint>
+            </rdf:Description>
+          </rdf:RDF>
+        </extension>
+      XML
+    end
+
+    let(:expected_hash) do
+      {
+        "form": [
+          {
+            "value": 'Image',
+            "type": 'media type',
+            "source": {
+              "value": 'DCMI Type Vocabulary'
+            }
+          }
+        ],
+        "subject": [
+          {
+            "structuredValue": [
+              {
+                "value": '41.893367',
+                "type": 'latitude'
+              },
+              {
+                "value": '12.483736',
+                "type": 'longitude'
+              }
+            ],
+            "type": 'point coordinates',
+            "encoding": {
+              "value": 'decimal'
+            }
+          }
+        ]
+      }
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq([expected_hash])
+    end
+  end
 end
