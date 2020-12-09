@@ -222,13 +222,8 @@ module Cocina
         end
 
         def person(xml, subject)
-          subject_attributes = {}.tap do |attrs|
+          subject_attributes = topic_attributes_for(subject).tap do |attrs|
             attrs[:type] = name_type_for(subject)
-            if subject.source
-              attrs[:authority] = subject.source.code
-              attrs[:authorityURI] = subject.source.uri
-            end
-            attrs[:valueURI] = subject.uri
           end.compact
 
           xml.name subject_attributes do
