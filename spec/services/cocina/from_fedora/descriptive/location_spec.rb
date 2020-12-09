@@ -15,6 +15,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     XML
   end
 
+  # most examples from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_location.txt
+  # example 1 from mods_to_cocina_location.txt
   context 'with a physical location term (with authority)' do
     let(:xml) do
       <<~XML
@@ -42,6 +44,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
+  # example 2 from mods_to_cocina_location.txt
   context 'with a physical location code' do
     let(:xml) do
       <<~XML
@@ -67,6 +70,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
+  # example 3 from mods_to_cocina_location.txt
   context 'with a physical repository' do
     let(:xml) do
       <<~XML
@@ -113,6 +117,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
+  # example 9 from mods_to_cocina_location.txt
   context 'with a physical repository with language and script' do
     let(:xml) do
       <<~XML
@@ -150,6 +155,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
+  # example 4 from mods_to_cocina_location.txt
   context 'with a URL (with usage)' do
     let(:xml) do
       <<~XML
@@ -191,7 +197,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
-  context 'with a URL (without usage)' do
+  # example 5 from mods_to_cocina_location.txt ???  If so, wrong result
+  context 'with a URL to purl' do
     let(:xml) do
       <<~XML
         <location>
@@ -205,6 +212,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
+  # example 8 from mods_to_cocina_location.txt
   context 'with a URL with note' do
     let(:xml) do
       <<~XML
@@ -231,6 +239,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
+  # example 6 from mods_to_cocina_location.txt
   context 'with a Web archive (with display label)' do
     let(:xml) do
       <<~XML
@@ -266,6 +275,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
+  # example 7 from mods_to_cocina_location.txt
   context 'with a Shelf locator' do
     let(:xml) do
       <<~XML
@@ -287,5 +297,93 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
         }
       )
     end
+  end
+
+  # example 10 from mods_to_cocina_location.txt
+  context 'with Physical location with type "discovery" mapping to digitalLocation' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_location.txt#L227'
+  end
+
+  # example 11 from mods_to_cocina_location.txt
+  context 'with Physical location with display label' do
+    let(:xml) do
+      <<~XML
+        <location>
+          <physicalLocation type="repository" displayLabel="Repository" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/no2014019980">Stanford University. Libraries. Department of Special Collections and University Archives</physicalLocation>
+          <physicalLocation>Call Number: SC0340, Accession 2005-101, Box: 51, Folder: 3</physicalLocation>
+        </location>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq(
+        "accessContact": [
+          {
+            "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
+            "uri": 'http://id.loc.gov/authorities/names/no2014019980',
+            "type": 'repository',
+            "displayLabel": 'Repository',
+            "source": {
+              "uri": 'http://id.loc.gov/authorities/names/'
+            }
+          }
+        ],
+        "physicalLocation": [
+          {
+            "value": 'Call Number: SC0340, Accession 2005-101, Box: 51, Folder: 3'
+          }
+        ]
+      )
+      # NOTE:  mapping spec also includes the following, per https://github.com/sul-dlss-labs/cocina-descriptive-metadata/commit/8351249d2008022f4a039846874fe76e58bbcb70
+      # "digitalRepository": [
+      #   {
+      #     "value": 'Stanford Digital Repository'
+      #   }
+      # ]
+    end
+  end
+
+  context 'with Physical location with display label - two location elements' do
+    let(:xml) do
+      <<~XML
+        <location>
+          <physicalLocation type="repository" displayLabel="Repository" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/no2014019980">Stanford University. Libraries. Department of Special Collections and University Archives</physicalLocation>
+        </location>
+        <location>
+          <physicalLocation>Call Number: SC0340, Accession 2005-101, Box: 51, Folder: 3</physicalLocation>
+        </location>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq(
+        "accessContact": [
+          {
+            "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
+            "uri": 'http://id.loc.gov/authorities/names/no2014019980',
+            "type": 'repository',
+            "displayLabel": 'Repository',
+            "source": {
+              "uri": 'http://id.loc.gov/authorities/names/'
+            }
+          }
+        ],
+        "physicalLocation": [
+          {
+            "value": 'Call Number: SC0340, Accession 2005-101, Box: 51, Folder: 3'
+          }
+        ]
+      )
+    end
+  end
+
+  # example 12 from mods_to_cocina_location.txt
+  context 'with multiple locations and URLs with usage="primary display"' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_location.txt#L308'
+  end
+
+  # example 13 from mods_to_cocina_location.txt
+  context 'with physical location with type "location"' do
+    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_location.txt#L308'
   end
 end

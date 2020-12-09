@@ -86,6 +86,7 @@ module Cocina
             attrs[:script] = cocina.valueLanguage&.valueScript&.code
             attrs[:lang] = cocina.valueLanguage&.code
             attrs[:type] = cocina.type
+            attrs[:displayLabel] = cocina.displayLabel
           end.compact
         end
 
