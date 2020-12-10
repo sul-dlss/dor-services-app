@@ -17,7 +17,7 @@ module Cocina
         end
 
         def build
-          abstract + simple_notes + parallel_notes + table_of_contents + target_audience
+          abstract + simple_notes + parallel_notes + table_of_contents + parallel_table_of_contents + target_audience
         end
 
         private
@@ -60,48 +60,15 @@ module Cocina
           }
         end
 
-        def note_for(note_node)
+        def note_for(node)
           {
-            value: note_node.text,
-            type: note_node[:type],
-            displayLabel: note_node[:displayLabel],
-            valueLanguage: value_language_for(note_node)
-          }.compact
-        end
-
-        def value_language_for(note_node)
-          value_language_attrs = {}.tap do |attrs|
-            if note_node[:lang].present?
-              attrs[:code] = note_node[:lang]
-              attrs[:source] = { code: 'iso639-2b' }
-            end
-            if note_node[:script].present?
-              attrs[:valueScript] = {
-                "code": note_node[:script],
-                "source": {
-                  "code": 'iso15924'
-                }
-              }
-            end
-          end
-          value_language_attrs.empty? ? nil : value_language_attrs
-        end
-
-        def table_of_contents
-          set = resource_element.xpath('mods:tableOfContents', mods: DESC_METADATA_NS)
-          set.map do |node|
-            {
-              type: 'table of contents',
-              displayLabel: node[:displayLabel]
-            }.tap do |attributes|
-              value_parts = node.content.split(' -- ')
-              if value_parts.size == 1
-                attributes[:value] = node.content
-              else
-                attributes[:structuredValue] = value_parts.map { |value_part| { value: value_part } }
-              end
-            end.compact
-          end
+            value: node.text,
+            type: node[:type],
+            displayLabel: node[:displayLabel]
+          }.tap do |attributes|
+            value_language = LanguageScript.build(node: node)
+            attributes[:valueLanguage] = value_language if value_language
+          end.compact
         end
 
         def target_audience
@@ -112,7 +79,48 @@ module Cocina
             }.tap do |attrs|
               attrs[:source] = { code: node[:authority] } if node[:authority]
             end
+          end.compact
+        end
+
+        def table_of_contents
+          # Using all of the tocs that have no altRepGroup or only one instance with an altRepGroup id.
+          toc_nodes = resource_element.xpath('mods:tableOfContents[not(@altRepGroup)]', mods: DESC_METADATA_NS).select { |node| node.text.present? } \
+            + grouped_toc_nodes.select { |parallel_nodes| parallel_nodes.size == 1 }.map(&:first)
+          toc_nodes.map { |note_node| toc_for(note_node).merge({ type: 'table of contents' }) }
+        end
+
+        def parallel_table_of_contents
+          # Using all of the tocs that have at least two instances with an altRepGroup id.
+          grouped_toc_nodes.reject { |parallel_toc_nodes| parallel_toc_nodes.size == 1 }.map { |parallel_toc_nodes| parallel_toc_for(parallel_toc_nodes) }
+        end
+
+        def grouped_toc_nodes
+          @grouped_toc_nodes ||= begin
+            toc_nodes = resource_element.xpath('mods:tableOfContents[@altRepGroup]', mods: DESC_METADATA_NS).select { |node| node.text.present? }
+            toc_nodes.group_by { |node| node['altRepGroup'] }.values
           end
+        end
+
+        def parallel_toc_for(toc_nodes)
+          {
+            type: 'table of contents',
+            parallelValue: toc_nodes.map { |toc_node| toc_for(toc_node) }
+          }
+        end
+
+        def toc_for(node)
+          {
+            displayLabel: node[:displayLabel]
+          }.tap do |attributes|
+            value_language = LanguageScript.build(node: node)
+            attributes[:valueLanguage] = value_language if value_language
+            value_parts = node.content.split(' -- ')
+            if value_parts.size == 1
+              attributes[:value] = node.content
+            else
+              attributes[:structuredValue] = value_parts.map { |value_part| { value: value_part } }
+            end
+          end.compact
         end
       end
     end
