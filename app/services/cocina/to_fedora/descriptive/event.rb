@@ -16,6 +16,8 @@ module Cocina
           'capture' => 'capture',
           'copyright' => 'copyright notice',
           'creation' => 'production',
+          'distribution' => 'distribution',
+          'manufacture' => 'manufacture',
           'publication' => 'publication',
           'acquisition' => 'acquisition'
         }.freeze
