@@ -17,29 +17,55 @@ module Cocina
         end
 
         def build
-          abstract + simple_notes + parallel_notes + table_of_contents + parallel_table_of_contents + target_audience
+          abstracts + parallel_abstracts + simple_notes + parallel_notes + table_of_contents + parallel_table_of_contents + target_audience
         end
 
         private
 
         attr_reader :resource_element
 
-        def abstract
-          set = resource_element.xpath('mods:abstract', mods: DESC_METADATA_NS)
-          set.map do |node|
-            {
-              type: 'summary',
-              value: node.content,
-              displayLabel: node[:displayLabel]
-            }.compact
+        def abstracts
+          # Using all of the notes that have no altRepGroup or only one instance with an altRepGroup id.
+          abstract_nodes = resource_element.xpath('mods:abstract[not(@altRepGroup)]', mods: DESC_METADATA_NS).select { |node| node.text.present? } \
+            + grouped_abstract_nodes.select { |parallel_nodes| parallel_nodes.size == 1 }.map(&:first)
+          abstract_nodes.map { |node| common_note_for(node).merge({ type: 'summary' }) }
+        end
+
+        def parallel_abstracts
+          # Using all of the notes that have at least two instances with an altRepGroup id.
+          grouped_abstract_nodes.reject { |parallel_nodes| parallel_nodes.size == 1 }.map { |parallel_nodes| parallel_abstract_for(parallel_nodes) }
+        end
+
+        def grouped_abstract_nodes
+          @grouped_abstract_nodes ||= begin
+            abstract_nodes = resource_element.xpath('mods:abstract[@altRepGroup]', mods: DESC_METADATA_NS)
+            abstract_nodes.group_by { |node| node['altRepGroup'] }.values
           end
+        end
+
+        def parallel_abstract_for(abstract_nodes)
+          {
+            type: 'summary',
+            parallelValue: abstract_nodes.map { |node| common_note_for(node) }
+          }
+        end
+
+        def common_note_for(node)
+          {
+            value: node.content,
+            displayLabel: node[:displayLabel],
+            type: node[:type]
+          }.tap do |attributes|
+            value_language = LanguageScript.build(node: node)
+            attributes[:valueLanguage] = value_language if value_language
+          end.compact
         end
 
         def simple_notes
           # Using all of the notes that have no altRepGroup or only one instance with an altRepGroup id.
           note_nodes = resource_element.xpath('mods:note[not(@altRepGroup)]', mods: DESC_METADATA_NS).select { |node| node.text.present? } \
             + grouped_note_nodes.select { |parallel_note_nodes| parallel_note_nodes.size == 1 }.map(&:first)
-          note_nodes.map { |note_node| note_for(note_node) }
+          note_nodes.map { |note_node| common_note_for(note_node) }
         end
 
         def parallel_notes
@@ -56,19 +82,8 @@ module Cocina
 
         def parallel_note_for(note_nodes)
           {
-            parallelValue: note_nodes.map { |note_node| note_for(note_node) }
+            parallelValue: note_nodes.map { |note_node| common_note_for(note_node) }
           }
-        end
-
-        def note_for(node)
-          {
-            value: node.text,
-            type: node[:type],
-            displayLabel: node[:displayLabel]
-          }.tap do |attributes|
-            value_language = LanguageScript.build(node: node)
-            attributes[:valueLanguage] = value_language if value_language
-          end.compact
         end
 
         def target_audience
