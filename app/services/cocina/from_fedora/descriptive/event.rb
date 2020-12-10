@@ -133,7 +133,11 @@ module Cocina
         end
 
         def find_or_create_event_by_precedence(events)
-          %w[publication distribution production creation manufacture].each { |event_type| events.each { |event| return event if event[:type] == event_type } }
+          %w[publication distribution production creation manufacture].each do |event_type|
+            events.each do |event|
+              return event if event[:type] == event_type
+            end
+          end
 
           { type: 'publication' }.tap do |event|
             events << event
