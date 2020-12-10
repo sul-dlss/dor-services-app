@@ -250,6 +250,42 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
+  context 'when normalizing originInfo/place/placeTerm text values' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <originInfo eventType="production" displayLabel="Place of Creation">
+            <place supplied="yes">
+              <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79118971">Oakland (Calif.)</placeTerm>
+            </place>
+          </originInfo>
+          <originInfo eventType="publication" displayLabel="publisher">
+            <place>
+              <placeTerm>[Stanford, California] :</placeTerm>
+            </place>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    it 'adds type text attribute if appropriate' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <originInfo eventType="production" displayLabel="Place of Creation">
+            <place supplied="yes">
+              <placeTerm type="text" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79118971">Oakland (Calif.)</placeTerm>
+            </place>
+          </originInfo>
+          <originInfo eventType="publication" displayLabel="publisher">
+            <place>
+              <placeTerm type="text">[Stanford, California] :</placeTerm>
+            </place>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
   context 'when normalizing subject authority' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML

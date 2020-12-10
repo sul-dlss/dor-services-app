@@ -25,6 +25,7 @@ module Cocina
       normalize_authority_uris
       normalize_origin_info_event_types
       normalize_origin_info_date_other_types
+      normalize_origin_info_place_term_type
       normalize_subject_authority
       normalize_subject_authority_lcnaf
       normalize_subject_authority_naf
@@ -128,6 +129,16 @@ module Cocina
 
           date_other_node.remove_attribute('type') if origin_info_event_type.match?(date_other_node['type'])
         end
+      end
+    end
+
+    # if the cocina model doesn't have a code, then it will have a value;
+    #   this is output as attribute type=text on the roundtripped placeTerm element
+    def normalize_origin_info_place_term_type
+      ng_xml.root.xpath('//mods:originInfo/mods:place/mods:placeTerm', mods: MODS_NS).each do |place_term_node|
+        next if place_term_node.content.blank?
+
+        place_term_node['type'] = 'text' if place_term_node.attributes['type'].blank?
       end
     end
 
