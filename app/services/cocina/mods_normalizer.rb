@@ -42,6 +42,7 @@ module Cocina
       normalize_location_physical_location
       normalize_purl
       normalize_empty_notes
+      normalize_empty_related_item_parts
       ng_xml
     end
 
@@ -287,6 +288,12 @@ module Cocina
           location_node.parent << new_location
         end
         location_node.remove
+      end
+    end
+
+    def normalize_empty_related_item_parts
+      ng_xml.root.xpath('//mods:relatedItem/mods:part[count(mods:*)=1]/mods:detail[count(mods:*)=1]/mods:number[not(text())]', mods: MODS_NS).each do |number_node|
+        number_node.parent.parent.remove
       end
     end
   end
