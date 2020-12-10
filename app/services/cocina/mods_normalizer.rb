@@ -3,6 +3,8 @@
 module Cocina
   # Normalizes a Fedora MODS document, accounting for differences between Fedora MODS and MODS generated from Cocina.
   class ModsNormalizer
+    MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
+
     # @param [Nokogiri::Document] mods_ng_xml MODS to be normalized
     # @param [String] druid
     # @return [Nokogiri::Document] normalized MODS
@@ -23,6 +25,7 @@ module Cocina
       normalize_subject_name
       normalize_authority_uris
       normalize_origin_info_event_types
+      normalize_origin_info_date_other_types
       normalize_subject_authority
       normalize_subject_authority_lcnaf
       normalize_subject_authority_naf
@@ -58,31 +61,30 @@ module Cocina
 
     def normalize_version
       # Only normalize version when version isn't mapped.
-      unless /MODS version (\d\.\d)/.match(ng_xml.root.at('//mods:recordInfo/mods:recordOrigin',
-                                                          mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)&.content)
-        ng_xml.root['version'] = '3.6'
-        ng_xml.root['xsi:schemaLocation'] = 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd'
-      end
+      return if /MODS version (\d\.\d)/.match(ng_xml.root.at('//mods:recordInfo/mods:recordOrigin', mods: MODS_NS)&.content)
+
+      ng_xml.root['version'] = '3.6'
+      ng_xml.root['xsi:schemaLocation'] = 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd'
     end
 
     def normalize_topics
-      ng_xml.root.xpath('//mods:subject[count(mods:topic) = 1 and count(mods:*) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
-        topic_node = subject_node.xpath('mods:topic', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).first
+      ng_xml.root.xpath('//mods:subject[count(mods:topic) = 1 and count(mods:*) = 1]', mods: MODS_NS).each do |subject_node|
+        topic_node = subject_node.xpath('mods:topic', mods: MODS_NS).first
         normalize_subject(subject_node, topic_node)
       end
     end
 
     def normalize_authority_uris
       Cocina::FromFedora::Descriptive::Authority::NORMALIZE_AUTHORITY_URIS.each do |authority_uri|
-        ng_xml.root.xpath("//mods:*[@authorityURI='#{authority_uri}']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        ng_xml.root.xpath("//mods:*[@authorityURI='#{authority_uri}']", mods: MODS_NS).each do |node|
           node[:authorityURI] = "#{authority_uri}/"
         end
       end
     end
 
     def normalize_subject_name
-      ng_xml.root.xpath('//mods:subject[count(mods:name) = 1 and count(mods:*) = 1]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
-        name_node = subject_node.xpath('mods:name', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).first
+      ng_xml.root.xpath('//mods:subject[count(mods:name) = 1 and count(mods:*) = 1]', mods: MODS_NS).each do |subject_node|
+        name_node = subject_node.xpath('mods:name', mods: MODS_NS).first
         normalize_subject(subject_node, name_node)
       end
     end
@@ -101,25 +103,24 @@ module Cocina
     end
 
     def normalize_subject_authority_naf
-      ng_xml.root.xpath("//mods:subject[@authority='naf']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |subject_node|
+      ng_xml.root.xpath("//mods:subject[@authority='naf']", mods: MODS_NS).each do |subject_node|
         subject_node[:authority] = 'lcsh'
       end
     end
 
     # change original xml to have the event type that will be output
     def normalize_origin_info_event_types
-      # code
-      ng_xml.root.xpath('//mods:originInfo', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |origin_info_node|
-        date_issued_nodes = origin_info_node.xpath('mods:dateIssued', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+      ng_xml.root.xpath('//mods:originInfo', mods: MODS_NS).each do |origin_info_node|
+        date_issued_nodes = origin_info_node.xpath('mods:dateIssued', mods: MODS_NS)
         add_event_type('publication', origin_info_node) && next if date_issued_nodes.present?
 
-        copyright_date_nodes = origin_info_node.xpath('mods:copyrightDate', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+        copyright_date_nodes = origin_info_node.xpath('mods:copyrightDate', mods: MODS_NS)
         add_event_type('copyright notice', origin_info_node) && next if copyright_date_nodes.present?
 
-        date_created_nodes = origin_info_node.xpath('mods:dateCreated', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+        date_created_nodes = origin_info_node.xpath('mods:dateCreated', mods: MODS_NS)
         add_event_type('production', origin_info_node) && next if date_created_nodes.present?
 
-        date_captured_nodes = origin_info_node.xpath('mods:dateCaptured', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+        date_captured_nodes = origin_info_node.xpath('mods:dateCaptured', mods: MODS_NS)
         add_event_type('capture', origin_info_node) && next if date_captured_nodes.present?
       end
     end
@@ -128,14 +129,27 @@ module Cocina
       origin_info_node['eventType'] = value if origin_info_node[:eventType].blank?
     end
 
+    # NOTE: must be run after normalize_origin_info_event_types
+    # remove dateOther type attribute if it matches originInfo@eventType and if dateOther is empty
+    def normalize_origin_info_date_other_types
+      ng_xml.root.xpath('//mods:originInfo[@eventType]', mods: MODS_NS).each do |origin_info_node|
+        origin_info_event_type = origin_info_node['eventType']
+        origin_info_node.xpath('mods:dateOther[@type]', mods: MODS_NS).each do |date_other_node|
+          next if date_other_node.content.present?
+
+          date_other_node.remove_attribute('type') if origin_info_event_type.match?(date_other_node['type'])
+        end
+      end
+    end
+
     def normalize_text_role_term
-      ng_xml.root.xpath("//mods:roleTerm[@type='text']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |role_term_node|
+      ng_xml.root.xpath("//mods:roleTerm[@type='text']", mods: MODS_NS).each do |role_term_node|
         role_term_node.content = role_term_node.content.downcase
       end
     end
 
     def normalize_role_term_authority
-      ng_xml.root.xpath("//mods:roleTerm[@authority='marcrelator']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |role_term_node|
+      ng_xml.root.xpath("//mods:roleTerm[@authority='marcrelator']", mods: MODS_NS).each do |role_term_node|
         role_term_node['authorityURI'] = 'http://id.loc.gov/vocabulary/relators/'
       end
     end
@@ -151,11 +165,11 @@ module Cocina
     end
 
     def location_nodes(ng_xml)
-      ng_xml.root.xpath('//mods:location', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+      ng_xml.root.xpath('//mods:location', mods: MODS_NS)
     end
 
     def url_nodes(location_node)
-      location_node.xpath('mods:url', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+      location_node.xpath('mods:url', mods: MODS_NS)
     end
 
     def has_primary_usage?(url_nodes)
@@ -163,7 +177,7 @@ module Cocina
     end
 
     def normalize_related_item_other_type
-      ng_xml.root.xpath('//mods:relatedItem[@type and @otherType]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |related_node|
+      ng_xml.root.xpath('//mods:relatedItem[@type and @otherType]', mods: MODS_NS).each do |related_node|
         related_node.delete('otherType')
         related_node.delete('otherTypeURI')
         related_node.delete('otherTypeAuth')
@@ -171,12 +185,12 @@ module Cocina
     end
 
     def normalize_empty_notes
-      ng_xml.root.xpath('//mods:note[not(text())]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each(&:remove)
+      ng_xml.root.xpath('//mods:note[not(text())]', mods: MODS_NS).each(&:remove)
     end
 
     def normalize_unmatched_altrepgroup
       altrepgroups = {}
-      ng_xml.root.xpath('//mods:*[@altRepGroup]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+      ng_xml.root.xpath('//mods:*[@altRepGroup]', mods: MODS_NS).each do |node|
         altrepgroup = node['altRepGroup']
         altrepgroups[altrepgroup] = [] unless altrepgroups.include?(altrepgroup)
         altrepgroups[altrepgroup] << node
@@ -190,33 +204,33 @@ module Cocina
     end
 
     def normalize_empty_attributes
-      ng_xml.root.xpath('//mods:*[@*=""]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+      ng_xml.root.xpath('//mods:*[@*=""]', mods: MODS_NS).each do |node|
         node.each { |attr_name, attr_value| node.delete(attr_name) if attr_value.blank? }
       end
     end
 
     def normalize_xml_space
-      ng_xml.root.xpath('//mods:*[@xml:space]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+      ng_xml.root.xpath('//mods:*[@xml:space]', mods: MODS_NS).each do |node|
         node.delete('space')
       end
     end
 
     def normalize_language_term_type
-      ng_xml.root.xpath('//mods:languageTerm[not(@type)]', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+      ng_xml.root.xpath('//mods:languageTerm[not(@type)]', mods: MODS_NS).each do |node|
         node['type'] = 'code'
       end
     end
 
     def normalize_subject_authority
       ng_xml.root.xpath('//mods:subject[not(@authority) and count(mods:*) = 1 and not(mods:geographicCode)]/mods:*[@authority]',
-                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+                        mods: MODS_NS).each do |node|
         node.parent['authority'] = node['authority']
       end
     end
 
     def normalize_geo_purl
       ng_xml.root.xpath('//mods:extension[@displayLabel="geo"]//rdf:Description/@rdf:about',
-                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS,
+                        mods: MODS_NS,
                         rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#').each do |attr|
         attr.value = "http://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
       end
@@ -224,34 +238,29 @@ module Cocina
 
     def normalize_dc_image
       ng_xml.root.xpath('//mods:extension[@displayLabel="geo"]//dc:type[text() = "image"]',
-                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS,
+                        mods: MODS_NS,
                         dc: 'http://purl.org/dc/elements/1.1/').each do |node|
         node.content = 'Image'
       end
     end
 
     def normalize_access_condition
-      ng_xml.root.xpath('//mods:accessCondition[@type="restrictionOnAccess"]',
-                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+      ng_xml.root.xpath('//mods:accessCondition[@type="restrictionOnAccess"]', mods: MODS_NS).each do |node|
         node['type'] = 'restriction on access'
       end
-      ng_xml.root.xpath('//mods:accessCondition[@type="useAndReproduction"]',
-                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+      ng_xml.root.xpath('//mods:accessCondition[@type="useAndReproduction"]', mods: MODS_NS).each do |node|
         node['type'] = 'use and reproduction'
       end
     end
 
     def normalize_identifier_type
-      ng_xml.root.xpath('//mods:identifier[@type]',
-                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+      ng_xml.root.xpath('//mods:identifier[@type]', mods: MODS_NS).each do |node|
         node['type'] = normalized_identifier_type_for(node['type'])
       end
-      ng_xml.root.xpath('//mods:nameIdentifier[@type]',
-                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+      ng_xml.root.xpath('//mods:nameIdentifier[@type]', mods: MODS_NS).each do |node|
         node['type'] = normalized_identifier_type_for(node['type'])
       end
-      ng_xml.root.xpath('//mods:recordIdentifier[@source]',
-                        mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+      ng_xml.root.xpath('//mods:recordIdentifier[@source]', mods: MODS_NS).each do |node|
         node['source'] = normalized_identifier_type_for(node['source'])
       end
     end
@@ -265,14 +274,14 @@ module Cocina
     end
 
     def normalize_subject_authority_lcnaf
-      ng_xml.root.xpath("//mods:*[@authority='lcnaf']", mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+      ng_xml.root.xpath("//mods:*[@authority='lcnaf']", mods: MODS_NS).each do |node|
         node[:authority] = 'naf'
       end
     end
 
     def normalize_location_physical_location
       location_nodes(ng_xml).each do |location_node|
-        location_node.xpath('mods:physicalLocation|mods:url|mods:shelfLocator', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |node|
+        location_node.xpath('mods:physicalLocation|mods:url|mods:shelfLocator', mods: MODS_NS).each do |node|
           new_location = Nokogiri::XML::Node.new('location', Nokogiri::XML(nil))
           new_location << node
           location_node.parent << new_location

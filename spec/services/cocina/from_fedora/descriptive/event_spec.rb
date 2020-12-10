@@ -586,6 +586,59 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L604'
   end
 
+  context 'when eventType matches date type "distribution"' do
+    let(:xml) do
+      <<~XML
+        <originInfo eventType="distribution">
+          <place>
+            <placeTerm type="text">Washington, DC</placeTerm>
+          </place>
+          <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
+          <dateOther type="distribution"/>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          type: 'distribution',
+          date: [
+            {
+              value: ''
+            }
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'For sale by the Superintendent of Documents, U.S. Government Publishing Office'
+                }
+              ],
+              type: 'organization',
+              role: [
+                {
+                  value: 'publisher',
+                  code: 'pbl',
+                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          location: [
+            {
+              value: 'Washington, DC'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
   # example 26 from mods_to_cocina_originInfo.txt
   context 'with originInfo eventType differs from date type' do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L621'
@@ -601,9 +654,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     let(:xml) do
       <<~XML
         <originInfo>
-        <place>
-          <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
-        </place>
+          <place>
+            <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+          </place>
         </originInfo>
       XML
     end
