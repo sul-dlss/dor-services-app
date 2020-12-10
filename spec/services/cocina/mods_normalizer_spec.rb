@@ -5,6 +5,10 @@ require 'rails_helper'
 RSpec.describe Cocina::ModsNormalizer do
   let(:normalized_ng_xml) { described_class.normalize(mods_ng_xml: mods_ng_xml, druid: druid) }
 
+  let(:mods_attributes) do
+    'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.6"
+    xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd"'
+  end
   let(:druid) { 'druid:pf694bk4862' }
 
   context 'when normalizing version' do
@@ -47,9 +51,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing topic' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009447">
             <topic>Marine biology</topic>
           </subject>
@@ -59,10 +61,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'moves authority, authorityURI, valueURI to topic' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject authority="fast">
             <topic authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009447">Marine biology</topic>
           </subject>
@@ -74,9 +73,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing topic with additional term' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject authority="lcsh">
             <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85046193">Excavations (Archaeology)</topic>
             <geographic>Turkey</geographic>
@@ -87,10 +84,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'leaves unchanged' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject authority="lcsh">
             <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85046193">Excavations (Archaeology)</topic>
             <geographic>Turkey</geographic>
@@ -103,9 +97,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing normalized_ng_xml name' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/270223">
             <name type="personal">
               <namePart>Anning, Mary, 1799-1847</namePart>
@@ -117,10 +109,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'moves authority, authorityURI, valueURI to topic' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject authority="fast">
             <name type="personal" authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/270223">
               <namePart>Anning, Mary, 1799-1847</namePart>
@@ -134,9 +123,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing authorityURIs' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <name authorityURI="http://id.loc.gov/authorities/names">
             <namePart authorityURI="http://id.loc.gov/authorities/subjects">Anning, Mary, 1799-1847</namePart>
             <role>
@@ -149,10 +136,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'adds trailing slash' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <name authorityURI="http://id.loc.gov/authorities/names/">
             <namePart authorityURI="http://id.loc.gov/authorities/subjects/">Anning, Mary, 1799-1847</namePart>
             <role>
@@ -167,9 +151,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing originInfo eventTypes' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <originInfo>
             <dateIssued>1930</dateIssued>
           </originInfo>
@@ -190,10 +172,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'adds eventType if missing' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <originInfo eventType="publication">
             <dateIssued>1930</dateIssued>
           </originInfo>
@@ -213,13 +192,10 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
-
   context 'when normalizing originInfo dateOther[@type]' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <originInfo eventType="distribution">
             <dateOther type="distribution"/>
           </originInfo>
@@ -235,9 +211,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'removes dateOther type attribute if it matches eventType and dateOther is empty' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <originInfo eventType="distribution">
             <dateOther/>
           </originInfo>
@@ -255,9 +229,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing subject authority' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject authority="naf">
             <topic>Marine biology</topic>
           </subject>
@@ -267,10 +239,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'changes naf to lcsh' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject authority="lcsh">
             <topic>Marine biology</topic>
           </subject>
@@ -282,9 +251,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing text roleTerm' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <name>
             <role>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
@@ -297,10 +264,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'downcases text' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <name>
             <role>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
@@ -315,9 +279,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing roleTerm authorityURI' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <name>
             <role>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
@@ -330,10 +292,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'adds authorityURI' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <name>
             <role>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
@@ -348,9 +307,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing PURL' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <location>
             <url>http://purl.stanford.edu/bw502ns3302</url>
           </location>
@@ -360,10 +317,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'adds usage' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <location>
             <url usage="primary display">http://purl.stanford.edu/bw502ns3302</url>
           </location>
@@ -375,9 +329,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing PURL but existing primary display in same <location> node' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <location>
             <url>http://purl.stanford.edu/bw502ns3302</url>
             <url usage="primary display">http://www.stanford.edu</url>
@@ -388,10 +340,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'does not add usage' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <location>
             <url>http://purl.stanford.edu/bw502ns3302</url>
           </location>
@@ -406,9 +355,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing PURL but existing primary display in different <location> node' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <location>
             <url>http://purl.stanford.edu/bw502ns3302</url>
           </location>
@@ -421,10 +368,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'does not add usage' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <location>
             <url>http://purl.stanford.edu/bw502ns3302</url>
           </location>
@@ -439,9 +383,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing relatedType with type and otherType' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <relatedItem type="otherFormat" otherType="Online version:" displayLabel="Online version:">
             <titleInfo>
               <title>Sitzungsberichte der Kaiserlichen Akademie der Wissenschaften. Mathematisch-Naturwissenschaftliche Classe. Abt. 2, Mathematik, Physik, Chemie, Physiologie, Meteorologie, physische Geographie und Astronomie</title>
@@ -454,10 +396,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'does not add otherType' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <relatedItem type="otherFormat" displayLabel="Online version:">
             <titleInfo>
               <title>Sitzungsberichte der Kaiserlichen Akademie der Wissenschaften. Mathematisch-Naturwissenschaftliche Classe. Abt. 2, Mathematik, Physik, Chemie, Physiologie, Meteorologie, physische Geographie und Astronomie</title>
@@ -472,9 +411,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing empty notes' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <note type="statement of responsibility" altRepGroup="00" script="Latn"/>
           <note>Includes various issues of some sheets.</note>
         </mods>
@@ -483,10 +420,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'removes' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <note>Includes various issues of some sheets.</note>
         </mods>
       XML
@@ -496,9 +430,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing unmatches altRepGroups' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject altRepGroup='1'>
             <topic>Marine biology</topic>
           </subject>
@@ -514,10 +446,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'removes unmatched' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject altRepGroup='1'>
             <topic>Marine biology</topic>
           </subject>
@@ -535,9 +464,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing empty attributes' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <classification authority="">Y 1.1/2:</mods:classification>
         </mods>
       XML
@@ -545,10 +472,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'removes unmatched' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <classification>Y 1.1/2:</mods:classification>
         </mods>
       XML
@@ -558,9 +482,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing xml:space' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <titleInfo>
             <nonSort xml:space="preserve">The</nonSort>
             <title>registers of the parish church of Adel, in the county of York, from 1606 to 1812</title>
@@ -572,10 +494,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'removes xml:space' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <titleInfo>
             <nonSort>The</nonSort>
             <title>registers of the parish church of Adel, in the county of York, from 1606 to 1812</title>
@@ -589,9 +508,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing languageTerm types' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <recordInfo>
             <languageOfCataloging>
               <languageTerm authority="iso639-2b">eng</languageTerm>
@@ -603,10 +520,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'removes unmatched' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <recordInfo>
             <languageOfCataloging>
               <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
@@ -620,9 +534,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing subject authority' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject>
             <name type="personal" authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/270223">
               <namePart>Anning, Mary, 1799-1847</namePart>
@@ -634,10 +546,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'adds authority' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject authority="fast">
             <name type="personal" authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/270223">
               <namePart>Anning, Mary, 1799-1847</namePart>
@@ -651,9 +560,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing subject authority when child authority is naf' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject>
             <name type="corporate" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80034013">
               <namePart>Institute for the Future</namePart>
@@ -665,10 +572,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'adds lcsh authority' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject authority="lcsh">
             <name type="corporate" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80034013">
               <namePart>Institute for the Future</namePart>
@@ -682,9 +586,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing subject authority with geographicCode child' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject>
             <geographicCode authority="marcgac">n-us-md</geographicCode>
           </subject>
@@ -694,10 +596,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'does not add authority' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject>
             <geographicCode authority="marcgac">n-us-md</geographicCode>
           </subject>
@@ -709,11 +608,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing geo PURL' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3"
-          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-          version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes} xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
               <rdf:Description rdf:about="https://www.stanford.edu/pf694bk4862">
@@ -728,12 +623,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'uses correct PURL' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3"
-          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-          version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes} xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
               <rdf:Description rdf:about="http://purl.stanford.edu/pf694bk4862">
@@ -750,10 +640,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing restriction on access without spaces' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3"
-          version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <accessCondition type="restrictionOnAccess">Available to Stanford researchers only.</accessCondition>
         </mods>
       XML
@@ -761,11 +648,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'adds spaces' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3"
-          version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <accessCondition type="restriction on access">Available to Stanford researchers only.</accessCondition>
         </mods>
       XML
@@ -775,10 +658,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing restriction on use and reproduction without spaces' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3"
-          version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <accessCondition type="useAndReproduction">User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.</accessCondition>
         </mods>
       XML
@@ -786,11 +666,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'adds spaces' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3"
-          version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <accessCondition type="use and reproduction">User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.</accessCondition>
         </mods>
       XML
@@ -800,10 +676,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing identifiers' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3"
-          version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <identifier type="Isbn">1234 5678 9203</identifier>
           <identifier type="Ark">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
           <identifier type="Oclc">123456789203</identifier>
@@ -827,11 +700,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'fixes capitalization' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3"
-          version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <identifier type="isbn">1234 5678 9203</identifier>
           <identifier type="ark">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
           <identifier type="OCLC">123456789203</identifier>
@@ -857,9 +726,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing lcnaf subject authority' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject authority="lcsh">
             <topic authority="lcnaf">Marine biology</topic>
           </subject>
@@ -869,10 +736,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'changes lcnaf to naf' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <subject authority="lcsh">
             <topic authority="naf">Marine biology</topic>
           </subject>
@@ -884,10 +748,7 @@ RSpec.describe Cocina::ModsNormalizer do
   context 'when normalizing physical location purl' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3"
-          version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <location>
             <url usage="primary display">http://purl.stanford.edu/cy979mw6316</url>
             <physicalLocation>Stanford University Libraries</physicalLocation>
@@ -906,11 +767,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
     it 'combines the location blocks' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3"
-          version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods #{mods_attributes}>
           <location>
             <url usage="primary display">http://purl.stanford.edu/cy979mw6316</url>
           </location>
@@ -940,11 +797,7 @@ RSpec.describe Cocina::ModsNormalizer do
     context 'when image (lowercase I)' do
       let(:mods_ng_xml) do
         Nokogiri::XML <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3"
-            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-            version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <mods #{mods_attributes} xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
             <extension displayLabel="geo">
               <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
                 <rdf:Description rdf:about="https://www.stanford.edu/pf694bk4862">
@@ -959,12 +812,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
       it 'fix capitalization (capitalizes I)' do
         expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <?xml version="1.0"?>
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3"
-            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-            version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <mods #{mods_attributes} xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
             <extension displayLabel="geo">
               <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
                 <rdf:Description rdf:about="http://purl.stanford.edu/pf694bk4862">
@@ -981,11 +829,7 @@ RSpec.describe Cocina::ModsNormalizer do
     context 'when Image (uppercase I)' do
       let(:mods_ng_xml) do
         Nokogiri::XML <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3"
-            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-            version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <mods #{mods_attributes} xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
             <extension displayLabel="geo">
               <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
                 <rdf:Description rdf:about="https://www.stanford.edu/pf694bk4862">
@@ -1000,12 +844,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
       it 'leaves capitalization' do
         expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <?xml version="1.0"?>
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3"
-            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-            version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <mods #{mods_attributes} xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
             <extension displayLabel="geo">
               <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
                 <rdf:Description rdf:about="http://purl.stanford.edu/pf694bk4862">
