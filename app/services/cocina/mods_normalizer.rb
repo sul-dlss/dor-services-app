@@ -3,6 +3,8 @@
 module Cocina
   # Normalizes a Fedora MODS document, accounting for differences between Fedora MODS and MODS generated from Cocina.
   class ModsNormalizer
+    MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
+
     # @param [Nokogiri::Document] mods_ng_xml MODS to be normalized
     # @param [String] druid
     # @return [Nokogiri::Document] normalized MODS
@@ -23,6 +25,7 @@ module Cocina
       normalize_subject_name
       normalize_authority_uris
       normalize_origin_info_event_types
+      normalize_origin_info_date_other_types
       normalize_subject_authority
       normalize_subject_authority_lcnaf
       normalize_subject_authority_naf
@@ -108,7 +111,6 @@ module Cocina
 
     # change original xml to have the event type that will be output
     def normalize_origin_info_event_types
-      # code
       ng_xml.root.xpath('//mods:originInfo', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).each do |origin_info_node|
         date_issued_nodes = origin_info_node.xpath('mods:dateIssued', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
         add_event_type('publication', origin_info_node) && next if date_issued_nodes.present?
@@ -126,6 +128,19 @@ module Cocina
 
     def add_event_type(value, origin_info_node)
       origin_info_node['eventType'] = value if origin_info_node[:eventType].blank?
+    end
+
+    # NOTE: must be run after normalize_origin_info_event_types
+    # remove dateOther type attribute if it matches originInfo@eventType and if dateOther is empty
+    def normalize_origin_info_date_other_types
+      ng_xml.root.xpath('//mods:originInfo[@eventType]', mods: MODS_NS).each do |origin_info_node|
+        origin_info_event_type = origin_info_node['eventType']
+        origin_info_node.xpath('mods:dateOther[@type]', mods: MODS_NS).each do |date_other_node|
+          next if date_other_node.content.present?
+
+          date_other_node.remove_attribute('type') if origin_info_event_type.match?(date_other_node['type'])
+        end
+      end
     end
 
     def normalize_text_role_term

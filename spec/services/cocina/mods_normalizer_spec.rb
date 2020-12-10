@@ -213,6 +213,45 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
+
+  context 'when normalizing originInfo dateOther[@type]' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo eventType="distribution">
+            <dateOther type="distribution"/>
+          </originInfo>
+          <originInfo eventType="manufacture">
+            <dateOther type="manufacture"/>
+          </originInfo>
+          <originInfo eventType="distribution">
+            <dateOther type="distribution">1937</dateOther>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    it 'removes dateOther type attribute if it matches eventType and dateOther is empty' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo eventType="distribution">
+            <dateOther/>
+          </originInfo>
+          <originInfo eventType="manufacture">
+            <dateOther/>
+          </originInfo>
+          <originInfo eventType="distribution">
+            <dateOther type="distribution">1937</dateOther>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
   context 'when normalizing subject authority' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
@@ -693,7 +732,7 @@ RSpec.describe Cocina::ModsNormalizer do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3"
           xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-          version="3.6"          
+          version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
@@ -725,7 +764,7 @@ RSpec.describe Cocina::ModsNormalizer do
         <?xml version="1.0"?>
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3"
-          version="3.6"          
+          version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <accessCondition type="restriction on access">Available to Stanford researchers only.</accessCondition>
         </mods>
@@ -750,7 +789,7 @@ RSpec.describe Cocina::ModsNormalizer do
         <?xml version="1.0"?>
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3"
-          version="3.6"          
+          version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <accessCondition type="use and reproduction">User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.</accessCondition>
         </mods>
@@ -791,7 +830,7 @@ RSpec.describe Cocina::ModsNormalizer do
         <?xml version="1.0"?>
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3"
-          version="3.6"          
+          version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <identifier type="isbn">1234 5678 9203</identifier>
           <identifier type="ark">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
@@ -870,7 +909,7 @@ RSpec.describe Cocina::ModsNormalizer do
         <?xml version="1.0"?>
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3"
-          version="3.6"          
+          version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <location>
             <url usage="primary display">http://purl.stanford.edu/cy979mw6316</url>
@@ -924,7 +963,7 @@ RSpec.describe Cocina::ModsNormalizer do
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.loc.gov/mods/v3"
             xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-            version="3.6"          
+            version="3.6"
             xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
             <extension displayLabel="geo">
               <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
@@ -965,7 +1004,7 @@ RSpec.describe Cocina::ModsNormalizer do
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.loc.gov/mods/v3"
             xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-            version="3.6"          
+            version="3.6"
             xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
             <extension displayLabel="geo">
               <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
