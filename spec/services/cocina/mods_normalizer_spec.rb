@@ -858,4 +858,55 @@ RSpec.describe Cocina::ModsNormalizer do
       end
     end
   end
+
+  context 'when normalizing empty relatedItem parts' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <relatedItem type="isReferencedBy">
+            <titleInfo>
+              <title>Social sciences &amp; humanities index</title>
+            </titleInfo>
+            <part>
+              <detail type="part">
+                <number/>
+              </detail>
+            </part>
+          </relatedItem>
+          <relatedItem type="isReferencedBy">
+            <titleInfo>
+              <title>STEM index</title>
+            </titleInfo>
+            <part>
+              <detail type="part">
+                <number>2</number>
+              </detail>
+            </part>
+          </relatedItem>
+        </mods>
+      XML
+    end
+
+    it 'removes part' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <relatedItem type="isReferencedBy">
+            <titleInfo>
+              <title>Social sciences &amp; humanities index</title>
+            </titleInfo>
+          </relatedItem>
+          <relatedItem type="isReferencedBy">
+            <titleInfo>
+              <title>STEM index</title>
+            </titleInfo>
+            <part>
+              <detail type="part">
+                <number>2</number>
+              </detail>
+            </part>
+          </relatedItem>
+        </mods>
+      XML
+    end
+  end
 end
