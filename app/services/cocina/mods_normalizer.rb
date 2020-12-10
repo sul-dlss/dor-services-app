@@ -21,8 +21,7 @@ module Cocina
       normalize_default_namespace
       normalize_version
       normalize_empty_attributes
-      normalize_topics
-      normalize_subject_name
+      normalize_subject
       normalize_authority_uris
       normalize_origin_info_event_types
       normalize_origin_info_date_other_types
@@ -68,13 +67,6 @@ module Cocina
       ng_xml.root['xsi:schemaLocation'] = 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd'
     end
 
-    def normalize_topics
-      ng_xml.root.xpath('//mods:subject[count(mods:topic) = 1 and count(mods:*) = 1]', mods: MODS_NS).each do |subject_node|
-        topic_node = subject_node.xpath('mods:topic', mods: MODS_NS).first
-        normalize_subject(subject_node, topic_node)
-      end
-    end
-
     def normalize_authority_uris
       Cocina::FromFedora::Descriptive::Authority::NORMALIZE_AUTHORITY_URIS.each do |authority_uri|
         ng_xml.root.xpath("//mods:*[@authorityURI='#{authority_uri}']", mods: MODS_NS).each do |node|
@@ -83,24 +75,20 @@ module Cocina
       end
     end
 
-    def normalize_subject_name
-      ng_xml.root.xpath('//mods:subject[count(mods:name) = 1 and count(mods:*) = 1]', mods: MODS_NS).each do |subject_node|
-        name_node = subject_node.xpath('mods:name', mods: MODS_NS).first
-        normalize_subject(subject_node, name_node)
+    def normalize_subject
+      ng_xml.root.xpath('//mods:subject[count(mods:name|mods:topic|mods:geographic) = 1 and count(mods:*) = 1]', mods: MODS_NS).each do |subject_node|
+        child_node = subject_node.xpath('mods:*', mods: MODS_NS).first
+        next unless subject_node[:authorityURI] || subject_node[:valueURI]
+
+        # If subject has authority and child doesn't, copy to child.
+        child_node[:authority] = subject_node[:authority] if subject_node[:authority] && !child_node[:authority]
+        # If subject has authorityURI and child doesn't, move to child.
+        child_node[:authorityURI] = subject_node[:authorityURI] if subject_node[:authorityURI] && !child_node[:authorityURI]
+        subject_node.delete('authorityURI')
+        # If subject has valueURI and child doesn't, move to child.
+        child_node[:valueURI] = subject_node[:valueURI] if subject_node[:valueURI] && !child_node[:valueURI]
+        subject_node.delete('valueURI')
       end
-    end
-
-    def normalize_subject(subject_node, child_node)
-      return unless subject_node[:authorityURI] || subject_node[:valueURI]
-
-      # If subject has authority and child doesn't, copy to child.
-      child_node[:authority] = subject_node[:authority] if subject_node[:authority] && !child_node[:authority]
-      # If subject has authorityURI and child doesn't, move to child.
-      child_node[:authorityURI] = subject_node[:authorityURI] if subject_node[:authorityURI] && !child_node[:authorityURI]
-      subject_node.delete('authorityURI')
-      # If subject has valueURI and child doesn't, move to child.
-      child_node[:valueURI] = subject_node[:valueURI] if subject_node[:valueURI] && !child_node[:valueURI]
-      subject_node.delete('valueURI')
     end
 
     def normalize_subject_authority_naf

@@ -48,103 +48,127 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
-  context 'when normalizing topic' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{mods_attributes}>
-          <subject authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009447">
-            <topic>Marine biology</topic>
-          </subject>
-        </mods>
-      XML
+  context 'when normalizing subject' do
+    context 'when normalizing topic' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009447">
+              <topic>Marine biology</topic>
+            </subject>
+          </mods>
+        XML
+      end
+
+      it 'moves authority, authorityURI, valueURI to topic' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="fast">
+              <topic authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009447">Marine biology</topic>
+            </subject>
+          </mods>
+        XML
+      end
     end
 
-    it 'moves authority, authorityURI, valueURI to topic' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{mods_attributes}>
-          <subject authority="fast">
-            <topic authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009447">Marine biology</topic>
-          </subject>
-        </mods>
-      XML
-    end
-  end
+    context 'when normalizing topic with additional term' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="lcsh">
+              <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85046193">Excavations (Archaeology)</topic>
+              <geographic>Turkey</geographic>
+            </subject>
+          </mods>
+        XML
+      end
 
-  context 'when normalizing topic with additional term' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{mods_attributes}>
-          <subject authority="lcsh">
-            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85046193">Excavations (Archaeology)</topic>
-            <geographic>Turkey</geographic>
-          </subject>
-        </mods>
-      XML
+      it 'leaves unchanged' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="lcsh">
+              <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85046193">Excavations (Archaeology)</topic>
+              <geographic>Turkey</geographic>
+            </subject>
+          </mods>
+        XML
+      end
     end
 
-    it 'leaves unchanged' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{mods_attributes}>
-          <subject authority="lcsh">
-            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85046193">Excavations (Archaeology)</topic>
-            <geographic>Turkey</geographic>
-          </subject>
-        </mods>
-      XML
-    end
-  end
+    context 'when normalizing normalized_ng_xml name' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/270223">
+              <name type="personal">
+                <namePart>Anning, Mary, 1799-1847</namePart>
+              </name>
+            </subject>
+          </mods>
+        XML
+      end
 
-  context 'when normalizing normalized_ng_xml name' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{mods_attributes}>
-          <subject authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/270223">
-            <name type="personal">
-              <namePart>Anning, Mary, 1799-1847</namePart>
+      it 'moves authority, authorityURI, valueURI to topic' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="fast">
+              <name type="personal" authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/270223">
+                <namePart>Anning, Mary, 1799-1847</namePart>
+              </name>
+            </subject>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when normalizing authorityURIs' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <name authorityURI="http://id.loc.gov/authorities/names">
+              <namePart authorityURI="http://id.loc.gov/authorities/subjects">Anning, Mary, 1799-1847</namePart>
+              <role>
+                <roleTerm authority="marcrelator" type="text" authorityURI="http://id.loc.gov/vocabulary/relators">creator</roleTerm>
+              </role>
             </name>
-          </subject>
-        </mods>
-      XML
-    end
+          </mods>
+        XML
+      end
 
-    it 'moves authority, authorityURI, valueURI to topic' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{mods_attributes}>
-          <subject authority="fast">
-            <name type="personal" authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/270223">
-              <namePart>Anning, Mary, 1799-1847</namePart>
+      it 'adds trailing slash' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <name authorityURI="http://id.loc.gov/authorities/names/">
+              <namePart authorityURI="http://id.loc.gov/authorities/subjects/">Anning, Mary, 1799-1847</namePart>
+              <role>
+                <roleTerm authority="marcrelator" type="text" authorityURI="http://id.loc.gov/vocabulary/relators/">creator</roleTerm>
+              </role>
             </name>
-          </subject>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when normalizing authorityURIs' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{mods_attributes}>
-          <name authorityURI="http://id.loc.gov/authorities/names">
-            <namePart authorityURI="http://id.loc.gov/authorities/subjects">Anning, Mary, 1799-1847</namePart>
-            <role>
-              <roleTerm authority="marcrelator" type="text" authorityURI="http://id.loc.gov/vocabulary/relators">creator</roleTerm>
-            </role>
-          </name>
-        </mods>
-      XML
+          </mods>
+        XML
+      end
     end
 
-    it 'adds trailing slash' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{mods_attributes}>
-          <name authorityURI="http://id.loc.gov/authorities/names/">
-            <namePart authorityURI="http://id.loc.gov/authorities/subjects/">Anning, Mary, 1799-1847</namePart>
-            <role>
-              <roleTerm authority="marcrelator" type="text" authorityURI="http://id.loc.gov/vocabulary/relators/">creator</roleTerm>
-            </role>
-          </name>
-        </mods>
-      XML
+    context 'when normalizing geographic' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85005490">
+              <geographic>Antarctica</geographic>
+            </subject>
+          </mods>
+        XML
+      end
+
+      it 'moves authority, authorityURI, valueURI to geographic' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="lcsh">
+              <geographic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85005490">Antarctica</geographic>
+            </subject>
+          </mods>
+        XML
+      end
     end
   end
 
