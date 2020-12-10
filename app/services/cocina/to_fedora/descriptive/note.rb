@@ -38,13 +38,15 @@ module Cocina
             :abstract
           when 'table of contents'
             :tableOfContents
+          when 'target audience'
+            :targetAudience
           else
             :note
           end
         end
 
         def tag(note, tag_name, attributes)
-          attributes[:type] = note.type if note.type && [:abstract, :tableOfContents].exclude?(tag_name)
+          attributes[:type] = note.type if note.type && [:abstract, :tableOfContents, :targetAudience].exclude?(tag_name)
           value = if note.structuredValue
                     note.structuredValue.map(&:value).join(' -- ')
                   else
@@ -70,7 +72,8 @@ module Cocina
           {
             lang: note.valueLanguage&.code,
             script: note.valueLanguage&.valueScript&.code,
-            displayLabel: note.displayLabel
+            displayLabel: note.displayLabel,
+            authority: note.source&.code
           }.compact
         end
       end

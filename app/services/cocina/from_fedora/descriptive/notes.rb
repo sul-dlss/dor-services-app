@@ -17,7 +17,7 @@ module Cocina
         end
 
         def build
-          abstract + simple_notes + parallel_notes + table_of_contents
+          abstract + simple_notes + parallel_notes + table_of_contents + target_audience
         end
 
         private
@@ -27,9 +27,11 @@ module Cocina
         def abstract
           set = resource_element.xpath('mods:abstract', mods: DESC_METADATA_NS)
           set.map do |node|
-            { type: 'summary', value: node.content }.tap do |attributes|
-              attributes[:displayLabel] = node[:displayLabel] if node[:displayLabel]
-            end
+            {
+              type: 'summary',
+              value: node.content,
+              displayLabel: node[:displayLabel]
+            }.compact
           end
         end
 
@@ -59,11 +61,12 @@ module Cocina
         end
 
         def note_for(note_node)
-          { value: note_node.text }.tap do |attributes|
-            attributes[:type] = note_node[:type]
-            attributes[:displayLabel] = note_node[:displayLabel]
-            attributes[:valueLanguage] = value_language_for(note_node)
-          end.compact
+          {
+            value: note_node.text,
+            type: note_node[:type],
+            displayLabel: note_node[:displayLabel],
+            valueLanguage: value_language_for(note_node)
+          }.compact
         end
 
         def value_language_for(note_node)
@@ -87,14 +90,27 @@ module Cocina
         def table_of_contents
           set = resource_element.xpath('mods:tableOfContents', mods: DESC_METADATA_NS)
           set.map do |node|
-            { type: 'table of contents' }.tap do |attributes|
-              attributes[:displayLabel] = node[:displayLabel] if node[:displayLabel]
+            {
+              type: 'table of contents',
+              displayLabel: node[:displayLabel]
+            }.tap do |attributes|
               value_parts = node.content.split(' -- ')
               if value_parts.size == 1
                 attributes[:value] = node.content
               else
                 attributes[:structuredValue] = value_parts.map { |value_part| { value: value_part } }
               end
+            end.compact
+          end
+        end
+
+        def target_audience
+          resource_element.xpath('mods:targetAudience', mods: DESC_METADATA_NS).map do |node|
+            {
+              type: 'target audience',
+              value: node.content
+            }.tap do |attrs|
+              attrs[:source] = { code: node[:authority] } if node[:authority]
             end
           end
         end
