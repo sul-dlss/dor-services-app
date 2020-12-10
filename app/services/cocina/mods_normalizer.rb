@@ -98,6 +98,8 @@ module Cocina
     end
 
     # change original xml to have the event type that will be output
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
     def normalize_origin_info_event_types
       ng_xml.root.xpath('//mods:originInfo', mods: MODS_NS).each do |origin_info_node|
         date_issued_nodes = origin_info_node.xpath('mods:dateIssued', mods: MODS_NS)
@@ -111,8 +113,22 @@ module Cocina
 
         date_captured_nodes = origin_info_node.xpath('mods:dateCaptured', mods: MODS_NS)
         add_event_type('capture', origin_info_node) && next if date_captured_nodes.present?
+
+        publisher = origin_info_node.xpath('mods:publisher', mods: MODS_NS)
+        add_event_type('publication', origin_info_node) && next if publisher.present?
+
+        edition = origin_info_node.xpath('mods:edition', mods: MODS_NS)
+        add_event_type('publication', origin_info_node) && next if edition.present?
+
+        issuance = origin_info_node.xpath('mods:issuance', mods: MODS_NS)
+        add_event_type('publication', origin_info_node) && next if issuance.present?
+
+        frequency = origin_info_node.xpath('mods:frequency', mods: MODS_NS)
+        add_event_type('publication', origin_info_node) && next if frequency.present?
       end
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
 
     def add_event_type(value, origin_info_node)
       origin_info_node['eventType'] = value if origin_info_node[:eventType].blank?
