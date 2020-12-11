@@ -82,12 +82,9 @@ module Cocina
             script: parallel_name.valueLanguage&.valueScript&.code
           }.tap do |attributes|
             attributes[:usage] = 'primary' if parallel_name.status == 'primary'
-            value_uri = parallel_name.uri
-            if value_uri
-              attributes[:valueURI] = value_uri
-              attributes[:authority] = parallel_name.source&.code
-              attributes[:authorityURI] = parallel_name.source&.uri
-            end
+            attributes[:authority] = parallel_name.source&.code
+            attributes[:valueURI] = parallel_name.uri
+            attributes[:authorityURI] = parallel_name.source&.uri
             attributes[:transliteration] = parallel_name.standard&.value if parallel_name.type == 'transliteration'
           end.compact
         end
@@ -105,12 +102,9 @@ module Cocina
             script: name.valueLanguage&.valueScript&.code
           }.tap do |attributes|
             attributes[:usage] = 'primary' if contributor.status == 'primary' || name.status == 'primary'
-            value_uri = name.uri
-            if value_uri
-              attributes[:valueURI] = value_uri
-              attributes[:authority] = name.source&.code
-              attributes[:authorityURI] = name.source&.uri
-            end
+            attributes[:valueURI] = name.uri
+            attributes[:authority] = name.source&.code
+            attributes[:authorityURI] = name.source&.uri
           end.compact
         end
 
