@@ -173,46 +173,90 @@ RSpec.describe Cocina::ModsNormalizer do
   end
 
   context 'when normalizing originInfo eventTypes' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{mods_attributes}>
-          <originInfo>
-            <dateIssued>1930</dateIssued>
-          </originInfo>
-          <originInfo>
-            <copyrightDate>1931</copyrightDate>
-          </originInfo>
-          <originInfo>
-            <dateCreated>1932</dateCreated>
-          </originInfo>
-          <relatedItem>
+    context 'when event type assigning date element present' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
             <originInfo>
-              <dateCaptured>1932</dateCaptured>
+              <dateIssued>1930</dateIssued>
             </originInfo>
-          </relatedItem>
-        </mods>
-      XML
+            <originInfo>
+              <copyrightDate>1931</copyrightDate>
+            </originInfo>
+            <originInfo>
+              <dateCreated>1932</dateCreated>
+            </originInfo>
+            <relatedItem>
+              <originInfo>
+                <dateCaptured>1932</dateCaptured>
+              </originInfo>
+            </relatedItem>
+          </mods>
+        XML
+      end
+
+      it 'adds eventType if missing' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <originInfo eventType="publication">
+              <dateIssued>1930</dateIssued>
+            </originInfo>
+            <originInfo eventType="copyright notice">
+              <copyrightDate>1931</copyrightDate>
+            </originInfo>
+            <originInfo eventType="production">
+              <dateCreated>1932</dateCreated>
+            </originInfo>
+            <relatedItem>
+              <originInfo eventType="capture">
+                <dateCaptured>1932</dateCaptured>
+              </originInfo>
+            </relatedItem>
+          </mods>
+        XML
+      end
     end
 
-    it 'adds eventType if missing' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{mods_attributes}>
-          <originInfo eventType="publication">
-            <dateIssued>1930</dateIssued>
-          </originInfo>
-          <originInfo eventType="copyright notice">
-            <copyrightDate>1931</copyrightDate>
-          </originInfo>
-          <originInfo eventType="production">
-            <dateCreated>1932</dateCreated>
-          </originInfo>
-          <relatedItem>
-            <originInfo eventType="capture">
-              <dateCaptured>1932</dateCaptured>
+    context 'when no event type assigning date element is present' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <originInfo>
+              <publisher>Macro Hamster Press</publisher>
             </originInfo>
-          </relatedItem>
-        </mods>
-      XML
+            <relatedItem type="otherFormat">
+              <originInfo>
+                <publisher>Northwestern University Library</publisher>
+              </originInfo>
+            </relatedItem>
+            <relatedItem type="otherFormat">
+              <originInfo>
+                <edition>Euro-global ed.</edition>
+              </originInfo>
+            </relatedItem>
+          </mods>
+        XML
+      end
+
+      it 'adds eventType if missing' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <originInfo eventType="publication">
+              <publisher>Macro Hamster Press</publisher>
+            </originInfo>
+            <relatedItem type="otherFormat">
+              <originInfo eventType="publication">
+                <publisher>Northwestern University Library</publisher>
+              </originInfo>
+            </relatedItem>
+            <relatedItem type="otherFormat">
+              <originInfo eventType="publication">
+                <edition>Euro-global ed.</edition>
+              </originInfo>
+            </relatedItem>
+          </mods>
+        XML
+      end
     end
   end
 
