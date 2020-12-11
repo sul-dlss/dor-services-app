@@ -31,6 +31,7 @@ module Cocina
           end
 
           write_physical_locations
+          write_digital_locations
           write_shelf_locators
           write_access_contact_locations
         end
@@ -43,6 +44,14 @@ module Cocina
           Array(access.physicalLocation).reject { |physical_location| shelf_locator?(physical_location) }.each do |physical_location|
             xml.location do
               xml.physicalLocation physical_location.value || physical_location.code, descriptive_attrs(physical_location)
+            end
+          end
+        end
+
+        def write_digital_locations
+          Array(access.digitalLocation).select { |digital_location| digital_location.type == 'discovery' }.each do |digital_location|
+            xml.location do
+              xml.physicalLocation digital_location.value || digital_location.code, descriptive_attrs(digital_location)
             end
           end
         end
