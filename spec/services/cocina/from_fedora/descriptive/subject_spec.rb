@@ -669,8 +669,46 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L695'
   end
 
+  # Example 24
   context 'with a multilingual subject' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L721'
+    let(:xml) do
+      <<~XML
+        <subject lang="eng" altRepGroup="1">
+          <topic>French New Wave</topic>
+        </subject>
+        <subject lang="fre" altRepGroup="1">
+          <topic>Nouvelle Vague</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "parallelValue": [
+            {
+              "value": 'French New Wave',
+              "valueLanguage": {
+                "code": 'eng',
+                "source": {
+                  "code": 'iso639-2b'
+                }
+              }
+            },
+            {
+              "value": 'Nouvelle Vague',
+              "valueLanguage": {
+                "code": 'fre',
+                "source": {
+                  "code": 'iso639-2b'
+                }
+              }
+            }
+          ],
+          "type": 'topic'
+        }
+      ]
+    end
   end
 
   context 'with a musical genre as topic' do
