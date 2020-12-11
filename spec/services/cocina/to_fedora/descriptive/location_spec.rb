@@ -261,6 +261,34 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
     end
   end
 
+  # example 14 from mods_to_cocina_location.txt
+  context 'when it is a PURL with note' do
+    let(:purl) { 'http://purl.stanford.edu/nd782fm8171' }
+
+    let(:access) do
+      Cocina::Models::DescriptiveAccessMetadata.new(
+        "note": [
+          {
+            "value": 'Available to Stanford-affiliated users.',
+            "type": 'purl access'
+          }
+        ]
+      )
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <location>
+            <url usage="primary display" note="Available to Stanford-affiliated users.">http://purl.stanford.edu/nd782fm8171</url>
+          </location>
+        </mods>
+      XML
+    end
+  end
+
   # example 6 from mods_to_cocina_location.txt
   context 'when it is a Web archive (with display label)' do
     let(:access) do

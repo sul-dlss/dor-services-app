@@ -212,6 +212,62 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
   end
 
+  # example 14 from mods_to_cocina_location
+  context 'with a URL to purl' do
+    let(:xml) do
+      <<~XML
+        <location>
+          <url displayLabel="electronic resource" usage="primary display" note="Available to Stanford-affiliated users.">http://purl.stanford.edu/nd782fm8171</url>
+        </location>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq({
+                            "note": [
+                              {
+                                "value": 'Available to Stanford-affiliated users.',
+                                "type": 'purl access'
+                              }
+                            ]
+                          })
+    end
+  end
+
+  context 'with multiple PURLs' do
+    let(:xml) do
+      <<~XML
+        <location>
+          <url usage="primary display" note="Available to Stanford-affiliated users.">http://purl.stanford.edu/nd782fm8171</url>
+        </location>
+        <location>
+          <url note="Available to Hoover-affiliated users.">http://purl.stanford.edu/qm814cd3342</url>
+        </location>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq({
+                            "url": [
+                              {
+                                "value": 'http://purl.stanford.edu/qm814cd3342',
+                                "note": [
+                                  {
+                                    "value": 'Available to Hoover-affiliated users.'
+                                  }
+                                ]
+                              }
+                            ],
+                            "note": [
+                              {
+                                "value": 'Available to Stanford-affiliated users.',
+                                "type": 'purl access'
+                              }
+                            ]
+                          })
+    end
+  end
+
   # example 8 from mods_to_cocina_location.txt
   context 'with a URL with note' do
     let(:xml) do
