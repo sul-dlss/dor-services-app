@@ -79,16 +79,19 @@ module Cocina
     def normalize_subject
       ng_xml.root.xpath('//mods:subject[count(mods:name|mods:topic|mods:geographic) = 1 and count(mods:*) = 1]', mods: MODS_NS).each do |subject_node|
         child_node = subject_node.xpath('mods:*', mods: MODS_NS).first
-        next unless subject_node[:authorityURI] || subject_node[:valueURI]
 
-        # If subject has authority and child doesn't, copy to child.
-        child_node[:authority] = subject_node[:authority] if subject_node[:authority] && !child_node[:authority]
-        # If subject has authorityURI and child doesn't, move to child.
-        child_node[:authorityURI] = subject_node[:authorityURI] if subject_node[:authorityURI] && !child_node[:authorityURI]
-        subject_node.delete('authorityURI')
-        # If subject has valueURI and child doesn't, move to child.
-        child_node[:valueURI] = subject_node[:valueURI] if subject_node[:valueURI] && !child_node[:valueURI]
-        subject_node.delete('valueURI')
+        if subject_node[:authorityURI] || subject_node[:valueURI]
+          # If subject has authority and child doesn't, copy to child.
+          child_node[:authority] = subject_node[:authority] if subject_node[:authority] && !child_node[:authority]
+          # If subject has authorityURI and child doesn't, move to child.
+          child_node[:authorityURI] = subject_node[:authorityURI] if subject_node[:authorityURI] && !child_node[:authorityURI]
+          subject_node.delete('authorityURI')
+          # If subject has valueURI and child doesn't, move to child.
+          child_node[:valueURI] = subject_node[:valueURI] if subject_node[:valueURI] && !child_node[:valueURI]
+          subject_node.delete('valueURI')
+        elsif child_node[:authority] && subject_node[:authority] == child_node[:authority]
+          child_node.delete('authority')
+        end
       end
     end
 
