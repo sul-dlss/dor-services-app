@@ -236,10 +236,10 @@ module Cocina
     end
 
     def normalize_geo_purl
-      ng_xml.root.xpath('//mods:extension[@displayLabel="geo"]//rdf:Description/@rdf:about',
+      ng_xml.root.xpath('//mods:extension[@displayLabel="geo"]//rdf:Description',
                         mods: MODS_NS,
-                        rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#').each do |attr|
-        attr.value = "http://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+                        rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#').each do |node|
+        node['rdf:about'] = "http://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
       end
     end
 
