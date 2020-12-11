@@ -417,7 +417,50 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
 
   # example 10 from mods_to_cocina_location.txt
   context 'with Physical location with type "discovery" mapping to digitalLocation' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_location.txt#L227'
+    let(:purl) { 'http://purl.stanford.edu/hn970dy7259' }
+    let(:access) do
+      Cocina::Models::DescriptiveAccessMetadata.new(
+        "accessContact": [
+          {
+            "value": 'Stanford University. Libraries. Department of Special Collections and University Archives.',
+            "type": 'repository',
+            "uri": 'http://id.loc.gov/authorities/names/no2014019980',
+            "source": {
+              "code": 'naf'
+            }
+          }
+        ],
+        "digitalLocation": [
+          {
+            "value": 'VICTOR\PLUS_PHOTOS_DAN\PLUS_TARD_PHOTOS_DAN_20071017\IMG_0852.JPG',
+            "type": 'discovery'
+          }
+        ],
+        "digitalRepository": [
+          {
+            "value": 'Stanford Digital Repository'
+          }
+        ]
+      )
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~'XML'
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <location>
+            <physicalLocation type="repository" authority="naf" valueURI="http://id.loc.gov/authorities/names/no2014019980">Stanford University. Libraries. Department of Special Collections and University Archives.</physicalLocation>
+          </location>
+          <location>
+            <physicalLocation type="discovery">VICTOR\PLUS_PHOTOS_DAN\PLUS_TARD_PHOTOS_DAN_20071017\IMG_0852.JPG</physicalLocation>
+          </location>
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/hn970dy7259</url>
+          </location>
+        </mods>
+      XML
+    end
   end
 
   # example 11 from mods_to_cocina_location.txt
@@ -472,6 +515,48 @@ RSpec.describe Cocina::ToFedora::Descriptive::Location do
 
   # example 13 from mods_to_cocina_location.txt
   context 'with physical location with type "location"' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_location.txt#L308'
+    let(:access) do
+      Cocina::Models::DescriptiveAccessMetadata.new(
+        "accessContact": [
+          {
+            "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
+            "type": 'repository',
+            "uri": 'http://id.loc.gov/authorities/names/no2014019980',
+            "source": {
+              "code": 'naf',
+              "uri": 'http://id.loc.gov/authorities/names/'
+            }
+          }
+        ],
+        "physicalLocation": [
+          {
+            "value": 'Box: 20, Folder: Engineering laboratories -- exterior -- #1',
+            "type": 'location'
+          },
+          {
+            "value": 'SC1071',
+            "type": 'shelf locator'
+          }
+        ]
+      )
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <location>
+            <physicalLocation type="repository" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/no2014019980">Stanford University. Libraries. Department of Special Collections and University Archives</physicalLocation>
+          </location>
+          <location>
+            <physicalLocation type="location">Box: 20, Folder: Engineering laboratories -- exterior -- #1</physicalLocation>
+          </location>
+          <location>
+            <shelfLocator>SC1071</shelfLocator>
+          </location>
+        </mods>
+      XML
+    end
   end
 end

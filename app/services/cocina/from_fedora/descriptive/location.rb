@@ -28,6 +28,7 @@ module Cocina
           {}.tap do |access|
             physical_locations = physical_location + shelf_location
             access[:physicalLocation] = physical_locations if physical_locations.present?
+            access[:digitalLocation] = digital_location if digital_location.present?
             access[:accessContact] = access_contact if access_contact.present?
             access[:url] = url if url.present?
             notes = note + purl_note
@@ -40,7 +41,11 @@ module Cocina
         attr_reader :resource_element
 
         def physical_location
-          descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[not(@type='repository')]", mods: DESC_METADATA_NS))
+          descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[not(@type='repository')][not(@type='discovery')]", mods: DESC_METADATA_NS))
+        end
+
+        def digital_location
+          descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[(@type='discovery')]", mods: DESC_METADATA_NS))
         end
 
         def access_contact
