@@ -30,7 +30,8 @@ module Cocina
             access[:physicalLocation] = physical_locations if physical_locations.present?
             access[:accessContact] = access_contact if access_contact.present?
             access[:url] = url if url.present?
-            access[:note] = note if note.present?
+            notes = note + purl_note
+            access[:note] = notes if notes.present?
           end
         end
 
@@ -56,16 +57,42 @@ module Cocina
         end
 
         def url
-          @url ||= resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS).map do |url_elem|
-            url_value = url_elem.text
-            next nil if PURL_REGEX.match(url_value)
+          @url ||= url_nodes.map do |url_node|
+            {
+              value: url_node.text,
+              displayLabel: url_node[:displayLabel]
+            }.tap do |attrs|
+              attrs[:status] = 'primary' if url_node[:usage] == 'primary display'
+              attrs[:note] = [{ value: url_node[:note] }] if url_node[:note]
+            end.compact
+          end
+        end
 
-            { value: url_value }.tap do |attrs|
-              attrs[:status] = 'primary' if url_elem[:usage] == 'primary display'
-              attrs[:displayLabel] = url_elem[:displayLabel] if url_elem[:displayLabel]
-              attrs[:note] = [{ value: url_elem[:note] }] if url_elem[:note]
-            end
-          end.compact
+        def primary_purl_node
+          @primary_purl_node ||= all_purl_nodes.size == 1 ? all_purl_nodes.first : all_purl_nodes.find { |purl_node| purl_node[:usage] == 'primary display' }
+        end
+
+        def all_purl_nodes
+          @all_purl_nodes ||= all_url_nodes.select { |url_node| PURL_REGEX.match(url_node.text) }
+        end
+
+        def all_url_nodes
+          @all_url_nodes ||= resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS)
+        end
+
+        def url_nodes
+          @url_nodes ||= all_url_nodes.reject { |url_node| url_node == primary_purl_node }
+        end
+
+        def purl_note
+          @purl_note ||= if primary_purl_node && primary_purl_node[:note]
+                           [{
+                             type: 'purl access',
+                             value: primary_purl_node[:note]
+                           }]
+                         else
+                           []
+                         end
         end
 
         def note

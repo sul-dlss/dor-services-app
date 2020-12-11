@@ -409,6 +409,8 @@ RSpec.describe Cocina::ModsNormalizer do
   end
 
   context 'when normalizing PURL' do
+    let(:druid) { 'druid:bw502ns3302' }
+
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{mods_attributes}>
@@ -431,6 +433,8 @@ RSpec.describe Cocina::ModsNormalizer do
   end
 
   context 'when normalizing PURL but existing primary display in same <location> node' do
+    let(:druid) { 'druid:bw502ns3302' }
+
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{mods_attributes}>
@@ -457,6 +461,8 @@ RSpec.describe Cocina::ModsNormalizer do
   end
 
   context 'when normalizing PURL but existing primary display in different <location> node' do
+    let(:druid) { 'druid:bw502ns3302' }
+
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{mods_attributes}>

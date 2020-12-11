@@ -171,25 +171,16 @@ module Cocina
     end
 
     def normalize_purl
-      any_url_primary_usage = location_nodes(ng_xml).any? { |location_node| has_primary_usage?(url_nodes(location_node)) }
+      location_nodes = ng_xml.root.xpath('//mods:location', mods: MODS_NS)
+      any_url_primary_usage = ng_xml.root.xpath('//mods:location/mods:url[@usage="primary display"]', mods: MODS_NS).present?
 
-      location_nodes(ng_xml).each do |location_node|
-        location_url_nodes = url_nodes(location_node)
-        purl_node = location_url_nodes.find { |url_node| Cocina::FromFedora::Descriptive::Location::PURL_REGEX.match(url_node.text) }
-        purl_node[:usage] = 'primary display' if purl_node && !has_primary_usage?(location_url_nodes) && !any_url_primary_usage
+      location_nodes.each do |location_node|
+        location_url_nodes = location_node.xpath('mods:url', mods: MODS_NS)
+        location_url_nodes.select { |url_node| Cocina::FromFedora::Descriptive::Location::PURL_REGEX.match(url_node.text) }.each do |purl_node|
+          purl_node[:usage] = 'primary display' if !any_url_primary_usage && purl_node.text.ends_with?(druid.delete_prefix('druid:'))
+          purl_node.delete('displayLabel') if purl_node[:displayLabel] == 'electronic resource' && purl_node[:usage] == 'primary display'
+        end
       end
-    end
-
-    def location_nodes(ng_xml)
-      ng_xml.root.xpath('//mods:location', mods: MODS_NS)
-    end
-
-    def url_nodes(location_node)
-      location_node.xpath('mods:url', mods: MODS_NS)
-    end
-
-    def has_primary_usage?(url_nodes)
-      url_nodes.any? { |url_node| url_node[:usage] == 'primary display' }
     end
 
     def normalize_related_item_other_type
@@ -296,7 +287,7 @@ module Cocina
     end
 
     def normalize_location_physical_location
-      location_nodes(ng_xml).each do |location_node|
+      ng_xml.root.xpath('//mods:location', mods: MODS_NS).each do |location_node|
         location_node.xpath('mods:physicalLocation|mods:url|mods:shelfLocator', mods: MODS_NS).each do |node|
           new_location = Nokogiri::XML::Node.new('location', Nokogiri::XML(nil))
           new_location << node

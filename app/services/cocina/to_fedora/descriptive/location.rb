@@ -73,8 +73,14 @@ module Cocina
         end
 
         def write_purl
+          attributes = {
+            usage: 'primary display'
+          }.tap do |attrs|
+            note_node = Array(access&.note).find { |node| node[:type] == 'purl access' }
+            attrs[:note] = note_node[:value] if note_node
+          end
           xml.location do
-            xml.url purl, { usage: 'primary display' }
+            xml.url purl, attributes
           end
         end
 
@@ -95,7 +101,7 @@ module Cocina
         end
 
         def write_access_conditions
-          Array(access.note).each do |note|
+          Array(access.note).reject { |note| note.type == 'purl access' }.each do |note|
             type = note.type == 'access restriction' ? 'restriction on access' : note.type
             xml.accessCondition note.value, type: type
           end
