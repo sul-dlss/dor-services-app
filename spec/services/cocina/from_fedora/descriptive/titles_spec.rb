@@ -18,6 +18,24 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
     end
 
+    context 'when the title is empty' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title />
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'raises and error' do
+        expect { build }.to raise_error Cocina::Mapper::MissingTitle
+      end
+    end
+
     context 'when the object has no title and not required' do
       let(:ng_xml) { Dor::Item.new.descMetadata.ng_xml }
 
