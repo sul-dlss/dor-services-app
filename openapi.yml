@@ -1316,6 +1316,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DescriptiveValue"
+        digitalLocation:
+          description: Location of a digital version of the resource, such as a file path for a born digital resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
         accessContact:
           description: The library, organization, or person responsible for access to the resource.
           type: array
