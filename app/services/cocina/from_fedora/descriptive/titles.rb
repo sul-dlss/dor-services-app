@@ -34,13 +34,10 @@ module Cocina
         end
 
         def build(require_title: true)
-          title_infos_with_groups = resource_element.xpath('mods:titleInfo[@altRepGroup]', mods: DESC_METADATA_NS)
-          grouped_title_infos = title_infos_with_groups.group_by { |node| node['altRepGroup'] }
+          altrepgroup_title_info_nodes, other_title_info_nodes = AltRepGroup.split(nodes: resource_element.xpath('mods:titleInfo', mods: DESC_METADATA_NS))
 
-          result = grouped_title_infos.map { |_k, node_set| parallel(node_set) }
-
-          title_infos_without_groups = resource_element.xpath('mods:titleInfo[not(@altRepGroup)]', mods: DESC_METADATA_NS)
-          result += simple_or_structured(title_infos_without_groups)
+          result = altrepgroup_title_info_nodes.map { |title_info_nodes| parallel(title_info_nodes) } \
+            + simple_or_structured(other_title_info_nodes)
 
           raise Cocina::Mapper::MissingTitle if result.empty? && require_title
 
@@ -123,7 +120,7 @@ module Cocina
                                 Honeybadger.notify('[DATA ERROR] Name not found for title group', { tags: 'data_error' })
                                 []
                               else
-                                NameBuilder.build(name_element: name_node, add_default_type: true)[:name]
+                                NameBuilder.build(name_elements: [name_node], add_default_type: true)[:name]
                               end
           structured_values.each { |structured_value| structured_value[:type] = 'name' }
 

@@ -6,8 +6,6 @@ module Cocina
       # Maps originInfo to cocina events
       # rubocop:disable Metrics/ClassLength
       class Event
-        ORIGININFO_XPATH = 'mods:originInfo'
-
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
@@ -20,14 +18,9 @@ module Cocina
         end
 
         def build
-          events = []
-          with_groups = resource_element.xpath('mods:originInfo[@altRepGroup]', mods: DESC_METADATA_NS)
-          grouped = with_groups.group_by { |node| node['altRepGroup'] }
+          altrepgroup_origin_info_nodes, other_origin_info_nodes = AltRepGroup.split(nodes: resource_element.xpath('mods:originInfo', mods: DESC_METADATA_NS))
 
-          events += build_grouped_origin_infos(grouped)
-
-          without_groups = resource_element.xpath('mods:originInfo[not(@altRepGroup)]', mods: DESC_METADATA_NS)
-          events + build_ungrouped_origin_infos(without_groups)
+          build_grouped_origin_infos(altrepgroup_origin_info_nodes) + build_ungrouped_origin_infos(other_origin_info_nodes)
         end
 
         private
@@ -36,7 +29,7 @@ module Cocina
 
         # @param [Hash[String, Array[Nokogiri::XML::NodeSet]]] grouped_origin_infos hash of key altRepGroup, value Array of NodeSets for originInfo elements in the grouping
         def build_grouped_origin_infos(grouped_origin_infos)
-          grouped_origin_infos.values.map do |nodeset|
+          grouped_origin_infos.map do |nodeset|
             origin_info_element = nodeset.first
             events = build_ungrouped_origin_infos([origin_info_element])
             event_type = origin_info_element['eventType'] || 'publication'
@@ -405,10 +398,6 @@ module Cocina
           return 'creation' if origin['eventType'] == 'production'
 
           origin['eventType']
-        end
-
-        def origin_info
-          @origin_info ||= resource_element.xpath(ORIGININFO_XPATH, mods: DESC_METADATA_NS)
         end
 
         def parallel_value(orig_value, parallel_value, scripts_langs_hash)

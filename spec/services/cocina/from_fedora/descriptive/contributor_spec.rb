@@ -1075,8 +1075,104 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L454'
   end
 
+  # Example 11
   context 'with multiple names with transliteration (name as value)' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L472'
+    let(:xml) do
+      <<~XML
+        <name usage="primary" type="personal" script="Cyrl" altRepGroup="0">
+          <namePart>Булгаков, Михаил Афанасьевич</namePart>
+        </name>
+        <name type="personal" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="0">
+          <namePart>Bulgakov, Mikhail Afanasʹevich</namePart>
+        </name>
+        <name type="personal" script="Cyrl" altRepGroup="1">
+          <namePart>Олеша, Юрий Карлович</namePart>
+        </name>
+        <name type="personal" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
+          <namePart>Olesha, I︠U︡riĭ Karlovich</namePart>
+        <name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "name": [
+            {
+              "parallelValue": [
+                {
+                  "value": 'Булгаков, Михаил Афанасьевич',
+                  "valueLanguage":
+                            {
+                              "valueScript": {
+                                "code": 'Cyrl',
+                                "source": {
+                                  "code": 'iso15924'
+                                }
+                              }
+                            },
+                  "status": 'primary'
+                },
+                {
+                  "value": 'Bulgakov, Mikhail Afanasʹevich',
+                  "valueLanguage":
+                          {
+                            "valueScript": {
+                              "code": 'Latn',
+                              "source": {
+                                "code": 'iso15924'
+                              }
+                            }
+                          },
+                  "type": 'transliteration',
+                  "standard": {
+                    "value": 'ALA-LC Romanization Tables'
+                  }
+                }
+              ],
+              "type": 'person'
+            }
+          ]
+        },
+        {
+          "name": [
+            {
+              "parallelValue": [
+                {
+                  "value": 'Олеша, Юрий Карлович',
+                  "valueLanguage":
+                            {
+                              "valueScript": {
+                                "code": 'Cyrl',
+                                "source": {
+                                  "code": 'iso15924'
+                                }
+                              }
+                            }
+                },
+                {
+                  "value": 'Olesha, I︠U︡riĭ Karlovich',
+                  "valueLanguage":
+                        {
+                          "valueScript": {
+                            "code": 'Latn',
+                            "source": {
+                              "code": 'iso15924'
+                            }
+                          }
+                        },
+                  "type": 'transliteration',
+                  "standard": {
+                    "value": 'ALA-LC Romanization Tables'
+                  }
+                }
+              ],
+              "type": 'person'
+            }
+          ]
+        }
+      ]
+    end
   end
 
   context 'with transliterated name with parts (name as structuredValue)' do

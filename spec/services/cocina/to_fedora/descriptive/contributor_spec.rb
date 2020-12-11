@@ -974,8 +974,118 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L454'
   end
 
+  # Example 11
   context 'with multiple names with transliteration (name as value)' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L472'
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          {
+            "name": [
+              {
+                "parallelValue": [
+                  {
+                    "value": 'Булгаков, Михаил Афанасьевич',
+                    "valueLanguage":
+                                {
+                                  "valueScript": {
+                                    "code": 'Cyrl',
+                                    "source": {
+                                      "code": 'iso15924'
+                                    }
+                                  }
+                                },
+                    "status": 'primary',
+                    "uri": 'http://id.loc.gov/authorities/names/no2015139297',
+                    "source": {
+                      code: 'naf',
+                      uri: 'http://id.loc.gov/authorities/names'
+                    }
+                  },
+                  {
+                    "value": 'Bulgakov, Mikhail Afanasʹevich',
+                    "valueLanguage":
+                              {
+                                "valueScript": {
+                                  "code": 'Latn',
+                                  "source": {
+                                    "code": 'iso15924'
+                                  }
+                                }
+                              },
+                    "type": 'transliteration',
+                    "standard": {
+                      "value": 'ALA-LC Romanization Tables'
+                    }
+                  }
+                ],
+                "type": 'person'
+              }
+            ]
+          }
+        ),
+        Cocina::Models::Contributor.new(
+          {
+            "name": [
+              {
+                "parallelValue": [
+                  {
+                    "value": 'Олеша, Юрий Карлович',
+                    "valueLanguage":
+                                {
+                                  "valueScript": {
+                                    "code": 'Cyrl',
+                                    "source": {
+                                      "code": 'iso15924'
+                                    }
+                                  }
+                                }
+
+                  },
+                  {
+                    "value": 'Olesha, I︠U︡riĭ Karlovich',
+                    "valueLanguage":
+                            {
+                              "valueScript": {
+                                "code": 'Latn',
+                                "source": {
+                                  "code": 'iso15924'
+                                }
+                              }
+                            },
+                    "type": 'transliteration',
+                    "standard": {
+                      "value": 'ALA-LC Romanization Tables'
+                    }
+                  }
+                ],
+                "type": 'person'
+              }
+            ]
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <name usage="primary" type="personal" script="Cyrl" altRepGroup="1" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/no2015139297">
+            <namePart>&#x411;&#x443;&#x43B;&#x433;&#x430;&#x43A;&#x43E;&#x432;, &#x41C;&#x438;&#x445;&#x430;&#x438;&#x43B; &#x410;&#x444;&#x430;&#x43D;&#x430;&#x441;&#x44C;&#x435;&#x432;&#x438;&#x447;</namePart>
+          </name>
+          <name type="personal" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
+            <namePart>Bulgakov, Mikhail Afanas&#x2B9;evich</namePart>
+          </name>
+          <name type="personal" script="Cyrl" altRepGroup="2">
+            <namePart>&#x41E;&#x43B;&#x435;&#x448;&#x430;, &#x42E;&#x440;&#x438;&#x439; &#x41A;&#x430;&#x440;&#x43B;&#x43E;&#x432;&#x438;&#x447;</namePart>
+          </name>
+          <name type="personal" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="2">
+            <namePart>Olesha, I&#xFE20;U&#xFE21;ri&#x12D; Karlovich</namePart>
+          </name>
+        </mods>
+      XML
+    end
   end
 
   context 'with transliterated name with parts (name as structuredValue)' do

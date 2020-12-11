@@ -233,7 +233,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
           Cocina::Models::Contributor.new(
             {
               "type": 'person',
-              "status": 'primary',
               "name": [
                 {
                   "parallelValue": [
@@ -251,7 +250,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
                           "value": '1838-1933',
                           "type": 'life dates'
                         }
-                      ]
+                      ],
+                      "status": 'primary'
                     },
                     {
                       "structuredValue": [
@@ -263,7 +263,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
                           "value": '1838-1933',
                           "type": 'life dates'
                         }
-                      ]
+                      ],
+                      "status": 'primary'
                     }
                   ]
                 }
