@@ -747,6 +747,38 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
+  context 'when normalizing missing geo PURL' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes} xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+          <extension displayLabel="geo">
+            <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+              <rdf:Description>
+                <dc:format>image/jpeg</dc:format>
+                <dc:type>Image</dc:type>
+              </rdf:Description>
+            </rdf:RDF>
+          </extension>
+        </mods>
+      XML
+    end
+
+    it 'adds correct PURL' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes} xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+          <extension displayLabel="geo">
+            <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+              <rdf:Description rdf:about="http://purl.stanford.edu/pf694bk4862">
+                <dc:format>image/jpeg</dc:format>
+                <dc:type>Image</dc:type>
+              </rdf:Description>
+            </rdf:RDF>
+          </extension>
+        </mods>
+      XML
+    end
+  end
+
   context 'when normalizing restriction on access without spaces' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
