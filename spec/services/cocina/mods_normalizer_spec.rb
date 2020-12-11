@@ -71,6 +71,28 @@ RSpec.describe Cocina::ModsNormalizer do
       end
     end
 
+    context 'when normalizing topic with authority only' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="local">
+              <topic authority="local">Big Game</topic>
+            </subject>
+          </mods>
+        XML
+      end
+
+      it 'removes authority from topic' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="local">
+              <topic>Big Game</topic>
+            </subject>
+          </mods>
+        XML
+      end
+    end
+
     context 'when normalizing topic with additional term' do
       let(:mods_ng_xml) do
         Nokogiri::XML <<~XML
