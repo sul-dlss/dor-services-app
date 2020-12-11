@@ -6,48 +6,89 @@ module Cocina
     class Descriptive
       # Maps a name
       class NameBuilder
-        # @param [Nokogiri::XML::Element] name_element
+        # @param [Array<Nokogiri::XML::Element>] name_elements (multiple if parallel)
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(name_element:, add_default_type: false)
-          new(name_element: name_element, add_default_type: add_default_type).build
+        def self.build(name_elements:, add_default_type: false)
+          new(name_elements: name_elements, add_default_type: add_default_type).build
         end
 
-        def initialize(name_element:, add_default_type: false)
-          @name_element = name_element
+        def initialize(name_elements:, add_default_type: false)
+          @name_elements = name_elements
           @add_default_type = add_default_type
         end
 
         def build
-          {
-            name: build_name_parts,
-            type: type_for(name_element['type']),
-            status: name_element['usage'],
-            note: build_notes,
-            identifier: build_identifier
-
-          }.tap do |attrs|
-            roles = build_roles
-            attrs[:role] = roles unless attrs[:name].nil?
-          end.compact
+          if name_elements.size == 1
+            build_name(name_elements.first)
+          else
+            build_parallel
+          end
         end
 
         private
 
-        attr_reader :name_element, :add_default_type
+        attr_reader :name_elements, :add_default_type
 
-        def build_name_parts
+        def build_parallel
+          {
+            name: [{
+              parallelValue: name_elements.map { |name_node| build_parallel_name(name_node) },
+              type: type_for(name_elements.first['type'])
+            }.compact]
+          }
+        end
+
+        def build_parallel_name(name_node)
+          name_attrs = {
+            status: name_node['usage']
+          }.tap do |attrs|
+            value_language = LanguageScript.build(node: name_node)
+            attrs[:valueLanguage] = value_language if value_language
+            if name_node[:transliteration] == 'ALA-LC Romanization Tables'
+              attrs[:type] = 'transliteration'
+              attrs[:standard] = {
+                value: 'ALA-LC Romanization Tables'
+              }
+            end
+          end
+          name_attrs = name_attrs.merge(common_name(name_node, name_attrs[:name]))
+          build_name_parts(name_node).each { |name_part| name_attrs = name_attrs.merge(name_part) }
+          name_attrs.compact
+        end
+
+        def build_name(name_node)
+          name = build_name_parts(name_node)
+          {
+            name: name,
+            type: type_for(name_node['type']),
+            status: name_node['usage']
+          }.compact.merge(common_name(name_node, name))
+        end
+
+        def common_name(name_node, name)
+          {
+            note: build_notes(name_node),
+            identifier: build_identifier(name_node)
+
+          }.tap do |attrs|
+            roles = build_roles(name_node)
+            attrs[:role] = roles unless name.nil?
+          end.compact
+        end
+
+        def build_name_parts(name_node)
           [].tap do |parts|
-            query = name_element.xpath('mods:namePart', mods: DESC_METADATA_NS)
+            query = name_node.xpath('mods:namePart', mods: DESC_METADATA_NS)
             if query.size == 1
               query.each do |name_part|
-                parts << build_name_part(name_part).merge(authority_attrs).presence
+                parts << build_name_part(name_part).merge(authority_attrs_for(name_node)).presence
               end
             else
               vals = query.map { |name_part| build_name_part(name_part).presence }.compact
-              parts << { structuredValue: vals }.merge(authority_attrs)
+              parts << { structuredValue: vals }.merge(authority_attrs_for(name_node))
             end
 
-            display_form = name_element.xpath('mods:displayForm', mods: DESC_METADATA_NS).first
+            display_form = name_node.xpath('mods:displayForm', mods: DESC_METADATA_NS).first
             parts << { value: display_form.text, type: 'display' } if display_form
           end.compact.presence
         end
@@ -72,39 +113,35 @@ module Cocina
           end
         end
 
-        def authority_attrs
+        def authority_attrs_for(name_node)
           {
-            uri: name_element['valueURI']
+            uri: name_node['valueURI']
 
           }.tap do |attrs|
             source = {
-              code: Authority.normalize_code(name_element['authority']),
-              uri: Authority.normalize_uri(name_element['authorityURI'])
+              code: Authority.normalize_code(name_node['authority']),
+              uri: Authority.normalize_uri(name_node['authorityURI'])
             }.compact
             attrs[:source] = source unless source.empty?
           end.compact
         end
 
-        def build_identifier
-          name_element.xpath('mods:nameIdentifier', mods: DESC_METADATA_NS).map { |identifier| IdentifierBuilder.build_from_name_identifier(identifier_element: identifier) }.presence
+        def build_identifier(name_node)
+          name_node.xpath('mods:nameIdentifier', mods: DESC_METADATA_NS).map { |identifier| IdentifierBuilder.build_from_name_identifier(identifier_element: identifier) }.presence
         end
 
-        def build_notes
+        def build_notes(name_node)
           [].tap do |parts|
-            affiliation = name_element.xpath('mods:affiliation', mods: DESC_METADATA_NS).first
+            affiliation = name_node.xpath('mods:affiliation', mods: DESC_METADATA_NS).first
             parts << { value: affiliation.text, type: 'affiliation' } if affiliation
 
-            description = name_element.xpath('mods:description', mods: DESC_METADATA_NS).first
+            description = name_node.xpath('mods:description', mods: DESC_METADATA_NS).first
             parts << { value: description.text, type: 'description' } if description
           end.presence
         end
 
-        def names
-          @names ||= resource_element.xpath(NAME_XPATH, mods: DESC_METADATA_NS)
-        end
-
-        def build_roles
-          role_nodes = name_element.xpath('mods:role', mods: DESC_METADATA_NS)
+        def build_roles(name_node)
+          role_nodes = name_node.xpath('mods:role', mods: DESC_METADATA_NS)
           role_nodes.map do |role_node|
             role_for(role_node)
           end.compact.presence

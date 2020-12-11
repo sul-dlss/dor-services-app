@@ -149,7 +149,7 @@ module Cocina
           when 'name'
             name_type = name_type_for_subject(node[:type])
             attrs[:type] = name_type if name_type
-            name_attrs = NameBuilder.build(name_element: node, add_default_type: true)[:name]&.first
+            name_attrs = NameBuilder.build(name_elements: [node], add_default_type: true)[:name]&.first
             name_attrs&.merge(attrs)
           when 'titleInfo'
             query = node.xpath('mods:title', mods: DESC_METADATA_NS)
