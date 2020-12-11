@@ -440,6 +440,40 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
 
   # example 13 from mods_to_cocina_location.txt
   context 'with physical location with type "location"' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_location.txt#L308'
+    let(:xml) do
+      <<~XML
+        <location>
+          <physicalLocation type="repository" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/no2014019980">Stanford University. Libraries. Department of Special Collections and University Archives</physicalLocation>
+          <physicalLocation type="location">Box: 20, Folder: Engineering laboratories -- exterior -- #1</physicalLocation>
+          <shelfLocator>SC1071</shelfLocator>
+        </location>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq(
+        "accessContact": [
+          {
+            "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
+            "type": 'repository',
+            "uri": 'http://id.loc.gov/authorities/names/no2014019980',
+            "source": {
+              "code": 'naf',
+              "uri": 'http://id.loc.gov/authorities/names/'
+            }
+          }
+        ],
+        "physicalLocation": [
+          {
+            "value": 'Box: 20, Folder: Engineering laboratories -- exterior -- #1',
+            "type": 'location'
+          },
+          {
+            "value": 'SC1071',
+            "type": 'shelf locator'
+          }
+        ]
+      )
+    end
   end
 end
