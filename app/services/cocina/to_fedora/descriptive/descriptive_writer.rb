@@ -15,7 +15,7 @@ module Cocina
           Form.write(xml: xml, forms: descriptive.form)
           Language.write(xml: xml, languages: descriptive.language)
           Note.write(xml: xml, notes: descriptive.note, id_generator: id_generator)
-          Subject.write(xml: xml, subjects: descriptive.subject, forms: descriptive.form)
+          Subject.write(xml: xml, subjects: descriptive.subject, forms: descriptive.form, id_generator: id_generator)
           Event.write(xml: xml, events: descriptive.event, id_generator: id_generator)
           Identifier.write(xml: xml, identifiers: descriptive.identifier)
           Location.write(xml: xml, access: descriptive.access, purl: descriptive.purl)

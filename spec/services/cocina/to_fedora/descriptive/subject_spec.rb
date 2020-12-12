@@ -5,13 +5,15 @@ require 'rails_helper'
 RSpec.describe Cocina::ToFedora::Descriptive::Subject do
   subject(:xml) { writer.to_xml }
 
+  let(:forms) { [] }
+
   let(:writer) do
     Nokogiri::XML::Builder.new do |xml|
       xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
                'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                'version' => '3.6',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, subjects: subjects)
+        described_class.write(xml: xml, subjects: subjects, forms: forms, id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
   end
@@ -363,17 +365,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
   end
 
   context 'when it has a cartographic subject' do
-    let(:writer) do
-      Nokogiri::XML::Builder.new do |xml|
-        xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
-                 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-                 'version' => '3.6',
-                 'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-          described_class.write(xml: xml, subjects: subjects, forms: forms)
-        end
-      end
-    end
-
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
@@ -421,17 +412,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
   end
 
   context 'when it has a cartographic subject with valueURI and authority' do
-    let(:writer) do
-      Nokogiri::XML::Builder.new do |xml|
-        xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
-                 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-                 'version' => '3.6',
-                 'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-          described_class.write(xml: xml, subjects: subjects, forms: forms)
-        end
-      end
-    end
-
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
@@ -483,17 +463,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
   end
 
   context 'when it has a cartographic subject without forms' do
-    let(:writer) do
-      Nokogiri::XML::Builder.new do |xml|
-        xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
-                 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-                 'version' => '3.6',
-                 'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-          described_class.write(xml: xml, subjects: subjects, forms: [])
-        end
-      end
-    end
-
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
@@ -591,7 +560,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
             {
               "value": 'French New Wave',
               "valueLanguage": {
-                "code": 'eng'
+                "code": 'eng',
+                valueScript: {
+                  "code": 'Latn'
+                }
               }
             },
             {
@@ -611,10 +583,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <subject lang="eng" altRepGroup="0">
+          <subject lang="eng" script="Latn" altRepGroup="1">
             <topic>French New Wave</topic>
           </subject>
-          <subject lang="fre" altRepGroup="0">
+          <subject lang="fre" altRepGroup="1">
             <topic>Nouvelle Vague</topic>
           </subject>
         </mods>

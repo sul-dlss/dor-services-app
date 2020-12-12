@@ -27,27 +27,42 @@ module Cocina
         end
 
         def build
-          subjects.map do |subject|
-            attrs = common_attrs(subject)
-            node_set = subject.xpath('*')
-            next subject_classification(subject, attrs) if subject.name == 'classification'
+          altrepgroup_subject_nodes, other_subject_nodes = AltRepGroup.split(nodes: subject_nodes)
 
-            is_geo_code = node_set.any? { |node| node.name == 'geographicCode' }
-
-            next geo_code_and_terms(node_set, attrs) if node_set.size != 1 && is_geo_code
-
-            next structured_value(node_set, attrs) if node_set.size != 1 && !is_geo_code
-
-            node = node_set.first
-            next hierarchical_geographic(node, attrs) if node.name == 'hierarchicalGeographic'
-
-            simple_item(node, attrs)
-          end.compact
+          altrepgroup_subject_nodes.map { |subject_nodes| build_parallel_subject(subject_nodes) } \
+            + other_subject_nodes.map { |subject_node| build_subject(subject_node) }.compact
         end
 
         private
 
         attr_reader :resource_element
+
+        def build_parallel_subject(parallel_subject_nodes)
+          parallel_subjects = parallel_subject_nodes.map { |subject_node| build_subject(subject_node) }
+          # Moving type up from parallel subjects
+          type = parallel_subjects.map { |subject| subject.delete(:type) }.compact.first
+          {
+            parallelValue: parallel_subjects,
+            type: type
+          }.compact
+        end
+
+        def build_subject(subject_node)
+          attrs = common_attrs(subject_node)
+          children_nodes = subject_node.xpath('*')
+          return subject_classification(subject_node, attrs) if subject_node.name == 'classification'
+
+          is_geo_code = children_nodes.any? { |node| node.name == 'geographicCode' }
+
+          return geo_code_and_terms(children_nodes, attrs) if children_nodes.size != 1 && is_geo_code
+
+          return structured_value(children_nodes, attrs) if children_nodes.size != 1 && !is_geo_code
+
+          first_child_node = children_nodes.first
+          return hierarchical_geographic(first_child_node, attrs) if first_child_node.name == 'hierarchicalGeographic'
+
+          simple_item(first_child_node, attrs)
+        end
 
         def common_attrs(subject)
           {
@@ -65,14 +80,8 @@ module Cocina
               attrs[:source] = source unless source.empty?
             end
             attrs[:encoding] = { code: subject[:encoding] } if subject[:encoding]
-            if subject[:lang]
-              attrs[:valueLanguage] = {
-                code: subject[:lang],
-                "source": {
-                  "code": 'iso639-2b'
-                }
-              }
-            end
+            language_script = LanguageScript.build(node: subject)
+            attrs[:valueLanguage] = language_script if language_script
           end.compact
         end
 
@@ -190,7 +199,7 @@ module Cocina
           Contributor::ROLES.fetch(name_type) if Contributor::ROLES.keys.include?(name_type)
         end
 
-        def subjects
+        def subject_nodes
           resource_element.xpath('mods:subject', mods: DESC_METADATA_NS) + resource_element.xpath('mods:classification', mods: DESC_METADATA_NS)
         end
 
