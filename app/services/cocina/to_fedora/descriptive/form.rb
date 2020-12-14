@@ -29,14 +29,15 @@ module Cocina
         end
 
         def write
-          other_forms = Array(forms).reject { |form| physical_description_member?(form) || manuscript?(form) }
+          other_forms = Array(forms).reject { |form| physical_description_member?(form) || manuscript?(form) || collection?(form) }
           is_manuscript = Array(forms).any? { |form| manuscript?(form) }
+          is_collection = Array(forms).any? { |form| collection?(form) }
 
           other_forms.each do |form|
             if form.structuredValue
               write_structured(form)
             elsif form.value
-              write_basic(form, is_manuscript: is_manuscript)
+              write_basic(form, is_manuscript: is_manuscript, is_collection: is_collection)
             end
           end
 
@@ -54,6 +55,10 @@ module Cocina
 
         def manuscript?(form)
           form.to_h == { value: 'manuscript', source: { value: 'MODS resource types' } }
+        end
+
+        def collection?(form)
+          form.to_h == { value: 'collection', source: { value: 'MODS resource types' } }
         end
 
         def write_physical_description(forms)
@@ -76,7 +81,7 @@ module Cocina
           end
         end
 
-        def write_basic(form, is_manuscript: false)
+        def write_basic(form, is_manuscript: false, is_collection: false)
           return nil if form.source&.value&.match?(/DataCite/i)
           return note(form) if form.note
 
@@ -87,6 +92,7 @@ module Cocina
           case form.type
           when 'resource type'
             attributes[:manuscript] = 'yes' if is_manuscript
+            attributes[:collection] = 'yes' if is_collection
             xml.typeOfResource form.value, attributes
           when 'map scale', 'map projection'
             # do nothing, these end up in subject/cartographics

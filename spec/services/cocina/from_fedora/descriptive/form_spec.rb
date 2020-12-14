@@ -76,11 +76,50 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     end
 
     context 'with a collection' do
-      xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L89'
+      let(:xml) do
+        <<~XML
+          <typeOfResource collection="yes">mixed material</typeOfResource>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'mixed material',
+            "type": 'resource type',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          },
+          {
+            "value": 'collection',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          }
+        ]
+      end
     end
 
-    context 'with a typeOfResource with display label' do
-      xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L106'
+    context 'with a display label' do
+      let(:xml) do
+        <<~XML
+          <typeOfResource displayLabel="Contains only">text</typeOfResource>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'text',
+            "type": 'resource type',
+            "displayLabel": 'Contains only',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          }
+        ]
+      end
     end
   end
 

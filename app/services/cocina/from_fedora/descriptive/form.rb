@@ -96,12 +96,23 @@ module Cocina
               type: 'resource type',
               source: {
                 value: 'MODS resource types'
+              },
+              displayLabel: type[:displayLabel].presence
+            }.compact
+
+            if type[:manuscript] == 'yes'
+              forms << {
+                value: 'manuscript',
+                source: {
+                  value: 'MODS resource types'
+                }
               }
-            }
-            next unless type[:manuscript] == 'yes'
+            end
+
+            next unless type[:collection] == 'yes'
 
             forms << {
-              value: 'manuscript',
+              value: 'collection',
               source: {
                 value: 'MODS resource types'
               }
