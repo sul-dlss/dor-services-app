@@ -83,7 +83,7 @@ def validate_druid(druid, cache, fast: false)
     cocina_props = cocina_props(original_ng_xml, label)
     cocina = Cocina::Models::Description.new(cocina_props)
   rescue StandardError => e
-    write_error(druid, original_ng_xml, cocina_props, e)
+    write_error(druid, original_ng_xml, cocina_props, e) unless fast
     return :to_cocina_error
   end
 
@@ -93,7 +93,7 @@ def validate_druid(druid, cache, fast: false)
   begin
     roundtrip_ng_xml = round_tripped_ng_xml(cocina, druid)
   rescue StandardError => e
-    write_error(druid, original_ng_xml, cocina_props, e)
+    write_error(druid, original_ng_xml, cocina_props, e) unless fast
     return :to_fedora_error
   end
 
