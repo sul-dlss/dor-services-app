@@ -43,8 +43,9 @@ module Cocina
       normalize_location_physical_location
       normalize_purl
       normalize_empty_notes
-      normalize_empty_related_item_parts
-      normalize_empty_subtitle
+      normalize_empty_titles
+      # This should be last-ish.
+      normalize_empty_related_items
       ng_xml
     end
 
@@ -302,10 +303,11 @@ module Cocina
       end
     end
 
-    def normalize_empty_related_item_parts
+    def normalize_empty_related_items
       ng_xml.root.xpath('//mods:relatedItem/mods:part[count(mods:*)=1]/mods:detail[count(mods:*)=1]/mods:number[not(text())]', mods: MODS_NS).each do |number_node|
         number_node.parent.parent.remove
       end
+      ng_xml.root.xpath('//mods:relatedItem[not(mods:*)]', mods: MODS_NS).each(&:remove)
     end
 
     def normalize_name
@@ -313,8 +315,10 @@ module Cocina
       ng_xml.root.xpath('//mods:name[not(mods:namePart)]', mods: MODS_NS).each(&:remove)
     end
 
-    def normalize_empty_subtitle
+    def normalize_empty_titles
+      ng_xml.root.xpath('//mods:title[not(text())]', mods: MODS_NS).each(&:remove)
       ng_xml.root.xpath('//mods:subTitle[not(text())]', mods: MODS_NS).each(&:remove)
+      ng_xml.root.xpath('//mods:titleInfo[not(mods:*)]', mods: MODS_NS).each(&:remove)
     end
   end
 end

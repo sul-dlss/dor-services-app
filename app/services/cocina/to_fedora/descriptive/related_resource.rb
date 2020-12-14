@@ -55,6 +55,8 @@ module Cocina
               new_notes = related_hash.fetch(:note, []).reject { |note| note[:type] == 'other relation type' }
               related_hash[:note] = new_notes.empty? ? nil : new_notes
             end
+            next if related_hash.empty?
+
             new_related = Cocina::Models::RelatedResource.new(related_hash.compact)
 
             xml.relatedItem attributes do
