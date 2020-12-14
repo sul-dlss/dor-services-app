@@ -85,6 +85,64 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
         XML
       end
     end
+
+    # Example 6
+    context 'with a collection' do
+      let(:forms) do
+        [
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'mixed material',
+            "type": 'resource type',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'collection',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          )
+
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <typeOfResource collection="yes">mixed material</typeOfResource>
+          </mods>
+        XML
+      end
+    end
+
+    # Example 7
+    context 'with a collection' do
+      let(:forms) do
+        [
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'text',
+            "type": 'resource type',
+            "displayLabel": 'Contains only',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <typeOfResource displayLabel="Contains only">text</typeOfResource>
+          </mods>
+        XML
+      end
+    end
   end
 
   describe 'genre' do
