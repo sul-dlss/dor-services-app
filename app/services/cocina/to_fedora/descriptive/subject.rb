@@ -8,7 +8,8 @@ module Cocina
       class Subject
         TAG_NAME = {
           'time' => :temporal,
-          'genre' => :genre
+          'genre' => :genre,
+          'occupation' => :occupation
         }.freeze
         DEORDINAL_REGEX = /(?<=[0-9])(?:st|nd|rd|th)/.freeze
 

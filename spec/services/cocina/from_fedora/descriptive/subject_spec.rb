@@ -716,7 +716,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L754'
   end
 
-  context 'with a occupation subject' do
+  context 'with an occupation subject' do
     let(:xml) do
       <<~XML
         <subject>

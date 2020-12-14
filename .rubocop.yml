@@ -236,3 +236,8 @@ Lint/RedundantSafeNavigation: # (new in 0.93)
   Enabled: true
 Style/ClassEqualityComparison: # (new in 0.93)
   Enabled: true
+
+Rails/AttributeDefaultBlockValue: # (new in 2.9)
+  Enabled: true
+Rails/WhereEquals: # (new in 2.9)
+  Enabled: true
