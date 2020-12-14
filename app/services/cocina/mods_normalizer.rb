@@ -31,6 +31,7 @@ module Cocina
       normalize_subject_authority_naf
       normalize_text_role_term
       normalize_role_term_authority
+      normalize_name
       normalize_related_item_other_type
       normalize_unmatched_altrepgroup
       normalize_xml_space
@@ -304,6 +305,11 @@ module Cocina
       ng_xml.root.xpath('//mods:relatedItem/mods:part[count(mods:*)=1]/mods:detail[count(mods:*)=1]/mods:number[not(text())]', mods: MODS_NS).each do |number_node|
         number_node.parent.parent.remove
       end
+    end
+
+    def normalize_name
+      ng_xml.root.xpath('//mods:namePart[not(text())]', mods: MODS_NS).each(&:remove)
+      ng_xml.root.xpath('//mods:name[not(mods:namePart)]', mods: MODS_NS).each(&:remove)
     end
   end
 end
