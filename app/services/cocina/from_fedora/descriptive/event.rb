@@ -103,12 +103,14 @@ module Cocina
 
         def build_ungrouped_origin_infos(origin_infos)
           origin_infos.flat_map do |origin_info|
-            events = build_events_for_origin_info(origin_info, origin_info[:displayLabel])
+            events = build_events_for_origin_info(origin_info)
 
             events = [{}] if events.empty?
 
             place = origin_info.xpath('mods:place', mods: DESC_METADATA_NS)
-            add_place_info(events.last, place) if place.present?
+            add_place_info(events.first, place) if place.present?
+            display_label = origin_info[:displayLabel].presence
+            events.first[:displayLabel] = display_label if display_label
 
             issuance = origin_info.xpath('mods:issuance', mods: DESC_METADATA_NS)
             frequency = origin_info.xpath('mods:frequency', mods: DESC_METADATA_NS)
@@ -137,25 +139,25 @@ module Cocina
           end
         end
 
-        def build_events_for_origin_info(origin_info, display_label)
+        def build_events_for_origin_info(origin_info)
           [].tap do |events|
             date_created = origin_info.xpath('mods:dateCreated', mods: DESC_METADATA_NS)
-            events << build_event('creation', date_created, display_label) if date_created.present?
+            events << build_event('creation', date_created) if date_created.present?
 
             date_issued = origin_info.xpath('mods:dateIssued', mods: DESC_METADATA_NS)
-            events << build_event('publication', date_issued, display_label) if date_issued.present?
+            events << build_event('publication', date_issued) if date_issued.present?
 
             copyright_date = origin_info.xpath('mods:copyrightDate', mods: DESC_METADATA_NS)
-            events << build_event('copyright', copyright_date, display_label) if copyright_date.present?
+            events << build_event('copyright', copyright_date) if copyright_date.present?
 
             date_captured = origin_info.xpath('mods:dateCaptured', mods: DESC_METADATA_NS)
-            events << build_event('capture', date_captured, display_label) if date_captured.present?
+            events << build_event('capture', date_captured) if date_captured.present?
 
             date_other = origin_info.xpath('mods:dateOther', mods: DESC_METADATA_NS)
-            events << build_event(date_other_event_type(origin_info), date_other, display_label) if date_other.present?
+            events << build_event(date_other_event_type(origin_info, date_other.first), date_other) if date_other.present?
 
             has_date = [date_created, date_issued, copyright_date, date_captured, date_other].flatten.present?
-            events << build_event('creation', [], display_label) if origin_info[:eventType] == 'production' && !has_date
+            events << build_event('creation', []) if origin_info[:eventType] == 'production' && !has_date
           end
         end
 
@@ -335,7 +337,7 @@ module Cocina
           orig_contrib_name_with_value[:name].first[:value] if orig_contrib_name_with_value
         end
 
-        def build_event(type, node_set, display_label = nil)
+        def build_event(type, node_set)
           points = node_set.select { |node| node['point'] }
           dates = points.size == 1 ? [build_date(type, points.first)] : build_structured_date(type, points)
           node_set.reject { |node| node['point'] }.each do |node|
@@ -344,7 +346,6 @@ module Cocina
 
           {}.tap do |event|
             event[:date] = dates unless dates.empty?
-            event[:displayLabel] = display_label if display_label
             event[:type] = type if type
             Honeybadger.notify('[DATA ERROR] originInfo/dateOther missing eventType', { tags: 'data_error' }) unless event[:type]
           end
@@ -394,7 +395,8 @@ module Cocina
           end
         end
 
-        def date_other_event_type(origin)
+        def date_other_event_type(origin, date)
+          return 'development' if date['type'] == 'developed'
           return 'creation' if origin['eventType'] == 'production'
 
           origin['eventType']

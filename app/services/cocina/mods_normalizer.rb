@@ -26,6 +26,7 @@ module Cocina
       normalize_origin_info_event_types
       normalize_origin_info_date_other_types
       normalize_origin_info_place_term_type
+      normalize_origin_info_developed_date
       normalize_subject_authority
       normalize_subject_authority_lcnaf
       normalize_subject_authority_naf
@@ -319,6 +320,17 @@ module Cocina
       ng_xml.root.xpath('//mods:title[not(text())]', mods: MODS_NS).each(&:remove)
       ng_xml.root.xpath('//mods:subTitle[not(text())]', mods: MODS_NS).each(&:remove)
       ng_xml.root.xpath('//mods:titleInfo[not(mods:*)]', mods: MODS_NS).each(&:remove)
+    end
+
+    def normalize_origin_info_developed_date
+      ng_xml.root.xpath('//mods:originInfo/mods:dateOther[@type="developed"]', mods: MODS_NS).each do |date_other|
+        # Move to own originInfo
+        new_origin_info = Nokogiri::XML::Node.new('originInfo', Nokogiri::XML(nil))
+        new_origin_info[:eventType] = 'development'
+        new_origin_info << date_other.dup
+        date_other.parent.parent << new_origin_info
+        date_other.remove
+      end
     end
   end
 end
