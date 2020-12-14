@@ -379,6 +379,7 @@ RSpec.describe Cocina::ModsNormalizer do
       Nokogiri::XML <<~XML
         <mods #{mods_attributes}>
           <name>
+            <namePart>Dunnett, Dorothy</namePart>
             <role>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
               <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">Photographer</roleTerm>
@@ -392,6 +393,7 @@ RSpec.describe Cocina::ModsNormalizer do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{mods_attributes}>
           <name>
+            <namePart>Dunnett, Dorothy</namePart>
             <role>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
               <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">photographer</roleTerm>
@@ -407,6 +409,7 @@ RSpec.describe Cocina::ModsNormalizer do
       Nokogiri::XML <<~XML
         <mods #{mods_attributes}>
           <name>
+            <namePart>Dunnett, Dorothy</namePart>
             <role>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
               <roleTerm type="text" authority="marcrelator" valueURI="http://id.loc.gov/vocabulary/relators/pht">Photographer</roleTerm>
@@ -420,6 +423,7 @@ RSpec.describe Cocina::ModsNormalizer do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{mods_attributes}>
           <name>
+            <namePart>Dunnett, Dorothy</namePart>
             <role>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
               <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">photographer</roleTerm>
@@ -847,6 +851,7 @@ RSpec.describe Cocina::ModsNormalizer do
           <identifier type="Xyz">123456789203</identifier>
           <identifier type="stock number">123456789203</identifier>
           <name>
+            <namePart>Dunnett, Dorothy</namePart>
             <nameIdentifier type="iSbn">1234 5678 9203</identifier>
             <nameIdentifier type="aRk">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
             <nameIdentifier type="oClc">123456789203</identifier>
@@ -871,6 +876,7 @@ RSpec.describe Cocina::ModsNormalizer do
           <identifier type="Xyz">123456789203</identifier>
           <identifier type="stock-number">123456789203</identifier>
           <name>
+            <namePart>Dunnett, Dorothy</namePart>
             <nameIdentifier type="isbn">1234 5678 9203</identifier>
             <nameIdentifier type="ark">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
             <nameIdentifier type="OCLC">123456789203</identifier>
@@ -1069,6 +1075,28 @@ RSpec.describe Cocina::ModsNormalizer do
               </detail>
             </part>
           </relatedItem>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing empty names' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <name>
+            <namePart/>
+            <role>
+              <roleTerm authority="marcrelator" type="text">author</roleTerm>
+            </role>
+          </name>
+        </mods>
+      XML
+    end
+
+    it 'removes name' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
         </mods>
       XML
     end
