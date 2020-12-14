@@ -1101,4 +1101,29 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing empty subtitle' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <titleInfo>
+            <title>Literature, measured</title>
+            <subTitle>A life's journey</subTitle>
+            <subTitle/>
+          </titleInfo>
+        </mods>
+      XML
+    end
+
+    it 'removes subtitle' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <titleInfo>
+            <title>Literature, measured</title>
+            <subTitle>A life's journey</subTitle>
+          </titleInfo>
+        </mods>
+      XML
+    end
+  end
 end

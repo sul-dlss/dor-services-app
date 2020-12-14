@@ -44,6 +44,7 @@ module Cocina
       normalize_purl
       normalize_empty_notes
       normalize_empty_related_item_parts
+      normalize_empty_subtitle
       ng_xml
     end
 
@@ -310,6 +311,10 @@ module Cocina
     def normalize_name
       ng_xml.root.xpath('//mods:namePart[not(text())]', mods: MODS_NS).each(&:remove)
       ng_xml.root.xpath('//mods:name[not(mods:namePart)]', mods: MODS_NS).each(&:remove)
+    end
+
+    def normalize_empty_subtitle
+      ng_xml.root.xpath('//mods:subTitle[not(text())]', mods: MODS_NS).each(&:remove)
     end
   end
 end
