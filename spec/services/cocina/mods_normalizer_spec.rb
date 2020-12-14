@@ -1101,4 +1101,41 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing empty title' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <titleInfo>
+            <title />
+            <subTitle/>
+          </titleInfo>
+        </mods>
+      XML
+    end
+
+    it 'removes titleInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing empty relatedItem' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <relatedItem />
+        </mods>
+      XML
+    end
+
+    it 'removes relatedItem' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+        </mods>
+      XML
+    end
+  end
 end
