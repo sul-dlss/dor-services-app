@@ -222,6 +222,25 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
     end
   end
 
+  context 'with an empty displayLabel' do
+    let(:xml) do
+      <<~XML
+        <abstract displayLabel="">This is a synopsis.</abstract>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+
+        {
+          "value": 'This is a synopsis.',
+          "type": 'summary'
+        }
+
+      ]
+    end
+  end
+
   # Example 1
   context 'with a simple table of contents' do
     let(:xml) do
