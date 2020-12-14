@@ -1735,4 +1735,67 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       XML
     end
   end
+
+  # example 45 from mods_to_cocina_originInfo.txt
+  context 'with dateOther with type="developed"' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          {
+            "type": 'creation',
+            "displayLabel": 'Place of Creation',
+            "location": [
+              {
+                "value": 'Stanford (Calif.)',
+                "uri": 'http://id.loc.gov/authorities/names/n50046557',
+                "source": {
+                  "code": 'naf',
+                  "uri": 'http://id.loc.gov/authorities/names/'
+                }
+              }
+            ],
+            "date": [
+              {
+                "value": '2003-11-29',
+                "status": 'primary',
+                "encoding": {
+                  "code": 'w3cdtf'
+                }
+              }
+            ]
+          }
+        ),
+        Cocina::Models::Event.new(
+          "type": 'development',
+          "date": [
+            {
+              "value": '2003-12-01',
+              "encoding": {
+                "code": 'w3cdtf'
+              }
+            }
+          ]
+        )
+
+      ]
+    end
+
+    it 'builds the expected xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo displayLabel="Place of Creation" eventType="production">
+            <place>
+              <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+            </place>
+            <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
+          </originInfo>
+          <originInfo eventType="development">
+            <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
 end

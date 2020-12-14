@@ -19,7 +19,8 @@ module Cocina
           'distribution' => 'distribution',
           'manufacture' => 'manufacture',
           'publication' => 'publication',
-          'acquisition' => 'acquisition'
+          'acquisition' => 'acquisition',
+          'development' => 'development'
         }.freeze
 
         # @params [Nokogiri::XML::Builder] xml
@@ -128,6 +129,7 @@ module Cocina
           attributes[:qualifier] = date.qualifier if date.qualifier
           attributes[:keyDate] = 'yes' if date.status == 'primary'
           attributes[:type] = date.note.find { |note| note.type == 'date type' }.value if tag == :dateOther && date.note
+          attributes[:type] = 'developed' if event_type == 'development'
 
           xml.public_send(tag, value, attributes)
         end

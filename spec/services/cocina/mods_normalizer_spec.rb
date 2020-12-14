@@ -1138,4 +1138,36 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing originInfo with developed date' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <originInfo displayLabel="Place of Creation" eventType="production">
+            <place>
+              <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+            </place>
+            <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
+            <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    it 'moves to own originInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <originInfo displayLabel="Place of Creation" eventType="production">
+            <place>
+              <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+            </place>
+            <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
+          </originInfo>
+          <originInfo eventType="development">
+            <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
 end
