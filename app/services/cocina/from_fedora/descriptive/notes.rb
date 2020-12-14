@@ -41,7 +41,7 @@ module Cocina
         def common_note_for(node)
           {
             value: node.content,
-            displayLabel: node[:displayLabel],
+            displayLabel: node[:displayLabel].presence,
             type: node[:type]
           }.tap do |attributes|
             value_language = LanguageScript.build(node: node)
@@ -89,7 +89,7 @@ module Cocina
 
         def toc_for(node)
           {
-            displayLabel: node[:displayLabel]
+            displayLabel: node[:displayLabel].presence
           }.tap do |attributes|
             value_language = LanguageScript.build(node: node)
             attributes[:valueLanguage] = value_language if value_language
