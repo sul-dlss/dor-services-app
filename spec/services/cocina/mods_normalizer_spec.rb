@@ -192,6 +192,64 @@ RSpec.describe Cocina::ModsNormalizer do
         XML
       end
     end
+
+    context 'when normalizing multiple cartographics' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <subject>
+              <cartographics>
+                <scale>Scale 1:100,000 :</scale>
+              </cartographics>
+              <cartographics>
+                <projection>universal transverse Mercator proj.</projection>
+              </cartographics>
+            </subject>
+          </mods>
+        XML
+      end
+
+      it 'combines multiple elements into a single one' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <subject>
+              <cartographics>
+                <scale>Scale 1:100,000 :</scale>
+                <projection>universal transverse Mercator proj.</projection>
+              </cartographics>
+            </subject>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when normalizing single cartographics' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <subject>
+              <cartographics>
+                <scale>Scale 1:100,000 :</scale>
+                <projection>universal transverse Mercator proj.</projection>
+              </cartographics>
+            </subject>
+          </mods>
+        XML
+      end
+
+      it 'returns the single node' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <subject>
+              <cartographics>
+                <scale>Scale 1:100,000 :</scale>
+                <projection>universal transverse Mercator proj.</projection>
+              </cartographics>
+            </subject>
+          </mods>
+        XML
+      end
+    end
   end
 
   context 'when normalizing originInfo eventTypes' do
