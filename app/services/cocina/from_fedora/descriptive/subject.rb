@@ -52,8 +52,9 @@ module Cocina
           children_nodes = subject_node.xpath('*')
           return subject_classification(subject_node, attrs) if subject_node.name == 'classification'
 
-          is_geo_code = children_nodes.any? { |node| node.name == 'geographicCode' }
+          return temporal_range(children_nodes, attrs) if children_nodes.all? { |node| node.name == 'temporal' && node['point'] }
 
+          is_geo_code = children_nodes.any? { |node| node.name == 'geographicCode' }
           return geo_code_and_terms(children_nodes, attrs) if children_nodes.size != 1 && is_geo_code
 
           return structured_value(children_nodes, attrs) if children_nodes.size != 1 && !is_geo_code
@@ -207,6 +208,18 @@ module Cocina
           return nil if subject[:edition].nil?
 
           "#{subject[:edition].to_i.ordinalize} edition"
+        end
+
+        def temporal_range(children_nodes, attrs)
+          attrs[:structuredValue] = children_nodes.map do |node|
+            {
+              type: node['point'],
+              value: node.content
+            }
+          end
+          attrs[:type] = 'time'
+          attrs[:encoding] = { code: children_nodes.first['encoding'] }
+          attrs
         end
       end
     end
