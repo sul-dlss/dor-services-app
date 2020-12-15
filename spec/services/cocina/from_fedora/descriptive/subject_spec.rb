@@ -665,8 +665,37 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  # Example 23
   context 'with a temporal subject with range' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L695'
+    let(:xml) do
+      <<~XML
+        <subject>
+          <temporal encoding="w3cdtf" point="start">1890-06-11</temporal>
+          <temporal encoding="w3cdtf" point="end">1894-03-19</temporal>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": '1890-06-11',
+              "type": 'start'
+            },
+            {
+              "value": '1894-03-19',
+              "type": 'end'
+            }
+          ],
+          "encoding": {
+            "code": 'w3cdtf'
+          },
+          "type": 'time'
+        }
+      ]
+    end
   end
 
   # Example 24
