@@ -30,6 +30,7 @@ module Cocina
       normalize_subject_authority
       normalize_subject_authority_lcnaf
       normalize_subject_authority_naf
+      normalize_subject_cartographics
       normalize_text_role_term
       normalize_role_term_authority
       normalize_name
@@ -96,6 +97,17 @@ module Cocina
         elsif child_node[:authority] && subject_node[:authority] == child_node[:authority]
           child_node.delete('authority')
         end
+      end
+    end
+
+    # Collapse multiple subject/cartographics nodes into a single one
+    def normalize_subject_cartographics
+      cartographics_nodes = ng_xml.root.xpath('//mods:subject/mods:cartographics', mods: MODS_NS)
+      return if cartographics_nodes.count.in?([0, 1]) # nothing to normalize if there aren't multiple cartographics
+
+      cartographics_nodes[1..-1].each do |node|
+        cartographics_nodes[0] << node.child
+        node.remove
       end
     end
 
