@@ -222,7 +222,7 @@ module Cocina
         end
 
         def with_uri_info(cocina, xml_node)
-          cocina[:uri] = xml_node['valueURI'] if xml_node['valueURI']
+          cocina[:uri] = ValueURI.sniff(xml_node['valueURI']) if xml_node['valueURI']
           source = {
             code: Authority.normalize_code(xml_node['authority']),
             uri: Authority.normalize_uri(xml_node['authorityURI'])

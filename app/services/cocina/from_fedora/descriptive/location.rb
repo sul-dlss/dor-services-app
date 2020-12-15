@@ -117,7 +117,7 @@ module Cocina
               else
                 attrs[:value] = node.text
               end
-              attrs[:uri] = node[:valueURI]
+              attrs[:uri] = ValueURI.sniff(node[:valueURI])
               source = {
                 code: Authority.normalize_code(node[:authority]),
                 uri: Authority.normalize_uri(node[:authorityURI])

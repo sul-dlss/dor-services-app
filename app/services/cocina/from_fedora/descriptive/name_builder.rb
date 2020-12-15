@@ -115,8 +115,7 @@ module Cocina
 
         def authority_attrs_for(name_node)
           {
-            uri: name_node['valueURI']
-
+            uri: ValueURI.sniff(name_node['valueURI'])
           }.tap do |attrs|
             source = {
               code: Authority.normalize_code(name_node['authority']),
@@ -174,7 +173,7 @@ module Cocina
             }.compact
             role[:source] = source if source.present?
 
-            role[:uri] = authority_value
+            role[:uri] = ValueURI.sniff(authority_value)
             role[:code] = code&.content
             marcrelator = marc_relator_role?(authority, authority_uri, authority_value)
             role[:value] = normalized_role_value(text.content, marcrelator) if text

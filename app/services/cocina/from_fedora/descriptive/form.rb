@@ -60,7 +60,7 @@ module Cocina
             forms << {
               value: type.text,
               type: type['type'] || 'genre',
-              uri: type[:valueURI],
+              uri: ValueURI.sniff(type[:valueURI]),
               displayLabel: type[:displayLabel]
             }.tap do |item|
               source = {
@@ -179,7 +179,7 @@ module Cocina
           physical_description.xpath('mods:form', mods: DESC_METADATA_NS).each do |form_content|
             forms << {
               value: form_content.content,
-              uri: form_content['valueURI'],
+              uri: ValueURI.sniff(form_content['valueURI']),
               type: form_content['type'] || 'form',
               source: source_for(form_content).presence
             }.compact
