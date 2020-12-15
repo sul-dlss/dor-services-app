@@ -76,7 +76,7 @@ module Cocina
             }.compact
             if subject[:valueURI]
               attrs[:source] = source unless source.empty?
-              attrs[:uri] = subject[:valueURI]
+              attrs[:uri] = ValueURI.sniff(subject[:valueURI])
             elsif subject[:authority]
               attrs[:source] = source unless source.empty?
             end

@@ -146,7 +146,7 @@ module Cocina
               uri: Authority.normalize_uri(title_info[:authorityURI])
             }.compact
             attrs[:source] = source if source.present?
-            attrs[:uri] = title_info[:valueURI]
+            attrs[:uri] = ValueURI.sniff(title_info[:valueURI])
 
             value_language = LanguageScript.build(node: title_info)
             attrs[:valueLanguage] = value_language if value_language

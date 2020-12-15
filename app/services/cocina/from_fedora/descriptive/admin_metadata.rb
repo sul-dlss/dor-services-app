@@ -81,7 +81,7 @@ module Cocina
 
           {
             code: description_standard['authority'],
-            uri: description_standard['valueURI'],
+            uri: ValueURI.sniff(description_standard['valueURI']),
             source: { uri: description_standard['authorityURI'] }
           }
         end
@@ -90,10 +90,10 @@ module Cocina
           return unless record_content_source
 
           [{
-            "name": [
+            name: [
               {
-                "code": record_content_source.text,
-                "uri": record_content_source['valueURI']
+                code: record_content_source.text,
+                uri: ValueURI.sniff(record_content_source['valueURI'])
               }.tap do |name_attrs|
                 source = {
                   code: record_content_source['authority'],
@@ -102,10 +102,10 @@ module Cocina
                 name_attrs[:source] = source unless source.empty?
               end.compact
             ],
-            "type": 'organization',
-            "role": [
+            type: 'organization',
+            role: [
               {
-                "value": 'original cataloging agency'
+                value: 'original cataloging agency'
               }
             ]
           }]

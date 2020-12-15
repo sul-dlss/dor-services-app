@@ -37,7 +37,7 @@ module Cocina
           {
             code: code_language_term&.text,
             value: text_language_term&.text,
-            uri: language_value_uri_for(code_language_term, text_language_term),
+            uri: ValueURI.sniff(language_value_uri_for(code_language_term, text_language_term)),
             appliesTo: language_applies_to,
             displayLabel: language_element['displayLabel']
           }.tap do |attrs|
