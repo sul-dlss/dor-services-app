@@ -48,7 +48,7 @@ module Cocina
           return unless admin_metadata.standard
 
           if admin_metadata.standard.uri
-            xml.descriptionStandard with_uri_info(admin_metadata.standard).merge(authority: admin_metadata.standard.code)
+            xml.descriptionStandard admin_metadata.standard.value, with_uri_info(admin_metadata.standard).merge(authority: admin_metadata.standard.code)
           else
             xml.descriptionStandard admin_metadata.standard.code
           end

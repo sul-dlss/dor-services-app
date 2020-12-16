@@ -29,7 +29,87 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
     end
   end
 
-  context 'when it is from replayable spreadsheet' do
+  context 'when it is from replayable spreadsheet (with desc standard value)' do
+    let(:admin_metadata) do
+      Cocina::Models::DescriptiveAdminMetadata.new(
+        "language": [
+          {
+            "value": 'English',
+            "code": 'eng',
+            "uri": 'http://id.loc.gov/vocabulary/iso639-2/eng',
+            "source": {
+              "code": 'iso639-2b',
+              "uri": 'http://id.loc.gov/vocabulary/iso639-2/'
+            },
+            "script": {
+              "value": 'Latin',
+              "code": 'Latn',
+              "source": {
+                "code": 'iso15924'
+              }
+            },
+            "status": 'primary'
+          }
+        ],
+        "contributor": [
+          {
+            "name": [
+              {
+                "code": 'CSt',
+                "uri": 'http://id.loc.gov/vocabulary/organizations/cst',
+                "source": {
+                  "code": 'marcorg',
+                  "uri": 'http://id.loc.gov/vocabulary/organizations/'
+                }
+              }
+            ],
+            "type": 'organization',
+            "role": [
+              {
+                "value": 'original cataloging agency'
+              }
+            ]
+          }
+        ],
+        "standard": {
+          "code": 'dacs',
+          "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
+          "value": "Describing archives: a content standard\u00A0(Chicago: Society of American Archivists)",
+          "source": {
+            "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/'
+          }
+        },
+        "note": [
+          {
+            "type": 'record origin',
+            "value": 'human prepared'
+          }
+        ]
+      )
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <recordInfo>
+            <languageOfCataloging usage="primary">
+              <languageTerm type="text" authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2/" valueURI="http://id.loc.gov/vocabulary/iso639-2/eng">English</languageTerm>
+              <languageTerm type="code" authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2/" valueURI="http://id.loc.gov/vocabulary/iso639-2/eng">eng</languageTerm>
+              <scriptTerm type="text" authority="iso15924">Latin</scriptTerm>
+              <scriptTerm type="code" authority="iso15924">Latn</scriptTerm>
+            </languageOfCataloging>
+            <recordContentSource authority="marcorg" authorityURI="http://id.loc.gov/vocabulary/organizations/" valueURI="http://id.loc.gov/vocabulary/organizations/cst">CSt</recordContentSource>
+            <descriptionStandard authority="dacs" authorityURI="http://id.loc.gov/vocabulary/descriptionConventions/" valueURI="http://id.loc.gov/vocabulary/descriptionConventions/dacs">Describing archives: a content standard&#xA0;(Chicago: Society of American Archivists)</descriptionStandard>
+            <recordOrigin>human prepared</recordOrigin>
+          </recordInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it is from replayable spreadsheet (without desc standard value)' do
     let(:admin_metadata) do
       Cocina::Models::DescriptiveAdminMetadata.new(
         "language": [
