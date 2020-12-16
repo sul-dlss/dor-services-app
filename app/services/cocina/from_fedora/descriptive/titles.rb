@@ -102,9 +102,17 @@ module Cocina
           return {} if children.map(&:name) == []
 
           # Is this a basic title or a title with parts
-          return simple_value(title_info) if children.map(&:name) == ['title'] || children.size == 1
+          return simple_value(title_info) if simple_title?(children)
 
           { structuredValue: structured_value(children), note: note(children) }.compact
+        end
+
+        def simple_title?(children)
+          return false if children.map(&:name) != ['title'] || children.size > 1
+
+          # There is only one child and it's a title element. If it has the
+          # @type attr set, it should not be treated as a simple value
+          children.first[:type].nil?
         end
 
         # @param [Nokogiri::XML::Element] node the titleInfo node
