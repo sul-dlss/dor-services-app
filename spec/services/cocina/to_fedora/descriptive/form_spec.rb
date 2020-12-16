@@ -635,6 +635,18 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
             "source": {
               "code": 'rdacarrier'
             }
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'estampe',
+            "type": 'technique'
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'eau-forte',
+            "type": 'material'
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'gravure au pointillé',
+            "type": 'material'
           )
         ]
       end
@@ -653,6 +665,9 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
               <note displayLabel="Condition">Small tear at top right corner.</note>
               <form type="media" authority="rdamedia">unmediated</form>
               <form type="carrier" authority="rdacarrier">volume</form>
+              <form type="technique">estampe</form>
+              <form type="material">eau-forte</form>
+              <form type="material">gravure au pointill&#xE9;</form>
             </physicalDescription>
           </mods>
         XML

@@ -241,6 +241,9 @@ RSpec.describe Cocina::FromFedora::Descriptive do
             <extent>1 online resource.</extent>
             <form type="media" authority="rdamedia">computer</form>
             <form type="carrier" authority="rdacarrier">online resource</form>
+            <form type="technique">estampe</form>
+            <form type="material">eau-forte</form>
+            <form type="material">gravure au pointill&#xE9;</form>
           </physicalDescription>
           <abstract displayLabel="Abstract">Blah blah blah, I believe in science!</abstract>
           <note type="statement of responsibility">John Doe Jr.</note>
@@ -391,7 +394,10 @@ RSpec.describe Cocina::FromFedora::Descriptive do
             code: 'rdacarrier'
           }
         },
-        { value: '1 online resource.', type: 'extent' }
+        { value: '1 online resource.', type: 'extent' },
+        { value: 'estampe', type: 'technique' },
+        { value: 'eau-forte', type: 'material' },
+        { value: 'gravure au pointillé', type: 'material' }
       ]
     end
   end
