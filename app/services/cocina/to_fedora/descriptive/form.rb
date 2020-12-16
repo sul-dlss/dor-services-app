@@ -14,7 +14,9 @@ module Cocina
           'extent' => :extent,
           'digital origin' => :digitalOrigin,
           'media' => :form,
-          'carrier' => :form
+          'carrier' => :form,
+          'material' => :form,
+          'technique' => :form
         }.freeze
 
         # @params [Nokogiri::XML::Builder] xml
