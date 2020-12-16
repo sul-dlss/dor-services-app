@@ -83,6 +83,34 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
     end
 
+    context 'when the title has type main' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title type="main">journal of stuff</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
+      it 'is a structured value' do
+        expect(build).to eq [
+          {
+            structuredValue: [
+              { type: 'main title', value: 'journal of stuff' }
+            ]
+          }
+        ]
+      end
+    end
+
     context 'when there is an alternative title' do
       let(:ng_xml) do
         Nokogiri::XML <<~XML
