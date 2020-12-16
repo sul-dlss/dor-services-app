@@ -81,15 +81,18 @@ module Cocina
           xml.url url.value, url_attrs
         end
 
+        def primary_url_is_not_purl?
+          Array(access&.url).any? { |url| url.status == 'primary' }
+        end
+
         def write_purl
-          attributes = {
-            usage: 'primary display'
-          }.tap do |attrs|
-            note_node = Array(access&.note).find { |node| node[:type] == 'purl access' }
-            attrs[:note] = note_node[:value] if note_node
-          end
+          attrs = {}
+          attrs[:usage] = 'primary display' unless primary_url_is_not_purl?
+          note_node = Array(access&.note).find { |node| node[:type] == 'purl access' }
+          attrs[:note] = note_node[:value] if note_node
+
           xml.location do
-            xml.url purl, attributes
+            xml.url purl, attrs
           end
         end
 
