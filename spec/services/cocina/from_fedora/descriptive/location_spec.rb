@@ -38,6 +38,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
                 "uri": 'http://id.loc.gov/authorities/names/'
               }
             }
+          ],
+          digitalRepository: [
+            {
+              value: 'Stanford Digital Repository'
+            }
           ]
         }
       )
@@ -63,6 +68,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
               "source": {
                 "code": 'marcorg'
               }
+            }
+          ],
+          digitalRepository: [
+            {
+              value: 'Stanford Digital Repository'
             }
           ]
         }
@@ -91,6 +101,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
               "code": 'naf'
             }
           }
+        ],
+        digitalRepository: [
+          {
+            value: 'Stanford Digital Repository'
+          }
         ]
       )
     end
@@ -107,12 +122,19 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
 
     it 'builds the cocina data structure' do
       expect(build).to eq(
-        "accessContact": [
-          {
-            "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
-            "type": 'repository'
-          }
-        ]
+        {
+          "accessContact": [
+            {
+              "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
+              "type": 'repository'
+            }
+          ],
+          digitalRepository: [
+            {
+              value: 'Stanford Digital Repository'
+            }
+          ]
+        }
       )
     end
   end
@@ -129,28 +151,35 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
 
     it 'builds the cocina data structure' do
       expect(build).to eq(
-        "accessContact": [
-          {
-            "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
-            "valueLanguage": {
-              "code": 'eng',
-              "source": {
-                "code": 'iso639-2b'
-              },
-              "valueScript": {
-                "code": 'Latn',
+        {
+          "accessContact": [
+            {
+              "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
+              "valueLanguage": {
+                "code": 'eng',
                 "source": {
-                  "code": 'iso15924'
+                  "code": 'iso639-2b'
+                },
+                "valueScript": {
+                  "code": 'Latn',
+                  "source": {
+                    "code": 'iso15924'
+                  }
                 }
+              },
+              "uri": 'http://id.loc.gov/authorities/names/no2014019980',
+              "type": 'repository',
+              "source": {
+                "code": 'naf'
               }
-            },
-            "uri": 'http://id.loc.gov/authorities/names/no2014019980',
-            "type": 'repository',
-            "source": {
-              "code": 'naf'
             }
-          }
-        ]
+          ],
+          digitalRepository: [
+            {
+              value: 'Stanford Digital Repository'
+            }
+          ]
+        }
       )
     end
   end
@@ -172,6 +201,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
             "value": 'https://www.davidrumsey.com/luna/servlet/view/search?q=pub_list_no=%2211728.000',
             "status": 'primary'
           }
+        ],
+        digitalRepository: [
+          {
+            value: 'Stanford Digital Repository'
+          }
         ]
       )
     end
@@ -192,6 +226,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
           {
             "value": 'https://www.davidrumsey.com/luna/servlet/view/search?q=pub_list_no=%2211728.000'
           }
+        ],
+        digitalRepository: [
+          {
+            value: 'Stanford Digital Repository'
+          }
         ]
       )
     end
@@ -207,8 +246,15 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
       XML
     end
 
-    it 'ignores' do
-      expect(build).to eq({})
+    it 'builds the cocina data structure' do
+      expect(build).to eq(
+        # purl: 'http://purl.stanford.edu/ys701qw6956', # see note above context block
+        digitalRepository: [
+          {
+            value: 'Stanford Digital Repository'
+          }
+        ]
+      )
     end
   end
 
@@ -223,14 +269,19 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
 
     it 'builds the cocina data structure' do
-      expect(build).to eq({
-                            "note": [
-                              {
-                                "value": 'Available to Stanford-affiliated users.',
-                                "type": 'purl access'
-                              }
-                            ]
-                          })
+      expect(build).to eq(
+        "note": [
+          {
+            "value": 'Available to Stanford-affiliated users.',
+            "type": 'purl access'
+          }
+        ],
+        digitalRepository: [
+          {
+            value: 'Stanford Digital Repository'
+          }
+        ]
+      )
     end
   end
 
@@ -247,24 +298,29 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
     end
 
     it 'builds the cocina data structure' do
-      expect(build).to eq({
-                            "url": [
-                              {
-                                "value": 'http://purl.stanford.edu/qm814cd3342',
-                                "note": [
-                                  {
-                                    "value": 'Available to Hoover-affiliated users.'
-                                  }
-                                ]
-                              }
-                            ],
-                            "note": [
-                              {
-                                "value": 'Available to Stanford-affiliated users.',
-                                "type": 'purl access'
-                              }
-                            ]
-                          })
+      expect(build).to eq(
+        "url": [
+          {
+            "value": 'http://purl.stanford.edu/qm814cd3342',
+            "note": [
+              {
+                "value": 'Available to Hoover-affiliated users.'
+              }
+            ]
+          }
+        ],
+        "note": [
+          {
+            "value": 'Available to Stanford-affiliated users.',
+            "type": 'purl access'
+          }
+        ],
+        digitalRepository: [
+          {
+            value: 'Stanford Digital Repository'
+          }
+        ]
+      )
     end
   end
 
@@ -289,6 +345,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
                 "value": 'Online table of contents from PCI available to Stanford-affiliated users:'
               }
             ]
+          }
+        ],
+        digitalRepository: [
+          {
+            value: 'Stanford Digital Repository'
           }
         ]
       )
@@ -325,6 +386,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
               "value": 'https://swap.stanford.edu/20171107174354/https://www.le.ac.uk/english/em1060to1220/index.html',
               "displayLabel": 'Archived website'
             }
+          ],
+          digitalRepository: [
+            {
+              value: 'Stanford Digital Repository'
+            }
           ]
         }
       )
@@ -348,6 +414,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
             {
               "value": 'SC080',
               "type": 'shelf locator'
+            }
+          ],
+          digitalRepository: [
+            {
+              value: 'Stanford Digital Repository'
             }
           ]
         }
@@ -385,6 +456,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
               "value": 'VICTOR\PLUS_PHOTOS_DAN\PLUS_TARD_PHOTOS_DAN_20071017\IMG_0852.JPG',
               "type": 'discovery'
             }
+          ],
+          digitalRepository: [
+            {
+              value: 'Stanford Digital Repository'
+            }
           ]
         }
       )
@@ -404,29 +480,28 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
 
     it 'builds the cocina data structure' do
       expect(build).to eq(
-        "accessContact": [
+        accessContact: [
           {
-            "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
-            "uri": 'http://id.loc.gov/authorities/names/no2014019980',
-            "type": 'repository',
-            "displayLabel": 'Repository',
-            "source": {
-              "uri": 'http://id.loc.gov/authorities/names/'
+            value: 'Stanford University. Libraries. Department of Special Collections and University Archives',
+            uri: 'http://id.loc.gov/authorities/names/no2014019980',
+            type: 'repository',
+            displayLabel: 'Repository',
+            source: {
+              uri: 'http://id.loc.gov/authorities/names/'
             }
           }
         ],
-        "physicalLocation": [
+        physicalLocation: [
           {
-            "value": 'Call Number: SC0340, Accession 2005-101, Box: 51, Folder: 3'
+            value: 'Call Number: SC0340, Accession 2005-101, Box: 51, Folder: 3'
+          }
+        ],
+        digitalRepository: [
+          {
+            value: 'Stanford Digital Repository'
           }
         ]
       )
-      # NOTE:  mapping spec also includes the following, per https://github.com/sul-dlss-labs/cocina-descriptive-metadata/commit/8351249d2008022f4a039846874fe76e58bbcb70
-      # "digitalRepository": [
-      #   {
-      #     "value": 'Stanford Digital Repository'
-      #   }
-      # ]
     end
   end
 
@@ -458,6 +533,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
         "physicalLocation": [
           {
             "value": 'Call Number: SC0340, Accession 2005-101, Box: 51, Folder: 3'
+          }
+        ],
+        digitalRepository: [
+          {
+            value: 'Stanford Digital Repository'
           }
         ]
       )
@@ -502,6 +582,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Location do
           {
             "value": 'SC1071',
             "type": 'shelf locator'
+          }
+        ],
+        digitalRepository: [
+          {
+            value: 'Stanford Digital Repository'
           }
         ]
       )

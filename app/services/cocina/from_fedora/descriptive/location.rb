@@ -33,12 +33,18 @@ module Cocina
             access[:url] = url if url.present?
             notes = note + purl_note
             access[:note] = notes if notes.present?
+            # Without the count check, this node winds up all over the damn place and breaks dozens of tests
+            access[:digitalRepository] = [{ value: 'Stanford Digital Repository' }] if location_nodes_count.positive?
           end
         end
 
         private
 
         attr_reader :resource_element
+
+        def location_nodes_count
+          resource_element.xpath('mods:location', mods: DESC_METADATA_NS).count
+        end
 
         def physical_location
           descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[not(@type='repository')][not(@type='discovery')]", mods: DESC_METADATA_NS))
