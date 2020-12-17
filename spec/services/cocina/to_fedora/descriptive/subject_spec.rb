@@ -619,6 +619,53 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     end
   end
 
+  context 'when it has a subject with lang and script' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "structuredValue": [
+              {
+                "value": 'Archives et documents',
+                "type": 'topic'
+              },
+              {
+                "value": 'Portraits',
+                "type": 'topic'
+              }
+            ],
+            "valueLanguage": {
+              "code": 'fre',
+              "source": {
+                "code": 'iso639-2b'
+              },
+              valueScript: {
+                code: 'Latn',
+                source: {
+                  code: 'iso15924'
+                }
+              }
+            },
+            "displayLabel": 'French archives'
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject lang="fre" script="Latn" displayLabel="French archives">
+            <topic>Archives et documents</topic>
+            <topic>Portraits</topic>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
   context 'when it has a musical genre as topic' do
     let(:subjects) do
       [
