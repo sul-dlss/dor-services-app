@@ -109,11 +109,26 @@ module Cocina
           title_info_attrs = title_info_attrs_for(title).merge(title_info_attrs)
 
           xml.titleInfo(with_uri_info(title, title_info_attrs)) do
-            title.structuredValue.reject { |structured_title| NAME_TYPES.include?(structured_title.type) }.each do |title_part|
+            title_parts = flatten_structured_value(title)
+            title_parts_without_names = title_parts_without_names(title_parts)
+
+            title_parts_without_names.each do |title_part|
               title_type = tag_name_for(title_part)
               xml.public_send(title_type, title_part.value) unless title_part.note
             end
           end
+        end
+
+        # Flatten the structuredValues into a simple list.
+        def flatten_structured_value(title)
+          leafs = title.structuredValue.select(&:value)
+          nodes = title.structuredValue.select(&:structuredValue)
+          leafs + nodes.flat_map { |node| flatten_structured_value(node) }
+        end
+
+        # Filter out name types
+        def title_parts_without_names(parts)
+          parts.reject { |structured_title| NAME_TYPES.include?(structured_title.type) }
         end
 
         def write_title_names(title_names, name_title_group, title, title_name_attrs)
