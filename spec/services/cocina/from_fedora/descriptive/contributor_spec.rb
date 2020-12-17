@@ -133,6 +133,88 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  context 'with translated name and roles' do
+    let(:xml) do
+      <<~XML
+        <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
+          <namePart>&#x30EC;&#x30A2;&#x30E1;&#x30BF;&#x30EB;&#x8CC7;&#x6E90;&#x518D;&#x751F;&#x6280;&#x8853;&#x7814;&#x7A76;&#x4F1A;</namePart>
+          <role>
+            <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">cre</roleTerm>
+            <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">creator</roleTerm>
+          </role>
+        </name>
+        <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
+          <namePart>Rea Metaru Shigen Saisei Gijutsu Kenky&#x16B;kai</namePart>
+          <role>
+            <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">cre</roleTerm>
+            <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">creator</roleTerm>
+          </role>
+        </name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          name: [
+            {
+              parallelValue: [
+                {
+                  "status": 'primary',
+                  "valueLanguage": {
+                    "code": 'jpn',
+                    "source": {
+                      "code": 'iso639-2b'
+                    },
+                    "valueScript": {
+                      "code": 'Jpan',
+                      "source": {
+                        "code": 'iso15924'
+                      }
+                    }
+                  },
+                  "value": 'レアメタル資源再生技術研究会'
+                },
+                {
+                  "valueLanguage": {
+                    "code": 'jpn',
+                    "source": {
+                      "code": 'iso639-2b'
+                    },
+                    "valueScript": {
+                      "code": 'Latn',
+                      "source": {
+                        "code": 'iso15924'
+                      }
+                    }
+                  },
+                  "type": 'transliteration',
+                  "standard": {
+                    "value": 'ALA-LC Romanization Tables'
+                  },
+                  "value": 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai'
+                }
+              ],
+
+              type: 'organization'
+            }
+          ],
+          role: [
+            {
+              "value": 'creator',
+              "code": 'cre',
+              "uri": 'http://id.loc.gov/vocabulary/relators/cre',
+              "source": {
+                "code": 'marcrelator',
+                "uri": 'http://id.loc.gov/vocabulary/relators/'
+              }
+            }
+          ]
+        }
+      ]
+    end
+  end
+
   context 'with an invalid type' do
     context 'when miscapitalized' do
       let(:xml) do

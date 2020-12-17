@@ -30,12 +30,14 @@ module Cocina
         attr_reader :name_elements, :add_default_type
 
         def build_parallel
-          {
-            name: [{
-              parallelValue: name_elements.map { |name_node| build_parallel_name(name_node) },
-              type: type_for(name_elements.first['type'])
-            }.compact]
-          }
+          names = {
+            parallelValue: name_elements.map { |name_node| build_parallel_name(name_node) },
+            type: type_for(name_elements.first['type'])
+          }.compact
+          { name: [names] }.tap do |attrs|
+            roles = name_elements.flat_map { |name_node| build_roles(name_node) }.compact.uniq
+            attrs[:role] = roles.presence
+          end.compact
         end
 
         def build_parallel_name(name_node)
@@ -51,6 +53,7 @@ module Cocina
               }
             end
           end
+
           name_attrs = name_attrs.merge(common_name(name_node, name_attrs[:name]))
           name_parts = build_name_parts(name_node)
           Honeybadger.notify('[DATA ERROR] missing name/namePart element', { tags: 'data_error' }) if name_parts.all?(&:empty?)
