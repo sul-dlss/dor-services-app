@@ -82,8 +82,9 @@ module Cocina
           {
             code: description_standard['authority'],
             uri: ValueURI.sniff(description_standard['valueURI']),
+            value: description_standard.text.presence,
             source: { uri: description_standard['authorityURI'] }
-          }
+          }.compact
         end
 
         def build_contributor
