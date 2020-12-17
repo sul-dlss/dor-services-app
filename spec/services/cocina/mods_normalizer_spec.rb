@@ -71,6 +71,28 @@ RSpec.describe Cocina::ModsNormalizer do
       end
     end
 
+    context 'when normalizing topic with authority on subject and topic' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="fast">
+              <topic authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009447">Marine biology</topic>
+            </subject>
+          </mods>
+        XML
+      end
+
+      it 'leaves unchanges' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="fast">
+              <topic authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009447">Marine biology</topic>
+            </subject>
+          </mods>
+        XML
+      end
+    end
+
     context 'when normalizing topic with authority only' do
       let(:mods_ng_xml) do
         Nokogiri::XML <<~XML

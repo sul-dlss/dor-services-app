@@ -81,6 +81,8 @@ module Cocina
       end
     end
 
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
     def normalize_subject
       ng_xml.root.xpath('//mods:subject[count(mods:name|mods:topic|mods:geographic) = 1 and count(mods:*) = 1]', mods: MODS_NS).each do |subject_node|
         child_node = subject_node.xpath('mods:*', mods: MODS_NS).first
@@ -94,11 +96,13 @@ module Cocina
           # If subject has valueURI and child doesn't, move to child.
           child_node[:valueURI] = subject_node[:valueURI] if subject_node[:valueURI] && !child_node[:valueURI]
           subject_node.delete('valueURI')
-        elsif child_node[:authority] && subject_node[:authority] == child_node[:authority]
+        elsif child_node[:authority] && subject_node[:authority] == child_node[:authority] && !(child_node[:authorityURI] || child_node[:valueURI])
           child_node.delete('authority')
         end
       end
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
 
     # Collapse multiple subject/cartographics nodes into a single one
     def normalize_subject_cartographics
