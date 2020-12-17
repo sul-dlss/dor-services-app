@@ -30,7 +30,10 @@ module Cocina
           parallel_values = contributor.name.first.parallelValue
           if parallel_values
             altrepgroup_id = id_generator.next_altrepgroup
-            parallel_values.each_with_index { |parallel_value, index| write_parallel_contributor(contributor, contributor.name.first, parallel_value, index, altrepgroup_id) }
+            parallel_values.each_with_index do |parallel_value, index|
+              name_title_group = name_title_group_indexes.dig(0, index)
+              write_parallel_contributor(contributor, contributor.name.first, parallel_value, name_title_group, altrepgroup_id)
+            end
           else
             write_contributor(contributor)
           end
@@ -54,8 +57,8 @@ module Cocina
           end
         end
 
-        def write_parallel_contributor(contributor, name, parallel_name, parallel_index, altrepgroup_id)
-          attributes = parallel_name_attributes(name, parallel_name, name_title_group_indexes.dig(0, parallel_index), altrepgroup_id)
+        def write_parallel_contributor(contributor, name, parallel_name, name_title_group, altrepgroup_id)
+          attributes = parallel_name_attributes(name, parallel_name, name_title_group, altrepgroup_id)
           xml.name attributes do
             if parallel_name.structuredValue
               write_structured(parallel_name)
@@ -69,42 +72,31 @@ module Cocina
         end
 
         def parallel_name_attributes(name, parallel_name, name_title_group, altrepgroup_id)
-          # rubocop doesn't like safe navigation here either and this code is clearer.
-          # rubocop:disable Style/SafeNavigation
-          return {} if parallel_name.value && parallel_name.value.blank?
-
-          # rubocop:enable Style/SafeNavigation
-
           {
             type: NAME_TYPE.fetch(name.type, name_title_group ? 'personal' : nil),
             nameTitleGroup: name_title_group,
             altRepGroup: altrepgroup_id,
-            script: parallel_name.valueLanguage&.valueScript&.code
+            lang: parallel_name.valueLanguage&.code,
+            script: parallel_name.valueLanguage&.valueScript&.code,
+            authority: parallel_name.source&.code,
+            valueURI: parallel_name.uri,
+            authorityURI: parallel_name.source&.uri
           }.tap do |attributes|
             attributes[:usage] = 'primary' if parallel_name.status == 'primary'
-            attributes[:authority] = parallel_name.source&.code
-            attributes[:valueURI] = parallel_name.uri
-            attributes[:authorityURI] = parallel_name.source&.uri
             attributes[:transliteration] = parallel_name.standard&.value if parallel_name.type == 'transliteration'
           end.compact
         end
 
         def name_attributes(contributor, name, name_title_group)
-          # rubocop doesn't like safe navigation here either and this code is clearer.
-          # rubocop:disable Style/SafeNavigation
-          return {} if name.value && name.value.blank?
-
-          # rubocop:enable Style/SafeNavigation
-
           {
             type: NAME_TYPE.fetch(contributor.type, name_title_group ? 'personal' : nil),
             nameTitleGroup: name_title_group,
-            script: name.valueLanguage&.valueScript&.code
+            script: name.valueLanguage&.valueScript&.code,
+            valueURI: name.uri,
+            authority: name.source&.code,
+            authorityURI: name.source&.uri
           }.tap do |attributes|
             attributes[:usage] = 'primary' if contributor.status == 'primary' || name.status == 'primary'
-            attributes[:valueURI] = name.uri
-            attributes[:authority] = name.source&.code
-            attributes[:authorityURI] = name.source&.uri
           end.compact
         end
 
