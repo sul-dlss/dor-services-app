@@ -422,7 +422,65 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
     end
 
     context 'when it is transliterated (title is value)' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L157'
+      # https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L157'
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            "parallelValue": [
+              {
+                "value": 'Война и миръ',
+                "status": 'primary',
+                "valueLanguage": {
+                  "code": 'rus',
+                  "source": {
+                    "code": 'iso639-2b'
+                  },
+                  "valueScript": {
+                    "code": 'Cyrl',
+                    "source": {
+                      "code": 'iso15924'
+                    }
+                  }
+                }
+              },
+              {
+                "value": 'Voĭna i mir',
+                "valueLanguage": {
+                  "code": 'rus',
+                  "source": {
+                    "code": 'iso639-2b'
+                  },
+                  "valueScript": {
+                    "code": 'Latn',
+                    "source": {
+                      "code": 'iso15924'
+                    }
+                  }
+                },
+                "type": 'transliterated',
+                "standard": {
+                  "value": 'ALA-LC Romanization Tables'
+                }
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'creates the equivalent MODS' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo usage="primary" lang="rus" script="Cyrl" altRepGroup="1">
+              <title>Война и миръ</title>
+            </titleInfo>
+            <titleInfo type="translated" lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
+              <title>Voĭna i mir</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
     end
 
     context 'when there is a title with script but no lang' do

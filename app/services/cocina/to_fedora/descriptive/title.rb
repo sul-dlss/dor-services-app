@@ -72,6 +72,9 @@ module Cocina
               end
             elsif title.type == 'uniform'
               title_info_attrs[:type] = 'uniform'
+            elsif parallel_title.type == 'transliterated'
+              title_info_attrs[:type] = 'translated'
+              title_info_attrs[:transliteration] = parallel_title.standard.value
             end
 
             title_info_attrs[:nameTitleGroup] = name_title_group_for(parallel_title)
