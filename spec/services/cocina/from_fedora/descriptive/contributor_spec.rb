@@ -164,7 +164,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
-    context 'when unrecognied' do
+    context 'when unrecognized' do
       let(:xml) do
         <<~XML
           <name type="primary">
@@ -213,8 +213,31 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       allow(Honeybadger).to receive(:notify).exactly(3).times
       build
       expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name type attribute is set to ""', { tags: 'data_error' })
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/role/roleTerm missing value', { tags: 'data_error' })
       expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart missing value', { tags: 'data_error' })
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] missing name/namePart element', { tags: 'data_error' })
+    end
+  end
+
+  context 'with missing namePart element' do
+    let(:xml) do
+      <<~XML
+        <name>
+          <role>
+            <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
+            <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/spn">Sponsor</roleTerm>
+          </role>
+        </name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [{}]
+    end
+
+    it 'notifies Honeybadger' do
+      allow(Honeybadger).to receive(:notify)
+      build
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] missing name/namePart element', { tags: 'data_error' })
     end
   end
 
@@ -832,10 +855,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
 
       it 'notifies Honeybadger namePart is empty' do
-        allow(Honeybadger).to receive(:notify).once
+        allow(Honeybadger).to receive(:notify).twice
         build
         expect(Honeybadger).to have_received(:notify)
           .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
+        expect(Honeybadger).to have_received(:notify)
+          .with('[DATA ERROR] missing name/namePart element', tags: 'data_error')
       end
     end
 
@@ -858,8 +883,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       it 'notifies Honeybadger namePart and roleTerm are empty' do
         allow(Honeybadger).to receive(:notify).twice
         build
-        expect(Honeybadger).to have_received(:notify)
-          .with('[DATA ERROR] name/role/roleTerm missing value', tags: 'data_error')
         expect(Honeybadger).to have_received(:notify)
           .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
       end

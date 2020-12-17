@@ -52,17 +52,25 @@ module Cocina
             end
           end
           name_attrs = name_attrs.merge(common_name(name_node, name_attrs[:name]))
-          build_name_parts(name_node).each { |name_part| name_attrs = name_attrs.merge(name_part) }
+          name_parts = build_name_parts(name_node)
+          Honeybadger.notify('[DATA ERROR] missing name/namePart element', { tags: 'data_error' }) if name_parts.all?(&:empty?)
+          name_parts.each { |name_part| name_attrs = name_attrs.merge(name_part) }
           name_attrs.compact
         end
 
         def build_name(name_node)
-          name = build_name_parts(name_node)
+          name_parts = build_name_parts(name_node)
+          # If there are no name parts, do not map the name
+          if name_parts.all?(&:empty?)
+            Honeybadger.notify('[DATA ERROR] missing name/namePart element', { tags: 'data_error' })
+            return {}
+          end
+
           {
-            name: name,
+            name: name_parts,
             type: type_for(name_node['type']),
             status: name_node['usage']
-          }.compact.merge(common_name(name_node, name))
+          }.compact.merge(common_name(name_node, name_parts))
         end
 
         def common_name(name_node, name)
@@ -79,7 +87,10 @@ module Cocina
         def build_name_parts(name_node)
           [].tap do |parts|
             query = name_node.xpath('mods:namePart', mods: DESC_METADATA_NS)
-            if query.size == 1
+            case query.size
+            when 0
+              next # NOTE: #tap will return [] when there are no name parts
+            when 1
               query.each do |name_part|
                 parts << build_name_part(name_part).merge(authority_attrs_for(name_node)).presence
               end
@@ -90,7 +101,7 @@ module Cocina
 
             display_form = name_node.xpath('mods:displayForm', mods: DESC_METADATA_NS).first
             parts << { value: display_form.text, type: 'display' } if display_form
-          end.compact.presence
+          end.compact
         end
 
         def build_name_part(name_part_node)
