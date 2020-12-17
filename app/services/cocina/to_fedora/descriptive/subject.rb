@@ -95,7 +95,8 @@ module Cocina
         def structured_attributes_for(subject, alt_rep_group: nil)
           {
             altRepGroup: alt_rep_group,
-            valueURI: subject.uri
+            valueURI: subject.uri,
+            displayLabel: subject.displayLabel
           }.tap do |attrs|
             if subject.source
               attrs[:authority] = authority_for(subject)
@@ -103,10 +104,8 @@ module Cocina
             elsif all_same_authority?(subject.structuredValue)
               attrs[:authority] = authority_for(subject.structuredValue.first)
             end
-            if alt_rep_group
-              attrs[:lang] = subject.valueLanguage&.code
-              attrs[:script] = subject.valueLanguage&.valueScript&.code
-            end
+            attrs[:lang] = subject.valueLanguage&.code
+            attrs[:script] = subject.valueLanguage&.valueScript&.code
           end.compact
         end
 
@@ -126,7 +125,7 @@ module Cocina
             end
           else
             xml.subject(subject_attributes) do
-              write_topic(subject, is_parallel: alt_rep_group.present?)
+              write_topic(subject, is_parallel: alt_rep_group.present?, is_basic: true)
             end
           end
         end
@@ -164,14 +163,14 @@ module Cocina
           xml.classification value, attrs
         end
 
-        def write_topic(subject, is_parallel: false)
+        def write_topic(subject, is_parallel: false, is_basic: false)
           case subject.type
           when 'person'
-            xml.name topic_attributes_for(subject, is_parallel: is_parallel).merge(type: 'personal') do
+            xml.name topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic).merge(type: 'personal') do
               xml.namePart subject.value
             end
           when 'title'
-            xml.titleInfo topic_attributes_for(subject, is_parallel: is_parallel) do
+            xml.titleInfo topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic) do
               xml.title subject.value
             end
           when 'map coordinates'
@@ -181,24 +180,26 @@ module Cocina
           else
             xml.public_send(TAG_NAME.fetch(subject.type, :topic),
                             subject.value,
-                            topic_attributes_for(subject, is_parallel: is_parallel))
+                            topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic))
           end
         end
 
         # rubocop:disable Metrics/CyclomaticComplexity
-        def topic_attributes_for(subject, is_parallel: false, is_geo: false)
+        # rubocop:disable Metrics/PerceivedComplexity
+        def topic_attributes_for(subject, is_parallel: false, is_geo: false, is_basic: false)
           {}.tap do |topic_attributes|
             topic_attributes[:authority] = subject.source&.code if subject.source&.uri || subject.uri || (is_geo && is_parallel)
             topic_attributes[:authorityURI] = subject.source&.uri
             topic_attributes[:encoding] = subject.encoding&.code
             topic_attributes[:valueURI] = subject.uri
-            unless is_parallel
+            if is_geo || (is_basic && !is_parallel)
               topic_attributes[:lang] = subject.valueLanguage&.code
               topic_attributes[:script] = subject.valueLanguage&.valueScript&.code
             end
           end.compact
         end
         # rubocop:enable Metrics/CyclomaticComplexity
+        # rubocop:enable Metrics/PerceivedComplexity
 
         def geographic(subject, is_parallel: false)
           if subject.code

@@ -740,6 +740,47 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with a subject with lang, script, and displayLabel' do
+    let(:xml) do
+      <<~XML
+        <subject lang="fre" script="Latn" displayLabel="French archives">
+          <topic>Archives et documents</topic>
+          <topic>Portraits</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Archives et documents',
+              "type": 'topic'
+            },
+            {
+              "value": 'Portraits',
+              "type": 'topic'
+            }
+          ],
+          "valueLanguage": {
+            "code": 'fre',
+            "source": {
+              "code": 'iso639-2b'
+            },
+            valueScript: {
+              code: 'Latn',
+              source: {
+                code: 'iso15924'
+              }
+            }
+          },
+          "displayLabel": 'French archives'
+        }
+      ]
+    end
+  end
+
   context 'with a musical genre as topic' do
     # See https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/51
     xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L754'
