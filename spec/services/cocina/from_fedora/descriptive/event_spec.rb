@@ -401,6 +401,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
           "type": 'publication',
           "date": [
             {
+              "value": '1948'
+            },
+            {
               "structuredValue": [
                 {
                   "value": '1940',
@@ -412,9 +415,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
                   "type": 'end'
                 }
               ]
-            },
-            {
-              "value": '1948'
             }
           ]
         }
@@ -761,13 +761,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
         {
           "location": [
             {
+              "value": 'London'
+            },
+            {
               "code": 'enk',
               "source": {
                 "code": 'marccountry'
               }
-            },
-            {
-              "value": 'London'
             }
           ]
         }
@@ -822,12 +822,110 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
 
     # example 32 from mods_to_cocina_originInfo.txt
     context 'when it is transliterated' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L772'
+      let(:xml) do
+        <<~XML
+          <originInfo>
+            <publisher lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
+          </originInfo>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "type": 'publication',
+            "contributor": [
+              {
+                "name": [
+                  {
+                    "value": 'Institut russkoĭ literatury (Pushkinskiĭ Dom)',
+                    "type": 'transliteration',
+                    "standard": {
+                      "value": 'ALA-LC Romanization Tables'
+                    },
+                    "valueLanguage": {
+                      "code": 'rus',
+                      "source": {
+                        "code": 'iso639-2b'
+                      },
+                      "valueScript": {
+                        "code": 'Latn',
+                        "source": {
+                          "code": 'iso15924'
+                        }
+                      }
+                    }
+                  }
+                ],
+                "type": 'organization',
+                "role": [
+                  {
+                    "value": 'publisher',
+                    "code": 'pbl',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                    "source": {
+                      "code": 'marcrelator',
+                      "uri": 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      end
     end
 
     # example 33 from mods_to_cocina_originInfo.txt
     context 'when it is in another language' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L821'
+      let(:xml) do
+        <<~XML
+          <originInfo>
+            <publisher lang="rus" script="Cyrl">СФУ</publisher>
+          </originInfo>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "type": 'publication',
+            "contributor": [
+              {
+                "name": [
+                  {
+                    "value": 'СФУ',
+                    "valueLanguage": {
+                      "code": 'rus',
+                      "source": {
+                        "code": 'iso639-2b'
+                      },
+                      "valueScript": {
+                        "code": 'Cyrl',
+                        "source": {
+                          "code": 'iso15924'
+                        }
+                      }
+                    }
+                  }
+                ],
+                "type": 'organization',
+                "role": [
+                  {
+                    "value": 'publisher',
+                    "code": 'pbl',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                    "source": {
+                      "code": 'marcrelator',
+                      "uri": 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      end
     end
 
     # example 34 from mods_to_cocina_originInfo.txt
@@ -1150,14 +1248,14 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
                       }
                     }
                   }
-                },
-                {
-                  value: '1996',
-                  encoding: {
-                    code: 'marc'
-                  }
                 }
               ]
+            },
+            {
+              value: '1996',
+              encoding: {
+                code: 'marc'
+              }
             }
           ],
           note: [
@@ -1327,6 +1425,849 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
                   }
                 }
               ]
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  # example 43a from mods_to_cocina_originInfo.txt
+  context 'with example adapted from hn285fy7937' do
+    let(:xml) do
+      <<~XML
+        <originInfo altRepGroup="0203">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Chengdu</placeTerm>
+          </place>
+          <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>Di 1 ban.</edition>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo altRepGroup="0203">
+          <place>
+            <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+          </place>
+          <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>[Di 1 ban in Chinese]</edition>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "location": [
+            {
+              "parallelValue": [
+                {
+                  "value": 'Chengdu'
+                },
+                {
+                  "value": '[Chengdu in Chinese]'
+                }
+              ]
+            },
+            {
+              "code": 'cc',
+              "source": {
+                "code": 'marccountry'
+              }
+            }
+          ],
+          "contributor": [
+            {
+              "type": 'organization',
+              "name": [
+                {
+                  "parallelValue": [
+                    {
+                      "value": 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
+                    },
+                    {
+                      "value": '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
+                    }
+                  ]
+                }
+              ],
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "value": '2005'
+            }
+          ],
+          "note": [
+            {
+              "type": 'edition',
+              "parallelValue": [
+                {
+                  "value": 'Di 1 ban.'
+                },
+                {
+                  "value": '[Di 1 ban in Chinese]'
+                }
+              ]
+            },
+            {
+              "type": 'issuance',
+              "value": 'monographic',
+              "source": {
+                "value": 'MODS issuance terms'
+              }
+
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  context 'with example adapted from hn285fy7937 after normalization' do
+    let(:xml) do
+      <<~XML
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Chengdu</placeTerm>
+          </place>
+          <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>Di 1 ban.</edition>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+          </place>
+          <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>[Di 1 ban in Chinese]</edition>
+          <issuance>monographic</issuance>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "location": [
+            {
+              "parallelValue": [
+                {
+                  "value": 'Chengdu'
+                },
+                {
+                  "value": '[Chengdu in Chinese]'
+                }
+              ]
+            },
+            {
+              "code": 'cc',
+              "source": {
+                "code": 'marccountry'
+              }
+            }
+          ],
+          "contributor": [
+            {
+              "type": 'organization',
+              "name": [
+                {
+                  "parallelValue": [
+                    {
+                      "value": 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
+                    },
+                    {
+                      "value": '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
+                    }
+                  ]
+                }
+              ],
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "value": '2005'
+            }
+          ],
+          "note": [
+            {
+              "type": 'edition',
+              "parallelValue": [
+                {
+                  "value": 'Di 1 ban.'
+                },
+                {
+                  "value": '[Di 1 ban in Chinese]'
+                }
+              ]
+            },
+            {
+              "type": 'issuance',
+              "value": 'monographic',
+              "source": {
+                "value": 'MODS issuance terms'
+              }
+
+            }
+
+          ]
+        }
+      ]
+    end
+  end
+
+  # example 43b from mods_to_cocina_originInfo.txt
+  context 'with example adapted from yc052ns4738' do
+    let(:xml) do
+      <<~XML
+        <originInfo altRepGroup="02">
+           <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+           </place>
+           <dateIssued encoding="marc" point="start">1933</dateIssued>
+           <dateIssued encoding="marc" point="end">uuuu</dateIssued>
+           <issuance>serial</issuance>
+           <frequency>Irregular</frequency>
+           <place>
+              <placeTerm type="text">[Ruijin]</placeTerm>
+           </place>
+           <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu</publisher>
+        </originInfo>
+        <originInfo altRepGroup="02">
+           <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+           </place>
+           <dateIssued encoding="marc" point="start">1933</dateIssued>
+           <dateIssued encoding="marc" point="end">uuuu</dateIssued>
+           <issuance>serial</issuance>
+           <frequency>Irregular</frequency>
+           <place>
+              <placeTerm type="text">[Ruijin] in Chinese</placeTerm>
+           </place>
+           <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese</publisher>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "location": [
+            {
+              "parallelValue": [
+                {
+                  "value": '[Ruijin]'
+                },
+                {
+                  "value": '[Ruijin] in Chinese'
+                }
+              ]
+            },
+            {
+              "code": 'cc',
+              "source": {
+                "code": 'marccountry'
+              }
+            }
+          ],
+          "date": [
+            {
+              "structuredValue": [
+                {
+                  "value": '1933',
+                  "type": 'start',
+                  "encoding": {
+                    "code": 'marc'
+                  }
+                },
+                {
+                  "value": 'uuuu',
+                  "type": 'end',
+                  "encoding": {
+                    "code": 'marc'
+                  }
+                }
+              ]
+            }
+          ],
+          "contributor": [
+            {
+              "type": 'organization',
+              "name": [
+                {
+                  "parallelValue": [
+                    {
+                      "value": 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu'
+                    },
+                    {
+                      "value": 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese'
+                    }
+                  ]
+                }
+              ],
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "note": [
+            {
+              "type": 'issuance',
+              "value": 'serial',
+              "source": {
+                "value": 'MODS issuance terms'
+              }
+            },
+            {
+              "type": 'frequency',
+              "value": 'Irregular'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  # example 43c from mods_to_cocina_originInfo.txt
+  context 'with example adapted from bh212vz9239' do
+    let(:xml) do
+      <<~XML
+        <originInfo altRepGroup="02">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo altRepGroup="02">
+          <place>
+            <placeTerm type="text">Guangdong in Chinese</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "location": [
+            {
+              "parallelValue": [
+                {
+                  "value": 'Guangdong'
+                },
+                {
+                  "value": 'Guangdong in Chinese'
+                }
+              ]
+            },
+            {
+              "code": 'cc',
+              "source": {
+                "code": 'marccountry'
+              }
+            }
+          ],
+          "contributor": [
+            {
+              "type": 'organization',
+              "name": [
+                {
+                  "parallelValue": [
+                    {
+                      "value": 'Guangdong lu jun ce liang ju'
+                    },
+                    {
+                      "value": 'Guangdong lu jun ce liang ju in Chinese'
+                    }
+                  ]
+                }
+              ],
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "parallelValue": [
+                {
+                  "value": 'Minguo 11-18 [1922-1929]'
+                },
+                {
+                  "value": 'Minguo 11-18 [1922-1929] in Chinese'
+                }
+              ]
+            },
+            {
+              "structuredValue": [
+                {
+                  "value": '1922',
+                  "type": 'start',
+                  "encoding": {
+                    "code": 'marc'
+                  }
+                },
+                {
+                  "value": '1929',
+                  "type": 'end',
+                  "encoding": {
+                    "code": 'marc'
+                  }
+                }
+              ]
+            }
+          ],
+          "note": [
+            {
+              "type": 'issuance',
+              "value": 'monographic',
+              "source": {
+                "value": 'MODS issuance terms'
+              }
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  context 'with example adapted from bh212vz9239 in different order' do
+    # This places the originInfo with additional elements in the second position.
+    let(:xml) do
+      <<~XML
+        <originInfo altRepGroup="02">
+          <place>
+            <placeTerm type="text">Guangdong in Chinese</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
+        </originInfo>
+        <originInfo altRepGroup="02">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "location": [
+            {
+              "parallelValue": [
+                {
+                  "value": 'Guangdong in Chinese'
+                },
+                {
+                  "value": 'Guangdong'
+                }
+              ]
+            },
+            {
+              "code": 'cc',
+              "source": {
+                "code": 'marccountry'
+              }
+            }
+          ],
+          "contributor": [
+            {
+              "type": 'organization',
+              "name": [
+                {
+                  "parallelValue": [
+                    {
+                      "value": 'Guangdong lu jun ce liang ju in Chinese'
+                    },
+                    {
+                      "value": 'Guangdong lu jun ce liang ju'
+                    }
+                  ]
+                }
+              ],
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "parallelValue": [
+                {
+                  "value": 'Minguo 11-18 [1922-1929] in Chinese'
+                },
+                {
+                  "value": 'Minguo 11-18 [1922-1929]'
+                }
+              ]
+            },
+            {
+              "structuredValue": [
+                {
+                  "value": '1922',
+                  "type": 'start',
+                  "encoding": {
+                    "code": 'marc'
+                  }
+                },
+                {
+                  "value": '1929',
+                  "type": 'end',
+                  "encoding": {
+                    "code": 'marc'
+                  }
+                }
+              ]
+            }
+          ],
+          "note": [
+            {
+              "type": 'issuance',
+              "value": 'monographic',
+              "source": {
+                "value": 'MODS issuance terms'
+              }
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  # example 44
+  context 'with multiple originInfo elements with and without eventTypes' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <place>
+            <placeTerm type="code" authority="marccountry">cau</placeTerm>
+          </place>
+          <dateIssued encoding="marc">2020</dateIssued>
+          <copyrightDate encoding="marc">2020</copyrightDate>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo eventType="publication">
+          <place>
+            <placeTerm type="text">[Stanford, Calif.]</placeTerm>
+          </place>
+          <publisher>[Stanford University]</publisher>
+          <dateIssued>2020</dateIssued>
+        </originInfo>
+        <originInfo eventType="copyright notice">
+          <copyrightDate>&#xA9;2020</copyrightDate>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "location": [
+            {
+              "code": 'cau',
+              "source": {
+                "code": 'marccountry'
+              }
+            }
+          ],
+          "date": [
+            {
+              "value": '2020',
+              "encoding": {
+                "code": 'marc'
+              }
+            }
+          ],
+          "note": [
+            {
+              "type": 'issuance',
+              "value": 'monographic',
+              "source": {
+                "value": 'MODS issuance terms'
+              }
+            }
+          ]
+        },
+        {
+          "type": 'copyright',
+          "date": [
+            {
+              "value": '2020',
+              "encoding": {
+                "code": 'marc'
+              }
+            }
+          ]
+        },
+        {
+          "type": 'publication',
+          "location": [
+            {
+              "value": '[Stanford, Calif.]'
+            }
+          ],
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": '[Stanford University]'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "value": '2020'
+            }
+          ]
+        },
+        {
+          "type": 'copyright',
+          "date": [
+            {
+              "value": '©2020'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  # From druid:mm706hr7414
+  context 'with an originInfo that does not get an event type' do
+    # This places the originInfo with additional elements in the second position.
+    let(:xml) do
+      <<~XML
+          <originInfo altRepGroup="02">
+            <place>
+              <placeTerm type="code" authority="marccountry">is</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">Tel-Aviv</placeTerm>
+            </place>
+            <publisher>A. Sh&#x1E6D;ibel</publisher>
+            <dateIssued>1939</dateIssued>
+            <issuance>monographic</issuance>
+          </originInfo>
+          <originInfo script="" altRepGroup="02">
+            <place>
+              <placeTerm type="text">&#x5EA;&#x5DC;&#x5BE;&#x5D0;&#x5D1;&#x5D9;&#x5D1; :</placeTerm>
+            </place>
+            <publisher>&#x5E9;. &#x5E9;&#x5D8;&#x5D9;&#x5D1;&#x5DC;,1939.</publisher>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "date": [
+            {
+              "value": '1939'
+            }
+          ],
+          "location": [
+            {
+              "parallelValue": [
+                {
+                  "value": 'Tel-Aviv'
+                },
+                {
+                  "value": 'תל־אביב :'
+                }
+              ]
+            },
+            {
+              "source": {
+                "code": 'marccountry'
+              },
+              "code": 'is'
+            }
+          ],
+          "note": [
+            {
+              "source": {
+                "value": 'MODS issuance terms'
+              },
+              "type": 'issuance',
+              "value": 'monographic'
+            }
+          ],
+          "contributor": [
+            {
+              "name": [
+                {
+                  "parallelValue": [
+                    {
+                      "value": 'A. Shṭibel'
+                    },
+                    {
+                      "value": 'ש. שטיבל,1939.'
+                    }
+                  ]
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  # From druid:bs861pk7886
+  context 'with an originInfo that has place and publisher, but no date' do
+    # This places the originInfo with additional elements in the second position.
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <place>
+            <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+          </place>
+          <publisher>Stanford University. Department of Geophysics</publisher>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Stanford University. Department of Geophysics'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "location": [
+            {
+              "uri": 'http://id.loc.gov/authorities/names/n50046557',
+              "source": {
+                "code": 'marccountry',
+                "uri": 'http://id.loc.gov/authorities/names/'
+              },
+              "value": 'Stanford (Calif.)'
             }
           ]
         }

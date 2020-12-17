@@ -204,9 +204,9 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
                   value: '1970-11-23',
                   status: 'primary',
                   encoding:
-                    {
-                      code: 'w3cdtf'
-                    }
+                          {
+                            code: 'w3cdtf'
+                          }
                 }
               ]
             }
@@ -1420,14 +1420,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
                       }
                     }
                   }
-                },
-                {
-                  value: '1996',
-                  encoding: {
-                    code: 'marc'
-                  }
                 }
               ]
+            },
+            {
+              value: '1996',
+              encoding: {
+                code: 'marc'
+              }
             }
           ],
           note: [
@@ -1730,6 +1730,342 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
           </originInfo>
           <originInfo eventType="publication" lang="rus" script="Cyrl" altRepGroup="1">
             <edition>Первое издание</edition>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  # example 43a from mods_to_cocina_originInfo.txt
+  context 'with example adapted from hn285fy7937' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          {
+            "type": 'publication',
+            "location": [
+              {
+                "parallelValue": [
+                  {
+                    "value": 'Chengdu'
+                  },
+                  {
+                    "value": '[Chengdu in Chinese]'
+                  }
+                ]
+              },
+              {
+                "code": 'cc',
+                "source": {
+                  "code": 'marccountry'
+                }
+              }
+            ],
+            "contributor": [
+              {
+                "type": 'organization',
+                "name": [
+                  {
+                    "parallelValue": [
+                      {
+                        "value": 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
+                      },
+                      {
+                        "value": '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
+                      }
+                    ]
+                  }
+                ],
+                "role": [
+                  {
+                    "value": 'publisher',
+                    "code": 'pbl',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                    "source": {
+                      "code": 'marcrelator',
+                      "uri": 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ],
+            "date": [
+              {
+                "value": '2005'
+              }
+            ],
+            "note": [
+              {
+                "type": 'issuance',
+                "value": 'monographic',
+                "source": {
+                  "value": 'MODS issuance terms'
+                }
+
+              },
+              {
+                "type": 'edition',
+                "parallelValue": [
+                  {
+                    "value": 'Di 1 ban.'
+                  },
+                  {
+                    "value": '[Di 1 ban in Chinese]'
+                  }
+                ]
+              }
+            ]
+          }
+        )
+      ]
+    end
+
+    it 'builds the expected xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo altRepGroup="1" eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">Chengdu</placeTerm>
+            </place>
+            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+            <dateIssued>2005</dateIssued>
+            <edition>Di 1 ban.</edition>
+            <issuance>monographic</issuance>
+          </originInfo>
+          <originInfo altRepGroup="1" eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+            </place>
+            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+            <dateIssued>2005</dateIssued>
+            <edition>[Di 1 ban in Chinese]</edition>
+            <issuance>monographic</issuance>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  # example 44 from mods_to_cocina_originInfo.txt
+  context 'with multiple originInfo elements with and without eventTypes' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          {
+            "type": 'publication',
+            "location": [
+              {
+                "code": 'cau',
+                "source": {
+                  "code": 'marccountry'
+                }
+              }
+            ],
+            "date": [
+              {
+                "value": '2020',
+                "encoding": {
+                  "code": 'marc'
+                }
+              }
+            ],
+            "note": [
+              {
+                "type": 'issuance',
+                "value": 'monographic',
+                "source": {
+                  "value": 'MODS issuance terms'
+                }
+              }
+            ]
+          }
+        ),
+        Cocina::Models::Event.new(
+          {
+            "type": 'copyright',
+            "date": [
+              {
+                "value": '2020',
+                "encoding": {
+                  "code": 'marc'
+                }
+              }
+            ]
+          }
+        ),
+        Cocina::Models::Event.new(
+          {
+            "type": 'publication',
+            "location": [
+              {
+                "value": '[Stanford, Calif.]'
+              }
+            ],
+            "contributor": [
+              {
+                "name": [
+                  {
+                    "value": '[Stanford University]'
+                  }
+                ],
+                "type": 'organization',
+                "role": [
+                  {
+                    "value": 'publisher',
+                    "code": 'pbl',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                    "source": {
+                      "code": 'marcrelator',
+                      "uri": 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ],
+            "date": [
+              {
+                "value": '2020'
+              }
+            ]
+          }
+        ),
+        Cocina::Models::Event.new(
+          {
+            "type": 'copyright',
+            "date": [
+              {
+                "value": '©2020'
+              }
+            ]
+          }
+        )
+      ]
+    end
+
+    it 'builds the expected xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo eventType="publication">
+            <dateIssued encoding="marc">2020</dateIssued>
+            <place>
+              <placeTerm type="code" authority="marccountry">cau</placeTerm>
+            </place>
+            <issuance>monographic</issuance>
+          </originInfo>
+          <originInfo eventType="copyright notice">
+            <copyrightDate encoding="marc">2020</copyrightDate>
+          </originInfo>
+          <originInfo eventType="publication">
+            <dateIssued>2020</dateIssued>
+            <place>
+              <placeTerm type="text">[Stanford, Calif.]</placeTerm>
+            </place>
+            <publisher>[Stanford University]</publisher>
+          </originInfo>
+          <originInfo eventType="copyright notice">
+            <copyrightDate>&#xA9;2020</copyrightDate>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  # From druid:bm971cx9348
+  context 'with originInfo with dateIssued with single point' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          {
+            "type": 'publication',
+            "date": [
+              {
+                "value": '[192-?]-[193-?]'
+              },
+              {
+                "value": '1920',
+                "encoding": {
+                  "code": 'marc'
+                },
+                "type": 'start'
+              }
+            ],
+            "note": [
+              {
+                "type": 'edition',
+                "value": '2nd ed.'
+              },
+              {
+                "source": {
+                  "value": 'MODS issuance terms'
+                },
+                "type": 'issuance',
+                "value": 'monographic'
+              }
+            ],
+            "contributor": [
+              {
+                "name": [
+                  {
+                    "value": 'H.M. Stationery Off'
+                  }
+                ],
+                "type": 'organization',
+                "role": [
+                  {
+                    "value": 'publisher',
+                    "code": 'pbl',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                    "source": {
+                      "code": 'marcrelator',
+                      "uri": 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ],
+            "location": [
+              {
+                "value": 'London'
+              },
+              {
+                "source": {
+                  "code": 'marccountry'
+                },
+                "code": 'enk'
+              }
+            ]
+          }
+        )
+      ]
+    end
+
+    it 'builds the expected xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo eventType="publication">
+            <dateIssued>[192-?]-[193-?]</dateIssued>
+            <dateIssued encoding="marc" point="start">1920</dateIssued>
+            <place>
+              <placeTerm type="text">London</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="code" authority="marccountry">enk</placeTerm>
+            </place>
+            <publisher>H.M. Stationery Off</publisher>
+            <edition>2nd ed.</edition>
+            <issuance>monographic</issuance>
           </originInfo>
         </mods>
       XML
