@@ -1228,4 +1228,222 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing parallel originInfos with no script or lang' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <originInfo altRepGroup="0203">
+            <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">Chengdu</placeTerm>
+            </place>
+            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+            <dateIssued>2005</dateIssued>
+            <edition>Di 1 ban.</edition>
+            <issuance>monographic</issuance>
+            <frequency>Monthly</frequency>
+          </originInfo>
+          <originInfo altRepGroup="0203">
+            <place>
+              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+            </place>
+            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+            <dateIssued>2005</dateIssued>
+            <edition>[Di 1 ban in Chinese]</edition>
+            <frequency authority=\"marcfrequency\">Monthly</frequency>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    it 'adds other values to all originInfos in group' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <originInfo altRepGroup="0203" eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">Chengdu</placeTerm>
+            </place>
+            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+            <dateIssued>2005</dateIssued>
+            <edition>Di 1 ban.</edition>
+            <issuance>monographic</issuance>
+            <frequency>Monthly</frequency>
+            <frequency authority=\"marcfrequency\">Monthly</frequency>
+          </originInfo>
+          <originInfo altRepGroup="0203" eventType="publication">
+            <place>
+              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+            </place>
+            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+            <dateIssued>2005</dateIssued>
+            <edition>[Di 1 ban in Chinese]</edition>
+            <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+            </place>
+            <issuance>monographic</issuance>
+            <frequency>Monthly</frequency>
+            <frequency authority=\"marcfrequency\">Monthly</frequency>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing parallel originInfos with same script or lang' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <originInfo altRepGroup="0203" script="Latn">
+            <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">Chengdu</placeTerm>
+            </place>
+            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+            <dateIssued>2005</dateIssued>
+            <edition>Di 1 ban.</edition>
+            <issuance>monographic</issuance>
+            <frequency>Monthly</frequency>
+          </originInfo>
+          <originInfo altRepGroup="0203" script="Latn">
+            <place>
+              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+            </place>
+            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+            <dateIssued>2005</dateIssued>
+            <edition>[Di 1 ban in Chinese]</edition>
+            <frequency authority=\"marcfrequency\">Monthly</frequency>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    it 'adds other values to all originInfos in group' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <originInfo altRepGroup="0203" eventType="publication" script="Latn">
+            <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">Chengdu</placeTerm>
+            </place>
+            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+            <dateIssued>2005</dateIssued>
+            <edition>Di 1 ban.</edition>
+            <issuance>monographic</issuance>
+            <frequency>Monthly</frequency>
+            <frequency authority=\"marcfrequency\">Monthly</frequency>
+          </originInfo>
+          <originInfo altRepGroup="0203" eventType="publication" script="Latn">
+            <place>
+              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+            </place>
+            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+            <dateIssued>2005</dateIssued>
+            <edition>[Di 1 ban in Chinese]</edition>
+            <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+            </place>
+            <issuance>monographic</issuance>
+            <frequency>Monthly</frequency>
+            <frequency authority=\"marcfrequency\">Monthly</frequency>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing originInfos with lang and scripts' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <originInfo script="Latn" lang="eng" eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">ja</placeTerm>
+            </place>
+            <dateIssued encoding="marc" point="start">1915</dateIssued>
+            <dateIssued encoding="marc" point="end">1942</dateIssued>
+            <issuance>monographic</issuance>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    it 'removes if none of the children are parallelizable' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">ja</placeTerm>
+            </place>
+            <dateIssued encoding="marc" point="start">1915</dateIssued>
+            <dateIssued encoding="marc" point="end">1942</dateIssued>
+            <issuance>monographic</issuance>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing originInfos with copyright dates' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <originInfo>
+            <place>
+              <placeTerm type="code" authority="marccountry">cau</placeTerm>
+            </place>
+            <dateIssued encoding="marc">2020</dateIssued>
+            <copyrightDate encoding="marc">2020</copyrightDate>
+            <issuance>monographic</issuance>
+          </originInfo>
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="text">[Stanford, California]</placeTerm>
+            </place>
+            <publisher>[Stanford University]</publisher>
+            <dateIssued>2020</dateIssued>
+          </originInfo>
+          <originInfo eventType="copyright notice">
+            <copyrightDate>&#xA9;2020</copyrightDate>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    it 'moves copyright into its own originInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">cau</placeTerm>
+            </place>
+            <dateIssued encoding="marc">2020</dateIssued>
+            <issuance>monographic</issuance>
+          </originInfo>
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="text">[Stanford, California]</placeTerm>
+            </place>
+            <publisher>[Stanford University]</publisher>
+            <dateIssued>2020</dateIssued>
+          </originInfo>
+          <originInfo eventType="copyright notice">
+            <copyrightDate encoding="marc">2020</copyrightDate>
+          </originInfo>
+          <originInfo eventType="copyright notice">
+            <copyrightDate>&#xA9;2020</copyrightDate>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
 end

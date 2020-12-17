@@ -23,10 +23,13 @@ module Cocina
       normalize_empty_attributes
       normalize_subject
       normalize_authority_uris
+      normalize_origin_info_split
       normalize_origin_info_event_types
       normalize_origin_info_date_other_types
       normalize_origin_info_place_term_type
       normalize_origin_info_developed_date
+      normalize_parallel_origin_info
+      normalize_origin_info_lang_script
       normalize_subject_authority
       normalize_subject_authority_lcnaf
       normalize_subject_authority_naf
@@ -342,6 +345,73 @@ module Cocina
         new_origin_info << date_other.dup
         date_other.parent.parent << new_origin_info
         date_other.remove
+      end
+    end
+
+    def normalize_parallel_origin_info
+      # For grouped originInfos, if no lang or script or lang and script are the same then make sure other values present on all in group.
+      altrepgroup_origin_info_nodes, _other_origin_info_nodes = Cocina::FromFedora::Descriptive::AltRepGroup.split(nodes: ng_xml.root.xpath('//mods:originInfo', mods: MODS_NS))
+
+      altrepgroup_origin_info_nodes.each do |origin_info_nodes|
+        lang_script_map = origin_info_nodes.group_by { |origin_info_node| [origin_info_node['lang'], origin_info_node['script']] }
+        grouped_origin_info_nodes = lang_script_map.values.select { |nodes| nodes.size > 1 }
+        grouped_origin_info_nodes.each do |origin_info_node_group|
+          origin_info_node_group.each do |origin_info_node|
+            other_origin_info_nodes = origin_info_node_group.reject { |check_origin_info_node| origin_info_node == check_origin_info_node }
+            normalize_parallel_origin_info_nodes(origin_info_node, other_origin_info_nodes)
+          end
+        end
+      end
+    end
+
+    def normalize_parallel_origin_info_nodes(from_node, to_nodes)
+      from_node.elements.each do |child_node|
+        to_nodes.each do |to_node|
+          next if matching_origin_info_child_node?(child_node, to_node)
+
+          to_node << child_node.dup
+        end
+      end
+    end
+
+    def matching_origin_info_child_node?(child_node, origin_info_node)
+      origin_info_node.elements.any? do |other_child_node|
+        if child_node.name == 'place' && other_child_node.name == 'place'
+          child_placeterm_node = child_node.xpath('mods:placeTerm', mods: MODS_NS).first
+          other_child_placeterm_node = other_child_node.xpath('mods:placeTerm', mods: MODS_NS).first
+          child_placeterm_node && other_child_placeterm_node && child_placeterm_node['type'] == other_child_placeterm_node['type']
+        else
+          child_node.name == other_child_node.name && child_node.to_h == other_child_node.to_h
+        end
+      end
+    end
+
+    def normalize_origin_info_lang_script
+      # Remove lang and script attributes if none of the children can be parallel.
+      ng_xml.root.xpath('//mods:originInfo[@lang or @script]', mods: MODS_NS).each do |origin_info_node|
+        parallel_nodes = origin_info_node.xpath('mods:place/mods:placeTerm[not(@type="code")]', mods: MODS_NS) \
+          + origin_info_node.xpath('mods:dateIssued[not(@encoding)]', mods: MODS_NS) \
+          + origin_info_node.xpath('mods:publisher', mods: MODS_NS) \
+          + origin_info_node.xpath('mods:edition', mods: MODS_NS)
+        if parallel_nodes.empty?
+          origin_info_node.delete('lang')
+          origin_info_node.delete('script')
+        end
+      end
+    end
+
+    def normalize_origin_info_split
+      # Split a single originInfo into multiple.
+      # Currently, this is splitting out copyright dates from originInfos with date issued. However, probably are other cases.
+      ng_xml.root.xpath('//mods:originInfo[mods:dateIssued and mods:copyrightDate]', mods: MODS_NS).each do |origin_info_node|
+        new_origin_info_node = Nokogiri::XML::Node.new('originInfo', Nokogiri::XML(nil))
+        new_origin_info_node['eventType'] = 'copyright notice'
+        origin_info_node.parent << new_origin_info_node
+        copyright_nodes = origin_info_node.xpath('mods:copyrightDate', mods: MODS_NS)
+        copyright_nodes.each do |copyright_node|
+          copyright_node.remove
+          new_origin_info_node << copyright_node
+        end
       end
     end
   end
