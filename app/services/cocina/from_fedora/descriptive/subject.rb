@@ -39,8 +39,9 @@ module Cocina
 
         def build_parallel_subject(parallel_subject_nodes)
           parallel_subjects = parallel_subject_nodes.map { |subject_node| build_subject(subject_node) }
-          # Moving type up from parallel subjects
-          type = parallel_subjects.map { |subject| subject.delete(:type) }.compact.first
+          # Moving type up from parallel subjects if they are all the same.
+          move_type = parallel_subjects.uniq { |subject| subject[:type] }.size == 1
+          type = move_type ? parallel_subjects.map { |subject| subject.delete(:type) }.compact.first : nil
           {
             parallelValue: parallel_subjects,
             type: type
