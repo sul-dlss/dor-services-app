@@ -119,7 +119,7 @@ module Cocina
 
           if type == 'classification'
             write_classification(subject.value, subject_attributes)
-          elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(type)
+          elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(type) || type == 'name'
             xml.subject(subject_attributes) do
               person(subject)
             end

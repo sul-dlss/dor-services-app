@@ -740,6 +740,44 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with a parallel subject but different types' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85135212" altRepGroup="2">
+          <geographic>Tiber River (Italy)</geographic>
+        </subject>
+        <subject authority="local" altRepGroup="2">
+          <topic>Tevere</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "parallelValue": [
+            {
+              "source": {
+                "code": 'lcsh',
+                "uri": 'http://id.loc.gov/authorities/subjects/'
+              },
+              "uri": 'http://id.loc.gov/authorities/subjects/sh85135212',
+              "value": 'Tiber River (Italy)',
+              "type": 'place'
+            },
+            {
+              "source": {
+                "code": 'local'
+              },
+              "value": 'Tevere',
+              "type": 'topic'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
   context 'with a subject with lang, script, and displayLabel' do
     let(:xml) do
       <<~XML

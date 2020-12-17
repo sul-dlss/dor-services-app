@@ -619,6 +619,64 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     end
   end
 
+  context 'with a parallel subject but different types' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "parallelValue": [
+              {
+                "source": {
+                  "code": 'lcsh',
+                  "uri": 'http://id.loc.gov/authorities/subjects/'
+                },
+                "uri": 'http://id.loc.gov/authorities/subjects/sh85135212',
+                "value": 'Tiber River (Italy)',
+                "type": 'place'
+              },
+              {
+                "source": {
+                  "code": 'local'
+                },
+                "value": 'Tevere',
+                "type": 'topic'
+              },
+              {
+                "value": 'Tiber River',
+                "type": 'name',
+                "source": {
+                  "code": 'lcsh',
+                  "uri": 'http://id.loc.gov/authorities/names/'
+                },
+                "uri": 'http://id.loc.gov/authorities/names/n97042879'
+              }
+            ]
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject authority="lcsh" altRepGroup="1">
+            <geographic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85135212">Tiber River (Italy)</geographic>
+          </subject>
+          <subject authority="local" altRepGroup="1">
+            <topic>Tevere</topic>
+          </subject>
+          <subject authority="lcsh" altRepGroup="1">
+            <name authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n97042879">
+              <namePart>Tiber River</namePart>
+            </name>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
   context 'when it has a subject with lang and script' do
     let(:subjects) do
       [
