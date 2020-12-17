@@ -176,6 +176,74 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
+  context 'with a translated name' do
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          {
+            "name": [
+              {
+                parallelValue: [
+                  {
+                    "status": 'primary',
+                    "valueLanguage": {
+                      "code": 'jpn',
+                      "source": {
+                        "code": 'iso639-2b'
+                      },
+                      "valueScript": {
+                        "code": 'Jpan',
+                        "source": {
+                          "code": 'iso15924'
+                        }
+                      }
+                    },
+                    "value": 'レアメタル資源再生技術研究会'
+                  },
+                  {
+                    "valueLanguage": {
+                      "code": 'jpn',
+                      "source": {
+                        "code": 'iso639-2b'
+                      },
+                      "valueScript": {
+                        "code": 'Latn',
+                        "source": {
+                          "code": 'iso15924'
+                        }
+                      }
+                    },
+                    "type": 'transliteration',
+                    "standard": {
+                      "value": 'ALA-LC Romanization Tables'
+                    },
+                    "value": 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai'
+                  }
+                ],
+                type: 'organization'
+              }
+            ]
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
+            <namePart>&#x30EC;&#x30A2;&#x30E1;&#x30BF;&#x30EB;&#x8CC7;&#x6E90;&#x518D;&#x751F;&#x6280;&#x8853;&#x7814;&#x7A76;&#x4F1A;</namePart>
+          </name>
+          <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
+            <namePart>Rea Metaru Shigen Saisei Gijutsu Kenky&#x16B;kai</namePart>
+          </name>
+        </mods>
+      XML
+    end
+  end
+
   context 'without type' do
     let(:contributors) do
       [
