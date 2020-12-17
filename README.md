@@ -153,7 +153,7 @@ Usage: bin/generate-cache [options]
     -a, --auto                       Automatically choose sample based on 14 day cycle.
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
     -h, --help                       Displays help.
-        
+
 $ bin/generate-cache
 ```
 
@@ -172,7 +172,7 @@ Usage: bin/validate-to-cocina [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -u, --unique-filename            Result file named for branch and runtime
     -h, --help                       Displays help.
-    
+
 $ bin/validate-to-cocina -s 10
 Testing |Time: 00:00:00 | ===================================================================== | Time: 00:00:00
 
@@ -203,7 +203,7 @@ Usage: bin/validate-to-fedora [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -u, --unique-filename            Result file named for branch and runtime
     -h, --help                       Displays help.
-    
+
 $ bin/validate-to-fedora
 Testing |Time: 00:00:06 | ============================================================= | Time: 00:00:06
 To Fedora error: 21 of 7500 (0.28%)
@@ -272,7 +272,7 @@ $ echo $FEDORA_CACHE
 /opt/app/deploy/dor-services-app/cache
 ```
 
-Test with `bin/validate-cocina-roundtrip`, comparing results from master against your branch. The sample size to you is up to you; biggers samples are recommended for more complex changes.
+Test with `bin/validate-cocina-roundtrip`, comparing results from master against your branch. The sample size to you is up to you; bigger samples are recommended for more complex changes.
 
 ```
 $ git checkout master
