@@ -114,8 +114,11 @@ module Cocina
 
         def write_access_conditions
           Array(access.note).reject { |note| note.type == 'purl access' }.each do |note|
-            type = note.type == 'access restriction' ? 'restriction on access' : note.type
-            xml.accessCondition note.value, type: type
+            attributes = {
+              type: note.type == 'access restriction' ? 'restriction on access' : note.type,
+              displayLabel: note.displayLabel
+            }.compact
+            xml.accessCondition note.value, attributes
           end
         end
       end
