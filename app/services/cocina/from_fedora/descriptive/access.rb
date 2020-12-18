@@ -109,7 +109,8 @@ module Cocina
           resource_element.xpath('mods:accessCondition', mods: DESC_METADATA_NS).map do |access_elem|
             {
               value: access_elem.text,
-              type: ACCESS_CONDITION_TYPES.fetch(access_elem['type'], access_elem['type'])
+              type: ACCESS_CONDITION_TYPES.fetch(access_elem['type'], access_elem['type']),
+              displayLabel: access_elem['displayLabel']
             }.compact
           end
         end
