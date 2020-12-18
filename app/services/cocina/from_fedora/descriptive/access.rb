@@ -27,15 +27,14 @@ module Cocina
         def build
           {}.tap do |access|
             physical_locations = physical_location + shelf_location
-            access[:physicalLocation] = physical_locations if physical_locations.present?
-            access[:digitalLocation] = digital_location if digital_location.present?
-            access[:accessContact] = access_contact if access_contact.present?
-            access[:url] = url if url.present?
-            notes = note + purl_note
-            access[:note] = notes if notes.present?
+            access[:physicalLocation] = physical_locations.presence
+            access[:digitalLocation] = digital_location.presence
+            access[:accessContact] = access_contact.presence
+            access[:url] = url.presence
+            access[:note] = (note + purl_note).presence
             # Without the count check, this node winds up all over the damn place and breaks dozens of tests
             access[:digitalRepository] = [{ value: 'Stanford Digital Repository' }] if location_nodes_count.positive?
-          end
+          end.compact
         end
 
         private
@@ -55,7 +54,7 @@ module Cocina
         end
 
         def access_contact
-          @access_contact ||= descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[@type='repository']", mods: DESC_METADATA_NS))
+          descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[@type='repository']", mods: DESC_METADATA_NS))
         end
 
         def shelf_location
@@ -68,7 +67,7 @@ module Cocina
         end
 
         def url
-          @url ||= url_nodes.map do |url_node|
+          url_nodes.map do |url_node|
             {
               value: url_node.text,
               displayLabel: url_node[:displayLabel]
@@ -92,26 +91,26 @@ module Cocina
         end
 
         def url_nodes
-          @url_nodes ||= all_url_nodes.reject { |url_node| url_node == primary_purl_node }
+          all_url_nodes.reject { |url_node| url_node == primary_purl_node }
         end
 
         def purl_note
-          @purl_note ||= if primary_purl_node && primary_purl_node[:note]
-                           [{
-                             type: 'purl access',
-                             value: primary_purl_node[:note]
-                           }]
-                         else
-                           []
-                         end
+          if primary_purl_node && primary_purl_node[:note]
+            [{
+              type: 'purl access',
+              value: primary_purl_node[:note]
+            }]
+          else
+            []
+          end
         end
 
         def note
-          @note ||= resource_element.xpath('mods:accessCondition', mods: DESC_METADATA_NS).map do |access_elem|
+          resource_element.xpath('mods:accessCondition', mods: DESC_METADATA_NS).map do |access_elem|
             {
               value: access_elem.text,
               type: ACCESS_CONDITION_TYPES.fetch(access_elem['type'], access_elem['type'])
-            }
+            }.compact
           end
         end
 

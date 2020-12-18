@@ -592,7 +592,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Access do
       )
     end
   end
-  
+
   # examples from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_accessCondition.txt
 
   # example 1A from mods_to_cocina_accessCondition.txt
