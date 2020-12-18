@@ -35,8 +35,8 @@ module Cocina
                   end
                 ]
               end
-            end.compact
-          end
+            end.compact.presence
+          end.compact
         end
 
         private
