@@ -353,4 +353,34 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
       ]
     end
   end
+
+  context 'with single PURL URL' do
+    let(:xml) do
+      <<~XML
+        <relatedItem type="otherVersion" displayLabel="Associated Essay">
+          <titleInfo>
+            <title>essay68buildingGrandCanyonPart3fredHarveyCo.pdf</title>
+          </titleInfo>
+          <location>
+            <url>http://purl.stanford.edu/vt726fn1198</url>
+          </location>
+        </relatedItem>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          type: 'has version',
+          displayLabel: 'Associated Essay',
+          title: [
+            {
+              value: 'essay68buildingGrandCanyonPart3fredHarveyCo.pdf'
+            }
+          ],
+          purl: 'http://purl.stanford.edu/vt726fn1198'
+        }
+      ]
+    end
+  end
 end
