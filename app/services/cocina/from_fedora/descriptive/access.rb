@@ -41,8 +41,10 @@ module Cocina
 
         attr_reader :resource_element
 
+        # The number of location nodes that themselves that have child nodes.
+        # Hydrus is know to create location nodes with no children.
         def location_nodes_count
-          resource_element.xpath('mods:location', mods: DESC_METADATA_NS).count
+          resource_element.xpath('mods:location[*]', mods: DESC_METADATA_NS).count
         end
 
         def physical_location

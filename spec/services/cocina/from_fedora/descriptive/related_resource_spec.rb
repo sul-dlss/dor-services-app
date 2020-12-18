@@ -17,6 +17,25 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     XML
   end
 
+  context 'with empty location (from Hydrus)' do
+    let(:xml) do
+      <<~XML
+        <relatedItem>
+          <titleInfo>
+            <title/>
+          </titleInfo>
+          <location>
+
+          </location>
+        </relatedItem>
+      XML
+    end
+
+    it 'builds nothing' do
+      expect(build).to be_empty
+    end
+  end
+
   context 'with type' do
     let(:xml) do
       <<~XML
