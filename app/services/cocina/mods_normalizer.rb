@@ -34,6 +34,7 @@ module Cocina
       normalize_subject_authority_lcnaf
       normalize_subject_authority_naf
       normalize_subject_authority_tgm
+      normalize_coordinates # Must be before normalize_subject_cartographics
       normalize_subject_cartographics
       normalize_text_role_term
       normalize_role_term_authority
@@ -108,15 +109,52 @@ module Cocina
     # rubocop:enable Metrics/CyclomaticComplexity
     # rubocop:enable Metrics/PerceivedComplexity
 
+    def normalize_coordinates
+      ng_xml.root.xpath('//mods:coordinates[text()]', mods: MODS_NS).each do |coordinate_node|
+        coordinate_node.content = coordinate_node.content.delete_prefix('(').delete_suffix(')')
+      end
+    end
+
     # Collapse multiple subject/cartographics nodes into a single one
     def normalize_subject_cartographics
-      cartographics_nodes = ng_xml.root.xpath('//mods:subject/mods:cartographics', mods: MODS_NS)
-      return if cartographics_nodes.count.in?([0, 1]) # nothing to normalize if there aren't multiple cartographics
+      normalize_subject_cartographics_for(ng_xml.root)
+      ng_xml.root.xpath('mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_subject_cartographics_for(related_item_node) }
+    end
 
-      cartographics_nodes[1..-1].each do |node|
-        cartographics_nodes[0] << node.child
-        node.remove
+    def normalize_subject_cartographics_for(root_node)
+      carto_subject_nodes = root_node.xpath('mods:subject[mods:cartographics]', mods: MODS_NS)
+      return if carto_subject_nodes.empty?
+
+      # Create a default carto subject.
+      default_carto_subject_node = Nokogiri::XML::Node.new('subject', Nokogiri::XML(nil))
+      default_carto_node = Nokogiri::XML::Node.new('cartographics', Nokogiri::XML(nil))
+      default_carto_subject_node << default_carto_node
+
+      carto_subject_nodes.each do |carto_subject_node|
+        carto_nodes = carto_subject_node.xpath('mods:cartographics', mods: MODS_NS)
+        carto_nodes.each do |carto_node|
+          child_nodes = if carto_subject_node['authority'] || carto_subject_node['authorityURI'] || carto_subject_node['valueURI']
+                          # Move scale and coordinates to default carto subject.
+                          carto_node.xpath('mods:scale', mods: MODS_NS) + carto_node.xpath('mods:coordinates', mods: MODS_NS)
+                        else
+                          # Merge all into default carto_subject.
+                          carto_node.elements
+                        end
+
+          child_nodes.each do |child_node|
+            child_node.remove
+            default_carto_node << child_node unless child_node_exists?(child_node, default_carto_node)
+          end
+          carto_node.remove if carto_node.elements.empty?
+        end
+        carto_subject_node.remove if carto_subject_node.elements.empty?
       end
+
+      root_node << default_carto_subject_node if default_carto_node.elements.present?
+    end
+
+    def child_node_exists?(child_node, parent_node)
+      parent_node.elements.any? { |check_node| child_node.name == check_node.name && child_node.content == check_node.content }
     end
 
     def normalize_subject_authority_naf

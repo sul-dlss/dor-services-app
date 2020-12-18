@@ -290,6 +290,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
   end
 
   describe 'subject' do
+    # Example 19 from mods_to_cocina_subject.txt
     context 'when there is a subject/cartographics node' do
       let(:xml) do
         <<~XML
@@ -312,6 +313,50 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
           {
             "value": 'Conic proj',
             "type": 'map projection'
+          }
+        ]
+      end
+    end
+
+    # Example 19b from mods_to_cocina_subject.txt
+    context 'with a multiple cartographic subjects' do
+      let(:xml) do
+        <<~XML
+          <subject>
+            <cartographics>
+              <scale>Scale not given.</scale>
+              <projection>Custom projection</projection>
+              <coordinates>(E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ)</coordinates>
+            </cartographics>
+          </subject>
+          <subject authority="EPSG" valueURI="http://opengis.net/def/crs/EPSG/0/4326" displayLabel="WGS84">
+            <cartographics>
+              <scale>Scale not given.</scale>
+              <projection>EPSG::4326</projection>
+              <coordinates>E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ</coordinates>
+            </cartographics>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'Scale not given.',
+            "type": 'map scale'
+          },
+          {
+            "value": 'Custom projection',
+            "type": 'map projection'
+          },
+          {
+            "value": 'EPSG::4326',
+            "type": 'map projection',
+            "uri": 'http://opengis.net/def/crs/EPSG/0/4326',
+            "source": {
+              "code": 'EPSG'
+            },
+            "displayLabel": 'WGS84'
           }
         ]
       end

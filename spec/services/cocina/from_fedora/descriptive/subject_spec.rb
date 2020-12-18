@@ -542,6 +542,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  # Example 19
   context 'with a cartographic subject' do
     let(:xml) do
       <<~XML
@@ -559,6 +560,40 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       expect(build).to eq [
         {
           "value": 'E 72°--E 148°/N 13°--N 18°',
+          "type": 'map coordinates',
+          "encoding": {
+            "value": 'DMS'
+          }
+        }
+      ]
+    end
+  end
+
+  # Example 19b
+  context 'with a multiple cartographic subjects' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <cartographics>
+            <scale>Scale not given.</scale>
+            <projection>Custom projection</projection>
+            <coordinates>(E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ)</coordinates>
+          </cartographics>
+        </subject>
+        <subject authority="EPSG" valueURI="http://opengis.net/def/crs/EPSG/0/4326" displayLabel="WGS84">
+          <cartographics>
+            <scale>Scale not given.</scale>
+            <projection>EPSG::4326</projection>
+            <coordinates>E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ</coordinates>
+          </cartographics>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ',
           "type": 'map coordinates',
           "encoding": {
             "value": 'DMS'
@@ -614,15 +649,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           value: 'W0750700 W0741200 N0443400 N0431200'
         },
         {
-          structuredValue: [
-            {
-              encoding: {
-                value: 'DMS'
-              },
-              type: 'map coordinates',
-              value: '(W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ)'
-            }
-          ]
+          encoding: {
+            value: 'DMS'
+          },
+          type: 'map coordinates',
+          value: 'W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ'
         }
       ]
     end

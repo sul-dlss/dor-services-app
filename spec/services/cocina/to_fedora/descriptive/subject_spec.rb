@@ -389,6 +389,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     end
   end
 
+  # Example 19
   context 'when it has a cartographic subject' do
     let(:subjects) do
       [
@@ -436,18 +437,79 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     end
   end
 
+  # Example 19b
+  context 'when it multiple cartographic subjects (mapped from ISO 19139)' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "value": 'E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ',
+          "type": 'map coordinates',
+          "encoding": {
+            "value": 'DMS'
+          }
+        )
+      ]
+    end
+
+    let(:forms) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": 'Scale not given.',
+            "type": 'map scale'
+          }
+        ),
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": 'Custom projection',
+            "type": 'map projection'
+          }
+        ),
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": 'EPSG::4326',
+            "type": 'map projection',
+            "uri": 'http://opengis.net/def/crs/EPSG/0/4326',
+            "source": {
+              "code": 'EPSG'
+            },
+            "displayLabel": 'WGS84'
+          }
+        )
+
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject>
+            <cartographics>
+              <scale>Scale not given.</scale>
+              <projection>Custom projection</projection>
+              <coordinates>E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ</coordinates>
+            </cartographics>
+          </subject>
+          <subject authority="EPSG" valueURI="http://opengis.net/def/crs/EPSG/0/4326" displayLabel="WGS84">
+            <cartographics>
+              <projection>EPSG::4326</projection>
+            </cartographics>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
   context 'when it has a cartographic subject with valueURI and authority' do
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
           "value": 'E 72°--E 148°/N 13°--N 18°',
           "type": 'map coordinates',
-          "uri": 'http://opengis.net/def/crs/EPSG/0/4326',
           "encoding": {
             "value": 'DMS'
-          },
-          "source": {
-            "code": 'EPSG'
           }
         )
       ]
@@ -464,7 +526,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
         Cocina::Models::DescriptiveValue.new(
           {
             "value": 'Conic proj',
-            "type": 'map projection'
+            "type": 'map projection',
+            "uri": 'http://opengis.net/def/crs/EPSG/0/4326',
+            "source": {
+              "code": 'EPSG'
+            }
           }
         )
       ]
@@ -475,10 +541,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <subject authority="EPSG" valueURI="http://opengis.net/def/crs/EPSG/0/4326">
+          <subject>
             <cartographics>
               <coordinates>E 72°--E 148°/N 13°--N 18°</coordinates>
               <scale>1:22,000,000</scale>
+            </cartographics>
+          </subject>
+          <subject authority="EPSG" valueURI="http://opengis.net/def/crs/EPSG/0/4326">
+            <cartographics>
               <projection>Conic proj</projection>
             </cartographics>
           </subject>

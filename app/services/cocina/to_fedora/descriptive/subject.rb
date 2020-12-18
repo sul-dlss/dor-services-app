@@ -24,14 +24,14 @@ module Cocina
         def initialize(xml:, subjects:, forms:, id_generator:)
           @xml = xml
           @subjects = Array(subjects)
-          @forms = forms
+          @forms = forms || []
           @id_generator = id_generator
-          # Used to determine if need to write form only cartographics
-          @wrote_cartographic = false
         end
 
         def write
           subjects.each do |subject|
+            next if subject.type == 'map coordinates'
+
             if subject.structuredValue
               write_structured(subject)
             elsif subject.parallelValue
@@ -40,12 +40,12 @@ module Cocina
               write_basic(subject)
             end
           end
-          write_form_only_cartographic
+          write_cartographic
         end
 
         private
 
-        attr_reader :xml, :subjects, :forms, :wrote_cartographic, :id_generator
+        attr_reader :xml, :subjects, :forms, :id_generator
 
         def write_subject(subject, alt_rep_group: nil, type: nil)
           if subject.structuredValue
@@ -137,10 +137,6 @@ module Cocina
             displayLabel: subject.displayLabel
           }.tap do |attrs|
             attrs[:edition] = edition(subject.source.version) if subject.source&.version
-            if subject.type == 'map coordinates'
-              attrs[:authorityURI] = subject.source&.uri
-              attrs[:valueURI] = subject.uri
-            end
             if alt_rep_group
               attrs[:lang] = subject.valueLanguage&.code
               attrs[:script] = subject.valueLanguage&.valueScript&.code
@@ -173,8 +169,6 @@ module Cocina
             xml.titleInfo topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic) do
               xml.title subject.value
             end
-          when 'map coordinates'
-            cartographics(subject)
           when 'place'
             geographic(subject, is_parallel: is_parallel)
           else
@@ -215,30 +209,46 @@ module Cocina
           end
         end
 
-        def cartographics(subject = nil)
-          xml.cartographics do
-            xml.coordinates subject.value if subject
-            xml.scale scale_form.value if scale_form
-            xml.projection projection_form.value if projection_form
-          end
-          @wrote_cartographic = true
+        def write_cartographic
+          write_cartographic_without_authority
+          write_cartographic_with_authority
         end
 
-        def write_form_only_cartographic
-          return if wrote_cartographic
-          return unless scale_form || projection_form
+        def write_cartographic_without_authority
+          # With all subject/forms without authorities.
+          scale_forms = forms.select { |form| form.type == 'map scale' }
+          projection_forms = forms.select { |form| form.type == 'map projection' && form.source.nil? }
+          carto_subjects = subjects.select { |subject| subject.type == 'map coordinates' }
+          return unless scale_forms.present? || projection_forms.present? || carto_subjects.present?
 
           xml.subject do
-            cartographics
+            xml.cartographics do
+              scale_forms.each { |scale_form| xml.scale scale_form.value }
+              projection_forms.each { |projection_form| xml.projection projection_form.value }
+              carto_subjects.each { |carto_subject| xml.coordinates carto_subject.value }
+            end
           end
         end
 
-        def scale_form
-          @scale_form ||= forms&.find { |form| form.type == 'map scale' }
+        def write_cartographic_with_authority
+          # Each for form with authority.
+          projection_forms_with_authority = forms.select { |form| form.type == 'map projection' && form.source.present? }
+          projection_forms_with_authority.each do |projection_form|
+            xml.subject carto_subject_attributes_for(projection_form) do
+              xml.cartographics do
+                xml.projection projection_form.value
+              end
+            end
+          end
         end
 
-        def projection_form
-          @projection_form ||= forms&.find { |form| form.type == 'map projection' }
+        def carto_subject_attributes_for(form)
+          {
+            displayLabel: form.displayLabel,
+            authority: form.source&.code,
+            authorityURI: form.source&.uri,
+            valueURI: form.uri
+          }.compact
         end
 
         def hierarchical_geographic(subject)

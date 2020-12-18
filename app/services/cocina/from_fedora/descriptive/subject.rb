@@ -30,7 +30,8 @@ module Cocina
           altrepgroup_subject_nodes, other_subject_nodes = AltRepGroup.split(nodes: subject_nodes)
 
           altrepgroup_subject_nodes.map { |subject_nodes| build_parallel_subject(subject_nodes) } \
-            + other_subject_nodes.map { |subject_node| build_subject(subject_node) }.compact
+            + other_subject_nodes.map { |subject_node| build_subject(subject_node) }.compact \
+            + build_cartographics
         end
 
         private
@@ -168,10 +169,8 @@ module Cocina
           when 'geographicCode'
             attrs.merge(code: node.text, type: 'place', source: { code: node['authority'] })
           when 'cartographics'
-            coords = node.xpath('mods:coordinates', mods: DESC_METADATA_NS).first
-            return nil if coords.nil?
-
-            attrs.merge(value: coords.text, type: 'map coordinates', encoding: { value: 'DMS' })
+            # Cartographics are built separately
+            nil
           when 'Topic'
             Honeybadger.notify('[DATA ERROR] <subject> has <Topic>; normalized to "topic"', tags: 'data_error')
             attrs.merge(value: node.text, type: 'topic')
@@ -221,6 +220,17 @@ module Cocina
           attrs[:type] = 'time'
           attrs[:encoding] = { code: children_nodes.first['encoding'] }
           attrs
+        end
+
+        def build_cartographics
+          coordinates = subject_nodes.map do |subject_node|
+            coordinate = subject_node.xpath('mods:cartographics/mods:coordinates', mods: DESC_METADATA_NS).first&.content
+
+            next coordinate.delete_prefix('(').delete_suffix(')') if coordinate.present?
+
+            nil
+          end.compact.uniq
+          coordinates.map { |coordinate| { value: coordinate, type: 'map coordinates', encoding: { value: 'DMS' } } }
         end
       end
     end
