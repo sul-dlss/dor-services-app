@@ -133,6 +133,40 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  context 'with a role that has no URI' do
+    let(:xml) do
+      <<~XML
+        <name type="personal" authority="naf" xlink:href="http://id.loc.gov/authorities/names/n82087745">
+          <role>
+            <roleTerm>creator</roleTerm>
+          </role>
+          <namePart>Tirion, Isaak</namePart>
+        </name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          name: [
+            {
+              value: 'Tirion, Isaak',
+              source: {
+                code: 'naf'
+              }
+            }
+          ],
+          role: [
+            {
+              "value": 'creator'
+            }
+          ],
+          type: 'person'
+        }
+      ]
+    end
+  end
+
   context 'with translated name and roles' do
     let(:xml) do
       <<~XML
