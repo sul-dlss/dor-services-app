@@ -41,6 +41,40 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
       end
     end
 
+    context 'when there is a title with language' do
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            "value": 'Union des Forces de Changement du Togo',
+            "valueLanguage": {
+              "code": 'fre',
+              "source": {
+                "code": 'iso639-2b'
+              },
+              "valueScript": {
+                "code": 'Latn',
+                "source": {
+                  "code": 'iso15924'
+                }
+              }
+            }
+          )
+        ]
+      end
+
+      it 'creates the equivalent MODS' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo lang="fre" script="Latn">
+              <title>Union des Forces de Changement du Togo</title>
+              </titleInfo>
+          </mods>
+        XML
+      end
+    end
+
     context 'when it has a structured value' do
       let(:titles) do
         [

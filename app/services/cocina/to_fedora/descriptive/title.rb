@@ -176,6 +176,7 @@ module Cocina
             attrs[:type] = title.type
             attrs[:usage] = title.status
             attrs[:script] = title.valueLanguage&.valueScript&.code
+            attrs[:lang] = title.valueLanguage&.code
             attrs[:displayLabel] = title.displayLabel
           end.compact
         end
