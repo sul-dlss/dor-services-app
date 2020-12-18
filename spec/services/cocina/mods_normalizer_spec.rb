@@ -995,6 +995,28 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
+  context 'when normalizing tgm subject authority' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <subject authority="tgm">
+            <topic authority="tgm">Marine biology</topic>
+          </subject>
+        </mods>
+      XML
+    end
+
+    it 'changes tgm to lctgm' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <subject authority="lctgm">
+            <topic>Marine biology</topic>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
   context 'when normalizing physical location purl' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML

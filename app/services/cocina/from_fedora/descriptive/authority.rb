@@ -25,6 +25,11 @@ module Cocina
             return 'naf'
           end
 
+          if code == 'tgm'
+            Honeybadger.notify('[DATA ERROR] tgm authority code (should be lctgm)', tags: 'data_error')
+            return 'lctgm'
+          end
+
           if code == '#N/A'
             # This is not a fatal problem. Just warn.
             Honeybadger.notify('[DATA ERROR] "#N/A" authority code', tags: 'data_error')

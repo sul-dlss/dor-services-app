@@ -72,6 +72,35 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with tgm authority code' do
+    let(:xml) do
+      <<~XML
+        <subject authority="tgm" authorityURI="http://id.loc.gov/vocabulary/graphicMaterials" valueURI="http://id.loc.gov/vocabulary/graphicMaterials/tgm001818">
+          <topic>Celebrities</topic>
+        </subject>
+      XML
+    end
+
+    before do
+      allow(Honeybadger).to receive(:notify).once
+    end
+
+    it 'changes to lctgm and Honeybadger notifies' do
+      expect(build).to eq [
+        {
+          value: 'Celebrities',
+          type: 'topic',
+          uri: 'http://id.loc.gov/vocabulary/graphicMaterials/tgm001818',
+          source: {
+            code: 'lctgm',
+            uri: 'http://id.loc.gov/vocabulary/graphicMaterials'
+          }
+        }
+      ]
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] tgm authority code (should be lctgm)', tags: 'data_error')
+    end
+  end
+
   context 'with invalid authority code and no authorityURI' do
     let(:xml) do
       <<~XML

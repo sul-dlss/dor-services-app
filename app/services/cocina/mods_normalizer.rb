@@ -33,6 +33,7 @@ module Cocina
       normalize_subject_authority
       normalize_subject_authority_lcnaf
       normalize_subject_authority_naf
+      normalize_subject_authority_tgm
       normalize_subject_cartographics
       normalize_text_role_term
       normalize_role_term_authority
@@ -309,6 +310,12 @@ module Cocina
     def normalize_subject_authority_lcnaf
       ng_xml.root.xpath("//mods:*[@authority='lcnaf']", mods: MODS_NS).each do |node|
         node[:authority] = 'naf'
+      end
+    end
+
+    def normalize_subject_authority_tgm
+      ng_xml.root.xpath("//mods:*[@authority='tgm']", mods: MODS_NS).each do |node|
+        node[:authority] = 'lctgm'
       end
     end
 
