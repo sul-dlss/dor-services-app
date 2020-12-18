@@ -704,4 +704,27 @@ RSpec.describe Cocina::FromFedora::Descriptive::Access do
       )
     end
   end
+
+  # https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/256
+  context 'with a displayLabel' do
+    let(:xml) do
+      <<~XML
+        <accessCondition displayLabel="CC License Type" type='license'>CC by: CC BY Attribution</accessCondition>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq(
+        {
+          note: [
+            {
+              value: 'CC by: CC BY Attribution',
+              displayLabel: 'CC License Type',
+              type: 'license'
+            }
+          ]
+        }
+      )
+    end
+  end
 end
