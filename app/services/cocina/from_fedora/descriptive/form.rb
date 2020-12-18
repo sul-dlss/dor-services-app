@@ -34,23 +34,37 @@ module Cocina
         attr_reader :resource_element
 
         def add_subject_cartographics(forms)
-          cartographic_scale.each do |scale|
-            next if scale.text.blank?
+          carto_forms = []
 
-            forms << {
-              value: scale.text,
-              type: 'map scale'
-            }
+          resource_element.xpath('mods:subject[mods:cartographics]', mods: DESC_METADATA_NS).each do |subject_node|
+            subject_node.xpath('mods:cartographics/mods:scale', mods: DESC_METADATA_NS).each do |scale_node|
+              next if scale_node.text.blank?
+
+              carto_forms << {
+                value: scale_node.text,
+                type: 'map scale'
+              }
+            end
+
+            subject_node.xpath('mods:cartographics/mods:projection', mods: DESC_METADATA_NS).each do |projection_node|
+              next if projection_node.text.blank?
+
+              carto_forms << {
+                value: projection_node.text,
+                type: 'map projection',
+                displayLabel: subject_node['displayLabel'],
+                uri: ValueURI.sniff(subject_node['valueURI'])
+              }.tap do |attrs|
+                source = {
+                  code: subject_node['authority'],
+                  uri: subject_node['authorityURI']
+                }.compact
+                attrs[:source] = source if source.present?
+              end.compact
+            end
           end
 
-          cartographic_projection.each do |projection|
-            next if projection.text.blank?
-
-            forms << {
-              value: projection.text,
-              type: 'map projection'
-            }
-          end
+          forms.concat(carto_forms.uniq)
         end
 
         def add_genre(forms)
@@ -209,14 +223,6 @@ module Cocina
         # returns structured genres at the root and inside subjects, which are combined to form a single, structured Cocina element
         def structured_genre
           resource_element.xpath("mods:genre[@type and starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}')]", mods: DESC_METADATA_NS)
-        end
-
-        def cartographic_scale
-          resource_element.xpath('mods:subject/mods:cartographics/mods:scale', mods: DESC_METADATA_NS)
-        end
-
-        def cartographic_projection
-          resource_element.xpath('mods:subject/mods:cartographics/mods:projection', mods: DESC_METADATA_NS)
         end
       end
       # rubocop:enable Metrics/ClassLength

@@ -1542,4 +1542,94 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing cartographic coordinates' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <subject>
+            <cartographics>
+              <coordinates>(E 72°--E 148°/N 13°--N 18°)</coordinates>
+              <scale>1:22,000,000</scale>
+              <projection>Conic proj</projection>
+            </cartographics>
+          </subject>
+        </mods>
+      XML
+    end
+
+    it 'removes parentheses' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <subject>
+            <cartographics>
+              <coordinates>E 72°--E 148°/N 13°--N 18°</coordinates>
+              <scale>1:22,000,000</scale>
+              <projection>Conic proj</projection>
+            </cartographics>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing multiple cartographic subjects' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <subject>
+            <cartographics>
+              <scale>Scale not given.</scale>
+              <projection>Custom projection</projection>
+              <coordinates>(E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ)</coordinates>
+            </cartographics>
+          </subject>
+          <subject authority="EPSG" valueURI="http://opengis.net/def/crs/EPSG/0/4326" displayLabel="WGS84">
+            <cartographics>
+              <scale>Scale not given.</scale>
+              <projection>EPSG::4326</projection>
+              <coordinates>E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ</coordinates>
+            </cartographics>
+          </subject>
+          <relatedItem>
+            <subject>
+              <cartographics>
+                <scale>Scale given.</scale>
+                <projection>Custom projection</projection>
+                <coordinates>W 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ</coordinates>
+              </cartographics>
+            </subject>
+          </relatedItem>
+        </mods>
+      XML
+    end
+
+    it 'puts all subject/cartographics without authority together' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <subject authority="EPSG" valueURI="http://opengis.net/def/crs/EPSG/0/4326" displayLabel="WGS84">
+            <cartographics>
+              <projection>EPSG::4326</projection>
+            </cartographics>
+          </subject>
+          <subject>
+            <cartographics>
+              <scale>Scale not given.</scale>
+              <projection>Custom projection</projection>
+              <coordinates>E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ</coordinates>
+            </cartographics>
+          </subject>
+          <relatedItem>
+            <subject>
+              <cartographics>
+                <scale>Scale given.</scale>
+                <projection>Custom projection</projection>
+                <coordinates>W 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ</coordinates>
+              </cartographics>
+            </subject>
+          </relatedItem>
+        </mods>
+      XML
+    end
+  end
 end
