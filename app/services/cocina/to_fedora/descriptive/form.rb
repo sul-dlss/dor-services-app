@@ -70,9 +70,11 @@ module Cocina
             forms.each do |form|
               if form.note
                 form.note.each do |val|
-                  attributes = {}
-                  attributes[:displayLabel] = val.displayLabel
-                  xml.note val.value, attributes.compact
+                  attributes = {
+                    displayLabel: val.displayLabel,
+                    type: val.type
+                  }.compact
+                  xml.note val.value, attributes
                 end
               else
                 attributes = {}

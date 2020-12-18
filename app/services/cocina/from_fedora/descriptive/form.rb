@@ -147,8 +147,14 @@ module Cocina
 
         def add_note(forms, physical_description)
           physical_description.xpath('mods:note', mods: DESC_METADATA_NS).each do |node|
+            note = {
+              value: node.content,
+              displayLabel: node['displayLabel'],
+              type: node['type']
+            }.compact
+
             forms << {
-              note: [{ value: node.content, displayLabel: node['displayLabel'] }.compact]
+              note: [note]
             }
           end
         end

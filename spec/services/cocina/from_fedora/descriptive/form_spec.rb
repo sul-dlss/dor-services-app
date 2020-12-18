@@ -712,6 +712,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
             <extent>1 sheet</extent>
             <digitalOrigin>reformatted digital</digitalOrigin>
             <note displayLabel="Condition">Small tear at top right corner.</note>
+            <note displayLabel="Material" type="material">Paper</note>
+            <note displayLabel="Layout" type="layout">34 and 24 lines to a page</note>
+            <note displayLabel="Height (mm)" type="dimensions">210</note>
+            <note displayLabel="Width (mm)" type="dimensions">146</note>
+            <note displayLabel="Collation" type="collation">1(8) 2(10) 3(8) 4(8) 5 (two) || a(16) (wants 16).</note>
+            <note displayLabel="Writing" type="handNote">change of hand</note>
+            <note displayLabel="Foliation" type="foliation">ff. i + 1-51 + ii-iii</note>
           </physicalDescription>
         XML
       end
@@ -752,6 +759,69 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
               {
                 "value": 'Small tear at top right corner.',
                 "displayLabel": 'Condition'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: 'Paper',
+                displayLabel: 'Material',
+                type: 'material'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: '34 and 24 lines to a page',
+                displayLabel: 'Layout',
+                type: 'layout'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: '210',
+                displayLabel: 'Height (mm)',
+                type: 'dimensions'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: '146',
+                displayLabel: 'Width (mm)',
+                type: 'dimensions'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: '1(8) 2(10) 3(8) 4(8) 5 (two) || a(16) (wants 16).',
+                displayLabel: 'Collation',
+                type: 'collation'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: 'change of hand',
+                displayLabel: 'Writing',
+                type: 'handNote'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: 'ff. i + 1-51 + ii-iii',
+                displayLabel: 'Foliation',
+                type: 'foliation'
               }
             ]
           }
@@ -822,7 +892,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
                  <form authority="marcform">print</form>
                  <extent>v. ; 24 cm.</extent>
               </physicalDescription>
-           </relatedItem>        
+           </relatedItem>
           <physicalDescription>
             <form>mezzotints (prints)</form>
           </physicalDescription>
