@@ -21,7 +21,7 @@ module Cocina
           'succeeded by' => 'succeeding'
         }.freeze
         # @params [Nokogiri::XML::Builder] xml
-        # @params [Array<Cocina::Models::DescriptiveValue>] related_resources
+        # @params [Array<Cocina::Models::RelatedResource>] related_resources
         # @param [string] druid
         # @param [IdGenerator] id_generator
         def self.write(xml:, related_resources:, druid:, id_generator:)
@@ -30,24 +30,26 @@ module Cocina
 
         def initialize(xml:, related_resources:, druid:, id_generator:)
           @xml = xml
-          @related_resources = related_resources
+          @related_resources = Array(related_resources)
           @druid = druid
           @id_generator = id_generator
         end
 
         def write
-          Array(related_resources).each do |related|
-            other_type_note = other_type_note_for(related)
-            attributes = {}.tap do |attrs|
-              attrs[:type] = TYPES.fetch(related.type) if related.type
-              attrs[:displayLabel] = related.displayLabel
+          filtered_related_resources.each do |(attributes, new_related)|
+            xml.relatedItem attributes do
+              DescriptiveWriter.write(xml: xml, descriptive: new_related, druid: druid, id_generator: id_generator)
+            end
+          end
+        end
 
-              if other_type_note
-                attrs[:otherType] = other_type_note.value
-                attrs[:otherTypeURI] = other_type_note.uri
-                attrs[:otherTypeAuth] = other_type_note.source&.value
-              end
-            end.compact
+        private
+
+        attr_reader :xml, :related_resources, :druid, :id_generator
+
+        def filtered_related_resources
+          related_resources.map do |related|
+            other_type_note = other_type_note_for(related)
 
             # Filter out "other relation type"
             related_hash = related.to_h
@@ -59,15 +61,22 @@ module Cocina
 
             new_related = Cocina::Models::RelatedResource.new(related_hash.compact)
 
-            xml.relatedItem attributes do
-              DescriptiveWriter.write(xml: xml, descriptive: new_related, druid: druid, id_generator: id_generator)
-            end
-          end
+            [attributes_for(related, other_type_note), new_related]
+          end.compact
         end
 
-        private
+        def attributes_for(related, other_type_note)
+          {}.tap do |attrs|
+            attrs[:type] = TYPES.fetch(related.type) if related.type
+            attrs[:displayLabel] = related.displayLabel
 
-        attr_reader :xml, :related_resources, :druid, :id_generator
+            if other_type_note
+              attrs[:otherType] = other_type_note.value
+              attrs[:otherTypeURI] = other_type_note.uri
+              attrs[:otherTypeAuth] = other_type_note.source&.value
+            end
+          end.compact
+        end
 
         def other_type_note_for(related)
           return nil if related.note.nil?
