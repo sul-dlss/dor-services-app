@@ -68,7 +68,6 @@ module Cocina
             Honeybadger.notify('[DATA ERROR] missing name/namePart element', { tags: 'data_error' })
             return {}
           end
-
           {
             name: name_parts,
             type: type_for(name_node['type']),
@@ -80,7 +79,6 @@ module Cocina
           {
             note: build_notes(name_node),
             identifier: build_identifier(name_node)
-
           }.tap do |attrs|
             roles = build_roles(name_node)
             attrs[:role] = roles unless name.nil?
@@ -128,8 +126,9 @@ module Cocina
         end
 
         def authority_attrs_for(name_node)
+          Honeybadger.notify('[DATA ERROR] name has an xlink:href property', { tags: 'data_error' }) if name_node['xlink:href']
           {
-            uri: ValueURI.sniff(name_node['valueURI'])
+            uri: ValueURI.sniff(name_node['valueURI'] || name_node['xlink:href'])
           }.tap do |attrs|
             source = {
               code: Authority.normalize_code(name_node['authority']),
@@ -160,23 +159,18 @@ module Cocina
           end.compact.presence
         end
 
-        ROLE_CODE_XPATH = './mods:roleTerm[@type="code"]'
-        ROLE_TEXT_XPATH = './mods:roleTerm[@type="text"]'
-        ROLE_AUTHORITY_XPATH = './mods:roleTerm/@authority'
-        ROLE_AUTHORITY_URI_XPATH = './mods:roleTerm/@authorityURI'
-        ROLE_AUTHORITY_VALUE_XPATH = './mods:roleTerm/@valueURI'
         MARC_RELATOR_PIECE = 'id.loc.gov/vocabulary/relators'
 
         # shameless green
         # rubocop:disable Metrics/AbcSize
         def role_for(ng_role)
-          code = ng_role.xpath(ROLE_CODE_XPATH, mods: DESC_METADATA_NS).first
-          text = ng_role.xpath(ROLE_TEXT_XPATH, mods: DESC_METADATA_NS).first
+          code = ng_role.xpath('./mods:roleTerm[@type="code"]', mods: DESC_METADATA_NS).first
+          text = ng_role.xpath('./mods:roleTerm[@type="text"] | ./mods:roleTerm[not(@type)]', mods: DESC_METADATA_NS).first
           return if code.nil? && text.nil?
 
-          authority = ng_role.xpath(ROLE_AUTHORITY_XPATH, mods: DESC_METADATA_NS).first&.content
-          authority_uri = ng_role.xpath(ROLE_AUTHORITY_URI_XPATH, mods: DESC_METADATA_NS).first&.content
-          authority_value = ng_role.xpath(ROLE_AUTHORITY_VALUE_XPATH, mods: DESC_METADATA_NS).first&.content
+          authority = ng_role.xpath('./mods:roleTerm/@authority', mods: DESC_METADATA_NS).first&.content
+          authority_uri = ng_role.xpath('./mods:roleTerm/@authorityURI', mods: DESC_METADATA_NS).first&.content
+          authority_value = ng_role.xpath('./mods:roleTerm/@valueURI', mods: DESC_METADATA_NS).first&.content
 
           check_role_code(code, authority)
 

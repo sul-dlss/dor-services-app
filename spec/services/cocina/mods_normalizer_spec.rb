@@ -455,32 +455,62 @@ RSpec.describe Cocina::ModsNormalizer do
   end
 
   context 'when normalizing text roleTerm' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{mods_attributes}>
-          <name>
-            <namePart>Dunnett, Dorothy</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">Photographer</roleTerm>
-            </role>
-          </name>
-        </mods>
-      XML
+    context 'when the content has capital letters' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <name>
+              <namePart>Dunnett, Dorothy</namePart>
+              <role>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">Photographer</roleTerm>
+              </role>
+            </name>
+          </mods>
+        XML
+      end
+
+      it 'downcases text' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <name>
+              <namePart>Dunnett, Dorothy</namePart>
+              <role>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">photographer</roleTerm>
+              </role>
+            </name>
+          </mods>
+        XML
+      end
     end
 
-    it 'downcases text' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{mods_attributes}>
-          <name>
-            <namePart>Dunnett, Dorothy</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">photographer</roleTerm>
-            </role>
-          </name>
-        </mods>
-      XML
+    context 'when the role term has no type' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <name>
+              <namePart>Dunnett, Dorothy</namePart>
+              <role>
+                <roleTerm>photographer</roleTerm>
+              </role>
+            </name>
+          </mods>
+        XML
+      end
+
+      it 'add type="text"' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <name>
+              <namePart>Dunnett, Dorothy</namePart>
+              <role>
+                <roleTerm type="text">photographer</roleTerm>
+              </role>
+            </name>
+          </mods>
+        XML
+      end
     end
   end
 
@@ -1199,6 +1229,28 @@ RSpec.describe Cocina::ModsNormalizer do
     it 'removes name' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{mods_attributes}>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when name has xlink:href' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes} xmlns:xlink="http://www.w3.org/1999/xlink">
+          <name type="personal" authority="naf" xlink:href="http://id.loc.gov/authorities/names/n82087745">
+            <namePart>Tirion, Isaak</namePart>
+          </name>
+        </mods>
+      XML
+    end
+
+    it 'is converted to valueURI' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <name type="personal" authority="naf" valueURI="http://id.loc.gov/authorities/names/n82087745">
+            <namePart>Tirion, Isaak</namePart>
+          </name>
         </mods>
       XML
     end

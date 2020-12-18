@@ -189,6 +189,11 @@ module Cocina
       ng_xml.root.xpath("//mods:roleTerm[@type='text']", mods: MODS_NS).each do |role_term_node|
         role_term_node.content = role_term_node.content.downcase
       end
+
+      # Add the type="text" attribute to roleTerms that don't have a type (seen in MODS 3.3 druid:yy910cj7795)
+      ng_xml.root.xpath('//mods:roleTerm[not(@type)]', mods: MODS_NS).each do |role_term_node|
+        role_term_node['type'] = 'text'
+      end
     end
 
     def normalize_role_term_authority
@@ -340,6 +345,11 @@ module Cocina
     def normalize_name
       ng_xml.root.xpath('//mods:namePart[not(text())]', mods: MODS_NS).each(&:remove)
       ng_xml.root.xpath('//mods:name[not(mods:namePart)]', mods: MODS_NS).each(&:remove)
+
+      # Some MODS 3.3 items have xlink:href attributes. See https://argo.stanford.edu/view/druid:yy910cj7795
+      ng_xml.xpath('//mods:name[@xlink:href]', mods: MODS_NS, xlink: 'http://www.w3.org/1999/xlink').each do |node|
+        node['valueURI'] = node.remove_attribute('href').value
+      end
     end
 
     def normalize_empty_titles
