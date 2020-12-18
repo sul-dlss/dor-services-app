@@ -131,26 +131,32 @@ module Cocina
       default_carto_subject_node << default_carto_node
 
       carto_subject_nodes.each do |carto_subject_node|
-        carto_nodes = carto_subject_node.xpath('mods:cartographics', mods: MODS_NS)
-        carto_nodes.each do |carto_node|
-          child_nodes = if carto_subject_node['authority'] || carto_subject_node['authorityURI'] || carto_subject_node['valueURI']
-                          # Move scale and coordinates to default carto subject.
-                          carto_node.xpath('mods:scale', mods: MODS_NS) + carto_node.xpath('mods:coordinates', mods: MODS_NS)
-                        else
-                          # Merge all into default carto_subject.
-                          carto_node.elements
-                        end
-
-          child_nodes.each do |child_node|
-            child_node.remove
-            default_carto_node << child_node unless child_node_exists?(child_node, default_carto_node)
-          end
-          carto_node.remove if carto_node.elements.empty?
+        carto_subject_node.xpath('mods:cartographics', mods: MODS_NS).each do |carto_node|
+          normalize_cartographic_node(carto_node, carto_subject_node, default_carto_node)
         end
         carto_subject_node.remove if carto_subject_node.elements.empty?
       end
 
       root_node << default_carto_subject_node if default_carto_node.elements.present?
+    end
+
+    # Normalizes a single cartographic node
+    def normalize_cartographic_node(carto_node, carto_subject_node, default_carto_node)
+      child_nodes = if carto_subject_node['authority'] || carto_subject_node['authorityURI'] || carto_subject_node['valueURI']
+                      # Move scale and coordinates to default carto subject.
+                      carto_node.xpath('mods:scale', mods: MODS_NS) + carto_node.xpath('mods:coordinates', mods: MODS_NS)
+                    else
+                      # Merge all into default carto_subject.
+                      carto_node.elements
+                    end
+
+      child_nodes.each do |child_node|
+        child_node.remove
+        next if child_node.children.blank? # skip empty nodes
+
+        default_carto_node << child_node unless child_node_exists?(child_node, default_carto_node)
+      end
+      carto_node.remove if carto_node.elements.empty?
     end
 
     def child_node_exists?(child_node, parent_node)

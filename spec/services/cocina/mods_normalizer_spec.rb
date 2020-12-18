@@ -246,30 +246,53 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     context 'when normalizing single cartographics' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{mods_attributes}>
-            <subject>
-              <cartographics>
-                <scale>Scale 1:100,000 :</scale>
-                <projection>universal transverse Mercator proj.</projection>
-              </cartographics>
-            </subject>
-          </mods>
-        XML
+      context 'with child nodes' do
+        let(:mods_ng_xml) do
+          Nokogiri::XML <<~XML
+            <mods #{mods_attributes}>
+              <subject>
+                <cartographics>
+                  <scale>Scale 1:100,000 :</scale>
+                  <projection>universal transverse Mercator proj.</projection>
+                </cartographics>
+              </subject>
+            </mods>
+          XML
+        end
+
+        it 'returns the single node' do
+          expect(normalized_ng_xml).to be_equivalent_to <<~XML
+            <mods #{mods_attributes}>
+              <subject>
+                <cartographics>
+                  <scale>Scale 1:100,000 :</scale>
+                  <projection>universal transverse Mercator proj.</projection>
+                </cartographics>
+              </subject>
+            </mods>
+          XML
+        end
       end
 
-      it 'returns the single node' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{mods_attributes}>
-            <subject>
-              <cartographics>
-                <scale>Scale 1:100,000 :</scale>
-                <projection>universal transverse Mercator proj.</projection>
-              </cartographics>
-            </subject>
-          </mods>
-        XML
+      context 'with empty child nodes' do
+        let(:mods_ng_xml) do
+          Nokogiri::XML <<~XML
+            <mods #{mods_attributes}>
+              <subject>
+                <cartographics>
+                  <scale/>
+                </cartographics>
+              </subject>
+            </mods>
+          XML
+        end
+
+        it 'removes the empty node' do
+          expect(normalized_ng_xml).to be_equivalent_to <<~XML
+            <mods #{mods_attributes}>
+            </mods>
+          XML
+        end
       end
     end
   end
