@@ -3,8 +3,8 @@
 module Cocina
   module FromFedora
     class Descriptive
-      # Maps locations
-      class Location
+      # Maps access conditions
+      class Access
         PURL_REGEX = %r{^https?://purl.stanford.edu/}.freeze
 
         ACCESS_CONDITION_TYPES = {

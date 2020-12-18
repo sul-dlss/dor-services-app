@@ -203,7 +203,7 @@ module Cocina
 
       location_nodes.each do |location_node|
         location_url_nodes = location_node.xpath('mods:url', mods: MODS_NS)
-        location_url_nodes.select { |url_node| Cocina::FromFedora::Descriptive::Location::PURL_REGEX.match(url_node.text) }.each do |purl_node|
+        location_url_nodes.select { |url_node| Cocina::FromFedora::Descriptive::Access::PURL_REGEX.match(url_node.text) }.each do |purl_node|
           purl_node[:usage] = 'primary display' if !any_url_primary_usage && purl_node.text.ends_with?(druid.delete_prefix('druid:'))
           purl_node.delete('displayLabel') if purl_node[:displayLabel] == 'electronic resource' && purl_node[:usage] == 'primary display'
         end
