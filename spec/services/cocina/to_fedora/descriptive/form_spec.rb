@@ -615,10 +615,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
             }
           ),
           Cocina::Models::DescriptiveValue.new(
-            "note": [
+            note: [
               {
-                "value": 'Small tear at top right corner.',
-                "displayLabel": 'Condition'
+                value: 'Small tear at top right corner.',
+                displayLabel: 'Condition',
+                type: 'condition'
               }
             ]
           ),
@@ -662,7 +663,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
               <internetMediaType>image/jpeg</internetMediaType>
               <extent>1 sheet</extent>
               <digitalOrigin>reformatted digital</digitalOrigin>
-              <note displayLabel="Condition">Small tear at top right corner.</note>
+              <note displayLabel="Condition" type="condition">Small tear at top right corner.</note>
               <form type="media" authority="rdamedia">unmediated</form>
               <form type="carrier" authority="rdacarrier">volume</form>
               <form type="technique">estampe</form>
