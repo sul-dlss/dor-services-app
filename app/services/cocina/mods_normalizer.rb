@@ -340,6 +340,11 @@ module Cocina
     def normalize_name
       ng_xml.root.xpath('//mods:namePart[not(text())]', mods: MODS_NS).each(&:remove)
       ng_xml.root.xpath('//mods:name[not(mods:namePart)]', mods: MODS_NS).each(&:remove)
+
+      # Some MODS 3.3 items have xlink:href attributes. See https://argo.stanford.edu/view/druid:yy910cj7795
+      ng_xml.xpath('//mods:name[@xlink:href]', mods: MODS_NS, xlink: 'http://www.w3.org/1999/xlink').each do |node|
+        node['valueURI'] = node.remove_attribute('href').value
+      end
     end
 
     def normalize_empty_titles

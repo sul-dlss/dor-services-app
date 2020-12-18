@@ -126,8 +126,9 @@ module Cocina
         end
 
         def authority_attrs_for(name_node)
+          Honeybadger.notify('[DATA ERROR] name has an xlink:href property', { tags: 'data_error' }) if name_node['xlink:href']
           {
-            uri: ValueURI.sniff(name_node['valueURI'])
+            uri: ValueURI.sniff(name_node['valueURI'] || name_node['xlink:href'])
           }.tap do |attrs|
             source = {
               code: Authority.normalize_code(name_node['authority']),

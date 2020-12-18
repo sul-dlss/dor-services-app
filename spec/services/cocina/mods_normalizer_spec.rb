@@ -1204,6 +1204,28 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
+  context 'when name has xlink:href' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes} xmlns:xlink="http://www.w3.org/1999/xlink">
+          <name type="personal" authority="naf" xlink:href="http://id.loc.gov/authorities/names/n82087745">
+            <namePart>Tirion, Isaak</namePart>
+          </name>
+        </mods>
+      XML
+    end
+
+    it 'is converted to valueURI' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <name type="personal" authority="naf" valueURI="http://id.loc.gov/authorities/names/n82087745">
+            <namePart>Tirion, Isaak</namePart>
+          </name>
+        </mods>
+      XML
+    end
+  end
+
   context 'when normalizing empty title' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML

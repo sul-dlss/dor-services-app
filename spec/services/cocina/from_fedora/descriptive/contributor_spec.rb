@@ -133,7 +133,18 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
-  context 'with a role that has no URI' do
+  context 'with a role that has no URI and has xlink uris from MODS 3.3' do
+    # MODS 3.3 header from druid:yy910cj7795
+    let(:ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
+          xmlns="http://www.loc.gov/mods/v3" version="3.3"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+          #{xml}
+        </mods>
+      XML
+    end
+
     let(:xml) do
       <<~XML
         <name type="personal" authority="naf" xlink:href="http://id.loc.gov/authorities/names/n82087745">
@@ -151,6 +162,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
           name: [
             {
               value: 'Tirion, Isaak',
+              uri: 'http://id.loc.gov/authorities/names/n82087745',
               source: {
                 code: 'naf'
               }
