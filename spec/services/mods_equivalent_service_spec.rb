@@ -242,6 +242,94 @@ RSpec.describe ModsEquivalentService do
     end
   end
 
+  context 'when matching altRepGroup with same id in relatedItem' do
+    let(:mods_ng_xml1) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <note lang="eng" altRepGroup="1">This is a note.</note>
+          <note lang="fre" altRepGroup="1">C'est une note.</note>
+          <relatedItem>
+            <note lang="eng" altRepGroup="1">This is a related note.</note>
+            <note lang="fre" altRepGroup="1">C'est une related note.</note>
+          </relatedItem>
+        </mods>
+      XML
+    end
+
+    let(:mods_ng_xml2) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <note lang="eng" altRepGroup="2">This is a note.</note>
+          <note lang="fre" altRepGroup="2">C'est une note.</note>
+          <relatedItem>
+            <note lang="eng" altRepGroup="1">This is a related note.</note>
+            <note lang="fre" altRepGroup="1">C'est une related note.</note>
+          </relatedItem>
+        </mods>
+      XML
+    end
+
+    it 'returns success' do
+      expect(result.success?).to be(true)
+    end
+
+    it 'returns true' do
+      expect(bool_result).to be(true)
+    end
+  end
+
+  context 'when mismatched altRepGroup with same id in relatedItem' do
+    let(:mods_ng_xml1) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <note lang="eng" altRepGroup="1">This is a note.</note>
+          <note lang="fre" altRepGroup="1">C'est une note.</note>
+          <relatedItem>
+            <note lang="eng" altRepGroup="1">This is not a related note.</note>
+            <note lang="fre" altRepGroup="1">C'est une related note.</note>
+          </relatedItem>
+        </mods>
+      XML
+    end
+
+    let(:mods_ng_xml2) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <note lang="eng" altRepGroup="2">This is a note.</note>
+          <note lang="fre" altRepGroup="2">C'est une note.</note>
+          <relatedItem>
+            <note lang="eng" altRepGroup="1">This is a related note.</note>
+            <note lang="fre" altRepGroup="1">C'est une related note.</note>
+          </relatedItem>
+        </mods>
+      XML
+    end
+
+    it 'returns failure' do
+      expect(result.failure?).to be(true)
+    end
+
+    it 'returns diff' do
+      expect(result.failure.size).to eq(1)
+      expect(result.failure.first.mods_node1.to_s).to eq("<relatedItem>\n    <note lang=\"eng\" altRepGroup=\"1\">This is not a related note.</note>\n    " \
+"<note lang=\"fre\" altRepGroup=\"1\">C'est une related note.</note>\n  </relatedItem>")
+      expect(result.failure.first.mods_node2.to_s).to eq("<relatedItem>\n    <note lang=\"eng\" altRepGroup=\"1\">This is a related note.</note>\n    " \
+"<note lang=\"fre\" altRepGroup=\"1\">C'est une related note.</note>\n  </relatedItem>")
+    end
+
+    it 'returns false' do
+      expect(bool_result).to be(false)
+    end
+  end
+
   context 'when matching nameTitleGroup with different ids' do
     let(:mods_ng_xml1) do
       Nokogiri::XML <<~XML
@@ -371,6 +459,122 @@ RSpec.describe ModsEquivalentService do
 
     it 'returns false' do
       expect(bool_result).to be(false)
+    end
+  end
+
+  context 'when matching nameTitleGroup with same id in relatedItem' do
+    let(:mods_ng_xml1) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo nameTitleGroup="0">
+            <title>Hamlet</title>
+          </titleInfo>
+          <name nameTitleGroup="0">
+            <namePart>Shakespeare, William, 1564-1616</namePart>
+          </name>
+          <relatedItem>
+            <titleInfo nameTitleGroup="0">
+              <title>Romeo and Juliet</title>
+            </titleInfo>
+            <name nameTitleGroup="0">
+              <namePart>Shakespeare, William, 1564-1616</namePart>
+            </name>
+          </relatedItem>
+        </mods>
+      XML
+    end
+
+    let(:mods_ng_xml2) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo nameTitleGroup="1">
+            <title>Hamlet</title>
+          </titleInfo>
+          <name nameTitleGroup="1">
+            <namePart>Shakespeare, William, 1564-1616</namePart>
+          </name>
+          <relatedItem>
+            <titleInfo nameTitleGroup="2">
+              <title>Romeo and Juliet</title>
+            </titleInfo>
+            <name nameTitleGroup="2">
+              <namePart>Shakespeare, William, 1564-1616</namePart>
+            </name>
+          </relatedItem>
+        </mods>
+      XML
+    end
+
+    it 'returns success' do
+      expect(result.success?).to be(true)
+    end
+
+    it 'returns true' do
+      expect(bool_result).to be(true)
+    end
+  end
+
+  context 'when mismatched nameTitleGroup with same id in relatedItem' do
+    let(:mods_ng_xml1) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo nameTitleGroup="0">
+            <title>Hamlet</title>
+          </titleInfo>
+          <name nameTitleGroup="0">
+            <namePart>Shakespeare, William, 1564-1616</namePart>
+          </name>
+          <relatedItem>
+            <titleInfo nameTitleGroup="0">
+              <title>Romeo and Juliet</title>
+            </titleInfo>
+            <name nameTitleGroup="0">
+              <namePart>Shakespeare, William, 1564-1616</namePart>
+            </name>
+          </relatedItem>
+        </mods>
+      XML
+    end
+
+    let(:mods_ng_xml2) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo nameTitleGroup="1">
+            <title>Hamlet</title>
+          </titleInfo>
+          <name nameTitleGroup="1">
+            <namePart>Shakespeare, William, 1564-1616</namePart>
+          </name>
+          <relatedItem>
+            <titleInfo nameTitleGroup="2">
+              <title>Hamlet</title>
+            </titleInfo>
+            <name nameTitleGroup="2">
+              <namePart>Shakespeare, William, 1564-1616</namePart>
+            </name>
+          </relatedItem>
+        </mods>
+      XML
+    end
+
+    it 'returns failure' do
+      expect(result.failure?).to be(true)
+    end
+
+    it 'returns diff' do
+      expect(result.failure.size).to eq(1)
+      expect(result.failure.first.mods_node1.to_s).to eq("<relatedItem>\n    <titleInfo nameTitleGroup=\"0\">\n      <title>Romeo and Juliet</title>\n    " \
+"</titleInfo>\n    <name nameTitleGroup=\"0\">\n      <namePart>Shakespeare, William, 1564-1616</namePart>\n    </name>\n  </relatedItem>")
+      expect(result.failure.first.mods_node2.to_s).to eq("<relatedItem>\n    <titleInfo nameTitleGroup=\"2\">\n      <title>Hamlet</title>\n    " \
+"</titleInfo>\n    <name nameTitleGroup=\"2\">\n      <namePart>Shakespeare, William, 1564-1616</namePart>\n    </name>\n  </relatedItem>")
     end
   end
 
