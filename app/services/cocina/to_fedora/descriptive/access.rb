@@ -3,8 +3,8 @@
 module Cocina
   module ToFedora
     class Descriptive
-      # Maps location from cocina to MODS XML
-      class Location
+      # Maps the Access subschema from cocina to MODS XML
+      class Access
         # @params [Nokogiri::XML::Builder] xml
         # @params [Cocina::Models::Access] access
         # @params [string] purl
