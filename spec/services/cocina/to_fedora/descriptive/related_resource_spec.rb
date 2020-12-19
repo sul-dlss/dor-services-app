@@ -361,4 +361,38 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
       XML
     end
   end
+
+  context 'when it has a purl' do
+    let(:resources) do
+      [
+        Cocina::Models::RelatedResource.new(
+          type: 'has version',
+          displayLabel: 'Associated Essay',
+          title: [
+            {
+              value: 'essay68buildingGrandCanyonPart3fredHarveyCo.pdf'
+            }
+          ],
+          purl: 'http://purl.stanford.edu/vt726fn1198'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <relatedItem type="otherVersion" displayLabel="Associated Essay">
+            <titleInfo>
+              <title>essay68buildingGrandCanyonPart3fredHarveyCo.pdf</title>
+            </titleInfo>
+            <location>
+              <url usage="primary display">http://purl.stanford.edu/vt726fn1198</url>
+            </location>
+          </relatedItem>
+        </mods>
+      XML
+    end
+  end
 end

@@ -649,7 +649,43 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
-  context 'when normalizing relatedType with type and otherType' do
+  context 'when normalizing relatedItem with single PURL location/url' do
+    context 'when normalizing PURL' do
+      let(:druid) { 'druid:bw502ns3302' }
+
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <relatedItem type="otherVersion" displayLabel="Associated Essay">
+              <titleInfo>
+                <title>essay68buildingGrandCanyonPart3fredHarveyCo.pdf</title>
+              </titleInfo>
+              <location>
+                <url>http://purl.stanford.edu/bw502ns3302</url>
+              </location>
+            </relatedItem>
+          </mods>
+        XML
+      end
+
+      it 'adds usage' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <relatedItem type="otherVersion" displayLabel="Associated Essay">
+              <titleInfo>
+                <title>essay68buildingGrandCanyonPart3fredHarveyCo.pdf</title>
+              </titleInfo>
+              <location>
+                <url usage="primary display">http://purl.stanford.edu/bw502ns3302</url>
+              </location>
+            </relatedItem>
+          </mods>
+        XML
+      end
+    end
+  end
+
+  context 'when normalizing relatedItem with type and otherType' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{mods_attributes}>
