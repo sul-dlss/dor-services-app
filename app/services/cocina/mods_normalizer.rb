@@ -467,15 +467,19 @@ module Cocina
 
     def normalize_origin_info_split
       # Split a single originInfo into multiple.
-      # Currently, this is splitting out copyright dates from originInfos with date issued. However, probably are other cases.
-      ng_xml.root.xpath('//mods:originInfo[mods:dateIssued and mods:copyrightDate]', mods: MODS_NS).each do |origin_info_node|
+      split_origin_info('copyrightDate', 'copyright notice')
+      split_origin_info('dateCaptured', 'capture')
+    end
+
+    def split_origin_info(split_node_name, event_type)
+      ng_xml.root.xpath("//mods:originInfo[mods:dateIssued and mods:#{split_node_name}]", mods: MODS_NS).each do |origin_info_node|
         new_origin_info_node = Nokogiri::XML::Node.new('originInfo', Nokogiri::XML(nil))
-        new_origin_info_node['eventType'] = 'copyright notice'
+        new_origin_info_node['eventType'] = event_type
         origin_info_node.parent << new_origin_info_node
-        copyright_nodes = origin_info_node.xpath('mods:copyrightDate', mods: MODS_NS)
-        copyright_nodes.each do |copyright_node|
-          copyright_node.remove
-          new_origin_info_node << copyright_node
+        split_nodes = origin_info_node.xpath("mods:#{split_node_name}", mods: MODS_NS)
+        split_nodes.each do |split_node|
+          split_node.remove
+          new_origin_info_node << split_node
         end
       end
     end
