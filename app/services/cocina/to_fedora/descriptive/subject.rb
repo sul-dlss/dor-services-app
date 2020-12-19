@@ -160,13 +160,10 @@ module Cocina
         end
 
         def write_topic(subject, is_parallel: false, is_basic: false)
+          topic_attributes = topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic)
           case subject.type
-          when 'person'
-            xml.name topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic).merge(type: 'personal') do
-              xml.namePart subject.value
-            end
           when 'title'
-            xml.titleInfo topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic) do
+            xml.titleInfo topic_attributes do
               xml.title subject.value
             end
           when 'place'
@@ -174,7 +171,7 @@ module Cocina
           else
             xml.public_send(TAG_NAME.fetch(subject.type, :topic),
                             subject.value,
-                            topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic))
+                            topic_attributes)
           end
         end
 
@@ -258,9 +255,11 @@ module Cocina
         end
 
         def person(subject)
-          subject_attributes = topic_attributes_for(subject).tap do |attrs|
-            attrs[:type] = name_type_for(subject.type)
-          end.compact
+          subject_attributes = topic_attributes_for(subject)
+                               .merge(
+                                 type: name_type_for(subject.type),
+                                 authority: subject.source&.code
+                               ).compact
 
           xml.name subject_attributes do
             xml.namePart subject.value
