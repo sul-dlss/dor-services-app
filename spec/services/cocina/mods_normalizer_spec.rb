@@ -730,6 +730,46 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
+  context 'when normalizing unmatches nameTitleGroups' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <titleInfo usage="primary" nameTitleGroup="1">
+            <title>Slaughterhouse-Five</title>
+          </titleInfo>
+          <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="0">
+            <title>Hamlet</title>
+          </titleInfo>
+          <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="0">
+            <namePart>Shakespeare, William, 1564-1616</namePart>
+          </name>
+          <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="3">
+            <namePart>Vonnegut, Kurt</namePart>
+          </name>
+        </mods>
+      XML
+    end
+
+    it 'removes unmatched' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <titleInfo usage="primary">
+            <title>Slaughterhouse-Five</title>
+          </titleInfo>
+          <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="0">
+            <title>Hamlet</title>
+          </titleInfo>
+          <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="0">
+            <namePart>Shakespeare, William, 1564-1616</namePart>
+          </name>
+          <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332">
+            <namePart>Vonnegut, Kurt</namePart>
+          </name>
+        </mods>
+      XML
+    end
+  end
+
   context 'when normalizing empty attributes' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML

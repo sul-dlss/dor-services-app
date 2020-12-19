@@ -41,6 +41,7 @@ module Cocina
       normalize_name
       normalize_related_item_other_type
       normalize_unmatched_altrepgroup
+      normalize_unmatched_nametitlegroup
       normalize_xml_space
       normalize_language_term_type
       normalize_geo_purl
@@ -272,17 +273,25 @@ module Cocina
     end
 
     def normalize_unmatched_altrepgroup
-      altrepgroups = {}
-      ng_xml.root.xpath('//mods:*[@altRepGroup]', mods: MODS_NS).each do |node|
-        altrepgroup = node['altRepGroup']
-        altrepgroups[altrepgroup] = [] unless altrepgroups.include?(altrepgroup)
-        altrepgroups[altrepgroup] << node
+      remove_unmatched('altRepGroup')
+    end
+
+    def normalize_unmatched_nametitlegroup
+      remove_unmatched('nameTitleGroup')
+    end
+
+    def remove_unmatched(attr_name)
+      ids = {}
+      ng_xml.root.xpath("//mods:*[@#{attr_name}]", mods: MODS_NS).each do |node|
+        id = node[attr_name]
+        ids[id] ||= []
+        ids[id] << node
       end
 
-      altrepgroups.each do |_altrepgroup, nodes|
+      ids.each_value do |nodes|
         next unless nodes.size == 1
 
-        nodes.first.delete('altRepGroup')
+        nodes.first.delete(attr_name)
       end
     end
 
