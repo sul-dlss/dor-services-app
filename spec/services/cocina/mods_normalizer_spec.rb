@@ -1566,6 +1566,41 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
+  context 'when normalizing originInfos with captured dates' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">tnu</placeTerm>
+            </place>
+            <dateIssued encoding="marc">2016</dateIssued>
+            <dateCaptured encoding="iso8601" point="start">20141010</dateCaptured>
+            <dateCaptured encoding="iso8601" point="end">20141012</dateCaptured>
+            <issuance>monographic</issuance>
+          </originInfo>
+      XML
+    end
+
+    it 'moves copyright into its own originInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">tnu</placeTerm>
+            </place>
+            <dateIssued encoding="marc">2016</dateIssued>
+            <issuance>monographic</issuance>
+          </originInfo>
+          <originInfo eventType="capture">
+            <dateCaptured encoding="iso8601" point="start">20141010</dateCaptured>
+            <dateCaptured encoding="iso8601" point="end">20141012</dateCaptured>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
   context 'when normalizing cartographic coordinates' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
