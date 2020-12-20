@@ -164,8 +164,7 @@ module Cocina
             name_attrs = NameBuilder.build(name_elements: [node], add_default_type: true)[:name]&.first
             name_attrs&.merge(attrs)
           when 'titleInfo'
-            query = node.xpath('mods:title', mods: DESC_METADATA_NS)
-            attrs.merge(value: query.first.text, type: 'title')
+            attrs.merge(TitleBuilder.build(title_info_element: node)).merge(type: 'title')
           when 'geographicCode'
             attrs.merge(code: node.text, type: 'place', source: { code: node['authority'] })
           when 'cartographics'

@@ -12,27 +12,29 @@ module Cocina
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValueRequired>] titles
         # @params [Array<Cocina::Models::DescriptiveValueRequired>] contributors
+        # @params [Hash] additional_attrs for title
         # @params [IdGenerator] id_generator
-        def self.write(xml:, titles:, contributors:, id_generator:)
-          new(xml: xml, titles: titles, contributors: contributors, id_generator: id_generator).write
+        def self.write(xml:, titles:, id_generator:, contributors: [], additional_attrs: {})
+          new(xml: xml, titles: titles, contributors: contributors, additional_attrs: additional_attrs, id_generator: id_generator).write
         end
 
-        def initialize(xml:, titles:, contributors:, id_generator:)
+        def initialize(xml:, titles:, additional_attrs:, contributors: [], id_generator: {})
           @xml = xml
           @titles = titles
           @contributors = contributors
           @name_title_groups = {}
+          @additional_attrs = additional_attrs
           @id_generator = id_generator
         end
 
         def write
           titles.each do |title|
             if title.parallelValue
-              write_parallel(title: title)
+              write_parallel(title: title, title_info_attrs: additional_attrs.dup)
             else
               title_info_attrs = {
                 nameTitleGroup: name_title_group_for(title)
-              }.compact
+              }.compact.merge(additional_attrs)
               if title.structuredValue
                 write_structured(title: title, title_info_attrs: title_info_attrs)
               elsif title.value
@@ -48,7 +50,7 @@ module Cocina
 
         private
 
-        attr_reader :xml, :titles, :contributors, :name_title_groups, :id_generator
+        attr_reader :xml, :titles, :contributors, :name_title_groups, :id_generator, :additional_attrs
 
         def write_basic(title:, title_info_attrs: {})
           title_info_attrs = title_info_attrs_for(title).merge(title_info_attrs)
@@ -58,11 +60,11 @@ module Cocina
           end
         end
 
-        def write_parallel(title:)
+        def write_parallel(title:, title_info_attrs: {})
           title_alt_rep_group = id_generator.next_altrepgroup
 
           title.parallelValue.each do |parallel_title|
-            title_info_attrs = { altRepGroup: title_alt_rep_group }
+            title_info_attrs[:altRepGroup] = title_alt_rep_group
             title_info_attrs[:lang] = parallel_title.valueLanguage.code if parallel_title.valueLanguage&.code
             if title.type == 'translated'
               if title.status == 'primary'
@@ -172,13 +174,13 @@ module Cocina
         end
 
         def title_info_attrs_for(title)
-          {}.tap do |attrs|
-            attrs[:type] = title.type
-            attrs[:usage] = title.status
-            attrs[:script] = title.valueLanguage&.valueScript&.code
-            attrs[:lang] = title.valueLanguage&.code
-            attrs[:displayLabel] = title.displayLabel
-          end.compact
+          {
+            type: title.type,
+            usage: title.status,
+            script: title.valueLanguage&.valueScript&.code,
+            lang: title.valueLanguage&.code,
+            displayLabel: title.displayLabel
+          }.compact
         end
       end
     end

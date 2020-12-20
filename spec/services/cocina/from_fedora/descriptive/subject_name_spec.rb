@@ -547,6 +547,62 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  # From druid:mt538yc4849
+  context 'with a name-title subject where title has partNumber' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh">
+          <name type="corporate">
+            <namePart>California.</namePart>
+            <namePart>Sect. 7570.</namePart>
+          </name>
+          <titleInfo>
+            <title>Government Code</title>
+            <partNumber>Sect. 7570</partNumber>
+          </titleInfo>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "source": {
+            "code": 'lcsh'
+          },
+          "structuredValue": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'California.',
+                  "type": 'name'
+                },
+                {
+                  "value": 'Sect. 7570.',
+                  "type": 'name'
+                }
+              ],
+              "type": 'organization'
+            },
+            {
+              "structuredValue": [
+                {
+                  "value": 'Government Code',
+                  "type": 'main title'
+                },
+                {
+                  "value": 'Sect. 7570',
+                  "type": 'part number'
+                }
+              ],
+              "type": 'title'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
   context 'without name type' do
     before do
       allow(Honeybadger).to receive(:notify)
