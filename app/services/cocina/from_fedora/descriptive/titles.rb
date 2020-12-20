@@ -79,47 +79,10 @@ module Cocina
             if node['nameTitleGroup']
               structured_name(node: node, display_types: display_types)
             else
-              attrs = title_info_to_simple_or_structured(node)
+              attrs = TitleBuilder.build(title_info_element: node)
               attrs.present? ? attrs.merge(common_attributes(node, display_types: display_types)) : nil
             end
           end.compact
-        end
-
-        # @param [Nokogiri::XML::Element] title_info the titleInfo node
-        def title_info_to_simple_or_structured(title_info)
-          # Find all the child nodes that have text
-          return nil if title_info.children.empty?
-
-          children = title_info.xpath('./*[child::node()[self::text()]]')
-          if children.empty?
-            Honeybadger.notify('[DATA ERROR] Empty title node', { tags: 'data_error' })
-            return nil
-          end
-
-          # If a displayLabel only with no title text element
-          # Note: this is an error condition,
-          # exceptions documented at: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_value_dependencies.txt
-          return {} if children.map(&:name) == []
-
-          # Is this a basic title or a title with parts
-          return simple_value(title_info) if simple_title?(children)
-
-          { structuredValue: structured_value(children), note: note(children) }.compact
-        end
-
-        def simple_title?(children)
-          return false if children.map(&:name) != ['title'] || children.size > 1
-
-          # There is only one child and it's a title element. If it has the
-          # @type attr set, it should not be treated as a simple value
-          children.first[:type].nil?
-        end
-
-        # @param [Nokogiri::XML::Element] node the titleInfo node
-        def simple_value(node)
-          value = node.xpath('./mods:title', mods: DESC_METADATA_NS).text
-
-          { value: value }
         end
 
         def structured_name(node:, display_types: true)
@@ -134,7 +97,7 @@ module Cocina
 
           {
             structuredValue: [
-              { type: 'title' }.merge(title_info_to_simple_or_structured(node))
+              { type: 'title' }.merge(TitleBuilder.build(title_info_element: node))
             ].concat(structured_values)
           }.merge(common_attributes(node, display_types: display_types))
         end
@@ -161,27 +124,6 @@ module Cocina
             attrs[:standard] = { value: title_info['transliteration'] } if title_info['transliteration']
             attrs[:displayLabel] = title_info['displayLabel']
           end.compact
-        end
-
-        # @param [Nokogiri::XML::NodeSet] child_nodes the children of the titleInfo
-        def structured_value(child_nodes)
-          child_nodes.map do |node|
-            { value: node.text, type: TYPES[node.name] }
-          end
-        end
-
-        def note(child_nodes)
-          unsortable = child_nodes.select { |node| node.name == 'nonSort' }
-          return nil if unsortable.empty?
-
-          count = unsortable.sum do |node|
-            add = node.text.end_with?('-') || node.text.end_with?("'") ? 0 : 1
-            node.text.size + add
-          end
-          [{
-            "value": count.to_s,  # cast to String until cocina-models 0.40.0 is used. See https://github.com/sul-dlss/cocina-models/pull/146
-            "type": 'nonsorting character count'
-          }]
         end
       end
     end

@@ -709,4 +709,64 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       XML
     end
   end
+
+  # From druid:mt538yc4849
+  context 'with a name-title subject where title has partNumber' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "source": {
+            "code": 'lcsh'
+          },
+          "structuredValue": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'California.',
+                  "type": 'name'
+                },
+                {
+                  "value": 'Sect. 7570.',
+                  "type": 'name'
+                }
+              ],
+              "type": 'organization'
+            },
+            {
+              "structuredValue": [
+                {
+                  "value": 'Government Code',
+                  "type": 'main title'
+                },
+                {
+                  "value": 'Sect. 7570',
+                  "type": 'part number'
+                }
+              ],
+              "type": 'title'
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject authority="lcsh">
+            <name type="corporate">
+              <namePart>California.</namePart>
+              <namePart>Sect. 7570.</namePart>
+            </name>
+            <titleInfo>
+              <title>Government Code</title>
+              <partNumber>Sect. 7570</partNumber>
+            </titleInfo>
+          </subject>
+        </mods>
+      XML
+    end
+  end
 end

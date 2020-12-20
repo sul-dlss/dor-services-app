@@ -160,21 +160,20 @@ module Cocina
         end
 
         def write_topic(subject, is_parallel: false, is_basic: false)
+          topic_attributes = topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic)
           case subject.type
           when 'person'
-            xml.name topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic).merge(type: 'personal') do
+            xml.name topic_attributes.merge(type: 'personal') do
               xml.namePart subject.value
             end
           when 'title'
-            xml.titleInfo topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic) do
-              xml.title subject.value
-            end
+            title = subject.to_h
+            title.delete(:type)
+            Title.write(xml: xml, titles: [Cocina::Models::DescriptiveValue.new(title)], id_generator: id_generator, additional_attrs: topic_attributes)
           when 'place'
             geographic(subject, is_parallel: is_parallel)
           else
-            xml.public_send(TAG_NAME.fetch(subject.type, :topic),
-                            subject.value,
-                            topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic))
+            xml.public_send(TAG_NAME.fetch(subject.type, :topic), subject.value, topic_attributes)
           end
         end
 
