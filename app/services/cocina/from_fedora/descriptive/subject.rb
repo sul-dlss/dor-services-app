@@ -76,12 +76,8 @@ module Cocina
               uri: Authority.normalize_uri(subject[:authorityURI]),
               version: edition_for(subject)
             }.compact
-            if subject[:valueURI]
-              attrs[:source] = source unless source.empty?
-              attrs[:uri] = ValueURI.sniff(subject[:valueURI])
-            elsif subject[:authority]
-              attrs[:source] = source unless source.empty?
-            end
+            attrs[:source] = source unless source.empty?
+            attrs[:uri] = ValueURI.sniff(subject[:valueURI])
             attrs[:encoding] = { code: subject[:encoding] } if subject[:encoding]
             language_script = LanguageScript.build(node: subject)
             attrs[:valueLanguage] = language_script if language_script
@@ -156,7 +152,7 @@ module Cocina
         end
 
         def simple_item(node, attrs = {})
-          attrs = attrs.merge(common_attrs(node))
+          attrs = attrs.deep_merge(common_attrs(node))
           case node.name
           when 'name'
             name_type = name_type_for_subject(node[:type])
