@@ -16,7 +16,7 @@ module Cocina
           adminMetadata: AdminMetadata,
           relatedResource: RelatedResource,
           geographic: Geographic,
-          access: Access
+          access: Descriptive::Access
         }.freeze
 
         # @param [#build] title_builder
@@ -49,7 +49,7 @@ module Cocina
         private
 
         def purl_from(resource_element)
-          purl_elem = resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS).find { |url_node| Access::PURL_REGEX.match(url_node.text) }
+          purl_elem = resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS).find { |url_node| Descriptive::Access::PURL_REGEX.match(url_node.text) }
           return nil if purl_elem.nil?
 
           purl_elem.text
