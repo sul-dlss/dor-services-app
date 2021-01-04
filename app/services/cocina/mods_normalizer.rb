@@ -89,6 +89,7 @@ module Cocina
 
     # rubocop:disable Metrics/CyclomaticComplexity
     # rubocop:disable Metrics/PerceivedComplexity
+    # rubocop:disable Metrics/AbcSize
     def normalize_subject
       ng_xml.root.xpath('//mods:subject[count(mods:name|mods:topic|mods:geographic) = 1 and count(mods:*) = 1]', mods: MODS_NS).each do |subject_node|
         child_node = subject_node.xpath('mods:*', mods: MODS_NS).first
@@ -104,11 +105,14 @@ module Cocina
           subject_node.delete('valueURI')
         elsif child_node[:authority] && subject_node[:authority] == child_node[:authority] && !(child_node[:authorityURI] || child_node[:valueURI])
           child_node.delete('authority')
+        elsif subject_node[:authority] && !child_node[:authority] && (child_node[:authorityURI] || child_node[:valueURI])
+          child_node[:authority] = subject_node[:authority]
         end
       end
     end
     # rubocop:enable Metrics/CyclomaticComplexity
     # rubocop:enable Metrics/PerceivedComplexity
+    # rubocop:enable Metrics/AbcSize
 
     def normalize_coordinates
       ng_xml.root.xpath('//mods:coordinates[text()]', mods: MODS_NS).each do |coordinate_node|

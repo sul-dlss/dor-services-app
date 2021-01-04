@@ -274,11 +274,35 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
-  context 'with a single-term topic subject with authority on the subject' do
+  context 'with a single-term topic subject with authority, authorityURI, and valueURI on the subject' do
     let(:xml) do
       <<~XML
         <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021262">
           <topic>Cats</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'Cats',
+          "type": 'topic',
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85021262',
+          "source": {
+            "code": 'lcsh',
+            "uri": 'http://id.loc.gov/authorities/subjects/'
+          }
+        }
+      ]
+    end
+  end
+
+  context 'with a single-term topic subject with authority on the subject and authorityURI and valueURI on topic' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh">
+          <topic authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
         </subject>
       XML
     end
