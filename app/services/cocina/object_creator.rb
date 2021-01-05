@@ -4,17 +4,17 @@ module Cocina
   # Given a Cocina model, create an ActiveFedora model.
   class ObjectCreator
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def self.create(obj, event_factory: EventFactory, persister: ActiveFedoraPersister)
-      new.create(obj, event_factory: event_factory, persister: persister)
+    def self.create(obj, event_factory: EventFactory)
+      new.create(obj, event_factory: event_factory)
     end
 
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def create(obj, event_factory:, persister:)
+    def create(obj, event_factory:)
       # Validate will raise an error if not valid.
       ObjectValidator.validate(obj)
 
-      af_model = create_from_model(obj, persister: persister)
+      af_model = create_from_model(obj)
 
       # Fedora 3 has no unique constrains, so
       # index right away to reduce the likelyhood of duplicate sourceIds
@@ -29,10 +29,9 @@ module Cocina
     private
 
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj
-    # @param [#store] persister the service responsible for persisting the model
     # @return [Dor::Abstract] a persisted ActiveFedora model
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def create_from_model(obj, persister:)
+    def create_from_model(obj)
       af_object = case obj
                   when Cocina::Models::RequestAdminPolicy
                     create_apo(obj)
@@ -44,7 +43,7 @@ module Cocina
                     raise "unsupported type #{obj.type}"
                   end
 
-      persister.store(af_object)
+      Persister.store(af_object)
       af_object
     end
 
