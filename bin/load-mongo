@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+# require_relative '../lib/fedora_cache'
+require 'optparse'
+
+options = { overwrite: false, random: false, auto: false, druids: [] }
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/load-mongo [options]'
+
+  option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+parser.parse!(into: options)
+
+druids = File.read('druids.txt').split
+druids = druids.take(options[:sample]) if options[:sample]
+
+druids.each_with_index do |druid, index|
+  puts "#{druid} (#{index + 1})\n"
+  fedora_obj = Dor.find(druid)
+  cocina_obj = Cocina::Mapper.build(fedora_obj)
+  MongoStore.upsert(obj: cocina_obj)
+end

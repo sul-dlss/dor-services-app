@@ -34,6 +34,12 @@ Metrics/ClassLength:
     - 'app/services/cocina/from_fedora/descriptive/identifier_type.rb'
     - 'app/services/cocina/to_fedora/descriptive/contributor_writer.rb'
 
+Rails/SkipsModelValidations:
+  Exclude:
+    - 'app/services/persister.rb'
+    - 'bin/load-mongo'
+    - 'app/controllers/objects_controller.rb'
+
 RSpec/DescribeClass:
   Exclude:
     - 'spec/requests/**/*'

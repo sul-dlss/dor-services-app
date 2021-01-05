@@ -19,7 +19,7 @@ class ReleaseTagsController < ApplicationController
   # 201
   def create
     ReleaseTags.create(@item, create_parameters)
-    @item.save
+    Persister.store(@item)
     head :created
   end
 

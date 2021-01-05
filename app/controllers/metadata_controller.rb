@@ -39,7 +39,7 @@ class MetadataController < ApplicationController
                                                        event_factory: EventFactory)
     end
 
-    @item.save!
+    Persister.store(@item)
   rescue Rubydora::FedoraInvalidRequest
     render json: { error: 'Invalid Fedora request possibly due to concurrent requests' },
            status: :service_unavailable

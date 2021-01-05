@@ -2,6 +2,10 @@
 enabled_features:
   registration: true
   update_descriptive: false
+  mongo: false
+  # mongo must be true for these other flags
+  mongo_persist_on_show: false
+  mongo_persist_on_save: false
 
 content:
   base_dir: '/dor/workspace'
@@ -74,3 +78,18 @@ catalog:
     headers:
       SD-ORIGINATING-APP-ID: DOR-SERVICES-APP
       SD-PREFERRED-ROLE: GUEST
+
+mongo:
+  host: '127.0.0.1'
+  port: 27017
+  database: 'dor'
+  collection: 'dor_items'
+  username: 'dor_user'
+  password: 'sekret'
+  max_pool_size: 5
+  srv: false
+  # To use Atlas:
+#  srv: true
+#  host: 'cluster0.9jhec.mongodb.net'
+#  password: <correct password>
+
