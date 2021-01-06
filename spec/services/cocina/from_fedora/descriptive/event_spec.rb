@@ -39,6 +39,29 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     end
   end
 
+  context 'with a simple dateCreated with a trailing period' do
+    let(:xml) do
+      <<~XML
+        <originInfo>
+          <dateCreated>1980.</dateCreated>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'creation',
+          "date": [
+            {
+              "value": '1980'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
   # example 2 from mods_to_cocina_originInfo.txt
   context 'with a simple dateIssued (with encoding)' do
     let(:xml) do

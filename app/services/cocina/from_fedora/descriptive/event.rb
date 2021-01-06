@@ -308,7 +308,7 @@ module Cocina
 
         def build_date(event_type, node)
           {}.tap do |date|
-            date[:value] = node.text
+            date[:value] = clean_date(node.text)
             date[:qualifier] = node[:qualifier] if node[:qualifier]
             date[:encoding] = { code: node['encoding'] } if node['encoding']
             date[:status] = 'primary' if node['keyDate']
@@ -322,6 +322,12 @@ module Cocina
             end
             date[:type] = node['point'] if node['point']
           end
+        end
+
+        def clean_date(date)
+          return date unless date.match(/^\d{4}\.$/)
+
+          date.delete_suffix('.')
         end
 
         def date_other_event_type(origin, date)
