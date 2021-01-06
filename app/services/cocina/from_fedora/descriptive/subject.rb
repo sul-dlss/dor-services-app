@@ -225,7 +225,7 @@ module Cocina
 
             nil
           end.compact.uniq
-          coordinates.map { |coordinate| { value: coordinate, type: 'map coordinates', encoding: { value: 'DMS' } } }
+          coordinates.map { |coordinate| { value: coordinate, type: 'map coordinates' } }
         end
       end
     end

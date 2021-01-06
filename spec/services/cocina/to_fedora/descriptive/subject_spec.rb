@@ -395,10 +395,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       [
         Cocina::Models::DescriptiveValue.new(
           "value": 'E 72°--E 148°/N 13°--N 18°',
-          "type": 'map coordinates',
-          "encoding": {
-            "value": 'DMS'
-          }
+          "type": 'map coordinates'
         )
       ]
     end
