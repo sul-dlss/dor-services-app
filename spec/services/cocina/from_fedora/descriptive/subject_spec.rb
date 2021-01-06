@@ -584,10 +584,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       expect(build).to eq [
         {
           "value": 'E 72°--E 148°/N 13°--N 18°',
-          "type": 'map coordinates',
-          "encoding": {
-            "value": 'DMS'
-          }
+          "type": 'map coordinates'
         }
       ]
     end
@@ -618,10 +615,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       expect(build).to eq [
         {
           "value": 'E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ',
-          "type": 'map coordinates',
-          "encoding": {
-            "value": 'DMS'
-          }
+          "type": 'map coordinates'
         }
       ]
     end
@@ -666,16 +660,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          encoding: {
-            value: 'DMS'
-          },
           type: 'map coordinates',
           value: 'W0750700 W0741200 N0443400 N0431200'
         },
         {
-          encoding: {
-            value: 'DMS'
-          },
           type: 'map coordinates',
           value: 'W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ'
         }
