@@ -37,17 +37,15 @@ module Cocina
         end
 
         def self.title_name_parts_for(title)
-          if title.structuredValue
-            structured_title = title.structuredValue.find { |check_structured_title| check_structured_title.type == 'name' }
-            if structured_title.nil?
-              nil
-            elsif structured_title.structuredValue
-              structured_title.structuredValue
-            else
-              [structured_title]
-            end
+          return nil unless title.structuredValue
+
+          structured_title = title.structuredValue.find { |check_structured_title| check_structured_title.type == 'name' }
+          if structured_title.nil?
+            nil
+          elsif structured_title.structuredValue
+            structured_title.structuredValue
           else
-            [title]
+            [structured_title]
           end
         end
         private_class_method :title_name_parts_for

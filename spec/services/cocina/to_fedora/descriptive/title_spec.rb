@@ -838,5 +838,51 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
         XML
       end
     end
+
+    context 'when it is a title and contributor have same value' do
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            {
+              "value": 'Stanford Alpine Club'
+            }
+          )
+        ]
+      end
+
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            {
+              "name": [
+                {
+                  "value": 'Stanford Alpine Club',
+                  "uri": 'http://id.loc.gov/authorities/names/n99277320',
+                  "source": {
+                    "code": 'naf',
+                    "uri": 'http://id.loc.gov/authorities/names/'
+                  }
+                }
+              ],
+              "type": 'organization',
+              "status": 'primary'
+            }
+          )
+        ]
+      end
+
+      # Note that not made into nameTitleGroup
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title>Stanford Alpine Club</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+    end
   end
 end
