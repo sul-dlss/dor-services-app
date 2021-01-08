@@ -50,7 +50,7 @@ module Cocina
       end
 
       # This logic has been excerpted from
-      # https://github.com/sul-dlss/gis-robot-suite/blob/master/robots/gisAssembly/generate-content-metadata.rb#L30
+      # https://github.com/sul-dlss/gis-robot-suite/blob/main/robots/gisAssembly/generate-content-metadata.rb#L30
       def for_geo
         files = file_set.structural.contains
         case ::File.extname(files.first.filename)

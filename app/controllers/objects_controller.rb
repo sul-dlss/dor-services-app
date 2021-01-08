@@ -120,7 +120,7 @@ class ObjectsController < ApplicationController
   end
 
   # This endpoint is called by the goobi-notify process in the goobiWF
-  # (code in https://github.com/sul-dlss/common-accessioning/blob/master/lib/robots/dor_repo/goobi/goobi_notify.rb)
+  # (code in https://github.com/sul-dlss/common-accessioning/blob/main/lib/robots/dor_repo/goobi/goobi_notify.rb)
   # This proxies a request to the Goobi server and proxies it's response to the client.
   def notify_goobi
     response = Dor::Goobi.new(@item).register
