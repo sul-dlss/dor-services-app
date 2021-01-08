@@ -58,3 +58,10 @@ module DorServices
     config.active_record.schema_format = :sql
   end
 end
+
+# Reconnect Mongo clients after forking.
+if defined?(PhusionPassenger) && Settings.enabled_features.mongo
+  PhusionPassenger.on_event(:starting_worker_process) do |_forked|
+    MongoStore.reconnect
+  end
+end

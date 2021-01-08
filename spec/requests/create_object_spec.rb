@@ -10,7 +10,7 @@ RSpec.describe 'Create object' do
   before do
     allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
     allow(Dor).to receive(:find).and_return(apo)
-    allow(Cocina::ActiveFedoraPersister).to receive(:store)
+    allow(Persister).to receive(:store)
     stub_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')
   end
 
