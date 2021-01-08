@@ -99,7 +99,7 @@ module Cocina
           lat = geo.subject.first.structuredValue.find { |point| point.type.include? 'latitude' }.value
           long = geo.subject.first.structuredValue.find { |point| point.type.include? 'longitude' }.value
           xml['gmd'].centerPoint do
-            xml['gml'].Point('gml:id' => 'ID') do
+            xml['gml'].Point do
               xml['gml'].pos "#{lat} #{long}"
             end
           end

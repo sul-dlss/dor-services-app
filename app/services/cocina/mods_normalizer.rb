@@ -53,6 +53,7 @@ module Cocina
       normalize_purl
       normalize_empty_notes
       normalize_empty_titles
+      normalize_gml_id
       # This should be last-ish.
       normalize_empty_related_items
       ng_xml
@@ -504,6 +505,12 @@ module Cocina
           split_node.remove
           new_origin_info_node << split_node
         end
+      end
+    end
+
+    def normalize_gml_id
+      ng_xml.root.xpath("//gml:Point[@gml:id='ID']", gml: 'http://www.opengis.net/gml/3.2/').each do |point_node|
+        point_node.delete('id')
       end
     end
   end

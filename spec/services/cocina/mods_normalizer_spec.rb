@@ -1808,4 +1808,46 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing gml:Point' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <extension displayLabel="geo">
+            <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gmd="http://www.isotc211.org/2005/gmd">
+              <rdf:Description rdf:about="http://purl.stanford.edu/aa666bb1234">
+                <dc:format>image/jpeg</dc:format>
+                <dc:type>Image</dc:type>
+                <gmd:centerPoint>
+                  <gml:Point gml:id="ID">
+                    <gml:pos>41.893367 12.483736</gml:pos>
+                  </gml:Point>
+                </gmd:centerPoint>
+              </rdf:Description>
+            </rdf:RDF>
+          </extension>
+        </mods>
+      XML
+    end
+
+    it 'removes gml:ID' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <extension displayLabel="geo">
+            <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gmd="http://www.isotc211.org/2005/gmd">
+              <rdf:Description rdf:about="http://purl.stanford.edu/aa666bb1234">
+                <dc:format>image/jpeg</dc:format>
+                <dc:type>Image</dc:type>
+                <gmd:centerPoint>
+                  <gml:Point>
+                    <gml:pos>41.893367 12.483736</gml:pos>
+                  </gml:Point>
+                </gmd:centerPoint>
+              </rdf:Description>
+            </rdf:RDF>
+          </extension>
+        </mods>
+      XML
+    end
+  end
 end
