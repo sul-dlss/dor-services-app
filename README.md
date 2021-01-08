@@ -3,7 +3,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/955223f2386ae5f10e33/test_coverage)](https://codeclimate.com/github/sul-dlss/dor-services-app/test_coverage)
 [![GitHub version](https://badge.fury.io/gh/sul-dlss%2Fdor-services-app.svg)](https://badge.fury.io/gh/sul-dlss%2Fdor-services-app)
 [![Docker image](https://images.microbadger.com/badges/image/suldlss/dor-services-app.svg)](https://microbadger.com/images/suldlss/dor-services-app "Get your own image badge on microbadger.com")
-[![OpenAPI Validator](http://validator.swagger.io/validator?url=https://raw.githubusercontent.com/sul-dlss/dor-services-app/master/openapi.yml)](http://validator.swagger.io/validator/debug?url=https://raw.githubusercontent.com/sul-dlss/dor-services-app/master/openapi.yml)
+[![OpenAPI Validator](http://validator.swagger.io/validator?url=https://raw.githubusercontent.com/sul-dlss/dor-services-app/main/openapi.yml)](http://validator.swagger.io/validator/debug?url=https://raw.githubusercontent.com/sul-dlss/dor-services-app/main/openapi.yml)
 
 # DOR Services App
 
@@ -28,7 +28,7 @@ It's possible to clear out and re-seed the staging environment by using the foll
 ./bin/rake delete_all_objects
 ```
 
-This will load all the FOXML from https://github.com/sul-dlss/dor-services-app/blob/master/lib/tasks/seeds/
+This will load all the FOXML from https://github.com/sul-dlss/dor-services-app/blob/main/lib/tasks/seeds/
 
 
 ## Developer Notes
@@ -222,7 +222,7 @@ $ bin/validate-cocina-roundtrip -h
 Usage: bin/validate-cocina-roundtrip [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -r, --random                     Select random druids.
-    -f, --fast                       Do not write results files.    
+    -f, --fast                       Do not write results files.
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
     -h, --help                       Displays help.
 
@@ -272,10 +272,10 @@ $ echo $FEDORA_CACHE
 /opt/app/deploy/dor-services-app/cache
 ```
 
-Test with `bin/validate-cocina-roundtrip`, comparing results from master against your branch. The sample size to you is up to you; bigger samples are recommended for more complex changes.
+Test with `bin/validate-cocina-roundtrip`, comparing results from main against your branch. The sample size to you is up to you; bigger samples are recommended for more complex changes.
 
 ```
-$ git checkout master
+$ git checkout main
 $ git pull
 $ bin/validate-cocina-roundtrip -s 350000 -f
 $ git checkout YOUR_BRANCH_NAME

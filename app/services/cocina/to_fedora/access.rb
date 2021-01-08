@@ -19,7 +19,7 @@ module Cocina
       end
 
       def apply
-        # See https://github.com/sul-dlss/dor-services/blob/master/lib/dor/datastreams/rights_metadata_ds.rb
+        # See https://github.com/sul-dlss/dor-services/blob/main/lib/dor/datastreams/rights_metadata_ds.rb
         Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, rights_type)
         item.rightsMetadata.ng_xml_will_change!
       end

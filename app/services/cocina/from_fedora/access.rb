@@ -50,7 +50,7 @@ module Cocina
 
       # Map values from dor-services
       # https://github.com/sul-dlss/dor-services/blob/b9b4768eac560ef99b4a8d03475ea31fe4ae2367/lib/dor/datastreams/rights_metadata_ds.rb#L221-L228
-      # to https://github.com/sul-dlss/cocina-models/blob/master/docs/maps/DRO.json#L102
+      # to https://github.com/sul-dlss/cocina-models/blob/main/docs/maps/DRO.json#L102
       def access_rights
         @access_rights ||=
           if world?
