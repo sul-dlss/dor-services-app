@@ -275,6 +275,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
       end
     end
 
+    # Example 18
     context 'when it is a multilingual uniform title' do
       let(:titles) do
         [
@@ -883,6 +884,111 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
           </mods>
         XML
       end
+    end
+  end
+
+  # Example 21
+  context 'when it is a complex multilingual title' do
+    let(:titles) do
+      [
+        Cocina::Models::Title.new(
+          "structuredValue": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'Vital, Ḥayyim ben Joseph',
+                  "type": 'name'
+                },
+                {
+                  "value": '1542 or 1543-1620',
+                  "type": 'life dates'
+                }
+              ],
+              "type": 'name'
+            },
+            {
+              "value": 'Shaʻare ha-ḳedushah',
+              "type": 'title'
+            }
+          ],
+          "type": 'uniform'
+        ),
+        Cocina::Models::Title.new(
+          "parallelValue": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'Sefer Shaʻare ha-ḳedushah in Hebrew',
+                  "type": 'main title'
+                },
+                {
+                  "value": 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo in Hebrew',
+                  "type": 'subtitle'
+                }
+              ]
+            },
+            {
+              "structuredValue": [
+                {
+                  "value": 'Sefer Shaʻare ha-ḳedushah',
+                  "type": 'main title'
+                },
+                {
+                  "value": 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo',
+                  "type": 'subtitle'
+                }
+              ]
+            }
+          ]
+        )
+      ]
+    end
+
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          "name": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'Vital, Ḥayyim ben Joseph',
+                  "type": 'name'
+                },
+                {
+                  "value": '1542 or 1543-1620',
+                  "type": 'life dates'
+                }
+              ]
+            }
+          ],
+          "type": 'person',
+          "status": 'primary'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo type="uniform" nameTitleGroup="1">
+            <title>Shaʻare ha-ḳedushah</title>
+          </titleInfo>
+          <titleInfo altRepGroup="1">
+            <title>Sefer Shaʻare ha-ḳedushah in Hebrew</title>
+            <subTitle>zeh sefer le-yosher ha-adam la-ʻavodat borʼo in Hebrew</subTitle>
+          </titleInfo>
+          <titleInfo altRepGroup="1">
+            <title>Sefer Shaʻare ha-ḳedushah</title>
+            <subTitle>zeh sefer le-yosher ha-adam la-ʻavodat borʼo</subTitle>
+          </titleInfo>
+          <name type="personal" usage="primary" nameTitleGroup="1">
+            <namePart>Vital, Ḥayyim ben Joseph</namePart>
+            <namePart type="date">1542 or 1543-1620</namePart>
+          </name>
+        </mods>
+      XML
     end
   end
 end

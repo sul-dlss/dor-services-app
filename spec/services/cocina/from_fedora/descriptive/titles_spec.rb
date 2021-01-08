@@ -385,6 +385,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
     end
 
+    # Example 20 from mods_to_cocina_titleInfo.txt
     context 'when there are uniform titles with authority' do
       let(:ng_xml) do
         Nokogiri::XML <<~XML
@@ -420,7 +421,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
                 "value": 'Hamlet',
                 "type": 'title'
               },
-
               {
                 "value": 'Shakespeare, William, 1564-1616',
                 "type": 'name',
@@ -437,6 +437,92 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
               "uri": 'http://id.loc.gov/authorities/names/',
               "code": 'naf'
             }
+          }
+        ]
+      end
+    end
+
+    # Example 21 from mods_to_cocina_titleInfo.txt
+    context 'when there is a complex multilingual title' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="01">
+              <title>Shaʻare ha-ḳedushah</title>
+            </titleInfo>
+            <name type="personal" usage="primary" nameTitleGroup="1">
+              <namePart>Vital, Ḥayyim ben Joseph</namePart>
+              <namePart type="date">1542 or 1543-1620</namePart>
+            </name>
+            <titleInfo altRepGroup="02">
+              <title>Sefer Shaʻare ha-ḳedushah in Hebrew</title>
+              <subTitle>zeh sefer le-yosher ha-adam la-ʻavodat borʼo in Hebrew</subTitle>
+            </titleInfo>
+            <titleInfo altRepGroup="02">
+              <title>Sefer Shaʻare ha-ḳedushah</title>
+              <subTitle>zeh sefer le-yosher ha-adam la-ʻavodat borʼo</subTitle>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
+      it 'creates value from the authority record' do
+        expect(build).to eq [
+          {
+            "parallelValue": [
+              {
+                "structuredValue": [
+                  {
+                    "value": 'Sefer Shaʻare ha-ḳedushah in Hebrew',
+                    "type": 'main title'
+                  },
+                  {
+                    "value": 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo in Hebrew',
+                    "type": 'subtitle'
+                  }
+                ]
+              },
+              {
+                "structuredValue": [
+                  {
+                    "value": 'Sefer Shaʻare ha-ḳedushah',
+                    "type": 'main title'
+                  },
+                  {
+                    "value": 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo',
+                    "type": 'subtitle'
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "structuredValue": [
+              {
+                type: 'title',
+                value: 'Shaʻare ha-ḳedushah'
+              },
+              {
+                "structuredValue": [
+                  {
+                    "value": 'Vital, Ḥayyim ben Joseph',
+                    "type": 'name'
+                  },
+                  {
+                    "value": '1542 or 1543-1620',
+                    "type": 'life dates'
+                  }
+                ],
+                "type": 'name'
+              }
+            ],
+            "type": 'uniform'
           }
         ]
       end
@@ -614,7 +700,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
                     "value": 'Mishnah berurah in Hebrew characters',
                     "type": 'title'
                   },
-
                   {
                     "structuredValue": [
                       {

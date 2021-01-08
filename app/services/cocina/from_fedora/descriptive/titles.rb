@@ -68,8 +68,8 @@ module Cocina
         def parallel_type(node_set)
           # If both uniform, then uniform
           return 'uniform' if node_set.all? { |node| node[:type] == 'uniform' }
-          # If none of these nodes are marked as primary, set the type to parallel
-          return 'parallel' unless node_set.any? { |node| node['usage'] }
+          # If none of these nodes are marked as primary or don't have a type, set the type to parallel
+          return 'parallel' unless node_set.any? { |node| node['usage'] || !node['type'] }
 
           nil
         end
@@ -87,6 +87,7 @@ module Cocina
 
         def structured_name(node:, display_types: true)
           name_node = node.xpath("//mods:name[@nameTitleGroup='#{node['nameTitleGroup']}']", mods: DESC_METADATA_NS).first
+
           structured_values = if name_node.nil?
                                 Honeybadger.notify('[DATA ERROR] Name not found for title group', { tags: 'data_error' })
                                 []
@@ -94,7 +95,6 @@ module Cocina
                                 NameBuilder.build(name_elements: [name_node], add_default_type: true)[:name]
                               end
           structured_values.each { |structured_value| structured_value[:type] = 'name' }
-
           {
             structuredValue: [
               { type: 'title' }.merge(TitleBuilder.build(title_info_element: node))
