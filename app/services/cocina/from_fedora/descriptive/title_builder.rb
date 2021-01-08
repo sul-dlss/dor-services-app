@@ -25,6 +25,8 @@ module Cocina
             return nil
           end
 
+          Honeybadger.notify('[DATA ERROR] Title with type', { tags: 'data_error' }) if children_with_type?(children)
+
           # If a displayLabel only with no title text element
           # Note: this is an error condition,
           # exceptions documented at: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_value_dependencies.txt
@@ -40,12 +42,14 @@ module Cocina
 
         attr_reader :title_info_element
 
-        def simple_title?(children)
-          return false if children.map(&:name) != ['title'] || children.size > 1
+        def children_with_type?(children)
+          children.any? do |child|
+            child.name == 'title' && child[:type].present?
+          end
+        end
 
-          # There is only one child and it's a title element. If it has the
-          # @type attr set, it should not be treated as a simple value
-          children.first[:type].nil?
+        def simple_title?(children)
+          children.size == 1 && children.first.name == 'title'
         end
 
         # @param [Nokogiri::XML::Element] node the titleInfo node

@@ -1850,4 +1850,26 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing titles with type' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <titleInfo>
+            <title type="main">Monaco Grand Prix</title>
+          </titleInfo>
+        </mods>
+      XML
+    end
+
+    it 'removes type' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <titleInfo>
+            <title>Monaco Grand Prix</title>
+          </titleInfo>
+        </mods>
+      XML
+    end
+  end
 end
