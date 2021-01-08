@@ -83,34 +83,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
     end
 
-    context 'when the title has type main' do
-      let(:ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <titleInfo>
-              <title type="main">journal of stuff</title>
-            </titleInfo>
-          </mods>
-        XML
-      end
-
-      it 'parses' do
-        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
-      end
-
-      it 'is a structured value' do
-        expect(build).to eq [
-          {
-            structuredValue: [
-              { type: 'main title', value: 'journal of stuff' }
-            ]
-          }
-        ]
-      end
-    end
-
     context 'when there is an alternative title' do
       let(:ng_xml) do
         Nokogiri::XML <<~XML
@@ -174,6 +146,35 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
           { status: 'primary', value: 'Five red herrings' }
         ]
         expect(Honeybadger).to have_received(:notify).at_least(:once).with('[DATA ERROR] Empty title node', { tags: 'data_error' })
+      end
+    end
+
+    context 'when there are title types' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title type="main">Monaco Grand Prix</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      before do
+        allow(Honeybadger).to receive(:notify)
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
+      it 'ignores and notifies Honeybadger' do
+        expect(build).to eq [
+          { value: 'Monaco Grand Prix' }
+        ]
+        expect(Honeybadger).to have_received(:notify).at_least(:once).with('[DATA ERROR] Title with type', { tags: 'data_error' })
       end
     end
 
