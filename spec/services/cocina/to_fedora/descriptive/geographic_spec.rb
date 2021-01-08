@@ -87,7 +87,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
                 <dc:format>image/jpeg</dc:format>
                 <dc:type>Image</dc:type>
                 <gmd:centerPoint>
-                  <gml:Point gml:id="ID">
+                  <gml:Point>
                     <gml:pos>41.893367 12.483736</gml:pos>
                   </gml:Point>
                 </gmd:centerPoint>
