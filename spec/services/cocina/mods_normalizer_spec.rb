@@ -654,6 +654,11 @@ RSpec.describe Cocina::ModsNormalizer do
           <location>
             <url>http://purl.stanford.edu/bw502ns3302</url>
           </location>
+          <relatedItem>
+            <location>
+              <url>http://purl.stanford.edu/vt726fn1198</url>
+            </location>
+          </relatedItem>
         </mods>
       XML
     end
@@ -664,6 +669,11 @@ RSpec.describe Cocina::ModsNormalizer do
           <location>
             <url usage="primary display">http://purl.stanford.edu/bw502ns3302</url>
           </location>
+          <relatedItem>
+            <location>
+              <url usage="primary display">http://purl.stanford.edu/vt726fn1198</url>
+            </location>
+          </relatedItem>
         </mods>
       XML
     end
