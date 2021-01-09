@@ -258,13 +258,18 @@ module Cocina
     end
 
     def normalize_purl
-      location_nodes = ng_xml.root.xpath('//mods:location', mods: MODS_NS)
-      any_url_primary_usage = ng_xml.root.xpath('//mods:location/mods:url[@usage="primary display"]', mods: MODS_NS).present?
+      normalize_purl_for(ng_xml.root, true)
+      ng_xml.root.xpath('mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_purl_for(related_item_node, false) }
+    end
+
+    def normalize_purl_for(base_node, match_purl)
+      location_nodes = base_node.xpath('mods:location', mods: MODS_NS)
+      any_url_primary_usage = base_node.xpath('mods:location/mods:url[@usage="primary display"]', mods: MODS_NS).present?
 
       location_nodes.each do |location_node|
         location_url_nodes = location_node.xpath('mods:url', mods: MODS_NS)
         location_url_nodes.select { |url_node| Cocina::FromFedora::Descriptive::Access::PURL_REGEX.match(url_node.text) }.each do |purl_node|
-          purl_node[:usage] = 'primary display' if !any_url_primary_usage && purl_node.text.ends_with?(druid.delete_prefix('druid:'))
+          purl_node[:usage] = 'primary display' if !any_url_primary_usage && (!match_purl || purl_node.text.ends_with?(druid.delete_prefix('druid:')))
           purl_node.delete('displayLabel') if purl_node[:displayLabel] == 'electronic resource' && purl_node[:usage] == 'primary display'
         end
       end
