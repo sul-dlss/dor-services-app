@@ -1729,6 +1729,31 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
+  context 'when normalizing originInfos with copyright date and publisher' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <originInfo eventType="copyright notice">
+            <publisher>Saturn Pictures</publisher>
+            <copyrightDate>1971</copyrightDate>
+          </originInfo>
+      XML
+    end
+
+    it 'moves publisher into its own originInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <originInfo eventType="copyright notice">
+            <copyrightDate>1971</copyrightDate>
+          </originInfo>
+          <originInfo eventType="publication">
+            <publisher>Saturn Pictures</publisher>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
   context 'when normalizing cartographic coordinates' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
