@@ -6,7 +6,7 @@ RSpec.describe Cocina::ModsNormalizer do
   let(:normalized_ng_xml) { described_class.normalize(mods_ng_xml: mods_ng_xml, druid: druid) }
 
   let(:mods_attributes) do
-    'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.6"
+    'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" version="3.6"
     xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd"'
   end
   let(:druid) { 'druid:pf694bk4862' }
@@ -1810,6 +1810,8 @@ RSpec.describe Cocina::ModsNormalizer do
   end
 
   context 'when normalizing gml:Point' do
+    let(:druid) { 'druid:aa666bb1234' }
+
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{mods_attributes}>
@@ -1868,6 +1870,38 @@ RSpec.describe Cocina::ModsNormalizer do
           <titleInfo>
             <title>Monaco Grand Prix</title>
           </titleInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing empty rdf:resources' do
+    let(:druid) { 'druid:ng599nr9959' }
+
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <extension displayLabel="geo">
+            <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+              <rdf:Description rdf:about="http://purl.stanford.edu/ng599nr9959">
+                <dc:coverage rdf:resource="" dc:language="eng" dc:title="Southeast Asia"/>
+              </rdf:Description>
+            </rdf:RDF>
+          </extension>
+        </mods>
+      XML
+    end
+
+    it 'removes the rdf:resource' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <extension displayLabel="geo">
+            <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+              <rdf:Description rdf:about="http://purl.stanford.edu/ng599nr9959">
+                <dc:coverage dc:language="eng" dc:title="Southeast Asia"/>
+              </rdf:Description>
+            </rdf:RDF>
+          </extension>
         </mods>
       XML
     end

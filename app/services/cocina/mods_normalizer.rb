@@ -56,6 +56,7 @@ module Cocina
       normalize_empty_titles
       normalize_title_type
       normalize_gml_id
+      normalize_empty_resource
       # This should be last-ish.
       normalize_empty_related_items
       ng_xml
@@ -520,6 +521,14 @@ module Cocina
     def normalize_title_type
       ng_xml.root.xpath('//mods:title[@type]', mods: MODS_NS).each do |title_node|
         title_node.delete('type')
+      end
+    end
+
+    def normalize_empty_resource
+      ng_xml.root.xpath('//dc:coverage[@rdf:resource = ""]',
+                        dc: 'http://purl.org/dc/elements/1.1/',
+                        rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#').each do |coverage_node|
+        coverage_node.delete('resource')
       end
     end
   end
