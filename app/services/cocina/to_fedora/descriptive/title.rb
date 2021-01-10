@@ -179,7 +179,10 @@ module Cocina
             usage: title.status,
             script: title.valueLanguage&.valueScript&.code,
             lang: title.valueLanguage&.code,
-            displayLabel: title.displayLabel
+            displayLabel: title.displayLabel,
+            valueURI: title.uri,
+            authorityURI: title.source&.uri,
+            authority: title.source&.code
           }.compact
         end
       end

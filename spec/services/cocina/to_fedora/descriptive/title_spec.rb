@@ -707,8 +707,38 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
       xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L278'
     end
 
+    # Example 8
     context 'when it is abbreviated' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L292'
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            "value": 'Annual report of notifiable diseases',
+            "status": 'primary'
+          ),
+          Cocina::Models::Title.new(
+            "value": 'Annu. rep. notif. dis.',
+            "type": 'abbreviated',
+            "source": {
+              "code": 'dnlm'
+            }
+          )
+        ]
+      end
+
+      it 'creates the equivalent MODS' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+               <titleInfo usage="primary">
+                  <title>Annual report of notifiable diseases</title>
+                </titleInfo>
+                <titleInfo type="abbreviated" authority="dnlm">
+                  <title>Annu. rep. notif. dis.</title>
+                </titleInfo>
+          </mods>
+        XML
+      end
     end
 
     context 'when it is parallel title' do

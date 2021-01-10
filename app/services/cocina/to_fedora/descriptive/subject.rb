@@ -169,6 +169,7 @@ module Cocina
           when 'title'
             title = subject.to_h
             title.delete(:type)
+            title[:source].delete(:code) if subject.source&.code && !topic_attributes[:authority]
             Title.write(xml: xml, titles: [Cocina::Models::DescriptiveValue.new(title)], id_generator: id_generator, additional_attrs: topic_attributes)
           when 'place'
             geographic(subject, is_parallel: is_parallel)
