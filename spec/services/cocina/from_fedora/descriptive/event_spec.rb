@@ -2351,4 +2351,65 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       ]
     end
   end
+
+  # From druid:ht706sj6651
+  context 'with an originInfo that is a presentation' do
+    let(:xml) do
+      <<~XML
+        <originInfo displayLabel="Presented" eventType="presentation">
+          <place>
+            <placeTerm type="text" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+          </place>
+          <publisher>Stanford Institute for Theoretical Economics</publisher>
+          <dateIssued keyDate="yes" encoding="w3cdtf">2018</dateIssued>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'presentation',
+          "date": [
+            {
+              "value": '2018',
+              "encoding": {
+                "code": 'w3cdtf'
+              },
+              "status": 'primary'
+            }
+          ],
+          "displayLabel": 'Presented',
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Stanford Institute for Theoretical Economics'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "location": [
+            {
+              "uri": 'http://id.loc.gov/authorities/names/n50046557',
+              "value": 'Stanford (Calif.)'
+            }
+          ]
+        }
+
+      ]
+    end
+  end
 end
