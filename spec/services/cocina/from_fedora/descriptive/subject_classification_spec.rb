@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# numbered examples here from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_classification.txt
 RSpec.describe Cocina::FromFedora::Descriptive::Subject do
   subject(:build) { described_class.build(resource_element: ng_xml.root) }
 
@@ -27,6 +28,20 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           "source": {
             "code": 'lcc'
           }
+        }
+      ]
+    end
+  end
+
+  # missing example ticketed as https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/294
+  context 'when given a classification without authority' do
+    let(:xml) { '<classification>G9801.S12 2015 .Z3</classification>' }
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'classification',
+          "value": 'G9801.S12 2015 .Z3'
         }
       ]
     end
@@ -68,6 +83,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  # 4. Multiple classifications
   context 'when given multiple classifications' do
     let(:xml) do
       <<~XML
@@ -94,7 +110,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
             "version": '12th edition'
           }
         }
-
       ]
     end
   end
