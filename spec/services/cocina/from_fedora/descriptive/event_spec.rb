@@ -2412,4 +2412,46 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       ]
     end
   end
+
+  # example 46 from mods_to_cocina_originInfo.txt
+  context 'with supplied place name' do
+    let(:xml) do
+      <<~XML
+        <originInfo eventType="production" displayLabel="Place of creation">
+          <place supplied="yes">
+            <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n81127564" type="text">Selma (Ala.)</placeTerm>
+          </place>
+          <dateCreated keyDate="yes" encoding="w3cdtf">1965</dateCreated>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'creation',
+          "displayLabel": 'Place of creation',
+          "location": [
+            {
+              "type": 'supplied',
+              "value": 'Selma (Ala.)',
+              "uri": 'http://id.loc.gov/authorities/names/n81127564',
+              "source": {
+                "uri": 'http://id.loc.gov/authorities/names/'
+              }
+            }
+          ],
+          "date": [
+            {
+              "value": '1965',
+              "encoding": {
+                "code": 'w3cdtf'
+              },
+              "status": 'primary'
+            }
+          ]
+        }
+      ]
+    end
+  end
 end

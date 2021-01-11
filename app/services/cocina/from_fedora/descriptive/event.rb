@@ -188,6 +188,7 @@ module Cocina
             location[:value] = text_place_term.text
             location[:code] = code_place_term.text if code_place_term
             location[:valueLanguage] = language_script if language_script
+            location[:type] = 'supplied' if place[:supplied] == 'yes'
             location
           end
 
@@ -196,6 +197,7 @@ module Cocina
             place_term = place.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
             location = with_uri_info({}, place_term)
             location[:code] = place_term.text
+            location[:type] = 'supplied' if place[:supplied] == 'yes'
             location
           end
 
