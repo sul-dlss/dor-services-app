@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# numbered examples here from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_targetAudience.txt
 RSpec.describe Cocina::FromFedora::Descriptive::Notes do
   subject(:build) { described_class.build(resource_element: ng_xml.root) }
 
@@ -15,7 +16,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
     XML
   end
 
-  # Example 1
+  # Example 1. Target audience with authority
   context 'with authority' do
     let(:xml) do
       <<~XML
@@ -36,7 +37,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
     end
   end
 
-  # Example 2
+  # Example 2. Target audience without authority
   context 'without authority' do
     let(:xml) do
       <<~XML
