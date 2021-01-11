@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# numbered examples here from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_targetAudience.txt
 RSpec.describe Cocina::ToFedora::Descriptive::Note do
   subject(:xml) { writer.to_xml }
 
@@ -16,6 +17,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
     end
   end
 
+  # Example 1. Target audience with authority
   context 'with authority' do
     let(:notes) do
       [
@@ -40,6 +42,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
     end
   end
 
+  # Example 2. Target audience without authority
   context 'without authority' do
     let(:notes) do
       [
