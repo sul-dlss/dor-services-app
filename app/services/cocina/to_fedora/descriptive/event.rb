@@ -9,7 +9,8 @@ module Cocina
           'production' => :dateCreated,
           'publication' => :dateIssued,
           'copyright notice' => :copyrightDate,
-          'capture' => :dateCaptured
+          'capture' => :dateCaptured,
+          'presentation' => :dateIssued
         }.freeze
 
         EVENT_TYPE = {
@@ -20,7 +21,8 @@ module Cocina
           'manufacture' => 'manufacture',
           'publication' => 'publication',
           'acquisition' => 'acquisition',
-          'development' => 'development'
+          'development' => 'development',
+          'presentation' => 'presentation'
         }.freeze
 
         GroupedParallelValues = Struct.new(:locations, :names, :dates, :notes, :value_language)

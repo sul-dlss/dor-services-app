@@ -137,7 +137,7 @@ module Cocina
         end
 
         def find_event_by_precedence(events, create: false)
-          %w[publication distribution production creation manufacture].each do |event_type|
+          %w[publication presentation distribution production creation manufacture].each do |event_type|
             events.each do |event|
               return event if event[:type] == event_type
             end
@@ -159,7 +159,10 @@ module Cocina
             events << build_event('creation', date_created, language_script) if date_created.present?
 
             date_issued = origin_info.xpath('mods:dateIssued', mods: DESC_METADATA_NS)
-            events << build_event('publication', date_issued, language_script) if date_issued.present?
+            if date_issued.present?
+              event_type = origin_info['eventType'] == 'presentation' ? 'presentation' : 'publication'
+              events << build_event(event_type, date_issued, language_script)
+            end
 
             copyright_date = origin_info.xpath('mods:copyrightDate', mods: DESC_METADATA_NS)
             events << build_event('copyright', copyright_date, language_script) if copyright_date.present?

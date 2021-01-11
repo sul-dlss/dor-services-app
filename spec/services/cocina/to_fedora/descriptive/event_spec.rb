@@ -2134,4 +2134,69 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       XML
     end
   end
+
+  # From druid:ht706sj6651
+  context 'with presentation' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          "type": 'presentation',
+          "date": [
+            {
+              "value": '2018',
+              "encoding": {
+                "code": 'w3cdtf'
+              },
+              "status": 'primary'
+            }
+          ],
+          "displayLabel": 'Presented',
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Stanford Institute for Theoretical Economics'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "location": [
+            {
+              "uri": 'http://id.loc.gov/authorities/names/n50046557',
+              "value": 'Stanford (Calif.)'
+            }
+          ]
+        )
+
+      ]
+    end
+
+    it 'builds the expected xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <originInfo displayLabel="Presented" eventType="presentation">
+            <place>
+              <placeTerm type="text" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+            </place>
+            <publisher>Stanford Institute for Theoretical Economics</publisher>
+            <dateIssued keyDate="yes" encoding="w3cdtf">2018</dateIssued>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
 end
