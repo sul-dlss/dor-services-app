@@ -1254,7 +1254,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
   end
 
   # 12. Multiple names with transliteration (name as value)
-  # FIXME: missing "status": "primary" for Булгаков
+  # FIXME: discrepancy - missing "status": "primary" for Булгаков
   context 'with multiple names with transliteration (name as value)' do
     let(:xml) do
       <<~XML
