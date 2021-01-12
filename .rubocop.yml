@@ -49,6 +49,10 @@ RSpec/ExpectActual:
   Exclude:
     - 'spec/routing/**'
 
+Style/AsciiComments:
+  Exclude:
+    - 'spec/services/cocina/from_fedora/descriptive/contributor_spec.rb'
+
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
 

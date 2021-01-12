@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# numbered examples from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt
 RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
   subject(:build) { described_class.build(resource_element: ng_xml.root) }
 
@@ -15,6 +16,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     XML
   end
 
+  # 1. Personal name
   context 'with a personal name' do
     let(:xml) do
       <<~XML
@@ -48,7 +50,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       XML
     end
 
-    it 'builds the cocina data structure' do
+    it 'builds the cocina data structure without type' do
       expect(build).to eq [
         {
           "name": [
@@ -61,6 +63,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # 2. Corporate name
   context 'with a corporate name' do
     let(:xml) do
       <<~XML
@@ -85,6 +88,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # 3. Family name
   context 'with a family name' do
     let(:xml) do
       <<~XML
@@ -109,6 +113,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # 4. Conference name
   context 'with a conference name' do
     let(:xml) do
       <<~XML
@@ -346,29 +351,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
-  context 'with missing namePart element' do
-    let(:xml) do
-      <<~XML
-        <name>
-          <role>
-            <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
-            <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/spn">Sponsor</roleTerm>
-          </role>
-        </name>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [{}]
-    end
-
-    it 'notifies Honeybadger' do
-      allow(Honeybadger).to receive(:notify)
-      build
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] missing name/namePart element', { tags: 'data_error' })
-    end
-  end
-
   context 'with namePart with empty type attribute' do
     context 'without role' do
       let(:xml) do
@@ -439,6 +421,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # 5. Name with additional subelements
   context 'with additional subelements' do
     let(:xml) do
       <<~XML
@@ -610,11 +593,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # 6. Name with ordinal
   context 'with ordinal' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L140'
+    xit 'TODO: 6. Name with ordinal - mods_to_cocina_name.txt#L137'
   end
 
   context 'with role' do
+    # 7. Name with role
     context 'when roleTerm for types code and text' do
       let(:xml) do
         <<~XML
@@ -701,6 +686,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
+    # 7c. Role code only
     context 'when roleTerm is type code' do
       let(:xml) do
         <<~XML
@@ -738,6 +724,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
+    # 7b. Role text only
     context 'when roleTerm is type text' do
       let(:xml) do
         <<~XML
@@ -851,6 +838,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
+    # 7d. Role with valueURI as the only attribute
     context 'when role has valueURI as the only authority attribute' do
       let(:xml) do
         <<~XML
@@ -886,6 +874,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
+    # 7e. Role with authority as the only authority attribute
     context 'when role has authority as the only authority attribute' do
       let(:xml) do
         <<~XML
@@ -921,6 +910,57 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
             ]
           }
         ]
+      end
+    end
+
+    # 7f. role without namePart value (matching - it has an EMPTY namePart element)
+    context 'when role without namePart value' do
+      let(:xml) do
+        <<~XML
+          <name>
+            <namePart/>
+            <role>
+              <roleTerm authority="marcrelator" type="text">author</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds empty cocina data structure and does not raise error' do
+        expect(build).to eq [{}]
+      end
+
+      it 'notifies Honeybadger namePart is empty' do
+        allow(Honeybadger).to receive(:notify).twice
+        build
+        expect(Honeybadger).to have_received(:notify)
+          .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
+        expect(Honeybadger).to have_received(:notify)
+          .with('[DATA ERROR] missing name/namePart element', tags: 'data_error')
+      end
+    end
+
+    # 7f. role without namePart value (not matching - it is MISSING namePart element)
+    context 'with missing namePart element' do
+      let(:xml) do
+        <<~XML
+          <name>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/spn">Sponsor</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [{}]
+      end
+
+      it 'notifies Honeybadger' do
+        allow(Honeybadger).to receive(:notify)
+        build
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] missing name/namePart element', { tags: 'data_error' })
       end
     end
 
@@ -966,32 +1006,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
-    context 'when role without namePart value' do
-      let(:xml) do
-        <<~XML
-          <name>
-            <namePart/>
-            <role>
-              <roleTerm authority="marcrelator" type="text">author</roleTerm>
-            </role>
-          </name>
-        XML
-      end
-
-      it 'builds empty cocina data structure and does not raise error' do
-        expect(build).to eq [{}]
-      end
-
-      it 'notifies Honeybadger namePart is empty' do
-        allow(Honeybadger).to receive(:notify).twice
-        build
-        expect(Honeybadger).to have_received(:notify)
-          .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
-        expect(Honeybadger).to have_received(:notify)
-          .with('[DATA ERROR] missing name/namePart element', tags: 'data_error')
-      end
-    end
-
+    # 7g. Role attribute without roleTerm or namePart value
     context 'when roleTerm with no value and no namepart' do
       let(:xml) do
         <<~XML
@@ -1043,6 +1058,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # 8. Name with authority
   context 'with authority' do
     let(:xml) do
       <<~XML
@@ -1072,6 +1088,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # 9. Multiple names, one primary
   context 'with multiple names, one primary' do
     let(:xml) do
       <<~XML
@@ -1123,6 +1140,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # kind of 18, except with multiple names
   context 'with multiple names, one primary, dates, no roles' do
     let(:xml) do
       <<~XML
@@ -1172,6 +1190,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # 10. Multiple names, no primary
   context 'with multiple names, no primary' do
     let(:xml) do
       <<~XML
@@ -1222,11 +1241,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # 11. Single name, no primary (pseudonym)
   context 'with single name, no primary (pseudonym)' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L454'
+    xit 'TODO: 6. Single name, no primary (pseudonym) - mods_to_cocina_name.txt#L473'
   end
 
-  # Example 11
+  # 12. Multiple names with transliteration (name as value)
+  # FIXME: missing "status": "primary" for Булгаков
   context 'with multiple names with transliteration (name as value)' do
     let(:xml) do
       <<~XML
@@ -1246,6 +1267,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
 
     it 'builds the cocina data structure' do
+      # FIXME: missing "status": "primary" for Булгаков
       expect(build).to eq [
         {
           "name": [
@@ -1254,27 +1276,27 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
                 {
                   "value": 'Булгаков, Михаил Афанасьевич',
                   "valueLanguage":
-                            {
-                              "valueScript": {
-                                "code": 'Cyrl',
-                                "source": {
-                                  "code": 'iso15924'
-                                }
-                              }
-                            },
+                    {
+                      "valueScript": {
+                        "code": 'Cyrl',
+                        "source": {
+                          "code": 'iso15924'
+                        }
+                      }
+                    },
                   "status": 'primary'
                 },
                 {
                   "value": 'Bulgakov, Mikhail Afanasʹevich',
                   "valueLanguage":
-                          {
-                            "valueScript": {
-                              "code": 'Latn',
-                              "source": {
-                                "code": 'iso15924'
-                              }
-                            }
-                          },
+                    {
+                      "valueScript": {
+                        "code": 'Latn',
+                        "source": {
+                          "code": 'iso15924'
+                        }
+                      }
+                    },
                   "type": 'transliteration',
                   "standard": {
                     "value": 'ALA-LC Romanization Tables'
@@ -1292,26 +1314,26 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
                 {
                   "value": 'Олеша, Юрий Карлович',
                   "valueLanguage":
-                            {
-                              "valueScript": {
-                                "code": 'Cyrl',
-                                "source": {
-                                  "code": 'iso15924'
-                                }
-                              }
-                            }
+                    {
+                      "valueScript": {
+                        "code": 'Cyrl',
+                        "source": {
+                          "code": 'iso15924'
+                        }
+                      }
+                    }
                 },
                 {
                   "value": 'Olesha, I︠U︡riĭ Karlovich',
                   "valueLanguage":
-                        {
-                          "valueScript": {
-                            "code": 'Latn',
-                            "source": {
-                              "code": 'iso15924'
-                            }
-                          }
-                        },
+                    {
+                      "valueScript": {
+                        "code": 'Latn',
+                        "source": {
+                          "code": 'iso15924'
+                        }
+                      }
+                    },
                   "type": 'transliteration',
                   "standard": {
                     "value": 'ALA-LC Romanization Tables'
@@ -1326,23 +1348,113 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
-  context 'with transliterated name with parts (name as structuredValue)' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L569'
-  end
+  # 13. Transliterated name with parts (name as structuredValue) - reference example only, not to be implemented
+  # context 'with transliterated name with parts (name as structuredValue)' do
+  #   xit 'TODO: 13. Transliterated name with parts (name as structuredValue)) - mods_to_cocina_name.txt#L583'
+  # end
 
+  # 14. Name with et al.
   context 'with et al.' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L639'
+    xit 'TODO: 14. Name with et al. - mods_to_cocina_name.txt#L650'
   end
 
+  # 15. Name with display label
   context 'with displayLabel' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L662'
+    xit 'TODO: 15. Name with display label - mods_to_cocina_name.txt#L673'
   end
 
+  # 16. Name with valueURI only (authority URI)
   context 'with valueURI only' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#681'
+    xit 'TODO: 16. Name with valueURI only (authority URI) - mods_to_cocina_name.txt#L693'
   end
 
+  # 17. Name with nameIdentifier only (RWO URI)
   context 'with nameIdentifier only (RWO URI)' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#701'
+    xit 'TODO: 17. Name with nameIdentifier only (RWO URI) - mods_to_cocina_name.txt#L693'
+  end
+
+  # 18. Full name with additional subelements
+  # FIXME: see 5 and after 9, "kind of 18, except with multiple names"
+  # FIXME: actually works, except missing type name within the structured value
+  context 'with full name with additional subelements' do
+    xit 'TODO: 18. Full name with additional subelements - mods_to_cocina_name.txt#L741'
+    # let(:xml) do
+    #   <<~XML
+    #     <name type="personal" usage="primary">
+    #       <namePart>Sarmiento, Domingo Faustino</namePart>
+    #       <namePart type="date">1811-1888</namePart>
+    #     </name>
+    #   XML
+    # end
+    #
+    # it 'builds the cocina data structure' do
+    #   expect(build).to eq [
+    #     {
+    #       "name": [
+    #         "structuredValue": [
+    #           {
+    #             "value": 'Sarmiento, Domingo Faustino',
+    #             "type": 'name',
+    #           },
+    #           {
+    #             "type": 'life dates',
+    #             "value": '1811-1888'
+    #           }
+    #         ]
+    #       ],
+    #       "type": 'person',
+    #       "status": 'primary'
+    #     }
+    #   ]
+    # end
+  end
+
+  # 19. Name with active date - year
+  context 'with name with active date - year' do
+    xit 'TODO: 19. Name with active date - year - mods_to_cocina_name.txt#L794'
+    # let(:xml) do
+    #   <<~XML
+    #     <name type="personal">
+    #       <namePart>Yao, Zongyi</namePart>
+    #       <namePart type="date">Active 1618</namePart>
+    #     </name>
+    #   XML
+    # end
+    #
+    # it 'builds the cocina data structure' do
+    #   expect(build).to eq [
+    #     {
+    #       "name": [
+    #         "structuredValue": [
+    #           {
+    #             "value": 'Yao, Zongyi',
+    #             "type": 'name',
+    #           },
+    #           {
+    #             "type": 'activity dates',
+    #             "value": '1618'
+    #           }
+    #         ]
+    #       ],
+    #       "type": 'person',
+    #       "status": 'primary'
+    #     }
+    #   ]
+    # end
+  end
+
+  # 20. Name with active date - century
+  context 'with name with active date - century' do
+    xit 'TODO: 20. Name with active date - century - mods_to_cocina_name.txt#L794'
+  end
+
+  # 21. Name with approximate date
+  context 'with name with approximate date' do
+    xit 'TODO: 21. name with approximate date - mods_to_cocina_name.txt#L820'
+  end
+
+  # 22. Name with language
+  context 'with name with language' do
+    xit 'TODO: 22. Name with language - mods_to_cocina_name.txt#L846'
   end
 end
