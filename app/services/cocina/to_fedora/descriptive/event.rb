@@ -63,12 +63,15 @@ module Cocina
         end
 
         def write_basic(event, event_type)
+          names = Array(event.contributor).map { |contributor| contributor.name.first }
+          name = names.first
           attributes = {
             displayLabel: event.displayLabel,
-            eventType: event_type
+            eventType: event_type,
+            lang: name&.valueLanguage&.code,
+            script: name&.valueLanguage&.valueScript&.code,
+            transliteration: name&.standard&.value
           }.compact
-
-          names = Array(event.contributor).map { |contributor| contributor.name.first }
 
           write_event(event_type, event.date, event.location, names, event.note, attributes)
         end
@@ -178,7 +181,7 @@ module Cocina
               write_location(loc)
             end
             Array(names).each do |name|
-              write_name(name, is_parallel: is_parallel)
+              xml.publisher name.value
             end
             Array(notes).each do |note|
               write_note(note)
@@ -191,21 +194,6 @@ module Cocina
           attributes = {}
           attributes[:authority] = note.source.code if note&.source&.code
           xml.send(note.type || 'edition', note.value, attributes)
-        end
-
-        def write_name(name, is_parallel: false)
-          attributes = if is_parallel
-                         {}
-                       else
-                         {
-                           lang: name.valueLanguage&.code,
-                           script: name.valueLanguage&.valueScript&.code,
-                           transliteration: name.standard&.value
-
-                         }.compact
-                       end
-
-          xml.publisher(name.value, attributes)
         end
 
         def write_location(location)

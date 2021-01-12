@@ -2408,7 +2408,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
             }
           ]
         }
-
       ]
     end
   end

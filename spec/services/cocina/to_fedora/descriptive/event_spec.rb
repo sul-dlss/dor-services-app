@@ -970,8 +970,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication">
-            <publisher lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
+          <originInfo eventType="publication" lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">
+            <publisher>Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
           </originInfo>
         </mods>
       XML
@@ -1026,8 +1026,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication">
-            <publisher lang="rus" script="Cyrl">СФУ</publisher>
+          <originInfo eventType="publication" lang="rus" script="Cyrl">
+            <publisher>СФУ</publisher>
           </originInfo>
         </mods>
       XML
