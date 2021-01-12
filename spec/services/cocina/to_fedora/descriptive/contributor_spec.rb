@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# numbered examples from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt
 RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
   subject(:xml) { writer.to_xml }
 
@@ -36,6 +37,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
+  # 1. Personal name
   context 'with a personal name' do
     let(:contributors) do
       [
@@ -62,37 +64,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
-  context 'with empty name' do
-    # see https://github.com/sul-dlss/dor-services-app/issues/1161
-    let(:contributors) do
-      [
-        Cocina::Models::Contributor.new(
-          "name": [
-            {
-              "value": ''
-            }
-          ],
-          "role": [
-            {
-              "value": ''
-            }
-          ]
-        )
-      ]
-    end
-
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        #{mods_element_open}
-          <name>
-            <namePart/>
-            <role/>
-          </name>
-        #{mods_element_close}
-      XML
-    end
-  end
-
+  # 2. Corporate name
   context 'with a corporate name' do
     let(:contributors) do
       [
@@ -119,6 +91,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
+  # 3. Family name
   context 'with a family name' do
     let(:contributors) do
       [
@@ -145,6 +118,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
+  # 4. Conference name
   context 'with a conference name' do
     let(:contributors) do
       [
@@ -171,7 +145,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
-  context 'with a translated name' do
+  # FIXME: this example should be added to cdm (?) - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
+  context 'with a translated name, no role' do
     let(:contributors) do
       [
         Cocina::Models::Contributor.new(
@@ -227,7 +202,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
       expect(xml).to be_equivalent_to <<~XML
         #{mods_element_open}
           <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
-            <namePart>&#x30EC;&#x30A2;&#x30E1;&#x30BF;&#x30EB;&#x8CC7;&#x6E90;&#x518D;&#x751F;&#x6280;&#x8853;&#x7814;&#x7A76;&#x4F1A;</namePart>
+            <namePart>レアメタル資源再生技術研究会</namePart>
           </name>
           <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
             <namePart>Rea Metaru Shigen Saisei Gijutsu Kenky&#x16B;kai</namePart>
@@ -237,6 +212,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
+  # FIXME: this example should be added to cdm (?) - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
   context 'without type' do
     let(:contributors) do
       [
@@ -262,332 +238,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
-  context 'with role' do
-    context 'when both code and value' do
-      let(:contributors) do
-        [
-          Cocina::Models::Contributor.new(
-            name: [
-              {
-                value: 'Dunnett, Dorothy'
-              }
-            ],
-            status: 'primary',
-            type: 'person',
-            role: [
-              {
-                value: 'author',
-                code: 'aut',
-                uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                source: {
-                  code: 'marcrelator',
-                  uri: 'http://id.loc.gov/vocabulary/relators/'
-                }
-              }
-            ]
-          )
-        ]
-      end
-
-      it 'builds the xml' do
-        expect(xml).to be_equivalent_to <<~XML
-          #{mods_element_open}
-            <name type="personal" usage="primary">
-              <namePart>Dunnett, Dorothy</namePart>
-              <role>
-                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-              </role>
-            </name>
-          #{mods_element_close}
-        XML
-      end
-    end
-
-    context 'when role has code but not value' do
-      let(:contributors) do
-        [
-          Cocina::Models::Contributor.new(
-            "name": [
-              {
-                "value": 'Dunnett, Dorothy'
-              }
-            ],
-            "status": 'primary',
-            "type": 'person',
-            "role": [
-              {
-                "code": 'aut',
-                "uri": 'http://id.loc.gov/vocabulary/relators/aut',
-                "source": {
-                  "code": 'marcrelator',
-                  "uri": 'http://id.loc.gov/vocabulary/relators/'
-                }
-              }
-            ]
-          )
-        ]
-      end
-
-      it 'builds the xml' do
-        expect(xml).to be_equivalent_to <<~XML
-          #{mods_element_open}
-            <name type="personal" usage="primary">
-              <namePart>Dunnett, Dorothy</namePart>
-              <role>
-                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-              </role>
-            </name>
-          #{mods_element_close}
-        XML
-      end
-    end
-
-    context 'when role has value but not code' do
-      let(:contributors) do
-        [
-          Cocina::Models::Contributor.new(
-            "name": [
-              {
-                "value": 'Dunnett, Dorothy'
-              }
-            ],
-            "status": 'primary',
-            "type": 'person',
-            "role": [
-              {
-                "value": 'author',
-                "uri": 'http://id.loc.gov/vocabulary/relators/aut',
-                "source": {
-                  "code": 'marcrelator',
-                  "uri": 'http://id.loc.gov/vocabulary/relators/'
-                }
-              }
-            ]
-          )
-        ]
-      end
-
-      it 'builds the xml' do
-        expect(xml).to be_equivalent_to <<~XML
-          #{mods_element_open}
-            <name type="personal" usage="primary">
-              <namePart>Dunnett, Dorothy</namePart>
-              <role>
-                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-              </role>
-            </name>
-          #{mods_element_close}
-        XML
-      end
-    end
-
-    context 'when role has value but not code and no authority' do
-      let(:contributors) do
-        [
-          Cocina::Models::Contributor.new(
-            "name": [
-              {
-                "value": 'Dunnett, Dorothy'
-              }
-            ],
-            "type": 'person',
-            "role": [
-              {
-                "value": 'Author'
-              }
-            ]
-          )
-        ]
-      end
-
-      it 'builds the xml' do
-        expect(xml).to be_equivalent_to <<~XML
-          #{mods_element_open}
-            <name type="personal">
-              <namePart>Dunnett, Dorothy</namePart>
-              <role>
-                <roleTerm type="text">Author</roleTerm>
-              </role>
-            </name>
-          #{mods_element_close}
-        XML
-      end
-    end
-
-    context 'when role has valueURI as the only authority attribute' do
-      let(:contributors) do
-        [
-          Cocina::Models::Contributor.new(
-            name: [
-              {
-                value: 'Dunnett, Dorothy'
-              }
-            ],
-            status: 'primary',
-            type: 'person',
-            role: [
-              {
-                value: 'author',
-                code: 'aut',
-                uri: 'http://id.loc.gov/vocabulary/relators/aut'
-              }
-            ]
-          )
-        ]
-      end
-
-      it 'builds the xml' do
-        expect(xml).to be_equivalent_to <<~XML
-          #{mods_element_open}
-            <name type="personal" usage="primary">
-              <namePart>Dunnett, Dorothy</namePart>
-              <role>
-                <roleTerm type="text" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-                <roleTerm type="code" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-              </role>
-            </name>
-          #{mods_element_close}
-        XML
-      end
-    end
-
-    context 'when role has authority as the only authority attribute' do
-      let(:contributors) do
-        [
-          Cocina::Models::Contributor.new(
-            name: [
-              {
-                value: 'Dunnett, Dorothy'
-              }
-            ],
-            status: 'primary',
-            type: 'person',
-            role: [
-              {
-                value: 'author',
-                code: 'aut',
-                source: {
-                  code: 'marcrelator',
-                  uri: 'http://id.loc.gov/vocabulary/relators/'
-                }
-              }
-            ]
-          )
-        ]
-      end
-
-      it 'builds the xml' do
-        expect(xml).to be_equivalent_to <<~XML
-          #{mods_element_open}
-            <name type="personal" usage="primary">
-              <namePart>Dunnett, Dorothy</namePart>
-              <role>
-                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/">author</roleTerm>
-                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/">aut</roleTerm>
-              </role>
-            </name>
-          #{mods_element_close}
-        XML
-      end
-    end
-
-    context 'when role and name elements are empty' do
-      let(:contributors) do
-        [
-          Cocina::Models::Contributor.new(
-            "name": [
-              {
-                "value": ''
-              }
-            ],
-            "role": [
-              {
-                "source":
-                  {
-                    "code": 'marcreleator'
-                  }
-              }
-            ]
-          )
-        ]
-      end
-
-      it 'builds the (empty) name elements in the xml' do
-        expect(xml).to be_equivalent_to <<~XML
-          #{mods_element_open}
-            <name>
-              <namePart/>
-              <role/>
-            </name>
-          #{mods_element_close}
-        XML
-      end
-    end
-
-    context 'when multiple roles' do
-      let(:contributors) do
-        [
-          Cocina::Models::Contributor.new(
-            name: [
-              {
-                value: 'Dunnett, Dorothy'
-              }
-            ],
-            status: 'primary',
-            type: 'person',
-            role: [
-              {
-                value: 'primary advisor'
-              },
-              {
-                source: {
-                  code: 'marcrelator',
-                  uri: 'http://id.loc.gov/vocabulary/relators/'
-                },
-                code: 'ths'
-              }
-            ]
-          )
-        ]
-      end
-
-      it 'builds the xml' do
-        expect(xml).to be_equivalent_to <<~XML
-          #{mods_element_open}
-            <name type="personal" usage="primary">
-              <namePart>Dunnett, Dorothy</namePart>
-                <role>
-                  <roleTerm type="text">primary advisor</roleTerm>
-                </role>
-                <role>
-                  <roleTerm authority="marcrelator" type="code" authorityURI="http://id.loc.gov/vocabulary/relators/">ths</roleTerm>
-                </role>
-            </name>
-          #{mods_element_close}
-        XML
-      end
-    end
-
-    context 'when contributor model is empty' do
-      # NOTE for https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L324'
-      #   from_fedora builds a null structure ... so we're not going to get roleTerm back
-
-      let(:contributors) do
-        [
-          Cocina::Models::Contributor.new
-        ]
-      end
-
-      it 'builds the (empty) xml' do
-        expect(xml).to be_equivalent_to <<~XML
-          #{mods_element_open}
-          #{mods_element_close}
-        XML
-      end
-    end
-  end
-
+  # 5. Name with additional subelements
   context 'with additional subelements' do
     let(:contributors) do
       [
@@ -658,6 +309,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
+  # FIXME: this example should be added to cdm (?) - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
   context 'with multiple nameParts without types' do
     let(:contributors) do
       [
@@ -691,54 +343,380 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
-  context 'with multiple contributors' do
-    let(:contributors) do
-      [
-        Cocina::Models::Contributor.new(
-          "name": [
-            {
-              "value": 'Hawaii International Services Agency'
-            }
-          ],
-          "type": 'organization'
-        ),
-        Cocina::Models::Contributor.new(
-          "name": [
-            {
-              "structuredValue": [
-                {
-                  "value": 'United States'
-                },
-                {
-                  "value": 'Office of Foreign Investment in the United States.'
-                }
-              ]
-            }
-          ],
-          "type": 'organization'
-        )
-      ]
-    end
-
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        #{mods_element_open}
-          <name type="corporate">
-            <namePart>Hawaii International Services Agency</namePart>
-          </name>
-          <name type="corporate">
-            <namePart>United States</namePart>
-            <namePart>Office of Foreign Investment in the United States.</namePart>
-          </name>
-        #{mods_element_close}
-      XML
-    end
-  end
-
+  # 6. Name with ordinal
   context 'with ordinal' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L140'
+    xit 'TODO: 6. Name with ordinal - mods_to_cocina_name.txt#L137'
   end
 
+  context 'with role' do
+    # 7. Name with role
+    context 'when both code and value' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            name: [
+              {
+                value: 'Dunnett, Dorothy'
+              }
+            ],
+            status: 'primary',
+            type: 'person',
+            role: [
+              {
+                value: 'author',
+                code: 'aut',
+                uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                source: {
+                  code: 'marcrelator',
+                  uri: 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          #{mods_element_open}
+            <name type="personal" usage="primary">
+              <namePart>Dunnett, Dorothy</namePart>
+              <role>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+              </role>
+            </name>
+          #{mods_element_close}
+        XML
+      end
+    end
+
+    # 7b. Role text only
+    #  FIXME: discrepancy - mods only has text, not code
+    context 'when role has value but not code' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            "name": [
+              {
+                "value": 'Dunnett, Dorothy'
+              }
+            ],
+            "status": 'primary',
+            "type": 'person',
+            "role": [
+              {
+                "value": 'author',
+                "uri": 'http://id.loc.gov/vocabulary/relators/aut',
+                "source": {
+                  "code": 'marcrelator',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          #{mods_element_open}
+            <name type="personal" usage="primary">
+              <namePart>Dunnett, Dorothy</namePart>
+              <role>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              </role>
+            </name>
+          #{mods_element_close}
+        XML
+      end
+    end
+
+    # FIXME: this example should be added to cdm - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
+    context 'when role has value but not code and no authority' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            "name": [
+              {
+                "value": 'Dunnett, Dorothy'
+              }
+            ],
+            "type": 'person',
+            "role": [
+              {
+                "value": 'Author'
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          #{mods_element_open}
+            <name type="personal">
+              <namePart>Dunnett, Dorothy</namePart>
+              <role>
+                <roleTerm type="text">Author</roleTerm>
+              </role>
+            </name>
+          #{mods_element_close}
+        XML
+      end
+    end
+
+    # 7c. Role code only
+    #  FIXME: discrepancy - mods has code only, not text
+    context 'when role has code but not value' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            "name": [
+              {
+                "value": 'Dunnett, Dorothy'
+              }
+            ],
+            "status": 'primary',
+            "type": 'person',
+            "role": [
+              {
+                "code": 'aut',
+                "uri": 'http://id.loc.gov/vocabulary/relators/aut',
+                "source": {
+                  "code": 'marcrelator',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          #{mods_element_open}
+            <name type="personal" usage="primary">
+              <namePart>Dunnett, Dorothy</namePart>
+              <role>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+              </role>
+            </name>
+          #{mods_element_close}
+        XML
+      end
+    end
+
+    # 7d. Role with valueURI as the only authority attribute
+    context 'when role has valueURI as the only authority attribute' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            name: [
+              {
+                value: 'Dunnett, Dorothy'
+              }
+            ],
+            status: 'primary',
+            type: 'person',
+            role: [
+              {
+                value: 'author',
+                code: 'aut',
+                uri: 'http://id.loc.gov/vocabulary/relators/aut'
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          #{mods_element_open}
+            <name type="personal" usage="primary">
+              <namePart>Dunnett, Dorothy</namePart>
+              <role>
+                <roleTerm type="text" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+                <roleTerm type="code" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+              </role>
+            </name>
+          #{mods_element_close}
+        XML
+      end
+    end
+
+    # 7e. Role with authority as the only authority attribute
+    # FIXME: discrepancy - our mods includes authority attribute
+    context 'when role has authority as the only authority attribute' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            name: [
+              {
+                value: 'Dunnett, Dorothy'
+              }
+            ],
+            status: 'primary',
+            type: 'person',
+            role: [
+              {
+                value: 'author',
+                code: 'aut',
+                source: {
+                  code: 'marcrelator',
+                  uri: 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          #{mods_element_open}
+            <name type="personal" usage="primary">
+              <namePart>Dunnett, Dorothy</namePart>
+              <role>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/">author</roleTerm>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/">aut</roleTerm>
+              </role>
+            </name>
+          #{mods_element_close}
+        XML
+      end
+    end
+
+    # 7f, 7g: cocina model for contributor is empty :-)
+    context 'when contributor model is empty' do
+      # NOTE for https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L324'
+      #   from_fedora builds a null structure ... so we're not going to get roleTerm back
+
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new
+        ]
+      end
+
+      it 'builds the (empty) xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          #{mods_element_open}
+          #{mods_element_close}
+        XML
+      end
+    end
+
+    context 'with empty name value and empty role value' do
+      # see https://github.com/sul-dlss/dor-services-app/issues/1161
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            "name": [
+              {
+                "value": ''
+              }
+            ],
+            "role": [
+              {
+                "value": ''
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds empty namePart and role elements in the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          #{mods_element_open}
+            <name>
+              <namePart/>
+              <role/>
+            </name>
+          #{mods_element_close}
+        XML
+      end
+    end
+
+    context 'with empty name value and missing role' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            "name": [
+              {
+                "value": ''
+              }
+            ],
+            "role": [
+              {
+                "source":
+                  {
+                    "code": 'marcreleator'
+                  }
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds empty namePart and role elements in the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          #{mods_element_open}
+            <name>
+              <namePart/>
+              <role/>
+            </name>
+          #{mods_element_close}
+        XML
+      end
+    end
+
+    # FIXME: this example should be added to cdm - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
+    context 'when multiple roles' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            name: [
+              {
+                value: 'Dunnett, Dorothy'
+              }
+            ],
+            status: 'primary',
+            type: 'person',
+            role: [
+              {
+                value: 'primary advisor'
+              },
+              {
+                source: {
+                  code: 'marcrelator',
+                  uri: 'http://id.loc.gov/vocabulary/relators/'
+                },
+                code: 'ths'
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          #{mods_element_open}
+            <name type="personal" usage="primary">
+              <namePart>Dunnett, Dorothy</namePart>
+                <role>
+                  <roleTerm type="text">primary advisor</roleTerm>
+                </role>
+                <role>
+                  <roleTerm authority="marcrelator" type="code" authorityURI="http://id.loc.gov/vocabulary/relators/">ths</roleTerm>
+                </role>
+            </name>
+          #{mods_element_close}
+        XML
+      end
+    end
+  end
+
+  # 8. Name with authority
   context 'with authority' do
     let(:contributors) do
       [
@@ -799,6 +777,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
+  # 9. Multiple names, one primary
   context 'with multiple names, one primary' do
     let(:contributors) do
       [
@@ -852,6 +831,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
+  # FIXME: this example should be added to cdm ??? - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
+  # kind of 18, except with multiple names
   context 'with multiple names, one primary, dates, no roles' do
     let(:contributors) do
       [
@@ -903,6 +884,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
+  # 10. Multiple names, no primary
   context 'with multiple names, no primary' do
     let(:contributors) do
       [
@@ -955,6 +937,52 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
+  context 'with multiple names, no primary, no roles' do
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          "name": [
+            {
+              "value": 'Hawaii International Services Agency'
+            }
+          ],
+          "type": 'organization'
+        ),
+        Cocina::Models::Contributor.new(
+          "name": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'United States'
+                },
+                {
+                  "value": 'Office of Foreign Investment in the United States.'
+                }
+              ]
+            }
+          ],
+          "type": 'organization'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        #{mods_element_open}
+          <name type="corporate">
+            <namePart>Hawaii International Services Agency</namePart>
+          </name>
+          <name type="corporate">
+            <namePart>United States</namePart>
+            <namePart>Office of Foreign Investment in the United States.</namePart>
+          </name>
+        #{mods_element_close}
+      XML
+    end
+  end
+
+  # almost mods_to_cocina_titleInfo.txt example 6. Uniform title with authority
+  # FIXME: discrepancies (see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L203)
   context 'with a personal name part of name title group' do
     let(:contributors) do
       [
@@ -1024,11 +1052,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
+  # 11. Single name, no primary (pseudonym)
   context 'with single name, no primary (pseudonym)' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L454'
+    xit 'TODO: 11. Single name, no primary (pseudonym) - mods_to_cocina_name.txt#L473'
   end
 
-  # Example 11
+  # 12.  Multiple names with transliteration (name as value)
+  # FIXME: discrepancy - doesn't match exactly (uris); also status primary in 2 places (inside and outside parallelValue)
   context 'with multiple names with transliteration (name as value)' do
     let(:contributors) do
       [
@@ -1140,23 +1170,53 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
   end
 
-  context 'with transliterated name with parts (name as structuredValue)' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L569'
-  end
+  # 13. Transliterated name with parts (name as structuredValue) - reference example only
+  # context 'with transliterated name with parts (name as structuredValue) - reference example only' do
+  #   xit 'TODO: 13. Transliterated name with parts (name as structuredValue)) - mods_to_cocina_name.txt#L583'
+  # end
 
+  # 14. Name with et al.
   context 'with et al.' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L639'
+    xit 'TODO: 14. Name with et al. - mods_to_cocina_name.txt#L650'
   end
 
+  # 15. Name with display label
   context 'with displayLabel' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#L662'
+    xit 'TODO: 15. Name with display label - mods_to_cocina_name.txt#L673'
   end
 
+  # 16. Name with valueURI only (authority URI)
   context 'with valueURI only' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#681'
+    xit 'TODO: 16. Name with valueURI only (authority URI) - mods_to_cocina_name.txt#L693'
   end
 
+  # 17. Name with nameIdentifier only (RWO URI)
   context 'with nameIdentifier only (RWO URI)' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt#701'
+    xit 'TODO: 17. Name with nameIdentifier only (RWO URI) - mods_to_cocina_name.txt#L713'
+  end
+
+  # 18. Full name with additional subelements
+  context 'with full name with additional subelements' do
+    xit 'TODO: 18. Full name with additional subelements - mods_to_cocina_name.txt#L741'
+  end
+
+  # 19. Name with active date - year
+  context 'with name with active date - year' do
+    xit 'TODO: 19. Name with active date - year - mods_to_cocina_name.txt#L794'
+  end
+
+  # 20. Name with active date - century
+  context 'with name with active date - century' do
+    xit 'TODO: 20. Name with active date - century - mods_to_cocina_name.txt#L794'
+  end
+
+  # 21. Name with approximate date
+  context 'with name with approximate date' do
+    xit 'TODO: 21. name with approximate date - mods_to_cocina_name.txt#L820'
+  end
+
+  # 22. Name with language
+  context 'with name with language' do
+    xit 'TODO: 22. Name with language - mods_to_cocina_name.txt#L846'
   end
 end
