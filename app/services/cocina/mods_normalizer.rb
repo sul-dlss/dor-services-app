@@ -30,6 +30,7 @@ module Cocina
       normalize_origin_info_place_term_type
       normalize_origin_info_developed_date
       normalize_origin_info_date
+      normalize_origin_info_publisher
       normalize_parallel_origin_info
       normalize_origin_info_lang_script
       normalize_subject_authority
@@ -535,6 +536,21 @@ module Cocina
                         dc: 'http://purl.org/dc/elements/1.1/',
                         rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#').each do |coverage_node|
         coverage_node.delete('resource')
+      end
+    end
+
+    def normalize_origin_info_publisher
+      ng_xml.root.xpath('//mods:publisher[@lang]', mods: MODS_NS).each do |publisher_node|
+        publisher_node.parent['lang'] = publisher_node['lang']
+        publisher_node.delete('lang')
+      end
+      ng_xml.root.xpath('//mods:publisher[@script]', mods: MODS_NS).each do |publisher_node|
+        publisher_node.parent['script'] = publisher_node['script']
+        publisher_node.delete('script')
+      end
+      ng_xml.root.xpath('//mods:publisher[@transliteration]', mods: MODS_NS).each do |publisher_node|
+        publisher_node.parent['transliteration'] = publisher_node['transliteration']
+        publisher_node.delete('transliteration')
       end
     end
   end

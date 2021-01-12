@@ -1941,4 +1941,26 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing publisher' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <originInfo>
+            <publisher lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    it 'moves lang, script, and transliteration to originInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <originInfo eventType="publication" lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">
+            <publisher>Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
 end
