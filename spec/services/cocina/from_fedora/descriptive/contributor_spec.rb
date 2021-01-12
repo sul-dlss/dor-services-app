@@ -326,7 +326,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
-  # FIXME: this example should be added to cdm
+  # FIXME: this example should be added to cdm - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
   context 'with missing nameIdentifier type' do
     let(:xml) do
       <<~XML
@@ -356,7 +356,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
-  # FIXME: this example should be added to cdm
+  # FIXME: this example should be added to cdm - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
   context 'with multiple nameParts without types' do
     let(:xml) do
       <<~XML
@@ -496,7 +496,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
-    # FIXME: this example should be added to cdm
+    # FIXME: this example should be added to cdm - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
     context 'with a role that has no URI and has xlink uris from MODS 3.3' do
       # MODS 3.3 header from druid:yy910cj7795
       let(:ng_xml) do
@@ -543,7 +543,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
-    # FIXME: this example should be added to cdm
+    # FIXME: this example should be added to cdm - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
     context 'with translated name and roles' do
       let(:xml) do
         <<~XML
@@ -711,7 +711,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
-    # FIXME: this example should be added to cdm
+    # FIXME: this example should be added to cdm - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
     context 'when the role text has no authority' do
       let(:xml) do
         <<~XML
@@ -781,7 +781,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
-    # FIXME: this example should be added to cdm
+    # FIXME: this example should be added to cdm - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
     context 'when the role code is missing the authority and length is 3' do
       let(:xml) do
         <<~XML
@@ -977,7 +977,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
-    # FIXME: this example should be added to cdm
+    # FIXME: this example should be added to cdm - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
     context 'when multiple roles' do
       let(:xml) do
         <<~XML
@@ -1103,7 +1103,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
-  # FIXME: this example should be added to cdm ???
+  # FIXME: this example should be added to cdm ??? - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
   # kind of 18, except with multiple names
   context 'with multiple names, one primary, dates, no roles' do
     let(:xml) do
@@ -1381,7 +1381,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
   end
 
   # 18. Full name with additional subelements
-  # FIXME: actually works, except missing type name within the structured value
+  # FIXME: works, except missing type name within the structured value
   context 'with full name with additional subelements' do
     xit 'TODO: 18. Full name with additional subelements - mods_to_cocina_name.txt#L741'
     # let(:xml) do
