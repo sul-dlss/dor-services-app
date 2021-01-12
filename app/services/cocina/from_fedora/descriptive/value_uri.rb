@@ -9,9 +9,8 @@ module Cocina
           'http'
         ].freeze
 
-        def self.sniff(uri)
-          Honeybadger.notify("[DATA ERROR] Value URI has unexpected value: #{uri}", tags: 'data_error') if uri.present? &&
-                                                                                                           !uri.starts_with?(*SUPPORTED_PREFIXES)
+        def self.sniff(uri, notifier)
+          notifier.warn('Value URI has unexpected value', { uri: uri }) if uri.present? && !uri.starts_with?(*SUPPORTED_PREFIXES)
 
           uri
         end

@@ -7,14 +7,16 @@ module Cocina
       # Maps a name
       class NameBuilder
         # @param [Array<Nokogiri::XML::Element>] name_elements (multiple if parallel)
+        # @param [Cocina::FromFedora::DataErrorNotifier] notifier
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(name_elements:, add_default_type: false)
-          new(name_elements: name_elements, add_default_type: add_default_type).build
+        def self.build(name_elements:, notifier:, add_default_type: false)
+          new(name_elements: name_elements, add_default_type: add_default_type, notifier: notifier).build
         end
 
-        def initialize(name_elements:, add_default_type: false)
+        def initialize(name_elements:, notifier:, add_default_type: false)
           @name_elements = name_elements
           @add_default_type = add_default_type
+          @notifier = notifier
         end
 
         def build
@@ -27,7 +29,7 @@ module Cocina
 
         private
 
-        attr_reader :name_elements, :add_default_type
+        attr_reader :name_elements, :add_default_type, :notifier
 
         def build_parallel
           names = {
@@ -56,7 +58,7 @@ module Cocina
 
           name_attrs = name_attrs.merge(common_name(name_node, name_attrs[:name]))
           name_parts = build_name_parts(name_node)
-          Honeybadger.notify('[DATA ERROR] missing name/namePart element', { tags: 'data_error' }) if name_parts.all?(&:empty?)
+          notifier.warn('Missing name/namePart element') if name_parts.all?(&:empty?)
           name_parts.each { |name_part| name_attrs = name_attrs.merge(name_part) }
           name_attrs.compact
         end
@@ -65,7 +67,7 @@ module Cocina
           name_parts = build_name_parts(name_node)
           # If there are no name parts, do not map the name
           if name_parts.all?(&:empty?)
-            Honeybadger.notify('[DATA ERROR] missing name/namePart element', { tags: 'data_error' })
+            notifier.warn('Missing name/namePart element')
             return {}
           end
           {
@@ -107,31 +109,31 @@ module Cocina
 
         def build_name_part(name_part_node)
           if name_part_node.content.blank?
-            Honeybadger.notify('[DATA ERROR] name/namePart missing value', { tags: 'data_error' })
+            notifier.warn('name/namePart missing value')
             return {}
           end
 
           { value: name_part_node.content }.tap do |name_part|
-            Honeybadger.notify('[DATA ERROR] name/namePart type attribute set to ""', { tags: 'data_error' }) if name_part_node['type'] == ''
+            notifier.warn('Name/namePart type attribute set to ""') if name_part_node['type'] == ''
 
             type = if add_default_type
                      Contributor::NAME_PART.fetch(name_part_node['type'], 'name')
                    elsif Contributor::NAME_PART.key? name_part_node['type']
                      Contributor::NAME_PART.fetch(name_part_node['type'])
                    elsif name_part_node['type'].present?
-                     Honeybadger.notify("[DATA ERROR] namePart has unknown type assigned to it: '#{name_part_node['type']}'", { tags: 'data_error' })
+                     notifier.warn('namePart has unknown type assigned', type: name_part_node['type'])
                    end
             name_part[:type] = type if type
           end
         end
 
         def authority_attrs_for(name_node)
-          Honeybadger.notify('[DATA ERROR] name has an xlink:href property', { tags: 'data_error' }) if name_node['xlink:href']
+          notifier.warn('Name has an xlink:href property') if name_node['xlink:href']
           {
-            uri: ValueURI.sniff(name_node['valueURI'] || name_node['xlink:href'])
+            uri: ValueURI.sniff(name_node['valueURI'] || name_node['xlink:href'], notifier)
           }.tap do |attrs|
             source = {
-              code: Authority.normalize_code(name_node['authority']),
+              code: Authority.normalize_code(name_node['authority'], notifier),
               uri: Authority.normalize_uri(name_node['authorityURI'])
             }.compact
             attrs[:source] = source unless source.empty?
@@ -176,18 +178,18 @@ module Cocina
 
           {}.tap do |role|
             source = {
-              code: Authority.normalize_code(authority),
+              code: Authority.normalize_code(authority, notifier),
               uri: authority == 'marcrelator' ? "http://#{MARC_RELATOR_PIECE}/" : Authority.normalize_uri(authority_uri)
             }.compact
             role[:source] = source if source.present?
 
-            role[:uri] = ValueURI.sniff(authority_value)
+            role[:uri] = ValueURI.sniff(authority_value, notifier)
             role[:code] = code&.content
             marcrelator = marc_relator_role?(authority, authority_uri, authority_value)
             role[:value] = normalized_role_value(text.content, marcrelator) if text
 
             if role[:code].blank? && role[:value].blank?
-              Honeybadger.notify('[DATA ERROR] name/role/roleTerm missing value', { tags: 'data_error' })
+              notifier.warn('name/role/roleTerm missing value')
               return nil
             end
           end.compact
@@ -198,10 +200,10 @@ module Cocina
           return nil if type.blank?
 
           unless Contributor::ROLES.keys.include?(type.downcase)
-            Honeybadger.notify("[DATA ERROR] Name type unrecognized '#{type}'", { tags: 'data_error' })
+            notifier.warn('Name type unrecognized', type: type)
             return
           end
-          Honeybadger.notify('[DATA ERROR] Name type incorrectly capitalized', { tags: 'data_error' }) if type.downcase != type
+          notifier.warn('Name type incorrectly capitalized', type: type) if type.downcase != type
 
           Contributor::ROLES.fetch(type.downcase)
         end
@@ -210,11 +212,11 @@ module Cocina
           return if role_code.nil? || role_authority
 
           if role_code.content.present? && role_code.content.size == 3
-            Honeybadger.notify('[DATA ERROR] Contributor role code is missing authority', { tags: 'data_error' })
+            notifier.warn('Contributor role code is missing authority')
             return
           end
 
-          raise Cocina::Mapper::InvalidDescMetadata, "Contributor role code has unexpected value: #{role_code.content}"
+          notifier.error('Contributor role code has unexpected value', role: role_code.content)
         end
 
         # ensure value is downcased if it's a marcrelator value

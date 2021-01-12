@@ -3,7 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive::Subject do
-  subject(:build) { described_class.build(resource_element: ng_xml.root) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+
+  let(:descriptive_builder) { Cocina::FromFedora::Descriptive::DescriptiveBuilder.new(notifier: notifier) }
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -73,7 +77,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    it 'builds the cocina data structure' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
           "value": 'Biblioteka Polskiej Akademii Nauk w Krakowie',
@@ -84,6 +92,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           }
         }
       ]
+      expect(notifier).to have_received(:warn).with('Value URI has unexpected value', { uri: '(OCoLC)fst00596994' })
     end
   end
 
@@ -604,10 +613,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
   end
 
   context 'without name type' do
-    before do
-      allow(Honeybadger).to receive(:notify)
-    end
-
     let(:xml) do
       <<~XML
         <subject authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n81070667">
@@ -618,7 +623,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    it 'builds the cocina data structure' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
           source:
@@ -631,11 +640,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           value: 'Stanford University. Libraries.'
         }
       ]
-    end
-
-    it 'notifies honeybadger' do
-      build
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject contains a <name> element without a type attribute', { tags: 'data_error' })
+      expect(notifier).to have_received(:warn).with('Subject contains a <name> element without a type attribute')
     end
   end
 
@@ -651,12 +656,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
 
     before do
-      allow(Honeybadger).to receive(:notify)
+      allow(notifier).to receive(:warn)
     end
 
-    it 'ignores the subject and Honeybadger notifies' do
+    it 'ignores the subject and warns' do
       expect(build).to eq []
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart missing value', { tags: 'data_error' })
+      expect(notifier).to have_received(:warn).with('name/namePart missing value')
     end
   end
 
@@ -671,16 +676,20 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    it 'builds the cocina data structure and logs an error' do
-      allow(Honeybadger).to receive(:notify)
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         { source: { uri: '#N/A' },
           type: 'name',
           uri: '#N/A',
           value: 'Hoveyda, Fereydoun' }
       ]
-      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Name type unrecognized '#N/A'", tags: 'data_error')
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has unknown authority code', tags: 'data_error')
+      expect(notifier).to have_received(:warn).with('Name type unrecognized', { type: '#N/A' })
+      expect(notifier).to have_received(:warn).with('Subject has unknown authority code', { code: '#N/A' })
+      expect(notifier).to have_received(:warn).with('Value URI has unexpected value', { uri: '#N/A' }).twice
     end
   end
 
@@ -695,7 +704,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    it 'builds the cocina data structure as if subject topic' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure as if subject topic and warns' do
       expect(build).to eq [
         {
           "value": 'Student movements',
@@ -707,12 +720,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           }
         }
       ]
-    end
-
-    it 'notifies Honeybadger' do
-      allow(Honeybadger).to receive(:notify).once
-      build
-      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Name type unrecognized 'topic'", tags: 'data_error')
+      expect(notifier).to have_received(:warn).with('Name type unrecognized', { type: 'topic' })
     end
   end
 end

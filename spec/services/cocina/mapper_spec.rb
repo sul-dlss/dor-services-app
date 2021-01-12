@@ -133,15 +133,16 @@ RSpec.describe Cocina::Mapper do
       end
     end
 
-    context 'when item has a data error' do
+    context 'when item has a cocina model error' do
       before do
         item.descMetadata.title_info.main_title = nil
         allow(Honeybadger).to receive(:notify)
       end
 
       it 'raises and Honeybadger notifies' do
-        expect { cocina_model }.to raise_error(Cocina::Mapper::MissingTitle)
-        expect(Honeybadger).to have_received(:notify).with(instance_of(Cocina::Mapper::MissingTitle), { error_message: '[DATA ERROR] Missing title', tags: 'data_error' })
+        expect { cocina_model }.to raise_error(Cocina::Mapper::UnexpectedBuildError)
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Missing title', { tags: 'data_error', context: { druid: 'druid:mx000xm0000' } })
+        expect(Honeybadger).to have_received(:notify).with(Cocina::Models::ValidationError)
       end
     end
 

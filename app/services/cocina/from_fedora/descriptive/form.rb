@@ -12,12 +12,13 @@ module Cocina
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder: nil)
-          new(resource_element: resource_element).build
+        def self.build(resource_element:, descriptive_builder:)
+          new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
         end
 
-        def initialize(resource_element:)
+        def initialize(resource_element:, descriptive_builder:)
           @resource_element = resource_element
+          @notifier = descriptive_builder.notifier
         end
 
         def build
@@ -31,7 +32,7 @@ module Cocina
 
         private
 
-        attr_reader :resource_element
+        attr_reader :resource_element, :notifier
 
         def add_subject_cartographics(forms)
           carto_forms = []
@@ -53,7 +54,7 @@ module Cocina
                 value: projection_node.text,
                 type: 'map projection',
                 displayLabel: subject_node['displayLabel'],
-                uri: ValueURI.sniff(subject_node['valueURI'])
+                uri: ValueURI.sniff(subject_node['valueURI'], notifier)
               }.tap do |attrs|
                 source = {
                   code: subject_node['authority'],
@@ -74,11 +75,11 @@ module Cocina
             forms << {
               value: type.text,
               type: type['type'] || 'genre',
-              uri: ValueURI.sniff(type[:valueURI]),
+              uri: ValueURI.sniff(type[:valueURI], notifier),
               displayLabel: type[:displayLabel]
             }.tap do |item|
               source = {
-                code: Authority.normalize_code(type[:authority]),
+                code: Authority.normalize_code(type[:authority], notifier),
                 uri: Authority.normalize_uri(type[:authorityURI])
               }.compact
               item[:source] = source if source.present?
@@ -199,7 +200,7 @@ module Cocina
           physical_description.xpath('mods:form', mods: DESC_METADATA_NS).each do |form_content|
             forms << {
               value: form_content.content,
-              uri: ValueURI.sniff(form_content['valueURI']),
+              uri: ValueURI.sniff(form_content['valueURI'], notifier),
               type: form_content['type'] || 'form',
               source: source_for(form_content).presence
             }.compact
@@ -212,7 +213,7 @@ module Cocina
 
         def source_for(form)
           {
-            code: Authority.normalize_code(form['authority']),
+            code: Authority.normalize_code(form['authority'], notifier),
             uri: Authority.normalize_uri(form['authorityURI'])
           }.compact
         end

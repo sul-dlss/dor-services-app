@@ -9,12 +9,13 @@ module Cocina
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder: nil)
-          new(resource_element: resource_element).build
+        def self.build(resource_element:, descriptive_builder:)
+          new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
         end
 
-        def initialize(resource_element:)
+        def initialize(resource_element:, descriptive_builder:)
           @resource_element = resource_element
+          @notifier = descriptive_builder.notifier
         end
 
         def build
@@ -25,7 +26,7 @@ module Cocina
 
         private
 
-        attr_reader :resource_element
+        attr_reader :resource_element, :notifier
 
         def build_grouped_origin_infos(grouped_origin_infos)
           grouped_origin_infos.map do |origin_info_nodes|
@@ -205,9 +206,9 @@ module Cocina
         end
 
         def with_uri_info(cocina, xml_node)
-          cocina[:uri] = ValueURI.sniff(xml_node['valueURI']) if xml_node['valueURI']
+          cocina[:uri] = ValueURI.sniff(xml_node['valueURI'], notifier) if xml_node['valueURI']
           source = {
-            code: Authority.normalize_code(xml_node['authority']),
+            code: Authority.normalize_code(xml_node['authority'], notifier),
             uri: Authority.normalize_uri(xml_node['authorityURI'])
           }.compact
           cocina[:source] = source if source.present?
@@ -296,7 +297,7 @@ module Cocina
           points_date = points.size == 1 ? build_date(type, points.first) : build_structured_date(type, points)
           dates << points_date if points_date
 
-          Honeybadger.notify('[DATA ERROR] originInfo/dateOther missing eventType', { tags: 'data_error' }) unless type
+          notifier.warn('originInfo/dateOther missing eventType') unless type
 
           {
             type: type,

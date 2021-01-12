@@ -6,15 +6,23 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
   let(:object) { Dor::Item.new }
 
   describe '.build' do
-    subject(:build) { described_class.build(resource_element: ng_xml.root, require_title: require_title) }
+    subject(:build) { described_class.build(resource_element: ng_xml.root, require_title: require_title, notifier: notifier) }
+
+    let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
     let(:require_title) { true }
 
     context 'when the object has no title' do
       let(:ng_xml) { Dor::Item.new.descMetadata.ng_xml }
 
-      it 'raises and error' do
-        expect { build }.to raise_error Cocina::Mapper::MissingTitle
+      before do
+        allow(notifier).to receive(:error)
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'returns empty and notifies error' do
+        expect(build).to be_empty
+        expect(notifier).to have_received(:error).with('Missing title')
       end
     end
 
@@ -31,8 +39,14 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         XML
       end
 
-      it 'raises and error' do
-        expect { build }.to raise_error Cocina::Mapper::MissingTitle
+      before do
+        allow(notifier).to receive(:error)
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'returns empty and notifies error' do
+        expect(build).to be_empty
+        expect(notifier).to have_received(:error).with('Missing title')
       end
     end
 
@@ -41,8 +55,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
 
       let(:require_title) { false }
 
-      it 'raises and error' do
-        expect(build).to eq([])
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'returns empty and warns' do
+        expect(build).to be_empty
+        expect(notifier).to have_received(:warn).with('Empty title node')
       end
     end
 
@@ -134,18 +153,18 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       before do
-        allow(Honeybadger).to receive(:notify)
+        allow(notifier).to receive(:warn)
       end
 
       it 'parses' do
         expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
       end
 
-      it 'ignores and notifies Honeybadger' do
+      it 'ignores and warns' do
         expect(build).to eq [
           { status: 'primary', value: 'Five red herrings' }
         ]
-        expect(Honeybadger).to have_received(:notify).at_least(:once).with('[DATA ERROR] Empty title node', { tags: 'data_error' })
+        expect(notifier).to have_received(:warn).at_least(:once).with('Empty title node')
       end
     end
 
@@ -163,18 +182,18 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       before do
-        allow(Honeybadger).to receive(:notify)
+        allow(notifier).to receive(:warn)
       end
 
       it 'parses' do
         expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
       end
 
-      it 'ignores and notifies Honeybadger' do
+      it 'ignores and warns' do
         expect(build).to eq [
           { value: 'Monaco Grand Prix' }
         ]
-        expect(Honeybadger).to have_received(:notify).at_least(:once).with('[DATA ERROR] Title with type', { tags: 'data_error' })
+        expect(notifier).to have_received(:warn).at_least(:once).with('Title with type')
       end
     end
 
@@ -749,14 +768,14 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       before do
-        allow(Honeybadger).to receive(:notify)
+        allow(notifier).to receive(:warn)
       end
 
       it 'parses' do
         expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
       end
 
-      it 'creates value from the authority record and Honeybadger notifies' do
+      it 'creates value from the authority record and warns' do
         expect(build).to eq [
           {
             "structuredValue": [
@@ -773,7 +792,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             }
           }
         ]
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Name not found for title group', { tags: 'data_error' })
+        expect(notifier).to have_received(:warn).with('Name not found for title group')
       end
     end
 

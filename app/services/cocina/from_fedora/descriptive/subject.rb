@@ -18,12 +18,13 @@ module Cocina
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder: nil)
-          new(resource_element: resource_element).build
+        def self.build(resource_element:, descriptive_builder:)
+          new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
         end
 
-        def initialize(resource_element:)
+        def initialize(resource_element:, descriptive_builder:)
           @resource_element = resource_element
+          @notifier = descriptive_builder.notifier
         end
 
         def build
@@ -36,7 +37,7 @@ module Cocina
 
         private
 
-        attr_reader :resource_element
+        attr_reader :resource_element, :notifier
 
         def build_parallel_subject(parallel_subject_nodes)
           parallel_subjects = parallel_subject_nodes.map { |subject_node| build_subject(subject_node) }
@@ -77,7 +78,7 @@ module Cocina
               version: edition_for(subject)
             }.compact
             attrs[:source] = source unless source.empty?
-            attrs[:uri] = ValueURI.sniff(subject[:valueURI])
+            attrs[:uri] = ValueURI.sniff(subject[:valueURI], notifier)
             attrs[:encoding] = { code: subject[:encoding] } if subject[:encoding]
             language_script = LanguageScript.build(node: subject)
             attrs[:valueLanguage] = language_script if language_script
@@ -85,12 +86,12 @@ module Cocina
         end
 
         def code_for(subject)
-          code = Authority.normalize_code(subject[:authority])
+          code = Authority.normalize_code(subject[:authority], notifier)
 
           return nil if code.nil?
 
           unless SubjectAuthorityCodes::SUBJECT_AUTHORITY_CODES.include?(code)
-            Honeybadger.notify('[DATA ERROR] Subject has unknown authority code', tags: 'data_error')
+            notifier.warn('Subject has unknown authority code', { code: code })
             return nil
           end
 
@@ -157,17 +158,17 @@ module Cocina
           when 'name'
             name_type = name_type_for_subject(node[:type])
             attrs[:type] = name_type if name_type
-            name_attrs = NameBuilder.build(name_elements: [node], add_default_type: true)[:name]&.first
+            name_attrs = NameBuilder.build(name_elements: [node], add_default_type: true, notifier: notifier)[:name]&.first
             name_attrs&.merge(attrs)
           when 'titleInfo'
-            attrs.merge(TitleBuilder.build(title_info_element: node)).merge(type: 'title')
+            attrs.merge(TitleBuilder.build(title_info_element: node, notifier: notifier)).merge(type: 'title')
           when 'geographicCode'
             attrs.merge(code: node.text, type: 'place', source: { code: node['authority'] })
           when 'cartographics'
             # Cartographics are built separately
             nil
           when 'Topic'
-            Honeybadger.notify('[DATA ERROR] <subject> has <Topic>; normalized to "topic"', tags: 'data_error')
+            notifier.warn('<subject> has <Topic>; normalized to "topic"')
             attrs.merge(value: node.text, type: 'topic')
           else
             node_type = node_type_for(node)
@@ -178,15 +179,13 @@ module Cocina
         def node_type_for(node)
           return NODE_TYPE.fetch(node.name) if NODE_TYPE.keys.include?(node.name)
 
-          Honeybadger.notify("[DATA ERROR] Unexpected node type for subject: '#{node.name}'",
-                             tags: 'data_error')
+          notifier.warn('Unexpected node type for subject', name: node.name)
           nil
         end
 
         def name_type_for_subject(name_type)
           unless name_type
-            Honeybadger.notify('[DATA ERROR] Subject contains a <name> element without a type attribute',
-                               tags: 'data_error')
+            notifier.warn('Subject contains a <name> element without a type attribute')
             return 'name'
           end
 

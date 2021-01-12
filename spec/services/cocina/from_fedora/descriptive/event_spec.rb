@@ -3,7 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive::Event do
-  subject(:build) { described_class.build(resource_element: ng_xml.root) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+
+  let(:descriptive_builder) { instance_double(Cocina::FromFedora::Descriptive::DescriptiveBuilder, notifier: notifier) }
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -152,7 +156,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
         XML
       end
 
-      it 'builds the cocina data structure' do
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'builds the cocina data structure and warns' do
         expect(build).to eq [
           {
             "date": [
@@ -168,13 +176,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
             ]
           }
         ]
-      end
-
-      it 'notifies Honeybadger event type is missing' do
-        allow(Honeybadger).to receive(:notify)
-        build
-        expect(Honeybadger).to have_received(:notify)
-          .with('[DATA ERROR] originInfo/dateOther missing eventType', tags: 'data_error')
+        expect(notifier).to have_received(:warn).with('originInfo/dateOther missing eventType')
       end
     end
 
@@ -203,81 +205,63 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
           }
         ]
       end
+    end
 
-      it 'does not notify Honeybadger' do
-        allow(Honeybadger).to receive(:notify)
-        build
-        expect(Honeybadger).not_to have_received(:notify)
+    describe 'with eventType="production" dateOther type="Julian" (MODS 3.6 and before)' do
+      let(:xml) do
+        <<~XML
+          <originInfo eventType="production">
+            <dateOther type="Julian">1544-02-02</dateOther>
+          </originInfo>
+        XML
       end
 
-      describe 'with eventType="production" dateOther type="Julian" (MODS 3.6 and before)' do
-        let(:xml) do
-          <<~XML
-            <originInfo eventType="production">
-              <dateOther type="Julian">1544-02-02</dateOther>
-            </originInfo>
-          XML
-        end
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "type": 'creation',
+            "date": [
+              {
+                "value": '1544-02-02',
+                "note": [
+                  {
+                    "value": 'Julian',
+                    "type": 'date type'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      end
+    end
 
-        it 'builds the cocina data structure' do
-          expect(build).to eq [
-            {
-              "type": 'creation',
-              "date": [
-                {
-                  "value": '1544-02-02',
-                  "note": [
-                    {
-                      "value": 'Julian',
-                      "type": 'date type'
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        end
-
-        it 'does not notify Honeybadger' do
-          allow(Honeybadger).to receive(:notify)
-          build
-          expect(Honeybadger).not_to have_received(:notify)
-        end
+    describe 'with eventType="production" dateCreated calendar="Julian" (MODS 3.7)' do
+      let(:xml) do
+        <<~XML
+          <originInfo eventType="production">
+            <dateCreated calendar="Julian">1544-02-02</dateCreated>
+          </originInfo>
+        XML
       end
 
-      describe 'with eventType="production" dateCreated calendar="Julian" (MODS 3.7)' do
-        let(:xml) do
-          <<~XML
-            <originInfo eventType="production">
-              <dateCreated calendar="Julian">1544-02-02</dateCreated>
-            </originInfo>
-          XML
-        end
-
-        it 'builds the cocina data structure' do
-          expect(build).to eq [
-            {
-              "type": 'creation',
-              "date": [
-                {
-                  "value": '1544-02-02',
-                  "note": [
-                    {
-                      "value": 'Julian',
-                      "type": 'calendar'
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        end
-
-        it 'does not notify Honeybadger' do
-          allow(Honeybadger).to receive(:notify)
-          build
-          expect(Honeybadger).not_to have_received(:notify)
-        end
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "type": 'creation',
+            "date": [
+              {
+                "value": '1544-02-02',
+                "note": [
+                  {
+                    "value": 'Julian',
+                    "type": 'calendar'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       end
     end
 
@@ -290,7 +274,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
         XML
       end
 
-      it 'builds the cocina data structure' do
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'builds the cocina data structure and warns' do
         expect(build).to eq [
           {
             "displayLabel": 'Acquisition date',
@@ -305,13 +293,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
             ]
           }
         ]
-      end
-
-      it 'notifies Honeybadger event type is missing' do
-        allow(Honeybadger).to receive(:notify)
-        build
-        expect(Honeybadger).to have_received(:notify)
-          .with('[DATA ERROR] originInfo/dateOther missing eventType', tags: 'data_error')
+        expect(notifier).to have_received(:warn)
+          .with('originInfo/dateOther missing eventType')
       end
     end
   end
@@ -546,11 +529,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
           ]
         }
       ]
-    end
-    it 'does not notify Honeybadger (as all is ok)' do
-      allow(Honeybadger).to receive(:notify)
-      build
-      expect(Honeybadger).not_to have_received(:notify)
     end
   end
 

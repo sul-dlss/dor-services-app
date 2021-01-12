@@ -23,12 +23,13 @@ module Cocina
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder: nil)
-          new(resource_element: resource_element).build
+        def self.build(resource_element:, descriptive_builder:)
+          new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
         end
 
-        def initialize(resource_element:)
+        def initialize(resource_element:, descriptive_builder:)
           @resource_element = resource_element
+          @notifier = descriptive_builder.notifier
         end
 
         def build
@@ -39,11 +40,11 @@ module Cocina
 
         private
 
-        attr_reader :resource_element
+        attr_reader :resource_element, :notifier
 
         def build_name_nodes(name_nodes)
-          name_nodes.each { |name_node| Honeybadger.notify('[DATA ERROR] name type attribute is set to ""', { tags: 'data_error' }) if name_node['type'] == '' }
-          NameBuilder.build(name_elements: name_nodes)
+          name_nodes.each { |name_node| notifier.warn('name type attribute is set to ""') if name_node['type'] == '' }
+          NameBuilder.build(name_elements: name_nodes, notifier: notifier)
         end
       end
     end

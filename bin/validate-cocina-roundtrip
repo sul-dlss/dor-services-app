@@ -3,6 +3,7 @@
 
 require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
+require_relative '../lib/data_error_notifier'
 require 'set'
 require 'optparse'
 require 'diffy'
@@ -28,18 +29,28 @@ def round_tripped_ng_xml(cocina, druid)
   Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina, druid).to_xml) { |config| config.default_xml.noblanks }
 end
 
-def cocina_props(ng_xml, label)
+def cocina_props(ng_xml, druid, label, notifier)
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: label)
-  Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: ng_xml)
+  Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: ng_xml, druid: druid, notifier: notifier)
 end
 
 def node_count_match?(ng_xml1, ng_xml2)
   ng_xml1.root.elements.size == ng_xml2.root.elements.size
 end
 
-def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, differences)
+# rubocop:disable Metrics/ParameterLists
+def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, differences, data_errors)
   File.open("results/#{druid}.txt", 'w') do |file|
     file.write("Druid: #{druid}\n\n")
+
+    if data_errors.present?
+      data_errors.each do |data_error|
+        file.write("Data error: #{data_error.msg}")
+        file.write(" (#{data_error.context}") if data_error.context.present?
+        file.write("Note that data errors are from the original XML, not the normalized XML shown below.\n\n")
+      end
+      file.write("\n")
+    end
 
     file.write("Node count mismatch between original and roundtripped.\n") unless node_count_match?(original_ng_xml, roundtrip_ng_xml)
 
@@ -59,6 +70,7 @@ def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, differences)
     file.write("Cocina:\n#{JSON.pretty_generate(cocina)}\n\n")
   end
 end
+# rubocop:enable Metrics/ParameterLists
 
 def write_error(druid, original_ng_xml, cocina, error)
   File.open("results/#{druid}.txt", 'w') do |file|
@@ -79,8 +91,9 @@ def validate_druid(druid, cache, fast: false)
     return :missing
   end
 
+  notifier = DataErrorNotifier.new
   begin
-    cocina_props = cocina_props(original_ng_xml, label)
+    cocina_props = cocina_props(original_ng_xml, druid, label, notifier)
     cocina = Cocina::Models::Description.new(cocina_props)
   rescue StandardError => e
     write_error(druid, original_ng_xml, cocina_props, e) unless fast
@@ -105,7 +118,7 @@ def validate_druid(druid, cache, fast: false)
 
   return :success if equiv.success?
 
-  write_result(druid, norm_original_ng_xml, roundtrip_ng_xml, cocina_props, equiv.failure)
+  write_result(druid, norm_original_ng_xml, roundtrip_ng_xml, cocina_props, equiv.failure, notifier.data_errors)
   :different
 end
 

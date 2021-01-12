@@ -5,7 +5,11 @@ require 'rails_helper'
 RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
   # h2 mapping specification examples
   # from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/h2_cocina_mappings/h2_to_cocina_contributor.txt
-  subject(:build) { described_class.build(resource_element: ng_xml.root) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+
+  let(:descriptive_builder) { instance_double(Cocina::FromFedora::Descriptive::DescriptiveBuilder, notifier: notifier) }
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -506,7 +510,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         </originInfo>
       XML
     end
-    let(:descriptive) { Cocina::FromFedora::Descriptive.props(mods: ng_xml) }
+    let(:descriptive) { Cocina::FromFedora::Descriptive.props(mods: ng_xml, druid: 'druid:xg944ht0398') }
 
     it 'builds the expected cocina data structure' do
       expect(descriptive).to eq(
@@ -548,7 +552,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         </originInfo>
       XML
     end
-    let(:descriptive) { Cocina::FromFedora::Descriptive.props(mods: ng_xml) }
+    let(:descriptive) { Cocina::FromFedora::Descriptive.props(mods: ng_xml, druid: 'druid:xg944ht0398') }
 
     it 'builds the expected cocina data structure' do
       # expect(descriptive[:events]).to match_array [
