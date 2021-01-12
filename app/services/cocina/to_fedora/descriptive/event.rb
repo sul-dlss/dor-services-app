@@ -209,7 +209,10 @@ module Cocina
         end
 
         def write_location(location)
-          xml.place do
+          place_attrs = {}.tap do |attrs|
+            attrs[:supplied] = 'yes' if location.type == 'supplied'
+          end
+          xml.place place_attrs do
             placeterm_attrs = { type: 'text' }
             placeterm_attrs[:authority] = location.source.code if location.source&.code
             placeterm_attrs[:authorityURI] = location.source.uri if location.source&.uri
