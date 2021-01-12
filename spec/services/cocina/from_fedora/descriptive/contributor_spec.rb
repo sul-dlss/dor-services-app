@@ -41,28 +41,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
-  context 'with an invalid type on the namePart node' do
-    let(:xml) do
-      <<~XML
-        <name>
-          <namePart type="personal">Dunnett, Dorothy</namePart>
-        </name>
-      XML
-    end
-
-    it 'builds the cocina data structure without type' do
-      expect(build).to eq [
-        {
-          "name": [
-            {
-              "value": 'Dunnett, Dorothy'
-            }
-          ]
-        }
-      ]
-    end
-  end
-
   # 2. Corporate name
   context 'with a corporate name' do
     let(:xml) do
@@ -133,134 +111,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
           ],
           "type": 'conference',
           "status": 'primary'
-        }
-      ]
-    end
-  end
-
-  context 'with a role that has no URI and has xlink uris from MODS 3.3' do
-    # MODS 3.3 header from druid:yy910cj7795
-    let(:ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
-          xmlns="http://www.loc.gov/mods/v3" version="3.3"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
-          #{xml}
-        </mods>
-      XML
-    end
-
-    let(:xml) do
-      <<~XML
-        <name type="personal" authority="naf" xlink:href="http://id.loc.gov/authorities/names/n82087745">
-          <role>
-            <roleTerm>creator</roleTerm>
-          </role>
-          <namePart>Tirion, Isaak</namePart>
-        </name>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          name: [
-            {
-              value: 'Tirion, Isaak',
-              uri: 'http://id.loc.gov/authorities/names/n82087745',
-              source: {
-                code: 'naf'
-              }
-            }
-          ],
-          role: [
-            {
-              "value": 'creator'
-            }
-          ],
-          type: 'person'
-        }
-      ]
-    end
-  end
-
-  context 'with translated name and roles' do
-    let(:xml) do
-      <<~XML
-        <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
-          <namePart>&#x30EC;&#x30A2;&#x30E1;&#x30BF;&#x30EB;&#x8CC7;&#x6E90;&#x518D;&#x751F;&#x6280;&#x8853;&#x7814;&#x7A76;&#x4F1A;</namePart>
-          <role>
-            <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">cre</roleTerm>
-            <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">creator</roleTerm>
-          </role>
-        </name>
-        <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
-          <namePart>Rea Metaru Shigen Saisei Gijutsu Kenky&#x16B;kai</namePart>
-          <role>
-            <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">cre</roleTerm>
-            <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">creator</roleTerm>
-          </role>
-        </name>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          name: [
-            {
-              parallelValue: [
-                {
-                  "status": 'primary',
-                  "valueLanguage": {
-                    "code": 'jpn',
-                    "source": {
-                      "code": 'iso639-2b'
-                    },
-                    "valueScript": {
-                      "code": 'Jpan',
-                      "source": {
-                        "code": 'iso15924'
-                      }
-                    }
-                  },
-                  "value": 'レアメタル資源再生技術研究会'
-                },
-                {
-                  "valueLanguage": {
-                    "code": 'jpn',
-                    "source": {
-                      "code": 'iso639-2b'
-                    },
-                    "valueScript": {
-                      "code": 'Latn',
-                      "source": {
-                        "code": 'iso15924'
-                      }
-                    }
-                  },
-                  "type": 'transliteration',
-                  "standard": {
-                    "value": 'ALA-LC Romanization Tables'
-                  },
-                  "value": 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai'
-                }
-              ],
-
-              type: 'organization'
-            }
-          ],
-          role: [
-            {
-              "value": 'creator',
-              "code": 'cre',
-              "uri": 'http://id.loc.gov/vocabulary/relators/cre',
-              "source": {
-                "code": 'marcrelator',
-                "uri": 'http://id.loc.gov/vocabulary/relators/'
-              }
-            }
-          ]
         }
       ]
     end
@@ -351,76 +201,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
-  context 'with namePart with empty type attribute' do
-    context 'without role' do
-      let(:xml) do
-        <<~XML
-          <name type="personal" authority="local">
-            <namePart type="">Burke, Andy</namePart>
-          </name>
-        XML
-      end
-
-      it 'builds the cocina data structure' do
-        expect(build).to eq [
-          {
-            "name": [
-              {
-                "value": 'Burke, Andy',
-                "source": {
-                  "code": 'local'
-                }
-              }
-            ],
-            "type": 'person'
-          }
-        ]
-      end
-
-      it 'notifies Honeybadger' do
-        allow(Honeybadger).to receive(:notify).once
-        build
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart type attribute set to ""', { tags: 'data_error' })
-      end
-    end
-
-    context 'with empty roleTerm' do
-      let(:xml) do
-        <<~XML
-          <name type="personal" authority="local">
-            <namePart type="">Burke, Andy</namePart>
-            <role>
-              <roleTerm authority="marcrelator" type="text"/>
-            </role>
-          </name>
-        XML
-      end
-
-      it 'builds the cocina data structure' do
-        expect(build).to eq [
-          {
-            "name": [
-              {
-                "value": 'Burke, Andy',
-                "source": {
-                  "code": 'local'
-                }
-              }
-            ],
-            "type": 'person'
-          }
-        ]
-      end
-
-      it 'notifies Honeybadger' do
-        allow(Honeybadger).to receive(:notify).twice
-        build
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart type attribute set to ""', { tags: 'data_error' })
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/role/roleTerm missing value', { tags: 'data_error' })
-      end
-    end
-  end
-
   # 5. Name with additional subelements
   context 'with additional subelements' do
     let(:xml) do
@@ -490,6 +270,63 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  context 'with namePart with empty type attribute' do
+    context 'without role' do
+      let(:xml) do
+        <<~XML
+          <name type="personal" authority="local">
+            <namePart type="">Burke, Andy</namePart>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure without structuredValue' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Burke, Andy',
+                "source": {
+                  "code": 'local'
+                }
+              }
+            ],
+            "type": 'person'
+          }
+        ]
+      end
+
+      it 'notifies Honeybadger' do
+        allow(Honeybadger).to receive(:notify).once
+        build
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart type attribute set to ""', { tags: 'data_error' })
+      end
+    end
+
+    context 'with an invalid type on the namePart node' do
+      let(:xml) do
+        <<~XML
+          <name>
+            <namePart type="personal">Dunnett, Dorothy</namePart>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure without structuredValue' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Dunnett, Dorothy'
+              }
+            ]
+          }
+        ]
+      end
+    end
+  end
+
+  # FIXME: this example should be added to cdm
   context 'with missing nameIdentifier type' do
     let(:xml) do
       <<~XML
@@ -519,6 +356,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # FIXME: this example should be added to cdm
   context 'with multiple nameParts without types' do
     let(:xml) do
       <<~XML
@@ -550,46 +388,29 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
-  context 'with multiple names' do
+  context 'when namePart with type but no value' do
     let(:xml) do
       <<~XML
-        <name type="corporate">
-          <namePart>Hawaii International Services Agency</namePart>
-        </name>
-        <name type="corporate">
-          <namePart>United States</namePart>
-          <namePart>Office of Foreign Investment in the United States.</namePart>
+        <name type="personal">
+          <namePart>Kielmansegg, Erich Ludwig Friedrich Christian</namePart>
+          <namePart type="termsOfAddress">Graf von</namePart>
+          <namePart type="date">1847-1923</namePart>
+          <namePart type="date"/>
         </name>
       XML
     end
 
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "name": [
-            {
-              "value": 'Hawaii International Services Agency'
-            }
-          ],
-          "type": 'organization'
-        },
-        {
-          "name": [
-            {
-              "structuredValue": [
-                {
-                  "value": 'United States'
-                },
-                {
-                  "value": 'Office of Foreign Investment in the United States.'
-                }
-              ]
-            }
-          ],
-          "type": 'organization'
-        }
+    before do
+      allow(Honeybadger).to receive(:notify).once
+    end
 
-      ]
+    it 'ignores the namePart with no value and Honeybadger notifies' do
+      expect(build).to eq [{ name: [{ structuredValue: [{ value: 'Kielmansegg, Erich Ludwig Friedrich Christian' },
+                                                        { type: 'term of address', value: 'Graf von' },
+                                                        { type: 'life dates', value: '1847-1923' }] }],
+                             type: 'person' }]
+      expect(Honeybadger).to have_received(:notify)
+        .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
     end
   end
 
@@ -627,6 +448,210 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
               {
                 "value": 'author',
                 "code": 'aut',
+                "uri": 'http://id.loc.gov/vocabulary/relators/aut',
+                "source": {
+                  "code": 'marcrelator',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          }
+        ]
+      end
+    end
+
+    context 'with empty roleTerm' do
+      let(:xml) do
+        <<~XML
+          <name type="personal" authority="local">
+            <namePart type="">Burke, Andy</namePart>
+            <role>
+              <roleTerm authority="marcrelator" type="text"/>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds cocina data structure, ignoring the namePart with no value' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Burke, Andy',
+                "source": {
+                  "code": 'local'
+                }
+              }
+            ],
+            "type": 'person'
+          }
+        ]
+      end
+
+      it 'notifies Honeybadger' do
+        allow(Honeybadger).to receive(:notify).twice
+        build
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart type attribute set to ""', { tags: 'data_error' })
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/role/roleTerm missing value', { tags: 'data_error' })
+      end
+    end
+
+    # FIXME: this example should be added to cdm
+    context 'with a role that has no URI and has xlink uris from MODS 3.3' do
+      # MODS 3.3 header from druid:yy910cj7795
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns="http://www.loc.gov/mods/v3" version="3.3"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+            #{xml}
+          </mods>
+        XML
+      end
+
+      let(:xml) do
+        <<~XML
+          <name type="personal" authority="naf" xlink:href="http://id.loc.gov/authorities/names/n82087745">
+            <role>
+              <roleTerm>creator</roleTerm>
+            </role>
+            <namePart>Tirion, Isaak</namePart>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            name: [
+              {
+                value: 'Tirion, Isaak',
+                uri: 'http://id.loc.gov/authorities/names/n82087745',
+                source: {
+                  code: 'naf'
+                }
+              }
+            ],
+            role: [
+              {
+                "value": 'creator'
+              }
+            ],
+            type: 'person'
+          }
+        ]
+      end
+    end
+
+    # FIXME: this example should be added to cdm
+    context 'with translated name and roles' do
+      let(:xml) do
+        <<~XML
+          <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
+            <namePart>&#x30EC;&#x30A2;&#x30E1;&#x30BF;&#x30EB;&#x8CC7;&#x6E90;&#x518D;&#x751F;&#x6280;&#x8853;&#x7814;&#x7A76;&#x4F1A;</namePart>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">cre</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">creator</roleTerm>
+            </role>
+          </name>
+          <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
+            <namePart>Rea Metaru Shigen Saisei Gijutsu Kenky&#x16B;kai</namePart>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">cre</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">creator</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            name: [
+              {
+                parallelValue: [
+                  {
+                    "status": 'primary',
+                    "valueLanguage": {
+                      "code": 'jpn',
+                      "source": {
+                        "code": 'iso639-2b'
+                      },
+                      "valueScript": {
+                        "code": 'Jpan',
+                        "source": {
+                          "code": 'iso15924'
+                        }
+                      }
+                    },
+                    "value": 'レアメタル資源再生技術研究会'
+                  },
+                  {
+                    "valueLanguage": {
+                      "code": 'jpn',
+                      "source": {
+                        "code": 'iso639-2b'
+                      },
+                      "valueScript": {
+                        "code": 'Latn',
+                        "source": {
+                          "code": 'iso15924'
+                        }
+                      }
+                    },
+                    "type": 'transliteration',
+                    "standard": {
+                      "value": 'ALA-LC Romanization Tables'
+                    },
+                    "value": 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai'
+                  }
+                ],
+
+                type: 'organization'
+              }
+            ],
+            role: [
+              {
+                "value": 'creator',
+                "code": 'cre',
+                "uri": 'http://id.loc.gov/vocabulary/relators/cre',
+                "source": {
+                  "code": 'marcrelator',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          }
+        ]
+      end
+    end
+
+    # 7b. Role text only
+    context 'when roleTerm is type text' do
+      let(:xml) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Dunnett, Dorothy'
+              }
+            ],
+            "status": 'primary',
+            "type": 'person',
+            "role": [
+              {
+                "value": 'author',
                 "uri": 'http://id.loc.gov/vocabulary/relators/aut',
                 "source": {
                   "code": 'marcrelator',
@@ -686,6 +711,38 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
+    # FIXME: this example should be added to cdm
+    context 'when the role text has no authority' do
+      let(:xml) do
+        <<~XML
+          <name type="personal">
+            <namePart>Bulgakov, Mikhail</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Bulgakov, Mikhail'
+              }
+            ],
+            "type": 'person',
+            "role": [
+              {
+                "value": 'author'
+              }
+            ]
+          }
+        ]
+      end
+    end
+
     # 7c. Role code only
     context 'when roleTerm is type code' do
       let(:xml) do
@@ -724,75 +781,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
-    # 7b. Role text only
-    context 'when roleTerm is type text' do
-      let(:xml) do
-        <<~XML
-          <name type="personal" usage="primary">
-            <namePart>Dunnett, Dorothy</namePart>
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-            </role>
-          </name>
-        XML
-      end
-
-      it 'builds the cocina data structure' do
-        expect(build).to eq [
-          {
-            "name": [
-              {
-                "value": 'Dunnett, Dorothy'
-              }
-            ],
-            "status": 'primary',
-            "type": 'person',
-            "role": [
-              {
-                "value": 'author',
-                "uri": 'http://id.loc.gov/vocabulary/relators/aut',
-                "source": {
-                  "code": 'marcrelator',
-                  "uri": 'http://id.loc.gov/vocabulary/relators/'
-                }
-              }
-            ]
-          }
-        ]
-      end
-    end
-
-    context 'when the role text has no authority' do
-      let(:xml) do
-        <<~XML
-          <name type="personal">
-            <namePart>Bulgakov, Mikhail</namePart>
-            <role>
-              <roleTerm type="text">author</roleTerm>
-            </role>
-          </name>
-        XML
-      end
-
-      it 'builds the cocina data structure' do
-        expect(build).to eq [
-          {
-            "name": [
-              {
-                "value": 'Bulgakov, Mikhail'
-              }
-            ],
-            "type": 'person',
-            "role": [
-              {
-                "value": 'author'
-              }
-            ]
-          }
-        ]
-      end
-    end
-
+    # FIXME: this example should be added to cdm
     context 'when the role code is missing the authority and length is 3' do
       let(:xml) do
         <<~XML
@@ -913,7 +902,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
-    # 7f. role without namePart value (matching - it has an EMPTY namePart element)
+    # 7f. role without namePart value (it has an EMPTY namePart element)
     context 'when role without namePart value' do
       let(:xml) do
         <<~XML
@@ -940,7 +929,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
-    # 7f. role without namePart value (not matching - it is MISSING namePart element)
     context 'with missing namePart element' do
       let(:xml) do
         <<~XML
@@ -964,6 +952,32 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
+    # 7g. Role attribute without roleTerm or namePart value
+    context 'when roleTerm with no value and no namepart' do
+      let(:xml) do
+        <<~XML
+          <name>
+            <namePart/>
+            <role>
+              <roleTerm authority="marcrelator" type="text"/>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds empty cocina data structure and does not raise error' do
+        expect(build).to eq [{}]
+      end
+
+      it 'notifies Honeybadger namePart and roleTerm are empty' do
+        allow(Honeybadger).to receive(:notify).twice
+        build
+        expect(Honeybadger).to have_received(:notify)
+          .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
+      end
+    end
+
+    # FIXME: this example should be added to cdm
     context 'when multiple roles' do
       let(:xml) do
         <<~XML
@@ -1004,57 +1018,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
           }
         ]
       end
-    end
-
-    # 7g. Role attribute without roleTerm or namePart value
-    context 'when roleTerm with no value and no namepart' do
-      let(:xml) do
-        <<~XML
-          <name>
-            <namePart/>
-            <role>
-              <roleTerm authority="marcrelator" type="text"/>
-            </role>
-          </name>
-        XML
-      end
-
-      it 'builds empty cocina data structure and does not raise error' do
-        expect(build).to eq [{}]
-      end
-
-      it 'notifies Honeybadger namePart and roleTerm are empty' do
-        allow(Honeybadger).to receive(:notify).twice
-        build
-        expect(Honeybadger).to have_received(:notify)
-          .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
-      end
-    end
-  end
-
-  context 'when namePart with type but no value' do
-    let(:xml) do
-      <<~XML
-        <name type="personal">
-          <namePart>Kielmansegg, Erich Ludwig Friedrich Christian</namePart>
-          <namePart type="termsOfAddress">Graf von</namePart>
-          <namePart type="date">1847-1923</namePart>
-          <namePart type="date"/>
-        </name>
-      XML
-    end
-
-    before do
-      allow(Honeybadger).to receive(:notify).once
-    end
-
-    it 'ignores the namePart with no value and Honeybadger notifies' do
-      expect(build).to eq [{ name: [{ structuredValue: [{ value: 'Kielmansegg, Erich Ludwig Friedrich Christian' },
-                                                        { type: 'term of address', value: 'Graf von' },
-                                                        { type: 'life dates', value: '1847-1923' }] }],
-                             type: 'person' }]
-      expect(Honeybadger).to have_received(:notify)
-        .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
     end
   end
 
@@ -1140,6 +1103,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # FIXME: this example should be added to cdm ???
   # kind of 18, except with multiple names
   context 'with multiple names, one primary, dates, no roles' do
     let(:xml) do
@@ -1237,6 +1201,49 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
             }
           ]
         }
+      ]
+    end
+  end
+
+  context 'with multiple names, no primary, no roles' do
+    let(:xml) do
+      <<~XML
+        <name type="corporate">
+          <namePart>Hawaii International Services Agency</namePart>
+        </name>
+        <name type="corporate">
+          <namePart>United States</namePart>
+          <namePart>Office of Foreign Investment in the United States.</namePart>
+        </name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "name": [
+            {
+              "value": 'Hawaii International Services Agency'
+            }
+          ],
+          "type": 'organization'
+        },
+        {
+          "name": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'United States'
+                },
+                {
+                  "value": 'Office of Foreign Investment in the United States.'
+                }
+              ]
+            }
+          ],
+          "type": 'organization'
+        }
+
       ]
     end
   end
@@ -1348,8 +1355,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
-  # 13. Transliterated name with parts (name as structuredValue) - reference example only, not to be implemented
-  # context 'with transliterated name with parts (name as structuredValue)' do
+  # 13. Transliterated name with parts (name as structuredValue) - reference example only
+  # context 'with transliterated name with parts (name as structuredValue) - reference example only' do
   #   xit 'TODO: 13. Transliterated name with parts (name as structuredValue)) - mods_to_cocina_name.txt#L583'
   # end
 
@@ -1370,11 +1377,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
 
   # 17. Name with nameIdentifier only (RWO URI)
   context 'with nameIdentifier only (RWO URI)' do
-    xit 'TODO: 17. Name with nameIdentifier only (RWO URI) - mods_to_cocina_name.txt#L693'
+    xit 'TODO: 17. Name with nameIdentifier only (RWO URI) - mods_to_cocina_name.txt#L713'
   end
 
   # 18. Full name with additional subelements
-  # FIXME: see 5 and after 9, "kind of 18, except with multiple names"
   # FIXME: actually works, except missing type name within the structured value
   context 'with full name with additional subelements' do
     xit 'TODO: 18. Full name with additional subelements - mods_to_cocina_name.txt#L741'
