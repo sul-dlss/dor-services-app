@@ -22,6 +22,9 @@ class ObjectsController < ApplicationController
     model_request = Cocina::Models.build_request(params.except(:action, :controller).to_unsafe_h)
     cocina_object = Cocina::ObjectCreator.create(model_request)
 
+    # Broadcast this to a topic
+    Notifications::ObjectCreated.publish(model: cocina_object) if Settings.rabbitmq.enabled
+
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
   rescue SymphonyReader::ResponseError
     json_api_error(status: :bad_gateway, title: 'Catalog connection error', message: 'Unable to read descriptive metadata from the catalog')

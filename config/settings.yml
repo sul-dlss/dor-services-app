@@ -40,6 +40,12 @@ sdr:
   local_workspace_root: /dor/workspace
   local_export_home: /dor/export
 
+rabbitmq:
+  enabled: false
+  hostname: localhost
+  username: guest
+  password: guest
+
 preservation_catalog:
   url: 'https://example.org/prescat'
   token: 'mint-token-with-target-preservation-catalog-rake-generate-token'
