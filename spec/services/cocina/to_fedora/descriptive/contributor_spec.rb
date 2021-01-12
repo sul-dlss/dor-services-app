@@ -15,7 +15,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
       end
     end
   end
-
+  let(:mods_element_open) do
+    <<~XML
+      <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.loc.gov/mods/v3" version="3.6"
+        xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+    XML
+  end
+  let(:mods_element_close) { '</mods>' }
   let(:titles) { nil }
 
   context 'when contributors is nil' do
@@ -23,10 +30,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-        </mods>
+        #{mods_element_open}
+        #{mods_element_close}
       XML
     end
   end
@@ -48,13 +53,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="personal" usage="primary">
             <namePart>Dunnett, Dorothy</namePart>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -80,14 +83,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name>
             <namePart/>
             <role/>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -109,13 +110,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="corporate" usage="primary">
             <namePart>Dorothy L. Sayers Society</namePart>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -137,13 +136,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="family" usage="primary">
             <namePart>James family</namePart>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -165,13 +162,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="conference" usage="primary">
             <namePart>Mystery Science Theater ConventioCon Expo Fest-o-rama</namePart>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -230,16 +225,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
             <namePart>&#x30EC;&#x30A2;&#x30E1;&#x30BF;&#x30EB;&#x8CC7;&#x6E90;&#x518D;&#x751F;&#x6280;&#x8853;&#x7814;&#x7A76;&#x4F1A;</namePart>
           </name>
           <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
             <namePart>Rea Metaru Shigen Saisei Gijutsu Kenky&#x16B;kai</namePart>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -260,13 +253,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name usage="primary">
             <namePart>Dunnett, Dorothy</namePart>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -300,9 +291,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
       it 'builds the xml' do
         expect(xml).to be_equivalent_to <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          #{mods_element_open}
             <name type="personal" usage="primary">
               <namePart>Dunnett, Dorothy</namePart>
               <role>
@@ -310,7 +299,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
                 <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
               </role>
             </name>
-          </mods>
+          #{mods_element_close}
         XML
       end
     end
@@ -342,16 +331,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
       it 'builds the xml' do
         expect(xml).to be_equivalent_to <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          #{mods_element_open}
             <name type="personal" usage="primary">
               <namePart>Dunnett, Dorothy</namePart>
               <role>
                 <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
               </role>
             </name>
-          </mods>
+          #{mods_element_close}
         XML
       end
     end
@@ -383,16 +370,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
       it 'builds the xml' do
         expect(xml).to be_equivalent_to <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          #{mods_element_open}
             <name type="personal" usage="primary">
               <namePart>Dunnett, Dorothy</namePart>
               <role>
                 <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
               </role>
             </name>
-          </mods>
+          #{mods_element_close}
         XML
       end
     end
@@ -418,16 +403,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
       it 'builds the xml' do
         expect(xml).to be_equivalent_to <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          #{mods_element_open}
             <name type="personal">
               <namePart>Dunnett, Dorothy</namePart>
               <role>
                 <roleTerm type="text">Author</roleTerm>
               </role>
             </name>
-          </mods>
+          #{mods_element_close}
         XML
       end
     end
@@ -456,9 +439,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
       it 'builds the xml' do
         expect(xml).to be_equivalent_to <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          #{mods_element_open}
             <name type="personal" usage="primary">
               <namePart>Dunnett, Dorothy</namePart>
               <role>
@@ -466,7 +447,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
                 <roleTerm type="code" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
               </role>
             </name>
-          </mods>
+          #{mods_element_close}
         XML
       end
     end
@@ -498,9 +479,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
       it 'builds the xml' do
         expect(xml).to be_equivalent_to <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          #{mods_element_open}
             <name type="personal" usage="primary">
               <namePart>Dunnett, Dorothy</namePart>
               <role>
@@ -508,7 +487,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
                 <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/">aut</roleTerm>
               </role>
             </name>
-          </mods>
+          #{mods_element_close}
         XML
       end
     end
@@ -536,14 +515,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
       it 'builds the (empty) name elements in the xml' do
         expect(xml).to be_equivalent_to <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          #{mods_element_open}
             <name>
               <namePart/>
               <role/>
             </name>
-          </mods>
+          #{mods_element_close}
         XML
       end
     end
@@ -577,9 +554,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
       it 'builds the xml' do
         expect(xml).to be_equivalent_to <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          #{mods_element_open}
             <name type="personal" usage="primary">
               <namePart>Dunnett, Dorothy</namePart>
                 <role>
@@ -589,7 +564,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
                   <roleTerm authority="marcrelator" type="code" authorityURI="http://id.loc.gov/vocabulary/relators/">ths</roleTerm>
                 </role>
             </name>
-          </mods>
+          #{mods_element_close}
         XML
       end
     end
@@ -606,10 +581,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
       it 'builds the (empty) xml' do
         expect(xml).to be_equivalent_to <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          </mods>
+          #{mods_element_open}
+          #{mods_element_close}
         XML
       end
     end
@@ -669,9 +642,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="personal" usage="primary">
             <namePart type="termsOfAddress">Dr.</namePart>
             <namePart type="given">Terry</namePart>
@@ -682,7 +653,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
             <displayForm>Castle, Terry</displayForm>
             <description>Professor of English</description>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -710,14 +681,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="corporate">
             <namePart>United States</namePart>
             <namePart>Office of Foreign Investment in the United States.</namePart>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -753,9 +722,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="corporate">
             <namePart>Hawaii International Services Agency</namePart>
           </name>
@@ -763,7 +730,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
             <namePart>United States</namePart>
             <namePart>Office of Foreign Investment in the United States.</namePart>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -794,13 +761,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="personal" usage="primary" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79046044">
             <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -825,13 +790,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="personal" usage="primary" authority="naf">
             <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -871,9 +834,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="personal" usage="primary">
             <namePart>Bulgakov, Mikhail</namePart>
             <role>
@@ -886,7 +847,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
               <roleTerm type="text">translator</roleTerm>
             </role>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -928,9 +889,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="personal" usage="primary">
             <namePart>Sarmiento, Domingo Faustino</namePart>
             <namePart type="date">1811-1888</namePart>
@@ -939,7 +898,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
             <namePart>Rojas, Ricardo</namePart>
             <namePart type="date">1882-1957</namePart>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -978,9 +937,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="personal">
             <namePart>Gaiman, Neil</namePart>
             <role>
@@ -993,7 +950,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
               <roleTerm type="text">author</roleTerm>
             </role>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -1058,13 +1015,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name type="personal">
             <namePart>Peele, Gregory</namePart>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
@@ -1167,9 +1122,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        #{mods_element_open}
           <name usage="primary" type="personal" script="Cyrl" altRepGroup="1" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/no2015139297">
             <namePart>&#x411;&#x443;&#x43B;&#x433;&#x430;&#x43A;&#x43E;&#x432;, &#x41C;&#x438;&#x445;&#x430;&#x438;&#x43B; &#x410;&#x444;&#x430;&#x43D;&#x430;&#x441;&#x44C;&#x435;&#x432;&#x438;&#x447;</namePart>
           </name>
@@ -1182,7 +1135,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
           <name type="personal" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="2">
             <namePart>Olesha, I&#xFE20;U&#xFE21;ri&#x12D; Karlovich</namePart>
           </name>
-        </mods>
+        #{mods_element_close}
       XML
     end
   end
