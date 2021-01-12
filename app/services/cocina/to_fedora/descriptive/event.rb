@@ -6,11 +6,18 @@ module Cocina
       # Maps events from cocina to MODS XML
       class Event
         TAG_NAME = {
-          'production' => :dateCreated,
+          'creation' => :dateCreated,
           'publication' => :dateIssued,
-          'copyright notice' => :copyrightDate,
+          'copyright' => :copyrightDate,
           'capture' => :dateCaptured,
           'presentation' => :dateIssued
+        }.freeze
+
+        DATE_OTHER_TYPE = {
+          'production' => 'production',
+          'development' => 'developed',
+          'distribution' => 'distribution',
+          'manufacture' => 'distribution'
         }.freeze
 
         EVENT_TYPE = {
@@ -22,7 +29,8 @@ module Cocina
           'publication' => 'publication',
           'acquisition' => 'acquisition',
           'development' => 'development',
-          'presentation' => 'presentation'
+          'presentation' => 'presentation',
+          'production' => 'production'
         }.freeze
 
         GroupedParallelValues = Struct.new(:locations, :names, :dates, :notes, :value_language)
@@ -73,7 +81,7 @@ module Cocina
             transliteration: name&.standard&.value
           }.compact
 
-          write_event(event_type, event.date, event.location, names, event.note, attributes)
+          write_event(event.type, event.date, event.location, names, event.note, attributes)
         end
 
         def write_translated(event, event_type, alt_rep_group)
@@ -88,7 +96,7 @@ module Cocina
               eventType: event_type
             }.compact
 
-            write_event(event_type,
+            write_event(event.type,
                         grouped_parallel_value.dates,
                         grouped_parallel_value.locations,
                         grouped_parallel_value.names,
@@ -172,10 +180,10 @@ module Cocina
         end
 
         # rubocop:disable Metrics/ParameterLists
-        def write_event(event_type, dates, locations, names, notes, attributes, is_parallel: false)
+        def write_event(cocina_event_type, dates, locations, names, notes, attributes, is_parallel: false)
           xml.originInfo attributes do
             Array(dates).each do |date|
-              write_basic_date(date, event_type)
+              write_basic_date(date, cocina_event_type)
             end
             Array(locations).each do |loc|
               write_location(loc)
@@ -214,32 +222,37 @@ module Cocina
           end
         end
 
-        def write_basic_date(date, event_type)
+        def write_basic_date(date, cocina_event_type)
           if date.structuredValue
-            date_range(date.structuredValue, event_type)
+            date_range(date.structuredValue, cocina_event_type)
           else
-            date_tag(date, event_type)
+            date_tag(date, cocina_event_type)
           end
         end
 
-        def date_tag(date, event_type)
+        def date_tag(date, cocina_event_type)
           value = date.value
-          tag = TAG_NAME.fetch(event_type, :dateOther)
+          tag = TAG_NAME.fetch(cocina_event_type, :dateOther)
           attributes = {
             encoding: date.encoding&.code,
             qualifier: date.qualifier
           }.tap do |attrs|
             attrs[:keyDate] = 'yes' if date.status == 'primary'
-            attrs[:type] = date.note.find { |note| note.type == 'date type' }.value if tag == :dateOther && date.note
-            attrs[:type] = 'developed' if event_type == 'development'
+            attrs[:type] = date_type_for(date, cocina_event_type) if tag == :dateOther && value.present?
             attrs[:point] = date.type if %w[start end].include?(date.type)
           end.compact
           xml.public_send(tag, value, attributes)
         end
 
-        def date_range(dates, event_type)
+        def date_type_for(date, cocina_event_type)
+          return date.note.find { |note| note.type == 'date type' }.value if date.note
+
+          DATE_OTHER_TYPE[cocina_event_type]
+        end
+
+        def date_range(dates, cocina_event_type)
           dates.each do |date|
-            date_tag(date, event_type)
+            date_tag(date, cocina_event_type)
           end
         end
 

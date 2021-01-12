@@ -272,18 +272,53 @@ module Cocina
                 end.compact
               ],
               type: 'organization',
-              role: [
-                {
-                  "value": 'publisher',
-                  "code": 'pbl',
-                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                  "source": {
-                    "code": 'marcrelator',
-                    "uri": 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
+              role: [role_for(event)]
             }.compact
+          end
+        end
+
+        def role_for(event)
+          case event[:type]
+          when 'distribution'
+            {
+              "value": 'distributor',
+              "code": 'dst',
+              "uri": 'http://id.loc.gov/vocabulary/relators/dst',
+              "source": {
+                "code": 'marcrelator',
+                "uri": 'http://id.loc.gov/vocabulary/relators/'
+              }
+            }
+          when 'manufacture'
+            {
+              "value": 'manufacturer',
+              "code": 'mfr',
+              "uri": 'http://id.loc.gov/vocabulary/relators/mfr',
+              "source": {
+                "code": 'marcrelator',
+                "uri": 'http://id.loc.gov/vocabulary/relators/'
+              }
+            }
+          when 'production'
+            {
+              "value": 'issuing body',
+              "code": 'isb',
+              "uri": 'http://id.loc.gov/vocabulary/relators/isb',
+              "source": {
+                "code": 'marcrelator',
+                "uri": 'http://id.loc.gov/vocabulary/relators/'
+              }
+            }
+          else
+            {
+              "value": 'publisher',
+              "code": 'pbl',
+              "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+              "source": {
+                "code": 'marcrelator',
+                "uri": 'http://id.loc.gov/vocabulary/relators/'
+              }
+            }
           end
         end
 
@@ -338,6 +373,7 @@ module Cocina
 
         def date_other_event_type(origin, date)
           return 'development' if date['type'] == 'developed'
+          return 'production' if date['type'] == 'production'
           return 'creation' if origin['eventType'] == 'production'
 
           origin['eventType']

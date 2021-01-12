@@ -587,59 +587,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L604'
   end
 
-  context 'when eventType matches date type "distribution"' do
-    let(:xml) do
-      <<~XML
-        <originInfo eventType="distribution">
-          <place>
-            <placeTerm type="text">Washington, DC</placeTerm>
-          </place>
-          <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
-          <dateOther type="distribution"/>
-        </originInfo>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          type: 'distribution',
-          date: [
-            {
-              value: ''
-            }
-          ],
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'For sale by the Superintendent of Documents, U.S. Government Publishing Office'
-                }
-              ],
-              type: 'organization',
-              role: [
-                {
-                  value: 'publisher',
-                  code: 'pbl',
-                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            }
-          ],
-          location: [
-            {
-              value: 'Washington, DC'
-            }
-          ]
-        }
-      ]
-    end
-  end
-
   # example 26 from mods_to_cocina_originInfo.txt
   context 'with originInfo eventType differs from date type' do
     xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L621'
@@ -2425,6 +2372,199 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
                 "code": 'w3cdtf'
               },
               "status": 'primary'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  # 47. Publisher with eventType production
+  context 'with publisher with eventType production' do
+    let(:xml) do
+      <<~XML
+        <originInfo eventType="production">
+          <publisher>Stanford University</publisher>
+          <dateOther type="production">2020</dateOther>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'production',
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Stanford University'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'issuing body',
+                  "code": 'isb',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/isb',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "value": '2020'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  # 48. Publisher with eventType distribution
+  context 'with publisher with eventType distribution' do
+    let(:xml) do
+      <<~XML
+        <originInfo eventType="distribution">
+          <publisher>Stanford University</publisher>
+          <dateOther type="distribution">2020</dateOther>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'distribution',
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Stanford University'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'distributor',
+                  "code": 'dst',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/dst',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "value": '2020'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  # 49. Publisher with eventType manufacture
+  context 'with publisher with eventType manufacture' do
+    let(:xml) do
+      <<~XML
+        <originInfo eventType="manufacture">
+          <publisher>Stanford University</publisher>
+          <dateOther type="distribution">2020</dateOther>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'manufacture',
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Stanford University'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'manufacturer',
+                  "code": 'mfr',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/mfr',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "value": '2020'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  # 50. Publisher with dateOther type
+  context 'with publisher with dateOther type' do
+    let(:xml) do
+      <<~XML
+        <originInfo displayLabel="producer">
+          <place>
+            <placeTerm>Stanford, Calif.</placeTerm>
+          </place>
+          <publisher>Stanford University, Department of Biostatistics</publisher>
+          <dateOther type="production">2002</dateOther>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'production',
+          "displayLabel": 'producer',
+          "location": [
+            {
+              "value": 'Stanford, Calif.'
+            }
+          ],
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Stanford University, Department of Biostatistics'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'issuing body',
+                  "code": 'isb',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/isb',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "value": '2002'
             }
           ]
         }
