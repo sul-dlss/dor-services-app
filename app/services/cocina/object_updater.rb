@@ -44,7 +44,7 @@ module Cocina
       Mapper.build(item).tap do
         event_factory.create(druid: item.pid, event_type: 'update', data: { success: true, request: obj.to_h })
       end
-    rescue Mapper::MissingTitle, Mapper::UnsupportedObjectType, ValidationError, NotImplemented => e
+    rescue Mapper::MapperError, ValidationError, NotImplemented => e
       event_factory.create(druid: item.pid, event_type: 'update', data: { success: false, error: e.message, request: obj.to_h })
       raise
     end
@@ -124,7 +124,7 @@ module Cocina
     def client_attempted_metadata_update?
       title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
 
-      descriptive = FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml)
+      descriptive = FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml, druid: item.pid)
 
       obj.description.title != descriptive.fetch(:title).map { |value| Cocina::Models::Title.new(value) }
     end

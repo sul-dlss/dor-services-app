@@ -16,12 +16,13 @@ module Cocina
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder: nil)
-          new(resource_element: resource_element).build
+        def self.build(resource_element:, descriptive_builder:)
+          new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
         end
 
-        def initialize(resource_element:)
+        def initialize(resource_element:, descriptive_builder:)
           @resource_element = resource_element
+          @notifier = descriptive_builder.notifier
         end
 
         def build
@@ -39,7 +40,7 @@ module Cocina
 
         private
 
-        attr_reader :resource_element
+        attr_reader :resource_element, :notifier
 
         # The number of location nodes that themselves that have child nodes.
         # Hydrus is know to create location nodes with no children.
@@ -125,9 +126,9 @@ module Cocina
               else
                 attrs[:value] = node.text
               end
-              attrs[:uri] = ValueURI.sniff(node[:valueURI])
+              attrs[:uri] = ValueURI.sniff(node[:valueURI], notifier)
               source = {
-                code: Authority.normalize_code(node[:authority]),
+                code: Authority.normalize_code(node[:authority], notifier),
                 uri: Authority.normalize_uri(node[:authorityURI])
               }.compact
               attrs[:source] = source unless source.empty?

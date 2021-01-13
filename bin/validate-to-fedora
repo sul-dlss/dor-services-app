@@ -56,10 +56,8 @@ end
 def validate_druid(druid, cache)
   begin
     title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: cache.label(druid))
-    desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: cache.descmd_xml(druid))
+    desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: cache.descmd_xml(druid), druid: druid)
     cocina = Cocina::Models::Description.new(desc_props)
-  rescue Cocina::Mapper::DataError => e
-    return Result.new(druid, e.message, :data_error)
   rescue StandardError => e
     return Result.new(druid, e.message, :missing) if e.message == 'Missing item'
 

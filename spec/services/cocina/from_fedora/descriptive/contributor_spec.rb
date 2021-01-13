@@ -4,7 +4,11 @@ require 'rails_helper'
 
 # numbered examples from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_name.txt
 RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
-  subject(:build) { described_class.build(resource_element: ng_xml.root) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+
+  let(:descriptive_builder) { Cocina::FromFedora::Descriptive::DescriptiveBuilder.new(notifier: notifier) }
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -126,7 +130,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         XML
       end
 
-      it 'builds the cocina data structure' do
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'builds the cocina data structure and warns' do
         expect(build).to eq [
           {
             "name": [
@@ -138,12 +146,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
             "status": 'primary'
           }
         ]
-      end
-
-      it 'notifies Honeybadger' do
-        allow(Honeybadger).to receive(:notify).once
-        build
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Name type incorrectly capitalized', { tags: 'data_error' })
+        expect(notifier).to have_received(:warn).with('Name type incorrectly capitalized', { type: 'Personal' })
       end
     end
 
@@ -156,7 +159,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         XML
       end
 
-      it 'builds the cocina data structure' do
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'builds the cocina data structure and warns' do
         expect(build).to eq [
           {
             "name": [
@@ -166,12 +173,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
             ]
           }
         ]
-      end
-
-      it 'notifies Honeybadger' do
-        allow(Honeybadger).to receive(:notify).once
-        build
-        expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Name type unrecognized 'primary'", { tags: 'data_error' })
+        expect(notifier).to have_received(:warn).with('Name type unrecognized', { type: 'primary' })
       end
     end
   end
@@ -188,16 +190,15 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       XML
     end
 
-    it 'builds the cocina data structure' do
-      expect(build).to eq [{}]
+    before do
+      allow(notifier).to receive(:warn).exactly(3).times
     end
 
-    it 'notifies Honeybadger' do
-      allow(Honeybadger).to receive(:notify).exactly(3).times
-      build
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name type attribute is set to ""', { tags: 'data_error' })
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart missing value', { tags: 'data_error' })
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] missing name/namePart element', { tags: 'data_error' })
+    it 'builds the cocina data structure and warns' do
+      expect(build).to eq [{}]
+      expect(notifier).to have_received(:warn).with('name type attribute is set to ""')
+      expect(notifier).to have_received(:warn).with('name/namePart missing value')
+      expect(notifier).to have_received(:warn).with('Missing name/namePart element')
     end
   end
 
@@ -280,7 +281,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         XML
       end
 
-      it 'builds the cocina data structure without structuredValue' do
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'builds the cocina data structure without structuredValue and warns' do
         expect(build).to eq [
           {
             "name": [
@@ -294,12 +299,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
             "type": 'person'
           }
         ]
-      end
-
-      it 'notifies Honeybadger' do
-        allow(Honeybadger).to receive(:notify).once
-        build
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart type attribute set to ""', { tags: 'data_error' })
+        expect(notifier).to have_received(:warn).with('Name/namePart type attribute set to ""')
       end
     end
 
@@ -312,7 +312,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         XML
       end
 
-      it 'builds the cocina data structure without structuredValue' do
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'builds the cocina data structure without structuredValue and warns' do
         expect(build).to eq [
           {
             "name": [
@@ -322,6 +326,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
             ]
           }
         ]
+        expect(notifier).to have_received(:warn).with('namePart has unknown type assigned', { type: 'personal' })
       end
     end
   end
@@ -401,16 +406,15 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
 
     before do
-      allow(Honeybadger).to receive(:notify).once
+      allow(notifier).to receive(:warn).once
     end
 
-    it 'ignores the namePart with no value and Honeybadger notifies' do
+    it 'ignores the namePart with no value and warns' do
       expect(build).to eq [{ name: [{ structuredValue: [{ value: 'Kielmansegg, Erich Ludwig Friedrich Christian' },
                                                         { type: 'term of address', value: 'Graf von' },
                                                         { type: 'life dates', value: '1847-1923' }] }],
                              type: 'person' }]
-      expect(Honeybadger).to have_received(:notify)
-        .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
+      expect(notifier).to have_received(:warn).with('name/namePart missing value')
     end
   end
 
@@ -472,7 +476,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         XML
       end
 
-      it 'builds cocina data structure, ignoring the namePart with no value' do
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'builds cocina data structure, ignoring the namePart with no value and warns' do
         expect(build).to eq [
           {
             "name": [
@@ -486,13 +494,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
             "type": 'person'
           }
         ]
-      end
-
-      it 'notifies Honeybadger' do
-        allow(Honeybadger).to receive(:notify).twice
-        build
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart type attribute set to ""', { tags: 'data_error' })
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/role/roleTerm missing value', { tags: 'data_error' })
+        expect(notifier).to have_received(:warn).with('Name/namePart type attribute set to ""')
+        expect(notifier).to have_received(:warn).with('name/role/roleTerm missing value')
       end
     end
 
@@ -504,23 +507,21 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
             xmlns="http://www.loc.gov/mods/v3" version="3.3"
             xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
-            #{xml}
+            <name type="personal" authority="naf" xlink:href="http://id.loc.gov/authorities/names/n82087745">
+              <role>
+                <roleTerm>creator</roleTerm>
+              </role>
+              <namePart>Tirion, Isaak</namePart>
+            </name>
           </mods>
         XML
       end
 
-      let(:xml) do
-        <<~XML
-          <name type="personal" authority="naf" xlink:href="http://id.loc.gov/authorities/names/n82087745">
-            <role>
-              <roleTerm>creator</roleTerm>
-            </role>
-            <namePart>Tirion, Isaak</namePart>
-          </name>
-        XML
+      before do
+        allow(notifier).to receive(:warn)
       end
 
-      it 'builds the cocina data structure' do
+      it 'builds the cocina data structure and warns' do
         expect(build).to eq [
           {
             name: [
@@ -540,6 +541,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
             type: 'person'
           }
         ]
+        expect(notifier).to have_received(:warn).with('Name has an xlink:href property')
       end
     end
 
@@ -677,10 +679,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         XML
       end
 
-      before do
-        allow(Honeybadger).to receive(:notify)
-      end
-
       it 'builds the cocina data structure with downcased role' do
         expect(build).to eq [
           {
@@ -704,10 +702,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
             ]
           }
         ]
-      end
-
-      it 'does not notify Honeybadger' do
-        expect(Honeybadger).not_to have_received(:notify)
       end
     end
 
@@ -795,10 +789,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
 
       before do
-        allow(Honeybadger).to receive(:notify)
+        allow(notifier).to receive(:warn)
       end
 
-      it 'builds the cocina data structure and Honeybadger notifies' do
+      it 'builds the cocina data structure and warns' do
         expect(build).to eq [
           { name: [
             { value: 'Selective Service System' }
@@ -806,7 +800,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
             { code: 'isb' }
           ] }
         ]
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Contributor role code is missing authority', { tags: 'data_error' })
+        expect(notifier).to have_received(:warn).with('Contributor role code is missing authority')
       end
     end
 
@@ -822,8 +816,21 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         XML
       end
 
-      it 'raises an error' do
-        expect { build }.to raise_error Cocina::Mapper::InvalidDescMetadata, 'Contributor role code has unexpected value: isbx'
+      before do
+        allow(notifier).to receive(:error)
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'builds the cocina data structure and notifies error' do
+        expect(build).to eq [
+          { name: [
+            { value: 'Selective Service System', uri: 'corporate' }
+          ], role: [
+            { code: 'isbx' }
+          ] }
+        ]
+        expect(notifier).to have_received(:warn).with('Value URI has unexpected value', { uri: 'corporate' })
+        expect(notifier).to have_received(:error).with('Contributor role code has unexpected value', { role: 'isbx' })
       end
     end
 
@@ -841,7 +848,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         XML
       end
 
-      it 'builds the cocina data structure' do
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'builds the cocina data structure and warns' do
         expect(build).to eq [
           {
             name: [
@@ -860,6 +871,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
             ]
           }
         ]
+        expect(notifier).to have_received(:warn).with('Contributor role code is missing authority')
       end
     end
 
@@ -915,17 +927,14 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         XML
       end
 
-      it 'builds empty cocina data structure and does not raise error' do
-        expect(build).to eq [{}]
+      before do
+        allow(notifier).to receive(:warn)
       end
 
-      it 'notifies Honeybadger namePart is empty' do
-        allow(Honeybadger).to receive(:notify).twice
-        build
-        expect(Honeybadger).to have_received(:notify)
-          .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
-        expect(Honeybadger).to have_received(:notify)
-          .with('[DATA ERROR] missing name/namePart element', tags: 'data_error')
+      it 'builds empty cocina data structure and warns' do
+        expect(build).to eq [{}]
+        expect(notifier).to have_received(:warn).with('name/namePart missing value')
+        expect(notifier).to have_received(:warn).with('Missing name/namePart element')
       end
     end
 
@@ -941,14 +950,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         XML
       end
 
-      it 'builds the cocina data structure' do
-        expect(build).to eq [{}]
+      before do
+        allow(notifier).to receive(:warn)
       end
 
-      it 'notifies Honeybadger' do
-        allow(Honeybadger).to receive(:notify)
-        build
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] missing name/namePart element', { tags: 'data_error' })
+      it 'builds the cocina data structure and warns' do
+        expect(build).to eq [{}]
+        expect(notifier).to have_received(:warn).with('Missing name/namePart element')
       end
     end
 
@@ -965,15 +973,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
         XML
       end
 
-      it 'builds empty cocina data structure and does not raise error' do
-        expect(build).to eq [{}]
+      before do
+        allow(notifier).to receive(:warn)
       end
 
-      it 'notifies Honeybadger namePart and roleTerm are empty' do
-        allow(Honeybadger).to receive(:notify).twice
-        build
-        expect(Honeybadger).to have_received(:notify)
-          .with('[DATA ERROR] name/namePart missing value', tags: 'data_error')
+      it 'builds empty cocina data structure and warns' do
+        expect(build).to eq [{}]
+        expect(notifier).to have_received(:warn).with('name/namePart missing value')
       end
     end
 

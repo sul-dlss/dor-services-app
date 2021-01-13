@@ -3,7 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive::Language do
-  subject(:build) { described_class.build(resource_element: ng_xml.root) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+
+  let(:descriptive_builder) { instance_double(Cocina::FromFedora::Descriptive::DescriptiveBuilder, notifier: notifier) }
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -89,10 +93,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Language do
     end
 
     before do
-      allow(Honeybadger).to receive(:notify)
+      allow(notifier).to receive(:warn)
     end
 
-    it 'builds the cocina data structure' do
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
           "code": 'eng',
@@ -101,7 +105,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Language do
           }
         }
       ]
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] languageTerm missing type', { tags: 'data_error' })
+      expect(notifier).to have_received(:warn).with('languageTerm missing type')
     end
   end
 
@@ -188,7 +192,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Language do
       XML
     end
 
-    it 'builds the cocina data structure' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
           "script": {
@@ -200,6 +208,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Language do
           }
         }
       ]
+      expect(notifier).to have_received(:warn).with('languageTerm missing type')
     end
   end
 

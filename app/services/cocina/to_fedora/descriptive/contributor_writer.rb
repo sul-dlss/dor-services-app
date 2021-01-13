@@ -155,7 +155,8 @@ module Cocina
             when 'description'
               xml.description note.value
             else
-              Honeybadger.notify('[DATA ERROR] Unknown contributor note type', { tags: 'data_error' })
+              # This should not happen, as mapping code only produces affiliation and description.
+              raise 'Unknown contributor note type'
             end
           end
         end

@@ -17,6 +17,7 @@ module Cocina
         def initialize(resource_element:, descriptive_builder:)
           @resource_element = resource_element
           @descriptive_builder = descriptive_builder
+          @notifier = descriptive_builder.notifier
         end
 
         def build
@@ -41,7 +42,7 @@ module Cocina
 
         private
 
-        attr_reader :resource_element, :descriptive_builder
+        attr_reader :resource_element, :descriptive_builder, :notifier
 
         def related_items
           resource_element.xpath('mods:relatedItem', mods: DESC_METADATA_NS)
@@ -57,14 +58,14 @@ module Cocina
                               TYPES['isReferencedBy']
                             end
 
-          Honeybadger.notify("[DATA ERROR] Invalid related resource type (#{type})", { tags: 'data_error' })
+          notifier.warn('Invalid related resource type', { resource_type: type })
           normalized_type
         end
 
         def check_other_type(related_item)
           return unless related_item['type'] && related_item['otherType']
 
-          Honeybadger.notify('[DATA ERROR] Related resource has type and otherType', { tags: 'data_error' })
+          notifier.warn('Related resource has type and otherType')
         end
       end
     end

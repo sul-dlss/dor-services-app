@@ -6,13 +6,15 @@ module Cocina
       # Maps titles
       class TitleBuilder
         # @param [Nokogiri::XML::Element] title_info_element titleInfo element
+        # @param [Cocina::FromFedora::DataErrorNotifier] notifier
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(title_info_element:)
-          new(title_info_element: title_info_element).build
+        def self.build(title_info_element:, notifier:)
+          new(title_info_element: title_info_element, notifier: notifier).build
         end
 
-        def initialize(title_info_element:)
+        def initialize(title_info_element:, notifier:)
           @title_info_element = title_info_element
+          @notifier = notifier
         end
 
         def build
@@ -21,11 +23,11 @@ module Cocina
 
           children = title_info_element.xpath('./*[child::node()[self::text()]]')
           if children.empty?
-            Honeybadger.notify('[DATA ERROR] Empty title node', { tags: 'data_error' })
+            notifier.warn('Empty title node')
             return nil
           end
 
-          Honeybadger.notify('[DATA ERROR] Title with type', { tags: 'data_error' }) if children_with_type?(children)
+          notifier.warn('Title with type') if children_with_type?(children)
 
           # If a displayLabel only with no title text element
           # Note: this is an error condition,
@@ -40,7 +42,7 @@ module Cocina
 
         private
 
-        attr_reader :title_info_element
+        attr_reader :title_info_element, :notifier
 
         def children_with_type?(children)
           children.any? do |child|

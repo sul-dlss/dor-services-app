@@ -3,11 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive do
-  subject(:descriptive) { described_class.props(mods: Nokogiri::XML(desc_metadata)) }
-
-  before do
-    allow(Honeybadger).to receive(:notify)
+  subject(:descriptive) do
+    described_class.props(mods: Nokogiri::XML(desc_metadata), druid: 'druid:mj284jb0952', notifier: notifier)
   end
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   context 'when the item is a was-seed' do
     let(:desc_metadata) do
@@ -417,9 +417,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       XML
     end
 
-    it 'does not notify' do
+    it 'does not warn' do
       descriptive
-      expect(Honeybadger).not_to have_received(:notify)
     end
   end
 
@@ -438,9 +437,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       XML
     end
 
-    it 'does not notify' do
+    it 'does not warn' do
       descriptive
-      expect(Honeybadger).not_to have_received(:notify)
     end
   end
 
@@ -459,9 +457,13 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       XML
     end
 
-    it 'notifies' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'warns' do
       descriptive
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Bad altRepGroup', { tags: 'data_error' })
+      expect(notifier).to have_received(:warn).with('Bad altRepGroup')
     end
   end
 
@@ -480,9 +482,13 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       XML
     end
 
-    it 'does not notifies' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'warns' do
       descriptive
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Bad altRepGroup', { tags: 'data_error' })
+      expect(notifier).to have_received(:warn).with('Bad altRepGroup')
     end
   end
 
@@ -501,9 +507,13 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       XML
     end
 
-    it 'notifies' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'warns' do
       descriptive
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Bad altRepGroup', { tags: 'data_error' })
+      expect(notifier).to have_received(:warn).with('Bad altRepGroup')
     end
   end
 end

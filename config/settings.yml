@@ -74,3 +74,8 @@ catalog:
     headers:
       SD-ORIGINATING-APP-ID: DOR-SERVICES-APP
       SD-PREFERRED-ROLE: GUEST
+
+# Whether to notify on data errors encountered when mapping from MODS to Cocina. See DataErrorNotifier.
+from_fedora_data_errors:
+  notify_warn: true
+  notify_error: true
