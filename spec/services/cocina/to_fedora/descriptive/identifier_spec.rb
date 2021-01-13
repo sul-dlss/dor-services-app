@@ -16,6 +16,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Identifier do
     end
   end
 
+  # 0: Identifier is nil
   context 'when identifiers is nil' do
     let(:identifiers) { nil }
 
@@ -29,7 +30,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Identifier do
     end
   end
 
-  context 'when it has a single identifier' do
+  # 1. Identifier with type
+  context 'when it has a single identifier with type' do
     let(:identifiers) do
       [
         Cocina::Models::DescriptiveValue.new(
@@ -63,30 +65,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Identifier do
     end
   end
 
-  context 'when it has a single identifier that does not match a MODS term' do
-    let(:identifiers) do
-      [
-        Cocina::Models::DescriptiveValue.new(
-          {
-            "value": '123456789203',
-            "type": 'OCLC'
-          }
-        )
-      ]
-    end
-
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <identifier type="OCLC">123456789203</identifier>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when it has a URI identifier' do
+  # 2. URI as identifier
+  context 'when it has a URI as identifier' do
     let(:identifiers) do
       [
         Cocina::Models::DescriptiveValue.new(
@@ -119,7 +99,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Identifier do
     end
   end
 
-  context 'when it has a display label' do
+  # 3. Identifier with display label
+  context 'when it has an Identifier with display label' do
     let(:identifiers) do
       [
         Cocina::Models::DescriptiveValue.new(
@@ -142,7 +123,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Identifier do
     end
   end
 
-  context 'when it is invalid' do
+  # 4. Invalid identifier
+  context 'when it is an Invalid identifier' do
     let(:identifiers) do
       [
         Cocina::Models::DescriptiveValue.new(
@@ -170,6 +152,30 @@ RSpec.describe Cocina::ToFedora::Descriptive::Identifier do
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <identifier type="lccn" invalid="yes">sn 87042262</identifier>
+        </mods>
+      XML
+    end
+  end
+
+  # FIXME:  https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/320
+  context 'when it has a single identifier that does not match a MODS term' do
+    let(:identifiers) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": '123456789203',
+            "type": 'OCLC'
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <identifier type="OCLC">123456789203</identifier>
         </mods>
       XML
     end
