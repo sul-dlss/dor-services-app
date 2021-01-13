@@ -1,23 +1,20 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'support/mods_mapping_spec_helper'
 
-# numbered examples here from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_targetAudience.txt
+# numbered examples refer to https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_targetAudience.txt
 RSpec.describe Cocina::ToFedora::Descriptive::Note do
-  subject(:xml) { writer.to_xml }
-
+  # see spec/support/mods_mapping_spec_helper.rb for how writer is used in shared examples
   let(:writer) do
     Nokogiri::XML::Builder.new do |xml|
-      xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
-               'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-               'version' => '3.6',
-               'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
+      xml.mods(mods_attributes) do
         described_class.write(xml: xml, notes: notes, id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
   end
 
-  # Example 1. Target audience with authority
+  # 1. Target audience with authority
   context 'with authority' do
     let(:notes) do
       [
@@ -31,18 +28,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <targetAudience authority="marctarget">juvenile</targetAudience>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <targetAudience authority="marctarget">juvenile</targetAudience>
+    XML
   end
 
-  # Example 2. Target audience without authority
+  # 2. Target audience without authority
   context 'without authority' do
     let(:notes) do
       [
@@ -53,14 +44,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <targetAudience>ages 3-6</targetAudience>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <targetAudience>ages 3-6</targetAudience>
+    XML
   end
 end
