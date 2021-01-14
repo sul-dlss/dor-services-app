@@ -12,73 +12,137 @@ RSpec.describe Cocina::FromFedora::Descriptive do
   context 'when the item is a was-seed' do
     let(:desc_metadata) do
       <<~XML
-        <?xml version="1.0"?>
-        <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.loc.gov/mods/v3" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+      <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <titleInfo>
+          <nonSort xml:space="preserve">The</nonSort>
+          <title>IRA, social media and political polarization in the United States, 2012-2018</title>
+        </titleInfo>
+
+
+
+
+
+
+        <typeOfResource>text</typeOfResource>
+        <genre authority="marcgt">bibliography</genre>
+        <genre authority="rdacontent">text</genre>
+        <originInfo>
+          <place>
+            <placeTerm type="code" authority="marccountry">enk</placeTerm>
+          </place>
+          <dateIssued encoding="marc">2018</dateIssued>
+          <copyrightDate encoding="marc">2018</copyrightDate>
+          <issuance>monographic</issuance>
+        <dateCreated keyDate="yes" encoding="w3cdtf">2018-12</dateCreated></originInfo>
+        <originInfo eventType="publication">
+          <place>
+            <placeTerm type="text">[Oxford, United Kingdom]</placeTerm>
+          </place>
+          <publisher>University of Oxford</publisher>
+          <dateIssued>2018</dateIssued>
+        </originInfo>
+        <language>
+          <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+        </language>
+        <physicalDescription>
+          <form authority="marccategory">electronic resource</form>
+          <form authority="marcsmd">remote</form>
+          <extent>1 online resource (46 pages) : color illustrations, color map</extent>
+          <form type="media" authority="rdamedia">computer</form>
+          <form type="carrier" authority="rdacarrier">online resource</form>
+        </physicalDescription>
+        <abstract displayLabel="Summary">Russia's Internet Research Agency (IRA) launched an extended attack on the United States by using computational propaganda to misinform and polarize US voters. This report provides the first major analysis of this attack based on data provided by social media firms to the Senate Select Committee on Intelligence (SSCI). This analysis answers several key questions about the activities of the known IRA accounts. In this analysis, we investigate how the IRA exploited the tools and platform of Facebook, Instagram, Twitter and YouTube to impact US users. We identify which aspects of the IRA's campaign strategy got the most traction on social media and the means of microtargeting US voters with particular messages.</abstract>
+        <tableOfContents>Executive summary. -- Introduction: Rising IRA involvement in US politics. -- Data &amp; Methodology. -- Overview of IRA activity across platforms. -- RA acticity and key political events in the US. -- The IRA's advertising campaign against US voters. -- How the IRA targeted US audiences on Twitter. -- Engaging US voters with organic posts on Facebook and Instagram. -- Conclusion: IRA activity a political polarization in the US. -- References. -- Series acknowlegements. -- Author biographies.</tableOfContents>
+        <note type="statement of responsibility">Philip N. Howard, Bharath Ganesh, Dimitra Liotsiou, John Kelly, Camille Fran&#xE7;ois.</note>
+        <note>At head of title: Computational Propaganda Research Project.</note>
+        <note type="bibliography">Includes bibliographical references (pages 42-43).</note>
+        <subject>
+          <geographicCode authority="marcgac">e-ru---</geographicCode>
+          <geographicCode authority="marcgac">n-us---</geographicCode>
+        </subject>
+        <subject authority="lcsh">
+
+        </subject>
+        <subject authority="lcsh">
           <titleInfo>
-            <title>Messaoud Ould Boulkheir - Mauritania 2009 Presidential Election</title>
+            <title>Facebook (Electronic resource)</title>
           </titleInfo>
-          <name>
-            <namePart>Joe McNopart</namePart>
-          </name>
-          <name type="corporate">
-            <namePart>Stanford University. Libraries. Humanities and Area Studies Resource Group</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/col">col</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/col">collector</roleTerm>
-            </role>
-          </name>
-          <typeOfResource>text</typeOfResource>
-          <genre authority="local">archived website</genre>
-          <language>
-            <languageTerm authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2" valueURI="http://id.loc.gov/vocabulary/iso639-2/ara" type="code">ara</languageTerm>
-            <languageTerm authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2" valueURI="http://id.loc.gov/vocabulary/iso639-2/ara" type="text">Arabic</languageTerm>
-          </language>
-          <language>
-            <languageTerm authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2" valueURI="http://id.loc.gov/vocabulary/iso639-2/fre" type="code">fre</languageTerm>
-            <languageTerm authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2" valueURI="http://id.loc.gov/vocabulary/iso639-2/fre" type="text">French</languageTerm>
-          </language>
-          <physicalDescription>
-            <form authority="marcform">electronic</form>
-            <digitalOrigin>born digital</digitalOrigin>
-            <internetMediaType>text/html</internetMediaType>
-          </physicalDescription>
-          <abstract>Official site of opposition candidate Boulkheir, "the Mauritanian Obama," for the 2009 Mauritania presidential election. The election was held July 18, 2009. Boulkheir came in second place with 16.3 percent of the vote. Elected "Pr&#xE9;sident de l&#x2019;Assembl&#xE9;e Nationale" in 2007. Boulkheir also had 5 Facebook pages including "SOUTENONS TOUS LE CANDIDAT OFFICIEL DU FNDD: MESS3OUD 0ULD BOULKHEIR" and "mess3oud ould belkhier LE CANDIDAT DU FNDD ET LE NOTRE VOTONS POUR LUI".</abstract>
-          <note type="system details" displayLabel="Original site">http://ennejah.info/</note>
-          <note>Site closed after 2010.</note>
-          <note>Archived by Stanford University Libraries, Humanities and Area Studies Resource Group</note>
-          <note displayLabel="Web archiving service">California Digital Library Web Archiving Service</note>
-          <subject authority="local">
-            <topic>Mauritania Presidential Election 2009</topic>
-          </subject>
-          <subject authority="lcsh">
-            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh85041557">Elections</topic>
-            <geographic authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n79061287">Mauritania</geographic>
-          </subject>
-          <relatedItem type="preceding">
-            <titleInfo>
-              <title>Bulletin of the American Mathematical Society</title>
-            </titleInfo>
-            <name>
-              <namePart>American Mathematical Society.</namePart>
-            </name>
-            <identifier type="issn">0002-9904</identifier>
-            <identifier type="local">(OCoLC)11471303</identifier>
-          </relatedItem>
-          <location>
-            <physicalLocation type="repository" authority="naf" valueURI="http://id.loc.gov/authorities/names/n81070667">Stanford University. Libraries</physicalLocation>
-            <url usage="primary display">https://purl.stanford.edu/bb196dd3409</url>
-            <url displayLabel="Archived website">https://swap.stanford.edu/*/http://ennejah.info/</url>
-          </location>
-          <recordInfo>
-            <languageOfCataloging usage="primary">
-              <languageTerm type="text" authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2" valueURI="http://id.loc.gov/vocabulary/iso639-2/eng">English</languageTerm>
-              <languageTerm type="code" authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2" valueURI="http://id.loc.gov/vocabulary/iso639-2/eng">eng</languageTerm>
-              <scriptTerm type="text" authority="iso15924">Latin</scriptTerm>
-              <scriptTerm type="code" authority="iso15924">Latn</scriptTerm>
-            </languageOfCataloging>
-            <recordContentSource authority="marcorg" authorityURI="http://id.loc.gov/vocabulary/organizations" valueURI="http://id.loc.gov/vocabulary/organizations/cst">CSt</recordContentSource>
-          </recordInfo>
-        </mods>
+          <topic>Political aspects</topic>
+          <geographic>United States</geographic>
+          <topic>Evaluation</topic>
+        </subject>
+        <subject authority="lcsh">
+          <titleInfo>
+            <title>Twitter</title>
+          </titleInfo>
+          <topic>Political aspects</topic>
+          <geographic>United States</geographic>
+          <topic>Evaluation</topic>
+        </subject>
+        <subject authority="lcsh">
+          <titleInfo>
+            <title>YouTube (Electronic resource)</title>
+          </titleInfo>
+          <topic>Political aspects</topic>
+          <geographic>United States</geographic>
+          <topic>Evaluation</topic>
+        </subject>
+        <subject authority="lcsh">
+          <topic>Information warfare</topic>
+          <geographic>Russia (Federation)</geographic>
+        </subject>
+        <subject authority="lcsh">
+          <topic>Disinformation</topic>
+          <geographic>Russia (Federation)</geographic>
+        </subject>
+        <subject authority="lcsh">
+          <topic>Elections</topic>
+          <geographic>United States</geographic>
+        </subject>
+        <subject authority="lcsh">
+          <topic>Social media</topic>
+          <topic>Political aspects</topic>
+        </subject>
+        <subject authority="lcsh">
+          <topic>Online social networks</topic>
+          <topic>Political aspects</topic>
+        </subject>
+        <subject authority="lcsh">
+          <topic>Internet in political campaigns</topic>
+          <geographic>United States</geographic>
+        </subject>
+        <subject authority="lcsh">
+          <topic>Communication in politics</topic>
+          <geographic>United States</geographic>
+        </subject>
+        <subject>
+          <topic>Instagram (Electronic resource)</topic>
+          <topic>Political aspects</topic>
+          <geographic>United States</geographic>
+          <topic>Evaluation</topic>
+        </subject>
+        <subject authority="lcsh">
+          <topic>Polarization (Social sciences)</topic>
+        </subject>
+        <location>
+          <url displayLabel="electronic resource" usage="primary display">https://comprop.oii.ox.ac.uk/wp-content/uploads/sites/93/2018/12/IRA-Report-2018.pdf</url>
+        </location>
+        <location>
+          <url displayLabel="electronic resource">https://purl.stanford.edu/tz346yg1321</url>
+        </location>
+        <identifier type="oclc">1079419321</identifier>
+        <recordInfo>
+          <descriptionStandard>rda</descriptionStandard>
+          <recordContentSource authority="marcorg">DID</recordContentSource>
+          <recordCreationDate encoding="marc">181219</recordCreationDate>
+          <recordChangeDate encoding="iso8601">20181220093450.0</recordChangeDate>
+          <recordIdentifier source="SIRSI">a12864684</recordIdentifier>
+          <recordOrigin>Converted from MARCXML to MODS version 3.6 using MARC21slim2MODS3-6_SDR.xsl (SUL version 1 2018/06/13; LC Revision 1.118 2018/01/31)</recordOrigin>
+          <languageOfCataloging>
+            <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+          </languageOfCataloging>
+        </recordInfo>
+      <relatedItem><titleInfo><title>IRA, social media and political polarization in the United States, 2012-2018 (Computational Propaganda Project)</title></titleInfo><location><url>https://comprop.oii.ox.ac.uk/research/ira-political-polarization/</url></location></relatedItem><note type="contact">jrjacobs@stanford.edu</note><name type="personal"><namePart>Howard, Philip N</namePart><role><roleTerm authority="marcrelator" type="text">Author</roleTerm></role></name><name type="personal"><namePart>Ganesh, Bharath</namePart><role><roleTerm authority="marcrelator" type="text">Author</roleTerm></role></name><name type="personal"><namePart>Liotsiou, Dimitra</namePart><role><roleTerm authority="marcrelator" type="text">Author</roleTerm></role></name><name type="personal"><namePart>Kelly, John</namePart><role><roleTerm authority="marcrelator" type="text">Author</roleTerm></role></name><name type="personal"><namePart>Fran&#xE7;ois, Camille</namePart><role><roleTerm authority="marcrelator" type="text">Author</roleTerm></role></name><name type="corporate"><namePart>University of Oxford</namePart><role><roleTerm authority="marcrelator" type="text">Publisher</roleTerm></role></name><name type="corporate"><namePart>Internet Research Agency, LLC.</namePart><role><roleTerm authority="marcrelator" type="text">Publisher</roleTerm></role></name><note type="preferred citation"/></mods>
       XML
     end
 

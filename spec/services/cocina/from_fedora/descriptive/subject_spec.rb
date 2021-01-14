@@ -75,6 +75,23 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with an empty subject (invalid data)' do
+    let(:xml) do
+      <<~XML
+        <subject></subject>
+      XML
+    end
+
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq []
+      expect(notifier).to have_received(:warn).with('Subject has no children')
+    end
+  end
+
   context 'with tgm authority code' do
     let(:xml) do
       <<~XML
