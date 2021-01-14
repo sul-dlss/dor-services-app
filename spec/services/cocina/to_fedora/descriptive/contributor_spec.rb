@@ -376,36 +376,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
       XML
     end
 
-    # FIXME: this example should be added to cdm - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
-    context 'when role has value but not code and no authority' do
-      let(:contributors) do
-        [
-          Cocina::Models::Contributor.new(
-            "name": [
-              {
-                "value": 'Dunnett, Dorothy'
-              }
-            ],
-            "type": 'person',
-            "role": [
-              {
-                "value": 'Author'
-              }
-            ]
-          )
-        ]
-      end
-
-      it_behaves_like 'cocina to MODS', <<~XML
-        <name type="personal">
-          <namePart>Dunnett, Dorothy</namePart>
-          <role>
-            <roleTerm type="text">Author</roleTerm>
-          </role>
-        </name>
-      XML
-    end
-
     # 7c. Role code only
     #  FIXME: discrepancy - mods has code only, not text
     context 'when role has code but not value' do
@@ -552,6 +522,37 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
         <name>
           <namePart/>
           <role/>
+        </name>
+      XML
+    end
+
+    # 7h. Unauthorized role term only
+    context 'when role has unauthorized role term only' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            "name": [
+              {
+                "value": 'Dunnett, Dorothy'
+              }
+            ],
+            "type": 'person',
+            "status": 'primary',
+            "role": [
+              {
+                "value": 'author'
+              }
+            ]
+          )
+        ]
+      end
+
+      it_behaves_like 'cocina to MODS', <<~XML
+        <name type="personal" usage="primary">
+          <namePart>Dunnett, Dorothy</namePart>
+          <role>
+            <roleTerm type="text">author</roleTerm>
+          </role>
         </name>
       XML
     end
