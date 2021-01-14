@@ -52,8 +52,13 @@ module Cocina
 
         def build_subject(subject_node)
           attrs = common_attrs(subject_node)
-          children_nodes = subject_node.xpath('*')
           return subject_classification(subject_node, attrs) if subject_node.name == 'classification'
+
+          children_nodes = subject_node.xpath('*')
+          if children_nodes.empty?
+            notifier.error('Subject has no children nodes', { subject: subject_node.to_s })
+            return nil
+          end
 
           return temporal_range(children_nodes, attrs) if children_nodes.all? { |node| node.name == 'temporal' && node['point'] }
 
