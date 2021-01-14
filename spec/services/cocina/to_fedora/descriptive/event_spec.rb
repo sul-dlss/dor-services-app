@@ -1,19 +1,15 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'support/mods_mapping_spec_helper'
 
+# numbered example comments refer to
+# from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt
 RSpec.describe Cocina::ToFedora::Descriptive::Event do
-  # mapping specification examples
-  # from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt
-
-  subject(:xml) { writer.to_xml }
-
+  # see spec/support/mods_mapping_spec_helper.rb for how writer is used in shared examples
   let(:writer) do
     Nokogiri::XML::Builder.new do |xml|
-      xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
-               'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-               'version' => '3.6',
-               'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
+      xml.mods(mods_attributes) do
         described_class.write(xml: xml, events: events, id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
@@ -22,17 +18,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
   context 'when events is nil' do
     let(:events) { nil }
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', '' # empty mods
   end
 
-  # example 1 from mods_to_cocina_originInfo.txt
+  # 1. Single dateCreated
   context 'when it has a single dateCreated' do
     let(:events) do
       [
@@ -47,20 +36,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="production">
-            <dateCreated>1980</dateCreated>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="production">
+        <dateCreated>1980</dateCreated>
+      </originInfo>
+    XML
   end
 
-  # example 2 from mods_to_cocina_originInfo.txt
+  # 2. Single dateIssued (with encoding)
   context 'when it has a single dateIssued (with encoding)' do
     let(:events) do
       [
@@ -80,20 +63,15 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication">
-            <dateIssued encoding="w3cdtf">1928</dateIssued>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication">
+        <dateIssued encoding="w3cdtf">1928</dateIssued>
+      </originInfo>
+    XML
   end
 
-  # example 3 from mods_to_cocina_originInfo.txt
+  # 3. Single copyrightDate
+  # FIXME: discrepancy - eventType "copyright" vs "copyright notice"
   context 'when it has a single copyrightDate' do
     let(:events) do
       [
@@ -110,20 +88,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="copyright notice">
-            <copyrightDate>1930</copyrightDate>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="copyright notice">
+        <copyrightDate>1930</copyrightDate>
+      </originInfo>
+    XML
   end
 
-  # example 4 from mods_to_cocina_originInfo.txt
+  # 4. Single dateCaptured (ISO 8601 encoding, keyDate)
   context 'when it has a single dateCaptured (ISO 8601 encoding, keyDate)' do
     let(:events) do
       [
@@ -144,17 +116,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="capture">
-            <dateCaptured keyDate="yes" encoding="iso8601">20131012231249</dateCaptured>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="capture">
+        <dateCaptured keyDate="yes" encoding="iso8601">20131012231249</dateCaptured>
+      </originInfo>
+    XML
   end
 
   # example 5 from mods_to_cocina_originInfo.txt
@@ -180,17 +146,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         ]
       end
 
-      it 'builds the xml' do
-        expect(xml).to be_equivalent_to <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <originInfo>
-              <dateOther type="Islamic">1441 AH</dateOther>
-            </originInfo>
-          </mods>
-        XML
-      end
+      it_behaves_like 'cocina to MODS', <<~XML
+        <originInfo>
+          <dateOther type="Islamic">1441 AH</dateOther>
+        </originInfo>
+      XML
     end
 
     describe 'with eventType="acquisition"' do
@@ -214,17 +174,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         ]
       end
 
-      it 'builds the xml' do
-        expect(xml).to be_equivalent_to <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <originInfo eventType="acquisition">
-              <dateOther keyDate="yes" encoding="w3cdtf">1970-11-23</dateOther>
-            </originInfo>
-          </mods>
-        XML
-      end
+      it_behaves_like 'cocina to MODS', <<~XML
+        <originInfo eventType="acquisition">
+          <dateOther keyDate="yes" encoding="w3cdtf">1970-11-23</dateOther>
+        </originInfo>
+      XML
     end
 
     describe 'without note, with displayLabel' do
@@ -247,17 +201,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         ]
       end
 
-      it 'builds the xml' do
-        expect(xml).to be_equivalent_to <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <originInfo displayLabel="Acquisition date">
-              <dateOther keyDate="yes" encoding="w3cdtf">1970-11-23</dateOther>
-            </originInfo>
-          </mods>
-        XML
-      end
+      it_behaves_like 'cocina to MODS', <<~XML
+        <originInfo displayLabel="Acquisition date">
+          <dateOther keyDate="yes" encoding="w3cdtf">1970-11-23</dateOther>
+        </originInfo>
+      XML
     end
   end
 
@@ -293,18 +241,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="production">
-            <dateCreated keyDate="yes" point="start">1920</dateCreated>
-            <dateCreated point="end">1925</dateCreated>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="production">
+        <dateCreated keyDate="yes" point="start">1920</dateCreated>
+        <dateCreated point="end">1925</dateCreated>
+      </originInfo>
+    XML
   end
 
   # example 7 from mods_to_cocina_originInfo.txt
@@ -325,17 +267,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="production">
-            <dateCreated qualifier="approximate">1940</dateCreated>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="production">
+        <dateCreated qualifier="approximate">1940</dateCreated>
+      </originInfo>
+    XML
   end
 
   # example 8 from mods_to_cocina_originInfo.txt
@@ -367,18 +303,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="production">
-            <dateCreated keyDate="yes" point="start" qualifier="approximate">1940</dateCreated>
-            <dateCreated point="end" qualifier="approximate">1945</dateCreated>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="production">
+        <dateCreated keyDate="yes" point="start" qualifier="approximate">1940</dateCreated>
+        <dateCreated point="end" qualifier="approximate">1945</dateCreated>
+      </originInfo>
+    XML
   end
 
   # example 9 from mods_to_cocina_originInfo.txt
@@ -409,17 +339,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="production">
-            <dateCreated qualifier="inferred">1940</dateCreated>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="production">
+        <dateCreated qualifier="inferred">1940</dateCreated>
+      </originInfo>
+    XML
   end
 
   # example 12 from mods_to_cocina_originInfo.txt
@@ -440,17 +364,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="production">
-            <dateCreated qualifier="questionable">1940</dateCreated>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="production">
+        <dateCreated qualifier="questionable">1940</dateCreated>
+      </originInfo>
+    XML
   end
 
   # example 13 from mods_to_cocina_originInfo.txt
@@ -483,19 +401,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication">
-            <dateIssued keyDate="yes" point="start">1940</dateIssued>
-            <dateIssued point="end">1945</dateIssued>
-            <dateIssued>1948</dateIssued>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication">
+        <dateIssued keyDate="yes" point="start">1940</dateIssued>
+        <dateIssued point="end">1945</dateIssued>
+        <dateIssued>1948</dateIssued>
+      </originInfo>
+    XML
   end
 
   # example 14 from mods_to_cocina_originInfo.txt
@@ -519,18 +431,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication">
-            <dateIssued keyDate="yes">1940</dateIssued>
-            <dateIssued>1942</dateIssued>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication">
+        <dateIssued keyDate="yes">1940</dateIssued>
+        <dateIssued>1942</dateIssued>
+      </originInfo>
+    XML
   end
 
   # example 15 from mods_to_cocina_originInfo.txt
@@ -553,17 +459,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="production">
-            <dateCreated encoding="edtf">-0499</dateCreated>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="production">
+        <dateCreated encoding="edtf">-0499</dateCreated>
+      </originInfo>
+    XML
   end
 
   # example 16 from mods_to_cocina_originInfo.txt
@@ -663,21 +563,15 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="distribution">
-            <place>
-              <placeTerm type="text">Washington, DC</placeTerm>
-            </place>
-            <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
-            <dateOther/>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="distribution">
+        <place>
+          <placeTerm type="text">Washington, DC</placeTerm>
+        </place>
+        <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
+        <dateOther/>
+      </originInfo>
+    XML
   end
 
   # example 26 from mods_to_cocina_originInfo.txt
@@ -711,19 +605,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
-            <place>
-              <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo>
+        <place>
+          <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+        </place>
+      </originInfo>
+    XML
   end
 
   # example 28 from mods_to_cocina_originInfo.txt
@@ -747,19 +635,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
-            <place>
-              <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/" valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo>
+        <place>
+          <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/" valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+        </place>
+      </originInfo>
+    XML
   end
 
   # example 29 from mods_to_cocina_originInfo.txt
@@ -784,20 +666,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
-            <place>
-              <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/" valueURI="http://id.loc.gov/vocabulary/countries/cau">California</placeTerm>
-              <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/" valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo>
+        <place>
+          <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/" valueURI="http://id.loc.gov/vocabulary/countries/cau">California</placeTerm>
+          <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/" valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+        </place>
+      </originInfo>
+    XML
   end
 
   # example 30 from mods_to_cocina_originInfo.txt
@@ -822,22 +698,16 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
-            <place>
-              <placeTerm type="code" authority="marccountry">enk</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">London</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo>
+        <place>
+          <placeTerm type="code" authority="marccountry">enk</placeTerm>
+        </place>
+        <place>
+          <placeTerm type="text">London</placeTerm>
+        </place>
+      </originInfo>
+    XML
   end
 
   # example 31 from mods_to_cocina_originInfo.txt
@@ -871,17 +741,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication">
-            <publisher>Virago</publisher>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication">
+        <publisher>Virago</publisher>
+      </originInfo>
+    XML
   end
 
   context 'when it has a publisher that is not marcrelator' do
@@ -905,17 +769,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the expected xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication">
-            <publisher>Stanford University Press</publisher>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication">
+        <publisher>Stanford University Press</publisher>
+      </originInfo>
+    XML
   end
 
   # example 32 from mods_to_cocina_originInfo.txt
@@ -965,17 +823,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication" lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">
-            <publisher>Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication" lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">
+        <publisher>Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
+      </originInfo>
+    XML
   end
 
   # example 33 from mods_to_cocina_originInfo.txt
@@ -1021,17 +873,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication" lang="rus" script="Cyrl">
-            <publisher>СФУ</publisher>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication" lang="rus" script="Cyrl">
+        <publisher>СФУ</publisher>
+      </originInfo>
+    XML
   end
 
   # example 34 from mods_to_cocina_originInfo.txt
@@ -1084,18 +930,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication">
-            <publisher>Ardis</publisher>
-            <publisher>Commonplace Books</publisher>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication">
+        <publisher>Ardis</publisher>
+        <publisher>Commonplace Books</publisher>
+      </originInfo>
+    XML
   end
 
   # example 35 from mods_to_cocina_originInfo.txt
@@ -1114,17 +954,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication">
-            <edition>1st ed.</edition>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication">
+        <edition>1st ed.</edition>
+      </originInfo>
+    XML
   end
 
   # example 36 from mods_to_cocina_originInfo.txt
@@ -1150,18 +984,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication">
-            <issuance>serial</issuance>
-            <frequency>every full moon</frequency>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication">
+        <issuance>serial</issuance>
+        <frequency>every full moon</frequency>
+      </originInfo>
+    XML
   end
 
   # example 37 from mods_to_cocina_originInfo.txt
@@ -1190,18 +1018,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication">
-            <issuance>multipart monograph</issuance>
-            <frequency authority="marcfrequency">Annual</frequency>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication">
+        <issuance>multipart monograph</issuance>
+        <frequency authority="marcfrequency">Annual</frequency>
+      </originInfo>
+    XML
   end
 
   # example 38 from mods_to_cocina_originInfo.txt
@@ -1237,26 +1059,20 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="production">
-            <dateCreated>1899</dateCreated>
-            <place>
-              <placeTerm type="text">York</placeTerm>
-            </place>
-          </originInfo>
-          <originInfo eventType="publication">
-            <dateIssued>1901</dateIssued>
-            <place>
-              <placeTerm type="text">London</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="production">
+        <dateCreated>1899</dateCreated>
+        <place>
+          <placeTerm type="text">York</placeTerm>
+        </place>
+      </originInfo>
+      <originInfo eventType="publication">
+        <dateIssued>1901</dateIssued>
+        <place>
+          <placeTerm type="text">London</placeTerm>
+        </place>
+      </originInfo>
+    XML
   end
 
   context 'with multiple events and missing event type' do
@@ -1290,26 +1106,20 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="production">
-            <dateCreated>1899</dateCreated>
-            <place>
-              <placeTerm type="text">York</placeTerm>
-            </place>
-          </originInfo>
-          <originInfo>
-            <dateOther>1901</dateOther>
-            <place>
-              <placeTerm type="text">London</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="production">
+        <dateCreated>1899</dateCreated>
+        <place>
+          <placeTerm type="text">York</placeTerm>
+        </place>
+      </originInfo>
+      <originInfo>
+        <dateOther>1901</dateOther>
+        <place>
+          <placeTerm type="text">London</placeTerm>
+        </place>
+      </originInfo>
+    XML
   end
 
   # example 39 from mods_to_cocina_originInfo.txt
@@ -1441,33 +1251,27 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo script="Latn" altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">ja</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Kyōto-shi</placeTerm>
-            </place>
-            <publisher>Rinsen Shoten</publisher>
-            <dateIssued>Heisei 8 [1996]</dateIssued>
-            <dateIssued encoding="marc">1996</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo script="Hani" altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="text">京都市</placeTerm>
-            </place>
-            <publisher>臨川書店</publisher>
-            <dateIssued>平成 8 [1996]</dateIssued>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo script="Latn" altRepGroup="1" eventType="publication">
+        <place>
+          <placeTerm type="code" authority="marccountry">ja</placeTerm>
+        </place>
+        <place>
+          <placeTerm type="text">Kyōto-shi</placeTerm>
+        </place>
+        <publisher>Rinsen Shoten</publisher>
+        <dateIssued>Heisei 8 [1996]</dateIssued>
+        <dateIssued encoding="marc">1996</dateIssued>
+        <issuance>monographic</issuance>
+      </originInfo>
+      <originInfo script="Hani" altRepGroup="1" eventType="publication">
+        <place>
+          <placeTerm type="text">京都市</placeTerm>
+        </place>
+        <publisher>臨川書店</publisher>
+        <dateIssued>平成 8 [1996]</dateIssued>
+      </originInfo>
+    XML
   end
 
   context 'when event location missing source' do
@@ -1483,19 +1287,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
-            <place>
-              <placeTerm type="code">xxu</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo>
+        <place>
+          <placeTerm type="code">xxu</placeTerm>
+        </place>
+      </originInfo>
+    XML
   end
 
   context 'when event location with code missing source' do
@@ -1512,19 +1310,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
-            <place>
-              <placeTerm type="code" valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo>
+        <place>
+          <placeTerm type="code" valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+        </place>
+      </originInfo>
+    XML
   end
 
   context 'when event location with value missing source' do
@@ -1541,19 +1333,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo>
-            <place>
-              <placeTerm type="text" valueURI="http://id.loc.gov/vocabulary/countries/cau">California</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo>
+        <place>
+          <placeTerm type="text" valueURI="http://id.loc.gov/vocabulary/countries/cau">California</placeTerm>
+        </place>
+      </originInfo>
+    XML
   end
 
   # example 40 from mods_to_cocina_originInfo.txt
@@ -1574,19 +1360,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo displayLabel="Origin" eventType="production">
-            <place>
-              <placeTerm type="text">Stanford (Calif.)</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo displayLabel="Origin" eventType="production">
+        <place>
+          <placeTerm type="text">Stanford (Calif.)</placeTerm>
+        </place>
+      </originInfo>
+    XML
   end
 
   # example 41 from mods_to_cocina_originInfo.txt
@@ -1650,25 +1430,19 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the expected xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="1">
-            <dateCreated keyDate="yes" encoding="w3cdtf">1999-09-09</dateCreated>
-            <place>
-              <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79076156" type="text">Moscow</placeTerm>
-            </place>
-          </originInfo>
-          <originInfo eventType="production" lang="rus" script="Cyrl" altRepGroup="1">
-            <place>
-              <placeTerm type="text">Москва</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="1">
+        <dateCreated keyDate="yes" encoding="w3cdtf">1999-09-09</dateCreated>
+        <place>
+          <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79076156" type="text">Moscow</placeTerm>
+        </place>
+      </originInfo>
+      <originInfo eventType="production" lang="rus" script="Cyrl" altRepGroup="1">
+        <place>
+          <placeTerm type="text">Москва</placeTerm>
+        </place>
+      </originInfo>
+    XML
   end
 
   # example 42 from mods_to_cocina_originInfo.txt
@@ -1720,20 +1494,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the expected xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication" lang="eng" script="Latn" altRepGroup="1">
-            <edition>First edition</edition>
-          </originInfo>
-          <originInfo eventType="publication" lang="rus" script="Cyrl" altRepGroup="1">
-            <edition>Первое издание</edition>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication" lang="eng" script="Latn" altRepGroup="1">
+        <edition>First edition</edition>
+      </originInfo>
+      <originInfo eventType="publication" lang="rus" script="Cyrl" altRepGroup="1">
+        <edition>Первое издание</edition>
+      </originInfo>
+    XML
   end
 
   # example 43a from mods_to_cocina_originInfo.txt
@@ -1820,38 +1588,32 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the expected xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Chengdu</placeTerm>
-            </place>
-            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>Di 1 ban.</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
-            </place>
-            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>[Di 1 ban in Chinese]</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo altRepGroup="1" eventType="publication">
+        <place>
+          <placeTerm type="code" authority="marccountry">cc</placeTerm>
+        </place>
+        <place>
+          <placeTerm type="text">Chengdu</placeTerm>
+        </place>
+        <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+        <dateIssued>2005</dateIssued>
+        <edition>Di 1 ban.</edition>
+        <issuance>monographic</issuance>
+      </originInfo>
+      <originInfo altRepGroup="1" eventType="publication">
+        <place>
+          <placeTerm type="code" authority="marccountry">cc</placeTerm>
+        </place>
+        <place>
+          <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+        </place>
+        <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+        <dateIssued>2005</dateIssued>
+        <edition>[Di 1 ban in Chinese]</edition>
+        <issuance>monographic</issuance>
+      </originInfo>
+    XML
   end
 
   # example 44 from mods_to_cocina_originInfo.txt
@@ -1950,34 +1712,28 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the expected xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication">
-            <dateIssued encoding="marc">2020</dateIssued>
-            <place>
-              <placeTerm type="code" authority="marccountry">cau</placeTerm>
-            </place>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="copyright notice">
-            <copyrightDate encoding="marc">2020</copyrightDate>
-          </originInfo>
-          <originInfo eventType="publication">
-            <dateIssued>2020</dateIssued>
-            <place>
-              <placeTerm type="text">[Stanford, Calif.]</placeTerm>
-            </place>
-            <publisher>[Stanford University]</publisher>
-          </originInfo>
-          <originInfo eventType="copyright notice">
-            <copyrightDate>&#xA9;2020</copyrightDate>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication">
+        <dateIssued encoding="marc">2020</dateIssued>
+        <place>
+          <placeTerm type="code" authority="marccountry">cau</placeTerm>
+        </place>
+        <issuance>monographic</issuance>
+      </originInfo>
+      <originInfo eventType="copyright notice">
+        <copyrightDate encoding="marc">2020</copyrightDate>
+      </originInfo>
+      <originInfo eventType="publication">
+        <dateIssued>2020</dateIssued>
+        <place>
+          <placeTerm type="text">[Stanford, Calif.]</placeTerm>
+        </place>
+        <publisher>[Stanford University]</publisher>
+      </originInfo>
+      <originInfo eventType="copyright notice">
+        <copyrightDate>&#xA9;2020</copyrightDate>
+      </originInfo>
+    XML
   end
 
   # From druid:bm971cx9348
@@ -2049,27 +1805,21 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the expected xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="publication">
-            <dateIssued>[192-?]-[193-?]</dateIssued>
-            <dateIssued encoding="marc" point="start">1920</dateIssued>
-            <place>
-              <placeTerm type="text">London</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="code" authority="marccountry">enk</placeTerm>
-            </place>
-            <publisher>H.M. Stationery Off</publisher>
-            <edition>2nd ed.</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication">
+        <dateIssued>[192-?]-[193-?]</dateIssued>
+        <dateIssued encoding="marc" point="start">1920</dateIssued>
+        <place>
+          <placeTerm type="text">London</placeTerm>
+        </place>
+        <place>
+          <placeTerm type="code" authority="marccountry">enk</placeTerm>
+        </place>
+        <publisher>H.M. Stationery Off</publisher>
+        <edition>2nd ed.</edition>
+        <issuance>monographic</issuance>
+      </originInfo>
+    XML
   end
 
   # example 45 from mods_to_cocina_originInfo.txt
@@ -2116,23 +1866,17 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the expected xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo displayLabel="Place of Creation" eventType="production">
-            <place>
-              <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
-            </place>
-            <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
-          </originInfo>
-          <originInfo eventType="development">
-            <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo displayLabel="Place of Creation" eventType="production">
+        <place>
+          <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+        </place>
+        <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
+      </originInfo>
+      <originInfo eventType="development">
+        <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
+      </originInfo>
+    XML
   end
 
   # From druid:ht706sj6651
@@ -2183,21 +1927,15 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the expected xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo displayLabel="Presented" eventType="presentation">
-            <place>
-              <placeTerm type="text" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
-            </place>
-            <publisher>Stanford Institute for Theoretical Economics</publisher>
-            <dateIssued keyDate="yes" encoding="w3cdtf">2018</dateIssued>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo displayLabel="Presented" eventType="presentation">
+        <place>
+          <placeTerm type="text" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+        </place>
+        <publisher>Stanford Institute for Theoretical Economics</publisher>
+        <dateIssued keyDate="yes" encoding="w3cdtf">2018</dateIssued>
+      </originInfo>
+    XML
   end
 
   # example 46 from mods_to_cocina_originInfo.txt
@@ -2232,19 +1970,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       ]
     end
 
-    it 'builds the expected xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <originInfo eventType="production" displayLabel="Place of creation">
-            <dateCreated keyDate="yes" encoding="w3cdtf">1965</dateCreated>
-            <place supplied="yes">
-              <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n81127564" type="text">Selma (Ala.)</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="production" displayLabel="Place of creation">
+        <dateCreated keyDate="yes" encoding="w3cdtf">1965</dateCreated>
+        <place supplied="yes">
+          <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n81127564" type="text">Selma (Ala.)</placeTerm>
+        </place>
+      </originInfo>
+    XML
   end
 end

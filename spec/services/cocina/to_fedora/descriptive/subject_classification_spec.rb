@@ -1,18 +1,14 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'support/mods_mapping_spec_helper'
 
-# numbered examples here from https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_classification.txt
+# numbered examples refer to https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_classification.txt
 RSpec.describe Cocina::ToFedora::Descriptive::Subject do
-  subject(:xml) { writer.to_xml }
-
+  # see spec/support/mods_mapping_spec_helper.rb for how writer is used in shared examples
   let(:writer) do
     Nokogiri::XML::Builder.new do |xml|
-      xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
-               'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-               'version' => '3.6',
-               'xmlns:rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-               'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
+      xml.mods(mods_attributes) do
         described_class.write(xml: xml, subjects: subjects, id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
@@ -21,15 +17,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
   context 'when nil' do
     let(:subjects) { nil }
 
-    it 'builds empty MODS xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', '' # empty MODS
   end
 
   # 1. Classification with authority
@@ -48,16 +36,9 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <classification authority="lcc">G9801.S12 2015 .Z3</classification>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <classification authority="lcc">G9801.S12 2015 .Z3</classification>
+    XML
   end
 
   # missing example ticketed as https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/294
@@ -73,16 +54,9 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <classification>G9801.S12 2015 .Z3</classification>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <classification>G9801.S12 2015 .Z3</classification>
+    XML
   end
 
   # 2. Classification with edition
@@ -102,16 +76,9 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <classification authority="ddc" edition="11">683</classification>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <classification authority="ddc" edition="11">683</classification>
+    XML
   end
 
   # 3. Display label
@@ -131,16 +98,9 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <classification authority="lcc" displayLabel="Library of Congress classification">ML410.B3</classification>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <classification authority="lcc" displayLabel="Library of Congress classification">ML410.B3</classification>
+    XML
   end
 
   # 4. Multiple classifications
@@ -170,16 +130,9 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       ]
     end
 
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <classification authority="ddc" edition="11">683</classification>
-          <classification authority="ddc" edition="12">684</classification>
-        </mods>
-      XML
-    end
+    it_behaves_like 'cocina to MODS', <<~XML
+      <classification authority="ddc" edition="11">683</classification>
+      <classification authority="ddc" edition="12">684</classification>
+    XML
   end
 end
