@@ -954,4 +954,24 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       ]
     end
   end
+
+  # From druid:rv133bz1764
+  context 'with a bad subject' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh2002009897">authority="" authorityURI="" valueURI=""&gt;Improvisation (Acting)</subject>
+      XML
+    end
+
+    before do
+      allow(notifier).to receive(:error)
+    end
+
+    it 'builds the cocina data structure and errors' do
+      expect(build).to be_empty
+      expect(notifier).to have_received(:error).with('Subject has no children nodes',
+                                                     { subject: '<subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" ' \
+'valueURI="http://id.loc.gov/authorities/subjects/sh2002009897">authority="" authorityURI="" valueURI=""&gt;Improvisation (Acting)</subject>' })
+    end
+  end
 end
