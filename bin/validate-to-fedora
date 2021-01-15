@@ -5,7 +5,7 @@ require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
 require 'optparse'
 
-options = { overwrite: false, random: false, unique_filename: false }
+options = { unique_filename: false }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-to-fedora [options]'
 

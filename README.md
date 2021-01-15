@@ -250,6 +250,21 @@ In addition, detailed results for each item with a difference are provided in an
 
 Note that the location of the cache can be set with `FEDORA_CACHE` environment variable.
 
+### Run Fedora / MODS reports
+```
+$ bin/report -h
+Usage: bin/report [options]
+    -s, --sample SAMPLE              Sample size, otherwise all druids.
+    -l, --local                      Run locally, i.e., without getting additional metadata from Fedora.
+    -h, --help                       Displays help.
+    
+$ bin/report
+```
+
+Using the druids from `druids.txt` and the cache, this will generate reports as defined in `bin/report`. Each report is written to a separate CSV file.
+
+Note that unlike the other tools, `bin/report` will use Fedora to retrieve additional metadata that is not in the cache for items that are included in the report.
+
 ### Running the validation on sdr-deploy
 
 All of these directions required that you be sshed into sdr-deploy server.
