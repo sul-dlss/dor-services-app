@@ -1979,4 +1979,189 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       </originInfo>
     XML
   end
+
+  # 47. Publisher with eventType production
+  context 'with publisher with eventType production' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          "type": 'production',
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Stanford University'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'issuing body',
+                  "code": 'isb',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/isb',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "value": '2020'
+            }
+          ]
+        )
+      ]
+    end
+
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="production">
+        <publisher>Stanford University</publisher>
+        <dateOther type="production">2020</dateOther>
+      </originInfo>
+    XML
+  end
+
+  # 48. Publisher with eventType distribution
+  context 'with publisher with eventType distribution' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          "type": 'distribution',
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Stanford University'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'distributor',
+                  "code": 'dst',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/dst',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "value": '2020'
+            }
+          ]
+        )
+      ]
+    end
+
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="distribution">
+        <publisher>Stanford University</publisher>
+        <dateOther type="distribution">2020</dateOther>
+      </originInfo>
+    XML
+  end
+
+  # 49. Publisher with eventType manufacture
+  context 'with publisher with eventType manufacture' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          "type": 'manufacture',
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Stanford University'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'manufacturer',
+                  "code": 'mfr',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/mfr',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "value": '2020'
+            }
+          ]
+        )
+      ]
+    end
+
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="manufacture">
+        <publisher>Stanford University</publisher>
+        <dateOther type="distribution">2020</dateOther>
+      </originInfo>
+    XML
+  end
+
+  # 50. Publisher with dateOther type
+  context 'with publisher with dateOther type' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          "type": 'production',
+          "displayLabel": 'producer',
+          "location": [
+            {
+              "value": 'Stanford, Calif.'
+            }
+          ],
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Stanford University, Department of Biostatistics'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'issuing body',
+                  "code": 'isb',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/isb',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "value": '2002'
+            }
+          ]
+        )
+      ]
+    end
+
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="production" displayLabel="producer">
+        <place>
+          <placeTerm type="text">Stanford, Calif.</placeTerm>
+        </place>
+        <publisher>Stanford University, Department of Biostatistics</publisher>
+        <dateOther type="production">2002</dateOther>
+      </originInfo>
+    XML
+  end
 end
