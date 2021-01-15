@@ -256,6 +256,7 @@ $ bin/report -h
 Usage: bin/report [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -l, --local                      Run locally, i.e., without getting additional metadata from Fedora.
+    -r, --reports REPORTS            List of reports to run: parts, xlink_href
     -h, --help                       Displays help.
     
 $ bin/report
