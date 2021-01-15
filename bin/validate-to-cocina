@@ -6,7 +6,7 @@ require_relative '../lib/fedora_cache'
 require_relative '../lib/data_error_notifier'
 require 'optparse'
 
-options = { overwrite: false, random: false, unique_filename: false }
+options = { unique_filename: false }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-to-cocina [options]'
 
