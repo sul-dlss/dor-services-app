@@ -705,38 +705,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
-    # FIXME: this example should be added to cdm - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
-    context 'when the role text has no authority' do
-      let(:xml) do
-        <<~XML
-          <name type="personal">
-            <namePart>Bulgakov, Mikhail</namePart>
-            <role>
-              <roleTerm type="text">author</roleTerm>
-            </role>
-          </name>
-        XML
-      end
-
-      it 'builds the cocina data structure' do
-        expect(build).to eq [
-          {
-            "name": [
-              {
-                "value": 'Bulgakov, Mikhail'
-              }
-            ],
-            "type": 'person',
-            "role": [
-              {
-                "value": 'author'
-              }
-            ]
-          }
-        ]
-      end
-    end
-
     # 7c. Role code only
     context 'when roleTerm is type code' do
       let(:xml) do
@@ -980,6 +948,39 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       it 'builds empty cocina data structure and warns' do
         expect(build).to eq [{}]
         expect(notifier).to have_received(:warn).with('name/namePart missing value')
+      end
+    end
+
+    # 7h. Unauthorized role term only
+    context 'when unauthorized role term only' do
+      let(:xml) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "name": [
+              {
+                "value": 'Dunnett, Dorothy'
+              }
+            ],
+            "type": 'person',
+            "status": 'primary',
+            "role": [
+              {
+                "value": 'author'
+              }
+            ]
+          }
+        ]
       end
     end
 
