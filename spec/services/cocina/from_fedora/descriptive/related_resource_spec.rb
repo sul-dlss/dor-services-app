@@ -315,7 +315,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
         {
           "title": [
             {
-              "value": 'Sitzungsberichte der Kaiserlichen Akademie der Wissenschaften.'
+              "value": 'Sitzungsberichte der Kaiserlichen Akademie der Wissenschaften'
             }
           ],
           "type": 'has other format',

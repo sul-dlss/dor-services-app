@@ -1993,4 +1993,38 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing title trailing characters' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{mods_attributes}>
+          <titleInfo>
+            <title>Syntactic Structures,</title>
+          </titleInfo>
+          <titleInfo>
+            <title>Requiem for the American Dream.</title>
+          </titleInfo>
+          <titleInfo type="abbreviated">
+            <title>Refl. on Lang.</title>
+          </titleInfo>
+        </mods>
+      XML
+    end
+
+    it 'removes trailing comma and period' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{mods_attributes}>
+          <titleInfo>
+            <title>Syntactic Structures</title>
+          </titleInfo>
+          <titleInfo>
+            <title>Requiem for the American Dream</title>
+          </titleInfo>
+          <titleInfo type="abbreviated">
+            <title>Refl. on Lang.</title>
+          </titleInfo>
+        </mods>
+      XML
+    end
+  end
 end

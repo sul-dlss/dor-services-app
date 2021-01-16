@@ -6,6 +6,7 @@ module Cocina
       # Maps MODS relatedItem to cocina relatedResource
       class RelatedResource
         TYPES = ToFedora::Descriptive::RelatedResource::TYPES.invert.freeze
+        DETAIL_TYPES = ToFedora::Descriptive::RelatedResource::DETAIL_TYPES.invert.freeze
 
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
@@ -25,17 +26,18 @@ module Cocina
             check_other_type(related_item)
             descriptive_builder.build(resource_element: related_item, require_title: false).tap do |item|
               item[:displayLabel] = related_item['displayLabel']
+              notes = build_notes(related_item)
               if related_item['type']
                 item[:type] = normalized_type_for(related_item['type'])
               elsif related_item['otherType']
                 item[:type] = 'related to'
-                item[:note] = [
+                notes <<
                   { type: 'other relation type', value: related_item['otherType'] }.tap do |note|
                     note[:uri] = related_item['otherTypeURI'] if related_item['otherTypeURI']
                     note[:source] = { value: related_item['otherTypeAuth'] } if related_item['otherTypeAuth']
                   end
-                ]
               end
+              item[:note] = notes unless notes.empty?
             end.compact.presence
           end.compact
         end
@@ -66,6 +68,27 @@ module Cocina
           return unless related_item['type'] && related_item['otherType']
 
           notifier.warn('Related resource has type and otherType')
+        end
+
+        def build_notes(related_item)
+          related_item.xpath('mods:part/mods:detail', mods: DESC_METADATA_NS).map do |detail_node|
+            value = note_value_for(detail_node)
+            next nil if value.empty?
+
+            {
+              value: value,
+              type: DETAIL_TYPES[detail_node['type']],
+              displayLabel: caption_for(detail_node)
+            }.compact.presence
+          end.compact
+        end
+
+        def note_value_for(detail_node)
+          detail_node.xpath('mods:number', mods: DESC_METADATA_NS).first&.content
+        end
+
+        def caption_for(detail_node)
+          detail_node.xpath('mods:caption', mods: DESC_METADATA_NS).first&.content
         end
       end
     end
