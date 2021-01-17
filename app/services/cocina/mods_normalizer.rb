@@ -58,6 +58,7 @@ module Cocina
       normalize_title_type
       normalize_gml_id
       normalize_empty_resource
+      normalize_abstract_summary
       # This should be last-ish.
       normalize_empty_related_items
       ng_xml
@@ -551,6 +552,12 @@ module Cocina
       ng_xml.root.xpath('//mods:publisher[@transliteration]', mods: MODS_NS).each do |publisher_node|
         publisher_node.parent['transliteration'] = publisher_node['transliteration']
         publisher_node.delete('transliteration')
+      end
+    end
+
+    def normalize_abstract_summary
+      ng_xml.root.xpath('//mods:abstract[@type="summary"]', mods: MODS_NS).each do |abstract_node|
+        abstract_node.delete('type')
       end
     end
   end

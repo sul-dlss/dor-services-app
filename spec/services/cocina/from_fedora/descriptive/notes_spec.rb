@@ -206,6 +206,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
     end
   end
 
+  # Example 3
   context 'with a single abstract with a displayLabel' do
     let(:xml) do
       <<~XML
@@ -238,6 +239,26 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
 
         {
           "value": 'This is a synopsis.',
+          "type": 'summary'
+        }
+
+      ]
+    end
+  end
+
+  # Example 4
+  context 'with an abstract with type "summary"' do
+    let(:xml) do
+      <<~XML
+        <abstract type="summary">This is a summary.</abstract>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+
+        {
+          "value": 'This is a summary.',
           "type": 'summary'
         }
 
