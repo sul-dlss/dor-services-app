@@ -137,6 +137,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
     end
   end
 
+  # Example 1
   context 'when it has a simple abstract' do
     let(:notes) do
       [
@@ -160,6 +161,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
     end
   end
 
+  # Example 2
   context 'when it has a multilingual abstract' do
     let(:notes) do
       [
@@ -215,6 +217,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
     end
   end
 
+  # Example 3
   context 'when it has a display label' do
     let(:notes) do
       [
@@ -234,6 +237,28 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <abstract displayLabel="Synopsis">This is a synopsis.</abstract>
+        </mods>
+      XML
+    end
+  end
+
+  # Example 4
+  context 'when it has an astract with type "summary"' do
+    let(:notes) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "value": 'This is a summary.',
+          "type": 'summary'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <abstract>This is a summary.</abstract>
         </mods>
       XML
     end
