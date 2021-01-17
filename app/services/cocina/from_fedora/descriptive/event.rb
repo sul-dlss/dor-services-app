@@ -138,7 +138,7 @@ module Cocina
         end
 
         def find_event_by_precedence(events, create: false)
-          %w[publication presentation distribution production creation manufacture].each do |event_type|
+          %w[publication presentation distribution production creation manufacture validity].each do |event_type|
             events.each do |event|
               return event if event[:type] == event_type
             end
@@ -170,6 +170,9 @@ module Cocina
 
             date_captured = origin_info.xpath('mods:dateCaptured', mods: DESC_METADATA_NS)
             events << build_event('capture', date_captured, language_script) if date_captured.present?
+
+            date_validity = origin_info.xpath('mods:dateValid', mods: DESC_METADATA_NS)
+            events << build_event('validity', date_validity, language_script) if date_validity.present?
 
             date_other = origin_info.xpath('mods:dateOther', mods: DESC_METADATA_NS)
             events << build_event(date_other_event_type(origin_info, date_other.first), date_other, language_script) if date_other.present?
