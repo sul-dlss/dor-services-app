@@ -2571,4 +2571,81 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
       ]
     end
   end
+
+  # 51. dateValid from druid:gx929mp5413
+  context 'with publisher with dateOther type' do
+    let(:xml) do
+      <<~XML
+        <originInfo eventType="publication">
+          <publisher>Articque informatique</publisher>
+          <place>
+            <placeTerm type="text">Fondettes, FR</placeTerm>
+          </place>
+          <dateIssued encoding="w3cdtf" keyDate="yes">2010</dateIssued>
+          <dateValid encoding="w3cdtf">2010</dateValid>
+          <edition>1</edition>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the expected cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Articque informatique'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "location": [
+            {
+              "value": 'Fondettes, FR'
+            }
+          ],
+          "date": [
+            {
+              "value": '2010',
+              "encoding": {
+                "code": 'w3cdtf'
+              },
+              "status": 'primary'
+            }
+          ],
+          "note": [
+            {
+              "type": 'edition',
+              "value": '1'
+            }
+          ]
+        },
+        {
+          "type": 'validity',
+          "date": [
+            {
+              "value": '2010',
+              "encoding": {
+                "code": 'w3cdtf'
+              }
+            }
+          ]
+        }
+      ]
+    end
+  end
 end

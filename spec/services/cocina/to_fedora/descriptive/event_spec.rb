@@ -2164,4 +2164,81 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
       </originInfo>
     XML
   end
+
+  # 51. dateValid from druid:gx929mp5413
+  context 'with dateValid' do
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          "type": 'publication',
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Articque informatique'
+                }
+              ],
+              "type": 'organization',
+              "role": [
+                {
+                  "value": 'publisher',
+                  "code": 'pbl',
+                  "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                  "source": {
+                    "code": 'marcrelator',
+                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "location": [
+            {
+              "value": 'Fondettes, FR'
+            }
+          ],
+          "date": [
+            {
+              "value": '2010',
+              "encoding": {
+                "code": 'w3cdtf'
+              },
+              "status": 'primary'
+            }
+          ],
+          "note": [
+            {
+              "type": 'edition',
+              "value": '1'
+            }
+          ]
+        ),
+        Cocina::Models::Event.new(
+          "type": 'validity',
+          "date": [
+            {
+              "value": '2010',
+              "encoding": {
+                "code": 'w3cdtf'
+              }
+            }
+          ]
+        )
+      ]
+    end
+
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication">
+        <publisher>Articque informatique</publisher>
+        <place>
+          <placeTerm type="text">Fondettes, FR</placeTerm>
+        </place>
+        <dateIssued encoding="w3cdtf" keyDate="yes">2010</dateIssued>
+        <edition>1</edition>
+      </originInfo>
+      <originInfo eventType="validity">
+        <dateValid encoding="w3cdtf">2010</dateValid>
+      </originInfo>
+    XML
+  end
 end

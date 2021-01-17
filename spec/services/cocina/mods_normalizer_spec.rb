@@ -333,6 +333,9 @@ RSpec.describe Cocina::ModsNormalizer do
             <originInfo>
               <dateCreated>1932</dateCreated>
             </originInfo>
+            <originInfo>
+              <dateValid>1933</dateValid>
+            </originInfo>
             <relatedItem>
               <originInfo>
                 <dateCaptured>1932</dateCaptured>
@@ -353,6 +356,9 @@ RSpec.describe Cocina::ModsNormalizer do
             </originInfo>
             <originInfo eventType="production">
               <dateCreated>1932</dateCreated>
+            </originInfo>
+            <originInfo eventType="validity">
+              <dateValid>1933</dateValid>
             </originInfo>
             <relatedItem>
               <originInfo eventType="capture">
@@ -460,6 +466,9 @@ RSpec.describe Cocina::ModsNormalizer do
           <originInfo eventType="publication">
             <dateOther>1441.</dateOther>
           </originInfo>
+          <originInfo eventType="validity">
+            <dateValid>1934.</dateValid>
+          </originInfo>
           <relatedItem>
             <originInfo eventType="capture">
               <dateCaptured>1932.</dateCaptured>
@@ -486,6 +495,9 @@ RSpec.describe Cocina::ModsNormalizer do
           </originInfo>
           <originInfo eventType="publication">
             <dateOther>1441</dateOther>
+          </originInfo>
+          <originInfo eventType="validity">
+            <dateValid>1934</dateValid>
           </originInfo>
           <relatedItem>
             <originInfo eventType="capture">

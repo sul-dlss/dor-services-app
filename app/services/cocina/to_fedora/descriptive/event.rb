@@ -10,7 +10,8 @@ module Cocina
           'publication' => :dateIssued,
           'copyright' => :copyrightDate,
           'capture' => :dateCaptured,
-          'presentation' => :dateIssued
+          'presentation' => :dateIssued,
+          'validity' => :dateValid
         }.freeze
 
         DATE_OTHER_TYPE = {
@@ -30,7 +31,8 @@ module Cocina
           'acquisition' => 'acquisition',
           'development' => 'development',
           'presentation' => 'presentation',
-          'production' => 'production'
+          'production' => 'production',
+          'validity' => 'validity'
         }.freeze
 
         GroupedParallelValues = Struct.new(:locations, :names, :dates, :notes, :value_language)
