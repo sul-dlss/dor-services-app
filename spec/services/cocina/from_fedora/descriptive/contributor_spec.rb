@@ -45,6 +45,35 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # 1b. Name without type
+  context 'with a personal name' do
+    let(:xml) do
+      <<~XML
+        <name usage="primary">
+          <namePart>Dunnett, Dorothy</namePart>
+        </name>
+      XML
+    end
+
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure and warns' do
+      expect(build).to eq [
+        {
+          "name": [
+            {
+              "value": 'Dunnett, Dorothy'
+            }
+          ],
+          "status": 'primary'
+        }
+      ]
+      expect(notifier).to have_received(:warn).with('Missing or empty name type attribute')
+    end
+  end
+
   # 2. Corporate name
   context 'with a corporate name' do
     let(:xml) do
@@ -196,7 +225,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
 
     it 'builds the cocina data structure and warns' do
       expect(build).to eq [{}]
-      expect(notifier).to have_received(:warn).with('name type attribute is set to ""')
+      expect(notifier).to have_received(:warn).with('Missing or empty name type attribute')
       expect(notifier).to have_received(:warn).with('name/namePart missing value')
       expect(notifier).to have_received(:warn).with('Missing name/namePart element')
     end
