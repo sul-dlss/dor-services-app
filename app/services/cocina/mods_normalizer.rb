@@ -56,6 +56,7 @@ module Cocina
       normalize_empty_notes
       normalize_empty_titles
       normalize_title_type
+      normalize_title_trailing
       normalize_gml_id
       normalize_empty_resource
       normalize_abstract_summary
@@ -562,6 +563,12 @@ module Cocina
     def normalize_abstract_summary
       ng_xml.root.xpath('//mods:abstract[@type="summary"]', mods: MODS_NS).each do |abstract_node|
         abstract_node.delete('type')
+      end
+    end
+
+    def normalize_title_trailing
+      ng_xml.root.xpath('//mods:titleInfo[not(@type="abbreviated")]/mods:title', mods: MODS_NS).each do |title_node|
+        title_node.content = title_node.content.delete_suffix(',').delete_suffix('.')
       end
     end
   end

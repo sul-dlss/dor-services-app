@@ -20,6 +20,18 @@ module Cocina
           'references' => 'references',
           'succeeded by' => 'succeeding'
         }.freeze
+
+        DETAIL_TYPES = {
+          'location within source' => 'part',
+          'volume' => 'volume',
+          'issue' => 'issue',
+          'chapter' => 'chapter',
+          'section' => 'section',
+          'paragraph' => 'paragraph',
+          'track' => 'track',
+          'marker' => 'marker'
+        }.freeze
+
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::RelatedResource>] related_resources
         # @param [string] druid
@@ -36,9 +48,10 @@ module Cocina
         end
 
         def write
-          filtered_related_resources.each do |(attributes, new_related)|
+          filtered_related_resources.each do |(attributes, new_related, orig_related)|
             xml.relatedItem attributes do
               DescriptiveWriter.write(xml: xml, descriptive: new_related, druid: druid, id_generator: id_generator)
+              write_part(orig_related)
             end
           end
         end
@@ -51,17 +64,17 @@ module Cocina
           related_resources.map do |related|
             other_type_note = other_type_note_for(related)
 
-            # Filter out "other relation type"
+            # Filter notes
             related_hash = related.to_h
-            if other_type_note
-              new_notes = related_hash.fetch(:note, []).reject { |note| note[:type] == 'other relation type' }
-              related_hash[:note] = new_notes.empty? ? nil : new_notes
+            new_notes = related_hash.fetch(:note, []).reject do |note|
+              note[:type] == 'other relation type' || DETAIL_TYPES.keys.include?(note[:type])
             end
+            related_hash[:note] = new_notes.empty? ? nil : new_notes
             next if related_hash.empty?
 
             new_related = Cocina::Models::RelatedResource.new(related_hash.compact)
 
-            [attributes_for(related, other_type_note), new_related]
+            [attributes_for(related, other_type_note), new_related, related]
           end.compact
         end
 
@@ -82,6 +95,27 @@ module Cocina
           return nil if related.note.nil?
 
           related.note.find { |note| note.type == 'other relation type' }
+        end
+
+        def write_part(related)
+          filtered_notes = Array(related.note).select { |note| DETAIL_TYPES.keys.include?(note.type) }
+          return if filtered_notes.blank?
+
+          xml.part do
+            filtered_notes.each do |note|
+              write_detail(note)
+            end
+          end
+        end
+
+        def write_detail(note)
+          attrs = {
+            type: DETAIL_TYPES[note.type]
+          }.compact
+          xml.detail attrs do
+            xml.number note.value if note.value
+            xml.caption note.displayLabel if note.displayLabel
+          end
         end
       end
     end
