@@ -44,6 +44,28 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     XML
   end
 
+  # 1b. Name without type
+  context 'with a name without type' do
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          "name": [
+            {
+              "value": 'Dunnett, Dorothy'
+            }
+          ],
+          "status": 'primary'
+        )
+      ]
+    end
+
+    it_behaves_like 'cocina to MODS', <<~XML
+      <name usage="primary">
+        <namePart>Dunnett, Dorothy</namePart>
+      </name>
+    XML
+  end
+
   # 2. Corporate name
   context 'with a corporate name' do
     let(:contributors) do
@@ -172,28 +194,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
       </name>
       <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
         <namePart>Rea Metaru Shigen Saisei Gijutsu Kenky&#x16B;kai</namePart>
-      </name>
-    XML
-  end
-
-  # FIXME: this example should be added to cdm (?) - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
-  context 'without type' do
-    let(:contributors) do
-      [
-        Cocina::Models::Contributor.new(
-          "name": [
-            {
-              "value": 'Dunnett, Dorothy'
-            }
-          ],
-          "status": 'primary'
-        )
-      ]
-    end
-
-    it_behaves_like 'cocina to MODS', <<~XML
-      <name usage="primary">
-        <namePart>Dunnett, Dorothy</namePart>
       </name>
     XML
   end

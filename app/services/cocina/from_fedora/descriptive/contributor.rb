@@ -43,7 +43,7 @@ module Cocina
         attr_reader :resource_element, :notifier
 
         def build_name_nodes(name_nodes)
-          name_nodes.each { |name_node| notifier.warn('name type attribute is set to ""') if name_node['type'] == '' }
+          name_nodes.each { |name_node| notifier.warn('Missing or empty name type attribute') if name_node['type'].blank? }
           NameBuilder.build(name_elements: name_nodes, notifier: notifier)
         end
       end
