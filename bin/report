@@ -3,7 +3,6 @@
 
 require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
-require_relative '../lib/data_error_notifier'
 require 'optparse'
 
 MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
@@ -57,6 +56,8 @@ results = Parallel.map(druids, progress: 'Testing') do |druid|
     item = Dor.find(druid)
     Result.new(druid, item.admin_policy_object_id, item.collections.map(&:pid), item.catkey, reports)
   end
+rescue Errno::EBUSY
+  retry
 rescue StandardError => e
   raise if e.message != 'Missing item'
 
