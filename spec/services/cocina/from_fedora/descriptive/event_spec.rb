@@ -589,12 +589,137 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
 
   # example 26 from mods_to_cocina_originInfo.txt
   context 'with originInfo eventType differs from date type' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L621'
+    let(:xml) do
+      <<~XML
+        <originInfo eventType="publication">
+          <copyrightDate>1980</copyrightDate>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'copyright',
+          "date": [
+            "value": '1980'
+          ]
+        }
+      ]
+    end
   end
 
   # example 26b from mods_to_cocina_originInfo.txt
   context 'with originInfo eventType differs from date type, converted from MARC with multiple 264s' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L634'
+    let(:xml) do
+      <<~XML
+        <originInfo>
+           <place>
+              <placeTerm type="code" authority="marccountry">ru</placeTerm>
+           </place>
+           <dateIssued encoding="marc">2019</dateIssued>
+           <copyrightDate encoding="marc">2018</copyrightDate>
+           <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo eventType="publication">
+           <place>
+              <placeTerm type="text">Moskva</placeTerm>
+           </place>
+           <publisher>Izdatelʹstvo "Vesʹ Mir"</publisher>
+           <dateIssued>2019</dateIssued>
+        </originInfo>
+        <originInfo eventType="copyright notice">
+           <copyrightDate>©2018</copyrightDate>
+        </originInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'publication',
+          "location": [
+            {
+              "code": 'ru',
+              "source": {
+                "code": 'marccountry'
+              }
+            }
+          ],
+          "date": [
+            {
+              "value": '2019',
+              "encoding": {
+                "code": 'marc'
+              }
+            }
+          ],
+          "note": [
+            {
+              "value": 'monographic',
+              "type": 'issuance',
+              "source": {
+                "value": 'MODS issuance terms'
+              }
+            }
+          ]
+        },
+        {
+          "type": 'copyright',
+          "date": [
+            {
+              "value": '2018',
+              "encoding": {
+                "code": 'marc'
+              }
+            }
+          ]
+        },
+        {
+          "type": 'publication',
+          "location": [
+            {
+              "value": 'Moskva'
+            }
+          ],
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Izdatelʹstvo "Vesʹ Mir"'
+                }
+              ],
+              type: 'organization',
+              role: [
+                {
+                  value: 'publisher',
+                  code: 'pbl',
+                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "value": '2019'
+            }
+          ]
+        },
+        {
+          "type": 'copyright',
+          "note": [
+            {
+              "value": '©2018',
+              "type": 'copyright statement'
+            }
+          ]
+        }
+      ]
+    end
   end
 
   # example 27 from mods_to_cocina_originInfo.txt
@@ -2065,9 +2190,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
         },
         {
           "type": 'copyright',
-          "date": [
+          "note": [
             {
-              "value": '©2020'
+              "value": '©2020',
+              "type": 'copyright statement'
             }
           ]
         }

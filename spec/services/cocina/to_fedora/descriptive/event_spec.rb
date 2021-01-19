@@ -71,7 +71,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
   end
 
   # 3. Single copyrightDate
-  # FIXME: discrepancy - eventType "copyright" vs "copyright notice"
   context 'when it has a single copyrightDate' do
     let(:events) do
       [
@@ -89,7 +88,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
     end
 
     it_behaves_like 'cocina to MODS', <<~XML
-      <originInfo eventType="copyright notice">
+      <originInfo eventType="copyright">
         <copyrightDate>1930</copyrightDate>
       </originInfo>
     XML
@@ -576,12 +575,136 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
 
   # example 26 from mods_to_cocina_originInfo.txt
   context 'when eventType differs from date type' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L621'
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          "type": 'copyright',
+          "date": [
+            "value": '1980'
+          ]
+        )
+      ]
+    end
+
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="copyright">
+        <copyrightDate>1980</copyrightDate>
+      </originInfo>
+    XML
   end
 
   # example 26b from mods_to_cocina_originInfo.txt
   context 'when eventType differs from date type, converted from MARC record with multiple 264s' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_originInfo.txt#L634'
+    let(:events) do
+      [
+        Cocina::Models::Event.new(
+          "type": 'publication',
+          "location": [
+            {
+              "code": 'ru',
+              "source": {
+                "code": 'marccountry'
+              }
+            }
+          ],
+          "date": [
+            {
+              "value": '2019',
+              "encoding": {
+                "code": 'marc'
+              }
+            }
+          ],
+          "note": [
+            {
+              "value": 'monographic',
+              "type": 'issuance',
+              "source": {
+                "value": 'MODS issuance terms'
+              }
+            }
+          ]
+        ),
+        Cocina::Models::Event.new(
+          "type": 'copyright',
+          "date": [
+            {
+              "value": '2018',
+              "encoding": {
+                "code": 'marc'
+              }
+            }
+          ]
+        ),
+        Cocina::Models::Event.new(
+          "type": 'publication',
+          "location": [
+            {
+              "value": 'Moskva'
+            }
+          ],
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Izdatelʹstvo "Vesʹ Mir"'
+                }
+              ],
+              type: 'organization',
+              role: [
+                {
+                  value: 'publisher',
+                  code: 'pbl',
+                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          "date": [
+            {
+              "value": '2019'
+            }
+          ]
+        ),
+        Cocina::Models::Event.new(
+          "type": 'copyright',
+          "note": [
+            {
+              "value": '©2018',
+              "type": 'copyright statement'
+            }
+          ]
+        )
+
+      ]
+    end
+
+    it_behaves_like 'cocina to MODS', <<~XML
+      <originInfo eventType="publication">
+         <dateIssued encoding="marc">2019</dateIssued>
+         <place>
+            <placeTerm type="code" authority="marccountry">ru</placeTerm>
+         </place>
+         <issuance>monographic</issuance>
+      </originInfo>
+      <originInfo eventType="copyright">
+        <copyrightDate encoding="marc">2018</copyrightDate>
+      </originInfo>
+      <originInfo eventType="publication">
+         <place>
+            <placeTerm type="text">Moskva</placeTerm>
+         </place>
+         <publisher>Izdatelʹstvo "Vesʹ Mir"</publisher>
+         <dateIssued>2019</dateIssued>
+      </originInfo>
+      <originInfo eventType="copyright notice">
+         <copyrightDate>©2018</copyrightDate>
+      </originInfo>
+    XML
   end
 
   # example 27 from mods_to_cocina_originInfo.txt
@@ -1700,14 +1823,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
           }
         ),
         Cocina::Models::Event.new(
-          {
-            "type": 'copyright',
-            "date": [
-              {
-                "value": '©2020'
-              }
-            ]
-          }
+          "type": 'copyright',
+          "note": [
+            {
+              "value": '©2020',
+              "type": 'copyright statement'
+            }
+          ]
         )
       ]
     end
@@ -1720,7 +1842,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Event do
         </place>
         <issuance>monographic</issuance>
       </originInfo>
-      <originInfo eventType="copyright notice">
+      <originInfo eventType="copyright">
         <copyrightDate encoding="marc">2020</copyrightDate>
       </originInfo>
       <originInfo eventType="publication">

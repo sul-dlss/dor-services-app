@@ -351,7 +351,7 @@ RSpec.describe Cocina::ModsNormalizer do
             <originInfo eventType="publication">
               <dateIssued>1930</dateIssued>
             </originInfo>
-            <originInfo eventType="copyright notice">
+            <originInfo eventType="copyright">
               <copyrightDate>1931</copyrightDate>
             </originInfo>
             <originInfo eventType="production">
@@ -1695,7 +1695,7 @@ RSpec.describe Cocina::ModsNormalizer do
             <publisher>[Stanford University]</publisher>
             <dateIssued>2020</dateIssued>
           </originInfo>
-          <originInfo eventType="copyright notice">
+          <originInfo eventType="copyright">
             <copyrightDate encoding="marc">2020</copyrightDate>
           </originInfo>
           <originInfo eventType="copyright notice">
