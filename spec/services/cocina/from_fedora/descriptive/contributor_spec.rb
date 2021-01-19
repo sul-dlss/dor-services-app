@@ -271,6 +271,36 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
+  # 5b. Name with untyped nameIdentifier
+  context 'with missing nameIdentifier type' do
+    let(:xml) do
+      <<~XML
+        <name type="personal">
+          <namePart>Burnett, Michael W.</namePart>
+          <nameIdentifier>https://orcid.org/0000-0001-5126-5568</nameIdentifier>
+        </name>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          identifier: [
+            {
+              value: 'https://orcid.org/0000-0001-5126-5568'
+            }
+          ],
+          name: [
+            {
+              value: 'Burnett, Michael W.'
+            }
+          ],
+          type: 'person'
+        }
+      ]
+    end
+  end
+
   context 'with namePart with empty type attribute' do
     context 'without role' do
       let(:xml) do
