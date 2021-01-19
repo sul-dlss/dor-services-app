@@ -265,8 +265,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     XML
   end
 
-  # FIXME: this example should be added to cdm (?) - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
-  context 'with multiple nameParts without types' do
+  # 5c. Name with multiple untyped parts
+  context 'with multiple untyped parts' do
     let(:contributors) do
       [
         Cocina::Models::Contributor.new(
