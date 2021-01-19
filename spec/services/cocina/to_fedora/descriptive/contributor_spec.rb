@@ -942,7 +942,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
   end
 
   # 12.  Multiple names with transliteration (name as value)
-  # FIXME: discrepancy - doesn't match exactly (uris); also status primary in 2 places (inside and outside parallelValue)
   context 'with multiple names with transliteration (name as value)' do
     let(:contributors) do
       [
@@ -962,12 +961,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
                                     }
                                   }
                                 },
-                    "status": 'primary',
-                    "uri": 'http://id.loc.gov/authorities/names/no2015139297',
-                    "source": {
-                      code: 'naf',
-                      uri: 'http://id.loc.gov/authorities/names'
-                    }
+                    "status": 'primary'
                   },
                   {
                     "value": 'Bulgakov, Mikhail Afanasʹevich',
@@ -1035,7 +1029,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
 
     it_behaves_like 'cocina to MODS', <<~XML
-      <name usage="primary" type="personal" script="Cyrl" altRepGroup="1" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/no2015139297">
+      <name usage="primary" type="personal" script="Cyrl" altRepGroup="1">
         <namePart>&#x411;&#x443;&#x43B;&#x433;&#x430;&#x43A;&#x43E;&#x432;, &#x41C;&#x438;&#x445;&#x430;&#x438;&#x43B; &#x410;&#x444;&#x430;&#x43D;&#x430;&#x441;&#x44C;&#x435;&#x432;&#x438;&#x447;</namePart>
       </name>
       <name type="personal" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
