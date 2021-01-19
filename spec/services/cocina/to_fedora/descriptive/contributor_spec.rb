@@ -265,6 +265,34 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     XML
   end
 
+  # 5b. Name with untyped nameIdentifier
+  context 'with untyped nameIdentifier' do
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          "name": [
+            {
+              "value": 'Burnett, Michael W.'
+            }
+          ],
+          "type": 'person',
+          "identifier": [
+            {
+              "uri": 'https://orcid.org/0000-0001-5126-5568'
+            }
+          ]
+        )
+      ]
+    end
+
+    it_behaves_like 'cocina to MODS', <<~XML
+      <name type="personal">
+        <namePart>Burnett, Michael W.</namePart>
+        <nameIdentifier>https://orcid.org/0000-0001-5126-5568</nameIdentifier>
+      </name>
+    XML
+  end
+
   # 5c. Name with multiple untyped parts
   context 'with multiple untyped parts' do
     let(:contributors) do
