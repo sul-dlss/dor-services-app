@@ -1036,7 +1036,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
                     }
                   }
                 ],
-                "type": 'person'
+                "type": 'person',
+                "status": 'primary'
               }
             ]
           }

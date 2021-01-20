@@ -678,7 +678,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
                     "code": 'naf'
                   }
                 }
-              ]
+              ],
+              "status": 'primary'
             }
           )
         ]

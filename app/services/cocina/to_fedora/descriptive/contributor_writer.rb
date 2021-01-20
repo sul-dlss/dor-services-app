@@ -96,7 +96,7 @@ module Cocina
             authority: name.source&.code,
             authorityURI: name.source&.uri
           }.tap do |attributes|
-            attributes[:usage] = 'primary' if contributor.status == 'primary' || name.status == 'primary'
+            attributes[:usage] = 'primary' if contributor.status == 'primary'
           end.compact
         end
 
