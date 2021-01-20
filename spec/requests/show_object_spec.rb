@@ -229,6 +229,39 @@ RSpec.describe 'Get the object' do
       end
     end
 
+    context 'when the object exists without a sourceId' do
+      let(:object) do
+        Dor::Item.new(pid: 'druid:bc123df4567',
+                      label: 'foo',
+                      read_rights: 'world').tap do |i|
+          i.rightsMetadata.copyright = 'All rights reserved unless otherwise indicated.'
+          i.rightsMetadata.use_statement = 'Property rights reside with the repository...'
+          i.descMetadata.title_info.main_title = 'Hello'
+        end
+      end
+
+      let(:expected) do
+        {
+          errors: [
+            a_hash_including(
+              detail: 'unable to resolve a sourceId for druid:bc123df4567',
+              meta: { backtrace: include(match("app/services/cocina/mapper.rb:[0-9]+:in `build'$"),
+                                         match("app/controllers/objects_controller.rb:[0-9]+:in `show'$")) },
+              status: '422',
+              title: 'Unexpected Cocina::Mapper.build error'
+            )
+          ]
+        }
+      end
+
+      it 'returns the error' do
+        get '/v1/objects/druid:bc123df4567',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response_model).to include expected
+      end
+    end
+
     context 'when there is an unexpected error mapping properties from the Fedora representation' do
       let(:object) do
         Dor::Item.new(pid: 'druid:bc123df4567',
