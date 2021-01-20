@@ -34,7 +34,8 @@ module Cocina
         def build_parallel
           names = {
             parallelValue: name_elements.map { |name_node| build_parallel_name(name_node) },
-            type: type_for(name_elements.first['type'])
+            type: type_for(name_elements.first['type']),
+            status: name_elements.map { |name_element| name_element['usage'] }.compact.first
           }.compact
           { name: [names] }.tap do |attrs|
             roles = name_elements.flat_map { |name_node| build_roles(name_node) }.compact.uniq

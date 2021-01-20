@@ -1243,7 +1243,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
   end
 
   # 12. Multiple names with transliteration (name as value)
-  # FIXME: discrepancy - missing "status": "primary" for Булгаков
   context 'with multiple names with transliteration (name as value)' do
     let(:xml) do
       <<~XML
@@ -1263,7 +1262,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
 
     it 'builds the cocina data structure' do
-      # FIXME: missing "status": "primary" for Булгаков
       expect(build).to eq [
         {
           "name": [
@@ -1299,7 +1297,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
                   }
                 }
               ],
-              "type": 'person'
+              "type": 'person',
+              "status": 'primary'
             }
           ]
         },
@@ -1412,8 +1411,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
                   "value": 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai'
                 }
               ],
-
-              type: 'organization'
+              type: 'organization',
+              status: 'primary'
             }
           ],
           role: [
