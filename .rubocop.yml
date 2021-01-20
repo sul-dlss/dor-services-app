@@ -37,6 +37,7 @@ Metrics/ClassLength:
 RSpec/DescribeClass:
   Exclude:
     - 'spec/requests/**/*'
+    - 'spec/services/cocina/mapping/descriptive/mods/**/*'
 
 RSpec/ExampleLength:
   Max: 8
