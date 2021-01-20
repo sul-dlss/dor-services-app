@@ -37,17 +37,21 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
-  # missing example ticketed as https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/294
   context 'when given a classification without authority' do
     let(:xml) { '<classification>G9801.S12 2015 .Z3</classification>' }
 
-    it 'builds the cocina data structure' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
           "type": 'classification',
           "value": 'G9801.S12 2015 .Z3'
         }
       ]
+      expect(notifier).to have_received(:warn).with('No source given for classification value', { value: 'G9801.S12 2015 .Z3' })
     end
   end
 

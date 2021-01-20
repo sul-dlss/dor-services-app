@@ -149,6 +149,8 @@ module Cocina
         end
 
         def subject_classification(subject_classification_node, attrs)
+          notifier.warn('No source given for classification value', value: subject_classification_node.text) unless attrs[:uri] || attrs.dig(:source, :code) || attrs.dig(:source, :uri)
+
           values = {}.tap do |content|
             content[:type] = 'classification'
             content[:value] = subject_classification_node.text
