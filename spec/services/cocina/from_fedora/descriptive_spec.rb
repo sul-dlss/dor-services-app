@@ -318,8 +318,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
             {
               code: 'ths',
               source: {
-                code: 'marcrelator',
-                uri: 'http://id.loc.gov/vocabulary/relators/'
+                code: 'marcrelator'
               }
             }
           ]
@@ -334,8 +333,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
             {
               code: 'ths',
               source: {
-                code: 'marcrelator',
-                uri: 'http://id.loc.gov/vocabulary/relators/'
+                code: 'marcrelator'
               }
             }
           ]
@@ -350,8 +348,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
             {
               code: 'ths',
               source: {
-                code: 'marcrelator',
-                uri: 'http://id.loc.gov/vocabulary/relators/'
+                code: 'marcrelator'
               }
             }
           ]

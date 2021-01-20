@@ -789,8 +789,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
                 value: 'author',
                 code: 'aut',
                 source: {
-                  code: 'marcrelator',
-                  uri: 'http://id.loc.gov/vocabulary/relators/'
+                  code: 'marcrelator'
                 }
               }
             ]

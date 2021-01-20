@@ -162,8 +162,6 @@ module Cocina
           end.compact.presence
         end
 
-        MARC_RELATOR_PIECE = 'id.loc.gov/vocabulary/relators'
-
         # shameless green
         # rubocop:disable Metrics/AbcSize
         def role_for(ng_role)
@@ -180,7 +178,7 @@ module Cocina
           {}.tap do |role|
             source = {
               code: Authority.normalize_code(authority, notifier),
-              uri: authority == 'marcrelator' ? "http://#{MARC_RELATOR_PIECE}/" : Authority.normalize_uri(authority_uri)
+              uri: Authority.normalize_uri(authority_uri)
             }.compact
             role[:source] = source if source.present?
 
@@ -227,8 +225,7 @@ module Cocina
 
         def marc_relator_role?(role_authority, role_authority_uri, role_authority_value)
           role_authority == 'marcrelator' ||
-            role_authority_uri&.include?(MARC_RELATOR_PIECE) ||
-            role_authority_value&.include?(MARC_RELATOR_PIECE)
+            [role_authority_uri, role_authority_value].compact.any? { |check| check.include?('id.loc.gov/vocabulary/relators') }
         end
       end
     end
