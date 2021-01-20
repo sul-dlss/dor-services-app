@@ -636,6 +636,28 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  # Example 19c
+  context 'with a multilingual subject but no lang attributes' do
+    let(:xml) do
+      <<~XML
+        <subject altRepGroup="1">
+          <cartographics>
+            <scale>Scale 1:650,000.</scale>
+          </cartographics>
+        </subject>
+        <subject altRepGroup="1">
+          <cartographics>
+            <scale>&#x6BD4;&#x4F8B;&#x5C3A; 1:650,000.</scale>
+          </cartographics>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq []
+    end
+  end
+
   context 'with a cartographic subject missing coordinates' do
     let(:xml) do
       <<~XML

@@ -366,6 +366,41 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       end
     end
 
+    # Example 19c from mods_to_cocina_subject.txt
+    context 'with a multiple cartographic subjects' do
+      let(:xml) do
+        <<~XML
+          <subject altRepGroup="1">
+            <cartographics>
+              <scale>Scale 1:650,000.</scale>
+            </cartographics>
+          </subject>
+          <subject altRepGroup="1">
+            <cartographics>
+              <scale>&#x6BD4;&#x4F8B;&#x5C3A; 1:650,000.</scale>
+            </cartographics>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            parallelValue: [
+              {
+                value: 'Scale 1:650,000.',
+                type: 'map scale'
+              },
+              {
+                value: '比例尺 1:650,000.',
+                type: 'map scale'
+              }
+            ]
+          }
+        ]
+      end
+    end
+
     context 'when there is a subject/cartographics node with empty elements' do
       let(:xml) do
         <<~XML
