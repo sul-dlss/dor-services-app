@@ -368,7 +368,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
 
     # 7b. Role text only
-    #  FIXME: discrepancy - mods only has text, not code
     context 'when role has value but not code' do
       let(:contributors) do
         [
@@ -405,7 +404,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
 
     # 7c. Role code only
-    #  FIXME: discrepancy - mods has code only, not text
     context 'when role has code but not value' do
       let(:contributors) do
         [
@@ -476,7 +474,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
     end
 
     # 7e. Role with authority as the only authority attribute
-    # FIXME: discrepancy - our mods includes authority attribute
     context 'when role has authority as the only authority attribute' do
       let(:contributors) do
         [
@@ -493,8 +490,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
                 value: 'author',
                 code: 'aut',
                 source: {
-                  code: 'marcrelator',
-                  uri: 'http://id.loc.gov/vocabulary/relators/'
+                  code: 'marcrelator'
                 }
               }
             ]
@@ -506,8 +502,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
         <name type="personal" usage="primary">
           <namePart>Dunnett, Dorothy</namePart>
           <role>
-            <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/">author</roleTerm>
-            <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/">aut</roleTerm>
+            <roleTerm type="text" authority="marcrelator">author</roleTerm>
+            <roleTerm type="code" authority="marcrelator">aut</roleTerm>
           </role>
         </name>
       XML
