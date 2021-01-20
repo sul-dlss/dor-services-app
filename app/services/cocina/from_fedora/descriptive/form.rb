@@ -35,37 +35,49 @@ module Cocina
         attr_reader :resource_element, :notifier
 
         def add_subject_cartographics(forms)
+          subject_nodes = resource_element.xpath('mods:subject[mods:cartographics]', mods: DESC_METADATA_NS)
+          altrepgroup_subject_nodes, other_subject_nodes = AltRepGroup.split(nodes: subject_nodes)
+
+          forms.concat(
+            altrepgroup_subject_nodes.map { |parallel_subject_nodes| build_parallel_cartographics(parallel_subject_nodes) } +
+            other_subject_nodes.flat_map { |subject_node| build_cartographics(subject_node) }.uniq
+          )
+        end
+
+        def build_parallel_cartographics(parallel_subject_nodes)
+          {
+            parallelValue: parallel_subject_nodes.flat_map { |subject_node| build_cartographics(subject_node) }
+          }
+        end
+
+        def build_cartographics(subject_node)
           carto_forms = []
+          subject_node.xpath('mods:cartographics/mods:scale', mods: DESC_METADATA_NS).each do |scale_node|
+            next if scale_node.text.blank?
 
-          resource_element.xpath('mods:subject[mods:cartographics]', mods: DESC_METADATA_NS).each do |subject_node|
-            subject_node.xpath('mods:cartographics/mods:scale', mods: DESC_METADATA_NS).each do |scale_node|
-              next if scale_node.text.blank?
-
-              carto_forms << {
-                value: scale_node.text,
-                type: 'map scale'
-              }
-            end
-
-            subject_node.xpath('mods:cartographics/mods:projection', mods: DESC_METADATA_NS).each do |projection_node|
-              next if projection_node.text.blank?
-
-              carto_forms << {
-                value: projection_node.text,
-                type: 'map projection',
-                displayLabel: subject_node['displayLabel'],
-                uri: ValueURI.sniff(subject_node['valueURI'], notifier)
-              }.tap do |attrs|
-                source = {
-                  code: subject_node['authority'],
-                  uri: subject_node['authorityURI']
-                }.compact
-                attrs[:source] = source if source.present?
-              end.compact
-            end
+            carto_forms << {
+              value: scale_node.text,
+              type: 'map scale'
+            }
           end
 
-          forms.concat(carto_forms.uniq)
+          subject_node.xpath('mods:cartographics/mods:projection', mods: DESC_METADATA_NS).each do |projection_node|
+            next if projection_node.text.blank?
+
+            carto_forms << {
+              value: projection_node.text,
+              type: 'map projection',
+              displayLabel: subject_node['displayLabel'],
+              uri: ValueURI.sniff(subject_node['valueURI'], notifier)
+            }.tap do |attrs|
+              source = {
+                code: subject_node['authority'],
+                uri: subject_node['authorityURI']
+              }.compact
+              attrs[:source] = source if source.present?
+            end.compact
+          end
+          carto_forms.uniq
         end
 
         def add_genre(forms)

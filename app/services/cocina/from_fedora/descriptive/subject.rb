@@ -30,9 +30,9 @@ module Cocina
         def build
           altrepgroup_subject_nodes, other_subject_nodes = AltRepGroup.split(nodes: subject_nodes)
 
-          altrepgroup_subject_nodes.map { |subject_nodes| build_parallel_subject(subject_nodes) } \
-            + other_subject_nodes.map { |subject_node| build_subject(subject_node) }.compact \
-            + build_cartographics
+          (altrepgroup_subject_nodes.map { |subject_nodes| build_parallel_subject(subject_nodes) } +
+            other_subject_nodes.map { |subject_node| build_subject(subject_node) }.compact +
+            build_cartographics).compact
         end
 
         private
@@ -40,14 +40,14 @@ module Cocina
         attr_reader :resource_element, :notifier
 
         def build_parallel_subject(parallel_subject_nodes)
-          parallel_subjects = parallel_subject_nodes.map { |subject_node| build_subject(subject_node) }
+          parallel_subjects = parallel_subject_nodes.map { |subject_node| build_subject(subject_node) }.compact
           # Moving type up from parallel subjects if they are all the same.
           move_type = parallel_subjects.uniq { |subject| subject[:type] }.size == 1
           type = move_type ? parallel_subjects.map { |subject| subject.delete(:type) }.compact.first : nil
           {
-            parallelValue: parallel_subjects,
+            parallelValue: parallel_subjects.presence,
             type: type
-          }.compact
+          }.compact.presence
         end
 
         def build_subject(subject_node)
@@ -159,6 +159,7 @@ module Cocina
           attrs.merge(values)
         end
 
+        # @return [Hash, NilClass]
         def simple_item(node, attrs = {})
           attrs = attrs.deep_merge(common_attrs(node))
           case node.name
