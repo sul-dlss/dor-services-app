@@ -77,13 +77,15 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
             ]
           }
         ],
-        "standard": {
-          "code": 'dacs',
-          "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
-          "source": {
-            "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/'
+        "metadataStandard": [
+          {
+            "code": 'dacs',
+            "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
+            "source": {
+              "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/'
+            }
           }
-        },
+        ],
         "note": [
           {
             "type": 'record origin',
@@ -141,14 +143,17 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
             ]
           }
         ],
-        standard: {
-          code: 'dacs',
-          uri: 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
-          value: "Describing archives: a content standard\u00A0(Chicago: Society of American Archivists)",
-          source: {
-            uri: 'http://id.loc.gov/vocabulary/descriptionConventions'
+        metadataStandard: [
+          {
+            code: 'dacs',
+            uri: 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
+            value: "Describing archives: a content standard\u00A0(Chicago: Society of American Archivists)",
+            source: {
+              uri: 'http://id.loc.gov/vocabulary/descriptionConventions'
+            }
           }
-        },
+
+        ],
         note: [
           { type: 'record origin', value: 'human prepared' }
         ]
@@ -294,9 +299,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
             ]
           }
         ],
-        "standard": {
-          "code": 'aacr'
-        },
+        "metadataStandard": [
+          {
+            "code": 'aacr'
+          }
+        ],
         "identifier": [
           {
             "value": 'a12374669',

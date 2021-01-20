@@ -24,7 +24,7 @@ module Cocina
           {}.tap do |admin_metadata|
             admin_metadata[:language] = build_language
             admin_metadata[:contributor] = build_contributor
-            admin_metadata[:standard] = build_standard
+            admin_metadata[:metadataStandard] = build_standard
             admin_metadata[:note] = build_note
             admin_metadata[:identifier] = build_identifier
             admin_metadata[:event] = build_events
@@ -79,14 +79,14 @@ module Cocina
         def build_standard
           return unless description_standard
 
-          return { code: description_standard.text } unless description_standard['authority']
+          return [{ code: description_standard.text }] unless description_standard['authority']
 
-          {
+          [{
             code: description_standard['authority'],
             uri: ValueURI.sniff(description_standard['valueURI'], notifier),
             value: description_standard.text.presence,
             source: { uri: description_standard['authorityURI'] }
-          }.compact
+          }.compact].presence
         end
 
         def build_contributor

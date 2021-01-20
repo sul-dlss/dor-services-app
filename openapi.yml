@@ -1362,9 +1362,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DescriptiveValue"
-        standard:
-          # description: Descriptive or content standard to which this resource description conforms.
-          $ref: "#/components/schemas/Standard"
+        metadataStandard:
+          description: Descriptive or content standard(s) to which this resource description conforms.
+          type: array
+          items:
+            $ref: "#/components/schemas/Standard"
         identifier:
           description: Identifiers associated with this resource description.
           type: array
