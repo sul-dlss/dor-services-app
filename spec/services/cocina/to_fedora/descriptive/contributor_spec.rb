@@ -614,37 +614,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
       XML
     end
 
-    context 'with empty name value and missing role' do
-      let(:contributors) do
-        [
-          Cocina::Models::Contributor.new(
-            "name": [
-              {
-                "value": ''
-              }
-            ],
-            "role": [
-              {
-                "source":
-                  {
-                    "code": 'marcreleator'
-                  }
-              }
-            ]
-          )
-        ]
-      end
-
-      it_behaves_like 'cocina to MODS', <<~XML
-        <name>
-          <namePart/>
-          <role/>
-        </name>
-      XML
-    end
-
-    # FIXME: this example should be added to cdm - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
-    context 'when multiple roles' do
+    # 7j. Name with multiple roles
+    context 'when name with multiple roles' do
       let(:contributors) do
         [
           Cocina::Models::Contributor.new(
@@ -680,6 +651,35 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
             <role>
               <roleTerm authority="marcrelator" type="code" authorityURI="http://id.loc.gov/vocabulary/relators/">ths</roleTerm>
             </role>
+        </name>
+      XML
+    end
+
+    context 'with empty name value and missing role' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            "name": [
+              {
+                "value": ''
+              }
+            ],
+            "role": [
+              {
+                "source":
+                  {
+                    "code": 'marcreleator'
+                  }
+              }
+            ]
+          )
+        ]
+      end
+
+      it_behaves_like 'cocina to MODS', <<~XML
+        <name>
+          <namePart/>
+          <role/>
         </name>
       XML
     end
