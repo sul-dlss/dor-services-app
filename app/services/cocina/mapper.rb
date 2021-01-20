@@ -10,12 +10,19 @@ module Cocina
     # Raised when called on something other than an item (DRO), etd, collection, or adminPolicy (APO)
     class UnsupportedObjectType < MapperError; end
 
+    # Raised when this object is missing a sourceID, so it can't be mapped to cocina.
+    class MissingSourceID < MapperError
+      def initialize(msg = 'Missing source ID')
+        super(msg)
+      end
+    end
+
     # Raised on unexpected mapper failures. It is unknown if a data error or a mapping error.
     class UnexpectedBuildError < StandardError; end
 
     # @param [Dor::Abstract] item the Fedora object to convert to a cocina object
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
-    # @raises [SolrConnectionError,UnsupportedObjectType,MissingTitle,MissingSourceID]
+    # @raises [SolrConnectionError,UnsupportedObjectType,MissingSourceID]
     def self.build(item)
       new(item).build
     end
