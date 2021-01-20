@@ -585,6 +585,35 @@ RSpec.describe Cocina::ToFedora::Descriptive::Contributor do
       XML
     end
 
+    # 7i. Valid role code without authority
+    context 'when valid role code without authority' do
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            name: [
+              {
+                value: 'Selective Service System'
+              }
+            ],
+            role: [
+              {
+                code: 'isb'
+              }
+            ]
+          )
+        ]
+      end
+
+      it_behaves_like 'cocina to MODS', <<~XML
+        <name>
+          <namePart>Selective Service System</namePart>
+          <role>
+            <roleTerm type="code">isb</roleTerm>
+          </role>
+        </name>
+      XML
+    end
+
     context 'with empty name value and missing role' do
       let(:contributors) do
         [

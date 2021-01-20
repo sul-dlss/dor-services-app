@@ -719,65 +719,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
     end
 
-    # FIXME: this example should be added to cdm - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
-    context 'when the role code is missing the authority and length is 3' do
-      let(:xml) do
-        <<~XML
-          <name>
-            <namePart>Selective Service System</namePart>
-            <role>
-              <roleTerm type="code">isb</roleTerm>
-            </role>
-          </name>
-        XML
-      end
-
-      before do
-        allow(notifier).to receive(:warn)
-      end
-
-      it 'builds the cocina data structure and warns' do
-        expect(build).to eq [
-          { name: [
-            { value: 'Selective Service System' }
-          ], role: [
-            { code: 'isb' }
-          ] }
-        ]
-        expect(notifier).to have_received(:warn).with('Contributor role code is missing authority')
-      end
-    end
-
-    context 'when the role code is missing the authority and length is not 3' do
-      let(:xml) do
-        <<~XML
-          <name valueURI="corporate">
-            <namePart>Selective Service System</namePart>
-            <role>
-              <roleTerm type="code">isbx</roleTerm>
-            </role>
-          </name>
-        XML
-      end
-
-      before do
-        allow(notifier).to receive(:error)
-        allow(notifier).to receive(:warn)
-      end
-
-      it 'builds the cocina data structure and notifies error' do
-        expect(build).to eq [
-          { name: [
-            { value: 'Selective Service System', uri: 'corporate' }
-          ], role: [
-            { code: 'isbx' }
-          ] }
-        ]
-        expect(notifier).to have_received(:warn).with('Value URI has unexpected value', { uri: 'corporate' })
-        expect(notifier).to have_received(:error).with('Contributor role code has unexpected value', { role: 'isbx' })
-      end
-    end
-
     # 7d. Role with valueURI as the only attribute
     context 'when role has valueURI as the only authority attribute' do
       let(:xml) do
@@ -957,6 +898,72 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
             ]
           }
         ]
+      end
+    end
+
+    # 7i. Valid role code without authority
+    context 'when valid role code without authority' do
+      let(:xml) do
+        <<~XML
+          <name>
+            <namePart>Selective Service System</namePart>
+            <role>
+              <roleTerm type="code">isb</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'builds the cocina data structure and warns' do
+        expect(build).to eq [
+          {
+            name: [
+              {
+                value: 'Selective Service System'
+              }
+            ],
+            role: [
+              {
+                code: 'isb'
+              }
+            ]
+          }
+        ]
+        expect(notifier).to have_received(:warn).with('Contributor role code is missing authority')
+      end
+    end
+
+    context 'when the role code is missing the authority and length is not 3' do
+      let(:xml) do
+        <<~XML
+          <name valueURI="corporate">
+            <namePart>Selective Service System</namePart>
+            <role>
+              <roleTerm type="code">isbx</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      before do
+        allow(notifier).to receive(:error)
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'builds the cocina data structure and notifies error' do
+        expect(build).to eq [
+          { name: [
+            { value: 'Selective Service System', uri: 'corporate' }
+          ], role: [
+            { code: 'isbx' }
+          ] }
+        ]
+        expect(notifier).to have_received(:warn).with('Value URI has unexpected value', { uri: 'corporate' })
+        expect(notifier).to have_received(:error).with('Contributor role code has unexpected value', { role: 'isbx' })
       end
     end
 
