@@ -154,6 +154,7 @@ module Cocina
           end
         end
 
+        # rubocop:disable Metrics/AbcSize
         def build_events_for_origin_info(origin_info, language_script)
           [].tap do |events|
             date_created = origin_info.xpath('mods:dateCreated', mods: DESC_METADATA_NS)
@@ -166,7 +167,13 @@ module Cocina
             end
 
             copyright_date = origin_info.xpath('mods:copyrightDate', mods: DESC_METADATA_NS)
-            events << build_event('copyright', copyright_date, language_script) if copyright_date.present?
+            if copyright_date.present?
+              events << if origin_info['eventType'] == 'copyright notice'
+                          build_copyright_note(copyright_date.first)
+                        else
+                          build_event('copyright', copyright_date, language_script)
+                        end
+            end
 
             date_captured = origin_info.xpath('mods:dateCaptured', mods: DESC_METADATA_NS)
             events << build_event('capture', date_captured, language_script) if date_captured.present?
@@ -180,6 +187,19 @@ module Cocina
             has_date = [date_created, date_issued, copyright_date, date_captured, date_other].flatten.present?
             events << build_event('creation', [], language_script) if origin_info[:eventType] == 'production' && !has_date
           end
+        end
+        # rubocop:enable Metrics/AbcSize
+
+        def build_copyright_note(copyright_date)
+          {
+            type: 'copyright',
+            note: [
+              {
+                value: copyright_date.content,
+                type: 'copyright statement'
+              }
+            ]
+          }
         end
 
         def add_place_info(event, places, language_script)
@@ -369,8 +389,6 @@ module Cocina
         end
 
         def clean_date(date)
-          return date unless date.match(/^\d{4}\.$/)
-
           date.delete_suffix('.')
         end
 

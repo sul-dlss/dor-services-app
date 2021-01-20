@@ -192,7 +192,7 @@ module Cocina
         add_event_type('publication', origin_info_node) && next if date_issued_nodes.present?
 
         copyright_date_nodes = origin_info_node.xpath('mods:copyrightDate', mods: MODS_NS)
-        add_event_type('copyright notice', origin_info_node) && next if copyright_date_nodes.present?
+        add_event_type('copyright', origin_info_node) && next if copyright_date_nodes.present?
 
         date_created_nodes = origin_info_node.xpath('mods:dateCreated', mods: MODS_NS)
         add_event_type('production', origin_info_node) && next if date_created_nodes.present?
@@ -446,8 +446,6 @@ module Cocina
     def normalize_origin_info_date
       %w[dateIssued copyrightDate dateCreated dateCaptured dateValid dateOther].each do |date_type|
         ng_xml.root.xpath("//mods:originInfo/mods:#{date_type}", mods: MODS_NS)
-              .to_a
-              .filter { |date_node| date_node.content =~ /^\d{4}\.$/ }
               .each { |date_node| date_node.content = date_node.content.delete_suffix('.') }
       end
     end
@@ -506,7 +504,7 @@ module Cocina
 
     def normalize_origin_info_split
       # Split a single originInfo into multiple.
-      split_origin_info('dateIssued', 'copyrightDate', 'copyright notice')
+      split_origin_info('dateIssued', 'copyrightDate', 'copyright')
       split_origin_info('dateIssued', 'dateCaptured', 'capture')
       split_origin_info('dateIssued', 'dateValid', 'validity')
       split_origin_info('copyrightDate', 'publisher', 'publication')

@@ -23,7 +23,7 @@ module Cocina
 
         EVENT_TYPE = {
           'capture' => 'capture',
-          'copyright' => 'copyright notice',
+          'copyright' => 'copyright',
           'creation' => 'production',
           'distribution' => 'distribution',
           'manufacture' => 'manufacture',
@@ -52,7 +52,7 @@ module Cocina
 
         def write
           Array(events).each do |event|
-            event_type = EVENT_TYPE.fetch(event.type) if event.type
+            event_type = event_type_for(event)
             if translated?(event)
               write_translated(event, event_type, id_generator.next_altrepgroup)
             else
@@ -64,6 +64,15 @@ module Cocina
         private
 
         attr_reader :xml, :events, :id_generator
+
+        def event_type_for(event)
+          return nil unless event.type
+
+          event_type = EVENT_TYPE.fetch(event.type)
+          return 'copyright notice' if (event_type == 'copyright') && Array(event.note).any? { |note| note.type == 'copyright statement' }
+
+          event_type
+        end
 
         def translated?(event)
           Array(event.location).any?(&:parallelValue) ||
@@ -203,7 +212,14 @@ module Cocina
         def write_note(note)
           attributes = {}
           attributes[:authority] = note.source.code if note&.source&.code
-          xml.send(note.type || 'edition', note.value, attributes)
+          xml.send(note_tag_for(note), note.value, attributes)
+        end
+
+        def note_tag_for(note)
+          return 'copyrightDate' if note.type == 'copyright statement'
+          return note.type if note.type
+
+          'edition'
         end
 
         def write_location(location)
