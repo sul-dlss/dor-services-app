@@ -1093,9 +1093,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
   end
 
-  # FIXME: this example should be added to cdm ??? - see https://github.com/sul-dlss-labs/cocina-descriptive-metadata/issues/298
-  # kind of 18, except with multiple names
-  context 'with multiple names, one primary, dates, no roles' do
+  # 9b. Multiple names, no roles
+  context 'with multiple names, no roles' do
     let(:xml) do
       <<~XML
         <name type="personal" usage="primary">
