@@ -40,7 +40,6 @@ module Cocina
       normalize_coordinates # Must be before normalize_subject_cartographics
       normalize_subject_cartographics
       normalize_text_role_term
-      normalize_role_term_authority
       normalize_name
       normalize_related_item_other_type
       normalize_unmatched_altrepgroup
@@ -254,12 +253,6 @@ module Cocina
       # Add the type="text" attribute to roleTerms that don't have a type (seen in MODS 3.3 druid:yy910cj7795)
       ng_xml.root.xpath('//mods:roleTerm[not(@type)]', mods: MODS_NS).each do |role_term_node|
         role_term_node['type'] = 'text'
-      end
-    end
-
-    def normalize_role_term_authority
-      ng_xml.root.xpath("//mods:roleTerm[@authority='marcrelator']", mods: MODS_NS).each do |role_term_node|
-        role_term_node['authorityURI'] = 'http://id.loc.gov/vocabulary/relators/'
       end
     end
 
