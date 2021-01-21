@@ -688,7 +688,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           value: 'Hoveyda, Fereydoun' }
       ]
       expect(notifier).to have_received(:warn).with('Name type unrecognized', { type: '#N/A' })
-      expect(notifier).to have_received(:warn).with('Subject has unknown authority code', { code: '#N/A' })
+      expect(notifier).to have_received(:warn).with('"#N/A" authority code').twice
       expect(notifier).to have_received(:warn).with('Value URI has unexpected value', { uri: '#N/A' }).twice
     end
   end

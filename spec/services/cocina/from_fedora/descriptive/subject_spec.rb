@@ -60,14 +60,15 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       allow(notifier).to receive(:warn)
     end
 
-    it 'ignores the invalid code and warns' do
+    it 'includes the invalid code and warns' do
       expect(build).to eq [
         {
           "value": 'College students',
           "type": 'topic',
           "uri": 'http://id.loc.gov/authorities/subjects/sh85028356',
           "source": {
-            "uri": 'http://id.loc.gov/authorities/subjects/'
+            "uri": 'http://id.loc.gov/authorities/subjects/',
+            "code": 'topic'
           }
         }
       ]
@@ -117,12 +118,15 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       allow(notifier).to receive(:warn)
     end
 
-    it 'omits source and warns' do
+    it 'includes source and warns' do
       expect(build).to eq [
         {
           "value": 'College students',
           "type": 'topic',
-          "uri": 'http://id.loc.gov/authorities/subjects/sh85028356'
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85028356',
+          "source": {
+            "code": 'topic'
+          }
         }
       ]
       expect(notifier).to have_received(:warn).with('Subject has unknown authority code', { code: 'topic' })

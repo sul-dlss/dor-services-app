@@ -95,10 +95,7 @@ module Cocina
 
           return nil if code.nil?
 
-          unless SubjectAuthorityCodes::SUBJECT_AUTHORITY_CODES.include?(code)
-            notifier.warn('Subject has unknown authority code', { code: code })
-            return nil
-          end
+          notifier.warn('Subject has unknown authority code', { code: code }) unless SubjectAuthorityCodes::SUBJECT_AUTHORITY_CODES.include?(code)
 
           code
         end
