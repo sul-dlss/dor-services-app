@@ -331,6 +331,7 @@ module Cocina
       ng_xml.root.xpath('//mods:subject[not(@authority) and count(mods:*) = 1 and not(mods:geographicCode)]/mods:*[@authority]',
                         mods: MODS_NS).each do |node|
         node.parent['authority'] = node['authority']
+        node.delete('authority') unless node['authorityURI'] || node['valueURI']
       end
     end
 

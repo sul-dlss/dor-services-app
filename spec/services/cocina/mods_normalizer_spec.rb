@@ -137,6 +137,32 @@ RSpec.describe Cocina::ModsNormalizer do
       end
     end
 
+    context 'when normalizing name subject with authority only' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <subject>
+              <name type="personal" authority="local">
+                <namePart>Hugo, Victor (Venezuelan, c. 1942-1993)</namePart>
+              </name>
+            </subject>
+          </mods>
+        XML
+      end
+
+      it 'moves to subject' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="local">
+              <name type="personal">
+                <namePart>Hugo, Victor (Venezuelan, c. 1942-1993)</namePart>
+              </name>
+            </subject>
+          </mods>
+        XML
+      end
+    end
+
     context 'when normalizing topic with additional term' do
       let(:mods_ng_xml) do
         Nokogiri::XML <<~XML
