@@ -627,36 +627,6 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
-  context 'when normalizing roleTerm authorityURI' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{mods_attributes}>
-          <name>
-            <namePart>Dunnett, Dorothy</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
-              <roleTerm type="text" authority="marcrelator" valueURI="http://id.loc.gov/vocabulary/relators/pht">Photographer</roleTerm>
-            </role>
-          </name>
-        </mods>
-      XML
-    end
-
-    it 'adds authorityURI' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{mods_attributes}>
-          <name>
-            <namePart>Dunnett, Dorothy</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">photographer</roleTerm>
-            </role>
-          </name>
-        </mods>
-      XML
-    end
-  end
-
   context 'when normalizing PURL' do
     let(:druid) { 'druid:bw502ns3302' }
 
