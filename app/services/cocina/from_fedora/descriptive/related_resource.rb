@@ -73,7 +73,7 @@ module Cocina
         def build_notes(related_item)
           related_item.xpath('mods:part/mods:detail', mods: DESC_METADATA_NS).map do |detail_node|
             value = note_value_for(detail_node)
-            next nil if value.empty?
+            next nil if value.blank?
 
             {
               value: value,
