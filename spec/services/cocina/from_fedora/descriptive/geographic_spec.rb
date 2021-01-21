@@ -616,6 +616,26 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
     end
   end
 
+  context 'with an https PURL' do
+    let(:dc_type) { 'Image' }
+    let(:xml) do
+      <<~XML
+        <extension displayLabel="geo">
+          <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gmd="http://www.isotc211.org/2005/gmd">
+            <rdf:Description rdf:about="http://purl.stanford.edu/zg154pd4168">
+              <dc:format>image/jpeg</dc:format>
+              <dc:type>#{dc_type}</dc:type>
+            </rdf:Description>
+          </rdf:RDF>
+        </extension>
+      XML
+    end
+
+    it 'does not warn' do
+      build
+    end
+  end
+
   context 'without dc:format' do
     let(:dc_type) { 'Image' }
     let(:xml) do
