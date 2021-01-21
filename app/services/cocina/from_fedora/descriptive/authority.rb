@@ -30,7 +30,10 @@ module Cocina
             return 'lctgm'
           end
 
-          notifier.warn('"#N/A" authority code') if code == '#N/A'
+          if code == '#N/A'
+            notifier.warn('"#N/A" authority code')
+            return nil
+          end
 
           code.presence
         end
