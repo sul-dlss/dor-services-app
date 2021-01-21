@@ -47,7 +47,7 @@ def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, differences, 
       data_errors.each do |data_error|
         file.write("Data error: #{data_error.msg}")
         file.write(" (#{data_error.context}") if data_error.context.present?
-        file.write("Note that data errors are from the original XML, not the normalized XML shown below.\n\n")
+        file.write("\nNote that data errors are from the original XML, not the normalized XML shown below.\n\n")
       end
       file.write("\n")
     end

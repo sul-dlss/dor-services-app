@@ -102,21 +102,7 @@ module Cocina
 
         def write_roles(contributor)
           Array(contributor.role).reject { |role| filtered_role?(role, contributor.type) }.each do |role|
-            xml.role do
-              attributes = {
-                valueURI: role.uri,
-                authority: role.source&.code,
-                authorityURI: role.source&.uri
-              }.compact
-              if role.value.present?
-                attributes[:type] = 'text'
-                xml.roleTerm role.value, attributes
-              end
-              if role.code.present?
-                attributes[:type] = 'code'
-                xml.roleTerm role.code, attributes
-              end
-            end
+            RoleWriter.write(xml: xml, role: role)
           end
         end
 

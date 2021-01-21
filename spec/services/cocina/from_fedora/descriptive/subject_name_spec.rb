@@ -723,4 +723,67 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       expect(notifier).to have_received(:warn).with('Name type unrecognized', { type: 'topic' })
     end
   end
+
+  # 32. Name subject with display form and role
+  # Adapted from vx363td7520
+  context 'with name subject with display form and role' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <name type="personal">
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">depicted</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">dpc</roleTerm>
+            </role>
+            <namePart type="family">Nole</namePart>
+            <namePart type="given">Andneas Colijns de</namePart>
+            <namePart type="date">1590-?</namePart>
+            <displayForm>Nole, Andneas Colijns de, 1590-?</displayForm>
+          </name>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'person',
+          "parallelValue": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'Nole',
+                  "type": 'surname'
+                },
+                {
+                  "value": 'Andneas Colijns de',
+                  "type": 'forename'
+                },
+                {
+                  "value": '1590-?',
+                  "type": 'life dates'
+                }
+              ]
+            },
+            {
+              "value": 'Nole, Andneas Colijns de, 1590-?',
+              "type": 'display'
+            }
+          ],
+          "note": [
+            {
+              "type": 'role',
+              "value": 'depicted',
+              "code": 'dpc',
+              "uri": 'http://id.loc.gov/vocabulary/relators/dpc',
+              "source": {
+                "code": 'marcrelator',
+                "uri": 'http://id.loc.gov/vocabulary/relators/'
+              }
+            }
+          ]
+        }
+      ]
+    end
+  end
 end
