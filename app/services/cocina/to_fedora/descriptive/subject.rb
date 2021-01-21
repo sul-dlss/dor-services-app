@@ -32,12 +32,19 @@ module Cocina
           subjects.each do |subject|
             next if subject.type == 'map coordinates'
 
-            if subject.structuredValue
-              write_structured(subject)
-            elsif subject.parallelValue
-              write_parallel(subject, alt_rep_group: id_generator.next_altrepgroup)
+            parallel_subject_values = Array(subject.parallelValue)
+            subject_value = subject
+
+            # Make adjustments for a parallel person.
+            if parallel_subject_values.present? && FromFedora::Descriptive::Contributor::ROLES.values.include?(subject.type)
+              display_values, parallel_subject_values = parallel_subject_values.partition { |value| value.type == 'display' }
+              subject_value = parallel_subject_values.first if parallel_subject_values.size == 1
+            end
+
+            if parallel_subject_values.size > 1
+              write_parallel(subject, parallel_subject_values, alt_rep_group: id_generator.next_altrepgroup, display_values: display_values)
             else
-              write_basic(subject)
+              write_subject(subject, subject_value, display_values: display_values)
             end
           end
           write_cartographic
@@ -47,42 +54,44 @@ module Cocina
 
         attr_reader :xml, :subjects, :forms, :id_generator
 
-        def write_subject(subject, alt_rep_group: nil, type: nil)
-          if subject.structuredValue
-            write_structured(subject, alt_rep_group: alt_rep_group, type: type)
+        def write_subject(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
+          if subject_value.structuredValue
+            write_structured(subject, subject_value, alt_rep_group: alt_rep_group, type: type, display_values: display_values)
           else
-            write_basic(subject, alt_rep_group: alt_rep_group, type: type)
+            write_basic(subject, subject_value, alt_rep_group: alt_rep_group, type: type, display_values: display_values)
           end
         end
 
-        def write_parallel(subject, alt_rep_group:)
+        def write_parallel(subject, subject_values, alt_rep_group:, display_values: nil)
           if subject.type == 'place'
             xml.subject do
-              subject.parallelValue.each do |geo|
+              subject_values.each do |geo|
                 geographic(geo, is_parallel: true)
               end
             end
           else
-            subject.parallelValue.each { |parallel_subject| write_subject(parallel_subject, alt_rep_group: alt_rep_group, type: subject.type) }
+            subject_values.each do |subject_value|
+              write_subject(subject, subject_value, alt_rep_group: alt_rep_group, type: subject.type, display_values: display_values)
+            end
           end
         end
 
-        def write_structured(subject, alt_rep_group: nil, type: nil)
-          type ||= subject.type
-          xml.subject(structured_attributes_for(subject, alt_rep_group: alt_rep_group)) do
+        def write_structured(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
+          type ||= subject_value.type || subject.type
+          xml.subject(structured_attributes_for(subject_value, alt_rep_group: alt_rep_group)) do
             if type == 'place'
-              hierarchical_geographic(subject)
+              hierarchical_geographic(subject_value)
             elsif type == 'time'
-              time_range(subject)
+              time_range(subject_value)
             elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(type)
-              structured_person(subject, type: type)
+              write_structured_person(subject, subject_value, type: type, display_values: display_values)
             else
-              subject.structuredValue&.each do |component|
+              Array(subject_value.structuredValue).each do |component|
                 if FromFedora::Descriptive::Contributor::ROLES.values.include?(component.type)
                   if component.structuredValue
-                    structured_person(component)
+                    write_structured_person(subject, component, display_values: display_values)
                   else
-                    person(component)
+                    write_person(subject, component, display_values: display_values)
                   end
                 else
                   write_topic(component, is_parallel: alt_rep_group.present?)
@@ -113,19 +122,19 @@ module Cocina
           Array(structured_value).map { |value| authority_for(value) }.uniq.size == 1
         end
 
-        def write_basic(subject, alt_rep_group: nil, type: nil)
-          subject_attributes = subject_attributes_for(subject, alt_rep_group)
-          type ||= subject.type
+        def write_basic(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
+          subject_attributes = subject_attributes_for(subject_value, alt_rep_group)
+          type ||= subject_value.type
 
           if type == 'classification'
-            write_classification(subject.value, subject_attributes)
+            write_classification(subject_value.value, subject_attributes)
           elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(type) || type == 'name'
             xml.subject(subject_attributes) do
-              person(subject)
+              write_person(subject, subject_value, display_values: display_values)
             end
           else
             xml.subject(subject_attributes) do
-              write_topic(subject, is_parallel: alt_rep_group.present?, is_basic: true)
+              write_topic(subject_value, is_parallel: alt_rep_group.present?, is_basic: true)
             end
           end
         end
@@ -257,28 +266,47 @@ module Cocina
           end
         end
 
-        def person(subject)
-          subject_attributes = topic_attributes_for(subject).tap do |attrs|
-            attrs[:type] = name_type_for(subject.type)
+        def write_person(subject, subject_value, display_values: nil)
+          name_attrs = topic_attributes_for(subject_value).tap do |attrs|
+            attrs[:type] = name_type_for(subject_value.type)
           end.compact
 
-          xml.name subject_attributes do
-            xml.namePart subject.value
+          xml.name name_attrs do
+            xml.namePart subject_value.value
+            write_display_form(display_values)
+            write_roles(subject.note)
           end
         end
 
-        def structured_person(subject, type: nil)
-          type ||= subject.type
+        def write_structured_person(subject, subject_value, type: nil, display_values: nil)
+          type ||= subject_value.type
           name_attrs = {
             type: name_type_for(type)
           }.compact
+
           xml.name name_attrs do
-            subject.structuredValue.each do |point|
-              attributes = {}.tap do |attrs|
-                attrs[:type] = FromFedora::Descriptive::Contributor::NAME_PART.invert[point.type]
-              end.compact
-              xml.namePart point.value, attributes
-            end
+            write_name_parts(subject_value)
+            write_display_form(display_values)
+            write_roles(subject.note)
+          end
+        end
+
+        def write_display_form(display_values)
+          Array(display_values).each do |display_value|
+            xml.displayForm display_value.value
+          end
+        end
+
+        def write_roles(notes)
+          Array(notes).filter { |note| note.type == 'role' }.each { |role| RoleWriter.write(xml: xml, role: role) }
+        end
+
+        def write_name_parts(descriptive_value)
+          descriptive_value.structuredValue.each do |point|
+            attributes = {}.tap do |attrs|
+              attrs[:type] = FromFedora::Descriptive::Contributor::NAME_PART.invert[point.type]
+            end.compact
+            xml.namePart point.value, attributes
           end
         end
 

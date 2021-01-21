@@ -161,10 +161,7 @@ module Cocina
           attrs = attrs.deep_merge(common_attrs(node))
           case node.name
           when 'name'
-            name_type = name_type_for_subject(node[:type])
-            attrs[:type] = name_type if name_type
-            name_attrs = NameBuilder.build(name_elements: [node], add_default_type: true, notifier: notifier)[:name]&.first
-            name_attrs&.merge(attrs)
+            name(node, attrs)
           when 'titleInfo'
             attrs.merge(TitleBuilder.build(title_info_element: node, notifier: notifier)).merge(type: 'title')
           when 'geographicCode'
@@ -179,6 +176,23 @@ module Cocina
             node_type = node_type_for(node)
             attrs.merge(value: node.text, type: node_type) if node_type
           end
+        end
+
+        def name(node, attrs)
+          name_type = name_type_for_subject(node[:type])
+          attrs[:type] = name_type if name_type
+          full_name = NameBuilder.build(name_elements: [node], add_default_type: true, notifier: notifier)
+          return nil if full_name[:name].nil?
+
+          name_attrs = if full_name[:name].size > 1
+                         {
+                           parallelValue: full_name[:name]
+                         }
+                       else
+                         full_name[:name].first
+                       end
+          name_attrs[:note] = full_name[:role].map { |role| role.merge({ type: 'role' }) } if full_name[:role].present?
+          name_attrs.merge(attrs)
         end
 
         def node_type_for(node)

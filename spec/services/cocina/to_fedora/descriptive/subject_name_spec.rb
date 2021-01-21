@@ -769,4 +769,71 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       XML
     end
   end
+
+  # 32. Name subject with display form and role
+  # Adapted from vx363td7520
+  context 'with name subject with display form and role' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "type": 'person',
+          "parallelValue": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'Nole',
+                  "type": 'surname'
+                },
+                {
+                  "value": 'Andneas Colijns de',
+                  "type": 'forename'
+                },
+                {
+                  "value": '1590-?',
+                  "type": 'life dates'
+                }
+              ]
+            },
+            {
+              "value": 'Nole, Andneas Colijns de, 1590-?',
+              "type": 'display'
+            }
+          ],
+          "note": [
+            {
+              "type": 'role',
+              "value": 'depicted',
+              "code": 'dpc',
+              "uri": 'http://id.loc.gov/vocabulary/relators/dpc',
+              "source": {
+                "code": 'marcrelator',
+                "uri": 'http://id.loc.gov/vocabulary/relators/'
+              }
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject>
+            <name type="personal">
+              <role>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">depicted</roleTerm>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">dpc</roleTerm>
+              </role>
+              <namePart type="family">Nole</namePart>
+              <namePart type="given">Andneas Colijns de</namePart>
+              <namePart type="date">1590-?</namePart>
+              <displayForm>Nole, Andneas Colijns de, 1590-?</displayForm>
+            </name>
+          </subject>
+        </mods>
+      XML
+    end
+  end
 end
