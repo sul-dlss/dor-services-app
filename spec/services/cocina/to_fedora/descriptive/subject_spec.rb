@@ -844,4 +844,45 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       XML
     end
   end
+
+  # 31. Cartographic subject with multiple coordinate representations
+  context 'when cartographic subject with multiple coordinate representations' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          type: 'map coordinates',
+          value: 'W0750700 W0741200 N0443400 N0431200'
+        ),
+        Cocina::Models::DescriptiveValue.new(
+          type: 'map coordinates',
+          value: 'W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ'
+        )
+      ]
+    end
+
+    let(:forms) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "value": 'Scale ca. 1:126,720. 1 in. to 2 miles.',
+          "type": 'map scale'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject>
+           <cartographics>
+             <scale>Scale ca. 1:126,720. 1 in. to 2 miles.</scale>
+             <coordinates>W0750700 W0741200 N0443400 N0431200</coordinates>
+             <coordinates>W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ</coordinates>
+           </cartographics>
+         </subject>
+        </mods>
+      XML
+    end
+  end
 end
