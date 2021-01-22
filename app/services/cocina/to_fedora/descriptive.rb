@@ -18,7 +18,7 @@ module Cocina
       end
 
       def transform
-        Nokogiri::XML::Builder.new do |xml|
+        Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
           xml.mods(mods_attributes) do
             Descriptive::DescriptiveWriter.write(xml: xml, descriptive: descriptive, druid: druid)
           end
