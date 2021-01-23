@@ -133,100 +133,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
     end
   end
 
-  context 'with a single abstract' do
-    let(:xml) do
-      <<~XML
-        <abstract>This is an abstract.</abstract>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-
-        {
-          "value": 'This is an abstract.',
-          "type": 'summary'
-        }
-
-      ]
-    end
-  end
-
-  # Example 2
-  context 'with a multilingual abstract' do
-    let(:xml) do
-      <<~XML
-        <abstract lang="eng" script="Latn" altRepGroup="1">This is an abstract.</abstract>
-        <abstract lang="rus" script="Cyrl" altRepGroup="1">&#x42D;&#x442;&#x43E; &#x430;&#x43D;&#x43D;&#x43E;&#x442;&#x430;&#x446;&#x438;&#x44F;.</abstract>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-
-        {
-          "type": 'summary',
-          "parallelValue": [
-            {
-              "value": 'This is an abstract.',
-              "valueLanguage":
-                    {
-                      "code": 'eng',
-                      "source": {
-                        "code": 'iso639-2b'
-                      },
-                      "valueScript": {
-                        "code": 'Latn',
-                        "source": {
-                          "code": 'iso15924'
-                        }
-                      }
-                    }
-            },
-            {
-              "value": 'Это аннотация.',
-              "valueLanguage":
-                    {
-                      "code": 'rus',
-                      "source": {
-                        "code": 'iso639-2b'
-                      },
-                      "valueScript": {
-                        "code": 'Cyrl',
-                        "source": {
-                          "code": 'iso15924'
-                        }
-                      }
-                    }
-
-            }
-          ]
-        }
-      ]
-    end
-  end
-
-  # Example 3
-  context 'with a single abstract with a displayLabel' do
-    let(:xml) do
-      <<~XML
-        <abstract displayLabel="Synopsis">This is a synopsis.</abstract>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-
-        {
-          "value": 'This is a synopsis.',
-          "type": 'summary',
-          "displayLabel": 'Synopsis'
-        }
-
-      ]
-    end
-  end
-
+  # abstract extra test
   context 'with an empty displayLabel' do
     let(:xml) do
       <<~XML
@@ -239,26 +146,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
 
         {
           "value": 'This is a synopsis.',
-          "type": 'summary'
-        }
-
-      ]
-    end
-  end
-
-  # Example 4
-  context 'with an abstract with type "summary"' do
-    let(:xml) do
-      <<~XML
-        <abstract type="summary">This is a summary.</abstract>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-
-        {
-          "value": 'This is a summary.',
           "type": 'summary'
         }
 
