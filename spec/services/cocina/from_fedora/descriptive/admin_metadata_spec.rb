@@ -31,6 +31,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
           </languageOfCataloging>
           <recordContentSource authority="marcorg" authorityURI="http://id.loc.gov/vocabulary/organizations/" valueURI="http://id.loc.gov/vocabulary/organizations/cst">CSt</recordContentSource>
           <descriptionStandard authority="dacs" authorityURI="http://id.loc.gov/vocabulary/descriptionConventions/" valueURI="http://id.loc.gov/vocabulary/descriptionConventions/dacs"></descriptionStandard>
+          <descriptionStandard>aacr</descriptionStandard>
           <recordOrigin>human prepared</recordOrigin>
         </recordInfo>
       XML
@@ -84,6 +85,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
             "source": {
               "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/'
             }
+          },
+          {
+            "code": 'aacr'
           }
         ],
         "note": [

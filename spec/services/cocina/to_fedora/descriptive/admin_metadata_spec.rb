@@ -245,6 +245,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
         "metadataStandard": [
           {
             "code": 'aacr'
+          },
+          {
+            "code": 'dacs',
+            "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
+            "source": {
+              "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/'
+            }
           }
         ],
         "identifier": [
@@ -277,6 +284,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <recordInfo>
             <descriptionStandard>aacr</descriptionStandard>
+            <descriptionStandard authority="dacs" authorityURI="http://id.loc.gov/vocabulary/descriptionConventions/" valueURI="http://id.loc.gov/vocabulary/descriptionConventions/dacs"></descriptionStandard>
             <recordContentSource authority="marcorg">CSt</recordContentSource>
             <recordCreationDate encoding="marc">180305</recordCreationDate>
             <recordChangeDate encoding='iso8601'>20200718050001.0</recordChangeDate>

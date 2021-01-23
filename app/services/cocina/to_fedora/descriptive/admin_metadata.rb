@@ -47,11 +47,12 @@ module Cocina
         def build_description_standard
           return if admin_metadata.metadataStandard.blank?
 
-          standard = admin_metadata.metadataStandard.first
-          if standard.uri
-            xml.descriptionStandard standard.value, with_uri_info(standard).merge(authority: standard.code)
-          else
-            xml.descriptionStandard standard.code
+          admin_metadata.metadataStandard.each do |standard|
+            if standard.uri
+              xml.descriptionStandard standard.value, with_uri_info(standard).merge(authority: standard.code)
+            else
+              xml.descriptionStandard standard.code
+            end
           end
         end
 
