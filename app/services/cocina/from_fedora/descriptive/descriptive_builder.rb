@@ -34,6 +34,7 @@ module Cocina
           @notifier = notifier
         end
 
+        # @return [Hash] a hash that can be mapped to a cocina descriptive model
         def build(resource_element:, require_title: true)
           cocina_description = {}
           title_result = @title_builder.build(resource_element: resource_element, require_title: require_title, notifier: notifier)
