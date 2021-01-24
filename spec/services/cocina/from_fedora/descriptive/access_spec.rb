@@ -240,7 +240,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Access do
     end
   end
 
-  # example 5 from mods_to_cocina_location.txt ???  If so, wrong result
+  # example 5 from mods_to_cocina_location.txt
   context 'with a URL to purl' do
     let(:xml) do
       <<~XML
@@ -252,7 +252,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Access do
 
     it 'builds the cocina data structure' do
       expect(build).to eq(
-        # purl: 'http://purl.stanford.edu/ys701qw6956', # see note above context block
         digitalRepository: [
           {
             value: 'Stanford Digital Repository'
@@ -550,7 +549,59 @@ RSpec.describe Cocina::FromFedora::Descriptive::Access do
 
   # example 12 from mods_to_cocina_location.txt
   context 'with multiple locations and URLs with usage="primary display"' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_location.txt#L308'
+    let(:xml) do
+      <<~XML
+        <location>
+          <url usage="primary display" note="Available to Stanford-affiliated users at READEX:">http://infoweb.newsbank.com/?db=SERIAL</url>
+        </location>
+        <location>
+          <url note="Available to Stanford-affiliated users at:">http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps&amp;srcboxes=SerialSet</url>
+        </location>
+        <location>
+          <url>http://purl.access.gpo.gov/GPO/LPS839</url>
+        </location>
+        <location>
+          <physicalLocation>Stanford University Libraries</physicalLocation>
+          <url>http://purl.stanford.edu/cy979mw6316</url>
+        </location>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq(
+        "url": [
+          {
+            "value": 'http://infoweb.newsbank.com/?db=SERIAL',
+            "note": [
+              {
+                "value": 'Available to Stanford-affiliated users at READEX:'
+              }
+            ]
+          },
+          {
+            "value": 'http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps&srcboxes=SerialSet',
+            "note": [
+              {
+                "value": 'Available to Stanford-affiliated users at:'
+              }
+            ]
+          },
+          {
+            "value": 'http://purl.access.gpo.gov/GPO/LPS839'
+          }
+        ],
+        "physicalLocation": [
+          {
+            "value": 'Stanford University Libraries'
+          }
+        ],
+        "digitalRepository": [
+          {
+            "value": 'Stanford Digital Repository'
+          }
+        ]
+      )
+    end
   end
 
   # example 13 from mods_to_cocina_location.txt

@@ -453,6 +453,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Access do
   # example 10 from mods_to_cocina_location.txt
   context 'with Physical location with type "discovery" mapping to digitalLocation' do
     let(:purl) { 'http://purl.stanford.edu/hn970dy7259' }
+
     let(:access) do
       Cocina::Models::DescriptiveAccessMetadata.new(
         "accessContact": [
@@ -545,7 +546,67 @@ RSpec.describe Cocina::ToFedora::Descriptive::Access do
 
   # example 12 from mods_to_cocina_location.txt
   context 'with multiple locations and URLs with usage="primary display"' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_location.txt#L308'
+    let(:purl) { 'http://purl.stanford.edu/cy979mw6316' }
+
+    let(:access) do
+      Cocina::Models::DescriptiveAccessMetadata.new(
+        "url": [
+          {
+            "value": 'http://infoweb.newsbank.com/?db=SERIAL',
+            "note": [
+              {
+                "value": 'Available to Stanford-affiliated users at READEX:'
+              }
+            ]
+          },
+          {
+            "value": 'http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps',
+            "note": [
+              {
+                "value": 'Available to Stanford-affiliated users at:'
+              }
+            ]
+          },
+          {
+            "value": 'http://purl.access.gpo.gov/GPO/LPS839'
+          }
+        ],
+        "physicalLocation": [
+          {
+            "value": 'Stanford University Libraries'
+          }
+        ],
+        "digitalRepository": [
+          {
+            "value": 'Stanford Digital Repository'
+          }
+        ]
+      )
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/cy979mw6316</url>
+          </location>
+          <location>
+            <url note="Available to Stanford-affiliated users at READEX:">http://infoweb.newsbank.com/?db=SERIAL</url>
+          </location>
+          <location>
+            <url note="Available to Stanford-affiliated users at:">http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps</url>
+          </location>
+          <location>
+            <url>http://purl.access.gpo.gov/GPO/LPS839</url>
+          </location>
+          <location>
+            <physicalLocation>Stanford University Libraries</physicalLocation>
+          </location>
+        </mods>
+      XML
+    end
   end
 
   # example 13 from mods_to_cocina_location.txt

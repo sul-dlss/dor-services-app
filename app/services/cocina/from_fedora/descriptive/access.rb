@@ -75,7 +75,7 @@ module Cocina
               value: url_node.text,
               displayLabel: url_node[:displayLabel]
             }.tap do |attrs|
-              attrs[:status] = 'primary' if url_node[:usage] == 'primary display'
+              attrs[:status] = 'primary' if url_node[:usage] == 'primary display' && (url_node == primary_purl_node || primary_purl_node.nil?)
               attrs[:note] = [{ value: url_node[:note] }] if url_node[:note]
             end.compact
           end

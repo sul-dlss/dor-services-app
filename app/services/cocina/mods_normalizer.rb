@@ -262,16 +262,43 @@ module Cocina
     end
 
     def normalize_purl_for(base_node, match_purl)
-      location_nodes = base_node.xpath('mods:location', mods: MODS_NS)
-      any_url_primary_usage = base_node.xpath('mods:location/mods:url[@usage="primary display"]', mods: MODS_NS).present?
+      url_nodes, purl_nodes = partition_url_nodes(base_node)
 
-      location_nodes.each do |location_node|
-        location_url_nodes = location_node.xpath('mods:url', mods: MODS_NS)
-        location_url_nodes.select { |url_node| Cocina::FromFedora::Descriptive::Access::PURL_REGEX.match(url_node.text) }.each do |purl_node|
-          purl_node[:usage] = 'primary display' if !any_url_primary_usage && (!match_purl || purl_node.text.ends_with?(druid.delete_prefix('druid:')))
-          purl_node.delete('displayLabel') if purl_node[:displayLabel] == 'electronic resource' && purl_node[:usage] == 'primary display'
+      any_purl_primary_usage = any_purl_primary_usage?(base_node)
+      purl_nodes.each do |purl_node|
+        if !any_purl_primary_usage && (!match_purl || purl_node.text.ends_with?(druid.delete_prefix('druid:')))
+          purl_node[:usage] = 'primary display'
+          any_purl_primary_usage = true
+        end
+        purl_node.delete('displayLabel') if purl_node[:displayLabel] == 'electronic resource' && purl_node[:usage] == 'primary display'
+      end
+
+      url_nodes.each do |url_node|
+        url_node.delete('usage') if url_node[:usage] == 'primary display' && any_purl_primary_usage
+      end
+    end
+
+    def partition_url_nodes(base_node)
+      purl_nodes = []
+      url_nodes = []
+      base_node.xpath('mods:location', mods: MODS_NS).each do |location_node|
+        location_node.xpath('mods:url', mods: MODS_NS).each do |url_node|
+          if purl?(url_node)
+            purl_nodes << url_node
+          else
+            url_nodes << url_node
+          end
         end
       end
+      [url_nodes, purl_nodes]
+    end
+
+    def any_purl_primary_usage?(base_node)
+      base_node.xpath('mods:location/mods:url[@usage="primary display"]', mods: MODS_NS).any? { |url_node| purl?(url_node) }
+    end
+
+    def purl?(url_node)
+      Cocina::FromFedora::Descriptive::Access::PURL_REGEX.match(url_node.text)
     end
 
     def normalize_related_item_other_type
