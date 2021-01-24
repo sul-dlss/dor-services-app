@@ -77,16 +77,20 @@ module Cocina
         end
 
         def build_standard
-          return unless description_standard
+          return unless description_standards
 
-          return [{ code: description_standard.text }] unless description_standard['authority']
-
-          [{
-            code: description_standard['authority'],
-            uri: ValueURI.sniff(description_standard['valueURI'], notifier),
-            value: description_standard.text.presence,
-            source: { uri: description_standard['authorityURI'] }
-          }.compact].presence
+          description_standards.map do |description_standard|
+            if description_standard['authority']
+              {
+                code: description_standard['authority'],
+                uri: ValueURI.sniff(description_standard['valueURI'], notifier),
+                value: description_standard.text.presence,
+                source: { uri: description_standard['authorityURI'] }
+              }.compact
+            else
+              { code: description_standard.text }
+            end
+          end.presence
         end
 
         def build_contributor
@@ -137,8 +141,8 @@ module Cocina
           @record_content_source ||= record_info.xpath('mods:recordContentSource', mods: DESC_METADATA_NS).first
         end
 
-        def description_standard
-          @description_standard ||= record_info.xpath('mods:descriptionStandard', mods: DESC_METADATA_NS).first
+        def description_standards
+          @description_standards ||= record_info.xpath('mods:descriptionStandard', mods: DESC_METADATA_NS)
         end
 
         def record_origin
