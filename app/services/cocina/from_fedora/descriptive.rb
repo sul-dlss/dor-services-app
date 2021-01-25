@@ -22,6 +22,8 @@ module Cocina
         @notifier = notifier || DataErrorNotifier.new(druid: druid)
       end
 
+      # @return [Hash] a hash that can be mapped to a cocina descriptive model
+      # @raises [Cocina::Mapper::InvalidDescMetadata] if some assumption about descMetadata is violated
       def props
         check_altrepgroups
         DescriptiveBuilder.build(title_builder: title_builder, resource_element: ng_xml.root, notifier: notifier)
