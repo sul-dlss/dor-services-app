@@ -128,86 +128,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
   end
 
   describe 'genre' do
-    context 'with a single genre' do
-      let(:xml) do
-        <<~XML
-          <genre>photographs</genre>
-        XML
-      end
-
-      it 'builds the cocina data structure' do
-        expect(build).to eq [
-          {
-            "value": 'photographs',
-            "type": 'genre'
-          }
-        ]
-      end
-    end
-
-    context 'with multiple genres' do
-      let(:xml) do
-        <<~XML
-          <genre>photographs</genre>
-          <genre>prints</genre>
-        XML
-      end
-
-      it 'builds the cocina data structure' do
-        expect(build).to eq [
-          {
-            "value": 'photographs',
-            "type": 'genre'
-          },
-          {
-            "value": 'prints',
-            "type": 'genre'
-          }
-        ]
-      end
-    end
-
-    context 'with  type' do
-      let(:xml) do
-        <<~XML
-          <genre type="style">Art Deco</genre>
-        XML
-      end
-
-      it 'builds the cocina data structure' do
-        expect(build).to eq [
-          {
-            "value": 'Art Deco',
-            "type": 'style'
-          }
-        ]
-      end
-    end
-
-    context 'with authority' do
-      let(:xml) do
-        <<~XML
-          <genre authority="lcgft" authorityURI="http://id.loc.gov/authorities/genreForms"
-            valueURI="http://id.loc.gov/authorities/genreForms/gf2017027249">Photographs</genre>
-        XML
-      end
-
-      it 'builds the cocina data structure' do
-        expect(build).to eq [
-          {
-            "value": 'Photographs',
-            "type": 'genre',
-            "uri": 'http://id.loc.gov/authorities/genreForms/gf2017027249',
-            "source": {
-              "code": 'lcgft',
-              "uri": 'http://id.loc.gov/authorities/genreForms/'
-            }
-          }
-        ]
-      end
-    end
-
-    context 'without valueURI' do
+    # MODS abstract mapping spec not in /mappings/mods/genre_spec.rb
+    # Arcadia to add it there or make a different decision
+    context 'with authority missing valueURI' do
       let(:xml) do
         <<~XML
           <genre authority="lcgft" authorityURI="http://id.loc.gov/authorities/genreForms/">Photographs</genre>
@@ -228,6 +151,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       end
     end
 
+    # MODS abstract mapping spec not in /mappings/mods/genre_spec.rb
+    # Arcadia to add it there or make a different decision
     context 'with authority missing authorityURI' do
       let(:xml) do
         <<~XML
@@ -249,6 +174,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       end
     end
 
+    # MODS abstract mapping spec not in /mappings/mods/genre_spec.rb
+    # Arcadia to add it there or make a different decision
     context 'with empty authority' do
       let(:xml) do
         <<~XML
@@ -261,32 +188,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
           {
             "value": 'Photographs',
             "type": 'genre'
-          }
-        ]
-      end
-    end
-
-    context 'with usage' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_genre.txt#L57'
-    end
-
-    context 'with multiple languages' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_genre.txt#L74'
-    end
-
-    context 'with display label' do
-      let(:xml) do
-        <<~XML
-          <genre displayLabel="Style">Art deco</genre>
-        XML
-      end
-
-      it 'builds the cocina data structure' do
-        expect(build).to eq [
-          {
-            "value": 'Art deco',
-            "type": 'genre',
-            "displayLabel": 'Style'
           }
         ]
       end
