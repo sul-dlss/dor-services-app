@@ -3559,16 +3559,19 @@
 	</xsl:template>
 	<xsl:template name="role">
 		<xsl:for-each select="marc:subfield[@code = 'e']">
-			<role>
-				<roleTerm type="text">
-					<!-- 1.126 -->
-					<xsl:call-template name="chopPunctuation">
-						<xsl:with-param name="chopString">
-							<xsl:value-of select="."/>
-						</xsl:with-param>
-					</xsl:call-template>
-				</roleTerm>
-			</role>
+			<!-- SUL edit 20210125 issue #1872 -->
+			<xsl:if test="string-length(normalize-space(.)) > 2">
+				<role>
+					<roleTerm type="text">
+						<!-- 1.126 -->
+						<xsl:call-template name="chopPunctuation">
+							<xsl:with-param name="chopString">
+								<xsl:value-of select="."/>
+							</xsl:with-param>
+						</xsl:call-template>
+					</roleTerm>
+				</role>
+			</xsl:if>
 		</xsl:for-each>
 		<xsl:for-each select="marc:subfield[@code = '4']">
 			<role>
