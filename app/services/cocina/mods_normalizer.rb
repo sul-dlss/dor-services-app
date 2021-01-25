@@ -2,6 +2,7 @@
 
 module Cocina
   # Normalizes a Fedora MODS document, accounting for differences between Fedora MODS and MODS generated from Cocina.
+  # these adjustments have been approved by our metadata authority, Arcadia.
   class ModsNormalizer
     MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
 
@@ -83,8 +84,8 @@ module Cocina
       # Only normalize version when version isn't mapped.
       return if /MODS version (\d\.\d)/.match(ng_xml.root.at('//mods:recordInfo/mods:recordOrigin', mods: MODS_NS)&.content)
 
-      ng_xml.root['version'] = '3.6'
-      ng_xml.root['xsi:schemaLocation'] = 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd'
+      ng_xml.root['version'] = '3.7'
+      ng_xml.root['xsi:schemaLocation'] = 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd'
     end
 
     def normalize_authority_uris

@@ -6,8 +6,9 @@ RSpec.describe Cocina::ModsNormalizer do
   let(:normalized_ng_xml) { described_class.normalize(mods_ng_xml: mods_ng_xml, druid: druid) }
 
   let(:mods_attributes) do
-    'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" version="3.6"
-    xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd"'
+    'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" version="3.7"
+    xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd"'
   end
   let(:druid) { 'druid:pf694bk4862' }
 
@@ -41,9 +42,9 @@ RSpec.describe Cocina::ModsNormalizer do
         XML
       end
 
-      it 'changes version to 3.6' do
-        expect(normalized_ng_xml.root['version']).to eq('3.6')
-        expect(normalized_ng_xml.root['xsi:schemaLocation']).to eq('http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd')
+      it 'changes version to 3.7' do
+        expect(normalized_ng_xml.root['version']).to eq('3.7')
+        expect(normalized_ng_xml.root['xsi:schemaLocation']).to eq('http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd')
       end
     end
   end
