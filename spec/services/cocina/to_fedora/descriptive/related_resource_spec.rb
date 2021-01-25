@@ -29,94 +29,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
     end
   end
 
-  context 'when it has a related item with type' do
-    let(:resources) do
-      [
-        Cocina::Models::RelatedResource.new(
-          {
-            "title": [
-              {
-                "value": 'Lymond chronicles'
-              }
-            ],
-            "contributor": [
-              {
-                "type": 'person',
-                "name": [
-                  {
-                    "value": 'Dunnett, Dorothy'
-                  }
-                ]
-              }
-            ],
-            "form": [
-              {
-                "value": '6 vols.',
-                "type": 'extent'
-              }
-            ],
-            "type": 'in series'
-          }
-        )
-      ]
-    end
-
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <relatedItem type="series">
-            <titleInfo>
-              <title>Lymond chronicles</title>
-            </titleInfo>
-            <name type="personal">
-              <namePart>Dunnett, Dorothy</namePart>
-            </name>
-            <physicalDescription>
-              <extent>6 vols.</extent>
-            </physicalDescription>
-          </relatedItem>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when it has a related item without type' do
-    let(:resources) do
-      [
-        Cocina::Models::RelatedResource.new(
-          "title": [
-            {
-              "value": 'Supplement'
-            }
-          ],
-          "note": [
-            {
-              "value": 'Additional data.',
-              "type": 'summary'
-            }
-          ]
-        )
-      ]
-    end
-
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <relatedItem>
-            <titleInfo>
-              <title>Supplement</title>
-            </titleInfo>
-            <abstract>Additional data.</abstract>
-          </relatedItem>
-        </mods>
-      XML
-    end
-  end
-
   context 'when it has a related item with the generic "related to" type (related link from H2)' do
     let(:resources) do
       [
@@ -176,36 +88,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <relatedItem>
             <note type="preferred citation">Stanford University (Stanford, CA.). (2020)</note>
-          </relatedItem>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when it has a related item without title' do
-    let(:resources) do
-      [
-        Cocina::Models::RelatedResource.new(
-          "access": {
-            "url": [
-              {
-                "value": 'https://www.example.com'
-              }
-            ]
-          }
-        )
-      ]
-    end
-
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <relatedItem>
-            <location>
-              <url>https://www.example.com</url>
-            </location>
           </relatedItem>
         </mods>
       XML
@@ -317,45 +199,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
             <name>
               <namePart>Dunnett, Dorothy</namePart>
             </name>
-          </relatedItem>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when it has an otherType' do
-    let(:resources) do
-      [
-        Cocina::Models::RelatedResource.new(
-          "type": 'related to',
-          "title": [
-            {
-              "value": 'A related resource'
-            }
-          ],
-          "note": [
-            {
-              "type": 'other relation type',
-              "value": 'has part',
-              "uri": 'http://purl.org/dc/terms/hasPart',
-              "source": {
-                "value": 'DCMI'
-              }
-            }
-          ]
-        )
-      ]
-    end
-
-    it 'builds the xml' do
-      expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <relatedItem otherType="has part" otherTypeURI="http://purl.org/dc/terms/hasPart" otherTypeAuth="DCMI">
-            <titleInfo>
-              <title>A related resource</title>
-            </titleInfo>
           </relatedItem>
         </mods>
       XML
