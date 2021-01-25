@@ -3723,9 +3723,12 @@
 	</xsl:template>
 	<!-- 1.139 -->
 	<xsl:template match="marc:subfield[@code = '0']" mode="valueURI">
-		<xsl:attribute name="valueURI">
-			<xsl:value-of select="."/>
-		</xsl:attribute>
+		<!-- SUL edit 20210125 issue #1602 -->
+		<xsl:if test="starts-with(.,'http')">
+			<xsl:attribute name="valueURI">
+				<xsl:value-of select="."/>
+			</xsl:attribute>
+		</xsl:if>
 	</xsl:template>
 	<xsl:template name="relatedForm">
 		<xsl:for-each select="marc:subfield[@code = 'h']">
