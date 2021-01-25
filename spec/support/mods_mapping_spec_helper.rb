@@ -75,7 +75,11 @@ RSpec.shared_examples 'MODS cocina mapping' do
         expect(notifier).not_to have_received(:warn)
       else
         local_warnings.each do |warning|
-          expect(notifier).to have_received(:warn).with(warning.msg, warning.context).exactly(warning.times || 1).times
+          if warning.context
+            expect(notifier).to have_received(:warn).with(warning.msg, warning.context).exactly(warning.times || 1).times
+          else
+            expect(notifier).to have_received(:warn).with(warning.msg).exactly(warning.times || 1).times
+          end
         end
       end
 
@@ -83,7 +87,11 @@ RSpec.shared_examples 'MODS cocina mapping' do
         expect(notifier).not_to have_received(:error)
       else
         local_errors.each do |error|
-          expect(notifier).to have_received(:error).with(error.msg, error.context).exactly(error.times || 1).times
+          if error.context
+            expect(notifier).to have_received(:error).with(error.msg, error.context).exactly(error.times || 1).times
+          else
+            expect(notifier).to have_received(:error).with(error.msg).exactly(error.times || 1).times
+          end
         end
       end
     end
