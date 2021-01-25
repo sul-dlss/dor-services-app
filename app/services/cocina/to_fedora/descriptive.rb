@@ -37,7 +37,7 @@ module Cocina
             match = /MODS version (\d\.\d)/.match(note.value)
             return match[1] if match
           end
-          '3.6'
+          '3.7'
         end
       end
 
