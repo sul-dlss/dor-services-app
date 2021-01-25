@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'MODS targetAudience <--> cocina mappings' do
-  describe 'with authority' do
+  describe 'Target audience with authority' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -27,7 +27,7 @@ RSpec.describe 'MODS targetAudience <--> cocina mappings' do
     end
   end
 
-  describe 'without authority' do
+  describe 'Target audience without authority' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML

@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'MODS subject classification <--> cocina mappings' do
-  describe 'with authority' do
+  describe 'Classification with authority' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -27,7 +27,7 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
     end
   end
 
-  describe 'without authority' do
+  describe 'Classification without authority' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -54,7 +54,7 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
     end
   end
 
-  describe 'with edition' do
+  describe 'Classification with edition' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -79,7 +79,7 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
     end
   end
 
-  describe 'with display label' do
+  describe 'Classification with display label' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -104,7 +104,7 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
     end
   end
 
-  describe 'multiple classifications' do
+  describe 'Multiple classifications' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML

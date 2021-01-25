@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'MODS abstract <--> cocina mappings' do
-  describe 'single abstract' do
+  describe 'Single abstract' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -24,7 +24,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
     end
   end
 
-  describe 'multilingual abstract' do
+  describe 'Multilingual abstract' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -77,7 +77,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
     end
   end
 
-  describe 'display label' do
+  describe 'Abstract with display label' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -99,7 +99,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
     end
   end
 
-  describe 'abstract with type "summary"' do
+  describe 'Abstract with type "summary"' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
