@@ -7907,6 +7907,10 @@
 			</xsl:if>
 		</xsl:variable>
 		<!-- Build main originInfo element -->
+		<!-- SUL edit 20210125 issue #1629 #1634 #1635 -->
+		<originInfo>
+			<xsl:copy-of select="$originInfoShared"/>
+		</originInfo>
 		<xsl:choose>
 			<xsl:when
 				test="marc:datafield[@tag = '044' or @tag = '260' or @tag = '046' or @tag = '033' or @tag = '250' or @tag = '310' or @tag = '321'][marc:subfield[@code = '6']]">
@@ -7921,7 +7925,8 @@
 								<xsl:call-template name="xxx880"/>
 							</xsl:when>
 						</xsl:choose>
-						<xsl:copy-of select="$originInfoShared"/>
+						<!-- SUL edit 20210125 issue #1629 #1634 #1635
+						<xsl:copy-of select="$originInfoShared"/> -->
 						<xsl:choose>
 							<xsl:when test="@tag = '260'">
 								<xsl:apply-templates select="." mode="originInfo">
@@ -7942,7 +7947,8 @@
 				<xsl:if
 					test="marc:datafield[@tag = '044' or @tag = '260' or @tag = '046' or @tag = '033' or @tag = '250' or @tag = '310' or @tag = '321'][not(marc:subfield[@code = '6'])]">
 					<originInfo>
-						<xsl:copy-of select="$originInfoShared"/>
+						<!-- SUL edit 20210125 issue #1629 #1634 #1635
+						<xsl:copy-of select="$originInfoShared"/> -->
 						<xsl:for-each
 							select="marc:datafield[@tag = '044' or @tag = '260' or @tag = '046' or @tag = '033' or @tag = '250' or @tag = '310' or @tag = '321'][not(marc:subfield[@code = '6'])]">
 							<xsl:choose>
@@ -7969,7 +7975,8 @@
 					test="marc:datafield[@tag = '044' or @tag = '260' or @tag = '046' or @tag = '033' or @tag = '250' or @tag = '310' or @tag = '321'] or marc:controlfield[@tag = '008']">
 					<originInfo>
 						<xsl:call-template name="z2xx880"/>
-						<xsl:copy-of select="$originInfoShared"/>
+						<!-- SUL edit 20210125 issue #1629 #1634 #1635
+						<xsl:copy-of select="$originInfoShared"/> -->
 						<xsl:apply-templates
 							select="marc:datafield[@tag = '044']/marc:subfield[@code = 'c']"
 							mode="originInfo"/>
@@ -8010,7 +8017,8 @@
 						<xsl:call-template name="xxx880"/>
 					</xsl:when>
 				</xsl:choose>
-				<xsl:copy-of select="$originInfoShared"/>
+				<!-- SUL edit 20210125 issue #1629 #1634 #1635
+				<xsl:copy-of select="$originInfoShared"/> -->
 				<xsl:choose>
 					<xsl:when test="@tag = '260'">
 						<xsl:apply-templates select="." mode="originInfo">
