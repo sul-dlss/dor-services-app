@@ -3,7 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive::Notes do
-  subject(:build) { described_class.build(resource_element: ng_xml.root) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+
+  let(:descriptive_builder) { instance_double(Cocina::FromFedora::Descriptive::DescriptiveBuilder, notifier: notifier) }
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -86,27 +90,29 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
           "parallelValue": [
             {
               "value": 'This is a note.',
-              "valueLanguage": {
-                "code": 'eng',
-                "source": {
-                  "code": 'iso639-2b'
-                },
-                "valueScript": {
-                  "code": 'Latn',
+              "valueLanguage":
+                {
+                  "code": 'eng',
                   "source": {
-                    "code": 'iso15924'
+                    "code": 'iso639-2b'
+                  },
+                  "valueScript": {
+                    "code": 'Latn',
+                    "source": {
+                      "code": 'iso15924'
+                    }
                   }
                 }
-              }
             },
             {
               "value": "C'est une note.",
-              "valueLanguage": {
-                "code": 'fre',
-                "source": {
-                  "code": 'iso639-2b'
+              "valueLanguage":
+                {
+                  "code": 'fre',
+                  "source": {
+                    "code": 'iso639-2b'
+                  }
                 }
-              }
             }
           ]
         }
@@ -146,6 +152,61 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
     end
   end
 
+  # Example 2
+  context 'with a multilingual abstract' do
+    let(:xml) do
+      <<~XML
+        <abstract lang="eng" script="Latn" altRepGroup="1">This is an abstract.</abstract>
+        <abstract lang="rus" script="Cyrl" altRepGroup="1">&#x42D;&#x442;&#x43E; &#x430;&#x43D;&#x43D;&#x43E;&#x442;&#x430;&#x446;&#x438;&#x44F;.</abstract>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+
+        {
+          "type": 'summary',
+          "parallelValue": [
+            {
+              "value": 'This is an abstract.',
+              "valueLanguage":
+                    {
+                      "code": 'eng',
+                      "source": {
+                        "code": 'iso639-2b'
+                      },
+                      "valueScript": {
+                        "code": 'Latn',
+                        "source": {
+                          "code": 'iso15924'
+                        }
+                      }
+                    }
+            },
+            {
+              "value": 'Это аннотация.',
+              "valueLanguage":
+                    {
+                      "code": 'rus',
+                      "source": {
+                        "code": 'iso639-2b'
+                      },
+                      "valueScript": {
+                        "code": 'Cyrl',
+                        "source": {
+                          "code": 'iso15924'
+                        }
+                      }
+                    }
+
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  # Example 3
   context 'with a single abstract with a displayLabel' do
     let(:xml) do
       <<~XML
@@ -166,6 +227,46 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
     end
   end
 
+  context 'with an empty displayLabel' do
+    let(:xml) do
+      <<~XML
+        <abstract displayLabel="">This is a synopsis.</abstract>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+
+        {
+          "value": 'This is a synopsis.',
+          "type": 'summary'
+        }
+
+      ]
+    end
+  end
+
+  # Example 4
+  context 'with an abstract with type "summary"' do
+    let(:xml) do
+      <<~XML
+        <abstract type="summary">This is a summary.</abstract>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+
+        {
+          "value": 'This is a summary.',
+          "type": 'summary'
+        }
+
+      ]
+    end
+  end
+
+  # Example 1
   context 'with a simple table of contents' do
     let(:xml) do
       <<~XML
@@ -185,6 +286,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
     end
   end
 
+  # Example 2
   context 'with a structured table of contents' do
     let(:xml) do
       <<~XML
@@ -214,11 +316,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
     end
   end
 
+  # Example 3
   context 'with a multilingual table of contents' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_tableOfContents.txt#L33'
-  end
-
-  context 'with a table of contents with a display label' do
     let(:xml) do
       <<~XML
         <tableOfContents displayLabel="Contents">Content 1. Content 2.</tableOfContents>
@@ -234,6 +333,58 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
           "displayLabel": 'Contents'
         }
 
+      ]
+    end
+  end
+
+  # Example 4
+  context 'with a table of contents with a display label' do
+    let(:xml) do
+      <<~XML
+        <tableOfContents lang="eng" script="Latn" altRepGroup="1">Chapter 1. Chapter 2. Chapter 3.</tableOfContents>
+        <tableOfContents lang="rus" script="Cyrl" altRepGroup="1">Глава 1. Глава 2. Глава 3.</tableOfContents>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "parallelValue": [
+            {
+              "value": 'Chapter 1. Chapter 2. Chapter 3.',
+              "valueLanguage":
+                      {
+                        "code": 'eng',
+                        "source": {
+                          "code": 'iso639-2b'
+                        },
+                        "valueScript": {
+                          "code": 'Latn',
+                          "source": {
+                            "code": 'iso15924'
+                          }
+                        }
+                      }
+            },
+            {
+              "value": 'Глава 1. Глава 2. Глава 3.',
+              "valueLanguage":
+                    {
+                      "code": 'rus',
+                      "source": {
+                        "code": 'iso639-2b'
+                      },
+                      "valueScript": {
+                        "code": 'Cyrl',
+                        "source": {
+                          "code": 'iso15924'
+                        }
+                      }
+                    }
+            }
+          ],
+          "type": 'table of contents'
+        }
       ]
     end
   end

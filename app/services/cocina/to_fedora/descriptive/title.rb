@@ -11,40 +11,46 @@ module Cocina
 
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValueRequired>] titles
-        def self.write(xml:, titles:)
-          new(xml: xml, titles: titles).write
+        # @params [Array<Cocina::Models::DescriptiveValueRequired>] contributors
+        # @params [Hash] additional_attrs for title
+        # @params [IdGenerator] id_generator
+        def self.write(xml:, titles:, id_generator:, contributors: [], additional_attrs: {})
+          new(xml: xml, titles: titles, contributors: contributors, additional_attrs: additional_attrs, id_generator: id_generator).write
         end
 
-        def initialize(xml:, titles:)
+        def initialize(xml:, titles:, additional_attrs:, contributors: [], id_generator: {})
           @xml = xml
           @titles = titles
-          @alt_rep_group = 0
-          @name_title_group = 0
+          @contributors = contributors
+          @name_title_groups = {}
+          @additional_attrs = additional_attrs
+          @id_generator = id_generator
         end
 
         def write
           titles.each do |title|
             if title.parallelValue
-              write_parallel(title: title)
-            elsif title.structuredValue
-              write_structured(title: title)
-            elsif title.value
-              write_basic(title: title)
+              write_parallel(title: title, title_info_attrs: additional_attrs.dup)
+            else
+              title_info_attrs = {
+                nameTitleGroup: name_title_group_for(title)
+              }.compact.merge(additional_attrs)
+              if title.structuredValue
+                write_structured(title: title, title_info_attrs: title_info_attrs)
+              elsif title.value
+                write_basic(title: title, title_info_attrs: title_info_attrs)
+              end
             end
+          end
+
+          name_title_groups.each_pair do |contributor, name_title_group_indexes|
+            ContributorWriter.write(xml: xml, contributor: contributor, name_title_group_indexes: name_title_group_indexes, id_generator: id_generator)
           end
         end
 
         private
 
-        attr_reader :xml, :titles
-
-        def next_alt_rep_group
-          @alt_rep_group += 1
-        end
-
-        def next_name_title_group
-          @name_title_group += 1
-        end
+        attr_reader :xml, :titles, :contributors, :name_title_groups, :id_generator, :additional_attrs
 
         def write_basic(title:, title_info_attrs: {})
           title_info_attrs = title_info_attrs_for(title).merge(title_info_attrs)
@@ -54,13 +60,11 @@ module Cocina
           end
         end
 
-        def write_parallel(title:)
-          title_alt_rep_group = next_alt_rep_group
-
-          title_name_attrs = parallel_has_title_name?(title) ? { altRepGroup: next_alt_rep_group, usage: 'primary' } : {}
+        def write_parallel(title:, title_info_attrs: {})
+          title_alt_rep_group = id_generator.next_altrepgroup
 
           title.parallelValue.each do |parallel_title|
-            title_info_attrs = { altRepGroup: title_alt_rep_group }
+            title_info_attrs[:altRepGroup] = title_alt_rep_group
             title_info_attrs[:lang] = parallel_title.valueLanguage.code if parallel_title.valueLanguage&.code
             if title.type == 'translated'
               if title.status == 'primary'
@@ -70,41 +74,63 @@ module Cocina
               end
             elsif title.type == 'uniform'
               title_info_attrs[:type] = 'uniform'
+            elsif parallel_title.type == 'transliterated'
+              title_info_attrs[:type] = 'translated'
+              title_info_attrs[:transliteration] = parallel_title.standard.value
             end
+
+            title_info_attrs[:nameTitleGroup] = name_title_group_for(parallel_title)
 
             if parallel_title.structuredValue
-              write_structured(title: parallel_title, title_info_attrs: title_info_attrs, title_name_attrs: title_name_attrs)
+              write_structured(title: parallel_title, title_info_attrs: title_info_attrs.compact)
             elsif parallel_title.value
-              write_basic(title: parallel_title, title_info_attrs: title_info_attrs)
+              write_basic(title: parallel_title, title_info_attrs: title_info_attrs.compact)
             end
           end
         end
 
-        def parallel_has_title_name?(title)
-          title.parallelValue.each do |parallel_title|
-            next unless parallel_title.structuredValue
+        def name_title_group_for(title)
+          return nil unless contributors
 
-            parallel_title.structuredValue.each do |structured_title|
-              return true if NAME_TYPES.include?(structured_title.type)
-            end
+          contributor, name_index, parallel_index = NameTitleGroup.find_contributor(title: title, contributors: contributors)
+
+          return nil unless contributor
+
+          name_title_group = id_generator.next_nametitlegroup
+          name_title_groups[contributor] ||= {}
+          if parallel_index
+            name_title_groups[contributor][name_index] ||= {}
+            name_title_groups[contributor][name_index][parallel_index] = name_title_group
+          else
+            name_title_groups[contributor][name_index] = name_title_group
           end
-          false
+          name_title_group
         end
 
-        def write_structured(title:, title_info_attrs: {}, title_name_attrs: {})
-          title_names = title.structuredValue.select { |structured_title| NAME_TYPES.include?(structured_title.type) }
-          name_title_group = next_name_title_group if title_names.present?
-
-          title_info_attrs = title_info_attrs_for(title, name_title_group: name_title_group).merge(title_info_attrs)
+        def write_structured(title:, title_info_attrs: {})
+          title_info_attrs = title_info_attrs_for(title).merge(title_info_attrs)
 
           xml.titleInfo(with_uri_info(title, title_info_attrs)) do
-            title.structuredValue.reject { |structured_title| NAME_TYPES.include?(structured_title.type) }.each do |title_part|
+            title_parts = flatten_structured_value(title)
+            title_parts_without_names = title_parts_without_names(title_parts)
+
+            title_parts_without_names.each do |title_part|
               title_type = tag_name_for(title_part)
               xml.public_send(title_type, title_part.value) unless title_part.note
             end
           end
+        end
 
-          write_title_names(title_names, name_title_group, title, title_name_attrs) if title_names.present?
+        # Flatten the structuredValues into a simple list.
+        def flatten_structured_value(title)
+          leafs = title.structuredValue.select(&:value)
+          nodes = title.structuredValue.select(&:structuredValue)
+          leafs + nodes.flat_map { |node| flatten_structured_value(node) }
+        end
+
+        # Filter out name types
+        def title_parts_without_names(parts)
+          parts.reject { |structured_title| NAME_TYPES.include?(structured_title.type) }
         end
 
         def write_title_names(title_names, name_title_group, title, title_name_attrs)
@@ -147,14 +173,17 @@ module Cocina
           TAG_NAME.fetch(title_part.type, nil)
         end
 
-        def title_info_attrs_for(title, name_title_group: nil)
-          {}.tap do |attrs|
-            attrs[:type] = title.type
-            attrs[:usage] = title.status
-            attrs[:nameTitleGroup] = name_title_group
-            attrs[:script] = title.valueLanguage&.valueScript&.code
-            attrs[:displayLabel] = title.displayLabel
-          end.compact
+        def title_info_attrs_for(title)
+          {
+            type: title.type,
+            usage: title.status,
+            script: title.valueLanguage&.valueScript&.code,
+            lang: title.valueLanguage&.code,
+            displayLabel: title.displayLabel,
+            valueURI: title.uri,
+            authorityURI: title.source&.uri,
+            authority: title.source&.code
+          }.compact
         end
       end
     end

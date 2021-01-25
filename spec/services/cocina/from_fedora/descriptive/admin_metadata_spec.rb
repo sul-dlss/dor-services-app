@@ -3,7 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
-  subject(:build) { described_class.build(resource_element: ng_xml.root) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+
+  let(:descriptive_builder) { instance_double(Cocina::FromFedora::Descriptive::DescriptiveBuilder, notifier: notifier) }
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -27,6 +31,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
           </languageOfCataloging>
           <recordContentSource authority="marcorg" authorityURI="http://id.loc.gov/vocabulary/organizations/" valueURI="http://id.loc.gov/vocabulary/organizations/cst">CSt</recordContentSource>
           <descriptionStandard authority="dacs" authorityURI="http://id.loc.gov/vocabulary/descriptionConventions/" valueURI="http://id.loc.gov/vocabulary/descriptionConventions/dacs"></descriptionStandard>
+          <descriptionStandard>aacr</descriptionStandard>
           <recordOrigin>human prepared</recordOrigin>
         </recordInfo>
       XML
@@ -73,18 +78,88 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
             ]
           }
         ],
-        "standard": {
-          "code": 'dacs',
-          "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
-          "source": {
-            "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/'
+        "metadataStandard": [
+          {
+            "code": 'dacs',
+            "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
+            "source": {
+              "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/'
+            }
+          },
+          {
+            "code": 'aacr'
           }
-        },
+        ],
         "note": [
           {
             "type": 'record origin',
             "value": 'human prepared'
           }
+        ]
+      )
+    end
+  end
+
+  context 'with a descriptionStandard that has a value' do
+    let(:xml) do
+      <<~XML
+        <recordInfo>
+          <languageOfCataloging usage="primary">
+            <languageTerm type="text" authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2" valueURI="http://id.loc.gov/vocabulary/iso639-2/eng">English</languageTerm>
+            <languageTerm type="code" authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2" valueURI="http://id.loc.gov/vocabulary/iso639-2/eng">eng</languageTerm>
+          </languageOfCataloging>
+          <recordContentSource authority="marcorg" authorityURI="http://id.loc.gov/vocabulary/organizations" valueURI="http://id.loc.gov/vocabulary/organizations/cst">CSt</recordContentSource>
+          <descriptionStandard authority="dacs" authorityURI="http://id.loc.gov/vocabulary/descriptionConventions" valueURI="http://id.loc.gov/vocabulary/descriptionConventions/dacs">Describing archives: a content standard&#xA0;(Chicago: Society of American Archivists)</descriptionStandard>
+          <recordOrigin>human prepared</recordOrigin>
+        </recordInfo>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq(
+        language: [
+          {
+            code: 'eng',
+            value: 'English',
+            uri: 'http://id.loc.gov/vocabulary/iso639-2/eng',
+            source: {
+              code: 'iso639-2b',
+              uri: 'http://id.loc.gov/vocabulary/iso639-2'
+            },
+            status: 'primary'
+          }
+        ],
+        contributor: [
+          {
+            name: [
+              {
+                code: 'CSt',
+                uri: 'http://id.loc.gov/vocabulary/organizations/cst',
+                source: {
+                  code: 'marcorg',
+                  uri: 'http://id.loc.gov/vocabulary/organizations'
+                }
+              }
+            ],
+            type: 'organization',
+            role: [
+              { value: 'original cataloging agency' }
+            ]
+          }
+        ],
+        metadataStandard: [
+          {
+            code: 'dacs',
+            uri: 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
+            value: "Describing archives: a content standard\u00A0(Chicago: Society of American Archivists)",
+            source: {
+              uri: 'http://id.loc.gov/vocabulary/descriptionConventions'
+            }
+          }
+
+        ],
+        note: [
+          { type: 'record origin', value: 'human prepared' }
         ]
       )
     end
@@ -103,10 +178,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
     end
 
     before do
-      allow(Honeybadger).to receive(:notify)
+      allow(notifier).to receive(:warn)
     end
 
-    it 'builds the cocina data structure and logs the error' do
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq(
         "language": [
           {
@@ -121,9 +196,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
           }
         ]
       )
-      expect(Honeybadger).to have_received(:notify).with(
-        '[DATA ERROR] languageOfCataloging usage attribute is set to "Primary"',
-        { tags: 'data_error' }
+      expect(notifier).to have_received(:warn).with(
+        'languageOfCataloging usage attribute not downcased', { value: 'Primary' }
       )
     end
   end
@@ -229,9 +303,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
             ]
           }
         ],
-        "standard": {
-          "code": 'aacr'
-        },
+        "metadataStandard": [
+          {
+            "code": 'aacr'
+          }
+        ],
         "identifier": [
           {
             "value": 'a12374669',
@@ -399,7 +475,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
       XML
     end
 
-    it 'builds the cocina data structure' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq(
         "language": [
           {
@@ -410,6 +490,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
           }
         ]
       )
+      expect(notifier).to have_received(:warn).with('languageTerm missing type')
     end
   end
 end

@@ -6,13 +6,15 @@ module Cocina
       # Maps language terms
       class LanguageTerm
         # @param [Nokogiri::XML::Element] language_element language or languageOfCataloging element
+        # @param [Cocina::FromFedora::DataErrorNotifier] notifier
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(language_element:, descriptive_builder: nil)
-          new(language_element: language_element).build
+        def self.build(language_element:, notifier:)
+          new(language_element: language_element, notifier: notifier).build
         end
 
-        def initialize(language_element:)
+        def initialize(language_element:, notifier:)
           @language_element = language_element
+          @notifier = notifier
         end
 
         def build
@@ -24,20 +26,20 @@ module Cocina
 
         private
 
-        attr_reader :language_element
+        attr_reader :language_element, :notifier
 
         def lang_term_attributes
           code_language_term = language_element.xpath('./mods:languageTerm[@type="code"]', mods: DESC_METADATA_NS).first
           text_language_term = language_element.xpath('./mods:languageTerm[@type="text"]', mods: DESC_METADATA_NS).first
           if code_language_term.nil? && text_language_term.nil?
-            Honeybadger.notify('[DATA ERROR] languageTerm missing type', { tags: 'data_error' })
+            notifier.warn('languageTerm missing type')
             code_language_term = language_element.xpath('./mods:languageTerm', mods: DESC_METADATA_NS).first
           end
 
           {
             code: code_language_term&.text,
             value: text_language_term&.text,
-            uri: language_value_uri_for(code_language_term, text_language_term),
+            uri: ValueURI.sniff(language_value_uri_for(code_language_term, text_language_term), notifier),
             appliesTo: language_applies_to,
             displayLabel: language_element['displayLabel']
           }.tap do |attrs|
@@ -88,10 +90,7 @@ module Cocina
           return unless status_value
 
           status_value.downcase.tap do |value|
-            if status_value != value
-              Honeybadger.notify("[DATA ERROR] #{language_element.name} usage attribute is set to \"#{language_element[:usage]}\"",
-                                 { tags: 'data_error' })
-            end
+            notifier.warn("#{language_element.name} usage attribute not downcased", { value: language_element[:usage] }) if status_value != value
           end
         end
       end

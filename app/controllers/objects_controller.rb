@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
   before_action :load_item, except: [:create]
 
@@ -50,18 +49,6 @@ class ObjectsController < ApplicationController
     json_api_error(status: :internal_server_error,
                    title: 'Unable to reach Solr',
                    message: e.message)
-  rescue Cocina::Mapper::MissingTitle
-    json_api_error(status: :unprocessable_entity,
-                   title: 'Missing title',
-                   message: "All objects are required to have a title, but #{params[:id]} appears to be malformed as a title cannot be found.")
-  rescue Cocina::Mapper::MissingSourceID => e
-    json_api_error(status: :unprocessable_entity,
-                   title: 'Missing sourceId',
-                   message: e)
-  rescue Cocina::Mapper::InvalidDescMetadata => e
-    json_api_error(status: :unprocessable_entity,
-                   title: 'Invalid descMetadata',
-                   message: e)
   rescue Cocina::Mapper::UnexpectedBuildError => e
     json_api_error(status: :unprocessable_entity,
                    title: 'Unexpected Cocina::Mapper.build error',
@@ -120,7 +107,7 @@ class ObjectsController < ApplicationController
   end
 
   # This endpoint is called by the goobi-notify process in the goobiWF
-  # (code in https://github.com/sul-dlss/common-accessioning/blob/master/lib/robots/dor_repo/goobi/goobi_notify.rb)
+  # (code in https://github.com/sul-dlss/common-accessioning/blob/main/lib/robots/dor_repo/goobi/goobi_notify.rb)
   # This proxies a request to the Goobi server and proxies it's response to the client.
   def notify_goobi
     response = Dor::Goobi.new(@item).register
@@ -175,4 +162,3 @@ class ObjectsController < ApplicationController
     end
   end
 end
-# rubocop:enable Metrics/ClassLength

@@ -11,7 +11,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
                'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                'version' => '3.6',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, subjects: subjects)
+        described_class.write(xml: xml, subjects: subjects, id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
   end
@@ -99,6 +99,36 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <subject authority="lcsh">
             <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79046044">
+              <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
+            </name>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has a name subject with authority only' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
+            "type": 'person',
+            "source": {
+              "code": 'naf'
+            }
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject authority="lcsh">
+            <name type="personal">
               <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
             </name>
           </subject>
@@ -674,6 +704,133 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
               <title>Hamlet</title>
             </titleInfo>
             <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh99001362">Bibliographies</genre>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  # From druid:mt538yc4849
+  context 'with a name-title subject where title has partNumber' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "source": {
+            "code": 'lcsh'
+          },
+          "structuredValue": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'California.',
+                  "type": 'name'
+                },
+                {
+                  "value": 'Sect. 7570.',
+                  "type": 'name'
+                }
+              ],
+              "type": 'organization'
+            },
+            {
+              "structuredValue": [
+                {
+                  "value": 'Government Code',
+                  "type": 'main title'
+                },
+                {
+                  "value": 'Sect. 7570',
+                  "type": 'part number'
+                }
+              ],
+              "type": 'title'
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject authority="lcsh">
+            <name type="corporate">
+              <namePart>California.</namePart>
+              <namePart>Sect. 7570.</namePart>
+            </name>
+            <titleInfo>
+              <title>Government Code</title>
+              <partNumber>Sect. 7570</partNumber>
+            </titleInfo>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  # 32. Name subject with display form and role
+  # Adapted from vx363td7520
+  context 'with name subject with display form and role' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "type": 'person',
+          "parallelValue": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'Nole',
+                  "type": 'surname'
+                },
+                {
+                  "value": 'Andneas Colijns de',
+                  "type": 'forename'
+                },
+                {
+                  "value": '1590-?',
+                  "type": 'life dates'
+                }
+              ]
+            },
+            {
+              "value": 'Nole, Andneas Colijns de, 1590-?',
+              "type": 'display'
+            }
+          ],
+          "note": [
+            {
+              "type": 'role',
+              "value": 'depicted',
+              "code": 'dpc',
+              "uri": 'http://id.loc.gov/vocabulary/relators/dpc',
+              "source": {
+                "code": 'marcrelator',
+                "uri": 'http://id.loc.gov/vocabulary/relators/'
+              }
+            }
+          ]
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject>
+            <name type="personal">
+              <role>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">depicted</roleTerm>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">dpc</roleTerm>
+              </role>
+              <namePart type="family">Nole</namePart>
+              <namePart type="given">Andneas Colijns de</namePart>
+              <namePart type="date">1590-?</namePart>
+              <displayForm>Nole, Andneas Colijns de, 1590-?</displayForm>
+            </name>
           </subject>
         </mods>
       XML

@@ -3,7 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
-  subject(:build) { described_class.build(resource_element: ng_xml.root) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+
+  let(:descriptive_builder) { instance_double(Cocina::FromFedora::Descriptive::DescriptiveBuilder, notifier: notifier) }
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -75,29 +79,22 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
       }
     end
 
-    before do
-      allow(Honeybadger).to receive(:notify)
-    end
-
     it 'builds the cocina data structure' do
       expect(build).to eq([expected_hash])
       build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
-      expect(Honeybadger).not_to have_received(:notify)
     end
 
     context 'when dc:type does not have the expected capitalization' do
       let(:dc_type) { 'image' }
 
-      it 'builds the cocina data structure' do
-        expect(build).to eq([expected_hash])
-        build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
+      before do
+        allow(notifier).to receive(:warn)
       end
 
-      it 'sends a warning about the data error via Honeybadger' do
-        allow(Honeybadger).to receive(:notify)
-        build
-        err_msg = '[DATA ERROR] <dc:type>image</dc:type> normalized to <dc:type>Image</dc:type>'
-        expect(Honeybadger).to have_received(:notify).with(err_msg, { tags: 'data_error' })
+      it 'builds the cocina data structure and warns' do
+        expect(build).to eq([expected_hash])
+        build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
+        expect(notifier).to have_received(:warn).with('dc:type normalized to <dc:type>Image</dc:type>', { type: 'image' })
       end
     end
   end
@@ -178,16 +175,14 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
     context 'when dc:type does not have the expected capitalization' do
       let(:dc_type) { 'image' }
 
-      it 'builds the cocina data structure' do
-        expect(build).to eq([expected_hash])
-        build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
+      before do
+        allow(notifier).to receive(:warn)
       end
 
-      it 'sends a warning about the data error via Honeybadger' do
-        allow(Honeybadger).to receive(:notify)
-        build
-        err_msg = '[DATA ERROR] <dc:type>image</dc:type> normalized to <dc:type>Image</dc:type>'
-        expect(Honeybadger).to have_received(:notify).with(err_msg, { tags: 'data_error' })
+      it 'builds the cocina data structure and warns' do
+        expect(build).to eq([expected_hash])
+        build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
+        expect(notifier).to have_received(:warn).with('dc:type normalized to <dc:type>Image</dc:type>', { type: 'image' })
       end
     end
   end
@@ -612,12 +607,88 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
     end
 
     before do
-      allow(Honeybadger).to receive(:notify)
+      allow(notifier).to receive(:warn)
     end
 
-    it 'notifies' do
+    it 'warns' do
       build
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] rdf:about does not contain a correctly formatted PURL', { tags: 'data_error' })
+      expect(notifier).to have_received(:warn).with('rdf:about does not contain a correctly formatted PURL')
+    end
+  end
+
+  context 'with an https PURL' do
+    let(:dc_type) { 'Image' }
+    let(:xml) do
+      <<~XML
+        <extension displayLabel="geo">
+          <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gmd="http://www.isotc211.org/2005/gmd">
+            <rdf:Description rdf:about="http://purl.stanford.edu/zg154pd4168">
+              <dc:format>image/jpeg</dc:format>
+              <dc:type>#{dc_type}</dc:type>
+            </rdf:Description>
+          </rdf:RDF>
+        </extension>
+      XML
+    end
+
+    it 'does not warn' do
+      build
+    end
+  end
+
+  context 'without dc:format' do
+    let(:dc_type) { 'Image' }
+    let(:xml) do
+      <<~XML
+        <extension displayLabel="geo">
+          <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gmd="http://www.isotc211.org/2005/gmd">
+            <rdf:Description rdf:about="http://purl.stanford.edu/kk138ps4721">
+              <dc:type>Image</dc:type>
+              <gmd:centerPoint>
+                <gml:Point gml:id="ID">
+                  <gml:pos>41.893367 12.483736</gml:pos>
+                </gml:Point>
+              </gmd:centerPoint>
+            </rdf:Description>
+          </rdf:RDF>
+        </extension>
+      XML
+    end
+
+    let(:expected_hash) do
+      {
+        "form": [
+          {
+            "value": 'Image',
+            "type": 'media type',
+            "source": {
+              "value": 'DCMI Type Vocabulary'
+            }
+          }
+        ],
+        "subject": [
+          {
+            "structuredValue": [
+              {
+                "value": '41.893367',
+                "type": 'latitude'
+              },
+              {
+                "value": '12.483736',
+                "type": 'longitude'
+              }
+            ],
+            "type": 'point coordinates',
+            "encoding": {
+              "value": 'decimal'
+            }
+          }
+        ]
+      }
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq([expected_hash])
     end
   end
 end

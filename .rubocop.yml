@@ -32,6 +32,7 @@ Metrics/ClassLength:
     - 'app/services/cocina/mods_normalizer.rb'
     - 'app/services/mods_equivalent_service.rb'
     - 'app/services/cocina/from_fedora/descriptive/identifier_type.rb'
+    - 'app/services/cocina/to_fedora/descriptive/contributor_writer.rb'
 
 RSpec/DescribeClass:
   Exclude:
@@ -47,6 +48,10 @@ RSpec/MultipleExpectations:
 RSpec/ExpectActual:
   Exclude:
     - 'spec/routing/**'
+
+Style/AsciiComments:
+  Exclude:
+    - 'spec/services/cocina/from_fedora/descriptive/contributor_spec.rb'
 
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
@@ -234,4 +239,9 @@ Lint/HashCompareByIdentity: # (new in 0.93)
 Lint/RedundantSafeNavigation: # (new in 0.93)
   Enabled: true
 Style/ClassEqualityComparison: # (new in 0.93)
+  Enabled: true
+
+Rails/AttributeDefaultBlockValue: # (new in 2.9)
+  Enabled: true
+Rails/WhereEquals: # (new in 2.9)
   Enabled: true

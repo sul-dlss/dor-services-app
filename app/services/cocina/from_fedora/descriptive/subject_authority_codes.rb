@@ -772,9 +772,19 @@ module Cocina
           marctarget
         ].freeze
 
+        PARKER = %w[
+          Corpus Christi College
+          James Catalog
+        ].freeze
+
+        OTHER_CODES = %w[
+          wikidata
+          EPSG
+        ].freeze
+
         SUBJECT_AUTHORITY_CODES = SUBJECT_CODES + CLASSIFICATION_CODES + GENRE_CODES + NAME_TITLE_CODES \
           + CARTOGRAPHIC_CODES + OCCUPATION_CODES + COUNTRY_CODES + GEOGRAPHIC_CODES \
-          + ISO_CODES + MARC_CODES + %w[wikidata EPSG]
+          + ISO_CODES + MARC_CODES + PARKER + OTHER_CODES
       end
     end
   end

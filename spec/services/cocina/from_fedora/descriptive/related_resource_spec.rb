@@ -5,7 +5,9 @@ require 'rails_helper'
 RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
   subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
 
-  let(:descriptive_builder) { Cocina::FromFedora::Descriptive::DescriptiveBuilder.new }
+  let(:descriptive_builder) { Cocina::FromFedora::Descriptive::DescriptiveBuilder.new(notifier: notifier) }
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -15,6 +17,30 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
         #{xml}
       </mods>
     XML
+  end
+
+  context 'with empty location (from Hydrus)' do
+    let(:xml) do
+      <<~XML
+        <relatedItem>
+          <titleInfo>
+            <title/>
+          </titleInfo>
+          <location>
+
+          </location>
+        </relatedItem>
+      XML
+    end
+
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds nothing and warns' do
+      expect(build).to be_empty
+      expect(notifier).to have_received(:warn).with('Empty title node')
+    end
   end
 
   context 'with type' do
@@ -75,10 +101,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
       end
 
       before do
-        allow(Honeybadger).to receive(:notify)
+        allow(notifier).to receive(:warn)
       end
 
-      it 'builds the cocina data structure' do
+      it 'builds the cocina data structure and warns' do
         expect(build).to eq [
           {
             'displayLabel': 'Original James Record',
@@ -90,7 +116,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
             'type': 'referenced by'
           }
         ]
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Invalid related resource type (isReferencedby)', { tags: 'data_error' })
+        expect(notifier).to have_received(:warn).with('Invalid related resource type', resource_type: 'isReferencedby')
       end
     end
   end
@@ -107,10 +133,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     end
 
     before do
-      allow(Honeybadger).to receive(:notify)
+      allow(notifier).to receive(:warn)
     end
 
-    it 'builds the cocina data structure' do
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
           "title": [
@@ -121,7 +147,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
           "type": 'has version'
         }
       ]
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Invalid related resource type (Other version)', { tags: 'data_error' })
+      expect(notifier).to have_received(:warn).with('Invalid related resource type', resource_type: 'Other version')
     end
   end
 
@@ -137,10 +163,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     end
 
     before do
-      allow(Honeybadger).to receive(:notify)
+      allow(notifier).to receive(:warn)
     end
 
-    it 'leaves off the type and notifies honeybadger' do
+    it 'leaves off the type and warns' do
       expect(build).to eq [
         {
           "title": [
@@ -150,7 +176,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
           ]
         }
       ]
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Invalid related resource type (Really bogus)', { tags: 'data_error' })
+      expect(notifier).to have_received(:warn).with('Invalid related resource type', resource_type: 'Really bogus')
     end
   end
 
@@ -281,22 +307,22 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     end
 
     before do
-      allow(Honeybadger).to receive(:notify)
+      allow(notifier).to receive(:warn)
     end
 
-    it 'builds the cocina data structure' do
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
           "title": [
             {
-              "value": 'Sitzungsberichte der Kaiserlichen Akademie der Wissenschaften.'
+              "value": 'Sitzungsberichte der Kaiserlichen Akademie der Wissenschaften'
             }
           ],
           "type": 'has other format',
           "displayLabel": 'Online version:'
         }
       ]
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Related resource has type and otherType', { tags: 'data_error' })
+      expect(notifier).to have_received(:warn).with('Related resource has type and otherType')
     end
   end
 

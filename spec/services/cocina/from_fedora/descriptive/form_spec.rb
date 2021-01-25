@@ -3,7 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive::Form do
-  subject(:build) { described_class.build(resource_element: ng_xml.root) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+
+  let(:descriptive_builder) { instance_double(Cocina::FromFedora::Descriptive::DescriptiveBuilder, notifier: notifier) }
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -44,8 +48,31 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L39'
     end
 
+    # Example 4
     context 'with a manuscript' do
-      xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L62'
+      let(:xml) do
+        <<~XML
+          <typeOfResource manuscript="yes">mixed material</typeOfResource>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'mixed material',
+            "type": 'resource type',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          },
+          {
+            "value": 'manuscript',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          }
+        ]
+      end
     end
 
     context 'with an attribute without a value' do
@@ -53,11 +80,50 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     end
 
     context 'with a collection' do
-      xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L89'
+      let(:xml) do
+        <<~XML
+          <typeOfResource collection="yes">mixed material</typeOfResource>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'mixed material',
+            "type": 'resource type',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          },
+          {
+            "value": 'collection',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          }
+        ]
+      end
     end
 
-    context 'with a typeOfResource with display label' do
-      xit 'https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_typeOfResource.txt#L106'
+    context 'with a display label' do
+      let(:xml) do
+        <<~XML
+          <typeOfResource displayLabel="Contains only">text</typeOfResource>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'text',
+            "type": 'resource type',
+            "displayLabel": 'Contains only',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          }
+        ]
+      end
     end
   end
 
@@ -228,6 +294,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
   end
 
   describe 'subject' do
+    # Example 19 from mods_to_cocina_subject.txt
     context 'when there is a subject/cartographics node' do
       let(:xml) do
         <<~XML
@@ -250,6 +317,85 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
           {
             "value": 'Conic proj',
             "type": 'map projection'
+          }
+        ]
+      end
+    end
+
+    # Example 19b from mods_to_cocina_subject.txt
+    context 'with a multiple cartographic subjects' do
+      let(:xml) do
+        <<~XML
+          <subject>
+            <cartographics>
+              <scale>Scale not given.</scale>
+              <projection>Custom projection</projection>
+              <coordinates>(E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ)</coordinates>
+            </cartographics>
+          </subject>
+          <subject authority="EPSG" valueURI="http://opengis.net/def/crs/EPSG/0/4326" displayLabel="WGS84">
+            <cartographics>
+              <scale>Scale not given.</scale>
+              <projection>EPSG::4326</projection>
+              <coordinates>E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ</coordinates>
+            </cartographics>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'Scale not given.',
+            "type": 'map scale'
+          },
+          {
+            "value": 'Custom projection',
+            "type": 'map projection'
+          },
+          {
+            "value": 'EPSG::4326',
+            "type": 'map projection',
+            "uri": 'http://opengis.net/def/crs/EPSG/0/4326',
+            "source": {
+              "code": 'EPSG'
+            },
+            "displayLabel": 'WGS84'
+          }
+        ]
+      end
+    end
+
+    # Example 19c from mods_to_cocina_subject.txt
+    context 'with a multiple cartographic subjects' do
+      let(:xml) do
+        <<~XML
+          <subject altRepGroup="1">
+            <cartographics>
+              <scale>Scale 1:650,000.</scale>
+            </cartographics>
+          </subject>
+          <subject altRepGroup="1">
+            <cartographics>
+              <scale>&#x6BD4;&#x4F8B;&#x5C3A; 1:650,000.</scale>
+            </cartographics>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            parallelValue: [
+              {
+                value: 'Scale 1:650,000.',
+                type: 'map scale'
+              },
+              {
+                value: '比例尺 1:650,000.',
+                type: 'map scale'
+              }
+            ]
           }
         ]
       end
@@ -605,6 +751,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
             <extent>1 sheet</extent>
             <digitalOrigin>reformatted digital</digitalOrigin>
             <note displayLabel="Condition">Small tear at top right corner.</note>
+            <note displayLabel="Material" type="material">Paper</note>
+            <note displayLabel="Layout" type="layout">34 and 24 lines to a page</note>
+            <note displayLabel="Height (mm)" type="dimensions">210</note>
+            <note displayLabel="Width (mm)" type="dimensions">146</note>
+            <note displayLabel="Collation" type="collation">1(8) 2(10) 3(8) 4(8) 5 (two) || a(16) (wants 16).</note>
+            <note displayLabel="Writing" type="handNote">change of hand</note>
+            <note displayLabel="Foliation" type="foliation">ff. i + 1-51 + ii-iii</note>
           </physicalDescription>
         XML
       end
@@ -645,6 +798,69 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
               {
                 "value": 'Small tear at top right corner.',
                 "displayLabel": 'Condition'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: 'Paper',
+                displayLabel: 'Material',
+                type: 'material'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: '34 and 24 lines to a page',
+                displayLabel: 'Layout',
+                type: 'layout'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: '210',
+                displayLabel: 'Height (mm)',
+                type: 'dimensions'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: '146',
+                displayLabel: 'Width (mm)',
+                type: 'dimensions'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: '1(8) 2(10) 3(8) 4(8) 5 (two) || a(16) (wants 16).',
+                displayLabel: 'Collation',
+                type: 'collation'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: 'change of hand',
+                displayLabel: 'Writing',
+                type: 'handNote'
+              }
+            ]
+          },
+          {
+            note: [
+              {
+                value: 'ff. i + 1-51 + ii-iii',
+                displayLabel: 'Foliation',
+                type: 'foliation'
               }
             ]
           }
@@ -715,7 +931,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
                  <form authority="marcform">print</form>
                  <extent>v. ; 24 cm.</extent>
               </physicalDescription>
-           </relatedItem>        
+           </relatedItem>
           <physicalDescription>
             <form>mezzotints (prints)</form>
           </physicalDescription>
@@ -734,6 +950,36 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
 
     context 'when it has displayLabel' do
       xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_physicalDescription.txt#L107'
+    end
+
+    # 31. Cartographic subject with multiple coordinate representations (from mods_to_cocina_subject.txt)
+    context 'with a cartographic subject with multiple coordinate representations' do
+      let(:xml) do
+        <<~XML
+          <subject>
+            <cartographics>
+              <coordinates>W0750700 W0741200 N0443400 N0431200</coordinates>
+            </cartographics>
+          </subject>
+          <subject>
+            <cartographics>
+              <scale>Scale ca. 1:126,720. 1 in. to 2 miles.</scale>
+            </cartographics>
+            <cartographics>
+              <coordinates>(W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ)</coordinates>
+            </cartographics>
+          </subject>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            "value": 'Scale ca. 1:126,720. 1 in. to 2 miles.',
+            "type": 'map scale'
+          }
+        ]
+      end
     end
   end
 end

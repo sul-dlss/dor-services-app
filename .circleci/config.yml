@@ -168,13 +168,13 @@ workflows:
     - build-image:
         filters:
           branches:
-            only: master
+            only: main
     - publish-latest:
         requires:
         - build-image
         filters:
           branches:
-            only: master
+            only: main
   build-tags:
     jobs:
     - build-image:

@@ -3,7 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive::Subject do
-  subject(:build) { described_class.build(resource_element: ng_xml.root) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+
+  let(:descriptive_builder) { Cocina::FromFedora::Descriptive::DescriptiveBuilder.new(notifier: notifier) }
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -24,7 +28,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    it 'builds the cocina data structure (as if it was <topic> lowercase)' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure (as if it was <topic> lowercase) and warns' do
       expect(build).to eq [
         {
           "value": 'College students',
@@ -35,12 +43,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           }
         }
       ]
-    end
-
-    it 'notifies Honeybadger' do
-      allow(Honeybadger).to receive(:notify).once
-      build
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] <subject> has <Topic>; normalized to "topic"', tags: 'data_error')
+      expect(notifier).to have_received(:warn).with('<subject> has <Topic>; normalized to "topic"')
     end
   end
 
@@ -54,21 +57,51 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
 
     before do
-      allow(Honeybadger).to receive(:notify).once
+      allow(notifier).to receive(:warn)
     end
 
-    it 'ignores the invalid code and Honeybadger notifies' do
+    it 'includes the invalid code and warns' do
       expect(build).to eq [
         {
           "value": 'College students',
           "type": 'topic',
           "uri": 'http://id.loc.gov/authorities/subjects/sh85028356',
           "source": {
-            "uri": 'http://id.loc.gov/authorities/subjects/'
+            "uri": 'http://id.loc.gov/authorities/subjects/',
+            "code": 'topic'
           }
         }
       ]
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has unknown authority code', tags: 'data_error')
+      expect(notifier).to have_received(:warn).with('Subject has unknown authority code', { code: 'topic' })
+    end
+  end
+
+  context 'with tgm authority code' do
+    let(:xml) do
+      <<~XML
+        <subject authority="tgm" authorityURI="http://id.loc.gov/vocabulary/graphicMaterials" valueURI="http://id.loc.gov/vocabulary/graphicMaterials/tgm001818">
+          <topic>Celebrities</topic>
+        </subject>
+      XML
+    end
+
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'changes to lctgm and warns' do
+      expect(build).to eq [
+        {
+          value: 'Celebrities',
+          type: 'topic',
+          uri: 'http://id.loc.gov/vocabulary/graphicMaterials/tgm001818',
+          source: {
+            code: 'lctgm',
+            uri: 'http://id.loc.gov/vocabulary/graphicMaterials'
+          }
+        }
+      ]
+      expect(notifier).to have_received(:warn).with('tgm authority code (should be lctgm)')
     end
   end
 
@@ -82,18 +115,21 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
 
     before do
-      allow(Honeybadger).to receive(:notify).once
+      allow(notifier).to receive(:warn)
     end
 
-    it 'omits source and Honeybadger notifies' do
+    it 'includes source and warns' do
       expect(build).to eq [
         {
           "value": 'College students',
           "type": 'topic',
-          "uri": 'http://id.loc.gov/authorities/subjects/sh85028356'
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85028356',
+          "source": {
+            "code": 'topic'
+          }
         }
       ]
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has unknown authority code', tags: 'data_error')
+      expect(notifier).to have_received(:warn).with('Subject has unknown authority code', { code: 'topic' })
     end
   end
 
@@ -107,10 +143,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
 
     before do
-      allow(Honeybadger).to receive(:notify).once
+      allow(notifier).to receive(:warn)
     end
 
-    it 'changes to naf and Honeybadger notifies' do
+    it 'changes to naf and warns' do
       expect(build).to eq [
         {
           "value": 'College students',
@@ -121,7 +157,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           }
         }
       ]
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] lcnaf authority code', tags: 'data_error')
+      expect(notifier).to have_received(:warn).with('lcnaf authority code')
     end
   end
 
@@ -134,10 +170,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
     it 'does not build subject element at all' do
-      allow(Honeybadger).to receive(:notify)
       expect(build).to eq []
-      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Unexpected node type for subject: 'corporate'", tags: 'data_error')
+      expect(notifier).to have_received(:warn).with('Unexpected node type for subject', { name: 'corporate' })
     end
   end
 
@@ -151,8 +190,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    it 'drops the invalid subelement' do
-      allow(Honeybadger).to receive(:notify)
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'drops the invalid subelement and warns' do
       expect(build).to eq [
         {
           "structuredValue": [
@@ -163,7 +205,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           ]
         }
       ]
-      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Unexpected node type for subject: 'corporate'", tags: 'data_error')
+      expect(notifier).to have_received(:warn).with('Unexpected node type for subject', { name: 'corporate' })
     end
   end
 
@@ -178,8 +220,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    it 'drops the invalid subelement' do
-      allow(Honeybadger).to receive(:notify)
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'drops the invalid subelement and warns' do
       expect(build).to eq [
         {
           "structuredValue": [
@@ -194,7 +239,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           ]
         }
       ]
-      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Unexpected node type for subject: 'corporate'", tags: 'data_error')
+      expect(notifier).to have_received(:warn).with('Unexpected node type for subject', { name: 'corporate' })
     end
   end
 
@@ -245,11 +290,35 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
-  context 'with a single-term topic subject with authority on the subject' do
+  context 'with a single-term topic subject with authority, authorityURI, and valueURI on the subject' do
     let(:xml) do
       <<~XML
         <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021262">
           <topic>Cats</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'Cats',
+          "type": 'topic',
+          "uri": 'http://id.loc.gov/authorities/subjects/sh85021262',
+          "source": {
+            "code": 'lcsh',
+            "uri": 'http://id.loc.gov/authorities/subjects/'
+          }
+        }
+      ]
+    end
+  end
+
+  context 'with a single-term topic subject with authority on the subject and authorityURI and valueURI on topic' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh">
+          <topic authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
         </subject>
       XML
     end
@@ -300,8 +369,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    it 'builds the cocina data structure and logs an error' do
-      allow(Honeybadger).to receive(:notify)
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
           "value": 'Cats',
@@ -313,7 +385,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           }
         }
       ]
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] "#N/A" authority code', tags: 'data_error')
+      expect(notifier).to have_received(:warn).with('"#N/A" authority code')
     end
   end
 
@@ -513,6 +585,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  # Example 19
   context 'with a cartographic subject' do
     let(:xml) do
       <<~XML
@@ -530,12 +603,62 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       expect(build).to eq [
         {
           "value": 'E 72°--E 148°/N 13°--N 18°',
-          "type": 'map coordinates',
-          "encoding": {
-            "value": 'DMS'
-          }
+          "type": 'map coordinates'
         }
       ]
+    end
+  end
+
+  # Example 19b
+  context 'with a multiple cartographic subjects' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <cartographics>
+            <scale>Scale not given.</scale>
+            <projection>Custom projection</projection>
+            <coordinates>(E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ)</coordinates>
+          </cartographics>
+        </subject>
+        <subject authority="EPSG" valueURI="http://opengis.net/def/crs/EPSG/0/4326" displayLabel="WGS84">
+          <cartographics>
+            <scale>Scale not given.</scale>
+            <projection>EPSG::4326</projection>
+            <coordinates>E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ</coordinates>
+          </cartographics>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "value": 'E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ',
+          "type": 'map coordinates'
+        }
+      ]
+    end
+  end
+
+  # Example 19c
+  context 'with a multilingual subject but no lang attributes' do
+    let(:xml) do
+      <<~XML
+        <subject altRepGroup="1">
+          <cartographics>
+            <scale>Scale 1:650,000.</scale>
+          </cartographics>
+        </subject>
+        <subject altRepGroup="1">
+          <cartographics>
+            <scale>&#x6BD4;&#x4F8B;&#x5C3A; 1:650,000.</scale>
+          </cartographics>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq []
     end
   end
 
@@ -578,22 +701,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          encoding: {
-            value: 'DMS'
-          },
           type: 'map coordinates',
           value: 'W0750700 W0741200 N0443400 N0431200'
         },
         {
-          structuredValue: [
-            {
-              encoding: {
-                value: 'DMS'
-              },
-              type: 'map coordinates',
-              value: '(W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ)'
-            }
-          ]
+          type: 'map coordinates',
+          value: 'W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ'
         }
       ]
     end
@@ -628,7 +741,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    it 'builds the cocina data structure' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
           "source": {
@@ -640,6 +757,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           "type": 'topic'
         }
       ]
+      expect(notifier).to have_received(:warn).with('Value URI has unexpected value', { uri: 'farming' })
     end
   end
 
@@ -665,12 +783,158 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  # Example 23
   context 'with a temporal subject with range' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L695'
+    let(:xml) do
+      <<~XML
+        <subject>
+          <temporal encoding="w3cdtf" point="start">1890-06-11</temporal>
+          <temporal encoding="w3cdtf" point="end">1894-03-19</temporal>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": '1890-06-11',
+              "type": 'start'
+            },
+            {
+              "value": '1894-03-19',
+              "type": 'end'
+            }
+          ],
+          "encoding": {
+            "code": 'w3cdtf'
+          },
+          "type": 'time'
+        }
+      ]
+    end
   end
 
+  # Example 24
   context 'with a multilingual subject' do
-    xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L721'
+    let(:xml) do
+      <<~XML
+        <subject lang="eng" altRepGroup="1">
+          <topic>French New Wave</topic>
+        </subject>
+        <subject lang="fre" altRepGroup="1">
+          <topic>Nouvelle Vague</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "parallelValue": [
+            {
+              "value": 'French New Wave',
+              "valueLanguage": {
+                "code": 'eng',
+                "source": {
+                  "code": 'iso639-2b'
+                }
+              }
+            },
+            {
+              "value": 'Nouvelle Vague',
+              "valueLanguage": {
+                "code": 'fre',
+                "source": {
+                  "code": 'iso639-2b'
+                }
+              }
+            }
+          ],
+          "type": 'topic'
+        }
+      ]
+    end
+  end
+
+  context 'with a parallel subject but different types' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85135212" altRepGroup="2">
+          <geographic>Tiber River (Italy)</geographic>
+        </subject>
+        <subject authority="local" altRepGroup="2">
+          <topic>Tevere</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "parallelValue": [
+            {
+              "source": {
+                "code": 'lcsh',
+                "uri": 'http://id.loc.gov/authorities/subjects/'
+              },
+              "uri": 'http://id.loc.gov/authorities/subjects/sh85135212',
+              "value": 'Tiber River (Italy)',
+              "type": 'place'
+            },
+            {
+              "source": {
+                "code": 'local'
+              },
+              "value": 'Tevere',
+              "type": 'topic'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  context 'with a subject with lang, script, and displayLabel' do
+    let(:xml) do
+      <<~XML
+        <subject lang="fre" script="Latn" displayLabel="French archives">
+          <topic>Archives et documents</topic>
+          <topic>Portraits</topic>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Archives et documents',
+              "type": 'topic'
+            },
+            {
+              "value": 'Portraits',
+              "type": 'topic'
+            }
+          ],
+          "valueLanguage": {
+            "code": 'fre',
+            "source": {
+              "code": 'iso639-2b'
+            },
+            valueScript: {
+              code: 'Latn',
+              source: {
+                code: 'iso15924'
+              }
+            }
+          },
+          "displayLabel": 'French archives'
+        }
+      ]
+    end
   end
 
   context 'with a musical genre as topic' do
@@ -678,7 +942,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     xit 'TODO https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_subject.txt#L754'
   end
 
-  context 'with a occupation subject' do
+  context 'with an occupation subject' do
     let(:xml) do
       <<~XML
         <subject>
@@ -712,6 +976,60 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           "value": 'Stuff',
           "type": 'topic',
           "displayLabel": 'This is about'
+        }
+      ]
+    end
+  end
+
+  # From druid:rv133bz1764
+  context 'with a bad subject' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh2002009897">authority="" authorityURI="" valueURI=""&gt;Improvisation (Acting)</subject>
+      XML
+    end
+
+    before do
+      allow(notifier).to receive(:error)
+    end
+
+    it 'builds the cocina data structure and errors' do
+      expect(build).to be_empty
+      expect(notifier).to have_received(:error).with('Subject has no children nodes',
+                                                     { subject: '<subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" ' \
+'valueURI="http://id.loc.gov/authorities/subjects/sh2002009897">authority="" authorityURI="" valueURI=""&gt;Improvisation (Acting)</subject>' })
+    end
+  end
+
+  # 31. Cartographic subject with multiple coordinate representations
+  context 'with a cartographic subject with multiple coordinate representations' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <cartographics>
+            <coordinates>W0750700 W0741200 N0443400 N0431200</coordinates>
+          </cartographics>
+        </subject>
+        <subject>
+          <cartographics>
+            <scale>Scale ca. 1:126,720. 1 in. to 2 miles.</scale>
+          </cartographics>
+          <cartographics>
+            <coordinates>(W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ)</coordinates>
+          </cartographics>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          type: 'map coordinates',
+          value: 'W0750700 W0741200 N0443400 N0431200'
+        },
+        {
+          type: 'map coordinates',
+          value: 'W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ'
         }
       ]
     end

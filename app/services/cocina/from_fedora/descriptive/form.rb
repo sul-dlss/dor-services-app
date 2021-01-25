@@ -12,12 +12,13 @@ module Cocina
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder: nil)
-          new(resource_element: resource_element).build
+        def self.build(resource_element:, descriptive_builder:)
+          new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
         end
 
-        def initialize(resource_element:)
+        def initialize(resource_element:, descriptive_builder:)
           @resource_element = resource_element
+          @notifier = descriptive_builder.notifier
         end
 
         def build
@@ -31,26 +32,52 @@ module Cocina
 
         private
 
-        attr_reader :resource_element
+        attr_reader :resource_element, :notifier
 
         def add_subject_cartographics(forms)
-          cartographic_scale.each do |scale|
-            next if scale.text.blank?
+          subject_nodes = resource_element.xpath('mods:subject[mods:cartographics]', mods: DESC_METADATA_NS)
+          altrepgroup_subject_nodes, other_subject_nodes = AltRepGroup.split(nodes: subject_nodes)
 
-            forms << {
-              value: scale.text,
+          forms.concat(
+            altrepgroup_subject_nodes.map { |parallel_subject_nodes| build_parallel_cartographics(parallel_subject_nodes) } +
+            other_subject_nodes.flat_map { |subject_node| build_cartographics(subject_node) }.uniq
+          )
+        end
+
+        def build_parallel_cartographics(parallel_subject_nodes)
+          {
+            parallelValue: parallel_subject_nodes.flat_map { |subject_node| build_cartographics(subject_node) }
+          }
+        end
+
+        def build_cartographics(subject_node)
+          carto_forms = []
+          subject_node.xpath('mods:cartographics/mods:scale', mods: DESC_METADATA_NS).each do |scale_node|
+            next if scale_node.text.blank?
+
+            carto_forms << {
+              value: scale_node.text,
               type: 'map scale'
             }
           end
 
-          cartographic_projection.each do |projection|
-            next if projection.text.blank?
+          subject_node.xpath('mods:cartographics/mods:projection', mods: DESC_METADATA_NS).each do |projection_node|
+            next if projection_node.text.blank?
 
-            forms << {
-              value: projection.text,
-              type: 'map projection'
-            }
+            carto_forms << {
+              value: projection_node.text,
+              type: 'map projection',
+              displayLabel: subject_node['displayLabel'],
+              uri: ValueURI.sniff(subject_node['valueURI'], notifier)
+            }.tap do |attrs|
+              source = {
+                code: subject_node['authority'],
+                uri: subject_node['authorityURI']
+              }.compact
+              attrs[:source] = source if source.present?
+            end.compact
           end
+          carto_forms.uniq
         end
 
         def add_genre(forms)
@@ -60,11 +87,11 @@ module Cocina
             forms << {
               value: type.text,
               type: type['type'] || 'genre',
-              uri: type[:valueURI],
+              uri: ValueURI.sniff(type[:valueURI], notifier),
               displayLabel: type[:displayLabel]
             }.tap do |item|
               source = {
-                code: Authority.normalize_code(type[:authority]),
+                code: Authority.normalize_code(type[:authority], notifier),
                 uri: Authority.normalize_uri(type[:authorityURI])
               }.compact
               item[:source] = source if source.present?
@@ -92,10 +119,29 @@ module Cocina
         def add_types(forms)
           type_of_resource.each do |type|
             forms << {
-              "value": type.text,
-              "type": 'resource type',
-              "source": {
-                "value": 'MODS resource types'
+              value: type.text,
+              type: 'resource type',
+              source: {
+                value: 'MODS resource types'
+              },
+              displayLabel: type[:displayLabel].presence
+            }.compact
+
+            if type[:manuscript] == 'yes'
+              forms << {
+                value: 'manuscript',
+                source: {
+                  value: 'MODS resource types'
+                }
+              }
+            end
+
+            next unless type[:collection] == 'yes'
+
+            forms << {
+              value: 'collection',
+              source: {
+                value: 'MODS resource types'
               }
             }
           end
@@ -114,8 +160,14 @@ module Cocina
 
         def add_note(forms, physical_description)
           physical_description.xpath('mods:note', mods: DESC_METADATA_NS).each do |node|
+            note = {
+              value: node.content,
+              displayLabel: node['displayLabel'],
+              type: node['type']
+            }.compact
+
             forms << {
-              note: [{ value: node.content, displayLabel: node['displayLabel'] }.compact]
+              note: [note]
             }
           end
         end
@@ -160,7 +212,7 @@ module Cocina
           physical_description.xpath('mods:form', mods: DESC_METADATA_NS).each do |form_content|
             forms << {
               value: form_content.content,
-              uri: form_content['valueURI'],
+              uri: ValueURI.sniff(form_content['valueURI'], notifier),
               type: form_content['type'] || 'form',
               source: source_for(form_content).presence
             }.compact
@@ -173,7 +225,7 @@ module Cocina
 
         def source_for(form)
           {
-            code: Authority.normalize_code(form['authority']),
+            code: Authority.normalize_code(form['authority'], notifier),
             uri: Authority.normalize_uri(form['authorityURI'])
           }.compact
         end
@@ -190,14 +242,6 @@ module Cocina
         # returns structured genres at the root and inside subjects, which are combined to form a single, structured Cocina element
         def structured_genre
           resource_element.xpath("mods:genre[@type and starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}')]", mods: DESC_METADATA_NS)
-        end
-
-        def cartographic_scale
-          resource_element.xpath('mods:subject/mods:cartographics/mods:scale', mods: DESC_METADATA_NS)
-        end
-
-        def cartographic_projection
-          resource_element.xpath('mods:subject/mods:cartographics/mods:projection', mods: DESC_METADATA_NS)
         end
       end
       # rubocop:enable Metrics/ClassLength

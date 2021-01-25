@@ -53,6 +53,96 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
         XML
       end
     end
+
+    # Example 4
+    context 'with a manuscript' do
+      let(:forms) do
+        [
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'mixed material',
+            "type": 'resource type',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'manuscript',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          )
+
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <typeOfResource manuscript="yes">mixed material</typeOfResource>
+          </mods>
+        XML
+      end
+    end
+
+    # Example 6
+    context 'with a collection' do
+      let(:forms) do
+        [
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'mixed material',
+            "type": 'resource type',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'collection',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          )
+
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <typeOfResource collection="yes">mixed material</typeOfResource>
+          </mods>
+        XML
+      end
+    end
+
+    # Example 7
+    context 'with a collection' do
+      let(:forms) do
+        [
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'text',
+            "type": 'resource type',
+            "displayLabel": 'Contains only',
+            "source": {
+              "value": 'MODS resource types'
+            }
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <typeOfResource displayLabel="Contains only">text</typeOfResource>
+          </mods>
+        XML
+      end
+    end
   end
 
   describe 'genre' do
@@ -525,10 +615,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
             }
           ),
           Cocina::Models::DescriptiveValue.new(
-            "note": [
+            note: [
               {
-                "value": 'Small tear at top right corner.',
-                "displayLabel": 'Condition'
+                value: 'Small tear at top right corner.',
+                displayLabel: 'Condition',
+                type: 'condition'
               }
             ]
           ),
@@ -545,6 +636,18 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
             "source": {
               "code": 'rdacarrier'
             }
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'estampe',
+            "type": 'technique'
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'eau-forte',
+            "type": 'material'
+          ),
+          Cocina::Models::DescriptiveValue.new(
+            "value": 'gravure au pointillé',
+            "type": 'material'
           )
         ]
       end
@@ -560,9 +663,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Form do
               <internetMediaType>image/jpeg</internetMediaType>
               <extent>1 sheet</extent>
               <digitalOrigin>reformatted digital</digitalOrigin>
-              <note displayLabel="Condition">Small tear at top right corner.</note>
+              <note displayLabel="Condition" type="condition">Small tear at top right corner.</note>
               <form type="media" authority="rdamedia">unmediated</form>
               <form type="carrier" authority="rdacarrier">volume</form>
+              <form type="technique">estampe</form>
+              <form type="material">eau-forte</form>
+              <form type="material">gravure au pointill&#xE9;</form>
             </physicalDescription>
           </mods>
         XML

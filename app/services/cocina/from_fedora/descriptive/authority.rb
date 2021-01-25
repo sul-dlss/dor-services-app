@@ -19,15 +19,20 @@ module Cocina
           uri.presence
         end
 
-        def self.normalize_code(code)
+        def self.normalize_code(code, notifier)
           if code == 'lcnaf'
-            Honeybadger.notify('[DATA ERROR] lcnaf authority code', tags: 'data_error')
+            notifier.warn('lcnaf authority code')
             return 'naf'
           end
 
+          if code == 'tgm'
+            notifier.warn('tgm authority code (should be lctgm)')
+            return 'lctgm'
+          end
+
           if code == '#N/A'
-            # This is not a fatal problem. Just warn.
-            Honeybadger.notify('[DATA ERROR] "#N/A" authority code', tags: 'data_error')
+            notifier.warn('"#N/A" authority code')
+            return nil
           end
 
           code.presence

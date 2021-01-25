@@ -3,9 +3,10 @@
 
 require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
+require_relative '../lib/data_error_notifier'
 require 'optparse'
 
-options = { overwrite: false, random: false, unique_filename: false }
+options = { unique_filename: false }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-to-cocina [options]'
 
@@ -78,26 +79,11 @@ druids = druids.take(options[:sample]) if options[:sample]
 Result = Struct.new(:druid, :msg, :error_type)
 
 results = Parallel.map(druids, progress: 'Testing') do |druid|
-  # Monkeypatching Honeybadger
-  def Honeybadger.notify(exception_or_opts, _opts = {})
-    @exception = exception_or_opts
-  end
-
-  # rubocop:disable Style/TrivialAccessors
-  def Honeybadger.exception
-    @exception
-  end
-  # rubocop:enable Style/TrivialAccessors
-
-  # Clear previous
-  Honeybadger.notify(nil)
-
+  notifier = DataErrorNotifier.new
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: cache.label(druid))
-  desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: cache.descmd_xml(druid))
+  desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: cache.descmd_xml(druid), druid: druid, notifier: notifier)
   Cocina::Models::Description.new(desc_props)
-  Honeybadger.exception ? Result.new(druid, Honeybadger.exception, :data_error) : nil
-rescue Cocina::Mapper::DataError => e
-  Result.new(druid, e.message, :data_error)
+  notifier.error? ? Result.new(druid, notifier.data_errors.first.msg, :data_error) : nil
 rescue StandardError => e
   if e.message == 'Missing item'
     Result.new(druid, e.message, :missing)

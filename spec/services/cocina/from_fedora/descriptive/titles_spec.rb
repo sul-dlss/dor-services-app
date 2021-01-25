@@ -6,15 +6,47 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
   let(:object) { Dor::Item.new }
 
   describe '.build' do
-    subject(:build) { described_class.build(resource_element: ng_xml.root, require_title: require_title) }
+    subject(:build) { described_class.build(resource_element: ng_xml.root, require_title: require_title, notifier: notifier) }
+
+    let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
     let(:require_title) { true }
 
     context 'when the object has no title' do
       let(:ng_xml) { Dor::Item.new.descMetadata.ng_xml }
 
-      it 'raises and error' do
-        expect { build }.to raise_error Cocina::Mapper::MissingTitle
+      before do
+        allow(notifier).to receive(:error)
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'returns empty and notifies error' do
+        expect(build).to be_empty
+        expect(notifier).to have_received(:error).with('Missing title')
+      end
+    end
+
+    context 'when the title is empty' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title />
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      before do
+        allow(notifier).to receive(:error)
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'returns empty and notifies error' do
+        expect(build).to be_empty
+        expect(notifier).to have_received(:error).with('Missing title')
       end
     end
 
@@ -23,8 +55,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
 
       let(:require_title) { false }
 
-      it 'raises and error' do
-        expect(build).to eq([])
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'returns empty and warns' do
+        expect(build).to be_empty
+        expect(notifier).to have_received(:warn).with('Empty title node')
       end
     end
 
@@ -104,7 +141,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             </titleInfo>
             <titleInfo>
               <title />
-            </titleInfo>  
+            </titleInfo>
             <titleInfo type="alternative">
               <title />
             </titleInfo>
@@ -116,18 +153,47 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       before do
-        allow(Honeybadger).to receive(:notify)
+        allow(notifier).to receive(:warn)
       end
 
       it 'parses' do
         expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
       end
 
-      it 'ignores and notifies Honeybadger' do
+      it 'ignores and warns' do
         expect(build).to eq [
           { status: 'primary', value: 'Five red herrings' }
         ]
-        expect(Honeybadger).to have_received(:notify).at_least(:once).with('[DATA ERROR] Empty title node', { tags: 'data_error' })
+        expect(notifier).to have_received(:warn).at_least(:once).with('Empty title node')
+      end
+    end
+
+    context 'when there are title types' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title type="main">Monaco Grand Prix</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
+      it 'ignores and warns' do
+        expect(build).to eq [
+          { value: 'Monaco Grand Prix' }
+        ]
+        expect(notifier).to have_received(:warn).at_least(:once).with('Title with type')
       end
     end
 
@@ -338,6 +404,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
     end
 
+    # Example 20 from mods_to_cocina_titleInfo.txt
     context 'when there are uniform titles with authority' do
       let(:ng_xml) do
         Nokogiri::XML <<~XML
@@ -350,7 +417,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="0">
               <title>Hamlet</title>
             </titleInfo>
-            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="0">
+            <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="0">
               <namePart>Shakespeare, William, 1564-1616</namePart>
             </name>
           </mods>
@@ -370,16 +437,111 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
           {
             "structuredValue": [
               {
-                "value": 'Shakespeare, William, 1564-1616',
-                "type": 'name'
-              },
-              {
                 "value": 'Hamlet',
                 "type": 'title'
+              },
+              {
+                "value": 'Shakespeare, William, 1564-1616',
+                "type": 'name',
+                "uri": 'http://id.loc.gov/authorities/names/n78095332',
+                "source": {
+                  "uri": 'http://id.loc.gov/authorities/names/',
+                  "code": 'naf'
+                }
               }
             ],
             "type": 'uniform',
-            "uri": 'http://id.loc.gov/authorities/names/n80008522'
+            "uri": 'http://id.loc.gov/authorities/names/n80008522',
+            "source": {
+              "uri": 'http://id.loc.gov/authorities/names/',
+              "code": 'naf'
+            }
+          }
+        ]
+      end
+    end
+
+    # Example 21 from mods_to_cocina_titleInfo.txt
+    context 'when there is a complex multilingual title' do
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="01">
+              <title>Shaʻare ha-ḳedushah</title>
+            </titleInfo>
+            <name type="personal" usage="primary" nameTitleGroup="1">
+              <namePart>Vital, Ḥayyim ben Joseph</namePart>
+              <namePart type="date">1542 or 1543-1620</namePart>
+            </name>
+            <titleInfo altRepGroup="02">
+              <title>Sefer Shaʻare ha-ḳedushah in Hebrew</title>
+              <subTitle>zeh sefer le-yosher ha-adam la-ʻavodat borʼo in Hebrew</subTitle>
+            </titleInfo>
+            <titleInfo altRepGroup="02">
+              <title>Sefer Shaʻare ha-ḳedushah</title>
+              <subTitle>zeh sefer le-yosher ha-adam la-ʻavodat borʼo</subTitle>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+      end
+
+      it 'creates value from the authority record' do
+        expect(build).to eq [
+          {
+            "parallelValue": [
+              {
+                "structuredValue": [
+                  {
+                    "value": 'Sefer Shaʻare ha-ḳedushah in Hebrew',
+                    "type": 'main title'
+                  },
+                  {
+                    "value": 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo in Hebrew',
+                    "type": 'subtitle'
+                  }
+                ]
+              },
+              {
+                "structuredValue": [
+                  {
+                    "value": 'Sefer Shaʻare ha-ḳedushah',
+                    "type": 'main title'
+                  },
+                  {
+                    "value": 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo',
+                    "type": 'subtitle'
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "structuredValue": [
+              {
+                type: 'title',
+                value: 'Shaʻare ha-ḳedushah'
+              },
+              {
+                "structuredValue": [
+                  {
+                    "value": 'Vital, Ḥayyim ben Joseph',
+                    "type": 'name'
+                  },
+                  {
+                    "value": '1542 or 1543-1620',
+                    "type": 'life dates'
+                  }
+                ],
+                "type": 'name'
+              }
+            ],
+            "type": 'uniform'
           }
         ]
       end
@@ -407,21 +569,26 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
       end
 
-      it 'creates value from the authority record' do
+      xit 'creates value from the authority record' do
         expect(build).to eq [
           {
             "structuredValue": [
               {
-                "value": 'Saint-Saëns',
-                "type": 'surname'
-              },
-              {
-                "value": 'Camille',
-                "type": 'forename'
-              },
-              {
-                "value": '1835-1921',
-                "type": 'life dates'
+                "structuredValue": [
+                  {
+                    "value": 'Saint-Saëns',
+                    "type": 'surname'
+                  },
+                  {
+                    "value": 'Camille',
+                    "type": 'forename'
+                  },
+                  {
+                    "value": '1835-1921',
+                    "type": 'life dates'
+                  }
+                ],
+                "type": 'name'
               },
               {
                 "value": 'Princesse jaune. Vocal score',
@@ -460,16 +627,21 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
           {
             "structuredValue": [
               {
-                "value": 'Spinoza, Benedictus de',
-                "type": 'name'
-              },
-              {
-                "value": '1632-1677',
-                "type": 'life dates'
-              },
-              {
                 "value": 'Tractatus de intellectus emendatione. German',
                 "type": 'title'
+              },
+              {
+                "structuredValue": [
+                  {
+                    "value": 'Spinoza, Benedictus de',
+                    "type": 'name'
+                  },
+                  {
+                    "value": '1632-1677',
+                    "type": 'life dates'
+                  }
+                ],
+                "type": 'name'
               }
             ],
             "type": 'uniform'
@@ -518,36 +690,47 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
               {
                 "structuredValue": [
                   {
-                    "value": 'Israel Meir',
-                    "type": 'name'
-                  },
-                  {
-                    "value": 'ha-Kohen',
-                    "type": 'term of address'
-                  },
-                  {
-                    "value": '1838-1933',
-                    "type": 'life dates'
-                  },
-                  {
                     "value": 'Mishnah berurah. English and Hebrew',
                     "type": 'title'
+                  },
+
+                  {
+                    "structuredValue": [
+                      {
+                        "value": 'Israel Meir',
+                        "type": 'name'
+                      },
+                      {
+                        "value": 'ha-Kohen',
+                        "type": 'term of address'
+                      },
+                      {
+                        "value": '1838-1933',
+                        "type": 'life dates'
+                      }
+                    ],
+                    "type": 'name'
                   }
                 ]
               },
               {
                 "structuredValue": [
                   {
-                    "value": 'Israel Meir in Hebrew characters',
-                    "type": 'name'
-                  },
-                  {
-                    "value": '1838-1933',
-                    "type": 'life dates'
-                  },
-                  {
                     "value": 'Mishnah berurah in Hebrew characters',
                     "type": 'title'
+                  },
+                  {
+                    "structuredValue": [
+                      {
+                        "value": 'Israel Meir in Hebrew characters',
+                        "type": 'name'
+                      },
+                      {
+                        "value": '1838-1933',
+                        "type": 'life dates'
+                      }
+                    ],
+                    "type": 'name'
                   }
                 ]
               }
@@ -566,6 +749,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
               }
             ]
           }
+
         ]
       end
     end
@@ -584,14 +768,14 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       before do
-        allow(Honeybadger).to receive(:notify)
+        allow(notifier).to receive(:warn)
       end
 
       it 'parses' do
         expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
       end
 
-      it 'creates value from the authority record and Honeybadger notifies' do
+      it 'creates value from the authority record and warns' do
         expect(build).to eq [
           {
             "structuredValue": [
@@ -601,10 +785,14 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
               }
             ],
             "type": 'uniform',
-            "uri": 'http://id.loc.gov/authorities/names/n80008522'
+            "uri": 'http://id.loc.gov/authorities/names/n80008522',
+            "source": {
+              code: 'naf',
+              uri: 'http://id.loc.gov/authorities/names/'
+            }
           }
         ]
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Name not found for title group', { tags: 'data_error' })
+        expect(notifier).to have_received(:warn).with('Name not found for title group')
       end
     end
 

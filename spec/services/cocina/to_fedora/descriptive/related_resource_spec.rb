@@ -11,7 +11,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
                'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                'version' => '3.6',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, related_resources: resources, druid: 'druid:vx162kw9911')
+        described_class.write(xml: xml, related_resources: resources, druid: 'druid:vx162kw9911', id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
   end

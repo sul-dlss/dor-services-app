@@ -18,8 +18,8 @@ module Cocina
       end
 
       def transform
-        Nokogiri::XML::Builder.new do |xml|
-          xml.mods(namespaces) do
+        Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
+          xml.mods(mods_attributes) do
             Descriptive::DescriptiveWriter.write(xml: xml, descriptive: descriptive, druid: druid)
           end
         end
@@ -40,7 +40,7 @@ module Cocina
         end
       end
 
-      def namespaces
+      def mods_attributes
         {
           'xmlns' => 'http://www.loc.gov/mods/v3',
           'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',

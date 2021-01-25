@@ -5,34 +5,24 @@ module Cocina
   class Mapper
     # Generic base error class, so we can easily determine when a data error is one we
     # already account for, so that we can wrap the unexpected ones.
-    class DataError < StandardError; end
+    class MapperError < StandardError; end
 
     # Raised when called on something other than an item (DRO), etd, collection, or adminPolicy (APO)
-    class UnsupportedObjectType < DataError; end
-
-    # Raised when we can't figure out the title for the object.
-    class MissingTitle < DataError
-      def initialize(msg = 'Missing title')
-        super(msg)
-      end
-    end
+    class UnsupportedObjectType < MapperError; end
 
     # Raised when this object is missing a sourceID, so it can't be mapped to cocina.
-    class MissingSourceID < DataError
+    class MissingSourceID < MapperError
       def initialize(msg = 'Missing source ID')
         super(msg)
       end
     end
-
-    # Raised when assumptions about descMetadata are violated
-    class InvalidDescMetadata < DataError; end
 
     # Raised on unexpected mapper failures. It is unknown if a data error or a mapping error.
     class UnexpectedBuildError < StandardError; end
 
     # @param [Dor::Abstract] item the Fedora object to convert to a cocina object
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
-    # @raises [SolrConnectionError,UnsupportedObjectType,MissingTitle,MissingSourceID]
+    # @raises [SolrConnectionError,UnsupportedObjectType,MissingSourceID]
     def self.build(item)
       new(item).build
     end
@@ -56,9 +46,6 @@ module Cocina
                 raise "unable to build '#{klass}'"
               end
       klass.new(props)
-    rescue DataError => e
-      Honeybadger.notify(e, { tags: 'data_error', error_message: "[DATA ERROR] #{e}" })
-      raise
     rescue StandardError => e
       Honeybadger.notify(e)
       raise UnexpectedBuildError, e # wrap unexpected StandardError, caller will probably want to look at #cause

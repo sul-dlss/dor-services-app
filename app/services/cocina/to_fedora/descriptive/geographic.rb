@@ -5,8 +5,6 @@ module Cocina
     class Descriptive
       # Maps geo extension from cocina to MODS
       class Geographic
-        DEFAULT_FORMAT = 'image/jpeg'
-        DEFAULT_TYPE = 'Image'
         TYPE_REGEX = /^type$/.freeze
         MEDIA_REGEX = /^media type$/.freeze
         DATA_FORMAT_REGEX = /^data format$/.freeze
@@ -59,19 +57,19 @@ module Cocina
         end
 
         def extract_format(geo)
-          media_type = geo.form.find { |form| form.type.match(MEDIA_REGEX) }
+          media_type = geo.form.find { |form| form.type.match(MEDIA_REGEX) && form[:value] != 'Image' }
           data_format = geo.form.find { |form| form.type.match(DATA_FORMAT_REGEX) }
 
-          return "#{media_type.value}; format=#{data_format.value}" if data_format
+          return "#{media_type.value}; format=#{data_format.value}" if data_format && media_type
 
-          DEFAULT_FORMAT
+          media_type&.value
         end
 
         def extract_type(geo)
-          type = geo[:form].find { |form| form[:type].match(TYPE_REGEX) }
+          type = geo[:form].find { |form| form[:type].match(TYPE_REGEX) || (form[:type].match(MEDIA_REGEX) && form[:value] == 'Image') }
           return type[:value] if type
 
-          DEFAULT_TYPE
+          nil
         end
 
         def about(druid)
@@ -79,11 +77,11 @@ module Cocina
         end
 
         def add_format(data)
-          xml['dc'].format data
+          xml['dc'].format data if data
         end
 
         def add_type(type)
-          xml['dc'].type type
+          xml['dc'].type type if type
         end
 
         def add_content(geo)
@@ -101,7 +99,7 @@ module Cocina
           lat = geo.subject.first.structuredValue.find { |point| point.type.include? 'latitude' }.value
           long = geo.subject.first.structuredValue.find { |point| point.type.include? 'longitude' }.value
           xml['gmd'].centerPoint do
-            xml['gml'].Point('gml:id' => 'ID') do
+            xml['gml'].Point do
               xml['gml'].pos "#{lat} #{long}"
             end
           end

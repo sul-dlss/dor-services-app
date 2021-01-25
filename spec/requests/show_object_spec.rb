@@ -229,28 +229,6 @@ RSpec.describe 'Get the object' do
       end
     end
 
-    context 'when the object exists without a title' do
-      let(:object) do
-        Dor::Item.new(pid: 'druid:bc123df4567',
-                      source_id: 'src:99999',
-                      label: 'foo',
-                      read_rights: 'world')
-      end
-
-      let(:expected) do
-        {
-          errors: [{ detail: 'All objects are required to have a title, but druid:bc123df4567 appears to be malformed as a title cannot be found.', status: '422', title: 'Missing title' }]
-        }
-      end
-
-      it 'returns the error' do
-        get '/v1/objects/druid:bc123df4567',
-            headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response).to have_http_status(:unprocessable_entity)
-        expect(response_model).to eq expected
-      end
-    end
-
     context 'when the object exists without a sourceId' do
       let(:object) do
         Dor::Item.new(pid: 'druid:bc123df4567',
@@ -264,7 +242,15 @@ RSpec.describe 'Get the object' do
 
       let(:expected) do
         {
-          errors: [{ detail: 'unable to resolve a sourceId for druid:bc123df4567', status: '422', title: 'Missing sourceId' }]
+          errors: [
+            a_hash_including(
+              detail: 'unable to resolve a sourceId for druid:bc123df4567',
+              meta: { backtrace: include(match("app/services/cocina/mapper.rb:[0-9]+:in `build'$"),
+                                         match("app/controllers/objects_controller.rb:[0-9]+:in `show'$")) },
+              status: '422',
+              title: 'Unexpected Cocina::Mapper.build error'
+            )
+          ]
         }
       end
 
@@ -272,48 +258,7 @@ RSpec.describe 'Get the object' do
         get '/v1/objects/druid:bc123df4567',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response_model).to eq expected
-      end
-    end
-
-    context 'when the object has invalid mods' do
-      let(:object) do
-        Dor::Item.new(pid: 'druid:bc123df4567',
-                      source_id: 'src:99999',
-                      label: 'foo',
-                      read_rights: 'world').tap do |i|
-          i.descMetadata.content = xml
-        end
-      end
-      let(:xml) do
-        <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns="http://www.loc.gov/mods/v3" version="3.6"
-            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <titleInfo>
-              <title>journal of stuff</title>
-            </titleInfo>
-            <name valueURI="corporate">
-              <namePart>Selective Service System</namePart>
-              <role>
-                <roleTerm type="code">isbx</roleTerm>
-              </role>
-            </name>
-          </mods>
-        XML
-      end
-
-      let(:expected) do
-        {
-          errors: [{ detail: 'Contributor role code has unexpected value: isbx', status: '422', title: 'Invalid descMetadata' }]
-        }
-      end
-
-      it 'returns the error' do
-        get '/v1/objects/druid:bc123df4567',
-            headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response).to have_http_status(:unprocessable_entity)
-        expect(response_model).to eq expected
+        expect(response_model).to include expected
       end
     end
 

@@ -8,91 +8,113 @@ module Cocina
       class Subject
         TAG_NAME = {
           'time' => :temporal,
-          'genre' => :genre
+          'genre' => :genre,
+          'occupation' => :occupation
         }.freeze
         DEORDINAL_REGEX = /(?<=[0-9])(?:st|nd|rd|th)/.freeze
 
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] subjects
         # @params [Array<Cocina::Models::DescriptiveValue>] forms
-        def self.write(xml:, subjects:, forms: [])
-          new(xml: xml, subjects: subjects, forms: forms).write
+        # @params [IdGenerator] id_generator
+        def self.write(xml:, subjects:, id_generator:, forms: [])
+          new(xml: xml, subjects: subjects, forms: forms, id_generator: id_generator).write
         end
 
-        def initialize(xml:, subjects:, forms:)
+        def initialize(xml:, subjects:, forms:, id_generator:)
           @xml = xml
           @subjects = Array(subjects)
-          @forms = forms
-          # Used to determine if need to write form only cartographics
-          @wrote_cartographic = false
+          @forms = forms || []
+          @id_generator = id_generator
         end
 
         def write
-          subjects.each_with_index do |subject, index|
-            if subject.structuredValue
-              write_structured(subject)
-            elsif subject.parallelValue
-              write_parallel(subject, alt_rep_group: index)
+          subjects.each do |subject|
+            next if subject.type == 'map coordinates'
+
+            parallel_subject_values = Array(subject.parallelValue)
+            subject_value = subject
+
+            # Make adjustments for a parallel person.
+            if parallel_subject_values.present? && FromFedora::Descriptive::Contributor::ROLES.values.include?(subject.type)
+              display_values, parallel_subject_values = parallel_subject_values.partition { |value| value.type == 'display' }
+              subject_value = parallel_subject_values.first if parallel_subject_values.size == 1
+            end
+
+            if parallel_subject_values.size > 1
+              write_parallel(subject, parallel_subject_values, alt_rep_group: id_generator.next_altrepgroup, display_values: display_values)
             else
-              write_basic(subject)
+              write_subject(subject, subject_value, display_values: display_values)
             end
           end
-          write_form_only_cartographic
+          write_cartographic
         end
 
         private
 
-        attr_reader :xml, :subjects, :forms, :wrote_cartographic
+        attr_reader :xml, :subjects, :forms, :id_generator
 
-        def write_parallel(subject, alt_rep_group:)
+        def write_subject(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
+          if subject_value.structuredValue
+            write_structured(subject, subject_value, alt_rep_group: alt_rep_group, type: type, display_values: display_values)
+          else
+            write_basic(subject, subject_value, alt_rep_group: alt_rep_group, type: type, display_values: display_values)
+          end
+        end
+
+        def write_parallel(subject, subject_values, alt_rep_group:, display_values: nil)
           if subject.type == 'place'
             xml.subject do
-              subject.parallelValue.each do |geo|
+              subject_values.each do |geo|
                 geographic(geo, is_parallel: true)
               end
             end
           else
-            subject.parallelValue.each do |val|
-              xml.subject lang: val.valueLanguage.code, altRepGroup: alt_rep_group do
-                write_topic(val, is_parallel: true)
-              end
+            subject_values.each do |subject_value|
+              write_subject(subject, subject_value, alt_rep_group: alt_rep_group, type: subject.type, display_values: display_values)
             end
           end
         end
 
-        def write_structured(subject)
-          xml.subject(structured_attributes_for(subject)) do
-            if subject.type == 'place'
-              hierarchical_geographic(xml, subject)
-            elsif subject.type == 'time'
-              time_range(xml, subject)
-            elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(subject.type)
-              structured_person(xml, subject)
+        def write_structured(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
+          type ||= subject_value.type || subject.type
+          xml.subject(structured_attributes_for(subject_value, alt_rep_group: alt_rep_group)) do
+            if type == 'place'
+              hierarchical_geographic(subject_value)
+            elsif type == 'time'
+              time_range(subject_value)
+            elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(type)
+              write_structured_person(subject, subject_value, type: type, display_values: display_values)
             else
-              subject.structuredValue&.each do |component|
+              Array(subject_value.structuredValue).each do |component|
                 if FromFedora::Descriptive::Contributor::ROLES.values.include?(component.type)
                   if component.structuredValue
-                    structured_person(xml, component)
+                    write_structured_person(subject, component, display_values: display_values)
                   else
-                    person(xml, component)
+                    write_person(subject, component, display_values: display_values)
                   end
                 else
-                  write_topic(component)
+                  write_topic(component, is_parallel: alt_rep_group.present?)
                 end
               end
             end
           end
         end
 
-        def structured_attributes_for(subject)
-          {}.tap do |attrs|
+        def structured_attributes_for(subject, alt_rep_group: nil)
+          {
+            altRepGroup: alt_rep_group,
+            valueURI: subject.uri,
+            displayLabel: subject.displayLabel
+          }.tap do |attrs|
             if subject.source
               attrs[:authority] = authority_for(subject)
               attrs[:authorityURI] = subject.source.uri
             elsif all_same_authority?(subject.structuredValue)
               attrs[:authority] = authority_for(subject.structuredValue.first)
             end
-            attrs[:valueURI] = subject.uri
+            attrs[:lang] = subject.valueLanguage&.code
+            attrs[:script] = subject.valueLanguage&.valueScript&.code
           end.compact
         end
 
@@ -100,28 +122,35 @@ module Cocina
           Array(structured_value).map { |value| authority_for(value) }.uniq.size == 1
         end
 
-        def write_basic(subject)
-          subject_attributes = {}.tap do |attrs|
-            attrs[:authority] = authority_for(subject)
-            attrs[:displayLabel] = subject.displayLabel
-            attrs[:edition] = edition(subject.source.version) if subject.source&.version
-            if subject.type == 'map coordinates'
-              attrs[:authorityURI] = subject.source&.uri
-              attrs[:valueURI] = subject.uri
-            end
-          end.compact
+        def write_basic(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
+          subject_attributes = subject_attributes_for(subject_value, alt_rep_group)
+          type ||= subject_value.type
 
-          if subject.type == 'classification'
-            write_classification(subject.value, subject_attributes)
-          elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(subject.type)
+          if type == 'classification'
+            write_classification(subject_value.value, subject_attributes)
+          elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(type) || type == 'name'
             xml.subject(subject_attributes) do
-              person(xml, subject)
+              write_person(subject, subject_value, display_values: display_values)
             end
           else
             xml.subject(subject_attributes) do
-              write_topic(subject)
+              write_topic(subject_value, is_parallel: alt_rep_group.present?, is_basic: true)
             end
           end
+        end
+
+        def subject_attributes_for(subject, alt_rep_group)
+          {
+            altRepGroup: alt_rep_group,
+            authority: authority_for(subject),
+            displayLabel: subject.displayLabel
+          }.tap do |attrs|
+            attrs[:edition] = edition(subject.source.version) if subject.source&.version
+            if alt_rep_group
+              attrs[:lang] = subject.valueLanguage&.code
+              attrs[:script] = subject.valueLanguage&.valueScript&.code
+            end
+          end.compact
         end
 
         def authority_for(subject)
@@ -139,115 +168,150 @@ module Cocina
           xml.classification value, attrs
         end
 
-        def write_topic(subject, is_parallel: false)
+        def write_topic(subject, is_parallel: false, is_basic: false)
+          topic_attributes = topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic)
           case subject.type
           when 'person'
-            xml.name topic_attributes_for(subject, is_parallel: is_parallel).merge(type: 'personal') do
+            xml.name topic_attributes.merge(type: 'personal') do
               xml.namePart subject.value
             end
           when 'title'
-            xml.titleInfo topic_attributes_for(subject, is_parallel: is_parallel) do
-              xml.title subject.value
-            end
-          when 'map coordinates'
-            cartographics(xml, subject)
+            title = subject.to_h
+            title.delete(:type)
+            title[:source].delete(:code) if subject.source&.code && !topic_attributes[:authority]
+            Title.write(xml: xml, titles: [Cocina::Models::DescriptiveValue.new(title)], id_generator: id_generator, additional_attrs: topic_attributes)
           when 'place'
             geographic(subject, is_parallel: is_parallel)
           else
-            xml.public_send(TAG_NAME.fetch(subject.type, :topic),
-                            subject.value,
-                            topic_attributes_for(subject, is_parallel: is_parallel))
+            xml.public_send(TAG_NAME.fetch(subject.type, :topic), subject.value, topic_attributes)
           end
         end
 
-        def topic_attributes_for(subject, is_parallel: false)
+        # rubocop:disable Metrics/CyclomaticComplexity
+        # rubocop:disable Metrics/PerceivedComplexity
+        def topic_attributes_for(subject, is_parallel: false, is_geo: false, is_basic: false)
           {}.tap do |topic_attributes|
-            topic_attributes[:authority] = subject.source&.code if subject.source&.uri || subject.uri || is_parallel
+            topic_attributes[:authority] = subject.source&.code if subject.source&.uri || subject.uri || (is_geo && is_parallel)
             topic_attributes[:authorityURI] = subject.source&.uri
             topic_attributes[:encoding] = subject.encoding&.code
             topic_attributes[:valueURI] = subject.uri
-            topic_attributes[:lang] = subject.valueLanguage&.code unless is_parallel
+            if is_geo || (is_basic && !is_parallel)
+              topic_attributes[:lang] = subject.valueLanguage&.code
+              topic_attributes[:script] = subject.valueLanguage&.valueScript&.code
+            end
           end.compact
         end
+        # rubocop:enable Metrics/CyclomaticComplexity
+        # rubocop:enable Metrics/PerceivedComplexity
 
         def geographic(subject, is_parallel: false)
           if subject.code
             xml.geographicCode subject.code, authority: subject.source.code
           else
-            xml.geographic subject.value, topic_attributes_for(subject, is_parallel: is_parallel)
+            xml.geographic subject.value, topic_attributes_for(subject, is_parallel: is_parallel, is_geo: true)
           end
         end
 
-        def time_range(xml, subject)
+        def time_range(subject)
           subject.structuredValue.each do |point|
             xml.temporal point.value, point: point.type, encoding: subject.encoding.code
           end
         end
 
-        def cartographics(xml, subject = nil)
-          xml.cartographics do
-            xml.coordinates subject.value if subject
-            xml.scale scale_form.value if scale_form
-            xml.projection projection_form.value if projection_form
-          end
-          @wrote_cartographic = true
+        def write_cartographic
+          write_cartographic_without_authority
+          write_cartographic_with_authority
         end
 
-        def write_form_only_cartographic
-          return if wrote_cartographic
-          return unless scale_form || projection_form
+        def write_cartographic_without_authority
+          # With all subject/forms without authorities.
+          scale_forms = forms.select { |form| form.type == 'map scale' }
+          projection_forms = forms.select { |form| form.type == 'map projection' && form.source.nil? }
+          carto_subjects = subjects.select { |subject| subject.type == 'map coordinates' }
+          return unless scale_forms.present? || projection_forms.present? || carto_subjects.present?
 
           xml.subject do
-            cartographics(xml)
-          end
-        end
-
-        def scale_form
-          @scale_form ||= forms&.find { |form| form.type == 'map scale' }
-        end
-
-        def projection_form
-          @projection_form ||= forms&.find { |form| form.type == 'map projection' }
-        end
-
-        def hierarchical_geographic(xml, subject)
-          xml.hierarchicalGeographic do
-            continent = subject.structuredValue.find { |geo| geo.type == 'continent' }&.value
-            xml.continent continent if continent
-            country = subject.structuredValue.find { |geo| geo.type == 'country' }&.value
-            xml.country country if country
-            city = subject.structuredValue.find { |geo| geo.type == 'city' }&.value
-            xml.city city if city
-          end
-        end
-
-        def person(xml, subject)
-          subject_attributes = {}.tap do |attrs|
-            attrs[:type] = name_type_for(subject)
-            if subject.source
-              attrs[:authority] = subject.source.code
-              attrs[:authorityURI] = subject.source.uri
+            xml.cartographics do
+              scale_forms.each { |scale_form| xml.scale scale_form.value }
+              projection_forms.each { |projection_form| xml.projection projection_form.value }
+              carto_subjects.each { |carto_subject| xml.coordinates carto_subject.value }
             end
-            attrs[:valueURI] = subject.uri
+          end
+        end
+
+        def write_cartographic_with_authority
+          # Each for form with authority.
+          projection_forms_with_authority = forms.select { |form| form.type == 'map projection' && form.source.present? }
+          projection_forms_with_authority.each do |projection_form|
+            xml.subject carto_subject_attributes_for(projection_form) do
+              xml.cartographics do
+                xml.projection projection_form.value
+              end
+            end
+          end
+        end
+
+        def carto_subject_attributes_for(form)
+          {
+            displayLabel: form.displayLabel,
+            authority: form.source&.code,
+            authorityURI: form.source&.uri,
+            valueURI: form.uri
+          }.compact
+        end
+
+        def hierarchical_geographic(subject)
+          xml.hierarchicalGeographic do
+            subject.structuredValue.each { |structured_value| xml.send(structured_value.type, structured_value.value) }
+          end
+        end
+
+        def write_person(subject, subject_value, display_values: nil)
+          name_attrs = topic_attributes_for(subject_value).tap do |attrs|
+            attrs[:type] = name_type_for(subject_value.type)
           end.compact
 
-          xml.name subject_attributes do
-            xml.namePart subject.value
+          xml.name name_attrs do
+            xml.namePart subject_value.value
+            write_display_form(display_values)
+            write_roles(subject.note)
           end
         end
 
-        def structured_person(xml, subject)
-          xml.name type: name_type_for(subject) do
-            subject.structuredValue.each do |point|
-              attributes = {}
-              attributes[:type] = FromFedora::Descriptive::Contributor::NAME_PART.invert.fetch(point.type) unless ['name', 'inverted full name'].include?(point.type)
-              xml.namePart point.value, attributes
-            end
+        def write_structured_person(subject, subject_value, type: nil, display_values: nil)
+          type ||= subject_value.type
+          name_attrs = {
+            type: name_type_for(type)
+          }.compact
+
+          xml.name name_attrs do
+            write_name_parts(subject_value)
+            write_display_form(display_values)
+            write_roles(subject.note)
           end
         end
 
-        def name_type_for(subject)
-          FromFedora::Descriptive::Contributor::ROLES.invert.fetch(subject.type)
+        def write_display_form(display_values)
+          Array(display_values).each do |display_value|
+            xml.displayForm display_value.value
+          end
+        end
+
+        def write_roles(notes)
+          Array(notes).filter { |note| note.type == 'role' }.each { |role| RoleWriter.write(xml: xml, role: role) }
+        end
+
+        def write_name_parts(descriptive_value)
+          descriptive_value.structuredValue.each do |point|
+            attributes = {}.tap do |attrs|
+              attrs[:type] = FromFedora::Descriptive::Contributor::NAME_PART.invert[point.type]
+            end.compact
+            xml.namePart point.value, attributes
+          end
+        end
+
+        def name_type_for(type)
+          FromFedora::Descriptive::Contributor::ROLES.invert[type]
         end
 
         def edition(version)

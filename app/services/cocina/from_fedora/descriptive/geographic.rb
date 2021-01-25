@@ -41,12 +41,13 @@ module Cocina
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder: nil)
-          new(resource_element: resource_element).build
+        def self.build(resource_element:, descriptive_builder:)
+          new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
         end
 
-        def initialize(resource_element:)
+        def initialize(resource_element:, descriptive_builder:)
           @resource_element = resource_element
+          @notifier = descriptive_builder.notifier
         end
 
         def build
@@ -62,13 +63,13 @@ module Cocina
 
         private
 
-        attr_reader :resource_element
+        attr_reader :resource_element, :notifier
 
         def build_form
           return unless format
 
           [].tap do |form|
-            form << { value: format[:text], type: MEDIA_TYPE, source: IANA_TERMS }
+            form << { value: format[:text], type: MEDIA_TYPE, source: IANA_TERMS } if format[:text]
             form << build_type
           end
         end
@@ -196,7 +197,7 @@ module Cocina
 
         def normalize_type_text(text)
           if text.downcase == 'image' && text != 'Image'
-            Honeybadger.notify("[DATA ERROR] <dc:type>#{text}</dc:type> normalized to <dc:type>Image</dc:type>", { tags: 'data_error' })
+            notifier.warn('dc:type normalized to <dc:type>Image</dc:type>', type: text)
             'Image'
           else
             text
@@ -204,9 +205,9 @@ module Cocina
         end
 
         def check_purl
-          return if description['rdf:about']&.start_with?('http://purl.stanford.edu/')
+          return if description['rdf:about'] =~ %r{^https?://purl.stanford.edu/}
 
-          Honeybadger.notify('[DATA ERROR] rdf:about does not contain a correctly formatted PURL', { tags: 'data_error' })
+          notifier.warn('rdf:about does not contain a correctly formatted PURL')
         end
       end
       # rubocop:enable Metrics/ClassLength

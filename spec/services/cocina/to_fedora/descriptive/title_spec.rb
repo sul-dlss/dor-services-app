@@ -11,10 +11,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
                'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                'version' => '3.6',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, titles: titles)
+        described_class.write(xml: xml, titles: titles, contributors: contributors, id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
   end
+
+  let(:contributors) { [] }
 
   describe 'title' do
     context 'when it is a basic value' do
@@ -34,6 +36,40 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
             <titleInfo>
               <title>Gaudy night</title>
             </titleInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when there is a title with language' do
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            "value": 'Union des Forces de Changement du Togo',
+            "valueLanguage": {
+              "code": 'fre',
+              "source": {
+                "code": 'iso639-2b'
+              },
+              "valueScript": {
+                "code": 'Latn',
+                "source": {
+                  "code": 'iso15924'
+                }
+              }
+            }
+          )
+        ]
+      end
+
+      it 'creates the equivalent MODS' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo lang="fre" script="Latn">
+              <title>Union des Forces de Changement du Togo</title>
+              </titleInfo>
           </mods>
         XML
       end
@@ -77,17 +113,64 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
     end
 
     context 'when it is a uniform title with multiple namePart subelements' do
-      # xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L243'
       let(:titles) do
         [
           Cocina::Models::Title.new(
-            { structuredValue: [{ type: 'surname', value: 'Saint-Saëns' },
-                                { type: 'forename', value: 'Camille' },
-                                { type: 'life dates', value: '1835-1921' },
-                                { type: 'title', value: 'Princesse jaune. Vocal score' },
-                                { type: 'term of address', value: 'Princess' }],
-              type: 'uniform',
-              status: 'primary' }
+            {
+              "structuredValue": [
+                {
+                  "structuredValue": [
+                    {
+                      "value": 'Saint-Saëns',
+                      "type": 'surname'
+                    },
+                    {
+                      "value": 'Camille',
+                      "type": 'forename'
+                    },
+                    {
+                      "value": '1835-1921',
+                      "type": 'life dates'
+                    }
+                  ],
+                  "type": 'name'
+                },
+                {
+                  "value": 'Princesse jaune. Vocal score',
+                  "type": 'title'
+                }
+              ],
+              "type": 'uniform'
+            }
+          )
+        ]
+      end
+
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            {
+              "name": [
+                {
+                  "structuredValue": [
+                    {
+                      "value": 'Saint-Saëns',
+                      "type": 'surname'
+                    },
+                    {
+                      "value": 'Camille',
+                      "type": 'forename'
+                    },
+                    {
+                      "value": '1835-1921',
+                      "type": 'life dates'
+                    }
+                  ]
+                }
+              ],
+              "type": 'person',
+              "status": 'primary'
+            }
           )
         ]
       end
@@ -97,20 +180,102 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
           <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.loc.gov/mods/v3" version="3.6"
             xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <titleInfo type="uniform" usage="primary" nameTitleGroup="1">
+            <titleInfo type="uniform" nameTitleGroup="1">
               <title>Princesse jaune. Vocal score</title>
             </titleInfo>
             <name type="personal" usage="primary" nameTitleGroup="1">
               <namePart type="family">Saint-Sa&#xEB;ns</namePart>
               <namePart type="given">Camille</namePart>
               <namePart type="date">1835-1921</namePart>
-              <namePart type="termsOfAddress">Princess</namePart>
             </name>
           </mods>
         XML
       end
     end
 
+    context 'when it is a uniform title with multiple title subelements' do
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            {
+              structuredValue: [
+                {
+                  type: 'title',
+                  structuredValue: [
+                    {
+                      value: 'Concertos, recorder, string orchestra',
+                      type: 'main title'
+                    },
+                    {
+                      value: 'RV 441, C minor',
+                      type: 'part number'
+                    }
+                  ]
+                },
+                {
+                  structuredValue: [
+                    {
+                      value: 'Vivaldi, Antonio',
+                      type: 'name'
+                    },
+                    {
+                      value: '1678-1741',
+                      type: 'life dates'
+                    }
+                  ],
+                  type: 'name'
+                }
+              ],
+              type: 'uniform'
+            }
+          )
+        ]
+      end
+
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            {
+              "name": [
+                {
+                  "structuredValue": [
+                    {
+                      "value": 'Vivaldi, Antonio',
+                      "type": 'name'
+                    },
+                    {
+                      "value": '1678-1741',
+                      "type": 'life dates'
+                    }
+                  ]
+                }
+              ],
+              "type": 'person',
+              "status": 'primary'
+            }
+          )
+        ]
+      end
+
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo type="uniform" nameTitleGroup="1">
+              <title>Concertos, recorder, string orchestra</title>
+              <partNumber>RV 441, C minor</partNumber>
+            </titleInfo>
+            <name type="personal" usage="primary" nameTitleGroup="1">
+              <namePart>Vivaldi, Antonio</namePart>
+              <namePart type="date">1678-1741</namePart>
+            </name>
+          </mods>
+        XML
+      end
+    end
+
+    # Example 18
     context 'when it is a multilingual uniform title' do
       let(:titles) do
         [
@@ -131,16 +296,21 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
               {
                 "structuredValue": [
                   {
-                    "value": 'Israel Meir',
+                    "structuredValue": [
+                      {
+                        "value": 'Israel Meir',
+                        "type": 'name'
+                      },
+                      {
+                        "value": 'ha-Kohen',
+                        "type": 'term of address'
+                      },
+                      {
+                        "value": '1838-1933',
+                        "type": 'life dates'
+                      }
+                    ],
                     "type": 'name'
-                  },
-                  {
-                    "value": 'ha-Kohen',
-                    "type": 'term of address'
-                  },
-                  {
-                    "value": '1838-1933',
-                    "type": 'life dates'
                   },
                   {
                     "value": 'Mishnah berurah. English and Hebrew',
@@ -151,12 +321,17 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
               {
                 "structuredValue": [
                   {
-                    "value": 'Israel Meir in Hebrew characters',
+                    "structuredValue": [
+                      {
+                        "value": 'Israel Meir in Hebrew characters',
+                        "type": 'name'
+                      },
+                      {
+                        "value": '1838-1933',
+                        "type": 'life dates'
+                      }
+                    ],
                     "type": 'name'
-                  },
-                  {
-                    "value": '1838-1933',
-                    "type": 'life dates'
                   },
                   {
                     "value": 'Mishnah berurah in Hebrew characters',
@@ -166,6 +341,52 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
               }
             ],
             "type": 'uniform'
+          )
+        ]
+      end
+
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            {
+              "type": 'person',
+              "name": [
+                {
+                  "parallelValue": [
+                    {
+                      "structuredValue": [
+                        {
+                          "value": 'Israel Meir',
+                          "type": 'name'
+                        },
+                        {
+                          "value": 'ha-Kohen',
+                          "type": 'term of address'
+                        },
+                        {
+                          "value": '1838-1933',
+                          "type": 'life dates'
+                        }
+                      ],
+                      "status": 'primary'
+                    },
+                    {
+                      "structuredValue": [
+                        {
+                          "value": 'Israel Meir in Hebrew characters',
+                          "type": 'name'
+                        },
+                        {
+                          "value": '1838-1933',
+                          "type": 'life dates'
+                        }
+                      ],
+                      "status": 'primary'
+                    }
+                  ]
+                }
+              ]
+            }
           )
         ]
       end
@@ -182,18 +403,19 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
             <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="1">
               <title>Mishnah berurah. English and Hebrew</title>
             </titleInfo>
+            <titleInfo type="uniform" nameTitleGroup="2" altRepGroup="1">
+              <title>Mishnah berurah in Hebrew characters</title>
+            </titleInfo>
             <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="1">
               <namePart>Israel Meir</namePart>
               <namePart type="termsOfAddress">ha-Kohen</namePart>
               <namePart type="date">1838-1933</namePart>
             </name>
-            <titleInfo type="uniform" nameTitleGroup="2" altRepGroup="1">
-              <title>Mishnah berurah in Hebrew characters</title>
-            </titleInfo>
             <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="2">
               <namePart>Israel Meir in Hebrew characters</namePart>
               <namePart type="date">1838-1933</namePart>
             </name>
+          </mods>
         XML
       end
     end
@@ -317,7 +539,65 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
     end
 
     context 'when it is transliterated (title is value)' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L157'
+      # https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L157'
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            "parallelValue": [
+              {
+                "value": 'Война и миръ',
+                "status": 'primary',
+                "valueLanguage": {
+                  "code": 'rus',
+                  "source": {
+                    "code": 'iso639-2b'
+                  },
+                  "valueScript": {
+                    "code": 'Cyrl',
+                    "source": {
+                      "code": 'iso15924'
+                    }
+                  }
+                }
+              },
+              {
+                "value": 'Voĭna i mir',
+                "valueLanguage": {
+                  "code": 'rus',
+                  "source": {
+                    "code": 'iso639-2b'
+                  },
+                  "valueScript": {
+                    "code": 'Latn',
+                    "source": {
+                      "code": 'iso15924'
+                    }
+                  }
+                },
+                "type": 'transliterated',
+                "standard": {
+                  "value": 'ALA-LC Romanization Tables'
+                }
+              }
+            ]
+          )
+        ]
+      end
+
+      it 'creates the equivalent MODS' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo usage="primary" lang="rus" script="Cyrl" altRepGroup="1">
+              <title>Война и миръ</title>
+            </titleInfo>
+            <titleInfo type="translated" lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
+              <title>Voĭna i mir</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
     end
 
     context 'when there is a title with script but no lang' do
@@ -370,7 +650,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
               },
               {
                 "value": 'Hamlet',
-                "type": 'main title'
+                "type": 'title'
               }
             ],
             "type": 'uniform',
@@ -378,6 +658,28 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
             "source": {
               "uri": 'http://id.loc.gov/authorities/names/',
               "code": 'naf'
+            }
+          )
+        ]
+      end
+
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            {
+              "name": [
+                {
+                  "value": 'Shakespeare, William, 1564-1616',
+                  "type": 'person',
+                  "status": 'primary',
+                  "uri": 'http://id.loc.gov/authorities/names/n78095332',
+                  "source": {
+                    "uri": 'http://id.loc.gov/authorities/names/',
+                    "code": 'naf'
+                  }
+                }
+              ],
+              "status": 'primary'
             }
           )
         ]
@@ -391,10 +693,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
             <titleInfo usage="primary">
               <title>Hamlet</title>
             </titleInfo>
-            <titleInfo type="uniform" nameTitleGroup="1" valueURI="http://id.loc.gov/authorities/names/n80008522" authorityURI="http://id.loc.gov/authorities/names/" authority="naf">
+            <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="1">
               <title>Hamlet</title>
             </titleInfo>
-            <name type="personal" nameTitleGroup="1" valueURI="http://id.loc.gov/authorities/names/n78095332" authorityURI="http://id.loc.gov/authorities/names/" authority="naf">
+            <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="1">
               <namePart>Shakespeare, William, 1564-1616</namePart>
             </name>
           </mods>
@@ -406,8 +708,38 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
       xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L278'
     end
 
+    # Example 8
     context 'when it is abbreviated' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_titleInfo.txt#L292'
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            "value": 'Annual report of notifiable diseases',
+            "status": 'primary'
+          ),
+          Cocina::Models::Title.new(
+            "value": 'Annu. rep. notif. dis.',
+            "type": 'abbreviated',
+            "source": {
+              "code": 'dnlm'
+            }
+          )
+        ]
+      end
+
+      it 'creates the equivalent MODS' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+               <titleInfo usage="primary">
+                  <title>Annual report of notifiable diseases</title>
+                </titleInfo>
+                <titleInfo type="abbreviated" authority="dnlm">
+                  <title>Annu. rep. notif. dis.</title>
+                </titleInfo>
+          </mods>
+        XML
+      end
     end
 
     context 'when it is parallel title' do
@@ -537,6 +869,157 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
           </mods>
         XML
       end
+    end
+
+    context 'when it is a title and contributor have same value' do
+      let(:titles) do
+        [
+          Cocina::Models::Title.new(
+            {
+              "value": 'Stanford Alpine Club'
+            }
+          )
+        ]
+      end
+
+      let(:contributors) do
+        [
+          Cocina::Models::Contributor.new(
+            {
+              "name": [
+                {
+                  "value": 'Stanford Alpine Club',
+                  "uri": 'http://id.loc.gov/authorities/names/n99277320',
+                  "source": {
+                    "code": 'naf',
+                    "uri": 'http://id.loc.gov/authorities/names/'
+                  }
+                }
+              ],
+              "type": 'organization',
+              "status": 'primary'
+            }
+          )
+        ]
+      end
+
+      # Note that not made into nameTitleGroup
+      it 'builds the xml' do
+        expect(xml).to be_equivalent_to <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title>Stanford Alpine Club</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+    end
+  end
+
+  # Example 21
+  context 'when it is a complex multilingual title' do
+    let(:titles) do
+      [
+        Cocina::Models::Title.new(
+          "structuredValue": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'Vital, Ḥayyim ben Joseph',
+                  "type": 'name'
+                },
+                {
+                  "value": '1542 or 1543-1620',
+                  "type": 'life dates'
+                }
+              ],
+              "type": 'name'
+            },
+            {
+              "value": 'Shaʻare ha-ḳedushah',
+              "type": 'title'
+            }
+          ],
+          "type": 'uniform'
+        ),
+        Cocina::Models::Title.new(
+          "parallelValue": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'Sefer Shaʻare ha-ḳedushah in Hebrew',
+                  "type": 'main title'
+                },
+                {
+                  "value": 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo in Hebrew',
+                  "type": 'subtitle'
+                }
+              ]
+            },
+            {
+              "structuredValue": [
+                {
+                  "value": 'Sefer Shaʻare ha-ḳedushah',
+                  "type": 'main title'
+                },
+                {
+                  "value": 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo',
+                  "type": 'subtitle'
+                }
+              ]
+            }
+          ]
+        )
+      ]
+    end
+
+    let(:contributors) do
+      [
+        Cocina::Models::Contributor.new(
+          "name": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'Vital, Ḥayyim ben Joseph',
+                  "type": 'name'
+                },
+                {
+                  "value": '1542 or 1543-1620',
+                  "type": 'life dates'
+                }
+              ]
+            }
+          ],
+          "type": 'person',
+          "status": 'primary'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo type="uniform" nameTitleGroup="1">
+            <title>Shaʻare ha-ḳedushah</title>
+          </titleInfo>
+          <titleInfo altRepGroup="1">
+            <title>Sefer Shaʻare ha-ḳedushah in Hebrew</title>
+            <subTitle>zeh sefer le-yosher ha-adam la-ʻavodat borʼo in Hebrew</subTitle>
+          </titleInfo>
+          <titleInfo altRepGroup="1">
+            <title>Sefer Shaʻare ha-ḳedushah</title>
+            <subTitle>zeh sefer le-yosher ha-adam la-ʻavodat borʼo</subTitle>
+          </titleInfo>
+          <name type="personal" usage="primary" nameTitleGroup="1">
+            <namePart>Vital, Ḥayyim ben Joseph</namePart>
+            <namePart type="date">1542 or 1543-1620</namePart>
+          </name>
+        </mods>
+      XML
     end
   end
 end

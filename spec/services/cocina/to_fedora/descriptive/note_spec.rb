@@ -11,7 +11,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
                'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                'version' => '3.6',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, notes: notes)
+        described_class.write(xml: xml, notes: notes, id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
   end
@@ -109,8 +109,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <note lang="eng" script="Latn" altRepGroup="0">This is a note.</note>
-          <note lang="fre" altRepGroup="0">C'est une note.</note>
+          <note lang="eng" script="Latn" altRepGroup="1">This is a note.</note>
+          <note lang="fre" altRepGroup="1">C'est une note.</note>
         </mods>
       XML
     end
@@ -137,6 +137,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
     end
   end
 
+  # Example 1
   context 'when it has a simple abstract' do
     let(:notes) do
       [
@@ -160,6 +161,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
     end
   end
 
+  # Example 2
   context 'when it has a multilingual abstract' do
     let(:notes) do
       [
@@ -208,13 +210,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <abstract lang="eng" script="Latn" altRepGroup="0">This is an abstract.</abstract>
-          <abstract lang="rus" script="Cyrl" altRepGroup="0">&#x42D;&#x442;&#x43E; &#x430;&#x43D;&#x43D;&#x43E;&#x442;&#x430;&#x446;&#x438;&#x44F;.</abstract>
+          <abstract lang="eng" script="Latn" altRepGroup="1">This is an abstract.</abstract>
+          <abstract lang="rus" script="Cyrl" altRepGroup="1">&#x42D;&#x442;&#x43E; &#x430;&#x43D;&#x43D;&#x43E;&#x442;&#x430;&#x446;&#x438;&#x44F;.</abstract>
         </mods>
       XML
     end
   end
 
+  # Example 3
   context 'when it has a display label' do
     let(:notes) do
       [
@@ -239,6 +242,29 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
     end
   end
 
+  # Example 4
+  context 'when it has an astract with type "summary"' do
+    let(:notes) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "value": 'This is a summary.',
+          "type": 'summary'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <abstract>This is a summary.</abstract>
+        </mods>
+      XML
+    end
+  end
+
+  # Example 1
   context 'when a simple table of contents' do
     let(:notes) do
       [
@@ -262,6 +288,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
     end
   end
 
+  # Example 2
   context 'when a structured table of contents' do
     let(:notes) do
       [
@@ -295,10 +322,65 @@ RSpec.describe Cocina::ToFedora::Descriptive::Note do
     end
   end
 
+  # Example 3
   context 'with a multilingual table of contents' do
-    xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_tableOfContents.txt#L33'
+    let(:notes) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "parallelValue": [
+              {
+                "value": 'Chapter 1. Chapter 2. Chapter 3.',
+                "valueLanguage":
+                          {
+                            "code": 'eng',
+                            "source": {
+                              "code": 'iso639-2b'
+                            },
+                            "valueScript": {
+                              "code": 'Latn',
+                              "source": {
+                                "code": 'iso15924'
+                              }
+                            }
+                          }
+              },
+              {
+                "value": 'Глава 1. Глава 2. Глава 3.',
+                "valueLanguage":
+                        {
+                          "code": 'rus',
+                          "source": {
+                            "code": 'iso639-2b'
+                          },
+                          "valueScript": {
+                            "code": 'Cyrl',
+                            "source": {
+                              "code": 'iso15924'
+                            }
+                          }
+                        }
+              }
+            ],
+            "type": 'table of contents'
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <tableOfContents lang="eng" script="Latn" altRepGroup="1">Chapter 1. Chapter 2. Chapter 3.</tableOfContents>
+          <tableOfContents lang="rus" script="Cyrl" altRepGroup="1">Глава 1. Глава 2. Глава 3.</tableOfContents>
+        </mods>
+      XML
+    end
   end
 
+  # Example 4
   context 'when a table of contents with a display label' do
     let(:notes) do
       [

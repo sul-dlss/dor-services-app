@@ -24,7 +24,7 @@ module Cocina
           access: Access.collection_props(item)
         }.tap do |props|
           title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
-          description = FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml)
+          description = FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml, druid: item.pid)
           props[:description] = description unless description.nil?
           identification = FromFedora::Identification.props(item)
           identification[:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey

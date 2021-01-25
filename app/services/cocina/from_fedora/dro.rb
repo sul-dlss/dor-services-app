@@ -15,6 +15,7 @@ module Cocina
       end
 
       # @raises [SolrConnectionError]
+      # rubocop:disable Metrics/AbcSize
       def props
         {
           externalIdentifier: item.pid,
@@ -27,7 +28,7 @@ module Cocina
           structural: DroStructural.props(item, type: dro_type)
         }.tap do |props|
           title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
-          description = FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml)
+          description = FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml, druid: item.pid)
           props[:description] = description unless description.nil?
 
           identification = FromFedora::Identification.props(item)
@@ -35,6 +36,7 @@ module Cocina
           props[:identification] = identification unless identification.empty?
         end
       end
+      # rubocop:enable Metrics/AbcSize
 
       private
 

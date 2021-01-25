@@ -3,7 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive::Subject do
-  subject(:build) { described_class.build(resource_element: ng_xml.root) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+
+  let(:descriptive_builder) { Cocina::FromFedora::Descriptive::DescriptiveBuilder.new(notifier: notifier) }
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   let(:ng_xml) do
     Nokogiri::XML <<~XML
@@ -73,7 +77,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    it 'builds the cocina data structure' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
           "value": 'Biblioteka Polskiej Akademii Nauk w Krakowie',
@@ -84,6 +92,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           }
         }
       ]
+      expect(notifier).to have_received(:warn).with('Value URI has unexpected value', { uri: '(OCoLC)fst00596994' })
     end
   end
 
@@ -547,11 +556,63 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
-  context 'without name type' do
-    before do
-      allow(Honeybadger).to receive(:notify)
+  # From druid:mt538yc4849
+  context 'with a name-title subject where title has partNumber' do
+    let(:xml) do
+      <<~XML
+        <subject authority="lcsh">
+          <name type="corporate">
+            <namePart>California.</namePart>
+            <namePart>Sect. 7570.</namePart>
+          </name>
+          <titleInfo>
+            <title>Government Code</title>
+            <partNumber>Sect. 7570</partNumber>
+          </titleInfo>
+        </subject>
+      XML
     end
 
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "source": {
+            "code": 'lcsh'
+          },
+          "structuredValue": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'California.',
+                  "type": 'name'
+                },
+                {
+                  "value": 'Sect. 7570.',
+                  "type": 'name'
+                }
+              ],
+              "type": 'organization'
+            },
+            {
+              "structuredValue": [
+                {
+                  "value": 'Government Code',
+                  "type": 'main title'
+                },
+                {
+                  "value": 'Sect. 7570',
+                  "type": 'part number'
+                }
+              ],
+              "type": 'title'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
+  context 'without name type' do
     let(:xml) do
       <<~XML
         <subject authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n81070667">
@@ -562,7 +623,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    it 'builds the cocina data structure' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
           source:
@@ -575,11 +640,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           value: 'Stanford University. Libraries.'
         }
       ]
-    end
-
-    it 'notifies honeybadger' do
-      build
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject contains a <name> element without a type attribute', { tags: 'data_error' })
+      expect(notifier).to have_received(:warn).with('Subject contains a <name> element without a type attribute')
     end
   end
 
@@ -595,12 +656,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
 
     before do
-      allow(Honeybadger).to receive(:notify)
+      allow(notifier).to receive(:warn)
     end
 
-    it 'ignores the subject and Honeybadger notifies' do
+    it 'ignores the subject and warns' do
       expect(build).to eq []
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] name/namePart missing value', { tags: 'data_error' })
+      expect(notifier).to have_received(:warn).with('name/namePart missing value')
     end
   end
 
@@ -615,16 +676,20 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    it 'builds the cocina data structure and logs an error' do
-      allow(Honeybadger).to receive(:notify)
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         { source: { uri: '#N/A' },
           type: 'name',
           uri: '#N/A',
           value: 'Hoveyda, Fereydoun' }
       ]
-      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Subject has <name> with an invalid type attribute '#N/A'", tags: 'data_error')
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Subject has unknown authority code', tags: 'data_error')
+      expect(notifier).to have_received(:warn).with('Name type unrecognized', { type: '#N/A' })
+      expect(notifier).to have_received(:warn).with('"#N/A" authority code').twice
+      expect(notifier).to have_received(:warn).with('Value URI has unexpected value', { uri: '#N/A' }).twice
     end
   end
 
@@ -639,7 +704,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    it 'builds the cocina data structure as if subject topic' do
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'builds the cocina data structure as if subject topic and warns' do
       expect(build).to eq [
         {
           "value": 'Student movements',
@@ -651,12 +720,70 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           }
         }
       ]
+      expect(notifier).to have_received(:warn).with('Name type unrecognized', { type: 'topic' })
+    end
+  end
+
+  # 32. Name subject with display form and role
+  # Adapted from vx363td7520
+  context 'with name subject with display form and role' do
+    let(:xml) do
+      <<~XML
+        <subject>
+          <name type="personal">
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">depicted</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">dpc</roleTerm>
+            </role>
+            <namePart type="family">Nole</namePart>
+            <namePart type="given">Andneas Colijns de</namePart>
+            <namePart type="date">1590-?</namePart>
+            <displayForm>Nole, Andneas Colijns de, 1590-?</displayForm>
+          </name>
+        </subject>
+      XML
     end
 
-    it 'notifies Honeybadger' do
-      allow(Honeybadger).to receive(:notify).once
-      build
-      expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] Subject has <name> with an invalid type attribute 'topic'", tags: 'data_error')
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "type": 'person',
+          "parallelValue": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'Nole',
+                  "type": 'surname'
+                },
+                {
+                  "value": 'Andneas Colijns de',
+                  "type": 'forename'
+                },
+                {
+                  "value": '1590-?',
+                  "type": 'life dates'
+                }
+              ]
+            },
+            {
+              "value": 'Nole, Andneas Colijns de, 1590-?',
+              "type": 'display'
+            }
+          ],
+          "note": [
+            {
+              "type": 'role',
+              "value": 'depicted',
+              "code": 'dpc',
+              "uri": 'http://id.loc.gov/vocabulary/relators/dpc',
+              "source": {
+                "code": 'marcrelator',
+                "uri": 'http://id.loc.gov/vocabulary/relators/'
+              }
+            }
+          ]
+        }
+      ]
     end
   end
 end

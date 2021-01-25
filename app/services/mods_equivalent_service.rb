@@ -26,11 +26,13 @@ class ModsEquivalentService
   def initialize(mods_ng_xml1, mods_ng_xml2)
     @mods_ng_xml1 = mods_ng_xml1
     @mods_ng_xml2 = mods_ng_xml2
-    # Map of altRepGroup ids from mods_ng_xml1 to mods_ng_xml2
+    # Map of [altRepGroup ids, parent node] from mods_ng_xml1 to mods_ng_xml2
+    # The parent node is necessary because ids are unique for mods/relatedItem not entire document.
     @altrepgroup_ids = {}
     # Map of equivalent nodes with altRepGroup attributes.
     @altrepgroup_nodes = {}
-    # Map of nameTitleGroup ids from mods_ng_xml1 to mods_ng_xml2
+    # Map of [nameTitleGroup ids, parent node] from mods_ng_xml1 to mods_ng_xml2
+    # The parent node is necessary because ids are unique for mods/relatedItem not entire document.
     @nametitlegroup_ids = {}
     # Map of equivalent nodes with nameTitleGroup attributes.
     @nametitlegroup_nodes = {}
@@ -92,11 +94,11 @@ class ModsEquivalentService
     equiv = EquivalentXml.equivalent?(norm_node1, norm_node2)
     if equiv
       if altrepgroup1
-        altrepgroup_ids[altrepgroup1.value] = altrepgroup2.value if altrepgroup2
+        altrepgroup_ids[[altrepgroup1.value, node1.parent]] = altrepgroup2.value if altrepgroup2
         altrepgroup_nodes[node1] = node2
       end
       if nametitlegroup1
-        nametitlegroup_ids[nametitlegroup1.value] = nametitlegroup2.value if nametitlegroup2
+        nametitlegroup_ids[[nametitlegroup1.value, node1.parent]] = nametitlegroup2.value if nametitlegroup2
         nametitlegroup_nodes[node1] = node2
       end
     end
@@ -164,7 +166,7 @@ class ModsEquivalentService
       node1_altrepgroup = node1['altRepGroup']
       node2 = altrepgroup_nodes[node1]
       node2_altrepgroup = node2 ? node2['altRepGroup'] : nil
-      expected_node2_altrepgroup = altrepgroup_ids[node1_altrepgroup]
+      expected_node2_altrepgroup = altrepgroup_ids[[node1_altrepgroup, node1.parent]]
 
       next nil if expected_node2_altrepgroup && expected_node2_altrepgroup == node2_altrepgroup
 
@@ -177,7 +179,7 @@ class ModsEquivalentService
       node1_nametitlegroup = node1['nameTitleGroup']
       node2 = nametitlegroup_nodes[node1]
       node2_nametitlegroup = node2 ? node2['nameTitleGroup'] : nil
-      expected_node2_nametitlegroup = nametitlegroup_ids[node1_nametitlegroup]
+      expected_node2_nametitlegroup = nametitlegroup_ids[[node1_nametitlegroup, node1.parent]]
 
       next nil if expected_node2_nametitlegroup && expected_node2_nametitlegroup == node2_nametitlegroup
 

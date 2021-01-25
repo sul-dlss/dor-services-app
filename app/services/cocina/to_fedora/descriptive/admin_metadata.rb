@@ -45,12 +45,14 @@ module Cocina
         end
 
         def build_description_standard
-          return unless admin_metadata.standard
+          return if admin_metadata.metadataStandard.blank?
 
-          if admin_metadata.standard.uri
-            xml.descriptionStandard with_uri_info(admin_metadata.standard).merge(authority: admin_metadata.standard.code)
-          else
-            xml.descriptionStandard admin_metadata.standard.code
+          admin_metadata.metadataStandard.each do |standard|
+            if standard.uri
+              xml.descriptionStandard standard.value, with_uri_info(standard).merge(authority: standard.code)
+            else
+              xml.descriptionStandard standard.code
+            end
           end
         end
 
@@ -62,7 +64,11 @@ module Cocina
         def build_event_for(type, tag)
           Array(admin_metadata.event).select { |note| note.type == type }.each do |event|
             event.date.each do |date|
-              xml.public_send(tag, date.value, encoding: date.encoding.code)
+              attributes = {}.tap do |attrs|
+                attrs[:encoding] = date.encoding&.code
+              end.compact
+
+              xml.public_send(tag, date.value, attributes)
             end
           end
         end

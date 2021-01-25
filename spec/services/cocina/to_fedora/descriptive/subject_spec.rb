@@ -5,13 +5,15 @@ require 'rails_helper'
 RSpec.describe Cocina::ToFedora::Descriptive::Subject do
   subject(:xml) { writer.to_xml }
 
+  let(:forms) { [] }
+
   let(:writer) do
     Nokogiri::XML::Builder.new do |xml|
       xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
                'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                'version' => '3.6',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, subjects: subjects)
+        described_class.write(xml: xml, subjects: subjects, forms: forms, id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
   end
@@ -48,6 +50,31 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <subject>
             <topic>Cats</topic>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has an occupation subject' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            value: 'Notaries',
+            type: 'occupation'
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject>
+            <occupation>Notaries</occupation>
           </subject>
         </mods>
       XML
@@ -362,26 +389,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     end
   end
 
+  # Example 19
   context 'when it has a cartographic subject' do
-    let(:writer) do
-      Nokogiri::XML::Builder.new do |xml|
-        xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
-                 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-                 'version' => '3.6',
-                 'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-          described_class.write(xml: xml, subjects: subjects, forms: forms)
-        end
-      end
-    end
-
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
           "value": 'E 72°--E 148°/N 13°--N 18°',
-          "type": 'map coordinates',
-          "encoding": {
-            "value": 'DMS'
-          }
+          "type": 'map coordinates'
         )
       ]
     end
@@ -420,29 +434,79 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     end
   end
 
-  context 'when it has a cartographic subject with valueURI and authority' do
-    let(:writer) do
-      Nokogiri::XML::Builder.new do |xml|
-        xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
-                 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-                 'version' => '3.6',
-                 'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-          described_class.write(xml: xml, subjects: subjects, forms: forms)
-        end
-      end
+  # Example 19b
+  context 'when it multiple cartographic subjects (mapped from ISO 19139)' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "value": 'E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ',
+          "type": 'map coordinates',
+          "encoding": {
+            "value": 'DMS'
+          }
+        )
+      ]
     end
 
+    let(:forms) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": 'Scale not given.',
+            "type": 'map scale'
+          }
+        ),
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": 'Custom projection',
+            "type": 'map projection'
+          }
+        ),
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "value": 'EPSG::4326',
+            "type": 'map projection',
+            "uri": 'http://opengis.net/def/crs/EPSG/0/4326',
+            "source": {
+              "code": 'EPSG'
+            },
+            "displayLabel": 'WGS84'
+          }
+        )
+
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject>
+            <cartographics>
+              <scale>Scale not given.</scale>
+              <projection>Custom projection</projection>
+              <coordinates>E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ</coordinates>
+            </cartographics>
+          </subject>
+          <subject authority="EPSG" valueURI="http://opengis.net/def/crs/EPSG/0/4326" displayLabel="WGS84">
+            <cartographics>
+              <projection>EPSG::4326</projection>
+            </cartographics>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has a cartographic subject with valueURI and authority' do
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
           "value": 'E 72°--E 148°/N 13°--N 18°',
           "type": 'map coordinates',
-          "uri": 'http://opengis.net/def/crs/EPSG/0/4326',
           "encoding": {
             "value": 'DMS'
-          },
-          "source": {
-            "code": 'EPSG'
           }
         )
       ]
@@ -459,7 +523,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
         Cocina::Models::DescriptiveValue.new(
           {
             "value": 'Conic proj',
-            "type": 'map projection'
+            "type": 'map projection',
+            "uri": 'http://opengis.net/def/crs/EPSG/0/4326',
+            "source": {
+              "code": 'EPSG'
+            }
           }
         )
       ]
@@ -470,10 +538,14 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <subject authority="EPSG" valueURI="http://opengis.net/def/crs/EPSG/0/4326">
+          <subject>
             <cartographics>
               <coordinates>E 72°--E 148°/N 13°--N 18°</coordinates>
               <scale>1:22,000,000</scale>
+            </cartographics>
+          </subject>
+          <subject authority="EPSG" valueURI="http://opengis.net/def/crs/EPSG/0/4326">
+            <cartographics>
               <projection>Conic proj</projection>
             </cartographics>
           </subject>
@@ -483,17 +555,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
   end
 
   context 'when it has a cartographic subject without forms' do
-    let(:writer) do
-      Nokogiri::XML::Builder.new do |xml|
-        xml.mods('xmlns' => 'http://www.loc.gov/mods/v3',
-                 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-                 'version' => '3.6',
-                 'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-          described_class.write(xml: xml, subjects: subjects, forms: [])
-        end
-      end
-    end
-
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
@@ -591,7 +652,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
             {
               "value": 'French New Wave',
               "valueLanguage": {
-                "code": 'eng'
+                "code": 'eng',
+                valueScript: {
+                  "code": 'Latn'
+                }
               }
             },
             {
@@ -611,11 +675,116 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://www.loc.gov/mods/v3" version="3.6"
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <subject lang="eng" altRepGroup="0">
+          <subject lang="eng" script="Latn" altRepGroup="1">
             <topic>French New Wave</topic>
           </subject>
-          <subject lang="fre" altRepGroup="0">
+          <subject lang="fre" altRepGroup="1">
             <topic>Nouvelle Vague</topic>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  context 'with a parallel subject but different types' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "parallelValue": [
+              {
+                "source": {
+                  "code": 'lcsh',
+                  "uri": 'http://id.loc.gov/authorities/subjects/'
+                },
+                "uri": 'http://id.loc.gov/authorities/subjects/sh85135212',
+                "value": 'Tiber River (Italy)',
+                "type": 'place'
+              },
+              {
+                "source": {
+                  "code": 'local'
+                },
+                "value": 'Tevere',
+                "type": 'topic'
+              },
+              {
+                "value": 'Tiber River',
+                "type": 'name',
+                "source": {
+                  "code": 'lcsh',
+                  "uri": 'http://id.loc.gov/authorities/names/'
+                },
+                "uri": 'http://id.loc.gov/authorities/names/n97042879'
+              }
+            ]
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject authority="lcsh" altRepGroup="1">
+            <geographic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85135212">Tiber River (Italy)</geographic>
+          </subject>
+          <subject authority="local" altRepGroup="1">
+            <topic>Tevere</topic>
+          </subject>
+          <subject authority="lcsh" altRepGroup="1">
+            <name authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n97042879">
+              <namePart>Tiber River</namePart>
+            </name>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when it has a subject with lang and script' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            "structuredValue": [
+              {
+                "value": 'Archives et documents',
+                "type": 'topic'
+              },
+              {
+                "value": 'Portraits',
+                "type": 'topic'
+              }
+            ],
+            "valueLanguage": {
+              "code": 'fre',
+              "source": {
+                "code": 'iso639-2b'
+              },
+              valueScript: {
+                code: 'Latn',
+                source: {
+                  code: 'iso15924'
+                }
+              }
+            },
+            "displayLabel": 'French archives'
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject lang="fre" script="Latn" displayLabel="French archives">
+            <topic>Archives et documents</topic>
+            <topic>Portraits</topic>
           </subject>
         </mods>
       XML
@@ -671,6 +840,47 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
           <subject displayLabel="This is about">
             <topic>Stuff</topic>
           </subject>
+        </mods>
+      XML
+    end
+  end
+
+  # 31. Cartographic subject with multiple coordinate representations
+  context 'when cartographic subject with multiple coordinate representations' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          type: 'map coordinates',
+          value: 'W0750700 W0741200 N0443400 N0431200'
+        ),
+        Cocina::Models::DescriptiveValue.new(
+          type: 'map coordinates',
+          value: 'W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ'
+        )
+      ]
+    end
+
+    let(:forms) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          "value": 'Scale ca. 1:126,720. 1 in. to 2 miles.',
+          "type": 'map scale'
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject>
+           <cartographics>
+             <scale>Scale ca. 1:126,720. 1 in. to 2 miles.</scale>
+             <coordinates>W0750700 W0741200 N0443400 N0431200</coordinates>
+             <coordinates>W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ</coordinates>
+           </cartographics>
+         </subject>
         </mods>
       XML
     end

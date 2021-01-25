@@ -20,55 +20,102 @@ module Cocina
           'references' => 'references',
           'succeeded by' => 'succeeding'
         }.freeze
+
+        DETAIL_TYPES = {
+          'location within source' => 'part',
+          'volume' => 'volume',
+          'issue' => 'issue',
+          'chapter' => 'chapter',
+          'section' => 'section',
+          'paragraph' => 'paragraph',
+          'track' => 'track',
+          'marker' => 'marker'
+        }.freeze
+
         # @params [Nokogiri::XML::Builder] xml
-        # @params [Array<Cocina::Models::DescriptiveValue>] related_resources
+        # @params [Array<Cocina::Models::RelatedResource>] related_resources
         # @param [string] druid
-        def self.write(xml:, related_resources:, druid:)
-          new(xml: xml, related_resources: related_resources, druid: druid).write
+        # @param [IdGenerator] id_generator
+        def self.write(xml:, related_resources:, druid:, id_generator:)
+          new(xml: xml, related_resources: related_resources, druid: druid, id_generator: id_generator).write
         end
 
-        def initialize(xml:, related_resources:, druid:)
+        def initialize(xml:, related_resources:, druid:, id_generator:)
           @xml = xml
-          @related_resources = related_resources
+          @related_resources = Array(related_resources)
           @druid = druid
+          @id_generator = id_generator
         end
 
         def write
-          Array(related_resources).each do |related|
-            other_type_note = other_type_note_for(related)
-            attributes = {}.tap do |attrs|
-              attrs[:type] = TYPES.fetch(related.type) if related.type
-              attrs[:displayLabel] = related.displayLabel
-
-              if other_type_note
-                attrs[:otherType] = other_type_note.value
-                attrs[:otherTypeURI] = other_type_note.uri
-                attrs[:otherTypeAuth] = other_type_note.source&.value
-              end
-            end.compact
-
-            # Filter out "other relation type"
-            related_hash = related.to_h
-            if other_type_note
-              new_notes = related_hash.fetch(:note, []).reject { |note| note[:type] == 'other relation type' }
-              related_hash[:note] = new_notes.empty? ? nil : new_notes
-            end
-            new_related = Cocina::Models::RelatedResource.new(related_hash.compact)
-
+          filtered_related_resources.each do |(attributes, new_related, orig_related)|
             xml.relatedItem attributes do
-              DescriptiveWriter.write(xml: xml, descriptive: new_related, druid: druid)
+              DescriptiveWriter.write(xml: xml, descriptive: new_related, druid: druid, id_generator: id_generator)
+              write_part(orig_related)
             end
           end
         end
 
         private
 
-        attr_reader :xml, :related_resources, :druid
+        attr_reader :xml, :related_resources, :druid, :id_generator
+
+        def filtered_related_resources
+          related_resources.map do |related|
+            other_type_note = other_type_note_for(related)
+
+            # Filter notes
+            related_hash = related.to_h
+            new_notes = related_hash.fetch(:note, []).reject do |note|
+              note[:type] == 'other relation type' || DETAIL_TYPES.keys.include?(note[:type])
+            end
+            related_hash[:note] = new_notes.empty? ? nil : new_notes
+            next if related_hash.empty?
+
+            new_related = Cocina::Models::RelatedResource.new(related_hash.compact)
+
+            [attributes_for(related, other_type_note), new_related, related]
+          end.compact
+        end
+
+        def attributes_for(related, other_type_note)
+          {}.tap do |attrs|
+            attrs[:type] = TYPES.fetch(related.type) if related.type
+            attrs[:displayLabel] = related.displayLabel
+
+            if other_type_note
+              attrs[:otherType] = other_type_note.value
+              attrs[:otherTypeURI] = other_type_note.uri
+              attrs[:otherTypeAuth] = other_type_note.source&.value
+            end
+          end.compact
+        end
 
         def other_type_note_for(related)
           return nil if related.note.nil?
 
           related.note.find { |note| note.type == 'other relation type' }
+        end
+
+        def write_part(related)
+          filtered_notes = Array(related.note).select { |note| DETAIL_TYPES.keys.include?(note.type) }
+          return if filtered_notes.blank?
+
+          xml.part do
+            filtered_notes.each do |note|
+              write_detail(note)
+            end
+          end
+        end
+
+        def write_detail(note)
+          attrs = {
+            type: DETAIL_TYPES[note.type]
+          }.compact
+          xml.detail attrs do
+            xml.number note.value if note.value
+            xml.caption note.displayLabel if note.displayLabel
+          end
         end
       end
     end

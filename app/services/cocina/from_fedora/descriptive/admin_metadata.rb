@@ -8,12 +8,14 @@ module Cocina
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder: nil)
-          new(resource_element: resource_element).build
+        def self.build(resource_element:, descriptive_builder:)
+          new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
         end
 
-        def initialize(resource_element:)
+        def initialize(resource_element:, descriptive_builder:)
           @resource_element = resource_element
+          @descriptive_builder = descriptive_builder
+          @notifier = descriptive_builder.notifier
         end
 
         def build
@@ -22,7 +24,7 @@ module Cocina
           {}.tap do |admin_metadata|
             admin_metadata[:language] = build_language
             admin_metadata[:contributor] = build_contributor
-            admin_metadata[:standard] = build_standard
+            admin_metadata[:metadataStandard] = build_standard
             admin_metadata[:note] = build_note
             admin_metadata[:identifier] = build_identifier
             admin_metadata[:event] = build_events
@@ -31,7 +33,7 @@ module Cocina
 
         private
 
-        attr_reader :resource_element
+        attr_reader :resource_element, :notifier, :descriptive_builder
 
         def build_events
           events = []
@@ -75,25 +77,30 @@ module Cocina
         end
 
         def build_standard
-          return unless description_standard
+          return unless description_standards
 
-          return { code: description_standard.text } unless description_standard['authority']
-
-          {
-            code: description_standard['authority'],
-            uri: description_standard['valueURI'],
-            source: { uri: description_standard['authorityURI'] }
-          }
+          description_standards.map do |description_standard|
+            if description_standard['authority']
+              {
+                code: description_standard['authority'],
+                uri: ValueURI.sniff(description_standard['valueURI'], notifier),
+                value: description_standard.text.presence,
+                source: { uri: description_standard['authorityURI'] }
+              }.compact
+            else
+              { code: description_standard.text }
+            end
+          end.presence
         end
 
         def build_contributor
           return unless record_content_source
 
           [{
-            "name": [
+            name: [
               {
-                "code": record_content_source.text,
-                "uri": record_content_source['valueURI']
+                code: record_content_source.text,
+                uri: ValueURI.sniff(record_content_source['valueURI'], notifier)
               }.tap do |name_attrs|
                 source = {
                   code: record_content_source['authority'],
@@ -102,10 +109,10 @@ module Cocina
                 name_attrs[:source] = source unless source.empty?
               end.compact
             ],
-            "type": 'organization',
-            "role": [
+            type: 'organization',
+            role: [
               {
-                "value": 'original cataloging agency'
+                value: 'original cataloging agency'
               }
             ]
           }]
@@ -114,7 +121,12 @@ module Cocina
         def build_language
           return if language_of_cataloging.empty?
 
-          language_of_cataloging.map { |lang_node| Cocina::FromFedora::Descriptive::LanguageTerm.build(language_element: lang_node) }
+          language_of_cataloging.map do |lang_node|
+            Cocina::FromFedora::Descriptive::LanguageTerm.build(
+              language_element: lang_node,
+              notifier: notifier
+            )
+          end
         end
 
         def record_info
@@ -129,8 +141,8 @@ module Cocina
           @record_content_source ||= record_info.xpath('mods:recordContentSource', mods: DESC_METADATA_NS).first
         end
 
-        def description_standard
-          @description_standard ||= record_info.xpath('mods:descriptionStandard', mods: DESC_METADATA_NS).first
+        def description_standards
+          @description_standards ||= record_info.xpath('mods:descriptionStandard', mods: DESC_METADATA_NS)
         end
 
         def record_origin

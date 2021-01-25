@@ -189,29 +189,30 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     end
 
     it 'generates contentMetadata.xml' do
-      expect(generate).to be_equivalent_to '<?xml version="1.0"?>
-         <contentMetadata objectId="druid:bc123de5678" type="book">
-           <bookData readingOrder="rtl" />
-           <resource id="bc123de5678_1" sequence="1" type="page">
-             <label>Page 1</label>
-             <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
-               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
-               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
-             </file>
-             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
-               <imageData height="200" width="300"/>
-             </file>
-           </resource>
-           <resource id="bc123de5678_2" sequence="2" type="page">
-             <label>Page 2</label>
-             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
-             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
-           </resource>
-           <resource id="bc123de5678_3" sequence="3" type="object">
-             <label>Object 1</label>
-             <file id="checksum.txt" mimetype="text/plain" size="11468" preserve="yes" publish="yes" shelve="yes"/>
-           </resource>
-         </contentMetadata>'
+      expect(generate).to be_equivalent_to <<~XML
+        <contentMetadata objectId="druid:bc123de5678" type="book">
+          <bookData readingOrder="rtl" />
+          <resource id="bc123de5678_1" sequence="1" type="page">
+            <label>Page 1</label>
+            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
+              <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
+              <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
+            </file>
+            <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+              <imageData height="200" width="300"/>
+            </file>
+          </resource>
+          <resource id="bc123de5678_2" sequence="2" type="page">
+            <label>Page 2</label>
+            <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
+            <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
+          </resource>
+          <resource id="bc123de5678_3" sequence="3" type="object">
+            <label>Object 1</label>
+            <file id="checksum.txt" mimetype="text/plain" size="11468" preserve="yes" publish="yes" shelve="yes"/>
+          </resource>
+        </contentMetadata>
+      XML
     end
   end
 
@@ -219,24 +220,25 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     let(:object_type) { Cocina::Models::Vocab.image }
 
     it 'generates contentMetadata.xml' do
-      expect(generate).to be_equivalent_to '<?xml version="1.0"?>
-         <contentMetadata objectId="druid:bc123de5678" type="image">
-           <resource id="bc123de5678_1" sequence="1" type="image">
-             <label>Page 1</label>
-             <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
-               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
-               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
-             </file>
-             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
-               <imageData height="200" width="300"/>
-             </file>
-           </resource>
-           <resource id="bc123de5678_2" sequence="2" type="image">
-             <label>Page 2</label>
-             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
-             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
-           </resource>
-         </contentMetadata>'
+      expect(generate).to be_equivalent_to <<~XML
+        <contentMetadata objectId="druid:bc123de5678" type="image">
+          <resource id="bc123de5678_1" sequence="1" type="image">
+            <label>Page 1</label>
+            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
+              <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
+              <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
+            </file>
+            <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+              <imageData height="200" width="300"/>
+            </file>
+          </resource>
+          <resource id="bc123de5678_2" sequence="2" type="image">
+            <label>Page 2</label>
+            <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
+            <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
+          </resource>
+        </contentMetadata>
+      XML
     end
   end
 
@@ -244,24 +246,25 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     let(:object_type) { Cocina::Models::Vocab.manuscript }
 
     it 'generates contentMetadata.xml' do
-      expect(generate).to be_equivalent_to '<?xml version="1.0"?>
-         <contentMetadata objectId="druid:bc123de5678" type="image">
-           <resource id="bc123de5678_1" sequence="1" type="file">
-             <label>Page 1</label>
-             <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
-               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
-               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
-             </file>
-             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
-               <imageData height="200" width="300"/>
-             </file>
-           </resource>
-           <resource id="bc123de5678_2" sequence="2" type="file">
-             <label>Page 2</label>
-             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
-             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
-           </resource>
-         </contentMetadata>'
+      expect(generate).to be_equivalent_to <<~XML
+        <contentMetadata objectId="druid:bc123de5678" type="image">
+          <resource id="bc123de5678_1" sequence="1" type="file">
+            <label>Page 1</label>
+            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
+              <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
+              <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
+            </file>
+            <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+              <imageData height="200" width="300"/>
+            </file>
+          </resource>
+          <resource id="bc123de5678_2" sequence="2" type="file">
+            <label>Page 2</label>
+            <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
+            <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
+          </resource>
+        </contentMetadata>
+      XML
     end
   end
 
@@ -341,27 +344,28 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     end
 
     it 'generates contentMetadata.xml' do
-      expect(generate).to be_equivalent_to '<?xml version="1.0"?>
-         <contentMetadata objectId="druid:bc123de5678" type="geo">
-           <resource id="bc123de5678_1" sequence="1" type="object">
-             <label>Data</label>
-             <file id="00001.zip" mimetype="application/zip" size="997" publish="no" shelve="no" preserve="yes">
-               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
-               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
-             </file>
-           </resource>
-           <resource id="bc123de5678_2" sequence="2" type="preview">
-             <label>Preview</label>
-             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
-               <imageData height="200" width="300"/>
-             </file>
-             <file id="00002.jp2" mimetype="image/jp2" size="111467" publish="yes" shelve="yes" preserve="yes"/>
-           </resource>
-           <resource id="bc123de5678_3" sequence="3" type="attachment">
-             <label>Attachment</label>
-             <file id="00002.xml" mimetype="text/xml" size="1914" publish="yes" shelve="no" preserve="yes"/>
-           </resource>
-         </contentMetadata>'
+      expect(generate).to be_equivalent_to <<~XML
+        <contentMetadata objectId="druid:bc123de5678" type="geo">
+          <resource id="bc123de5678_1" sequence="1" type="object">
+            <label>Data</label>
+            <file id="00001.zip" mimetype="application/zip" size="997" publish="no" shelve="no" preserve="yes">
+              <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
+              <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
+            </file>
+          </resource>
+          <resource id="bc123de5678_2" sequence="2" type="preview">
+            <label>Preview</label>
+            <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+              <imageData height="200" width="300"/>
+            </file>
+            <file id="00002.jp2" mimetype="image/jp2" size="111467" publish="yes" shelve="yes" preserve="yes"/>
+          </resource>
+          <resource id="bc123de5678_3" sequence="3" type="attachment">
+            <label>Attachment</label>
+            <file id="00002.xml" mimetype="text/xml" size="1914" publish="yes" shelve="no" preserve="yes"/>
+          </resource>
+        </contentMetadata>
+      XML
     end
   end
 
@@ -382,15 +386,16 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     end
 
     it 'generates contentMetadata.xml' do
-      expect(generate).to be_equivalent_to '<?xml version="1.0"?>
-         <contentMetadata objectId="druid:bc123de5678" type="webarchive-seed">
-           <resource id="bc123de5678_1" sequence="1" type="image">
-             <label>Preview</label>
-             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
-               <imageData height="200" width="300"/>
-             </file>
-           </resource>
-         </contentMetadata>'
+      expect(generate).to be_equivalent_to <<~XML
+        <contentMetadata objectId="druid:bc123de5678" type="webarchive-seed">
+          <resource id="bc123de5678_1" sequence="1" type="image">
+            <label>Preview</label>
+            <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+              <imageData height="200" width="300"/>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
     end
   end
 
@@ -398,24 +403,25 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     let(:object_type) { Cocina::Models::Vocab.document }
 
     it 'generates contentMetadata.xml' do
-      expect(generate).to be_equivalent_to '<?xml version="1.0"?>
-         <contentMetadata objectId="druid:bc123de5678" type="document">
-           <resource id="bc123de5678_1" sequence="1" type="document">
-             <label>Page 1</label>
-             <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
-               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
-               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
-             </file>
-             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
-               <imageData height="200" width="300"/>
-             </file>
-           </resource>
-           <resource id="bc123de5678_2" sequence="2" type="document">
-             <label>Page 2</label>
-             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
-             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
-           </resource>
-         </contentMetadata>'
+      expect(generate).to be_equivalent_to <<~XML
+        <contentMetadata objectId="druid:bc123de5678" type="document">
+          <resource id="bc123de5678_1" sequence="1" type="document">
+            <label>Page 1</label>
+            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
+              <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
+              <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
+            </file>
+            <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+              <imageData height="200" width="300"/>
+            </file>
+          </resource>
+          <resource id="bc123de5678_2" sequence="2" type="document">
+            <label>Page 2</label>
+            <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
+            <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
+          </resource>
+        </contentMetadata>
+      XML
     end
   end
 
@@ -469,21 +475,22 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     end
 
     it 'generates contentMetadata.xml' do
-      expect(generate).to be_equivalent_to '<?xml version="1.0"?>
-         <contentMetadata objectId="druid:bc123de5678" type="media">
-           <resource id="bc123de5678_1" sequence="1" type="video">
-             <label>Page 1</label>
-             <file id="bb012xz4244_pm.mpeg" mimetype="video/mpeg" size="997" preserve="yes" publish="no" shelve="no">
-               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
-               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
-             </file>
-           </resource>
-           <resource id="bc123de5678_2" sequence="2" type="file">
-             <label>Page 2</label>
-             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
-             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
-           </resource>
-         </contentMetadata>'
+      expect(generate).to be_equivalent_to <<~XML
+        <contentMetadata objectId="druid:bc123de5678" type="media">
+          <resource id="bc123de5678_1" sequence="1" type="video">
+            <label>Page 1</label>
+            <file id="bb012xz4244_pm.mpeg" mimetype="video/mpeg" size="997" preserve="yes" publish="no" shelve="no">
+              <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
+              <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
+            </file>
+          </resource>
+          <resource id="bc123de5678_2" sequence="2" type="file">
+            <label>Page 2</label>
+            <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
+            <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
+          </resource>
+        </contentMetadata>
+      XML
     end
   end
 
@@ -520,24 +527,25 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     end
 
     it 'generates contentMetadata.xml' do
-      expect(generate).to be_equivalent_to '<?xml version="1.0"?>
-         <contentMetadata objectId="druid:bc123de5678" type="media">
-           <resource id="bc123de5678_1" sequence="1" type="video" thumb="yes">
-             <label>Page 1</label>
-             <file id="bb012xz4244_pm.mpeg" mimetype="video/mpeg" size="997" preserve="yes" publish="no" shelve="no">
-               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
-               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
-             </file>
-             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
-               <imageData height="200" width="300"/>
-             </file>
-           </resource>
-           <resource id="bc123de5678_2" sequence="2" type="file">
-             <label>Page 2</label>
-             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
-             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
-           </resource>
-         </contentMetadata>'
+      expect(generate).to be_equivalent_to <<~XML
+        <contentMetadata objectId="druid:bc123de5678" type="media">
+          <resource id="bc123de5678_1" sequence="1" type="video" thumb="yes">
+            <label>Page 1</label>
+            <file id="bb012xz4244_pm.mpeg" mimetype="video/mpeg" size="997" preserve="yes" publish="no" shelve="no">
+              <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
+              <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
+            </file>
+            <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+              <imageData height="200" width="300"/>
+            </file>
+          </resource>
+          <resource id="bc123de5678_2" sequence="2" type="file">
+            <label>Page 2</label>
+            <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
+            <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
+          </resource>
+        </contentMetadata>
+      XML
     end
   end
 
@@ -574,24 +582,25 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     end
 
     it 'generates contentMetadata.xml' do
-      expect(generate).to be_equivalent_to '<?xml version="1.0"?>
-         <contentMetadata objectId="druid:bc123de5678" type="media">
-           <resource id="bc123de5678_1" sequence="1" type="audio" thumb="yes">
-             <label>Page 1</label>
-             <file id="bb015cf9132_ars0021_201006112000_11_01_sl.m4a" mimetype="audio/mp4" size="997" preserve="yes" publish="no" shelve="no">
-               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
-               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
-             </file>
-             <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
-               <imageData height="200" width="300"/>
-             </file>
-           </resource>
-           <resource id="bc123de5678_2" sequence="2" type="file">
-             <label>Page 2</label>
-             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
-             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
-           </resource>
-         </contentMetadata>'
+      expect(generate).to be_equivalent_to <<~XML
+        <contentMetadata objectId="druid:bc123de5678" type="media">
+          <resource id="bc123de5678_1" sequence="1" type="audio" thumb="yes">
+            <label>Page 1</label>
+            <file id="bb015cf9132_ars0021_201006112000_11_01_sl.m4a" mimetype="audio/mp4" size="997" preserve="yes" publish="no" shelve="no">
+              <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
+              <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
+            </file>
+            <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+              <imageData height="200" width="300"/>
+            </file>
+          </resource>
+          <resource id="bc123de5678_2" sequence="2" type="file">
+            <label>Page 2</label>
+            <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
+            <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
+          </resource>
+        </contentMetadata>
+      XML
     end
   end
 end
