@@ -868,34 +868,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       end
     end
 
-    context 'with multiple descriptions' do
-      xit 'TODO: https://github.com/sul-dlss-labs/cocina-descriptive-metadata/blob/master/mods_cocina_mappings/mods_to_cocina_physicalDescription.txt#L52'
-    end
-
-    context 'when form has authority' do
-      let(:xml) do
-        <<~XML
-          <physicalDescription>
-            <form authority="aat" authorityURI="http://vocab.getty.edu/aat/" valueURI="http://vocab.getty.edu/aat/300041356">mezzotints (prints)</form>
-          </physicalDescription>
-        XML
-      end
-
-      it 'builds the cocina data structure' do
-        expect(build).to eq [
-          {
-            "value": 'mezzotints (prints)',
-            "type": 'form',
-            "uri": 'http://vocab.getty.edu/aat/300041356',
-            "source": {
-              "code": 'aat',
-              "uri": 'http://vocab.getty.edu/aat/'
-            }
-          }
-        ]
-      end
-    end
-
     context 'when note does not have displayLabel' do
       let(:xml) do
         <<~XML
