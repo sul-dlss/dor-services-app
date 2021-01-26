@@ -43,81 +43,34 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     end
   end
 
-  context 'with type' do
+  context 'when type is mis-capitalized isReferencedBy' do
     let(:xml) do
       <<~XML
-        <relatedItem type="series">
+        <relatedItem displayLabel="Original James Record" type="isReferencedby">
           <titleInfo>
-            <title>Lymond chronicles</title>
+            <title>https://stacks.stanford.edu/file/druid:mf281cz1275/MS_296.pdf</title>
           </titleInfo>
-          <name type="personal">
-            <namePart>Dunnett, Dorothy</namePart>
-          </name>
-          <physicalDescription>
-            <extent>6 vols.</extent>
-          </physicalDescription>
         </relatedItem>
       XML
     end
 
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "title": [
-            {
-              "value": 'Lymond chronicles'
-            }
-          ],
-          "contributor": [
-            {
-              "type": 'person',
-              "name": [
-                {
-                  "value": 'Dunnett, Dorothy'
-                }
-              ]
-            }
-          ],
-          "form": [
-            {
-              "value": '6 vols.',
-              "type": 'extent'
-            }
-          ],
-          "type": 'in series'
-        }
-      ]
+    before do
+      allow(notifier).to receive(:warn)
     end
 
-    context 'when type is mis-capitalized isReferencedBy' do
-      let(:xml) do
-        <<~XML
-          <relatedItem displayLabel="Original James Record" type="isReferencedby">
-            <titleInfo>
-              <title>https://stacks.stanford.edu/file/druid:mf281cz1275/MS_296.pdf</title>
-            </titleInfo>
-          </relatedItem>
-        XML
-      end
-
-      before do
-        allow(notifier).to receive(:warn)
-      end
-
-      it 'builds the cocina data structure and warns' do
-        expect(build).to eq [
-          {
-            'displayLabel': 'Original James Record',
-            'title': [
-              {
-                'value': 'https://stacks.stanford.edu/file/druid:mf281cz1275/MS_296.pdf'
-              }
-            ],
-            'type': 'referenced by'
-          }
-        ]
-        expect(notifier).to have_received(:warn).with('Invalid related resource type', resource_type: 'isReferencedby')
-      end
+    it 'builds the cocina data structure and warns' do
+      expect(build).to eq [
+        {
+          'displayLabel': 'Original James Record',
+          'title': [
+            {
+              'value': 'https://stacks.stanford.edu/file/druid:mf281cz1275/MS_296.pdf'
+            }
+          ],
+          'type': 'referenced by'
+        }
+      ]
+      expect(notifier).to have_received(:warn).with('Invalid related resource type', resource_type: 'isReferencedby')
     end
   end
 
@@ -180,37 +133,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     end
   end
 
-  context 'without type' do
-    let(:xml) do
-      <<~XML
-        <relatedItem>
-          <titleInfo>
-            <title>Supplement</title>
-          </titleInfo>
-          <abstract>Additional data.</abstract>
-        </relatedItem>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "title": [
-            {
-              "value": 'Supplement'
-            }
-          ],
-          "note": [
-            {
-              "value": 'Additional data.',
-              "type": 'summary'
-            }
-          ]
-        }
-      ]
-    end
-  end
-
   context 'without title' do
     let(:xml) do
       <<~XML
@@ -270,31 +192,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     end
   end
 
-  context 'with a displayLabel' do
-    let(:xml) do
-      <<~XML
-        <relatedItem displayLabel="Additional data">
-          <titleInfo>
-            <title>Supplement</title>
-          </titleInfo>
-        </relatedItem>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "title": [
-            {
-              "value": 'Supplement'
-            }
-          ],
-          "displayLabel": 'Additional data'
-        }
-      ]
-    end
-  end
-
   context 'with type and otherType (invalid)' do
     let(:xml) do
       <<~XML
@@ -323,41 +220,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
         }
       ]
       expect(notifier).to have_received(:warn).with('Related resource has type and otherType')
-    end
-  end
-
-  context 'with otherType' do
-    let(:xml) do
-      <<~XML
-        <relatedItem otherType="has part" otherTypeURI="http://purl.org/dc/terms/hasPart" otherTypeAuth="DCMI">
-          <titleInfo>
-            <title>A related resource</title>
-          </titleInfo>
-        </relatedItem>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "type": 'related to',
-          "title": [
-            {
-              "value": 'A related resource'
-            }
-          ],
-          "note": [
-            {
-              "type": 'other relation type',
-              "value": 'has part',
-              "uri": 'http://purl.org/dc/terms/hasPart',
-              "source": {
-                "value": 'DCMI'
-              }
-            }
-          ]
-        }
-      ]
     end
   end
 end
