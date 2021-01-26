@@ -526,10 +526,10 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       }
     end
 
-    it 'generates contentMetadata.xml' do
+    it 'generates contentMetadata.xml but does not add a thumb attribute on the resource' do
       expect(generate).to be_equivalent_to <<~XML
         <contentMetadata objectId="druid:bc123de5678" type="media">
-          <resource id="bc123de5678_1" sequence="1" type="video" thumb="yes">
+          <resource id="bc123de5678_1" sequence="1" type="video">
             <label>Page 1</label>
             <file id="bb012xz4244_pm.mpeg" mimetype="video/mpeg" size="997" preserve="yes" publish="no" shelve="no">
               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
@@ -549,7 +549,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     end
   end
 
-  context 'with a media (audio resource)' do
+  context 'with a media (audio resource, with thumbnail)' do
     let(:object_type) { Cocina::Models::Vocab.media }
 
     let(:file1) do
@@ -581,10 +581,10 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       }
     end
 
-    it 'generates contentMetadata.xml' do
+    it 'generates contentMetadata.xml but does not add a thumb attribute on the resource' do
       expect(generate).to be_equivalent_to <<~XML
         <contentMetadata objectId="druid:bc123de5678" type="media">
-          <resource id="bc123de5678_1" sequence="1" type="audio" thumb="yes">
+          <resource id="bc123de5678_1" sequence="1" type="audio">
             <label>Page 1</label>
             <file id="bb015cf9132_ars0021_201006112000_11_01_sl.m4a" mimetype="audio/mp4" size="997" preserve="yes" publish="no" shelve="no">
               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
