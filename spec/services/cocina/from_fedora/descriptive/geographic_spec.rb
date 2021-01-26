@@ -78,8 +78,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
       }
     end
 
-    # MODS geo mapping spec not in /mappings/mods/geo_extension_spec.rb
-    # Arcadia to add it there or make a different decision
     context 'when dc:type does not have the expected capitalization' do
       let(:dc_type) { 'image' }
 
@@ -162,8 +160,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
       }
     end
 
-    # MODS geo mapping spec not in /mappings/mods/geo_extension_spec.rb
-    # Arcadia to add it there or make a different decision
     context 'when dc:type does not have the expected capitalization' do
       let(:dc_type) { 'image' }
 
@@ -179,8 +175,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
     end
   end
 
-  # MODS geo mapping spec not in /mappings/mods/geo_extension_spec.rb
-  # Arcadia to add it there or make a different decision
   context 'with a bad PURL' do
     let(:dc_type) { 'Image' }
     let(:xml) do
@@ -206,8 +200,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
     end
   end
 
-  # MODS geo mapping spec not in /mappings/mods/geo_extension_spec.rb
-  # Arcadia to add it there or make a different decision
   context 'with an https PURL' do
     let(:dc_type) { 'Image' }
     let(:xml) do

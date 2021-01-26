@@ -20,8 +20,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
     end
   end
 
-  # MODS geo mapping spec not in /mappings/mods/geo_extension_spec.rb
-  # Arcadia to add it there or make a different decision
   context 'when geo is nil' do
     let(:geos) { nil }
 
@@ -36,8 +34,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
     end
   end
 
-  # MODS geo mapping spec not in /mappings/mods/geo_extension_spec.rb
-  # Arcadia to add it there or make a different decision
   context 'with a bounding box from a polygon shapefile converted from ISO 19139 missing standard' do
     let(:geo) do
       Cocina::Models::DescriptiveGeographicMetadata.new(
@@ -121,8 +117,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
     end
   end
 
-  # MODS geo mapping spec not in /mappings/mods/geo_extension_spec.rb
-  # Arcadia to add it there or make a different decision
   context 'when a polygon shapefile without subject' do
     let(:geo) do
       Cocina::Models::DescriptiveGeographicMetadata.new(
