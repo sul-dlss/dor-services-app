@@ -32,7 +32,7 @@ module Cocina
           top_attributes[:displayLabel] = language.displayLabel if language.displayLabel
           applies_to = applies_to_first_value(language.appliesTo)
           top_attributes[:objectPart] = applies_to if applies_to
-          top_attributes[:status] = language.status if language.status
+          top_attributes[:usage] = language.status if language.status
           xml.language top_attributes do
             attributes = {}
             attributes[:valueURI] = language.uri if language.uri
