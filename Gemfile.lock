@@ -383,8 +383,14 @@ GEM
     rsolr (2.3.0)
       builder (>= 2.1.2)
       faraday (>= 0.9.0)
+    rspec (3.10.0)
+      rspec-core (~> 3.10.0)
+      rspec-expectations (~> 3.10.0)
+      rspec-mocks (~> 3.10.0)
     rspec-core (3.10.1)
       rspec-support (~> 3.10.0)
+    rspec-deep-ignore-order-matcher (0.0.5)
+      rspec (~> 3.0)
     rspec-expectations (3.10.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
@@ -546,6 +552,7 @@ DEPENDENCIES
   rack-console
   rails (~> 5.2.0)
   retries
+  rspec-deep-ignore-order-matcher
   rspec-rails
   rspec_junit_formatter
   rubocop (~> 0.86)
