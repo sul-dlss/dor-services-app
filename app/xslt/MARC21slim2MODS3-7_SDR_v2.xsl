@@ -7977,8 +7977,12 @@
 				</xsl:if>
 			</xsl:when>
 			<xsl:otherwise>
+				<!-- SUL edit 20210126 issue #1910 -->
 				<xsl:if
-					test="marc:datafield[@tag = '044' or @tag = '260' or @tag = '046' or @tag = '033' or @tag = '250' or @tag = '310' or @tag = '321'] or marc:controlfield[@tag = '008']">
+					test="marc:datafield[@tag = '044' or @tag = '260' or @tag = '046' or @tag = '033' or @tag = '250' or @tag = '310' or @tag = '321']">
+				<!-- SUL edit 20210126 issue #1910
+				<xsl:if
+					test="marc:datafield[@tag = '044' or @tag = '260' or @tag = '046' or @tag = '033' or @tag = '250' or @tag = '310' or @tag = '321'] or marc:controlfield[@tag = '008']"> -->
 					<originInfo>
 						<xsl:call-template name="z2xx880"/>
 						<!-- SUL edit 20210125 issue #1629 #1634 #1635
