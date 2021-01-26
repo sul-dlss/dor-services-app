@@ -133,8 +133,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
     end
   end
 
-  # MODS abstract mapping spec not in /mappings/mods/abstract_spec.rb
-  # Arcadia to add it there or make a different decision
   context 'with an empty displayLabel' do
     let(:xml) do
       <<~XML

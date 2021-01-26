@@ -20,8 +20,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
   end
 
   describe 'genre' do
-    # MODS genre mapping spec not in /mappings/mods/genre_spec.rb
-    # Arcadia to add it there or make a different decision
     context 'with authority missing valueURI' do
       let(:xml) do
         <<~XML
@@ -43,8 +41,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       end
     end
 
-    # MODS genre mapping spec not in /mappings/mods/genre_spec.rb
-    # Arcadia to add it there or make a different decision
     context 'with authority missing authorityURI' do
       let(:xml) do
         <<~XML
@@ -66,8 +62,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       end
     end
 
-    # MODS genre mapping spec not in /mappings/mods/genre_spec.rb
-    # Arcadia to add it there or make a different decision
     context 'with empty authority' do
       let(:xml) do
         <<~XML
