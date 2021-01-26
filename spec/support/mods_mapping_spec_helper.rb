@@ -27,7 +27,10 @@ end
 
 RSpec.shared_examples 'MODS cocina mapping' do
   # Required: mods, cocina
-  # Optional: druid, roundtrip_mods, warnings, errors
+  # Optional:
+  # * druid
+  # * roundtrip_mods: For when the roundtripped MODS is different than the original MODS
+  # * source_cocina: For when the source COCINA (e.g., submitted by H2) is different than the mapped COCINA.
 
   # Note that this instantiation of Description does NOT validate against OpenAPI due to title validation issues.
   let(:orig_cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
@@ -42,7 +45,7 @@ RSpec.shared_examples 'MODS cocina mapping' do
 
   let(:local_errors) { defined?(errors) ? errors : [] }
 
-  context 'when mapping from MODS (to cocina)' do
+  context 'when mapping from MODS to cocina' do
     let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
     let(:actual_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: orig_mods_ng, druid: local_druid, notifier: notifier) }
@@ -97,7 +100,7 @@ RSpec.shared_examples 'MODS cocina mapping' do
     end
   end
 
-  context 'when mapping to MODS (from cocina)' do
+  context 'when mapping to MODS from cocina' do
     let(:expected_mods_ng) { roundtrip_mods_ng || orig_mods_ng }
 
     let(:actual_mods_ng) { Cocina::ToFedora::Descriptive.transform(orig_cocina_description, local_druid).doc }
@@ -113,6 +116,29 @@ RSpec.shared_examples 'MODS cocina mapping' do
       #  and back, per Arcadia's specifications.  E.g., removal of empty nodes and attributes; addition of eventType to
       #  originInfo nodes.
       expect(actual_xml).to be_equivalent_to Cocina::ModsNormalizer.normalize(mods_ng_xml: orig_mods_ng, druid: local_druid)
+    end
+  end
+
+  # For H2, descriptive metadata is submitted as cocina, which is then mapped to and persisted as MODS. This verifies
+  # that the MODS can then be roundtripped back to cocina (including allowing for lost data when a source_cocina is provided).
+  context 'when mapping to cocina from MODS from cocina' do
+    let(:local_source_cocina) { defined?(source_cocina) ? source_cocina : cocina }
+
+    let(:source_cocina_description) { Cocina::Models::Description.new(local_source_cocina, false, false) }
+
+    let(:mapped_mods_ng) { Cocina::ToFedora::Descriptive.transform(source_cocina_description, local_druid).doc }
+
+    let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
+
+    let(:actual_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: mapped_mods_ng, druid: local_druid, notifier: notifier) }
+
+    before do
+      allow(notifier).to receive(:warn)
+      allow(notifier).to receive(:error)
+    end
+
+    it 'MODS maps to expected cocina' do
+      expect(actual_cocina_props).to eq(cocina)
     end
   end
 end
