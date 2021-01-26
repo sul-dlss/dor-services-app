@@ -3520,8 +3520,11 @@
 					<xsl:value-of select="."/>
 				</recordIdentifier>
 			</xsl:for-each>
+			<recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7_SDR_v2.xsl
+				(SUL 3.7 version 1.1 20210126; LC Revision 1.140 20200717)</recordOrigin>
+			<!-- SUL edit 20210126 issue #1909
 			<recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7_SDR_v1.xsl
-				(SUL 3.7 version 1.1 20200917; LC Revision 1.140 20200717)</recordOrigin>
+				(SUL 3.7 version 1.1 20200917; LC Revision 1.140 20200717)</recordOrigin> -->
 				<!-- SUL edit 20200828 issue #1002
 				<recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7.xsl
 				(Revision 1.140 20200717)</recordOrigin>-->
