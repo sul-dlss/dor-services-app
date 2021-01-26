@@ -19,34 +19,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Identifier do
     XML
   end
 
-  context 'with an identifier that is from Standard Identifier Scheme' do
-    let(:xml) do
-      <<~XML
-        <identifier type="isbn">1234 5678 9203</identifier>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "value": '1234 5678 9203',
-          "type": 'ISBN',
-          "note": [
-            {
-              "type": 'type',
-              "value": 'isbn',
-              "uri": 'http://id.loc.gov/vocabulary/identifiers/isbn',
-              "source": {
-                "value": 'Standard Identifier Schemes',
-                "uri": 'http://id.loc.gov/vocabulary/identifiers/'
-              }
-            }
-          ]
-        }
-      ]
-    end
-  end
-
   context 'with an identifier that is from Standard Identifier Source Codes' do
     let(:xml) do
       <<~XML
@@ -102,79 +74,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Identifier do
         {
           "value": '123456789203',
           "type": 'xyz'
-        }
-      ]
-    end
-  end
-
-  context 'with URI as an identifier' do
-    let(:xml) do
-      <<~XML
-        <identifier type="uri">https://www.wikidata.org/wiki/Q146</identifier>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "uri": 'https://www.wikidata.org/wiki/Q146',
-          "note": [
-            {
-              "type": 'type',
-              "value": 'uri',
-              "uri": 'http://id.loc.gov/vocabulary/identifiers/uri',
-              "source": {
-                "value": 'Standard Identifier Schemes',
-                "uri": 'http://id.loc.gov/vocabulary/identifiers/'
-              }
-            }
-          ]
-        }
-      ]
-    end
-  end
-
-  context 'with display label' do
-    let(:xml) do
-      <<~XML
-        <identifier displayLabel="Accession number">1980-12345</identifier>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "value": '1980-12345',
-          "displayLabel": 'Accession number'
-        }
-      ]
-    end
-  end
-
-  context 'with invalid identifier' do
-    let(:xml) do
-      <<~XML
-        <identifier type="lccn" invalid="yes">sn 87042262</identifier>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-        {
-          "value": 'sn 87042262',
-          "status": 'invalid',
-          "type": 'LCCN',
-          "note": [
-            {
-              "type": 'type',
-              "value": 'lccn',
-              "uri": 'http://id.loc.gov/vocabulary/identifiers/lccn',
-              "source": {
-                "value": 'Standard Identifier Schemes',
-                "uri": 'http://id.loc.gov/vocabulary/identifiers/'
-              }
-            }
-          ]
         }
       ]
     end
