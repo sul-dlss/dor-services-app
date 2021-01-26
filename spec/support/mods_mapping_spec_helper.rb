@@ -66,7 +66,15 @@ RSpec.shared_examples 'MODS cocina mapping' do
     end
 
     it 'MODS maps to expected cocina' do
-      expect(actual_cocina_props).to be_deep_equal(cocina)
+      if cocina
+        expect(actual_cocina_props).to be_deep_equal(cocina)
+      else
+        actual_cocina_props.each_key do |key|
+          return true if actual_cocina_props[key].blank?
+
+          expect(actual_cocina_props[key] == [{}]).to eq true
+        end
+      end
     end
 
     it 'notifier receives warning and/or error messages as specified' do
@@ -110,7 +118,17 @@ RSpec.shared_examples 'MODS cocina mapping' do
     end
 
     it 'MODS maps to expected cocina' do
-      expect(actual_cocina_props).to be_deep_equal(cocina) if defined?(roundtrip_mods)
+      if defined?(roundtrip_mods)
+        if cocina
+          expect(actual_cocina_props).to be_deep_equal(cocina)
+        else
+          actual_cocina_props.each_key do
+            return true if actual_cocina_props[key].blank?
+
+            expect(actual_cocina_props[key] == [{}]).to eq true
+          end
+        end
+      end
     end
   end
 
