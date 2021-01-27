@@ -250,20 +250,25 @@ module Cocina
 
         def date_tag(date, cocina_event_type)
           value = date.value
-          tag = TAG_NAME.fetch(cocina_event_type, :dateOther)
+          tag = date_type_value_for(date) ? :dateOther : TAG_NAME.fetch(cocina_event_type, :dateOther)
           attributes = {
             encoding: date.encoding&.code,
             qualifier: date.qualifier
           }.tap do |attrs|
             attrs[:keyDate] = 'yes' if date.status == 'primary'
-            attrs[:type] = date_type_for(date, cocina_event_type) if tag == :dateOther && value.present?
+            attrs[:type] = date_type_for(date, cocina_event_type) if value.present?
             attrs[:point] = date.type if %w[start end].include?(date.type)
           end.compact
           xml.public_send(tag, value, attributes)
         end
 
+        def date_type_value_for(date)
+          Array(date.note).find { |note| note.type == 'date type' }&.value
+        end
+
         def date_type_for(date, cocina_event_type)
-          return date.note.find { |note| note.type == 'date type' }.value if date.note
+          date_type_value = date_type_value_for(date)
+          return date_type_value if date_type_value
 
           DATE_OTHER_TYPE[cocina_event_type]
         end
