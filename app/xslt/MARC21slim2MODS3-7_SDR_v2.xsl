@@ -3049,6 +3049,8 @@
 				<xsl:value-of select="."/>-->
 								</namePart>
 							</xsl:for-each>
+							<!-- SUL edit 20201204 issue #1482 -->
+							<xsl:if test="marc:subfield[@code = 'c'] or marc:subfield[@code = 'd'] or marc:subfield[@code = 'n']">
 							<namePart>
 								<!-- SUL edit 20200828 issue #1017 -->
 								<xsl:call-template name="chopPunctuation">
@@ -3065,6 +3067,7 @@
 									</xsl:with-param>
 								</xsl:call-template>
 							</namePart>
+							</xsl:if>
 							<xsl:call-template name="role"/>
 						</name>
 						<xsl:call-template name="relatedForm"/>
@@ -3517,8 +3520,11 @@
 					<xsl:value-of select="."/>
 				</recordIdentifier>
 			</xsl:for-each>
+			<recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7_SDR_v2.xsl
+				(SUL 3.7 version 2.0 20210127; LC Revision 1.140 20200717)</recordOrigin>
+			<!-- SUL edit 20210126 issue #1909
 			<recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7_SDR_v1.xsl
-				(SUL 3.7 version 1.1 20200917; LC Revision 1.140 20200717)</recordOrigin>
+				(SUL 3.7 version 1.1 20200917; LC Revision 1.140 20200717)</recordOrigin> -->
 				<!-- SUL edit 20200828 issue #1002
 				<recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7.xsl
 				(Revision 1.140 20200717)</recordOrigin>-->
@@ -3556,16 +3562,19 @@
 	</xsl:template>
 	<xsl:template name="role">
 		<xsl:for-each select="marc:subfield[@code = 'e']">
-			<role>
-				<roleTerm type="text">
-					<!-- 1.126 -->
-					<xsl:call-template name="chopPunctuation">
-						<xsl:with-param name="chopString">
-							<xsl:value-of select="."/>
-						</xsl:with-param>
-					</xsl:call-template>
-				</roleTerm>
-			</role>
+			<!-- SUL edit 20210125 issue #1872 -->
+			<xsl:if test="string-length(normalize-space(.)) > 2">
+				<role>
+					<roleTerm type="text">
+						<!-- 1.126 -->
+						<xsl:call-template name="chopPunctuation">
+							<xsl:with-param name="chopString">
+								<xsl:value-of select="."/>
+							</xsl:with-param>
+						</xsl:call-template>
+					</roleTerm>
+				</role>
+			</xsl:if>
 		</xsl:for-each>
 		<xsl:for-each select="marc:subfield[@code = '4']">
 			<role>
@@ -3720,9 +3729,12 @@
 	</xsl:template>
 	<!-- 1.139 -->
 	<xsl:template match="marc:subfield[@code = '0']" mode="valueURI">
-		<xsl:attribute name="valueURI">
-			<xsl:value-of select="."/>
-		</xsl:attribute>
+		<!-- SUL edit 20210125 issue #1602 -->
+		<xsl:if test="starts-with(.,'http')">
+			<xsl:attribute name="valueURI">
+				<xsl:value-of select="."/>
+			</xsl:attribute>
+		</xsl:if>
 	</xsl:template>
 	<xsl:template name="relatedForm">
 		<xsl:for-each select="marc:subfield[@code = 'h']">
@@ -7059,12 +7071,15 @@
 			<location>
 				<!-- 1.121 -->
 				<xsl:call-template name="xxx880"/>
-				<url displayLabel="electronic resource">
+				<!-- SUL edit 20201204 issue #1612
+				<url displayLabel="electronic resource"> -->
+				<url>
 					<!-- 1.41 tmee AQ1.9 added choice protocol for @usage="primary display" -->
 					<xsl:variable name="primary">
 						<xsl:choose>
 							<!-- SUL edit 20201204 issue #125 and #1559 -->
 							<xsl:when test="marc:subfield[@code = 'x'] = 'SDR-PURL'">true</xsl:when>
+							<!--
 							<xsl:when
 								test="@ind2 = 0 and count(preceding-sibling::marc:datafield[@tag = 856][@ind2 = 0]) = 0"
 								>true</xsl:when>
@@ -7076,7 +7091,7 @@
 							<xsl:when
 								test="@ind2 != 1 and @ind2 != 0 and @ind2 != 2 and count(ancestor::marc:record//marc:datafield[@tag = 856 and @ind2 = 0]) = 0 and count(ancestor::marc:record//marc:datafield[@tag = 856 and @ind2 = 1]) = 0 and count(preceding-sibling::marc:datafield[@tag = 856][@ind2]) = 0"
 								>true</xsl:when>
-							<xsl:otherwise>false</xsl:otherwise>
+							<xsl:otherwise>false</xsl:otherwise> -->
 						</xsl:choose>
 					</xsl:variable>
 					<xsl:if test="$primary = 'true'">
@@ -7898,6 +7913,10 @@
 			</xsl:if>
 		</xsl:variable>
 		<!-- Build main originInfo element -->
+		<!-- SUL edit 20210125 issue #1629 #1634 #1635 -->
+		<originInfo>
+			<xsl:copy-of select="$originInfoShared"/>
+		</originInfo>
 		<xsl:choose>
 			<xsl:when
 				test="marc:datafield[@tag = '044' or @tag = '260' or @tag = '046' or @tag = '033' or @tag = '250' or @tag = '310' or @tag = '321'][marc:subfield[@code = '6']]">
@@ -7912,7 +7931,8 @@
 								<xsl:call-template name="xxx880"/>
 							</xsl:when>
 						</xsl:choose>
-						<xsl:copy-of select="$originInfoShared"/>
+						<!-- SUL edit 20210125 issue #1629 #1634 #1635
+						<xsl:copy-of select="$originInfoShared"/> -->
 						<xsl:choose>
 							<xsl:when test="@tag = '260'">
 								<xsl:apply-templates select="." mode="originInfo">
@@ -7933,7 +7953,8 @@
 				<xsl:if
 					test="marc:datafield[@tag = '044' or @tag = '260' or @tag = '046' or @tag = '033' or @tag = '250' or @tag = '310' or @tag = '321'][not(marc:subfield[@code = '6'])]">
 					<originInfo>
-						<xsl:copy-of select="$originInfoShared"/>
+						<!-- SUL edit 20210125 issue #1629 #1634 #1635
+						<xsl:copy-of select="$originInfoShared"/> -->
 						<xsl:for-each
 							select="marc:datafield[@tag = '044' or @tag = '260' or @tag = '046' or @tag = '033' or @tag = '250' or @tag = '310' or @tag = '321'][not(marc:subfield[@code = '6'])]">
 							<xsl:choose>
@@ -7956,11 +7977,16 @@
 				</xsl:if>
 			</xsl:when>
 			<xsl:otherwise>
+				<!-- SUL edit 20210126 issue #1910 -->
 				<xsl:if
-					test="marc:datafield[@tag = '044' or @tag = '260' or @tag = '046' or @tag = '033' or @tag = '250' or @tag = '310' or @tag = '321'] or marc:controlfield[@tag = '008']">
+					test="marc:datafield[@tag = '044' or @tag = '260' or @tag = '046' or @tag = '033' or @tag = '250' or @tag = '310' or @tag = '321']">
+				<!-- SUL edit 20210126 issue #1910
+				<xsl:if
+					test="marc:datafield[@tag = '044' or @tag = '260' or @tag = '046' or @tag = '033' or @tag = '250' or @tag = '310' or @tag = '321'] or marc:controlfield[@tag = '008']"> -->
 					<originInfo>
 						<xsl:call-template name="z2xx880"/>
-						<xsl:copy-of select="$originInfoShared"/>
+						<!-- SUL edit 20210125 issue #1629 #1634 #1635
+						<xsl:copy-of select="$originInfoShared"/> -->
 						<xsl:apply-templates
 							select="marc:datafield[@tag = '044']/marc:subfield[@code = 'c']"
 							mode="originInfo"/>
@@ -8001,7 +8027,8 @@
 						<xsl:call-template name="xxx880"/>
 					</xsl:when>
 				</xsl:choose>
-				<xsl:copy-of select="$originInfoShared"/>
+				<!-- SUL edit 20210125 issue #1629 #1634 #1635
+				<xsl:copy-of select="$originInfoShared"/> -->
 				<xsl:choose>
 					<xsl:when test="@tag = '260'">
 						<xsl:apply-templates select="." mode="originInfo">
