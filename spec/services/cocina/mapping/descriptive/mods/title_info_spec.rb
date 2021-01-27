@@ -322,7 +322,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
       }
     end
 
-    xit 'needs to be fixed'
+    xit 'broken'
   end
 
   describe 'Uniform title with multiple namePart subelements' do
@@ -850,59 +850,59 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
       XML
     end
 
-    xit 'implemented, but broken'
+    xit 'broken'
   end
 
   describe 'Title with xml:space="preserve"' do
-    let(:mods) do
-      <<~XML
-        <titleInfo>
-          <nonSort xml:space="preserve">A </nonSort>
-          <title>broken journey</title>
-          <subTitle>memoir of Mrs. Beatty, wife of Rev. William Beatty, Indian missionary</subTitle>
-        </titleInfo>
-      XML
-    end
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo>
+            <nonSort xml:space="preserve">A </nonSort>
+            <title>broken journey</title>
+            <subTitle>memoir of Mrs. Beatty, wife of Rev. William Beatty, Indian missionary</subTitle>
+          </titleInfo>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        "title": [
-          {
-            "structuredValue": [
-              {
-                "value": 'A',
-                "type": 'nonsorting characters'
-              },
-              {
-                "value": 'broken journey',
-                "type": 'main title'
-              },
-              {
-                "value": 'memoir of Mrs. Beatty, wife of Rev. William Beatty, Indian missionary',
-                "type": 'subtitle'
-              }
-            ],
-            "note": [
-              {
-                "value": '2',
-                "type": 'nonsorting character count'
-              }
-            ]
-          }
-        ]
-      }
-    end
+      let(:cocina) do
+        {
+          "title": [
+            {
+              "structuredValue": [
+                {
+                  "value": 'A',
+                  "type": 'nonsorting characters'
+                },
+                {
+                  "value": 'broken journey',
+                  "type": 'main title'
+                },
+                {
+                  "value": 'memoir of Mrs. Beatty, wife of Rev. William Beatty, Indian missionary',
+                  "type": 'subtitle'
+                }
+              ],
+              "note": [
+                {
+                  "value": '2',
+                  "type": 'nonsorting character count'
+                }
+              ]
+            }
+          ]
+        }
+      end
 
-    let(:roundtrip_mods) do
-      <<~XML
-        <titleInfo>
-          <nonSort>A </nonSort>
-          <title>broken journey</title>
-          <subTitle>memoir of Mrs. Beatty, wife of Rev. William Beatty, Indian missionary</subTitle>
-        </titleInfo>
-      XML
+      let(:roundtrip_mods) do
+        <<~XML
+          <titleInfo>
+            <nonSort>A </nonSort>
+            <title>broken journey</title>
+            <subTitle>memoir of Mrs. Beatty, wife of Rev. William Beatty, Indian missionary</subTitle>
+          </titleInfo>
+        XML
+      end
     end
-
-    xit 'broken'
   end
 end

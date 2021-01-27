@@ -58,23 +58,28 @@ module Cocina
         def simple_value(node)
           value = node.xpath('./mods:title', mods: DESC_METADATA_NS).text
 
-          { value: clean_title(value, node['type']) }
+          { value: clean_title(value, node['type'], node.name) }
         end
 
         # @param [Nokogiri::XML::NodeSet] child_nodes the children of the titleInfo
         def structured_value(child_nodes, type)
           child_nodes.map do |node|
-            value = node.name == 'title' ? clean_title(node.text, type) : node.text
-            { value: value, type: Titles::TYPES[node.name] }
+            { value: clean_title(node.text, type, node.name), type: Titles::TYPES[node.name] }
           end
         end
 
-        def clean_title(title, type)
-          new_title = title.delete_suffix(',')
-
-          return new_title if type == 'abbreviated'
-
-          new_title.delete_suffix('.')
+        def clean_title(title, type, tag)
+          if %w[title titleInfo].include?(tag)
+            if type == 'abbreviated'
+              title.delete_suffix(',')
+            else
+              title.delete_suffix(',').delete_suffix('.')
+            end
+          elsif tag == 'nonSort'
+            title.delete_suffix(' ')
+          else
+            title
+          end
         end
 
         def note(child_nodes)
@@ -82,7 +87,8 @@ module Cocina
           return nil if unsortable.empty?
 
           count = unsortable.sum do |node|
-            add = node.text.end_with?('-') || node.text.end_with?("'") ? 0 : 1
+            last_character = node.text.slice(-1, 1)
+            add = ['-', "'", ' '].include?(last_character) ? 0 : 1
             node.text.size + add
           end
           [{

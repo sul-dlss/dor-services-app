@@ -13,7 +13,6 @@ require 'rspec/rails'
 require "super_diff/rspec-rails"
 require 'support/foxml_helper'
 require 'support/factory_bot'
-require 'rspec_deep_ignore_order_matcher'
 
 # Add additional requires below this line. Rails is not loaded until this point!
 
