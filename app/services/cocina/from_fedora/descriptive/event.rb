@@ -88,7 +88,7 @@ module Cocina
               # Note that this valueLanguage shuffling is only for contributor/names
               base_parallel_value = base_value.merge({ valueLanguage: base_event[:valueLanguage] }.compact)
               base_value.clear
-              if base_parallel_value[:type]
+              if base_parallel_value[:type] && base_parallel_value[:type] != 'name'
                 base_value[:type] = base_parallel_value[:type]
                 base_parallel_value.delete(:type)
               end
@@ -96,7 +96,7 @@ module Cocina
               base_event.delete(:valueLanguage)
             end
             new_grouped_value = grouped_value.merge({ valueLanguage: grouped_event[:valueLanguage] }.compact)
-            new_grouped_value.delete(:type)
+            new_grouped_value.delete(:type) unless new_grouped_value[:type] == 'name'
             base_value[:parallelValue] << new_grouped_value
           end
           # Add any extra values that are in grouped_event
@@ -284,6 +284,7 @@ module Cocina
               name: [
                 {
                   value: publisher.text,
+                  type: 'name',
                   valueLanguage: language_script || LanguageScript.build(node: publisher)
                 }.tap do |attrs|
                   if publisher['transliteration']

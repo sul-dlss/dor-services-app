@@ -19,7 +19,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Dunnett, Dorothy'
+                  value: 'Dunnett, Dorothy',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -47,7 +48,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Dunnett, Dorothy'
+                  value: 'Dunnett, Dorothy',
+                  type: 'name'
                 }
               ],
               status: 'primary'
@@ -76,7 +78,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Dorothy L. Sayers Society'
+                  value: 'Dorothy L. Sayers Society',
+                  type: 'name'
                 }
               ],
               type: 'organization',
@@ -104,7 +107,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'James family'
+                  value: 'James family',
+                  type: 'name'
                 }
               ],
               type: 'family',
@@ -132,7 +136,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Mystery Science Theater ConventioCon Expo Fest-o-rama'
+                  value: 'Mystery Science Theater ConventioCon Expo Fest-o-rama',
+                  type: 'name'
                 }
               ],
               type: 'conference',
@@ -235,7 +240,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
           {
             name: [
               {
-                value: 'Burnett, Michael W.'
+                value: 'Burnett, Michael W.',
+                type: 'name'
               }
             ],
             type: 'person',
@@ -269,10 +275,12 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                 {
                   structuredValue: [
                     {
-                      value: 'United States'
+                      value: 'United States',
+                      type: 'name'
                     },
                     {
-                      value: 'Office of Foreign Investment in the United States'
+                      value: 'Office of Foreign Investment in the United States',
+                      type: 'name'
                     }
                   ]
                 }
@@ -346,7 +354,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Dunnett, Dorothy'
+                  value: 'Dunnett, Dorothy',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -389,7 +398,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Dunnett, Dorothy'
+                  value: 'Dunnett, Dorothy',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -431,7 +441,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Dunnett, Dorothy'
+                  value: 'Dunnett, Dorothy',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -473,7 +484,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Dunnett, Dorothy'
+                  value: 'Dunnett, Dorothy',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -514,7 +526,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Dunnett, Dorothy'
+                  value: 'Dunnett, Dorothy',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -609,7 +622,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Dunnett, Dorothy'
+                  value: 'Dunnett, Dorothy',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -645,7 +659,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Selective Service System'
+                  value: 'Selective Service System',
+                  type: 'name'
                 }
               ],
               role: [
@@ -688,7 +703,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Dunnett, Dorothy'
+                  value: 'Dunnett, Dorothy',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -730,6 +746,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
               name: [
                 {
                   value: 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
+                  type: 'name',
                   uri: 'http://id.loc.gov/authorities/names/n79046044',
                   source: {
                     code: 'naf',
@@ -771,7 +788,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Bulgakov, Mikhail'
+                  value: 'Bulgakov, Mikhail',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -785,7 +803,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Burgin, Diana Lewis'
+                  value: 'Burgin, Diana Lewis',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -823,7 +842,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
               name: [
                 structuredValue: [
                   {
-                    value: 'Sarmiento, Domingo Faustino'
+                    value: 'Sarmiento, Domingo Faustino',
+                    type: 'name'
                   },
                   {
                     type: 'life dates',
@@ -838,7 +858,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
               name: [
                 structuredValue: [
                   {
-                    value: 'Rojas, Ricardo'
+                    value: 'Rojas, Ricardo',
+                    type: 'name'
                   },
                   {
                     type: 'life dates',
@@ -879,7 +900,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Gaiman, Neil'
+                  value: 'Gaiman, Neil',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -892,7 +914,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Pratchett, Terry'
+                  value: 'Pratchett, Terry',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -924,7 +947,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Tey, Josephine'
+                  value: 'Tey, Josephine',
+                  type: 'name'
                 }
               ],
               type: 'person'
@@ -965,6 +989,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                   parallelValue: [
                     {
                       value: 'Булгаков, Михаил Афанасьевич',
+                      type: 'name',
                       status: 'primary',
                       valueLanguage: {
                         valueScript: {
@@ -1002,6 +1027,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                   parallelValue: [
                     {
                       value: 'Олеша, Юрий Карлович',
+                      type: 'name',
                       valueLanguage: {
                         valueScript: {
                           code: 'Cyrl',
@@ -1158,7 +1184,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                         }
                       }
                     },
-                    value: 'レアメタル資源再生技術研究会'
+                    value: 'レアメタル資源再生技術研究会',
+                    type: 'name'
                   },
                   {
                     valueLanguage: {
@@ -1222,7 +1249,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
           {
             name: [
               {
-                value: 'Frydman, Judith'
+                value: 'Frydman, Judith',
+                type: 'name'
               }
             ],
             type: 'person'
@@ -1506,6 +1534,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                 parallelValue: [
                   {
                     value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai in Japanese characters',
+                    type: 'name',
                     status: 'primary',
                     valueLanguage: {
                       code: 'jpn',

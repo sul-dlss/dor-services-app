@@ -136,7 +136,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       ]
       expect(descriptive[:contributor]).to match_array [{
         name: [{
-          value: 'Stanford University. Libraries. Humanities and Area Studies Resource Group'
+          value: 'Stanford University. Libraries. Humanities and Area Studies Resource Group',
+          type: 'name'
         }],
         type: 'organization',
         role: [{
@@ -150,7 +151,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         }]
       }, {
         name: [{
-          value: 'Joe McNopart'
+          value: 'Joe McNopart',
+          type: 'name'
         }]
       }]
       expect(descriptive[:form]).to match_array [
@@ -300,7 +302,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       expect(descriptive[:contributor]).to match_array [
         {
           name: [{
-            value: 'Doe, John Jr.'
+            value: 'Doe, John Jr.',
+            type: 'name'
           }],
           type: 'person',
           status: 'primary',
@@ -310,7 +313,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         },
         {
           name: [{
-            value: 'Doe, John Sr.'
+            value: 'Doe, John Sr.',
+            type: 'name'
           }],
           type: 'person',
           role: [
@@ -325,7 +329,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         },
         {
           name: [{
-            value: 'Doe, Jane'
+            value: 'Doe, Jane',
+            type: 'name'
           }],
           type: 'person',
           role: [
@@ -340,7 +345,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         },
         {
           name: [{
-            value: 'Majors, Brad'
+            value: 'Majors, Brad',
+            type: 'name'
           }],
           type: 'person',
           role: [
@@ -356,8 +362,14 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         {
           name: [{
             structuredValue: [
-              { value: 'Stanford University' },
-              { value: 'Department of Computer Science.' }
+              {
+                value: 'Stanford University',
+                type: 'name'
+              },
+              {
+                value: 'Department of Computer Science.',
+                type: 'name'
+              }
             ]
           }],
           type: 'organization'

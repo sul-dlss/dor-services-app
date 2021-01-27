@@ -30,7 +30,8 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
                 {
                   "name": [
                     {
-                      "value": 'Virago'
+                      "value": 'Virago',
+                      "type": 'name'
                     }
                   ],
                   "type": 'organization',
@@ -149,6 +150,7 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
                   "name": [
                     {
                       "value": 'СФУ',
+                      "type": 'name',
                       "valueLanguage": {
                         "code": 'rus',
                         "source": {
@@ -213,7 +215,8 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
                 {
                   "name": [
                     {
-                      "value": 'Ardis'
+                      "value": 'Ardis',
+                      "type": 'name'
                     }
                   ],
                   "type": 'organization',
@@ -232,7 +235,8 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
                 {
                   "name": [
                     {
-                      "value": 'Commonplace Books'
+                      "value": 'Commonplace Books',
+                      "type": 'name'
                     }
                   ],
                   "type": 'organization',
@@ -276,7 +280,8 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
                 {
                   "name": [
                     {
-                      "value": 'Stanford University'
+                      "value": 'Stanford University',
+                      "type": 'name'
                     }
                   ],
                   "type": 'organization',
@@ -325,7 +330,8 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
                 {
                   "name": [
                     {
-                      "value": 'Stanford University'
+                      "value": 'Stanford University',
+                      "type": 'name'
                     }
                   ],
                   "type": 'organization',
@@ -374,7 +380,8 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
                 {
                   "name": [
                     {
-                      "value": 'Stanford University'
+                      "value": 'Stanford University',
+                      "type": 'name'
                     }
                   ],
                   "type": 'organization',
@@ -445,7 +452,8 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
                 {
                   "name": [
                     {
-                      "value": 'Stanford University, Department of Biostatistics'
+                      "value": 'Stanford University, Department of Biostatistics',
+                      "type": 'name'
                     }
                   ],
                   "type": 'organization',

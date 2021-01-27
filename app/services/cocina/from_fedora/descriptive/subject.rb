@@ -181,7 +181,7 @@ module Cocina
         def name(node, attrs)
           name_type = name_type_for_subject(node[:type])
           attrs[:type] = name_type if name_type
-          full_name = NameBuilder.build(name_elements: [node], add_default_type: true, notifier: notifier)
+          full_name = NameBuilder.build(name_elements: [node], notifier: notifier)
           return nil if full_name[:name].nil?
 
           name_attrs = if full_name[:name].size > 1

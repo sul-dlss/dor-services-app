@@ -9,13 +9,12 @@ module Cocina
         # @param [Array<Nokogiri::XML::Element>] name_elements (multiple if parallel)
         # @param [Cocina::FromFedora::DataErrorNotifier] notifier
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(name_elements:, notifier:, add_default_type: false)
-          new(name_elements: name_elements, add_default_type: add_default_type, notifier: notifier).build
+        def self.build(name_elements:, notifier:)
+          new(name_elements: name_elements, notifier: notifier).build
         end
 
-        def initialize(name_elements:, notifier:, add_default_type: false)
+        def initialize(name_elements:, notifier:)
           @name_elements = name_elements
-          @add_default_type = add_default_type
           @notifier = notifier
         end
 
@@ -29,7 +28,7 @@ module Cocina
 
         private
 
-        attr_reader :name_elements, :add_default_type, :notifier
+        attr_reader :name_elements, :notifier
 
         def build_parallel
           names = {
@@ -60,7 +59,7 @@ module Cocina
           name_attrs = name_attrs.merge(common_name(name_node, name_attrs[:name]))
           name_parts = build_name_parts(name_node)
           notifier.warn('Missing name/namePart element') if name_parts.all?(&:empty?)
-          name_parts.each { |name_part| name_attrs = name_attrs.merge(name_part) }
+          name_parts.each { |name_part| name_attrs = name_part.merge(name_attrs) }
           name_attrs.compact
         end
 
@@ -90,16 +89,14 @@ module Cocina
 
         def build_name_parts(name_node)
           [].tap do |parts|
-            query = name_node.xpath('mods:namePart', mods: DESC_METADATA_NS)
-            case query.size
+            name_part_nodes = name_node.xpath('mods:namePart', mods: DESC_METADATA_NS)
+            case name_part_nodes.size
             when 0
               next # NOTE: #tap will return [] when there are no name parts
             when 1
-              query.each do |name_part|
-                parts << build_name_part(name_part).merge(authority_attrs_for(name_node)).presence
-              end
+              parts << build_name_part(name_part_nodes.first).merge(authority_attrs_for(name_node)).presence
             else
-              vals = query.map { |name_part| build_name_part(name_part).presence }.compact
+              vals = name_part_nodes.map { |name_part| build_name_part(name_part).presence }.compact
               parts << { structuredValue: vals }.merge(authority_attrs_for(name_node))
             end
 
@@ -117,15 +114,15 @@ module Cocina
           { value: name_part_node.content }.tap do |name_part|
             notifier.warn('Name/namePart type attribute set to ""') if name_part_node['type'] == ''
 
-            type = if add_default_type
-                     Contributor::NAME_PART.fetch(name_part_node['type'], 'name')
-                   elsif Contributor::NAME_PART.key? name_part_node['type']
-                     Contributor::NAME_PART.fetch(name_part_node['type'])
-                   elsif name_part_node['type'].present?
-                     notifier.warn('namePart has unknown type assigned', type: name_part_node['type'])
-                   end
-            name_part[:type] = type if type
-          end
+            name_part[:type] = if name_part_node['type'].blank?
+                                 'name'
+                               elsif Contributor::NAME_PART.key? name_part_node['type']
+                                 Contributor::NAME_PART[name_part_node['type']]
+                               else
+                                 notifier.warn('namePart has unknown type assigned', type: name_part_node['type'])
+                                 nil
+                               end
+          end.compact
         end
 
         def authority_attrs_for(name_node)

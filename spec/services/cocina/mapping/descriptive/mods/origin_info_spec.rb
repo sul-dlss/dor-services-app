@@ -1211,7 +1211,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                 {
                   "name": [
                     {
-                      "value": 'Izdatelʹstvo "Vesʹ Mir"'
+                      "value": 'Izdatelʹstvo "Vesʹ Mir"',
+                      "type": 'name'
                     }
                   ],
                   "type": 'organization',
@@ -1532,6 +1533,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                       "parallelValue": [
                         {
                           "value": 'Rinsen Shoten',
+                          "type": 'name',
                           "valueLanguage": {
                             "valueScript": {
                               "code": 'Latn',
@@ -1543,6 +1545,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                         },
                         {
                           "value": '臨川書店',
+                          "type": 'name',
                           "valueLanguage": {
                             "valueScript": {
                               "code": 'Hani',
@@ -1900,10 +1903,12 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                     {
                       "parallelValue": [
                         {
-                          "value": 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
+                          "value": 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she',
+                          "type": 'name'
                         },
                         {
-                          "value": '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
+                          "value": '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]',
+                          "type": 'name'
                         }
                       ]
                     }
@@ -2075,10 +2080,12 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                     {
                       "parallelValue": [
                         {
-                          "value": 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu'
+                          "value": 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu',
+                          "type": 'name'
                         },
                         {
-                          "value": 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese'
+                          "value": 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese',
+                          "type": 'name'
                         }
                       ]
                     }
@@ -2211,10 +2218,12 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                     {
                       "parallelValue": [
                         {
-                          "value": 'Guangdong lu jun ce liang ju'
+                          "value": 'Guangdong lu jun ce liang ju',
+                          "type": 'name'
                         },
                         {
-                          "value": 'Guangdong lu jun ce liang ju in Chinese'
+                          "value": 'Guangdong lu jun ce liang ju in Chinese',
+                          "type": 'name'
                         }
                       ]
                     }
@@ -2387,7 +2396,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                 {
                   "name": [
                     {
-                      "value": '[Stanford University]'
+                      "value": '[Stanford University]',
+                      "type": 'name'
                     }
                   ],
                   "type": 'organization',
@@ -2539,7 +2549,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                 {
                   "name": [
                     {
-                      "value": 'Articque informatique'
+                      "value": 'Articque informatique',
+                      "type": 'name'
                     }
                   ],
                   "type": 'organization',

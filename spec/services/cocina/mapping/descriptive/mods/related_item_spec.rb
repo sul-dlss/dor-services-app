@@ -35,7 +35,8 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
                   "type": 'person',
                   "name": [
                     {
-                      "value": 'Dunnett, Dorothy'
+                      "value": 'Dunnett, Dorothy',
+                      "type": 'name'
                     }
                   ]
                 }

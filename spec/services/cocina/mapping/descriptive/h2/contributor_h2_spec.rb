@@ -62,7 +62,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford, Jane'
+                  value: 'Stanford, Jane',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -172,7 +173,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford, Jane'
+                  value: 'Stanford, Jane',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -273,7 +275,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford University'
+                  value: 'Stanford University',
+                  type: 'name'
                 }
               ],
               type: 'organization',
@@ -382,7 +385,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford University'
+                  value: 'Stanford University',
+                  type: 'name'
                 }
               ],
               type: 'organization',
@@ -478,7 +482,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'LDCX'
+                  value: 'LDCX',
+                  type: 'name'
                 }
               ],
               type: 'conference',
@@ -544,7 +549,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'San Francisco Symphony Concert'
+                  value: 'San Francisco Symphony Concert',
+                  type: 'name'
                 }
               ],
               type: 'organization', # this should be event
@@ -656,7 +662,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford, Jane'
+                  value: 'Stanford, Jane',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -676,7 +683,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford, Leland'
+                  value: 'Stanford, Leland',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -803,7 +811,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford, Jane'
+                  value: 'Stanford, Jane',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -823,7 +832,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford University'
+                  value: 'Stanford University',
+                  type: 'name'
                 }
               ],
               type: 'organization',
@@ -983,7 +993,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford, Jane'
+                  value: 'Stanford, Jane',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -1003,7 +1014,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford University'
+                  value: 'Stanford University',
+                  type: 'name'
                 }
               ],
               type: 'organization',
@@ -1022,7 +1034,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford, Leland'
+                  value: 'Stanford, Leland',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -1191,7 +1204,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford, Jane'
+                  value: 'Stanford, Jane',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -1211,7 +1225,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford University'
+                  value: 'Stanford University',
+                  type: 'name'
                 }
               ],
               type: 'organization',
@@ -1230,7 +1245,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford, Leland'
+                  value: 'Stanford, Leland',
+                  type: 'name'
                 }
               ],
               type: 'person',
@@ -1327,7 +1343,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford University'
+                  value: 'Stanford University',
+                  type: 'name'
                 }
               ],
               type: 'organization',
@@ -1424,7 +1441,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
                 {
                   name: [
                     {
-                      value: 'Stanford University Press'
+                      value: 'Stanford University Press',
+                      type: 'name'
                     }
                   ],
                   type: 'organization',
@@ -1516,7 +1534,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
                 {
                   name: [
                     {
-                      value: 'Stanford University Press'
+                      value: 'Stanford University Press',
+                      type: 'name'
                     }
                   ],
                   type: 'organization',

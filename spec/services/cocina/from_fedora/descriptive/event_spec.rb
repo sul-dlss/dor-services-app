@@ -291,10 +291,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
                 {
                   "parallelValue": [
                     {
-                      "value": 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
+                      "value": 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she',
+                      "type": 'name'
                     },
                     {
-                      "value": '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
+                      "value": '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]',
+                      "type": 'name'
                     }
                   ]
                 }
@@ -400,10 +402,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
                 {
                   "parallelValue": [
                     {
-                      "value": 'Guangdong lu jun ce liang ju in Chinese'
+                      "value": 'Guangdong lu jun ce liang ju in Chinese',
+                      "type": 'name'
                     },
                     {
-                      "value": 'Guangdong lu jun ce liang ju'
+                      "value": 'Guangdong lu jun ce liang ju',
+                      "type": 'name'
                     }
                   ]
                 }
@@ -532,10 +536,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
                 {
                   "parallelValue": [
                     {
-                      "value": 'A. Shṭibel'
+                      "value": 'A. Shṭibel',
+                      "type": 'name'
                     },
                     {
-                      "value": 'ש. שטיבל,1939.'
+                      "value": 'ש. שטיבל,1939.',
+                      "type": 'name'
                     }
                   ]
                 }
@@ -581,7 +587,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
             {
               "name": [
                 {
-                  "value": 'Stanford University. Department of Geophysics'
+                  "value": 'Stanford University. Department of Geophysics',
+                  "type": 'name'
                 }
               ],
               "type": 'organization',
@@ -645,7 +652,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
             {
               "name": [
                 {
-                  "value": 'Stanford Institute for Theoretical Economics'
+                  "value": 'Stanford Institute for Theoretical Economics',
+                  "type": 'name'
                 }
               ],
               "type": 'organization',
