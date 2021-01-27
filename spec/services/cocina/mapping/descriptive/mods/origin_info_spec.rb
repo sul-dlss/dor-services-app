@@ -151,36 +151,36 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Single dateOther' do
-    let(:mods) do
-      <<~XML
-        <originInfo eventType="publication">
-          <dateOther type="Islamic">1441 AH</dateOther>
-        </originInfo>
-      XML
-    end
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="publication">
+            <dateOther type="Islamic">1441 AH</dateOther>
+          </originInfo>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        "event": [
-          {
-            "type": 'publication',
-            "date": [
-              {
-                "value": '1441 AH',
-                "note": [
-                  {
-                    "value": 'Islamic',
-                    "type": 'date type'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          "event": [
+            {
+              "type": 'publication',
+              "date": [
+                {
+                  "value": '1441 AH',
+                  "note": [
+                    {
+                      "value": 'Islamic',
+                      "type": 'date type'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
-
-    xit 'broken'
   end
 
   describe 'dateOther in Gregorian calendar' do

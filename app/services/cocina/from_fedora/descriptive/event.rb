@@ -371,21 +371,26 @@ module Cocina
         end
 
         def build_date(event_type, node)
-          {}.tap do |date|
-            date[:value] = clean_date(node.text)
-            date[:qualifier] = node[:qualifier] if node[:qualifier]
+          {
+            note: build_date_note(event_type, node),
+            value: clean_date(node.text),
+            qualifier: node[:qualifier],
+            type: node['point']
+          }.tap do |date|
             date[:encoding] = { code: node['encoding'] } if node['encoding']
             date[:status] = 'primary' if node['keyDate']
-            if (!event_type || event_type == 'creation') && (node['type'] || node['calendar'])
-              date[:note] = [
-                {
-                  value: (node['type'] || node['calendar']),
-                  type: node['type'] ? 'date type' : 'calendar'
-                }
-              ]
-            end
-            date[:type] = node['point'] if node['point']
-          end
+          end.compact
+        end
+
+        def build_date_note(event_type, node)
+          return nil unless [nil, 'creation', 'publication'].include?(event_type) && (node['type'] || node['calendar'])
+
+          [
+            {
+              value: (node['type'] || node['calendar']),
+              type: node['type'] ? 'date type' : 'calendar'
+            }
+          ]
         end
 
         def clean_date(date)
