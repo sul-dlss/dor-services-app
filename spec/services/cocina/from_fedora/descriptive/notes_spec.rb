@@ -19,63 +19,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
     XML
   end
 
-  context 'with a simple note' do
-    let(:xml) do
-      <<~XML
-        <note>This is a note.</note>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-
-        {
-          "value": 'This is a note.'
-        }
-
-      ]
-    end
-  end
-
-  context 'with a note with a type' do
-    let(:xml) do
-      <<~XML
-        <note type="preferred citation">This is the preferred citation.</note>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-
-        {
-          "value": 'This is the preferred citation.',
-          "type": 'preferred citation'
-        }
-
-      ]
-    end
-  end
-
-  context 'with a note with a display label' do
-    let(:xml) do
-      <<~XML
-        <note displayLabel="Conservation note">This is a conservation note.</note>
-      XML
-    end
-
-    it 'builds the cocina data structure' do
-      expect(build).to eq [
-
-        {
-          "value": 'This is a conservation note.',
-          "displayLabel": 'Conservation note'
-        }
-
-      ]
-    end
-  end
-
-  context 'with a multilingual note' do
+  context 'with a multilingual note with a script for one language' do
     let(:xml) do
       <<~XML
         <note lang="eng" altRepGroup="1" script="Latn">This is a note.</note>
@@ -85,7 +29,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
 
     it 'builds the cocina data structure' do
       expect(build).to eq [
-
         {
           "parallelValue": [
             {
@@ -116,7 +59,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Notes do
             }
           ]
         }
-
       ]
     end
   end
