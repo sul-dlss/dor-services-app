@@ -59,7 +59,6 @@ group :test, :development do
   gem 'parallel' # used for validating cocina tools
   gem 'pry-byebug'
   gem 'rack-console'
-  gem 'rspec-deep-ignore-order-matcher'
   gem 'rspec_junit_formatter'
   gem 'rspec-rails'
   gem 'rubocop', '~> 0.86'
