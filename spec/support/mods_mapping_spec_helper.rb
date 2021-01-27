@@ -25,6 +25,7 @@ RSpec.shared_examples 'cocina to MODS' do |expected_xml|
   end
 end
 
+# When starting from MODS.
 RSpec.shared_examples 'MODS cocina mapping' do
   # Required: mods, cocina
   # Optional: druid, roundtrip_mods, warnings, errors
@@ -129,6 +130,87 @@ RSpec.shared_examples 'MODS cocina mapping' do
       #  and back, per Arcadia's specifications.  E.g., removal of empty nodes and attributes; addition of eventType to
       #  originInfo nodes.
       expect(actual_xml).to be_equivalent_to Cocina::ModsNormalizer.normalize(mods_ng_xml: orig_mods_ng, druid: local_druid)
+    end
+  end
+end
+
+# When starting from cocina, e.g., H2.
+RSpec.shared_examples 'cocina MODS mapping' do
+  # Required: mods, cocina
+  # Optional: druid, roundtrip_cocina, warnings, errors
+
+  # Note that this instantiation of Description does NOT validate against OpenAPI due to title validation issues.
+  let(:orig_cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
+
+  let(:mods_ng) { ng_mods_for(mods) }
+
+  let(:local_druid) { defined?(druid) ? druid : 'no-druid-given' }
+
+  let(:local_warnings) { defined?(warnings) ? warnings : [] }
+
+  let(:local_errors) { defined?(errors) ? errors : [] }
+
+  context 'when mapping from cocina (to MODS)' do
+    let(:actual_mods_ng) { Cocina::ToFedora::Descriptive.transform(orig_cocina_description, local_druid).doc }
+
+    let(:actual_xml) { actual_mods_ng.to_xml }
+
+    it 'mods snippet(s) produce valid MODS' do
+      expect { mods_ng }.not_to raise_error
+    end
+
+    it 'cocina Description maps to expected MODS' do
+      expect(actual_xml).to be_equivalent_to mods_ng.to_xml
+    end
+  end
+
+  context 'when mapping to cocina (from MODS)' do
+    let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
+
+    let(:actual_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: mods_ng, druid: local_druid, notifier: notifier) }
+
+    let(:expected_cocina) { defined?(roundtrip_cocina) ? roundtrip_cocina : cocina }
+
+    before do
+      allow(notifier).to receive(:warn)
+      allow(notifier).to receive(:error)
+    end
+
+    it 'cocina hash produces valid cocina Description' do
+      cocina_props = actual_cocina_props.deep_dup
+      cocina_props[:title] = [{ value: 'Test title' }] if cocina_props[:title].nil?
+      expect { Cocina::Models::Description.new(cocina_props) }.not_to raise_error
+    end
+
+    it 'MODS maps to expected cocina' do
+      expect(actual_cocina_props).to eq(expected_cocina)
+    end
+
+    it 'notifier receives warning and/or error messages as specified' do
+      Cocina::FromFedora::Descriptive.props(mods: mods_ng, druid: local_druid, notifier: notifier, title_builder: TestTitleBuilder)
+      if local_warnings.empty?
+        expect(notifier).not_to have_received(:warn)
+      else
+        local_warnings.each do |warning|
+          if warning.context
+            expect(notifier).to have_received(:warn).with(warning.msg, warning.context).exactly(warning.times || 1).times
+          else
+            expect(notifier).to have_received(:warn).with(warning.msg).exactly(warning.times || 1).times
+          end
+        end
+      end
+
+      if local_errors.empty?
+        expect(notifier).not_to have_received(:error)
+      else
+        local_errors.each do |error|
+          if error.context
+            expect(notifier).to have_received(:error).with(error.msg, error.context).exactly(error.times || 1).times
+          else
+            expect(notifier).to have_received(:error).with(error.msg).exactly(error.times || 1).times
+          end
+        end
+      end
     end
   end
 end
