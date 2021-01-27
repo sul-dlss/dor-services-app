@@ -65,7 +65,7 @@ RSpec.shared_examples 'MODS cocina mapping' do
     end
 
     it 'MODS maps to expected cocina' do
-      expect(actual_cocina_props).to eq(cocina)
+      expect(actual_cocina_props).to be_deep_equal(cocina)
     end
 
     it 'notifier receives warning and/or error messages as specified' do
@@ -94,6 +94,22 @@ RSpec.shared_examples 'MODS cocina mapping' do
           end
         end
       end
+    end
+  end
+
+  # Checks mapping from roundtripped MODS back to cocina.
+  context 'when roundtrip mapping from MODS (to cocina)' do
+    let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
+
+    let(:actual_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: roundtrip_mods_ng, druid: local_druid, notifier: notifier) }
+
+    before do
+      allow(notifier).to receive(:warn)
+      allow(notifier).to receive(:error)
+    end
+
+    it 'MODS maps to expected cocina' do
+      expect(actual_cocina_props).to be_deep_equal(cocina) if defined?(roundtrip_mods)
     end
   end
 

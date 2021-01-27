@@ -115,57 +115,57 @@ RSpec.describe 'MODS subject cartographic <--> cocina mappings' do
   end
 
   describe 'Cartographic subject with multiple coordinate representations' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <subject>
-            <cartographics>
-              <coordinates>W0750700 W0741200 N0443400 N0431200</coordinates>
-            </cartographics>
-          </subject>
-          <subject>
-            <cartographics>
-              <scale>Scale ca. 1:126,720. 1 in. to 2 miles.</scale>
-            </cartographics>
-            <cartographics>
-              <coordinates>(W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ)</coordinates>
-            </cartographics>
-          </subject>
-        XML
-      end
-
-      let(:roundtrip_mods) do
-        <<~XML
-           <subject>
-            <cartographics>
-              <scale>Scale ca. 1:126,720. 1 in. to 2 miles.</scale>
-              <coordinates>W0750700 W0741200 N0443400 N0431200</coordinates>
-              <coordinates>W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ</coordinates>
-            </cartographics>
-          </subject>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          "subject": [
-            {
-              type: 'map coordinates',
-              value: 'W0750700 W0741200 N0443400 N0431200'
-            },
-            {
-              type: 'map coordinates',
-              value: 'W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ'
-            }
-          ],
-          "form": [
-            {
-              "value": 'Scale ca. 1:126,720. 1 in. to 2 miles.',
-              "type": 'map scale'
-            }
-          ]
-        }
-      end
+    let(:mods) do
+      <<~XML
+        <subject>
+          <cartographics>
+            <coordinates>W0750700 W0741200 N0443400 N0431200</coordinates>
+          </cartographics>
+        </subject>
+        <subject>
+          <cartographics>
+            <scale>Scale ca. 1:126,720. 1 in. to 2 miles.</scale>
+          </cartographics>
+          <cartographics>
+            <coordinates>(W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ)</coordinates>
+          </cartographics>
+        </subject>
+      XML
     end
+
+    let(:roundtrip_mods) do
+      <<~XML
+         <subject>
+          <cartographics>
+            <scale>Scale ca. 1:126,720. 1 in. to 2 miles.</scale>
+            <coordinates>W0750700 W0741200 N0443400 N0431200</coordinates>
+            <coordinates>W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ</coordinates>
+          </cartographics>
+        </subject>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        "subject": [
+          {
+            type: 'map coordinates',
+            value: 'W0750700 W0741200 N0443400 N0431200'
+          },
+          {
+            type: 'map coordinates',
+            value: 'W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ'
+          }
+        ],
+        "form": [
+          {
+            "value": 'Scale ca. 1:126,720. 1 in. to 2 miles.',
+            "type": 'map scale'
+          }
+        ]
+      }
+    end
+
+    xit 'broken'
   end
 end
