@@ -598,6 +598,29 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     end
   end
 
+  describe 'Link to external value only' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <name xlink:href="http://name.org/name" />
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          "subject": [
+            {
+              "type": 'name',
+              "valueAt": 'http://name.org/name'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Name subject with display form and role' do
     # Adapted from druid:vx363td7520
 
