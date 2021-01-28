@@ -55,70 +55,70 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
   end
 
   describe 'Publisher - transliterated' do
-    let(:mods) do
-      <<~XML
-        <originInfo>
-          <publisher lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
-        </originInfo>
-      XML
-    end
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <publisher lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
+          </originInfo>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      <<~XML
-        <originInfo eventType="publication" lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">
-          <publisher>Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
-        </originInfo>
-      XML
-    end
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo eventType="publication" lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">
+            <publisher>Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
+          </originInfo>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        "event": [
-          {
-            "type": 'publication',
-            "contributor": [
-              {
-                "name": [
-                  {
-                    "value": 'Institut russkoĭ literatury (Pushkinskiĭ Dom)',
-                    "type": 'transliteration',
-                    "standard": {
-                      "value": 'ALA-LC Romanization Tables'
-                    },
-                    "valueLanguage": {
-                      "code": 'rus',
-                      "source": {
-                        "code": 'iso639-2b'
+      let(:cocina) do
+        {
+          "event": [
+            {
+              "type": 'publication',
+              "contributor": [
+                {
+                  "name": [
+                    {
+                      "value": 'Institut russkoĭ literatury (Pushkinskiĭ Dom)',
+                      "type": 'transliteration',
+                      "standard": {
+                        "value": 'ALA-LC Romanization Tables'
                       },
-                      "valueScript": {
-                        "code": 'Latn',
+                      "valueLanguage": {
+                        "code": 'rus',
                         "source": {
-                          "code": 'iso15924'
+                          "code": 'iso639-2b'
+                        },
+                        "valueScript": {
+                          "code": 'Latn',
+                          "source": {
+                            "code": 'iso15924'
+                          }
                         }
                       }
                     }
-                  }
-                ],
-                "type": 'organization',
-                "role": [
-                  {
-                    "value": 'publisher',
-                    "code": 'pbl',
-                    "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                    "source": {
-                      "code": 'marcrelator',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  ],
+                  "type": 'organization',
+                  "role": [
+                    {
+                      "value": 'publisher',
+                      "code": 'pbl',
+                      "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
+                      "source": {
+                        "code": 'marcrelator',
+                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      }
                     }
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
-
-    xit 'broken'
   end
 
   describe 'Publisher - other language' do

@@ -123,7 +123,7 @@ module Cocina
               add_edition_info(event, edition, language_script)
               add_issuance_info(event, issuance)
               add_frequency_info(event, frequency)
-              add_publisher_info(event, publisher, language_script)
+              add_publisher_info(event, publisher, language_script, origin_info)
             end
 
             events = [{}] if events.empty?
@@ -277,7 +277,7 @@ module Cocina
           end
         end
 
-        def add_publisher_info(event, set, language_script)
+        def add_publisher_info(event, set, language_script, origin_info_node)
           return if set.empty?
 
           event[:contributor] ||= []
@@ -291,6 +291,10 @@ module Cocina
                   if publisher['transliteration']
                     attrs[:type] = 'transliteration'
                     attrs[:standard] = { value: publisher['transliteration'] }
+                  end
+                  if origin_info_node['transliteration']
+                    attrs[:type] = 'transliteration'
+                    attrs[:standard] = { value: origin_info_node['transliteration'] }
                   end
                 end.compact
               ],
