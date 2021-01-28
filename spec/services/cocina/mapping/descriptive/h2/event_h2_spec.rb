@@ -64,7 +64,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Creation date range: 2020-01-01 to 2021-01-01' do
-    xit 'to be implemented: date encoding is in wrong place for structuredValue'
+    xit 'not implemented: date encoding is in wrong place for structuredValue'
     # date encoding is in wrong place for structuredValue.
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
 
@@ -106,7 +106,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Approximate creation date: approx. 1900' do
-    xit 'to be implemented: date encoding and qualifier in wrong place for structuredValue'
+    xit 'not implemented: date encoding and qualifier in wrong place for structuredValue'
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
 
     let(:cocina) do
@@ -149,7 +149,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
 
   describe 'Release date: 2022-01-01' do
     xit 'not implemented: release type nor appliesTo'
-    # Ask Arcadia if she wants to add release or if she meant something else
+    # Ask Arcadia if she wants to add release to types or if she meant something else
 
     let(:cocina) do
       {
