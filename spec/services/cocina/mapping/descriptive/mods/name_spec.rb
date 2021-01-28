@@ -145,7 +145,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with additional subelements' do
-    xit('BROKEN: name identifier needs it to be "uri" and not "value" for wikidata identifier (or maybe for any valid uri?)')
+    xit('broken: name identifier needs it to be "uri" and not "value" for wikidata identifier (or maybe for any valid uri?)')
 
     let(:mods) do
       <<~XML
