@@ -145,7 +145,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with additional subelements' do
-    xit('broken: name identifier needs it to be "uri" and not "value" for wikidata identifier (or maybe for any valid uri?)')
+    xit('broken: cocina identifier needs type "uri", not "value" for wikidata identifier (or maybe for any valid uri?)')
+    # ask Arcadia if mapping is correct first
 
     let(:mods) do
       <<~XML
@@ -217,7 +218,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with untyped nameIdentifier' do
-    xit('TODO: name identifier needs it to be "uri" and not "value" (as it is a valid uri?)')
+    xit('broken: cocina identifier needs type "uri", not "value" (as it is a valid uri?)')
 
     let(:mods) do
       <<~XML
@@ -285,7 +286,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with ordinal' do
-    xit('TODO: implement ordinal type (determined from source data)')
+    xit('not implemented: ordinal type (determined from source data)')
     # Use "term of address" for "ordinal" if type of term cannot be determined from source data.
 
     let(:mods) do
@@ -590,8 +591,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Unauthorized role term only' do
-    # Should this warn?
-
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -937,7 +936,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Multiple names with transliteration (name as value)' do
-    xit('FIXME: status primary is both inside a parallel value and outside it.')
+    xit('not mapped: status primary is both inside a parallel value and outside it.')
 
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
@@ -1039,7 +1038,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Transliterated name with parts (name as structuredValue)' do
-    xit('FIXME: status primary is both inside a parallel value and outside it.')
+    xit('not mapped: status primary is both inside a parallel value and outside it.')
 
     # This example is for reference only - doesn't need to be mapped.  Splitting the name isn't implemented
     let(:mods) do
@@ -1117,7 +1116,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Transliterated name with role' do
-    xit('FIXME: status primary is both inside a parallel value and outside it.')
+    xit('not mapped: status primary is both inside a parallel value and outside it.')
 
     let(:mods) do
       <<~XML
@@ -1204,7 +1203,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with et al.' do
-    xit 'TODO: implement etal for contributor'
+    xit 'not implemented: etal for contributor'
 
     let(:mods) do
       <<~XML
@@ -1237,7 +1236,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with display label' do
-    xit 'TODO: implement displayLabel for contributor'
+    xit 'not implemented: displayLabel for contributor'
 
     let(:mods) do
       <<~XML
@@ -1275,7 +1274,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with valueURI only (authority URI)' do
-    xit 'TODO: implement mapping to contributor with valueURI only'
+    xit 'not implemented: mapping to contributor with valueURI only'
 
     let(:mods) do
       <<~XML
@@ -1307,7 +1306,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with nameIdentifier only (RWO URI)' do
-    xit 'TODO: implement mapping to contributor with nameIdentifier only'
+    xit 'not implemented: mapping to contributor with nameIdentifier only'
 
     let(:mods) do
       <<~XML
@@ -1345,7 +1344,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Full name with additional subelements' do
-    xit 'TODO: spec needs status primary and name type personal (and implementation)'
+    xit 'not mapped: needs status primary and name type personal (and implementation)'
 
     let(:mods) do
       <<~XML
@@ -1381,7 +1380,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with active date - year' do
-    xit 'TODO: implement type activity dates'
+    xit 'not implemented: type activity dates'
 
     # If date starts with "active," use type "activity dates" and drop "active" from date value
     let(:mods) do
@@ -1414,7 +1413,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with active date - century' do
-    xit 'TODO: implement type activity dates'
+    xit 'not implemented: type activity dates'
 
     # If date starts with "active," use type "activity dates" and drop "active" from date value
     let(:mods) do
@@ -1447,7 +1446,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with approximate date' do
-    xit 'TODO: spec needs cocina name type personal, implementation needs structuredVaue type name'
+    xit 'not mapped: needs cocina name type personal, implementation needs structuredVaue type name'
 
     let(:mods) do
       <<~XML
@@ -1483,9 +1482,9 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with language' do
-    xit 'TODO: implement "both type and status should be siblings to name, as they apply to the contributor entity."'
+    xit 'not implemented: "both type and status should be siblings to name, as they apply to the contributor entity."'
 
-    let(:druid) { 'cp049zn0898' } # adapted from ...
+    # adapted from cp049zn0898
 
     let(:mods) do
       <<~XML
