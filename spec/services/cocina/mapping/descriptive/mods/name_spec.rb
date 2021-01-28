@@ -549,7 +549,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
       let(:roundtrip_mods) { nil }
 
-      let(:cocina) { nil }
+      let(:cocina) { {} }
 
       let(:warnings) do
         [
@@ -576,7 +576,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
       let(:roundtrip_mods) { nil }
 
-      let(:cocina) { nil }
+      let(:cocina) { {} }
 
       let(:warnings) do
         [
