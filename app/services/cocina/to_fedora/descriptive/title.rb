@@ -133,38 +133,11 @@ module Cocina
           parts.reject { |structured_title| NAME_TYPES.include?(structured_title.type) }
         end
 
-        def write_title_names(title_names, name_title_group, title, title_name_attrs)
-          title_name_with_authority = title_names.find { |title_name| title_name.uri || title_name.source }
-
-          title_name_attrs = name_attrs_for(title_name_with_authority || title_names.first, name_title_group, title).merge(title_name_attrs)
-
-          xml.name title_name_attrs do
-            title_names.each do |title_name|
-              name_type = NAME_TAG_NAME.fetch(title_name[:type], nil)
-              name_attrs = {}
-              name_attrs[:type] = name_type if name_type
-              xml.namePart title_name[:value], name_attrs
-            end
-          end
-        end
-
         def with_uri_info(cocina, xml_attrs)
           xml_attrs[:valueURI] = cocina.uri
           xml_attrs[:authorityURI] = cocina.source&.uri
           xml_attrs[:authority] = cocina.source&.code
           xml_attrs.compact
-        end
-
-        def name_attrs_for(title_name, name_title_group, title)
-          {}.tap do |attrs|
-            attrs[:type] = 'personal'
-            attrs[:usage] = title_name.status if title_name.status
-            attrs[:usage] = title.status if title.type == 'uniform' && title.status
-            attrs[:nameTitleGroup] = name_title_group
-            attrs[:valueURI] = title_name.uri if title_name.uri
-            attrs[:authorityURI] = title_name.source.uri if title_name.source&.uri
-            attrs[:authority] = title_name.source.code if title_name.source&.code
-          end
         end
 
         def tag_name_for(title_part)
