@@ -99,6 +99,8 @@ RSpec.describe 'MODS genre <--> cocina mappings' do
   end
 
   describe 'With usage' do
+    xit 'not implemented: genre with usage'
+
     let(:mods) do
       <<~XML
         <genre usage="primary">photographs</genre>
@@ -121,11 +123,11 @@ RSpec.describe 'MODS genre <--> cocina mappings' do
         ]
       }
     end
-
-    xit 'TODO: implement genre with usage'
   end
 
   describe 'Multilingual' do
+    xit 'not implemented: multilingual genre'
+
     let(:mods) do
       <<~XML
         <genre lang="eng" script="Latn" altRepGroup="1">photographs</genre>
@@ -178,8 +180,6 @@ RSpec.describe 'MODS genre <--> cocina mappings' do
         ]
       }
     end
-
-    xit 'TODO: implement multilingual genre'
   end
 
   describe 'Display label' do
