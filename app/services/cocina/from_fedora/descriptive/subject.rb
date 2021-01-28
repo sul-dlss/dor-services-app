@@ -237,12 +237,14 @@ module Cocina
 
         def build_cartographics
           coordinates = subject_nodes.map do |subject_node|
-            coordinate = subject_node.xpath('mods:cartographics/mods:coordinates', mods: DESC_METADATA_NS).first&.content
+            subject_node.xpath('mods:cartographics/mods:coordinates', mods: DESC_METADATA_NS).map do |coordinate_node|
+              coordinate = coordinate_node.content
+              return nil if coordinate.blank?
 
-            next coordinate.delete_prefix('(').delete_suffix(')') if coordinate.present?
+              coordinate.delete_prefix('(').delete_suffix(')')
+            end.compact
+          end.flatten.compact.uniq
 
-            nil
-          end.compact.uniq
           coordinates.map { |coordinate| { value: coordinate, type: 'map coordinates' } }
         end
       end
