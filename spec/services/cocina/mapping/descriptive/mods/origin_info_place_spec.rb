@@ -4,47 +4,47 @@ require 'rails_helper'
 
 RSpec.describe 'MODS originInfo place <--> cocina mappings' do
   describe 'Place - text (authorized)' do
-    let(:mods) do
-      <<~XML
-        <originInfo>
-          <place>
-            <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
-          </place>
-        </originInfo>
-      XML
-    end
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <place>
+              <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+            </place>
+          </originInfo>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      <<~XML
-        <originInfo eventType="publication">
-          <place>
-            <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
-          </place>
-        </originInfo>
-      XML
-    end
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+            </place>
+          </originInfo>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        "event": [
-          {
-            "type": 'publication',
-            "location": [
-              {
-                "value": 'Stanford (Calif.)',
-                "uri": 'http://id.loc.gov/authorities/names/n50046557',
-                "source": {
-                  "code": 'naf',
-                  "uri": 'http://id.loc.gov/authorities/names/'
+      let(:cocina) do
+        {
+          "event": [
+            {
+              "type": 'publication',
+              "location": [
+                {
+                  "value": 'Stanford (Calif.)',
+                  "uri": 'http://id.loc.gov/authorities/names/n50046557',
+                  "source": {
+                    "code": 'naf',
+                    "uri": 'http://id.loc.gov/authorities/names/'
+                  }
                 }
-              }
-            ]
-          }
-        ]
-      }
+              ]
+            }
+          ]
+        }
+      end
     end
-
-    xit 'broken'
   end
 
   describe 'Place - code' do

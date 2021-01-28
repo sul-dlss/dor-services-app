@@ -119,17 +119,17 @@ module Cocina
             edition = origin_info.xpath('mods:edition', mods: DESC_METADATA_NS)
             publisher = origin_info.xpath('mods:publisher', mods: DESC_METADATA_NS)
             if issuance.present? || frequency.present? || edition.present? || publisher.present?
-              event = find_event_by_precedence(events, create: true)
+              event = find_event_by_precedence(events)
               add_edition_info(event, edition, language_script)
               add_issuance_info(event, issuance)
               add_frequency_info(event, frequency)
               add_publisher_info(event, publisher, language_script, origin_info)
             end
 
-            events = [{}] if events.empty?
             place = origin_info.xpath('mods:place', mods: DESC_METADATA_NS)
             add_place_info(find_event_by_precedence(events) || events.last, place, language_script) if place.present?
 
+            events = [{}] if events.empty?
             display_label = origin_info[:displayLabel].presence
             events.first[:displayLabel] = display_label if display_label
 
@@ -137,7 +137,7 @@ module Cocina
           end
         end
 
-        def find_event_by_precedence(events, create: false)
+        def find_event_by_precedence(events)
           %w[publication presentation distribution production creation manufacture validity].each do |event_type|
             events.each do |event|
               return event if event[:type] == event_type
@@ -145,9 +145,7 @@ module Cocina
           end
 
           # Any event which isn't empty.
-          events.each(&:present?)
-
-          return nil unless create
+          events.find(&:present?)
 
           { type: 'publication' }.tap do |event|
             events << event
