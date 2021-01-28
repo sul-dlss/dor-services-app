@@ -59,7 +59,7 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
     end
   end
 
-  describe 'Multiple types and one predominant' do
+  describe 'Object with multiple types and one predominant' do
     let(:mods) do
       <<~XML
         <typeOfResource usage="primary">text</typeOfResource>
@@ -92,7 +92,7 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
     xit 'not implemented'
   end
 
-  describe 'Manuscript' do
+  describe 'Manuscript attribute with resource type' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -122,7 +122,7 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
     end
   end
 
-  describe 'Attribute without value' do
+  describe 'Manuscript attribute without resource type' do
     let(:mods) do
       <<~XML
         <typeOfResource manuscript="yes" />
@@ -145,7 +145,7 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
     xit 'not implemented'
   end
 
-  describe 'Collection' do
+  describe 'Collection attribute with resource type' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -174,6 +174,30 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Collection attribute without resource type' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <typeOfResource collection="yes" />
+        XML
+      end
+
+      let(:cocina) do
+        {
+          "form": [
+            {
+              "value": 'collection',
+              "source": {
+                "value": 'MODS resource types'
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
 
   describe 'With display label' do
     it_behaves_like 'MODS cocina mapping' do
