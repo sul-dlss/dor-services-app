@@ -181,7 +181,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
       XML
     end
 
-    xit 'not yet mapped to cocina'
+    xit 'not mapped (to cocina)'
   end
 
   describe 'Multilingual part' do
@@ -202,7 +202,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
       XML
     end
 
-    xit 'not yet mapped to cocina'
+    xit 'not mapped (to cocina)'
   end
 
   describe 'Multiple ordered parts' do
@@ -225,6 +225,6 @@ RSpec.describe 'MODS part <--> cocina mappings' do
       XML
     end
 
-    xit 'not yet mapped to cocina'
+    xit 'not mapped (to cocina)'
   end
 end
