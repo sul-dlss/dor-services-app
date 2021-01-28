@@ -257,72 +257,71 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
   describe 'Uniform title with authority' do
     # How to ID: titleInfo type="uniform"
-    let(:mods) do
-      <<~XML
-        <titleInfo usage="primary">
-          <title>Hamlet</title>
-        </titleInfo>
-        <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="1">
-          <title>Hamlet</title>
-        </titleInfo>
-        <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="1">
-          <namePart>Shakespeare, William, 1564-1616</namePart>
-        </name>
-      XML
-    end
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo usage="primary">
+            <title>Hamlet</title>
+          </titleInfo>
+          <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="1">
+            <title>Hamlet</title>
+          </titleInfo>
+          <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="1">
+            <namePart>Shakespeare, William, 1564-1616</namePart>
+          </name>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        "title": [
-          {
-            "value": 'Hamlet',
-            "status": 'primary'
-          },
-          {
-            "structuredValue": [
-              {
-                "value": 'Shakespeare, William, 1564-1616',
-                "type": 'name',
-                "uri": 'http://id.loc.gov/authorities/names/n78095332',
-                "source": {
-                  "uri": 'http://id.loc.gov/authorities/names/',
-                  "code": 'naf'
+      let(:cocina) do
+        {
+          "title": [
+            {
+              "value": 'Hamlet',
+              "status": 'primary'
+            },
+            {
+              "structuredValue": [
+                {
+                  "value": 'Hamlet',
+                  "type": 'title'
+                },
+                {
+                  "value": 'Shakespeare, William, 1564-1616',
+                  "type": 'name',
+                  "uri": 'http://id.loc.gov/authorities/names/n78095332',
+                  "source": {
+                    "uri": 'http://id.loc.gov/authorities/names/',
+                    "code": 'naf'
+                  }
                 }
+              ],
+              "type": 'uniform',
+              "source": {
+                "uri": 'http://id.loc.gov/authorities/names/',
+                "code": 'naf'
               },
-              {
-                "value": 'Hamlet',
-                "type": 'title'
-              }
-            ],
-            "type": 'uniform',
-            "uri": 'http://id.loc.gov/authorities/names/n80008522',
-            "source": {
-              "uri": 'http://id.loc.gov/authorities/names/',
-              "code": 'naf'
+              "uri": 'http://id.loc.gov/authorities/names/n80008522'
             }
-          }
-        ],
-        "contributor": [
-          {
-            "name": [
-              {
-                "value": 'Shakespeare, William, 1564-1616',
-                "type": 'person',
-                "status": 'primary',
-                "uri": 'http://id.loc.gov/authorities/names/n78095332',
-                "source": {
-                  "uri": 'http://id.loc.gov/authorities/names/',
-                  "code": 'naf'
+          ],
+          "contributor": [
+            {
+              "name": [
+                {
+                  "value": 'Shakespeare, William, 1564-1616',
+                  "uri": 'http://id.loc.gov/authorities/names/n78095332',
+                  "source": {
+                    "uri": 'http://id.loc.gov/authorities/names/',
+                    "code": 'naf'
+                  }
                 }
-              }
-            ],
-            "status": 'primary'
-          }
-        ]
-      }
+              ],
+              "status": 'primary',
+              "type": 'person'
+            }
+          ]
+        }
+      end
     end
-
-    xit 'broken'
   end
 
   describe 'Uniform title with multiple namePart subelements' do
