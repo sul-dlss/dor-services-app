@@ -65,7 +65,6 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
         }
       end
     end
-    # xit 'broken'
   end
 
   describe 'Name subject with multiple namePart elements - example 2' do
