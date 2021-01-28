@@ -1073,38 +1073,38 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'originInfo eventType differs from date type' do
-    let(:mods) do
-      <<~XML
-        <originInfo eventType="publication">
-          <copyrightDate>1980</copyrightDate>
-        </originInfo>
-      XML
-    end
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="publication">
+            <copyrightDate>1980</copyrightDate>
+          </originInfo>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      <<~XML
-        <originInfo eventType="copyright">
-          <copyrightDate>1980</copyrightDate>
-        </originInfo>
-      XML
-    end
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo eventType="copyright">
+            <copyrightDate>1980</copyrightDate>
+          </originInfo>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        "event": [
-          {
-            "type": 'copyright',
-            "date": [
-              {
-                "value": '1980'
-              }
-            ]
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          "event": [
+            {
+              "type": 'copyright',
+              "date": [
+                {
+                  "value": '1980'
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
-
-    xit 'broken'
   end
 
   describe 'originInfo eventType differs from date type, copyright and copyright notice events, converted from MARC record with multiple 264s' do

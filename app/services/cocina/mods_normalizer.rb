@@ -184,43 +184,36 @@ module Cocina
     end
 
     # change original xml to have the event type that will be output
-    # rubocop:disable Metrics/CyclomaticComplexity
-    # rubocop:disable Metrics/PerceivedComplexity
     def normalize_origin_info_event_types
       ng_xml.root.xpath('//mods:originInfo', mods: MODS_NS).each do |origin_info_node|
-        date_issued_nodes = origin_info_node.xpath('mods:dateIssued', mods: MODS_NS)
-        add_event_type('publication', origin_info_node) && next if date_issued_nodes.present?
+        next if normalize_event_type(origin_info_node, 'dateIssued', 'publication', ->(oi_node) { oi_node['eventType'] != 'presentation' })
 
         copyright_date_nodes = origin_info_node.xpath('mods:copyrightDate', mods: MODS_NS)
-        add_event_type('copyright', origin_info_node) && next if copyright_date_nodes.present?
+        if copyright_date_nodes.present?
+          origin_info_node['eventType'] = 'copyright' if origin_info_node['eventType'] != 'copyright notice'
+          next
+        end
 
-        date_created_nodes = origin_info_node.xpath('mods:dateCreated', mods: MODS_NS)
-        add_event_type('production', origin_info_node) && next if date_created_nodes.present?
+        next if normalize_event_type(origin_info_node, 'dateCreated', 'production')
+        next if normalize_event_type(origin_info_node, 'dateCaptured', 'capture')
+        next if normalize_event_type(origin_info_node, 'dateValid', 'validity')
 
-        date_captured_nodes = origin_info_node.xpath('mods:dateCaptured', mods: MODS_NS)
-        add_event_type('capture', origin_info_node) && next if date_captured_nodes.present?
+        event_type_nil_lambda = ->(oi_node) { oi_node['eventType'].nil? }
 
-        date_valid_nodes = origin_info_node.xpath('mods:dateValid', mods: MODS_NS)
-        add_event_type('validity', origin_info_node) && next if date_valid_nodes.present?
-
-        publisher = origin_info_node.xpath('mods:publisher', mods: MODS_NS)
-        add_event_type('publication', origin_info_node) && next if publisher.present?
-
-        edition = origin_info_node.xpath('mods:edition', mods: MODS_NS)
-        add_event_type('publication', origin_info_node) && next if edition.present?
-
-        issuance = origin_info_node.xpath('mods:issuance', mods: MODS_NS)
-        add_event_type('publication', origin_info_node) && next if issuance.present?
-
-        frequency = origin_info_node.xpath('mods:frequency', mods: MODS_NS)
-        add_event_type('publication', origin_info_node) && next if frequency.present?
+        next if normalize_event_type(origin_info_node, 'publisher', 'publication', event_type_nil_lambda)
+        next if normalize_event_type(origin_info_node, 'edition', 'publication', event_type_nil_lambda)
+        next if normalize_event_type(origin_info_node, 'issuance', 'publication', event_type_nil_lambda)
+        next if normalize_event_type(origin_info_node, 'frequency', 'publication', event_type_nil_lambda)
       end
     end
-    # rubocop:enable Metrics/CyclomaticComplexity
-    # rubocop:enable Metrics/PerceivedComplexity
 
-    def add_event_type(value, origin_info_node)
-      origin_info_node['eventType'] = value if origin_info_node[:eventType].blank?
+    def normalize_event_type(origin_info_node, child_node_name, event_type, filter = nil)
+      child_nodes = origin_info_node.xpath("mods:#{child_node_name}", mods: MODS_NS)
+      return false if child_nodes.blank?
+      return false if filter && !filter.call(origin_info_node)
+
+      origin_info_node['eventType'] = event_type
+      true
     end
 
     # NOTE: must be run after normalize_origin_info_event_types
