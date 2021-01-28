@@ -176,6 +176,8 @@ RSpec.describe 'MODS recordInfo <--> cocina mappings' do
   end
 
   describe 'Converted from MARC' do
+    xit 'broken: MARC to MODS conversion needs to use MODS 3.7 and then this spec will pass'
+
     let(:mods) do
       <<~XML
         <recordInfo>
@@ -266,8 +268,6 @@ RSpec.describe 'MODS recordInfo <--> cocina mappings' do
         }
       }
     end
-
-    xit 'TODO: MARC to MODS conversion needs to use MODS 3.7 and then this spec will pass'
   end
 
   describe 'Converted from ISO 19139' do
