@@ -55,7 +55,7 @@ services:
     ports:
       - 6379:6379
   solr:
-    image: solr:7
+    image: solr:slim
     volumes:
       - ./solr_conf/conf/:/myconfig
     command: solr-create -c dorservices -d /myconfig
