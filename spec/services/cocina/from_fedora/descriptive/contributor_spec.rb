@@ -95,7 +95,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
 
     it 'builds the cocina data structure and warns' do
-      expect(build).to eq [{}]
+      expect(build).to eq nil
       expect(notifier).to have_received(:warn).with('Missing or empty name type attribute')
       expect(notifier).to have_received(:warn).with('name/namePart missing value')
       expect(notifier).to have_received(:warn).with('Missing name/namePart element')
@@ -454,7 +454,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
       end
 
       it 'builds the cocina data structure and warns' do
-        expect(build).to eq [{}]
+        expect(build).to eq nil
         expect(notifier).to have_received(:warn).with('Missing name/namePart element')
       end
     end
