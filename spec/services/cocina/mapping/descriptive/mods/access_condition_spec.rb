@@ -129,4 +129,26 @@ RSpec.describe 'MODS accessCondition <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Link to external value only' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <accessCondition xlink:href="http://access.org/accessCondition" type="use and reproduction" />
+        XML
+      end
+
+      let(:cocina) do
+        {
+          access: {
+            note: [
+              {
+                type: "use and reproduction",
+                valueAt: "http://access.org/accessCondition"
+              }
+            ]
+          }
+        }
+    end
+  end
 end
