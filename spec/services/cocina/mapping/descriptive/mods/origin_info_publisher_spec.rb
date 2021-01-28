@@ -405,73 +405,72 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
 
   describe 'Publisher with dateOther type' do
     # Adapted from druid:sz423cd8263
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo displayLabel="producer">
+            <place>
+              <placeTerm>Stanford, Calif.</placeTerm>
+            </place>
+            <publisher>Stanford University, Department of Biostatistics</publisher>
+            <dateOther type="production">2002</dateOther>
+          </originInfo>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <originInfo displayLabel="producer">
-          <place>
-            <placeTerm>Stanford, Calif.</placeTerm>
-          </place>
-          <publisher>Stanford University, Department of Biostatistics</publisher>
-          <dateOther type="production">2002</dateOther>
-        </originInfo>
-      XML
-    end
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo displayLabel="producer" eventType="production">
+            <place>
+              <placeTerm type="text">Stanford, Calif.</placeTerm>
+            </place>
+            <publisher>Stanford University, Department of Biostatistics</publisher>
+            <dateOther type="production">2002</dateOther>
+          </originInfo>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      <<~XML
-        <originInfo displayLabel="producer" eventType="production">
-          <place>
-            <placeTerm type="text">Stanford, Calif.</placeTerm>
-          </place>
-          <publisher>Stanford University, Department of Biostatistics</publisher>
-          <dateOther type="production">2002</dateOther>
-        </originInfo>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        "event": [
-          {
-            "type": 'production',
-            "displayLabel": 'producer',
-            "location": [
-              {
-                "value": 'Stanford, Calif.'
-              }
-            ],
-            "contributor": [
-              {
-                "name": [
-                  {
-                    "value": 'Stanford University, Department of Biostatistics'
-                  }
-                ],
-                "type": 'organization',
-                "role": [
-                  {
-                    "value": 'issuing body',
-                    "code": 'isb',
-                    "uri": 'http://id.loc.gov/vocabulary/relators/isb',
-                    "source": {
-                      "code": 'marcrelator',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/'
+      let(:cocina) do
+        {
+          "event": [
+            {
+              "type": 'production',
+              "displayLabel": 'producer',
+              "location": [
+                {
+                  "value": 'Stanford, Calif.'
+                }
+              ],
+              "contributor": [
+                {
+                  "name": [
+                    {
+                      "value": 'Stanford University, Department of Biostatistics'
                     }
-                  }
-                ]
-              }
-            ],
-            "date": [
-              {
-                "value": '2002'
-              }
-            ]
-          }
-        ]
-      }
+                  ],
+                  "type": 'organization',
+                  "role": [
+                    {
+                      "value": 'issuing body',
+                      "code": 'isb',
+                      "uri": 'http://id.loc.gov/vocabulary/relators/isb',
+                      "source": {
+                        "code": 'marcrelator',
+                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
+                }
+              ],
+              "date": [
+                {
+                  "value": '2002'
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
-
-    xit 'broken'
   end
 end

@@ -184,6 +184,7 @@ module Cocina
     end
 
     # change original xml to have the event type that will be output
+    # rubocop:disable Metrics/CyclomaticComplexity
     def normalize_origin_info_event_types
       ng_xml.root.xpath('//mods:originInfo', mods: MODS_NS).each do |origin_info_node|
         next if normalize_event_type(origin_info_node, 'dateIssued', 'publication', ->(oi_node) { oi_node['eventType'] != 'presentation' })
@@ -197,6 +198,7 @@ module Cocina
         next if normalize_event_type(origin_info_node, 'dateCreated', 'production')
         next if normalize_event_type(origin_info_node, 'dateCaptured', 'capture')
         next if normalize_event_type(origin_info_node, 'dateValid', 'validity')
+        next if normalize_date_other_event_type(origin_info_node)
 
         event_type_nil_lambda = ->(oi_node) { oi_node['eventType'].nil? }
 
@@ -205,6 +207,15 @@ module Cocina
         next if normalize_event_type(origin_info_node, 'issuance', 'publication', event_type_nil_lambda)
         next if normalize_event_type(origin_info_node, 'frequency', 'publication', event_type_nil_lambda)
       end
+    end
+    # rubocop:enable Metrics/CyclomaticComplexity
+
+    def normalize_date_other_event_type(origin_info_node)
+      date_other_node = origin_info_node.xpath('mods:dateOther[@type]', mods: MODS_NS).first
+      return false unless date_other_node.present? && Cocina::ToFedora::Descriptive::Event::DATE_OTHER_TYPE.keys.include?(date_other_node['type']) && origin_info_node['eventType'].nil?
+
+      origin_info_node['eventType'] = date_other_node['type']
+      true
     end
 
     def normalize_event_type(origin_info_node, child_node_name, event_type, filter = nil)
