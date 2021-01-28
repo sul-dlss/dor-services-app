@@ -185,6 +185,7 @@ module Cocina
 
     # change original xml to have the event type that will be output
     # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
     def normalize_origin_info_event_types
       ng_xml.root.xpath('//mods:originInfo', mods: MODS_NS).each do |origin_info_node|
         next if normalize_event_type(origin_info_node, 'dateIssued', 'publication', ->(oi_node) { oi_node['eventType'] != 'presentation' })
@@ -206,9 +207,11 @@ module Cocina
         next if normalize_event_type(origin_info_node, 'edition', 'publication', event_type_nil_lambda)
         next if normalize_event_type(origin_info_node, 'issuance', 'publication', event_type_nil_lambda)
         next if normalize_event_type(origin_info_node, 'frequency', 'publication', event_type_nil_lambda)
+        next if normalize_event_type(origin_info_node, 'place', 'publication', event_type_nil_lambda)
       end
     end
     # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
 
     def normalize_date_other_event_type(origin_info_node)
       date_other_node = origin_info_node.xpath('mods:dateOther[@type]', mods: MODS_NS).first
