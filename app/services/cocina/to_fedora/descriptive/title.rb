@@ -6,7 +6,6 @@ module Cocina
       # Maps titles from cocina to MODS XML
       class Title
         TAG_NAME = FromFedora::Descriptive::Titles::TYPES.invert.freeze
-        NAME_TAG_NAME = FromFedora::Descriptive::Contributor::NAME_PART.invert.freeze
         NAME_TYPES = ['name', 'forename', 'surname', 'life dates', 'term of address'].freeze
 
         # @params [Nokogiri::XML::Builder] xml
