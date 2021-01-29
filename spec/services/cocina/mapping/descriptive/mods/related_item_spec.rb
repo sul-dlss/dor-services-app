@@ -23,30 +23,30 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "relatedResource": [
+          relatedResource: [
             {
-              "title": [
+              title: [
                 {
-                  "value": 'Lymond chronicles'
+                  value: 'Lymond chronicles'
                 }
               ],
-              "contributor": [
+              contributor: [
                 {
-                  "type": 'person',
-                  "name": [
+                  type: 'person',
+                  name: [
                     {
-                      "value": 'Dunnett, Dorothy'
+                      value: 'Dunnett, Dorothy'
                     }
                   ]
                 }
               ],
-              "form": [
+              form: [
                 {
-                  "value": '6 vols.',
-                  "type": 'extent'
+                  value: '6 vols.',
+                  type: 'extent'
                 }
               ],
-              "type": 'in series'
+              type: 'in series'
             }
 
           ]
@@ -70,17 +70,17 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "relatedResource": [
+          relatedResource: [
             {
-              "title": [
+              title: [
                 {
-                  "value": 'Supplement'
+                  value: 'Supplement'
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "value": 'Additional data.',
-                  "type": 'summary'
+                  value: 'Additional data.',
+                  type: 'summary'
                 }
               ]
             }
@@ -91,6 +91,8 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
   end
 
   describe 'Related item without title' do
+    xit 'broken: cocina access gets undesired digital repository SDR'
+
     let(:mods) do
       <<~XML
         <relatedItem>
@@ -103,12 +105,12 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "relatedResource": [
+        relatedResource: [
           {
-            "access": {
-              "url": [
+            access: {
+              url: [
                 {
-                  "value": 'https://www.example.com'
+                  value: 'https://www.example.com'
                 }
               ]
             }
@@ -116,8 +118,6 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
         ]
       }
     end
-
-    xit 'broken'
   end
 
   describe 'Multiple related items' do
@@ -139,18 +139,18 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "relatedResource": [
+          relatedResource: [
             {
-              "title": [
+              title: [
                 {
-                  "value": 'Related item 1'
+                  value: 'Related item 1'
                 }
               ]
             },
             {
-              "title": [
+              title: [
                 {
-                  "value": 'Related item 2'
+                  value: 'Related item 2'
                 }
               ]
             }
@@ -174,14 +174,14 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "relatedResource": [
+          relatedResource: [
             {
-              "title": [
+              title: [
                 {
-                  "value": 'Supplement'
+                  value: 'Supplement'
                 }
               ],
-              "displayLabel": 'Additional data'
+              displayLabel: 'Additional data'
             }
           ]
         }
@@ -208,6 +208,7 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
         XML
       end
 
+      # capitalized OCLC
       let(:roundtrip_mods) do
         <<~XML
           <relatedItem type="original">
@@ -227,59 +228,59 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "relatedResource": [
+          relatedResource: [
             {
-              "type": 'has original version',
-              "title": [
+              type: 'has original version',
+              title: [
                 {
-                  "value": 'This item is related'
+                  value: 'This item is related'
                 }
               ],
-              "adminMetadata": {
-                "metadataStandard": [
+              adminMetadata: {
+                metadataStandard: [
                   {
-                    "code": 'aacr2'
+                    code: 'aacr2'
                   }
                 ],
-                "contributor": [
+                contributor: [
                   {
-                    "name": [
+                    name: [
                       {
-                        "code": 'GPO',
-                        "source": {
-                          "code": 'marcorg'
+                        code: 'GPO',
+                        source: {
+                          code: 'marcorg'
                         }
                       }
                     ],
-                    "type": 'organization',
-                    "role": [
+                    type: 'organization',
+                    role: [
                       {
-                        "value": 'original cataloging agency'
+                        value: 'original cataloging agency'
                       }
                     ]
                   }
                 ],
-                "event": [
+                event: [
                   {
-                    "type": 'creation',
-                    "date": [
+                    type: 'creation',
+                    date: [
                       {
-                        "value": '780512',
-                        "encoding": {
-                          "code": 'marc'
+                        value: '780512',
+                        encoding: {
+                          code: 'marc'
                         }
                       }
                     ]
                   }
                 ],
-                "identifier": [
+                identifier: [
                   {
-                    "value": '6766105',
-                    "type": 'SUL catalog key'
+                    value: '6766105',
+                    type: 'SUL catalog key'
                   },
                   {
-                    "value": '3888071',
-                    "type": 'OCLC'
+                    value: '3888071',
+                    type: 'OCLC'
                   }
                 ]
               }
@@ -315,15 +316,15 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "relatedResource": [
+          relatedResource: [
             {
-              "title": [
+              title: [
                 {
-                  "value": 'Sitzungsberichte der Kaiserlichen Akademie der Wissenschaften'
+                  value: 'Sitzungsberichte der Kaiserlichen Akademie der Wissenschaften'
                 }
               ],
-              "type": 'has other format',
-              "displayLabel": 'Online version:'
+              type: 'has other format',
+              displayLabel: 'Online version:'
             }
           ]
         }
@@ -353,21 +354,21 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "relatedResource": [
+          relatedResource: [
             {
-              "type": 'related to',
-              "title": [
+              type: 'related to',
+              title: [
                 {
-                  "value": 'A related resource'
+                  value: 'A related resource'
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "type": 'other relation type',
-                  "value": 'has part',
-                  "uri": 'http://purl.org/dc/terms/hasPart',
-                  "source": {
-                    "value": 'DCMI'
+                  type: 'other relation type',
+                  value: 'has part',
+                  uri: 'http://purl.org/dc/terms/hasPart',
+                  source: {
+                    value: 'DCMI'
                   }
                 }
               ]
@@ -379,6 +380,8 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
   end
 
   describe 'Related item with related item' do
+    xit 'not implemented: relatedItem within relatedItem'
+
     let(:mods) do
       <<~XML
         <relatedItem type="constituent">
@@ -396,21 +399,21 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "relatedResource": [
+        relatedResource: [
           {
-            "type": 'has part',
-            "title": [
+            type: 'has part',
+            title: [
               {
-                "value": '[Unidentified sextet] [incomplete]'
+                value: '[Unidentified sextet] [incomplete]'
               }
             ],
-            "relatedResource": [
+            relatedResource: [
               {
-                "type": 'part of',
-                "displayLabel": 'Concert title',
-                "title": [
+                type: 'part of',
+                displayLabel: 'Concert title',
+                title: [
                   {
-                    "value": 'Silver Saturday Blues'
+                    value: 'Silver Saturday Blues'
                   }
                 ]
               }
@@ -419,7 +422,5 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
         ]
       }
     end
-
-    xit 'not implemented'
   end
 end
