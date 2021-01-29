@@ -200,10 +200,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
 
     it 'builds the cocina data structure and warns' do
       expect(build).to eq [
-        { source: { uri: '#N/A' },
-          type: 'name',
+        {
+          source: {
+            uri: '#N/A'
+          },
           uri: '#N/A',
-          value: 'Hoveyda, Fereydoun' }
+          value: 'Hoveyda, Fereydoun'
+        }
       ]
       expect(notifier).to have_received(:warn).with('Name type unrecognized', { type: '#N/A' })
       expect(notifier).to have_received(:warn).with('"#N/A" authority code').twice

@@ -274,10 +274,12 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                 {
                   structuredValue: [
                     {
-                      value: 'United States'
+                      value: 'United States',
+                      type: 'name'
                     },
                     {
-                      value: 'Office of Foreign Investment in the United States'
+                      value: 'Office of Foreign Investment in the United States',
+                      type: 'name'
                     }
                   ]
                 }
@@ -828,7 +830,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
               name: [
                 structuredValue: [
                   {
-                    value: 'Sarmiento, Domingo Faustino'
+                    value: 'Sarmiento, Domingo Faustino',
+                    type: 'name'
                   },
                   {
                     type: 'life dates',
@@ -843,7 +846,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
               name: [
                 structuredValue: [
                   {
-                    value: 'Rojas, Ricardo'
+                    value: 'Rojas, Ricardo',
+                    type: 'name'
                   },
                   {
                     type: 'life dates',

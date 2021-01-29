@@ -93,7 +93,7 @@ module Cocina
                                 notifier.warn('Name not found for title group')
                                 []
                               else
-                                NameBuilder.build(name_elements: [name_node], add_default_type: true, notifier: notifier)[:name]
+                                NameBuilder.build(name_elements: [name_node], notifier: notifier)[:name]
                               end
           structured_values.each { |structured_value| structured_value[:type] = 'name' }
           {
