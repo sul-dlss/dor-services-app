@@ -15,13 +15,13 @@ RSpec.describe 'MODS subject temporal <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": '1922-05-15',
-              "encoding": {
-                "code": 'w3cdtf'
+              value: '1922-05-15',
+              encoding: {
+                code: 'w3cdtf'
               },
-              "type": 'time'
+              type: 'time'
             }
           ]
         }
@@ -42,22 +42,22 @@ RSpec.describe 'MODS subject temporal <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": '1890-06-11',
-                  "type": 'start'
+                  value: '1890-06-11',
+                  type: 'start'
                 },
                 {
-                  "value": '1894-03-19',
-                  "type": 'end'
+                  value: '1894-03-19',
+                  type: 'end'
                 }
               ],
-              "encoding": {
-                "code": 'w3cdtf'
+              encoding: {
+                code: 'w3cdtf'
               },
-              "type": 'time'
+              type: 'time'
             }
           ]
         }

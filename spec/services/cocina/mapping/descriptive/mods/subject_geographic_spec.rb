@@ -16,16 +16,16 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Cats',
-                  "type": 'topic'
+                  value: 'Cats',
+                  type: 'topic'
                 },
                 {
-                  "value": 'Europe',
-                  "type": 'place'
+                  value: 'Europe',
+                  type: 'place'
                 }
               ]
             }
@@ -51,23 +51,23 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'North America',
-                  "type": 'continent'
+                  value: 'North America',
+                  type: 'continent'
                 },
                 {
-                  "value": 'Canada',
-                  "type": 'country'
+                  value: 'Canada',
+                  type: 'country'
                 },
                 {
-                  "value": 'Vancouver',
-                  "type": 'city'
+                  value: 'Vancouver',
+                  type: 'city'
                 }
               ],
-              "type": 'place'
+              type: 'place'
             }
           ]
         }
@@ -87,12 +87,12 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "code": 'n-us-md',
-              "type": 'place',
-              "source": {
-                "code": 'marcgac'
+              code: 'n-us-md',
+              type: 'place',
+              source: {
+                code: 'marcgac'
               }
             }
           ]
@@ -114,23 +114,23 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "parallelValue": [
+              parallelValue: [
                 {
-                  "value": 'United States',
-                  "source": {
-                    "code": 'lcsh'
+                  value: 'United States',
+                  source: {
+                    code: 'lcsh'
                   }
                 },
                 {
-                  "code": 'us',
-                  "source": {
-                    "code": 'iso3166'
+                  code: 'us',
+                  source: {
+                    code: 'iso3166'
                   }
                 }
               ],
-              "type": 'place'
+              type: 'place'
             }
           ]
         }
@@ -158,15 +158,15 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Antarctica',
-              "uri": 'http://id.loc.gov/authorities/subjects/sh85005490',
-              "source": {
-                "code": 'lcsh',
-                "uri": 'http://id.loc.gov/authorities/subjects/'
+              value: 'Antarctica',
+              uri: 'http://id.loc.gov/authorities/subjects/sh85005490',
+              source: {
+                code: 'lcsh',
+                uri: 'http://id.loc.gov/authorities/subjects/'
               },
-              "type": 'place'
+              type: 'place'
             }
           ]
         }
@@ -194,21 +194,21 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Arctic Ocean',
-              "valueLanguage": {
-                "code": 'eng',
-                "source": {
-                  "code": 'iso639-2b'
+              value: 'Arctic Ocean',
+              valueLanguage: {
+                code: 'eng',
+                source: {
+                  code: 'iso639-2b'
                 }
               },
-              "uri": 'http://sws.geonames.org/2960860/',
-              "source": {
-                "code": 'geonames',
-                "uri": 'http://www.geonames.org/ontology#'
+              uri: 'http://sws.geonames.org/2960860/',
+              source: {
+                code: 'geonames',
+                uri: 'http://www.geonames.org/ontology#'
               },
-              "type": 'place'
+              type: 'place'
             }
           ]
         }

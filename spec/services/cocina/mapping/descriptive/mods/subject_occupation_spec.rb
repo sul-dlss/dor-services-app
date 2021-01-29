@@ -15,10 +15,10 @@ RSpec.describe 'MODS subject occupation <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Typesetters',
-              "type": 'occupation'
+              value: 'Typesetters',
+              type: 'occupation'
             }
           ]
         }

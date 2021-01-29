@@ -26,10 +26,10 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Cats',
-              "type": 'topic'
+              value: 'Cats',
+              type: 'topic'
             }
           ]
         }
@@ -50,16 +50,16 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Cats',
-                  "type": 'topic'
+                  value: 'Cats',
+                  type: 'topic'
                 },
                 {
-                  "value": '1640',
-                  "type": 'time'
+                  value: '1640',
+                  type: 'time'
                 }
               ]
             }
@@ -73,7 +73,8 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021262">
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+            valueURI="http://id.loc.gov/authorities/subjects/sh85021262">
             <topic>Cats</topic>
           </subject>
         XML
@@ -82,21 +83,22 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
       let(:roundtrip_mods) do
         <<~XML
           <subject authority="lcsh">
-            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+              valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
           </subject>
         XML
       end
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Cats',
-              "type": 'topic',
-              "uri": 'http://id.loc.gov/authorities/subjects/sh85021262',
-              "source": {
-                "code": 'lcsh',
-                "uri": 'http://id.loc.gov/authorities/subjects/'
+              value: 'Cats',
+              type: 'topic',
+              uri: 'http://id.loc.gov/authorities/subjects/sh85021262',
+              source: {
+                code: 'lcsh',
+                uri: 'http://id.loc.gov/authorities/subjects/'
               }
             }
           ]
@@ -110,7 +112,8 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
       let(:mods) do
         <<~XML
           <subject authority="lcsh">
-            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+              valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
           </subject>
         XML
       end
@@ -125,14 +128,14 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Cats',
-              "type": 'topic',
-              "uri": 'http://id.loc.gov/authorities/subjects/sh85021262',
-              "source": {
-                "code": 'lcsh',
-                "uri": 'http://id.loc.gov/authorities/subjects/'
+              value: 'Cats',
+              type: 'topic',
+              uri: 'http://id.loc.gov/authorities/subjects/sh85021262',
+              source: {
+                code: 'lcsh',
+                uri: 'http://id.loc.gov/authorities/subjects/'
               }
             }
           ]
@@ -145,8 +148,10 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021262">
-            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+            valueURI="http://id.loc.gov/authorities/subjects/sh85021262">
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+              valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
           </subject>
         XML
       end
@@ -154,21 +159,22 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
       let(:roundtrip_mods) do
         <<~XML
           <subject authority="lcsh">
-            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+              valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
           </subject>
         XML
       end
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Cats',
-              "type": 'topic',
-              "uri": 'http://id.loc.gov/authorities/subjects/sh85021262',
-              "source": {
-                "code": 'lcsh',
-                "uri": 'http://id.loc.gov/authorities/subjects/'
+              value: 'Cats',
+              type: 'topic',
+              uri: 'http://id.loc.gov/authorities/subjects/sh85021262',
+              source: {
+                code: 'lcsh',
+                uri: 'http://id.loc.gov/authorities/subjects/'
               }
             }
           ]
@@ -181,7 +187,8 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021263">
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+            valueURI="http://id.loc.gov/authorities/subjects/sh85021263">
             <topic>Cats</topic>
             <topic>Anatomy</topic>
           </subject>
@@ -190,22 +197,22 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Cats',
-                  "type": 'topic'
+                  value: 'Cats',
+                  type: 'topic'
                 },
                 {
-                  "value": 'Anatomy',
-                  "type": 'topic'
+                  value: 'Anatomy',
+                  type: 'topic'
                 }
               ],
-              "uri": 'http://id.loc.gov/authorities/subjects/sh85021263',
-              "source": {
-                "code": 'lcsh',
-                "uri": 'http://id.loc.gov/authorities/subjects/'
+              uri: 'http://id.loc.gov/authorities/subjects/sh85021263',
+              source: {
+                code: 'lcsh',
+                uri: 'http://id.loc.gov/authorities/subjects/'
               }
             }
           ]
@@ -227,20 +234,20 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Prices',
-                  "type": 'topic'
+                  value: 'Prices',
+                  type: 'topic'
                 },
                 {
-                  "value": 'Great Britain',
-                  "type": 'place'
+                  value: 'Great Britain',
+                  type: 'place'
                 }
               ],
-              "source": {
-                "code": 'lcsh'
+              source: {
+                code: 'lcsh'
               }
             }
           ]
@@ -253,31 +260,33 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
     let(:mods) do
       <<~XML
         <subject authority="lcsh">
-          <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
-          <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sj96004895">Behavior</topic>
+          <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+            valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
+          <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+            valueURI="http://id.loc.gov/authorities/subjects/sj96004895">Behavior</topic>
         </subject>
       XML
     end
 
     let(:cocina) do
       {
-        "subject": [
+        subject: [
           {
-            "structuredValue": [
+            structuredValue: [
               {
-                "value": 'Cats',
-                "type": 'topic',
-                "uri": 'http://id.loc.gov/authorities/subjects/sh85021262'
+                value: 'Cats',
+                type: 'topic',
+                uri: 'http://id.loc.gov/authorities/subjects/sh85021262'
               },
               {
-                "value": 'Behavior',
-                "type": 'topic',
-                "uri": 'http://id.loc.gov/authorities/subjects/sj96004895'
+                value: 'Behavior',
+                type: 'topic',
+                uri: 'http://id.loc.gov/authorities/subjects/sj96004895'
               }
             ],
-            "source": {
-              "code": 'lcsh',
-              "uri": 'http://id.loc.gov/authorities/subjects/'
+            source: {
+              code: 'lcsh',
+              uri: 'http://id.loc.gov/authorities/subjects/'
             }
           }
         ]
@@ -291,41 +300,44 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh12345">
-            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh23456">Horses</topic>
-            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh34567">History</topic>
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+            valueURI="http://id.loc.gov/authorities/subjects/sh12345">
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+              valueURI="http://id.loc.gov/authorities/subjects/sh23456">Horses</topic>
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+              valueURI="http://id.loc.gov/authorities/subjects/sh34567">History</topic>
           </subject>
         XML
       end
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Horses',
-                  "type": 'topic',
-                  "uri": 'http://id.loc.gov/authorities/subjects/sh23456',
-                  "source": {
-                    "code": 'lcsh',
-                    "uri": 'http://id.loc.gov/authorities/subjects/'
+                  value: 'Horses',
+                  type: 'topic',
+                  uri: 'http://id.loc.gov/authorities/subjects/sh23456',
+                  source: {
+                    code: 'lcsh',
+                    uri: 'http://id.loc.gov/authorities/subjects/'
                   }
                 },
                 {
-                  "value": 'History',
-                  "type": 'topic',
-                  "uri": 'http://id.loc.gov/authorities/subjects/sh34567',
-                  "source": {
-                    "code": 'lcsh',
-                    "uri": 'http://id.loc.gov/authorities/subjects/'
+                  value: 'History',
+                  type: 'topic',
+                  uri: 'http://id.loc.gov/authorities/subjects/sh34567',
+                  source: {
+                    code: 'lcsh',
+                    uri: 'http://id.loc.gov/authorities/subjects/'
                   }
                 }
               ],
-              "uri": 'http://id.loc.gov/authorities/subjects/sh12345',
-              "source": {
-                "code": 'lcsh',
-                "uri": 'http://id.loc.gov/authorities/subjects/'
+              uri: 'http://id.loc.gov/authorities/subjects/sh12345',
+              source: {
+                code: 'lcsh',
+                uri: 'http://id.loc.gov/authorities/subjects/'
               }
             }
           ]
@@ -349,29 +361,29 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "parallelValue": [
+              parallelValue: [
                 {
-                  "value": 'French New Wave',
-                  "valueLanguage": {
-                    "code": 'eng',
-                    "source": {
-                      "code": 'iso639-2b'
+                  value: 'French New Wave',
+                  valueLanguage: {
+                    code: 'eng',
+                    source: {
+                      code: 'iso639-2b'
                     }
                   }
                 },
                 {
-                  "value": 'Nouvelle Vague',
-                  "valueLanguage": {
-                    "code": 'fre',
-                    "source": {
-                      "code": 'iso639-2b'
+                  value: 'Nouvelle Vague',
+                  valueLanguage: {
+                    code: 'fre',
+                    source: {
+                      code: 'iso639-2b'
                     }
                   }
                 }
               ],
-              "type": 'topic'
+              type: 'topic'
             }
           ]
         }
@@ -391,12 +403,12 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'String quartets',
-              "type": 'topic',
-              "source": {
-                "code": 'lcsh'
+              value: 'String quartets',
+              type: 'topic',
+              source: {
+                code: 'lcsh'
               }
             }
           ]
@@ -417,11 +429,11 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Stuff',
-              "type": 'topic',
-              "displayLabel": 'This is about'
+              value: 'Stuff',
+              type: 'topic',
+              displayLabel: 'This is about'
             }
           ]
         }
