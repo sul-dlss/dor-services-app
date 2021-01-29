@@ -205,8 +205,39 @@ RSpec.describe 'MODS part <--> cocina mappings' do
         </part>
       XML
     end
+  end
 
-    xit 'not mapped (to cocina)'
+  describe 'Hierarchical detail' do
+    # valid MODS, but Arcadia will not map unless it shows up in our data.
+    xit 'not mapped (to cocina) unless it shows up in our data'
+
+    let(:mods) do
+      <<~XML
+        <part>
+          <detail type="volume" level="0">
+            <title>Some animals</title>
+          </detail>
+          <detail type="chapter" level="1">
+            <title>Chapter 1: Mammals</title>
+          </detail>
+          <detail> type="section" level="2">
+            <caption>This section is about cats.</caption>
+          </detail>
+          <detail type="section" level="2">
+            <caption>This section is about rabbits.</caption>
+          </detail>
+          <detail type="chapter" level="1">
+            <title>Chapter 2: Amphibians</title>
+          </detail>
+          <detail type="section" level="2">
+            <caption>This section is about salamanders.</caption>
+          </detail>
+          <detail type="section" level="2">
+            <caption>This section is about frogs.</caption>
+          </detail>
+        </part>
+      XML
+    end
   end
 
   describe 'Multiple ordered parts' do
