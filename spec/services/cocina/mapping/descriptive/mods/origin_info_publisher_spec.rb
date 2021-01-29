@@ -23,25 +23,25 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "contributor": [
+              type: 'publication',
+              contributor: [
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": 'Virago'
+                      value: 'Virago'
                     }
                   ],
-                  "type": 'organization',
-                  "role": [
+                  type: 'organization',
+                  role: [
                     {
-                      "value": 'publisher',
-                      "code": 'pbl',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
@@ -59,7 +59,8 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
       let(:mods) do
         <<~XML
           <originInfo>
-            <publisher lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
+            <publisher lang="rus" script="Latn"
+              transliteration="ALA-LC Romanization Tables">Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
           </originInfo>
         XML
       end
@@ -74,41 +75,41 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "contributor": [
+              type: 'publication',
+              contributor: [
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": 'Institut russkoĭ literatury (Pushkinskiĭ Dom)',
-                      "type": 'transliteration',
-                      "standard": {
-                        "value": 'ALA-LC Romanization Tables'
+                      value: 'Institut russkoĭ literatury (Pushkinskiĭ Dom)',
+                      type: 'transliteration',
+                      standard: {
+                        value: 'ALA-LC Romanization Tables'
                       },
-                      "valueLanguage": {
-                        "code": 'rus',
-                        "source": {
-                          "code": 'iso639-2b'
+                      valueLanguage: {
+                        code: 'rus',
+                        source: {
+                          code: 'iso639-2b'
                         },
-                        "valueScript": {
-                          "code": 'Latn',
-                          "source": {
-                            "code": 'iso15924'
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
                           }
                         }
                       }
                     }
                   ],
-                  "type": 'organization',
-                  "role": [
+                  type: 'organization',
+                  role: [
                     {
-                      "value": 'publisher',
-                      "code": 'pbl',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
@@ -141,37 +142,37 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "contributor": [
+              type: 'publication',
+              contributor: [
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": 'СФУ',
-                      "valueLanguage": {
-                        "code": 'rus',
-                        "source": {
-                          "code": 'iso639-2b'
+                      value: 'СФУ',
+                      valueLanguage: {
+                        code: 'rus',
+                        source: {
+                          code: 'iso639-2b'
                         },
-                        "valueScript": {
-                          "code": 'Cyrl',
-                          "source": {
-                            "code": 'iso15924'
+                        valueScript: {
+                          code: 'Cyrl',
+                          source: {
+                            code: 'iso15924'
                           }
                         }
                       }
                     }
                   ],
-                  "type": 'organization',
-                  "role": [
+                  type: 'organization',
+                  role: [
                     {
-                      "value": 'publisher',
-                      "code": 'pbl',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
@@ -206,44 +207,44 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "contributor": [
+              type: 'publication',
+              contributor: [
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": 'Ardis'
+                      value: 'Ardis'
                     }
                   ],
-                  "type": 'organization',
-                  "role": [
+                  type: 'organization',
+                  role: [
                     {
-                      "value": 'publisher',
-                      "code": 'pbl',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
                 },
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": 'Commonplace Books'
+                      value: 'Commonplace Books'
                     }
                   ],
-                  "type": 'organization',
-                  "role": [
+                  type: 'organization',
+                  role: [
                     {
-                      "value": 'publisher',
-                      "code": 'pbl',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
@@ -269,33 +270,33 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'production',
-              "contributor": [
+              type: 'production',
+              contributor: [
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": 'Stanford University'
+                      value: 'Stanford University'
                     }
                   ],
-                  "type": 'organization',
-                  "role": [
+                  type: 'organization',
+                  role: [
                     {
-                      "value": 'issuing body',
-                      "code": 'isb',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/isb',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'issuing body',
+                      code: 'isb',
+                      uri: 'http://id.loc.gov/vocabulary/relators/isb',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "value": '2020'
+                  value: '2020'
                 }
               ]
             }
@@ -318,33 +319,33 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'distribution',
-              "contributor": [
+              type: 'distribution',
+              contributor: [
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": 'Stanford University'
+                      value: 'Stanford University'
                     }
                   ],
-                  "type": 'organization',
-                  "role": [
+                  type: 'organization',
+                  role: [
                     {
-                      "value": 'distributor',
-                      "code": 'dst',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/dst',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'distributor',
+                      code: 'dst',
+                      uri: 'http://id.loc.gov/vocabulary/relators/dst',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "value": '2020'
+                  value: '2020'
                 }
               ]
             }
@@ -367,33 +368,33 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'manufacture',
-              "contributor": [
+              type: 'manufacture',
+              contributor: [
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": 'Stanford University'
+                      value: 'Stanford University'
                     }
                   ],
-                  "type": 'organization',
-                  "role": [
+                  type: 'organization',
+                  role: [
                     {
-                      "value": 'manufacturer',
-                      "code": 'mfr',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/mfr',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'manufacturer',
+                      code: 'mfr',
+                      uri: 'http://id.loc.gov/vocabulary/relators/mfr',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "value": '2020'
+                  value: '2020'
                 }
               ]
             }
@@ -432,39 +433,39 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'production',
-              "displayLabel": 'producer',
-              "location": [
+              type: 'production',
+              displayLabel: 'producer',
+              location: [
                 {
-                  "value": 'Stanford, Calif.'
+                  value: 'Stanford, Calif.'
                 }
               ],
-              "contributor": [
+              contributor: [
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": 'Stanford University, Department of Biostatistics'
+                      value: 'Stanford University, Department of Biostatistics'
                     }
                   ],
-                  "type": 'organization',
-                  "role": [
+                  type: 'organization',
+                  role: [
                     {
-                      "value": 'issuing body',
-                      "code": 'isb',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/isb',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'issuing body',
+                      code: 'isb',
+                      uri: 'http://id.loc.gov/vocabulary/relators/isb',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "value": '2002'
+                  value: '2002'
                 }
               ]
             }

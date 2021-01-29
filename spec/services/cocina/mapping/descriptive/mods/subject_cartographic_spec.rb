@@ -20,20 +20,20 @@ RSpec.describe 'MODS subject cartographic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "form": [
+          form: [
             {
-              "value": '1:22,000,000',
-              "type": 'map scale'
+              value: '1:22,000,000',
+              type: 'map scale'
             },
             {
-              "value": 'Conic proj',
-              "type": 'map projection'
+              value: 'Conic proj',
+              type: 'map projection'
             }
           ],
-          "subject": [
+          subject: [
             {
-              "value": 'E 72°--E 148°/N 13°--N 18°',
-              "type": 'map coordinates'
+              value: 'E 72°--E 148°/N 13°--N 18°',
+              type: 'map coordinates'
             }
           ]
         }
@@ -84,29 +84,29 @@ RSpec.describe 'MODS subject cartographic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "form": [
+          form: [
             {
-              "value": 'Scale not given.',
-              "type": 'map scale'
+              value: 'Scale not given.',
+              type: 'map scale'
             },
             {
-              "value": 'Custom projection',
-              "type": 'map projection'
+              value: 'Custom projection',
+              type: 'map projection'
             },
             {
-              "value": 'EPSG::4326',
-              "type": 'map projection',
-              "uri": 'http://opengis.net/def/crs/EPSG/0/4326',
-              "source": {
-                "code": 'EPSG'
+              value: 'EPSG::4326',
+              type: 'map projection',
+              uri: 'http://opengis.net/def/crs/EPSG/0/4326',
+              source: {
+                code: 'EPSG'
               },
-              "displayLabel": 'WGS84'
+              displayLabel: 'WGS84'
             }
           ],
-          "subject": [
+          subject: [
             {
-              "value": 'E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ',
-              "type": 'map coordinates'
+              value: 'E 72°34ʹ58ʺ--E 73°52ʹ24ʺ/S 52°54ʹ8ʺ--S 53°11ʹ42ʺ',
+              type: 'map coordinates'
             }
           ]
         }
@@ -132,15 +132,15 @@ RSpec.describe 'MODS subject cartographic <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "form": [
-          "parallelValue": [
+        form: [
+          parallelValue: [
             {
-              "value": 'Scale 1:650,000.',
-              "type": 'map scale'
+              value: 'Scale 1:650,000.',
+              type: 'map scale'
             },
             {
-              "value": '比例尺 1:650,000.',
-              "type": 'map scale'
+              value: '比例尺 1:650,000.',
+              type: 'map scale'
             }
           ]
         ]
@@ -184,7 +184,7 @@ RSpec.describe 'MODS subject cartographic <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
               type: 'map coordinates',
               value: 'W0750700 W0741200 N0443400 N0431200'
@@ -194,10 +194,10 @@ RSpec.describe 'MODS subject cartographic <--> cocina mappings' do
               value: 'W 75⁰07ʹ00ʹ--W 74⁰12ʹ00ʹ/N 44⁰34ʹ00ʹ--N 43⁰12ʹ00ʹ'
             }
           ],
-          "form": [
+          form: [
             {
-              "value": 'Scale ca. 1:126,720. 1 in. to 2 miles.',
-              "type": 'map scale'
+              value: 'Scale ca. 1:126,720. 1 in. to 2 miles.',
+              type: 'map scale'
             }
           ]
         }

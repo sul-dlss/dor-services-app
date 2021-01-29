@@ -17,10 +17,10 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Dunnett, Dorothy',
-              "type": 'person'
+              value: 'Dunnett, Dorothy',
+              type: 'person'
             }
           ]
         }
@@ -44,21 +44,21 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Nakahama, Manjirō',
-                  "type": 'name'
+                  value: 'Nakahama, Manjirō',
+                  type: 'name'
                 },
                 {
-                  "value": '1827-1898',
-                  "type": 'life dates'
+                  value: '1827-1898',
+                  type: 'life dates'
                 }
               ],
-              "type": 'person',
-              "source": {
-                "code": 'lcsh'
+              type: 'person',
+              source: {
+                code: 'lcsh'
               }
             }
           ]
@@ -82,21 +82,21 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Saki',
-                  "type": 'name'
+                  value: 'Saki',
+                  type: 'name'
                 },
                 {
-                  "value": '1870-1916',
-                  "type": 'life dates'
+                  value: '1870-1916',
+                  type: 'life dates'
                 }
               ],
-              "type": 'person',
-              "source": {
-                "code": 'lcsh'
+              type: 'person',
+              source: {
+                code: 'lcsh'
               }
             }
           ]
@@ -110,7 +110,8 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
       let(:mods) do
         <<~XML
           <subject authority="lcsh">
-            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79046044">
+            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+              valueURI="http://id.loc.gov/authorities/names/n79046044">
               <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
             </name>
           </subject>
@@ -119,14 +120,14 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
-              "type": 'person',
-              "uri": 'http://id.loc.gov/authorities/names/n79046044',
-              "source": {
-                "code": 'naf',
-                "uri": 'http://id.loc.gov/authorities/names/'
+              value: 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
+              type: 'person',
+              uri: 'http://id.loc.gov/authorities/names/n79046044',
+              source: {
+                code: 'naf',
+                uri: 'http://id.loc.gov/authorities/names/'
               }
             }
           ]
@@ -150,16 +151,16 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Shakespeare, William, 1564-1616',
-                  "type": 'person'
+                  value: 'Shakespeare, William, 1564-1616',
+                  type: 'person'
                 },
                 {
-                  "value": 'Homes and haunts',
-                  "type": 'topic'
+                  value: 'Homes and haunts',
+                  type: 'topic'
                 }
               ]
             }
@@ -173,7 +174,8 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85120951">
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+            valueURI="http://id.loc.gov/authorities/subjects/sh85120951">
             <name type="personal">
               <namePart>Shakespeare, William, 1564-1616</namePart>
             </name>
@@ -184,22 +186,22 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Shakespeare, William, 1564-1616',
-                  "type": 'person'
+                  value: 'Shakespeare, William, 1564-1616',
+                  type: 'person'
                 },
                 {
-                  "value": 'Homes and haunts',
-                  "type": 'topic'
+                  value: 'Homes and haunts',
+                  type: 'topic'
                 }
               ],
-              "uri": 'http://id.loc.gov/authorities/subjects/sh85120951',
-              "source": {
-                "code": 'lcsh',
-                "uri": 'http://id.loc.gov/authorities/subjects/'
+              uri: 'http://id.loc.gov/authorities/subjects/sh85120951',
+              source: {
+                code: 'lcsh',
+                uri: 'http://id.loc.gov/authorities/subjects/'
               }
             }
           ]
@@ -213,35 +215,37 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
       let(:mods) do
         <<~XML
           <subject authority="lcsh">
-            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332">
+            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+              valueURI="http://id.loc.gov/authorities/names/n78095332">
               <namePart>Shakespeare, William, 1564-1616</namePart>
             </name>
-            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh99005711">Homes and haunts</topic>
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+              valueURI="http://id.loc.gov/authorities/subjects/sh99005711">Homes and haunts</topic>
           </subject>
         XML
       end
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Shakespeare, William, 1564-1616',
-                  "type": 'person',
-                  "uri": 'http://id.loc.gov/authorities/names/n78095332',
-                  "source": {
-                    "code": 'naf',
-                    "uri": 'http://id.loc.gov/authorities/names/'
+                  value: 'Shakespeare, William, 1564-1616',
+                  type: 'person',
+                  uri: 'http://id.loc.gov/authorities/names/n78095332',
+                  source: {
+                    code: 'naf',
+                    uri: 'http://id.loc.gov/authorities/names/'
                   }
                 },
                 {
-                  "value": 'Homes and haunts',
-                  "type": 'topic',
-                  "uri": 'http://id.loc.gov/authorities/subjects/sh99005711',
-                  "source": {
-                    "code": 'lcsh',
-                    "uri": 'http://id.loc.gov/authorities/subjects/'
+                  value: 'Homes and haunts',
+                  type: 'topic',
+                  uri: 'http://id.loc.gov/authorities/subjects/sh99005711',
+                  source: {
+                    code: 'lcsh',
+                    uri: 'http://id.loc.gov/authorities/subjects/'
                   }
                 }
               ]
@@ -256,43 +260,46 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85120951">
-            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332">
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+            valueURI="http://id.loc.gov/authorities/subjects/sh85120951">
+            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+              valueURI="http://id.loc.gov/authorities/names/n78095332">
               <namePart>Shakespeare, William, 1564-1616</namePart>
             </name>
-            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh99005711">Homes and haunts</topic>
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+              valueURI="http://id.loc.gov/authorities/subjects/sh99005711">Homes and haunts</topic>
           </subject>
         XML
       end
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Shakespeare, William, 1564-1616',
-                  "type": 'person',
-                  "uri": 'http://id.loc.gov/authorities/names/n78095332',
-                  "source": {
-                    "code": 'naf',
-                    "uri": 'http://id.loc.gov/authorities/names/'
+                  value: 'Shakespeare, William, 1564-1616',
+                  type: 'person',
+                  uri: 'http://id.loc.gov/authorities/names/n78095332',
+                  source: {
+                    code: 'naf',
+                    uri: 'http://id.loc.gov/authorities/names/'
                   }
                 },
                 {
-                  "value": 'Homes and haunts',
-                  "type": 'topic',
-                  "uri": 'http://id.loc.gov/authorities/subjects/sh99005711',
-                  "source": {
-                    "code": 'lcsh',
-                    "uri": 'http://id.loc.gov/authorities/subjects/'
+                  value: 'Homes and haunts',
+                  type: 'topic',
+                  uri: 'http://id.loc.gov/authorities/subjects/sh99005711',
+                  source: {
+                    code: 'lcsh',
+                    uri: 'http://id.loc.gov/authorities/subjects/'
                   }
                 }
               ],
-              "uri": 'http://id.loc.gov/authorities/subjects/sh85120951',
-              "source": {
-                "code": 'lcsh',
-                "uri": 'http://id.loc.gov/authorities/subjects/'
+              uri: 'http://id.loc.gov/authorities/subjects/sh85120951',
+              source: {
+                code: 'lcsh',
+                uri: 'http://id.loc.gov/authorities/subjects/'
               }
             }
           ]
@@ -305,7 +312,8 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n97075542">
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/"
+            valueURI="http://id.loc.gov/authorities/names/n97075542">
             <name type="personal">
               <namePart>Dunnett, Dorothy</namePart>
             </name>
@@ -318,22 +326,22 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Dunnett, Dorothy',
-                  "type": 'person'
+                  value: 'Dunnett, Dorothy',
+                  type: 'person'
                 },
                 {
-                  "value": 'Lymond chronicles',
-                  "type": 'title'
+                  value: 'Lymond chronicles',
+                  type: 'title'
                 }
               ],
-              "uri": 'http://id.loc.gov/authorities/names/n97075542',
-              "source": {
-                "code": 'naf',
-                "uri": 'http://id.loc.gov/authorities/names/'
+              uri: 'http://id.loc.gov/authorities/names/n97075542',
+              source: {
+                code: 'naf',
+                uri: 'http://id.loc.gov/authorities/names/'
               }
             }
           ]
@@ -346,8 +354,10 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n97075542">
-            <name authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50025011" type="personal">
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/"
+            valueURI="http://id.loc.gov/authorities/names/n97075542">
+            <name authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+              valueURI="http://id.loc.gov/authorities/names/n50025011" type="personal">
               <namePart>Dunnett, Dorothy</namePart>
             </name>
             <titleInfo>
@@ -359,27 +369,27 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Dunnett, Dorothy',
-                  "type": 'person',
-                  "uri": 'http://id.loc.gov/authorities/names/n50025011',
-                  "source": {
-                    "code": 'naf',
-                    "uri": 'http://id.loc.gov/authorities/names/'
+                  value: 'Dunnett, Dorothy',
+                  type: 'person',
+                  uri: 'http://id.loc.gov/authorities/names/n50025011',
+                  source: {
+                    code: 'naf',
+                    uri: 'http://id.loc.gov/authorities/names/'
                   }
                 },
                 {
-                  "value": 'Lymond chronicles',
-                  "type": 'title'
+                  value: 'Lymond chronicles',
+                  type: 'title'
                 }
               ],
-              "uri": 'http://id.loc.gov/authorities/names/n97075542',
-              "source": {
-                "code": 'naf',
-                "uri": 'http://id.loc.gov/authorities/names/'
+              uri: 'http://id.loc.gov/authorities/names/n97075542',
+              source: {
+                code: 'naf',
+                uri: 'http://id.loc.gov/authorities/names/'
               }
             }
           ]
@@ -392,7 +402,8 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     # Authority is not applied to form because the term may be a subject subdivision, with a different term for being used alone.
     let(:mods) do
       <<~XML
-        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
+        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+          valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
           <name type="personal">
             <namePart>Shakespeare, William, 1564-1616</namePart>
           </name>
@@ -406,7 +417,8 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
     let(:roundtrip_mods) do
       <<~XML
-        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
+        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+          valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
           <name type="personal">
             <namePart>Shakespeare, William, 1564-1616</namePart>
           </name>
@@ -421,33 +433,33 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "subject": [
+        subject: [
           {
-            "structuredValue": [
+            structuredValue: [
               {
-                "value": 'Shakespeare, William, 1564-1616',
-                "type": 'person'
+                value: 'Shakespeare, William, 1564-1616',
+                type: 'person'
               },
               {
-                "value": 'Hamlet',
-                "type": 'title'
+                value: 'Hamlet',
+                type: 'title'
               },
               {
-                "value": 'Bibliographies',
-                "type": 'genre'
+                value: 'Bibliographies',
+                type: 'genre'
               }
             ],
-            "uri": 'http://id.loc.gov/authorities/subjects/sh85120809',
-            "source": {
-              "code": 'lcsh',
-              "uri": 'http://id.loc.gov/authorities/subjects/'
+            uri: 'http://id.loc.gov/authorities/subjects/sh85120809',
+            source: {
+              code: 'lcsh',
+              uri: 'http://id.loc.gov/authorities/subjects/'
             }
           }
         ],
-        "form": [
+        form: [
           {
-            "value": 'Bibliographies',
-            "type": 'genre'
+            value: 'Bibliographies',
+            type: 'genre'
           }
         ]
       }
@@ -460,13 +472,16 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     let(:mods) do
       <<~XML
         <subject authority="lcsh">
-          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332">
+          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+            valueURI="http://id.loc.gov/authorities/names/n78095332">
             <namePart>Shakespeare, William, 1564-1616</namePart>
           </name>
-          <titleInfo authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522">
+          <titleInfo authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+            valueURI="http://id.loc.gov/authorities/names/n80008522">
             <title>Hamlet</title>
           </titleInfo>
-          <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh99001362">Bibliographies</genre>
+          <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+            valueURI="http://id.loc.gov/authorities/subjects/sh99001362">Bibliographies</genre>
         </subject>
       XML
     end
@@ -474,13 +489,16 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     let(:roundtrip_mods) do
       <<~XML
         <subject authority="lcsh">
-          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n78095332">
+          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names"
+            valueURI="http://id.loc.gov/authorities/names/n78095332">
             <namePart>Shakespeare, William, 1564-1616</namePart>
           </name>
-          <titleInfo authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n80008522">
+          <titleInfo authority="naf" authorityURI="http://id.loc.gov/authorities/names"
+            valueURI="http://id.loc.gov/authorities/names/n80008522">
             <title>Hamlet</title>
           </titleInfo>
-          <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh99001362">Bibliographies</genre>
+          <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects"
+            valueURI="http://id.loc.gov/authorities/subjects/sh99001362">Bibliographies</genre>
         </subject>
         <genre>Bibliographies</genre>
       XML
@@ -488,43 +506,43 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "subject": [
+        subject: [
           {
-            "structuredValue": [
+            structuredValue: [
               {
-                "value": 'Shakespeare, William, 1564-1616',
-                "type": 'person',
-                "uri": 'http://id.loc.gov/authorities/names/n78095332',
-                "source": {
-                  "code": 'naf',
-                  "uri": 'http://id.loc.gov/authorities/names/'
+                value: 'Shakespeare, William, 1564-1616',
+                type: 'person',
+                uri: 'http://id.loc.gov/authorities/names/n78095332',
+                source: {
+                  code: 'naf',
+                  uri: 'http://id.loc.gov/authorities/names/'
                 }
               },
               {
-                "value": 'Hamlet',
-                "type": 'title',
-                "uri": 'http://id.loc.gov/authorities/names/n80008522',
-                "source": {
-                  "code": 'naf',
-                  "uri": 'http://id.loc.gov/authorities/names/'
+                value: 'Hamlet',
+                type: 'title',
+                uri: 'http://id.loc.gov/authorities/names/n80008522',
+                source: {
+                  code: 'naf',
+                  uri: 'http://id.loc.gov/authorities/names/'
                 }
               },
               {
-                "value": 'Bibliographies',
-                "type": 'genre',
-                "uri": 'http://id.loc.gov/authorities/subjects/sh99001362',
-                "source": {
-                  "code": 'lcsh',
-                  "uri": 'http://id.loc.gov/authorities/subjects/'
+                value: 'Bibliographies',
+                type: 'genre',
+                uri: 'http://id.loc.gov/authorities/subjects/sh99001362',
+                source: {
+                  code: 'lcsh',
+                  uri: 'http://id.loc.gov/authorities/subjects/'
                 }
               }
             ]
           }
         ],
-        "form": [
+        form: [
           {
-            "value": 'Bibliographies',
-            "type": 'genre'
+            value: 'Bibliographies',
+            type: 'genre'
           }
         ]
       }
@@ -549,29 +567,29 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": 'Debord, Guy',
-                      "type": 'name'
+                      value: 'Debord, Guy',
+                      type: 'name'
                     },
                     {
-                      "value": '1931-1994',
-                      "type": 'life dates'
+                      value: '1931-1994',
+                      type: 'life dates'
                     }
                   ],
-                  "type": 'person'
+                  type: 'person'
                 },
                 {
-                  "value": 'Criticism and interpretation',
-                  "type": 'topic'
+                  value: 'Criticism and interpretation',
+                  type: 'topic'
                 }
               ],
-              "source": {
-                "code": 'lcsh'
+              source: {
+                code: 'lcsh'
               }
             }
           ]
@@ -589,8 +607,10 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
           <subject>
             <name type="personal">
               <role>
-                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">depicted</roleTerm>
-                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">dpc</roleTerm>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
+                  valueURI="http://id.loc.gov/vocabulary/relators/dpc">depicted</roleTerm>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
+                  valueURI="http://id.loc.gov/vocabulary/relators/dpc">dpc</roleTerm>
               </role>
               <namePart type="family">Nole</namePart>
               <namePart type="given">Andneas Colijns de</namePart>
@@ -603,40 +623,40 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "type": 'person',
-              "parallelValue": [
+              type: 'person',
+              parallelValue: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": 'Nole',
-                      "type": 'surname'
+                      value: 'Nole',
+                      type: 'surname'
                     },
                     {
-                      "value": 'Andneas Colijns de',
-                      "type": 'forename'
+                      value: 'Andneas Colijns de',
+                      type: 'forename'
                     },
                     {
-                      "value": '1590-?',
-                      "type": 'life dates'
+                      value: '1590-?',
+                      type: 'life dates'
                     }
                   ]
                 },
                 {
-                  "value": 'Nole, Andneas Colijns de, 1590-?',
-                  "type": 'display'
+                  value: 'Nole, Andneas Colijns de, 1590-?',
+                  type: 'display'
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "type": 'role',
-                  "value": 'depicted',
-                  "code": 'dpc',
-                  "uri": 'http://id.loc.gov/vocabulary/relators/dpc',
-                  "source": {
-                    "code": 'marcrelator',
-                    "uri": 'http://id.loc.gov/vocabulary/relators/'
+                  type: 'role',
+                  value: 'depicted',
+                  code: 'dpc',
+                  uri: 'http://id.loc.gov/vocabulary/relators/dpc',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
                 }
               ]
