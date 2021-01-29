@@ -945,8 +945,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Multiple names with transliteration (name as value)' do
-    xit('not mapped: status primary is both inside a parallel value and outside it.')
-
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -1047,7 +1045,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Transliterated name with parts (name as structuredValue)' do
-    xit('not mapped: status primary is both inside a parallel value and outside it.')
+    xit('not mapped: for reference only.')
 
     # This example is for reference only - doesn't need to be mapped.  Splitting the name isn't implemented
     let(:mods) do
@@ -1494,7 +1492,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     xit 'not implemented: "both type and status should be siblings to name, as they apply to the contributor entity."'
 
     # adapted from cp049zn0898
-
     let(:mods) do
       <<~XML
         <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
