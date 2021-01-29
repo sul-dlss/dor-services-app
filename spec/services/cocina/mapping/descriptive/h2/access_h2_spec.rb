@@ -4,16 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> MODS mappings for access (H2 specific)' do
   describe 'Contact email' do
-    xit 'FIXME: get MODS mapping for email (is it part of name ?)'
-
-    # this is clearly wrong
-    let(:mods) do
-      <<~XML
-        <location>
-          <physicalLocation type="email" displayLabel="Contact">me@stanford.edu</physicalLocation>
-        </location>
-      XML
-    end
+    xit 'not mapped: email to MODS'
 
     let(:cocina) do
       {
@@ -36,9 +27,7 @@ RSpec.describe 'Cocina --> MODS mappings for access (H2 specific)' do
   end
 
   describe 'Contact email not provided' do
-    xit 'FIXME: cocina -> MODS ok, but no way to get back'
-
-    let(:mods) { '' }
+    xit 'not mapped: access.digitalRepository to MODS'
 
     let(:cocina) do
       {

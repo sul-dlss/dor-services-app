@@ -289,6 +289,6 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
       XML
     end
 
-    xit 'mapping not completed'
+    xit 'not mapped'
   end
 end
