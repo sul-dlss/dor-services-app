@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'MODS part <--> cocina mappings' do
   describe 'isReferencedBy relatedItem/part (510c)' do
-    # Adapted from druid:kf840zn4567
+    # Adapted from kf840zn4567
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -44,18 +44,18 @@ RSpec.describe 'MODS part <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "relatedResource": [
+          relatedResource: [
             {
-              "type": 'referenced by',
-              "title": [
+              type: 'referenced by',
+              title: [
                 {
-                  "value": 'Alden, J.E. European Americana'
+                  value: 'Alden, J.E. European Americana'
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "value": '635/94',
-                  "type": 'location within source'
+                  value: '635/94',
+                  type: 'location within source'
                 }
               ]
             }
@@ -66,7 +66,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
   end
 
   describe 'constituent relatedItem/part' do
-    # Adapted from druid:vt758zn6912
+    # Adapted from vt758zn6912
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -108,49 +108,49 @@ RSpec.describe 'MODS part <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "relatedResource": [
+          relatedResource: [
             {
-              "type": 'has part',
-              "title": [
+              type: 'has part',
+              title: [
                 {
-                  "value": '[Unidentified sextet]'
+                  value: '[Unidentified sextet]'
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "type": 'marker',
-                  "value": '02:T00:04:01',
-                  "displayLabel": 'Marker'
+                  type: 'marker',
+                  value: '02:T00:04:01',
+                  displayLabel: 'Marker'
                 }
               ]
             },
             {
-              "type": 'has part',
-              "title": [
+              type: 'has part',
+              title: [
                 {
-                  "value": 'Steal Away'
+                  value: 'Steal Away'
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "type": 'marker',
-                  "value": '03:T00:08:35',
-                  "displayLabel": 'Marker'
+                  type: 'marker',
+                  value: '03:T00:08:35',
+                  displayLabel: 'Marker'
                 }
               ]
             },
             {
-              "type": 'has part',
-              "title": [
+              type: 'has part',
+              title: [
                 {
-                  "value": 'Railroad Porter Blues'
+                  value: 'Railroad Porter Blues'
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "type": 'marker',
-                  "value": '04:T00:15:35',
-                  "displayLabel": 'Marker'
+                  type: 'marker',
+                  value: '04:T00:15:35',
+                  displayLabel: 'Marker'
                 }
               ]
             }
@@ -161,6 +161,9 @@ RSpec.describe 'MODS part <--> cocina mappings' do
   end
 
   describe 'Monolingual part with all subelements' do
+    # valid MODS, but Arcadia will not map unless it shows up in our data.
+    xit 'not mapped (to cocina) unless it shows up in our data'
+
     let(:mods) do
       <<~XML
         <part type="article" order="1">
@@ -180,11 +183,12 @@ RSpec.describe 'MODS part <--> cocina mappings' do
         </part>
       XML
     end
-
-    xit 'not mapped (to cocina)'
   end
 
   describe 'Multilingual part' do
+    # valid MODS, but Arcadia will not map unless it shows up in our data.
+    xit 'not mapped (to cocina) unless it shows up in our data'
+
     # Every text element plus part, other than extent/total, can have the lang, script, and transliteration attributes.
     # The altRepGroup attribute appears only on the part element.
     let(:mods) do
@@ -201,11 +205,45 @@ RSpec.describe 'MODS part <--> cocina mappings' do
         </part>
       XML
     end
+  end
 
-    xit 'not mapped (to cocina)'
+  describe 'Hierarchical detail' do
+    # valid MODS, but Arcadia will not map unless it shows up in our data.
+    xit 'not mapped (to cocina) unless it shows up in our data'
+
+    let(:mods) do
+      <<~XML
+        <part>
+          <detail type="volume" level="0">
+            <title>Some animals</title>
+          </detail>
+          <detail type="chapter" level="1">
+            <title>Chapter 1: Mammals</title>
+          </detail>
+          <detail> type="section" level="2">
+            <caption>This section is about cats.</caption>
+          </detail>
+          <detail type="section" level="2">
+            <caption>This section is about rabbits.</caption>
+          </detail>
+          <detail type="chapter" level="1">
+            <title>Chapter 2: Amphibians</title>
+          </detail>
+          <detail type="section" level="2">
+            <caption>This section is about salamanders.</caption>
+          </detail>
+          <detail type="section" level="2">
+            <caption>This section is about frogs.</caption>
+          </detail>
+        </part>
+      XML
+    end
   end
 
   describe 'Multiple ordered parts' do
+    # valid MODS, but Arcadia will not map unless they show up in our data.
+    xit 'not mapped (to cocina) unless they show up in our data'
+
     let(:mods) do
       <<~XML
         <part type="volume" order="1">
@@ -224,7 +262,5 @@ RSpec.describe 'MODS part <--> cocina mappings' do
         <part>
       XML
     end
-
-    xit 'not mapped (to cocina)'
   end
 end
