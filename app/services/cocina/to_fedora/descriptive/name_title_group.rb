@@ -37,6 +37,15 @@ module Cocina
         end
 
         def self.title_name_parts_for(title)
+          if title.parallelValue
+            title.parallelValue.map { |value| title_name_parts_for_structured_value(value) }.flatten.compact.presence
+          else
+            title_name_parts_for_structured_value(title)
+          end
+        end
+        private_class_method :title_name_parts_for
+
+        def self.title_name_parts_for_structured_value(title)
           return nil unless title.structuredValue
 
           structured_title = title.structuredValue.find { |check_structured_title| check_structured_title.type == 'name' }
@@ -48,7 +57,7 @@ module Cocina
             [structured_title]
           end
         end
-        private_class_method :title_name_parts_for
+        private_class_method :title_name_parts_for_structured_value
 
         def self.contributor_name_matches?(contributor_name, title_name_parts)
           if contributor_name.structuredValue

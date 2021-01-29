@@ -309,10 +309,29 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
     end
 
     it 'ignores the namePart with no value and warns' do
-      expect(build).to eq [{ name: [{ structuredValue: [{ value: 'Kielmansegg, Erich Ludwig Friedrich Christian' },
-                                                        { type: 'term of address', value: 'Graf von' },
-                                                        { type: 'life dates', value: '1847-1923' }] }],
-                             type: 'person' }]
+      expect(build).to eq [
+        {
+          name: [
+            {
+              structuredValue: [
+                {
+                  value: 'Kielmansegg, Erich Ludwig Friedrich Christian',
+                  type: 'name'
+                },
+                {
+                  type: 'term of address',
+                  value: 'Graf von'
+                },
+                {
+                  type: 'life dates',
+                  value: '1847-1923'
+                }
+              ]
+            }
+          ],
+          type: 'person'
+        }
+      ]
       expect(notifier).to have_received(:warn).with('name/namePart missing value')
     end
   end
@@ -478,11 +497,18 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
 
       it 'builds the cocina data structure and notifies error' do
         expect(build).to eq [
-          { name: [
-            { value: 'Selective Service System', uri: 'corporate' }
-          ], role: [
-            { code: 'isbx' }
-          ] }
+          {
+            name: [
+              {
+                value: 'Selective Service System',
+                uri: 'corporate'
+              }
+            ], role: [
+              {
+                code: 'isbx'
+              }
+            ]
+          }
         ]
         expect(notifier).to have_received(:warn).with('Value URI has unexpected value', { uri: 'corporate' })
         expect(notifier).to have_received(:error).with('Contributor role code has unexpected value', { role: 'isbx' })
@@ -518,10 +544,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Contributor do
             {
               "structuredValue": [
                 {
-                  "value": 'United States'
+                  "value": 'United States',
+                  "type": 'name'
                 },
                 {
-                  "value": 'Office of Foreign Investment in the United States.'
+                  "value": 'Office of Foreign Investment in the United States.',
+                  "type": 'name'
                 }
               ]
             }

@@ -697,167 +697,168 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Multilingual uniform title' do
-    xit 'not implemented: two <name> elements have usage="primary" so "status": "primary" maps to contributor rather than name'
+    it_behaves_like 'MODS cocina mapping' do
+      # Both <name> elements have usage="primary" so "status": "primary" maps to contributor rather than name.
+      let(:mods) do
+        <<~XML
+          <titleInfo>
+            <title>Mishnah berurah</title>
+            <subTitle>the classic commentary to Shulchan aruch Orach chayim, comprising the laws of daily Jewish conduct</subTitle>
+          </titleInfo>
+          <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="1">
+            <title>Mishnah berurah. English and Hebrew</title>
+          </titleInfo>
+          <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="1">
+            <namePart>Israel Meir</namePart>
+            <namePart type="termsOfAddress">ha-Kohen</namePart>
+            <namePart type="date">1838-1933</namePart>
+          </name>
+          <name type="personal" altRepGroup="2" script="" nameTitleGroup="2">
+            <namePart>Israel Meir in Hebrew characters</namePart>
+            <namePart type="date">1838-1933</namePart>
+          </name>
+          <titleInfo type="uniform" nameTitleGroup="2" altRepGroup="1" script="">
+            <title>Mishnah berurah in Hebrew characters</title>
+          </titleInfo>
+        XML
+      end
 
-    # Both <name> elements have usage="primary" so "status": "primary" maps to contributor rather than name.
-    let(:mods) do
-      <<~XML
-        <titleInfo>
-          <title>Mishnah berurah</title>
-          <subTitle>the classic commentary to Shulchan aruch Orach chayim, comprising the laws of daily Jewish conduct</subTitle>
-        </titleInfo>
-        <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="01">
-          <title>Mishnah berurah. English &amp; Hebrew</title>
-        </titleInfo>
-        <name type="personal" usage="primary" altRepGroup="02" nameTitleGroup="1">
-          <namePart>Israel Meir</namePart>
-          <namePart type="termsOfAddress">ha-Kohen</namePart>
-          <namePart type="date">1838-1933</namePart>
-        </name>
-        <name type="personal" usage="primary" altRepGroup="02" script="" nameTitleGroup="2">
-          <namePart>Israel Meir in Hebrew characters</namePart>
-          <namePart type="date">1838-1933</namePart>
-        </name>
-        <titleInfo type="uniform" nameTitleGroup="2" altRepGroup="01" script="">
-          <title>Mishnah berurah in Hebrew characters</title>
-        </titleInfo>
-      XML
-    end
+      let(:cocina) do
+        {
+          title: [
+            {
+              parallelValue: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Mishnah berurah. English and Hebrew',
+                      type: 'title'
+                    },
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Israel Meir',
+                          type: 'name'
+                        },
+                        {
+                          value: 'ha-Kohen',
+                          type: 'term of address'
+                        },
+                        {
+                          value: '1838-1933',
+                          type: 'life dates'
+                        }
+                      ],
+                      type: 'name'
+                    }
+                  ]
+                },
+                {
+                  structuredValue: [
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Israel Meir in Hebrew characters',
+                          type: 'name'
+                        },
+                        {
+                          value: '1838-1933',
+                          type: 'life dates'
+                        }
+                      ],
+                      type: 'name'
+                    },
+                    {
+                      value: 'Mishnah berurah in Hebrew characters',
+                      type: 'title'
+                    }
+                  ]
+                }
+              ],
+              type: 'uniform'
+            },
+            {
+              structuredValue: [
+                {
+                  value: 'Mishnah berurah',
+                  type: 'main title'
+                },
+                {
+                  value: 'the classic commentary to Shulchan aruch Orach chayim, comprising the laws of daily Jewish conduct',
+                  type: 'subtitle'
+                }
+              ]
+            }
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  parallelValue: [
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Israel Meir',
+                          type: 'name'
+                        },
+                        {
+                          value: 'ha-Kohen',
+                          type: 'term of address'
+                        },
+                        {
+                          value: '1838-1933',
+                          type: 'life dates'
+                        }
+                      ],
+                      status: 'primary'
+                    },
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Israel Meir in Hebrew characters',
+                          type: 'name'
+                        },
+                        {
+                          value: '1838-1933',
+                          type: 'life dates'
+                        }
+                      ]
+                    }
+                  ],
+                  type: 'person',
+                  status: 'primary'
+                }
+              ]
+            }
+          ]
+        }
+      end
 
-    let(:cocina) do
-      {
-        title: [
-          {
-            structuredValue: [
-              {
-                value: 'Mishnah berurah',
-                type: 'main title'
-              },
-              {
-                value: 'the classic commentary to Shulchan aruch Orach chayim, comprising the laws of daily Jewish conduct',
-                type: 'subtitle'
-              }
-            ]
-          },
-          {
-            parallelValue: [
-              {
-                structuredValue: [
-                  {
-                    structuredValue: [
-                      {
-                        value: 'Israel Meir',
-                        type: 'name'
-                      },
-                      {
-                        value: 'ha-Kohen',
-                        type: 'term of address'
-                      },
-                      {
-                        value: '1838-1933',
-                        type: 'life dates'
-                      }
-                    ],
-                    type: 'name'
-                  },
-                  {
-                    value: 'Mishnah berurah. English & Hebrew',
-                    type: 'title'
-                  }
-                ]
-              },
-              {
-                structuredValue: [
-                  {
-                    structuredValue: [
-                      {
-                        value: 'Israel Meir in Hebrew characters',
-                        type: 'name'
-                      },
-                      {
-                        value: '1838-1933',
-                        type: 'life dates'
-                      }
-                    ],
-                    type: 'name'
-                  },
-                  {
-                    value: 'Mishnah berurah in Hebrew characters',
-                    type: 'title'
-                  }
-                ]
-              }
-            ],
-            type: 'uniform'
-          }
-        ],
-        contributor: [
-          {
-            type: 'person',
-            status: 'primary',
-            name: [
-              {
-                parallelValue: [
-                  {
-                    structuredValue: [
-                      {
-                        value: 'Israel Meir',
-                        type: 'name'
-                      },
-                      {
-                        value: 'ha-Kohen',
-                        type: 'term of address'
-                      },
-                      {
-                        value: '1838-1933',
-                        type: 'life dates'
-                      }
-                    ]
-                  },
-                  {
-                    structuredValue: [
-                      {
-                        value: 'Israel Meir in Hebrew characters',
-                        type: 'name'
-                      },
-                      {
-                        value: '1838-1933',
-                        type: 'life dates'
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    end
-
-    # Only change in round-trip mapping is dropping empty script attributes. In the round-trip 'name usage="primary"'
-    # would come from the COCINA contributor property, not the title property, which is why it's not in the COCINA title mapping above, but still in the MODS below.
-    let(:roundtrip_mods) do
-      <<~XML
-        <titleInfo>
-          <title>Mishnah berurah</title>
-          <subTitle>the classic commentary to Shulchan aruch Orach chayim, comprising the laws of daily Jewish conduct</subTitle>
-        </titleInfo>
-        <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="1">
-          <title>Mishnah berurah. English &amp; Hebrew</title>
-        </titleInfo>
-        <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="1">
-          <namePart>Israel Meir</namePart>
-          <namePart type="termsOfAddress">ha-Kohen</namePart>
-          <namePart type="date">1838-1933</namePart>
-        </name>
-        <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="2">
-          <namePart>Israel Meir in Hebrew characters</namePart>
-          <namePart type="date">1838-1933</namePart>
-        </name>
-        <titleInfo type="uniform" nameTitleGroup="2" altRepGroup="1">
-          <title>Mishnah berurah in Hebrew characters</title>
-        </titleInfo>
-      XML
+      # Only change in round-trip mapping is dropping empty script attributes. In the round-trip 'name usage="primary"'
+      # would come from the COCINA contributor property, not the title property, which is why it's not in the COCINA title mapping above, but still in the MODS below.
+      let(:roundtrip_mods) do
+        <<~XML
+          <titleInfo>
+            <title>Mishnah berurah</title>
+            <subTitle>the classic commentary to Shulchan aruch Orach chayim, comprising the laws of daily Jewish conduct</subTitle>
+          </titleInfo>
+          <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="1">
+            <title>Mishnah berurah. English and Hebrew</title>
+          </titleInfo>
+          <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="1">
+            <namePart>Israel Meir</namePart>
+            <namePart type="termsOfAddress">ha-Kohen</namePart>
+            <namePart type="date">1838-1933</namePart>
+          </name>
+          <name type="personal" altRepGroup="2" nameTitleGroup="2">
+            <namePart>Israel Meir in Hebrew characters</namePart>
+            <namePart type="date">1838-1933</namePart>
+          </name>
+          <titleInfo type="uniform" nameTitleGroup="2" altRepGroup="1">
+            <title>Mishnah berurah in Hebrew characters</title>
+          </titleInfo>
+        XML
+      end
     end
   end
 
