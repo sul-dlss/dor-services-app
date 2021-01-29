@@ -706,8 +706,8 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
           <title>Mishnah berurah</title>
           <subTitle>the classic commentary to Shulchan aruch Orach chayim, comprising the laws of daily Jewish conduct</subTitle>
         </titleInfo>
-        <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="01>
-          <title>Mishnah berurah. English & Hebrew</title>
+        <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="01">
+          <title>Mishnah berurah. English &amp; Hebrew</title>
         </titleInfo>
         <name type="personal" usage="primary" altRepGroup="02" nameTitleGroup="1">
           <namePart>Israel Meir</namePart>
