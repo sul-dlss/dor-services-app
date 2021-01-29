@@ -16,9 +16,9 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "title": [
+          title: [
             {
-              "value": 'Gaudy night'
+              value: 'Gaudy night'
             }
           ]
         }
@@ -28,6 +28,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
   describe 'Title with parts' do
     # How to ID: multiple subelements in titleInfo
+
     # Note: the nonsorting character count should be the number of characters in the nonsorting characters value plus 1
     # unless the nonsorting characters value ends with an apostrophe or a hyphen.
     it_behaves_like 'MODS cocina mapping' do
@@ -45,34 +46,34 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "title": [
+          title: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'The',
-                  "type": 'nonsorting characters'
+                  value: 'The',
+                  type: 'nonsorting characters'
                 },
                 {
-                  "value": 'journal of stuff',
-                  "type": 'main title'
+                  value: 'journal of stuff',
+                  type: 'main title'
                 },
                 {
-                  "value": 'a journal',
-                  "type": 'subtitle'
+                  value: 'a journal',
+                  type: 'subtitle'
                 },
                 {
-                  "value": 'volume 5',
-                  "type": 'part number'
+                  value: 'volume 5',
+                  type: 'part number'
                 },
                 {
-                  "value": 'special issue',
-                  "type": 'part name'
+                  value: 'special issue',
+                  type: 'part name'
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "value": '4',
-                  "type": 'nonsorting character count'
+                  value: '4',
+                  type: 'nonsorting character count'
                 }
               ]
             }
@@ -98,14 +99,14 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "title": [
+          title: [
             {
-              "value": 'Five red herrings',
-              "status": 'primary'
+              value: 'Five red herrings',
+              status: 'primary'
             },
             {
-              "value": 'Suspicious characters',
-              "type": 'alternative'
+              value: 'Suspicious characters',
+              type: 'alternative'
             }
           ]
         }
@@ -131,56 +132,56 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "title": [
+          title: [
             {
-              "parallelValue": [
+              parallelValue: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": 'Les',
-                      "type": 'nonsorting characters'
+                      value: 'Les',
+                      type: 'nonsorting characters'
                     },
                     {
-                      "value": 'misérables',
-                      "type": 'main title'
+                      value: 'misérables',
+                      type: 'main title'
                     }
                   ],
-                  "note": [
+                  note: [
                     {
-                      "value": '4',
-                      "type": 'nonsorting character count'
+                      value: '4',
+                      type: 'nonsorting character count'
                     }
                   ],
-                  "status": 'primary',
-                  "valueLanguage": {
-                    "code": 'fre',
-                    "source": {
-                      "code": 'iso639-2b'
+                  status: 'primary',
+                  valueLanguage: {
+                    code: 'fre',
+                    source: {
+                      code: 'iso639-2b'
                     }
                   }
                 },
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": 'The',
-                      "type": 'nonsorting characters'
+                      value: 'The',
+                      type: 'nonsorting characters'
                     },
                     {
-                      "value": 'wretched',
-                      "type": 'main title'
+                      value: 'wretched',
+                      type: 'main title'
                     }
                   ],
-                  "note": [
+                  note: [
                     {
-                      "value": '4',
-                      "type": 'nonsorting character count'
+                      value: '4',
+                      type: 'nonsorting character count'
                     }
                   ],
-                  "type": 'translated',
-                  "valueLanguage": {
-                    "code": 'eng',
-                    "source": {
-                      "code": 'iso639-2b'
+                  type: 'translated',
+                  valueLanguage: {
+                    code: 'eng',
+                    source: {
+                      code: 'iso639-2b'
                     }
                   }
                 }
@@ -209,42 +210,42 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "title": [
+          title: [
             {
-              "parallelValue": [
+              parallelValue: [
                 {
-                  "value": 'Война и миръ',
-                  "status": 'primary',
-                  "valueLanguage": {
-                    "code": 'rus',
-                    "source": {
-                      "code": 'iso639-2b'
+                  value: 'Война и миръ',
+                  status: 'primary',
+                  valueLanguage: {
+                    code: 'rus',
+                    source: {
+                      code: 'iso639-2b'
                     },
-                    "valueScript": {
-                      "code": 'Cyrl',
-                      "source": {
-                        "code": 'iso15924'
+                    valueScript: {
+                      code: 'Cyrl',
+                      source: {
+                        code: 'iso15924'
                       }
                     }
                   }
                 },
                 {
-                  "value": 'Voĭna i mir',
-                  "valueLanguage": {
-                    "code": 'rus',
-                    "source": {
-                      "code": 'iso639-2b'
+                  value: 'Voĭna i mir',
+                  valueLanguage: {
+                    code: 'rus',
+                    source: {
+                      code: 'iso639-2b'
                     },
-                    "valueScript": {
-                      "code": 'Latn',
-                      "source": {
-                        "code": 'iso15924'
+                    valueScript: {
+                      code: 'Latn',
+                      source: {
+                        code: 'iso15924'
                       }
                     }
                   },
-                  "type": 'transliterated',
-                  "standard": {
-                    "value": 'ALA-LC Romanization Tables'
+                  type: 'transliterated',
+                  standard: {
+                    value: 'ALA-LC Romanization Tables'
                   }
                 }
               ]
@@ -263,10 +264,12 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
           <titleInfo usage="primary">
             <title>Hamlet</title>
           </titleInfo>
-          <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="1">
+          <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+            valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="1">
             <title>Hamlet</title>
           </titleInfo>
-          <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="1">
+          <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+            valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="1">
             <namePart>Shakespeare, William, 1564-1616</namePart>
           </name>
         XML
@@ -274,49 +277,49 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "title": [
+          title: [
             {
-              "value": 'Hamlet',
-              "status": 'primary'
+              value: 'Hamlet',
+              status: 'primary'
             },
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Hamlet',
-                  "type": 'title'
+                  value: 'Hamlet',
+                  type: 'title'
                 },
                 {
-                  "value": 'Shakespeare, William, 1564-1616',
-                  "type": 'name',
-                  "uri": 'http://id.loc.gov/authorities/names/n78095332',
-                  "source": {
-                    "uri": 'http://id.loc.gov/authorities/names/',
-                    "code": 'naf'
+                  value: 'Shakespeare, William, 1564-1616',
+                  type: 'name',
+                  uri: 'http://id.loc.gov/authorities/names/n78095332',
+                  source: {
+                    uri: 'http://id.loc.gov/authorities/names/',
+                    code: 'naf'
                   }
                 }
               ],
-              "type": 'uniform',
-              "source": {
-                "uri": 'http://id.loc.gov/authorities/names/',
-                "code": 'naf'
+              type: 'uniform',
+              source: {
+                uri: 'http://id.loc.gov/authorities/names/',
+                code: 'naf'
               },
-              "uri": 'http://id.loc.gov/authorities/names/n80008522'
+              uri: 'http://id.loc.gov/authorities/names/n80008522'
             }
           ],
-          "contributor": [
+          contributor: [
             {
-              "name": [
+              name: [
                 {
-                  "value": 'Shakespeare, William, 1564-1616',
-                  "uri": 'http://id.loc.gov/authorities/names/n78095332',
-                  "source": {
-                    "uri": 'http://id.loc.gov/authorities/names/',
-                    "code": 'naf'
+                  value: 'Shakespeare, William, 1564-1616',
+                  uri: 'http://id.loc.gov/authorities/names/n78095332',
+                  source: {
+                    uri: 'http://id.loc.gov/authorities/names/',
+                    code: 'naf'
                   }
                 }
               ],
-              "status": 'primary',
-              "type": 'person'
+              status: 'primary',
+              type: 'person'
             }
           ]
         }
@@ -341,56 +344,56 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "title": [
+          title: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Princesse jaune. Vocal score',
-                  "type": 'title'
+                  value: 'Princesse jaune. Vocal score',
+                  type: 'title'
                 },
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": 'Saint-Saëns',
-                      "type": 'surname'
+                      value: 'Saint-Saëns',
+                      type: 'surname'
                     },
                     {
-                      "value": 'Camille',
-                      "type": 'forename'
+                      value: 'Camille',
+                      type: 'forename'
                     },
                     {
-                      "value": '1835-1921',
-                      "type": 'life dates'
+                      value: '1835-1921',
+                      type: 'life dates'
                     }
                   ],
-                  "type": 'name'
+                  type: 'name'
                 }
               ],
-              "type": 'uniform'
+              type: 'uniform'
             }
           ],
-          "contributor": [
+          contributor: [
             {
-              "name": [
+              name: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": 'Saint-Saëns',
-                      "type": 'surname'
+                      value: 'Saint-Saëns',
+                      type: 'surname'
                     },
                     {
-                      "value": 'Camille',
-                      "type": 'forename'
+                      value: 'Camille',
+                      type: 'forename'
                     },
                     {
-                      "value": '1835-1921',
-                      "type": 'life dates'
+                      value: '1835-1921',
+                      type: 'life dates'
                     }
                   ]
                 }
               ],
-              "type": 'person',
-              "status": 'primary'
+              type: 'person',
+              status: 'primary'
             }
           ]
         }
@@ -404,13 +407,16 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         <titleInfo usage="primary">
           <title>Hamlet</title>
         </titleInfo>
-        <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="0">
+        <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+          valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="0">
           <title>Hamlet</title>
         </titleInfo>
-        <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="0">
+        <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+          valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="0">
           <namePart>Shakespeare, William, 1564-1616</namePart>
         </name>
-        <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78088956">
+        <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+          valueURI="http://id.loc.gov/authorities/names/n78088956">
           <namePart>Marlowe, Christopher, 1564-1593</namePart>
         </name>
       XML
@@ -418,60 +424,60 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "title": [
+        title: [
           {
-            "value": 'Hamlet',
-            "status": 'primary'
+            value: 'Hamlet',
+            status: 'primary'
           },
           {
-            "structuredValue": [
+            structuredValue: [
               {
-                "value": 'Hamlet',
-                "type": 'title'
+                value: 'Hamlet',
+                type: 'title'
               },
               {
-                "value": 'Shakespeare, William, 1564-1616',
-                "type": 'name',
-                "uri": 'http://id.loc.gov/authorities/names/n78095332',
-                "source": {
-                  "uri": 'http://id.loc.gov/authorities/names/',
-                  "code": 'naf'
+                value: 'Shakespeare, William, 1564-1616',
+                type: 'name',
+                uri: 'http://id.loc.gov/authorities/names/n78095332',
+                source: {
+                  uri: 'http://id.loc.gov/authorities/names/',
+                  code: 'naf'
                 }
               }
             ],
-            "type": 'uniform',
-            "uri": 'http://id.loc.gov/authorities/names/n80008522',
-            "source": {
-              "uri": 'http://id.loc.gov/authorities/names/',
-              "code": 'naf'
+            type: 'uniform',
+            uri: 'http://id.loc.gov/authorities/names/n80008522',
+            source: {
+              uri: 'http://id.loc.gov/authorities/names/',
+              code: 'naf'
             }
           }
         ],
-        "contributor": [
+        contributor: [
           {
-            "name": [
+            name: [
               {
-                "value": 'Shakespeare, William, 1564-1616',
-                "type": 'person',
-                "status": 'primary',
-                "uri": 'http://id.loc.gov/authorities/names/n78095332',
-                "source": {
-                  "uri": 'http://id.loc.gov/authorities/names/',
-                  "code": 'naf'
+                value: 'Shakespeare, William, 1564-1616',
+                type: 'person',
+                status: 'primary',
+                uri: 'http://id.loc.gov/authorities/names/n78095332',
+                source: {
+                  uri: 'http://id.loc.gov/authorities/names/',
+                  code: 'naf'
                 }
               }
             ]
           },
           {
-            "name": [
+            name: [
               {
-                "value": 'Marlowe, Christopher, 1564-1593',
-                "type": 'person',
-                "status": 'primary',
-                "uri": 'http://id.loc.gov/authorities/names/n78088956',
-                "source": {
-                  "uri": 'http://id.loc.gov/authorities/names/',
-                  "code": 'naf'
+                value: 'Marlowe, Christopher, 1564-1593',
+                type: 'person',
+                status: 'primary',
+                uri: 'http://id.loc.gov/authorities/names/n78088956',
+                source: {
+                  uri: 'http://id.loc.gov/authorities/names/',
+                  code: 'naf'
                 }
               }
             ]
@@ -495,10 +501,10 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "title": [
+        title: [
           {
-            "value": '"Because I could not stop for death"',
-            "type": 'supplied'
+            value: '"Because I could not stop for death"',
+            type: 'supplied'
           }
         ]
       }
@@ -523,16 +529,16 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "title": [
+          title: [
             {
-              "value": 'Annual report of notifiable diseases',
-              "status": 'primary'
+              value: 'Annual report of notifiable diseases',
+              status: 'primary'
             },
             {
-              "value": 'Annu. rep. notif. dis.',
-              "type": 'abbreviated',
-              "source": {
-                "code": 'dnlm'
+              value: 'Annu. rep. notif. dis.',
+              type: 'abbreviated',
+              source: {
+                code: 'dnlm'
               }
             }
           ]
@@ -559,38 +565,38 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "title": [
+        title: [
           {
-            "parallelValue": [
+            parallelValue: [
               {
-                "value": 'Berliner Mauer Kunst',
-                "valueLanguage": {
-                  "code": 'ger',
-                  "source": {
-                    "code": 'iso639-2b'
+                value: 'Berliner Mauer Kunst',
+                valueLanguage: {
+                  code: 'ger',
+                  source: {
+                    code: 'iso639-2b'
                   }
                 }
               },
               {
-                "value": "Berlin's wall art",
-                "valueLanguage": {
-                  "code": 'eng',
-                  "source": {
-                    "code": 'iso639-2b'
+                value: "Berlin's wall art",
+                valueLanguage: {
+                  code: 'eng',
+                  source: {
+                    code: 'iso639-2b'
                   }
                 }
               },
               {
-                "value": 'Arte en el muro de Berlin',
-                "valueLanguage": {
-                  "code": 'spa',
-                  "source": {
-                    "code": 'iso639-2b'
+                value: 'Arte en el muro de Berlin',
+                valueLanguage: {
+                  code: 'spa',
+                  source: {
+                    code: 'iso639-2b'
                   }
                 }
               }
             ],
-            "type": 'parallel'
+            type: 'parallel'
           }
         ]
       }
@@ -614,12 +620,12 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "title": [
+          title: [
             {
-              "value": 'Symphony no. 6'
+              value: 'Symphony no. 6'
             },
             {
-              "value": 'Pastoral symphony'
+              value: 'Pastoral symphony'
             }
           ]
         }
@@ -642,13 +648,13 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "title": [
+          title: [
             {
-              "value": 'Symphony no. 6'
+              value: 'Symphony no. 6'
             },
             {
-              "value": 'Pastoral symphony',
-              "type": 'alternative'
+              value: 'Pastoral symphony',
+              type: 'alternative'
             }
           ]
         }
@@ -671,15 +677,15 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "title": [
+          title: [
             {
-              "value": 'Unnatural death',
-              "status": 'primary'
+              value: 'Unnatural death',
+              status: 'primary'
             },
             {
-              "value": 'The Dawson pedigree',
-              "type": 'alternative',
-              "displayLabel": 'Original U.S. title'
+              value: 'The Dawson pedigree',
+              type: 'alternative',
+              displayLabel: 'Original U.S. title'
             }
           ]
         }
@@ -715,103 +721,103 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "title": [
+        title: [
           {
-            "structuredValue": [
+            structuredValue: [
               {
-                "value": 'Mishnah berurah',
-                "type": 'main title'
+                value: 'Mishnah berurah',
+                type: 'main title'
               },
               {
-                "value": 'the classic commentary to Shulchan aruch Orach chayim, comprising the laws of daily Jewish conduct',
-                "type": 'subtitle'
+                value: 'the classic commentary to Shulchan aruch Orach chayim, comprising the laws of daily Jewish conduct',
+                type: 'subtitle'
               }
             ]
           },
           {
-            "parallelValue": [
+            parallelValue: [
               {
-                "structuredValue": [
+                structuredValue: [
                   {
-                    "structuredValue": [
+                    structuredValue: [
                       {
-                        "value": 'Israel Meir',
-                        "type": 'name'
+                        value: 'Israel Meir',
+                        type: 'name'
                       },
                       {
-                        "value": 'ha-Kohen',
-                        "type": 'term of address'
+                        value: 'ha-Kohen',
+                        type: 'term of address'
                       },
                       {
-                        "value": '1838-1933',
-                        "type": 'life dates'
+                        value: '1838-1933',
+                        type: 'life dates'
                       }
                     ],
-                    "type": 'name'
+                    type: 'name'
                   },
                   {
-                    "value": 'Mishnah berurah. English & Hebrew',
-                    "type": 'title'
+                    value: 'Mishnah berurah. English & Hebrew',
+                    type: 'title'
                   }
                 ]
               },
               {
-                "structuredValue": [
+                structuredValue: [
                   {
-                    "structuredValue": [
+                    structuredValue: [
                       {
-                        "value": 'Israel Meir in Hebrew characters',
-                        "type": 'name'
+                        value: 'Israel Meir in Hebrew characters',
+                        type: 'name'
                       },
                       {
-                        "value": '1838-1933',
-                        "type": 'life dates'
+                        value: '1838-1933',
+                        type: 'life dates'
                       }
                     ],
-                    "type": 'name'
+                    type: 'name'
                   },
                   {
-                    "value": 'Mishnah berurah in Hebrew characters',
-                    "type": 'title'
+                    value: 'Mishnah berurah in Hebrew characters',
+                    type: 'title'
                   }
                 ]
               }
             ],
-            "type": 'uniform'
+            type: 'uniform'
           }
         ],
-        "contributor": [
+        contributor: [
           {
-            "type": 'person',
-            "status": 'primary',
-            "name": [
+            type: 'person',
+            status: 'primary',
+            name: [
               {
-                "parallelValue": [
+                parallelValue: [
                   {
-                    "structuredValue": [
+                    structuredValue: [
                       {
-                        "value": 'Israel Meir',
-                        "type": 'name'
+                        value: 'Israel Meir',
+                        type: 'name'
                       },
                       {
-                        "value": 'ha-Kohen',
-                        "type": 'term of address'
+                        value: 'ha-Kohen',
+                        type: 'term of address'
                       },
                       {
-                        "value": '1838-1933',
-                        "type": 'life dates'
+                        value: '1838-1933',
+                        type: 'life dates'
                       }
                     ]
                   },
                   {
-                    "structuredValue": [
+                    structuredValue: [
                       {
-                        "value": 'Israel Meir in Hebrew characters',
-                        "type": 'name'
+                        value: 'Israel Meir in Hebrew characters',
+                        type: 'name'
                       },
                       {
-                        "value": '1838-1933',
-                        "type": 'life dates'
+                        value: '1838-1933',
+                        type: 'life dates'
                       }
                     ]
                   }
@@ -866,26 +872,26 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "title": [
+          title: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'A',
-                  "type": 'nonsorting characters'
+                  value: 'A',
+                  type: 'nonsorting characters'
                 },
                 {
-                  "value": 'broken journey',
-                  "type": 'main title'
+                  value: 'broken journey',
+                  type: 'main title'
                 },
                 {
-                  "value": 'memoir of Mrs. Beatty, wife of Rev. William Beatty, Indian missionary',
-                  "type": 'subtitle'
+                  value: 'memoir of Mrs. Beatty, wife of Rev. William Beatty, Indian missionary',
+                  type: 'subtitle'
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "value": '2',
-                  "type": 'nonsorting character count'
+                  value: '2',
+                  type: 'nonsorting character count'
                 }
               ]
             }
@@ -893,6 +899,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         }
       end
 
+      # dropped xml:space="preserve" attribute on nonSort
       let(:roundtrip_mods) do
         <<~XML
           <titleInfo>
