@@ -145,108 +145,113 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with additional subelements' do
-    xit('broken: cocina identifier needs type "uri", not "value" for wikidata identifier (or maybe for any valid uri?)')
-    # ask Arcadia if mapping is correct first
+    # NOTE: name identifiers that are uris, for mods mapping purposes are 'value' rather than uri
+    #  in identifier and nameIdentifier mods doesn't distinguish between a uri and other non-uri identifiers
 
-    let(:mods) do
-      <<~XML
-        <name type="personal" usage="primary">
-          <namePart type="termsOfAddress">Dr.</namePart>
-          <namePart type="given">Terry</namePart>
-          <namePart type="family">Castle</namePart>
-          <namePart type="date">1953-</namePart>
-          <affiliation>Stanford University</affiliation>
-          <nameIdentifier type="wikidata">https://www.wikidata.org/wiki/Q7704207</nameIdentifier>
-          <displayForm>Castle, Terry</displayForm>
-          <description>Professor of English</description>
-        </name>
-      XML
-    end
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart type="termsOfAddress">Dr.</namePart>
+            <namePart type="given">Terry</namePart>
+            <namePart type="family">Castle</namePart>
+            <namePart type="date">1953-</namePart>
+            <affiliation>Stanford University</affiliation>
+            <nameIdentifier type="wikidata">https://www.wikidata.org/wiki/Q7704207</nameIdentifier>
+            <displayForm>Castle, Terry</displayForm>
+            <description>Professor of English</description>
+          </name>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                structuredValue: [
-                  {
-                    value: 'Dr.',
-                    type: 'term of address'
-                  },
-                  {
-                    value: 'Terry',
-                    type: 'forename'
-                  },
-                  {
-                    value: 'Castle',
-                    type: 'surname'
-                  },
-                  {
-                    value: '1953-',
-                    type: 'life dates'
-                  }
-                ]
-              },
-              {
-                value: 'Castle, Terry',
-                type: 'display'
-              }
-            ],
-            status: 'primary',
-            type: 'person',
-            identifier: [
-              {
-                uri: 'https://www.wikidata.org/wiki/Q7704207',
-                type: 'Wikidata'
-              }
-            ],
-            note: [
-              {
-                value: 'Stanford University',
-                type: 'affiliation'
-              },
-              {
-                value: 'Professor of English',
-                type: 'description'
-              }
-            ]
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Dr.',
+                      type: 'term of address'
+                    },
+                    {
+                      value: 'Terry',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Castle',
+                      type: 'surname'
+                    },
+                    {
+                      value: '1953-',
+                      type: 'life dates'
+                    }
+                  ]
+                },
+                {
+                  value: 'Castle, Terry',
+                  type: 'display'
+                }
+              ],
+              status: 'primary',
+              type: 'person',
+              identifier: [
+                {
+                  value: 'https://www.wikidata.org/wiki/Q7704207',
+                  type: 'Wikidata'
+                }
+              ],
+              note: [
+                {
+                  value: 'Stanford University',
+                  type: 'affiliation'
+                },
+                {
+                  value: 'Professor of English',
+                  type: 'description'
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 
   describe 'Name with untyped nameIdentifier' do
-    xit('broken: cocina identifier needs type "uri", not "value" (as it is a valid uri?)')
+    # NOTE: name identifiers that are uris, for mods mapping purposes are 'value' rather than uri
+    #  in identifier and nameIdentifier mods doesn't distinguish between a uri and other non-uri identifiers
 
-    let(:mods) do
-      <<~XML
-        <name type="personal">
-          <namePart>Burnett, Michael W.</namePart>
-          <nameIdentifier>https://orcid.org/0000-0001-5126-5568</nameIdentifier>
-        </name>
-      XML
-    end
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Burnett, Michael W.</namePart>
+            <nameIdentifier>https://orcid.org/0000-0001-5126-5568</nameIdentifier>
+          </name>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                value: 'Burnett, Michael W.'
-              }
-            ],
-            type: 'person',
-            identifier: [
-              {
-                uri: 'https://orcid.org/0000-0001-5126-5568'
-              }
-            ]
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Burnett, Michael W.'
+                }
+              ],
+              type: 'person',
+              identifier: [
+                {
+                  value: 'https://orcid.org/0000-0001-5126-5568'
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 
