@@ -123,25 +123,25 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
   end
 
   describe 'Attribute without value' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <typeOfResource manuscript="yes" />
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <typeOfResource manuscript="yes" />
-      XML
-    end
-
-    let(:cocina) do
-      {
-        form: [
-          {
-            value: 'manuscript',
-            source: {
-              value: 'MODS resource types'
+      let(:cocina) do
+        {
+          form: [
+            {
+              value: 'manuscript',
+              source: {
+                value: 'MODS resource types'
+              }
             }
-          }
-        ]
-      }
+          ]
+        }
+      end
     end
   end
 
