@@ -257,43 +257,50 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
   end
 
   describe 'Multi-term topic subject with authority for terms' do
-    let(:mods) do
-      <<~XML
-        <subject authority="lcsh">
-          <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
-            valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
-          <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
-            valueURI="http://id.loc.gov/authorities/subjects/sj96004895">Behavior</topic>
-        </subject>
-      XML
-    end
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+              valueURI="http://id.loc.gov/authorities/subjects/sh85021262">Cats</topic>
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+              valueURI="http://id.loc.gov/authorities/subjects/sj96004895">Behavior</topic>
+          </subject>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        subject: [
-          {
-            structuredValue: [
-              {
-                value: 'Cats',
-                type: 'topic',
-                uri: 'http://id.loc.gov/authorities/subjects/sh85021262'
-              },
-              {
-                value: 'Behavior',
-                type: 'topic',
-                uri: 'http://id.loc.gov/authorities/subjects/sj96004895'
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  value: 'Cats',
+                  type: 'topic',
+                  uri: 'http://id.loc.gov/authorities/subjects/sh85021262',
+                  source: {
+                    code: 'lcsh',
+                    uri: 'http://id.loc.gov/authorities/subjects/'
+                  }
+                },
+                {
+                  value: 'Behavior',
+                  type: 'topic',
+                  uri: 'http://id.loc.gov/authorities/subjects/sj96004895',
+                  source: {
+                    code: 'lcsh',
+                    uri: 'http://id.loc.gov/authorities/subjects/'
+                  }
+                }
+              ],
+              source: {
+                code: 'lcsh'
               }
-            ],
-            source: {
-              code: 'lcsh',
-              uri: 'http://id.loc.gov/authorities/subjects/'
             }
-          }
-        ]
-      }
+          ]
+        }
+      end
     end
-
-    xit 'broken'
   end
 
   describe 'Multi-term topic subject with authority for both set and terms' do
@@ -338,6 +345,58 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
               source: {
                 code: 'lcsh',
                 uri: 'http://id.loc.gov/authorities/subjects/'
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Multi-term topic subject with partial authority for both set and terms' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <topic valueURI="http://id.loc.gov/authorities/subjects/sh23456">Horses</topic>
+            <topic valueURI="http://id.loc.gov/authorities/subjects/sh34567">History</topic>
+          </subject>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <topic authority="lcsh" valueURI="http://id.loc.gov/authorities/subjects/sh23456">Horses</topic>
+            <topic authority="lcsh" valueURI="http://id.loc.gov/authorities/subjects/sh34567">History</topic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  value: 'Horses',
+                  type: 'topic',
+                  uri: 'http://id.loc.gov/authorities/subjects/sh23456',
+                  source: {
+                    code: 'lcsh'
+                  }
+                },
+                {
+                  value: 'History',
+                  type: 'topic',
+                  uri: 'http://id.loc.gov/authorities/subjects/sh34567',
+                  source: {
+                    code: 'lcsh'
+                  }
+                }
+              ],
+              source: {
+                code: 'lcsh'
               }
             }
           ]
