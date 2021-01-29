@@ -13,12 +13,12 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "form": [
+          form: [
             {
-              "value": 'text',
-              "type": 'resource type',
-              "source": {
-                "value": 'MODS resource types'
+              value: 'text',
+              type: 'resource type',
+              source: {
+                value: 'MODS resource types'
               }
             }
           ]
@@ -38,19 +38,19 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "form": [
+          form: [
             {
-              "value": 'notated music',
-              "type": 'resource type',
-              "source": {
-                "value": 'MODS resource types'
+              value: 'notated music',
+              type: 'resource type',
+              source: {
+                value: 'MODS resource types'
               }
             },
             {
-              "value": 'sound recording-musical',
-              "type": 'resource type',
-              "source": {
-                "value": 'MODS resource types'
+              value: 'sound recording-musical',
+              type: 'resource type',
+              source: {
+                value: 'MODS resource types'
               }
             }
           ]
@@ -60,6 +60,8 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
   end
 
   describe 'Multiple types and one predominant' do
+    xit 'not implemented: status primary for typeOfResource'
+
     let(:mods) do
       <<~XML
         <typeOfResource usage="primary">text</typeOfResource>
@@ -69,27 +71,25 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "form": [
+        form: [
           {
-            "value": 'text',
-            "status": 'primary',
-            "type": 'resource type',
-            "source": {
-              "value": 'MODS resource types'
+            value: 'text',
+            status: 'primary',
+            type: 'resource type',
+            source: {
+              value: 'MODS resource types'
             }
           },
           {
-            "value": 'still image',
-            "type": 'resource type',
-            "source": {
-              "value": 'MODS resource types'
+            value: 'still image',
+            type: 'resource type',
+            source: {
+              value: 'MODS resource types'
             }
           }
         ]
       }
     end
-
-    xit 'not implemented'
   end
 
   describe 'Manuscript' do
@@ -102,18 +102,18 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "form": [
+          form: [
             {
-              "value": 'mixed material',
-              "type": 'resource type',
-              "source": {
-                "value": 'MODS resource types'
+              value: 'mixed material',
+              type: 'resource type',
+              source: {
+                value: 'MODS resource types'
               }
             },
             {
-              "value": 'manuscript',
-              "source": {
-                "value": 'MODS resource types'
+              value: 'manuscript',
+              source: {
+                value: 'MODS resource types'
               }
             }
           ]
@@ -123,6 +123,8 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
   end
 
   describe 'Attribute without value' do
+    xit 'not implemented'
+
     let(:mods) do
       <<~XML
         <typeOfResource manuscript="yes" />
@@ -131,18 +133,16 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "form": [
+        form: [
           {
-            "value": 'manuscript',
-            "source": {
-              "value": 'MODS resource types'
+            value: 'manuscript',
+            source: {
+              value: 'MODS resource types'
             }
           }
         ]
       }
     end
-
-    xit 'not implemented'
   end
 
   describe 'Collection' do
@@ -155,18 +155,18 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "form": [
+          form: [
             {
-              "value": 'mixed material',
-              "type": 'resource type',
-              "source": {
-                "value": 'MODS resource types'
+              value: 'mixed material',
+              type: 'resource type',
+              source: {
+                value: 'MODS resource types'
               }
             },
             {
-              "value": 'collection',
-              "source": {
-                "value": 'MODS resource types'
+              value: 'collection',
+              source: {
+                value: 'MODS resource types'
               }
             }
           ]
@@ -185,13 +185,13 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "form": [
+          form: [
             {
-              "value": 'text',
-              "type": 'resource type',
-              "displayLabel": 'Contains only',
-              "source": {
-                "value": 'MODS resource types'
+              value: 'text',
+              type: 'resource type',
+              displayLabel: 'Contains only',
+              source: {
+                value: 'MODS resource types'
               }
             }
           ]
