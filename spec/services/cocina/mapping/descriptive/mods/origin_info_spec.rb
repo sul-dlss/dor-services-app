@@ -23,12 +23,12 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "value": '1980'
+                  value: '1980'
                 }
               ]
             }
@@ -58,14 +58,14 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "date": [
+              type: 'publication',
+              date: [
                 {
-                  "value": '1928',
-                  "encoding": {
-                    "code": 'w3cdtf'
+                  value: '1928',
+                  encoding: {
+                    code: 'w3cdtf'
                   }
                 }
               ]
@@ -96,12 +96,12 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'copyright',
-              "date": [
+              type: 'copyright',
+              date: [
                 {
-                  "value": '1930'
+                  value: '1930'
                 }
               ]
             }
@@ -131,16 +131,16 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'capture',
-              "date": [
+              type: 'capture',
+              date: [
                 {
-                  "value": '20131012231249',
-                  "encoding": {
-                    "code": 'iso8601'
+                  value: '20131012231249',
+                  encoding: {
+                    code: 'iso8601'
                   },
-                  "status": 'primary'
+                  status: 'primary'
                 }
               ]
             }
@@ -162,16 +162,16 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "date": [
+              type: 'publication',
+              date: [
                 {
-                  "value": '1441 AH',
-                  "note": [
+                  value: '1441 AH',
+                  note: [
                     {
-                      "value": 'Islamic',
-                      "type": 'date type'
+                      value: 'Islamic',
+                      type: 'date type'
                     }
                   ]
                 }
@@ -195,15 +195,15 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'acquisition',
-              "displayLabel": 'Acquisition date',
-              "date": [
+              type: 'acquisition',
+              displayLabel: 'Acquisition date',
+              date: [
                 {
-                  "value": '1992',
-                  "encoding": {
-                    "code": 'w3cdtf'
+                  value: '1992',
+                  encoding: {
+                    code: 'w3cdtf'
                   }
                 }
               ]
@@ -236,20 +236,20 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": '1920',
-                      "type": 'start',
-                      "status": 'primary'
+                      value: '1920',
+                      type: 'start',
+                      status: 'primary'
                     },
                     {
-                      "value": '1925',
-                      "type": 'end'
+                      value: '1925',
+                      type: 'end'
                     }
                   ]
                 }
@@ -281,13 +281,13 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "value": '1940',
-                  "qualifier": 'approximate'
+                  value: '1940',
+                  qualifier: 'approximate'
                 }
               ]
             }
@@ -319,22 +319,22 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": '1940',
-                      "type": 'start',
-                      "status": 'primary',
-                      "qualifier": 'approximate'
+                      value: '1940',
+                      type: 'start',
+                      status: 'primary',
+                      qualifier: 'approximate'
                     },
                     {
-                      "value": '1945',
-                      "type": 'end',
-                      "qualifier": 'approximate'
+                      value: '1945',
+                      type: 'end',
+                      qualifier: 'approximate'
                     }
                   ]
                 }
@@ -368,21 +368,21 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": '1940',
-                      "type": 'start',
-                      "status": 'primary',
-                      "qualifier": 'approximate'
+                      value: '1940',
+                      type: 'start',
+                      status: 'primary',
+                      qualifier: 'approximate'
                     },
                     {
-                      "value": '1945',
-                      "type": 'end'
+                      value: '1945',
+                      type: 'end'
                     }
                   ]
                 }
@@ -416,21 +416,21 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": '1940',
-                      "type": 'start',
-                      "status": 'primary'
+                      value: '1940',
+                      type: 'start',
+                      status: 'primary'
                     },
                     {
-                      "value": '1945',
-                      "type": 'end',
-                      "qualifier": 'approximate'
+                      value: '1945',
+                      type: 'end',
+                      qualifier: 'approximate'
                     }
                   ]
                 }
@@ -462,13 +462,13 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "value": '1940',
-                  "qualifier": 'inferred'
+                  value: '1940',
+                  qualifier: 'inferred'
                 }
               ]
             }
@@ -498,13 +498,13 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "value": '1940',
-                  "qualifier": 'questionable'
+                  value: '1940',
+                  qualifier: 'questionable'
                 }
               ]
             }
@@ -538,23 +538,23 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "date": [
+              type: 'publication',
+              date: [
                 {
-                  "value": '1948'
+                  value: '1948'
                 },
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": '1940',
-                      "type": 'start',
-                      "status": 'primary'
+                      value: '1940',
+                      type: 'start',
+                      status: 'primary'
                     },
                     {
-                      "value": '1945',
-                      "type": 'end'
+                      value: '1945',
+                      type: 'end'
                     }
                   ]
                 }
@@ -588,16 +588,16 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "date": [
+              type: 'publication',
+              date: [
                 {
-                  "value": '1940',
-                  "status": 'primary'
+                  value: '1940',
+                  status: 'primary'
                 },
                 {
-                  "value": '1942'
+                  value: '1942'
                 }
               ]
             }
@@ -627,14 +627,14 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "value": '-0499',
-                  "encoding": {
-                    "code": 'edtf'
+                  value: '-0499',
+                  encoding: {
+                    code: 'edtf'
                   }
                 }
               ]
@@ -667,24 +667,24 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": '-0499',
-                      "type": 'start',
-                      "encoding": {
-                        "code": 'edtf'
+                      value: '-0499',
+                      type: 'start',
+                      encoding: {
+                        code: 'edtf'
                       }
                     },
                     {
-                      "value": '-0599',
-                      "type": 'end',
-                      "encoding": {
-                        "code": 'edtf'
+                      value: '-0599',
+                      type: 'end',
+                      encoding: {
+                        code: 'edtf'
                       }
                     }
                   ]
@@ -717,14 +717,14 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "value": '0800',
-                  "encoding": {
-                    "code": 'edtf'
+                  value: '0800',
+                  encoding: {
+                    code: 'edtf'
                   }
                 }
               ]
@@ -757,24 +757,24 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": '0800',
-                      "type": 'start',
-                      "encoding": {
-                        "code": 'edtf'
+                      value: '0800',
+                      type: 'start',
+                      encoding: {
+                        code: 'edtf'
                       }
                     },
                     {
-                      "value": '1000',
-                      "type": 'end',
-                      "encoding": {
-                        "code": 'edtf'
+                      value: '1000',
+                      type: 'end',
+                      encoding: {
+                        code: 'edtf'
                       }
                     }
                   ]
@@ -811,20 +811,20 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "date": [
+              type: 'publication',
+              date: [
                 {
-                  "value": '1955'
+                  value: '1955'
                 }
               ]
             },
             {
-              "type": 'copyright',
-              "date": [
+              type: 'copyright',
+              date: [
                 {
-                  "value": '1940'
+                  value: '1940'
                 }
               ]
             }
@@ -845,16 +845,16 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "event": [
+        event: [
           {
-            "type": 'creation',
-            "date": [
+            type: 'creation',
+            date: [
               {
-                "value": '1544-02-02',
-                "note": [
+                value: '1544-02-02',
+                note: [
                   {
-                    "value": 'Julian',
-                    "type": 'date type'
+                    value: 'Julian',
+                    type: 'date type'
                   }
                 ]
               }
@@ -878,16 +878,16 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "event": [
+        event: [
           {
-            "type": 'creation',
-            "date": [
+            type: 'creation',
+            date: [
               {
-                "value": '1544-02-02',
-                "note": [
+                value: '1544-02-02',
+                note: [
                   {
-                    "value": 'Julian',
-                    "type": 'date type'
+                    value: 'Julian',
+                    type: 'date type'
                   }
                 ]
               }
@@ -920,13 +920,13 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "date": [
+              type: 'publication',
+              date: [
                 {
-                  "value": '1980',
-                  "type": 'end'
+                  value: '1980',
+                  type: 'end'
                 }
               ]
             }
@@ -956,13 +956,13 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "date": [
+              type: 'publication',
+              date: [
                 {
-                  "value": '1975',
-                  "type": 'start'
+                  value: '1975',
+                  type: 'start'
                 }
               ]
             }
@@ -992,14 +992,14 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "value": '19uu',
-                  "encoding": {
-                    "code": 'marc'
+                  value: '19uu',
+                  encoding: {
+                    code: 'marc'
                   }
                 }
               ]
@@ -1030,12 +1030,12 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "value": '11th century'
+                  value: '11th century'
                 }
               ]
             }
@@ -1057,12 +1057,12 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "date": [
+              type: 'publication',
+              date: [
                 {
-                  "value": '1980'
+                  value: '1980'
                 }
               ]
             }
@@ -1092,12 +1092,12 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'copyright',
-              "date": [
+              type: 'copyright',
+              date: [
                 {
-                  "value": '1980'
+                  value: '1980'
                 }
               ]
             }
@@ -1160,86 +1160,86 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "location": [
+              type: 'publication',
+              location: [
                 {
-                  "code": 'ru',
-                  "source": {
-                    "code": 'marccountry'
+                  code: 'ru',
+                  source: {
+                    code: 'marccountry'
                   }
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "value": '2019',
-                  "encoding": {
-                    "code": 'marc'
+                  value: '2019',
+                  encoding: {
+                    code: 'marc'
                   }
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "value": 'monographic',
-                  "type": 'issuance',
-                  "source": {
-                    "value": 'MODS issuance terms'
+                  value: 'monographic',
+                  type: 'issuance',
+                  source: {
+                    value: 'MODS issuance terms'
                   }
                 }
               ]
             },
             {
-              "type": 'copyright',
-              "date": [
+              type: 'copyright',
+              date: [
                 {
-                  "value": '2018',
-                  "encoding": {
-                    "code": 'marc'
+                  value: '2018',
+                  encoding: {
+                    code: 'marc'
                   }
                 }
               ]
             },
             {
-              "type": 'publication',
-              "location": [
+              type: 'publication',
+              location: [
                 {
-                  "value": 'Moskva'
+                  value: 'Moskva'
                 }
               ],
-              "contributor": [
+              contributor: [
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": 'Izdatelʹstvo "Vesʹ Mir"'
+                      value: 'Izdatelʹstvo "Vesʹ Mir"'
                     }
                   ],
-                  "type": 'organization',
-                  "role": [
+                  type: 'organization',
+                  role: [
                     {
-                      "value": 'publisher',
-                      "code": 'pbl',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "value": '2019'
+                  value: '2019'
                 }
               ]
             },
             {
-              "type": 'copyright',
-              "note": [
+              type: 'copyright',
+              note: [
                 {
-                  "value": '©2018',
-                  "type": 'copyright statement'
+                  value: '©2018',
+                  type: 'copyright statement'
                 }
               ]
             }
@@ -1269,13 +1269,13 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "note": [
+              type: 'publication',
+              note: [
                 {
-                  "value": '1st ed.',
-                  "type": 'edition'
+                  value: '1st ed.',
+                  type: 'edition'
                 }
               ]
             }
@@ -1307,20 +1307,20 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "note": [
+              type: 'publication',
+              note: [
                 {
-                  "value": 'serial',
-                  "type": 'issuance',
-                  "source": {
-                    "value": 'MODS issuance terms'
+                  value: 'serial',
+                  type: 'issuance',
+                  source: {
+                    value: 'MODS issuance terms'
                   }
                 },
                 {
-                  "value": 'every full moon',
-                  "type": 'frequency'
+                  value: 'every full moon',
+                  type: 'frequency'
                 }
               ]
             }
@@ -1352,22 +1352,22 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "note": [
+              type: 'publication',
+              note: [
                 {
-                  "value": 'multipart monograph',
-                  "type": 'issuance',
-                  "source": {
-                    "value": 'MODS issuance terms'
+                  value: 'multipart monograph',
+                  type: 'issuance',
+                  source: {
+                    value: 'MODS issuance terms'
                   }
                 },
                 {
-                  "value": 'Annual',
-                  "type": 'frequency',
-                  "source": {
-                    "code": 'marcfrequency'
+                  value: 'Annual',
+                  type: 'frequency',
+                  source: {
+                    code: 'marcfrequency'
                   }
                 }
               ]
@@ -1399,30 +1399,30 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "value": '1899'
+                  value: '1899'
                 }
               ],
-              "location": [
+              location: [
                 {
-                  "value": 'York'
+                  value: 'York'
                 }
               ]
             },
             {
-              "type": 'publication',
-              "date": [
+              type: 'publication',
+              date: [
                 {
-                  "value": '1901'
+                  value: '1901'
                 }
               ],
-              "location": [
+              location: [
                 {
-                  "value": 'London'
+                  value: 'London'
                 }
               ]
             }
@@ -1487,30 +1487,30 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
       # See Parallel value with no script given in MODS for mapping when both attributes are absent.
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "location": [
+              type: 'publication',
+              location: [
                 {
-                  "parallelValue": [
+                  parallelValue: [
                     {
-                      "value": 'Kyōto-shi',
-                      "valueLanguage": {
-                        "valueScript": {
-                          "code": 'Latn',
-                          "source": {
-                            "code": 'iso15924'
+                      value: 'Kyōto-shi',
+                      valueLanguage: {
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
                           }
                         }
                       }
                     },
                     {
-                      "value": '京都市',
-                      "valueLanguage": {
-                        "valueScript": {
-                          "code": 'Hani',
-                          "source": {
-                            "code": 'iso15924'
+                      value: '京都市',
+                      valueLanguage: {
+                        valueScript: {
+                          code: 'Hani',
+                          source: {
+                            code: 'iso15924'
                           }
                         }
                       }
@@ -1518,36 +1518,36 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                   ]
                 },
                 {
-                  "code": 'ja',
-                  "source": {
-                    "code": 'marccountry'
+                  code: 'ja',
+                  source: {
+                    code: 'marccountry'
                   }
                 }
               ],
-              "contributor": [
+              contributor: [
                 {
-                  "type": 'organization',
-                  "name": [
+                  type: 'organization',
+                  name: [
                     {
-                      "parallelValue": [
+                      parallelValue: [
                         {
-                          "value": 'Rinsen Shoten',
-                          "valueLanguage": {
-                            "valueScript": {
-                              "code": 'Latn',
-                              "source": {
-                                "code": 'iso15924'
+                          value: 'Rinsen Shoten',
+                          valueLanguage: {
+                            valueScript: {
+                              code: 'Latn',
+                              source: {
+                                code: 'iso15924'
                               }
                             }
                           }
                         },
                         {
-                          "value": '臨川書店',
-                          "valueLanguage": {
-                            "valueScript": {
-                              "code": 'Hani',
-                              "source": {
-                                "code": 'iso15924'
+                          value: '臨川書店',
+                          valueLanguage: {
+                            valueScript: {
+                              code: 'Hani',
+                              source: {
+                                code: 'iso15924'
                               }
                             }
                           }
@@ -1555,40 +1555,40 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                       ]
                     }
                   ],
-                  "role": [
+                  role: [
                     {
-                      "value": 'publisher',
-                      "code": 'pbl',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "parallelValue": [
+                  parallelValue: [
                     {
-                      "value": 'Heisei 8 [1996]',
-                      "valueLanguage": {
-                        "valueScript": {
-                          "code": 'Latn',
-                          "source": {
-                            "code": 'iso15924'
+                      value: 'Heisei 8 [1996]',
+                      valueLanguage: {
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
                           }
                         }
                       }
                     },
                     {
-                      "value": '平成 8 [1996]',
-                      "valueLanguage": {
-                        "valueScript": {
-                          "code": 'Hani',
-                          "source": {
-                            "code": 'iso15924'
+                      value: '平成 8 [1996]',
+                      valueLanguage: {
+                        valueScript: {
+                          code: 'Hani',
+                          source: {
+                            code: 'iso15924'
                           }
                         }
                       }
@@ -1596,18 +1596,18 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                   ]
                 },
                 {
-                  "value": '1996',
-                  "encoding": {
-                    "code": 'marc'
+                  value: '1996',
+                  encoding: {
+                    code: 'marc'
                   }
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "value": 'monographic',
-                  "type": 'issuance',
-                  "source": {
-                    "value": 'MODS issuance terms'
+                  value: 'monographic',
+                  type: 'issuance',
+                  source: {
+                    value: 'MODS issuance terms'
                   }
                 }
               ]
@@ -1632,13 +1632,13 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "displayLabel": 'Origin',
-              "location": [
+              type: 'creation',
+              displayLabel: 'Origin',
+              location: [
                 {
-                  "value": 'Stanford (Calif.)'
+                  value: 'Stanford (Calif.)'
                 }
               ]
             }
@@ -1655,7 +1655,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
           <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="1">
             <dateCreated keyDate="yes" encoding="w3cdtf">1999-09-09</dateCreated>
             <place>
-              <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
+              <placeTerm authorityURI="http://id.loc.gov/authorities/names/"
+                valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
             </place>
           </originInfo>
           <originInfo eventType="production" lang="rus" script="Cyrl" altRepGroup="1">
@@ -1671,7 +1672,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
            <originInfo script="Latn" lang="eng" altRepGroup="1" eventType="production">
             <dateCreated encoding="w3cdtf" keyDate="yes">1999-09-09</dateCreated>
             <place>
-              <placeTerm type="text" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
+              <placeTerm type="text" authorityURI="http://id.loc.gov/authorities/names/"
+                valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
             </place>
           </originInfo>
           <originInfo script="Cyrl" lang="rus" altRepGroup="1" eventType="production">
@@ -1686,51 +1688,51 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "date": [
+              type: 'creation',
+              date: [
                 {
-                  "value": '1999-09-09',
-                  "status": 'primary',
-                  "encoding": {
-                    "code": 'w3cdtf'
+                  value: '1999-09-09',
+                  status: 'primary',
+                  encoding: {
+                    code: 'w3cdtf'
                   }
                 }
               ],
-              "location": [
+              location: [
                 {
-                  "parallelValue": [
+                  parallelValue: [
                     {
-                      "value": 'Moscow',
-                      "uri": 'http://id.loc.gov/authorities/names/n79076156',
-                      "source": {
-                        "uri": 'http://id.loc.gov/authorities/names/'
+                      value: 'Moscow',
+                      uri: 'http://id.loc.gov/authorities/names/n79076156',
+                      source: {
+                        uri: 'http://id.loc.gov/authorities/names/'
                       },
-                      "valueLanguage": {
-                        "code": 'eng',
-                        "source": {
-                          "code": 'iso639-2b'
+                      valueLanguage: {
+                        code: 'eng',
+                        source: {
+                          code: 'iso639-2b'
                         },
-                        "valueScript": {
-                          "code": 'Latn',
-                          "source": {
-                            "code": 'iso15924'
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
                           }
                         }
                       }
                     },
                     {
-                      "value": 'Москва',
-                      "valueLanguage": {
-                        "code": 'rus',
-                        "source": {
-                          "code": 'iso639-2b'
+                      value: 'Москва',
+                      valueLanguage: {
+                        code: 'rus',
+                        source: {
+                          code: 'iso639-2b'
                         },
-                        "valueScript": {
-                          "code": 'Cyrl',
-                          "source": {
-                            "code": 'iso15924'
+                        valueScript: {
+                          code: 'Cyrl',
+                          source: {
+                            code: 'iso15924'
                           }
                         }
                       }
@@ -1760,39 +1762,39 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "note": [
+              type: 'publication',
+              note: [
                 {
-                  "type": 'edition',
-                  "parallelValue": [
+                  type: 'edition',
+                  parallelValue: [
                     {
-                      "value": 'First edition',
-                      "valueLanguage": {
-                        "code": 'eng',
-                        "source": {
-                          "code": 'iso639-2b'
+                      value: 'First edition',
+                      valueLanguage: {
+                        code: 'eng',
+                        source: {
+                          code: 'iso639-2b'
                         },
-                        "valueScript": {
-                          "code": 'Latn',
-                          "source": {
-                            "code": 'iso15924'
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
                           }
                         }
                       }
                     },
                     {
-                      "value": 'Первое издание',
-                      "valueLanguage": {
-                        "code": 'rus',
-                        "source": {
-                          "code": 'iso639-2b'
+                      value: 'Первое издание',
+                      valueLanguage: {
+                        code: 'rus',
+                        source: {
+                          code: 'iso639-2b'
                         },
-                        "valueScript": {
-                          "code": 'Cyrl',
-                          "source": {
-                            "code": 'iso15924'
+                        valueScript: {
+                          code: 'Cyrl',
+                          source: {
+                            code: 'iso15924'
                           }
                         }
                       }
@@ -1872,77 +1874,77 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "location": [
+              type: 'publication',
+              location: [
                 {
-                  "parallelValue": [
+                  parallelValue: [
                     {
-                      "value": 'Chengdu'
+                      value: 'Chengdu'
                     },
                     {
-                      "value": '[Chengdu in Chinese]'
+                      value: '[Chengdu in Chinese]'
                     }
                   ]
                 },
                 {
-                  "code": 'cc',
-                  "source": {
-                    "code": 'marccountry'
+                  code: 'cc',
+                  source: {
+                    code: 'marccountry'
                   }
                 }
               ],
-              "contributor": [
+              contributor: [
                 {
-                  "type": 'organization',
-                  "name": [
+                  type: 'organization',
+                  name: [
                     {
-                      "parallelValue": [
+                      parallelValue: [
                         {
-                          "value": 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
+                          value: 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
                         },
                         {
-                          "value": '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
+                          value: '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
                         }
                       ]
                     }
                   ],
-                  "role": [
+                  role: [
                     {
-                      "value": 'publisher',
-                      "code": 'pbl',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "value": '2005'
+                  value: '2005'
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "type": 'edition',
-                  "parallelValue": [
+                  type: 'edition',
+                  parallelValue: [
                     {
-                      "value": 'Di 1 ban.'
+                      value: 'Di 1 ban.'
                     },
                     {
-                      "value": '[Di 1 ban in Chinese]'
+                      value: '[Di 1 ban in Chinese]'
                     }
                   ]
                 },
                 {
-                  "type": 'issuance',
-                  "value": 'monographic',
-                  "source": {
-                    "value": 'MODS issuance terms'
+                  type: 'issuance',
+                  value: 'monographic',
+                  source: {
+                    value: 'MODS issuance terms'
                   }
 
                 }
@@ -2027,86 +2029,86 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "location": [
+              type: 'publication',
+              location: [
                 {
-                  "parallelValue": [
+                  parallelValue: [
                     {
-                      "value": '[Ruijin]'
+                      value: '[Ruijin]'
                     },
                     {
-                      "value": '[Ruijin] in Chinese'
+                      value: '[Ruijin] in Chinese'
                     }
                   ]
                 },
                 {
-                  "code": 'cc',
-                  "source": {
-                    "code": 'marccountry'
+                  code: 'cc',
+                  source: {
+                    code: 'marccountry'
                   }
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": '1933',
-                      "type": 'start',
-                      "encoding": {
-                        "code": 'marc'
+                      value: '1933',
+                      type: 'start',
+                      encoding: {
+                        code: 'marc'
                       }
                     },
                     {
-                      "value": 'uuuu',
-                      "type": 'end',
-                      "encoding": {
-                        "code": 'marc'
+                      value: 'uuuu',
+                      type: 'end',
+                      encoding: {
+                        code: 'marc'
                       }
                     }
                   ]
                 }
               ],
-              "contributor": [
+              contributor: [
                 {
-                  "type": 'organization',
-                  "name": [
+                  type: 'organization',
+                  name: [
                     {
-                      "parallelValue": [
+                      parallelValue: [
                         {
-                          "value": 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu'
+                          value: 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu'
                         },
                         {
-                          "value": 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese'
+                          value: 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese'
                         }
                       ]
                     }
                   ],
-                  "role": [
+                  role: [
                     {
-                      "value": 'publisher',
-                      "code": 'pbl',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "type": 'issuance',
-                  "value": 'serial',
-                  "source": {
-                    "value": 'MODS issuance terms'
+                  type: 'issuance',
+                  value: 'serial',
+                  source: {
+                    value: 'MODS issuance terms'
                   }
                 },
                 {
-                  "type": 'frequency',
-                  "value": 'Irregular'
+                  type: 'frequency',
+                  value: 'Irregular'
                 }
               ]
             }
@@ -2183,91 +2185,91 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "location": [
+              type: 'publication',
+              location: [
                 {
-                  "parallelValue": [
+                  parallelValue: [
                     {
-                      "value": 'Guangdong'
+                      value: 'Guangdong'
                     },
                     {
-                      "value": 'Guangdong in Chinese'
+                      value: 'Guangdong in Chinese'
                     }
                   ]
                 },
                 {
-                  "code": 'cc',
-                  "source": {
-                    "code": 'marccountry'
+                  code: 'cc',
+                  source: {
+                    code: 'marccountry'
                   }
                 }
               ],
-              "contributor": [
+              contributor: [
                 {
-                  "type": 'organization',
-                  "name": [
+                  type: 'organization',
+                  name: [
                     {
-                      "parallelValue": [
+                      parallelValue: [
                         {
-                          "value": 'Guangdong lu jun ce liang ju'
+                          value: 'Guangdong lu jun ce liang ju'
                         },
                         {
-                          "value": 'Guangdong lu jun ce liang ju in Chinese'
+                          value: 'Guangdong lu jun ce liang ju in Chinese'
                         }
                       ]
                     }
                   ],
-                  "role": [
+                  role: [
                     {
-                      "value": 'publisher',
-                      "code": 'pbl',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "parallelValue": [
+                  parallelValue: [
                     {
-                      "value": 'Minguo 11-18 [1922-1929]'
+                      value: 'Minguo 11-18 [1922-1929]'
                     },
                     {
-                      "value": 'Minguo 11-18 [1922-1929] in Chinese'
+                      value: 'Minguo 11-18 [1922-1929] in Chinese'
                     }
                   ]
                 },
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": '1922',
-                      "type": 'start',
-                      "encoding": {
-                        "code": 'marc'
+                      value: '1922',
+                      type: 'start',
+                      encoding: {
+                        code: 'marc'
                       }
                     },
                     {
-                      "value": '1929',
-                      "type": 'end',
-                      "encoding": {
-                        "code": 'marc'
+                      value: '1929',
+                      type: 'end',
+                      encoding: {
+                        code: 'marc'
                       }
                     }
                   ]
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "type": 'issuance',
-                  "value": 'monographic',
-                  "source": {
-                    "value": 'MODS issuance terms'
+                  type: 'issuance',
+                  value: 'monographic',
+                  source: {
+                    value: 'MODS issuance terms'
                   }
                 }
               ]
@@ -2336,86 +2338,86 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "location": [
+              type: 'publication',
+              location: [
                 {
-                  "code": 'cau',
-                  "source": {
-                    "code": 'marccountry'
+                  code: 'cau',
+                  source: {
+                    code: 'marccountry'
                   }
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "value": '2020',
-                  "encoding": {
-                    "code": 'marc'
+                  value: '2020',
+                  encoding: {
+                    code: 'marc'
                   }
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "type": 'issuance',
-                  "value": 'monographic',
-                  "source": {
-                    "value": 'MODS issuance terms'
+                  type: 'issuance',
+                  value: 'monographic',
+                  source: {
+                    value: 'MODS issuance terms'
                   }
                 }
               ]
             },
             {
-              "type": 'copyright',
-              "date": [
+              type: 'copyright',
+              date: [
                 {
-                  "value": '2020',
-                  "encoding": {
-                    "code": 'marc'
+                  value: '2020',
+                  encoding: {
+                    code: 'marc'
                   }
                 }
               ]
             },
             {
-              "type": 'publication',
-              "location": [
+              type: 'publication',
+              location: [
                 {
-                  "value": '[Stanford, Calif.]'
+                  value: '[Stanford, Calif.]'
                 }
               ],
-              "contributor": [
+              contributor: [
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": '[Stanford University]'
+                      value: '[Stanford University]'
                     }
                   ],
-                  "type": 'organization',
-                  "role": [
+                  type: 'organization',
+                  role: [
                     {
-                      "value": 'publisher',
-                      "code": 'pbl',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "value": '2020'
+                  value: '2020'
                 }
               ]
             },
             {
-              "type": 'copyright',
-              "note": [
+              type: 'copyright',
+              note: [
                 {
-                  "value": '©2020',
-                  "type": 'copyright statement'
+                  value: '©2020',
+                  type: 'copyright statement'
                 }
               ]
             }
@@ -2431,7 +2433,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         <<~XML
           <originInfo displayLabel="Place of Creation" eventType="production">
             <place>
-              <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+              <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names"
+                valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
             </place>
             <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
             <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
@@ -2443,7 +2446,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         <<~XML
           <originInfo displayLabel="Place of Creation" eventType="production">
             <place>
-              <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+              <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+                valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
             </place>
             <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
           </originInfo>
@@ -2455,37 +2459,37 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'creation',
-              "displayLabel": 'Place of Creation',
-              "location": [
+              type: 'creation',
+              displayLabel: 'Place of Creation',
+              location: [
                 {
-                  "value": 'Stanford (Calif.)',
-                  "uri": 'http://id.loc.gov/authorities/names/n50046557',
-                  "source": {
-                    "code": 'naf',
-                    "uri": 'http://id.loc.gov/authorities/names/'
+                  value: 'Stanford (Calif.)',
+                  uri: 'http://id.loc.gov/authorities/names/n50046557',
+                  source: {
+                    code: 'naf',
+                    uri: 'http://id.loc.gov/authorities/names/'
                   }
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "value": '2003-11-29',
-                  "status": 'primary',
-                  "encoding": {
-                    "code": 'w3cdtf'
+                  value: '2003-11-29',
+                  status: 'primary',
+                  encoding: {
+                    code: 'w3cdtf'
                   }
                 }
               ]
             },
             {
-              "type": 'development',
-              "date": [
+              type: 'development',
+              date: [
                 {
-                  "value": '2003-12-01',
-                  "encoding": {
-                    "code": 'w3cdtf'
+                  value: '2003-12-01',
+                  encoding: {
+                    code: 'w3cdtf'
                   }
                 }
               ]
@@ -2532,58 +2536,58 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "event": [
+          event: [
             {
-              "type": 'publication',
-              "contributor": [
+              type: 'publication',
+              contributor: [
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": 'Articque informatique'
+                      value: 'Articque informatique'
                     }
                   ],
-                  "type": 'organization',
-                  "role": [
+                  type: 'organization',
+                  role: [
                     {
-                      "value": 'publisher',
-                      "code": 'pbl',
-                      "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-                      "source": {
-                        "code": 'marcrelator',
-                        "uri": 'http://id.loc.gov/vocabulary/relators/'
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
                   ]
                 }
               ],
-              "location": [
+              location: [
                 {
-                  "value": 'Fondettes, FR'
+                  value: 'Fondettes, FR'
                 }
               ],
-              "date": [
+              date: [
                 {
-                  "value": '2010',
-                  "encoding": {
-                    "code": 'w3cdtf'
+                  value: '2010',
+                  encoding: {
+                    code: 'w3cdtf'
                   },
-                  "status": 'primary'
+                  status: 'primary'
                 }
               ],
-              "note": [
+              note: [
                 {
-                  "type": 'edition',
-                  "value": '1'
+                  type: 'edition',
+                  value: '1'
                 }
               ]
             },
             {
-              "type": 'validity',
-              "date": [
+              type: 'validity',
+              date: [
                 {
-                  "value": '2010',
-                  "encoding": {
-                    "code": 'w3cdtf'
+                  value: '2010',
+                  encoding: {
+                    code: 'w3cdtf'
                   }
                 }
               ]
