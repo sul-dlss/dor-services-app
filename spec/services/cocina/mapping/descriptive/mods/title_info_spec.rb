@@ -914,4 +914,151 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Uniform title with corporate author' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo type="uniform" nameTitleGroup="1">
+            <title>Laws, etc. (United States code service)</title>
+          </titleInfo>
+          <name usage="primary" type="corporate" nameTitleGroup="1">
+            <namePart>United States</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              structuredValue: [
+                {
+                  value: 'United States',
+                  type: 'name'
+                },
+                {
+                  value: 'Laws, etc. (United States code service)',
+                  type: 'title'
+                }
+              ],
+              type: 'uniform'
+            }
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'United States'
+                }
+              ],
+              type: 'organization',
+              status: 'primary'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Complex multilingual title' do
+    xit 'not implemented: parallelValue of a structuredValue'
+
+    let(:mods) do
+      <<~XML
+        <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="01">
+          <title>Shaʻare ha-ḳedushah</title>
+        </titleInfo>
+        <name type="personal" usage="primary" nameTitleGroup="1">
+          <namePart>Vital, Ḥayyim ben Joseph</namePart>
+          <namePart type="date">1542 or 1543-1620</namePart>
+        </name>
+        <titleInfo altRepGroup="02">
+          <title>ספר שערי הקדושה</title>
+          <subTitle>זה ספר האדם לעבודת בוראו</subTitle>
+        </titleInfo>
+        <titleInfo altRepGroup="02">
+          <title>Sefer Shaʻare ha-ḳedushah</title>
+          <subTitle>zeh sefer le-yosher ha-adam la-ʻavodat borʼo</subTitle>
+        </titleInfo>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        title: [
+          {
+            structuredValue: [
+              {
+                structuredValue: [
+                  {
+                    value: 'Vital, Ḥayyim ben Joseph',
+                    type: 'name'
+                  },
+                  {
+                    value: '1542 or 1543-1620',
+                    type: 'life dates'
+                  }
+                ],
+                type: 'name'
+              },
+              {
+                value: 'Shaʻare ha-ḳedushah',
+                type: 'title'
+              }
+            ],
+            type: 'uniform'
+          },
+          {
+            parallelValue: [
+              {
+                structuredValue: [
+                  {
+                    value: 'ספר שערי הקדושה',
+                    type: 'main title'
+                  },
+                  {
+                    value: 'זה ספר האדם לעבודת בורא',
+                    type: 'subtitle'
+                  }
+                ]
+              },
+              {
+                structuredValue: [
+                  {
+                    value: 'Sefer Shaʻare ha-ḳedushah',
+                    type: 'main title'
+                  },
+                  {
+                    value: 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo',
+                    type: 'subtitle'
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        contributor: [
+          {
+            name: [
+              {
+                structuredValue: [
+                  {
+                    value: 'Vital, Ḥayyim ben Joseph',
+                    type: 'name'
+                  },
+                  {
+                    value: '1542 or 1543-1620',
+                    type: 'life dates'
+                  }
+                ]
+              }
+            ],
+            type: 'person',
+            status: 'primary'
+          }
+        ]
+      }
+    end
+  end
 end
