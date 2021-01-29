@@ -27,41 +27,41 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "form": [
+          form: [
             {
-              "value": 'ink on paper',
-              "type": 'form'
+              value: 'ink on paper',
+              type: 'form'
             },
             {
-              "value": 'access',
-              "type": 'reformatting quality',
-              "source": {
-                "value": 'MODS reformatting quality terms'
+              value: 'access',
+              type: 'reformatting quality',
+              source: {
+                value: 'MODS reformatting quality terms'
               }
             },
             {
-              "value": 'image/jpeg',
-              "type": 'media type',
-              "source": {
-                "value": 'IANA media types'
+              value: 'image/jpeg',
+              type: 'media type',
+              source: {
+                value: 'IANA media types'
               }
             },
             {
-              "value": '1 sheet',
-              "type": 'extent'
+              value: '1 sheet',
+              type: 'extent'
             },
             {
-              "value": 'reformatted digital',
-              "type": 'digital origin',
-              "source": {
-                "value": 'MODS digital origin terms'
+              value: 'reformatted digital',
+              type: 'digital origin',
+              source: {
+                value: 'MODS digital origin terms'
               }
             },
             {
-              "note": [
+              note: [
                 {
-                  "value": 'Small tear at top right corner.',
-                  "displayLabel": 'Condition'
+                  value: 'Small tear at top right corner.',
+                  displayLabel: 'Condition'
                 }
               ]
             },
@@ -135,6 +135,8 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
   end
 
   describe 'Multiple physical descriptions' do
+    xit 'not implemented: multiple physical descriptions'
+
     let(:mods) do
       <<~XML
         <physicalDescription>
@@ -150,36 +152,34 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "form": [
+        form: [
           {
-            "structuredValue": [
+            structuredValue: [
               {
-                "value": 'audio recording',
-                "type": 'form'
+                value: 'audio recording',
+                type: 'form'
               },
               {
-                "value": '1 audiocassette',
-                "type": 'extent'
+                value: '1 audiocassette',
+                type: 'extent'
               }
             ]
           },
           {
-            "structuredValue": [
+            structuredValue: [
               {
-                "value": 'transcript',
-                "type": 'form'
+                value: 'transcript',
+                type: 'form'
               },
               {
-                "value": '5 pages',
-                "type": 'extent'
+                value: '5 pages',
+                type: 'extent'
               }
             ]
           }
         ]
       }
     end
-
-    xit 'not implemented'
   end
 
   describe 'Form with authority' do
@@ -187,21 +187,22 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
       let(:mods) do
         <<~XML
           <physicalDescription>
-            <form authority="aat" authorityURI="http://vocab.getty.edu/aat/" valueURI="http://vocab.getty.edu/aat/300041356">mezzotints (prints)</form>
+            <form authority="aat" authorityURI="http://vocab.getty.edu/aat/"
+              valueURI="http://vocab.getty.edu/aat/300041356">mezzotints (prints)</form>
           </physicalDescription>
         XML
       end
 
       let(:cocina) do
         {
-          "form": [
+          form: [
             {
-              "value": 'mezzotints (prints)',
-              "type": 'form',
-              "uri": 'http://vocab.getty.edu/aat/300041356',
-              "source": {
-                "code": 'aat',
-                "uri": 'http://vocab.getty.edu/aat/'
+              value: 'mezzotints (prints)',
+              type: 'form',
+              uri: 'http://vocab.getty.edu/aat/300041356',
+              source: {
+                code: 'aat',
+                uri: 'http://vocab.getty.edu/aat/'
               }
             }
           ]
@@ -211,6 +212,8 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
   end
 
   describe 'Display label' do
+    xit 'not implemented: display label for physicalDescription'
+
     let(:mods) do
       <<~XML
         <physicalDescription displayLabel="Medium">
@@ -221,16 +224,14 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
 
     let(:cocina) do
       {
-        "form": [
+        form: [
           {
-            "value": 'metal embossed on wood',
-            "type": 'form',
-            "displayLabel": 'Medium'
+            value: 'metal embossed on wood',
+            type: 'form',
+            displayLabel: 'Medium'
           }
         ]
       }
     end
-
-    xit 'not implemented'
   end
 end

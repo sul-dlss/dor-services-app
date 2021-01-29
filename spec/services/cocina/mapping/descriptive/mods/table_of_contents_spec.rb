@@ -13,10 +13,10 @@ RSpec.describe 'MODS tableOfContents <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "note": [
+          note: [
             {
-              "value": 'Chapter 1. Chapter 2. Chapter 3.',
-              "type": 'table of contents'
+              value: 'Chapter 1. Chapter 2. Chapter 3.',
+              type: 'table of contents'
             }
           ]
         }
@@ -34,20 +34,20 @@ RSpec.describe 'MODS tableOfContents <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "note": [
+          note: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Chapter 1.'
+                  value: 'Chapter 1.'
                 },
                 {
-                  "value": 'Chapter 2.'
+                  value: 'Chapter 2.'
                 },
                 {
-                  "value": 'Chapter 3.'
+                  value: 'Chapter 3.'
                 }
               ],
-              "type": 'table of contents'
+              type: 'table of contents'
             }
           ]
         }
@@ -66,43 +66,43 @@ RSpec.describe 'MODS tableOfContents <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "note": [
+          note: [
             {
-              "parallelValue": [
+              parallelValue: [
                 {
-                  "value": 'Chapter 1. Chapter 2. Chapter 3.',
-                  "valueLanguage":
-                            {
-                              "code": 'eng',
-                              "source": {
-                                "code": 'iso639-2b'
-                              },
-                              "valueScript": {
-                                "code": 'Latn',
-                                "source": {
-                                  "code": 'iso15924'
-                                }
-                              }
-                            }
+                  value: 'Chapter 1. Chapter 2. Chapter 3.',
+                  valueLanguage:
+                    {
+                      code: 'eng',
+                      source: {
+                        code: 'iso639-2b'
+                      },
+                      valueScript: {
+                        code: 'Latn',
+                        source: {
+                          code: 'iso15924'
+                        }
+                      }
+                    }
                 },
                 {
-                  "value": 'Глава 1. Глава 2. Глава 3.',
-                  "valueLanguage":
-                          {
-                            "code": 'rus',
-                            "source": {
-                              "code": 'iso639-2b'
-                            },
-                            "valueScript": {
-                              "code": 'Cyrl',
-                              "source": {
-                                "code": 'iso15924'
-                              }
-                            }
-                          }
+                  value: 'Глава 1. Глава 2. Глава 3.',
+                  valueLanguage:
+                    {
+                      code: 'rus',
+                      source: {
+                        code: 'iso639-2b'
+                      },
+                      valueScript: {
+                        code: 'Cyrl',
+                        source: {
+                          code: 'iso15924'
+                        }
+                      }
+                    }
                 }
               ],
-              "type": 'table of contents'
+              type: 'table of contents'
             }
           ]
         }
@@ -141,11 +141,11 @@ RSpec.describe 'MODS tableOfContents <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "note": [
+          note: [
             {
-              "value": 'Content 1. Content 2.',
-              "type": 'table of contents',
-              "displayLabel": 'Contents'
+              value: 'Content 1. Content 2.',
+              type: 'table of contents',
+              displayLabel: 'Contents'
             }
           ]
         }
