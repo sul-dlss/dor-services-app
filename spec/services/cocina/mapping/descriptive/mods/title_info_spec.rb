@@ -402,6 +402,8 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Name-title authority plus additional contributor not part of uniform title' do
+    xit 'not implemented: "both type and status should be siblings to name, as they apply to the contributor entity."'
+
     let(:mods) do
       <<~XML
         <titleInfo usage="primary">
@@ -485,12 +487,14 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         ]
       }
     end
-
-    xit 'not implemented'
   end
 
   describe 'Supplied title' do
     # How to ID: titleInfo supplied="yes"
+
+    xit 'not mapped: cocina type of supplied needs to map to correct MODS'
+    # ask Arcadia if 'supplied=yes' is a valid MODS attribute
+
     let(:mods) do
       <<~XML
         <titleInfo supplied="yes">
@@ -509,8 +513,6 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         ]
       }
     end
-
-    xit 'not implemented'
   end
 
   describe 'Abbreviated title' do
@@ -549,6 +551,9 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
   describe 'Parallel titles' do
     # How to ID: edge case requiring manual review of records with multiple titleInfo type="translated" instances
+
+    xit 'not implemented: multiple type="translated" edge case'
+
     let(:mods) do
       <<~XML
         <titleInfo type="translated" lang="ger" altRepGroup="1">
@@ -601,8 +606,6 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         ]
       }
     end
-
-    xit 'not implemented'
   end
 
   describe 'Multiple untyped titles without primary' do
@@ -694,6 +697,8 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Multilingual uniform title' do
+    xit 'not implemented: two <name> elements have usage="primary" so "status": "primary" maps to contributor rather than name'
+
     # Both <name> elements have usage="primary" so "status": "primary" maps to contributor rather than name.
     let(:mods) do
       <<~XML
@@ -854,8 +859,6 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         </titleInfo>
       XML
     end
-
-    xit 'broken'
   end
 
   describe 'Title with xml:space="preserve"' do
