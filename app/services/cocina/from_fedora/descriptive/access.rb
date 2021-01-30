@@ -16,7 +16,7 @@ module Cocina
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder:)
+        def self.build(resource_element:, descriptive_builder:, add_sdr: true)
           new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
         end
 
@@ -34,18 +34,25 @@ module Cocina
             access[:url] = url.presence
             access[:note] = (note + purl_note).presence
             # Without the count check, this node winds up all over the damn place and breaks dozens of tests
-            access[:digitalRepository] = [{ value: 'Stanford Digital Repository' }] if location_nodes_count.positive?
+            access[:digitalRepository] = [{ value: 'Stanford Digital Repository' }] if add_sdr?
           end.compact
         end
 
         private
 
-        attr_reader :resource_element, :notifier
+        attr_reader :resource_element, :notifier, :add_sdr
 
-        # The number of location nodes that themselves that have child nodes.
+        def add_sdr?
+          if resource_element.name == 'relatedItem'
+            all_purl_nodes.present?
+          else
+            location_nodes.present?
+          end
+        end
+
         # Hydrus is know to create location nodes with no children.
-        def location_nodes_count
-          resource_element.xpath('mods:location[*]', mods: DESC_METADATA_NS).count
+        def location_nodes
+          resource_element.xpath('mods:location[*]', mods: DESC_METADATA_NS)
         end
 
         def physical_location
