@@ -436,19 +436,16 @@ RSpec.describe Cocina::FromFedora::Descriptive::Event do
               "structuredValue": [
                 {
                   "value": '1922',
-                  "type": 'start',
-                  "encoding": {
-                    "code": 'marc'
-                  }
+                  "type": 'start'
                 },
                 {
                   "value": '1929',
-                  "type": 'end',
-                  "encoding": {
-                    "code": 'marc'
-                  }
+                  "type": 'end'
                 }
-              ]
+              ],
+              "encoding": {
+                "code": 'marc'
+              }
             }
           ],
           "note": [
