@@ -91,32 +91,74 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
   end
 
   describe 'Related item without title' do
-    xit 'broken: cocina access gets undesired digital repository SDR'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <relatedItem>
+            <location>
+              <url>https://www.example.com</url>
+            </location>
+          </relatedItem>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <relatedItem>
-          <location>
-            <url>https://www.example.com</url>
-          </location>
-        </relatedItem>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        relatedResource: [
-          {
-            access: {
-              url: [
-                {
-                  value: 'https://www.example.com'
-                }
-              ]
+      let(:cocina) do
+        {
+          relatedResource: [
+            {
+              access: {
+                url: [
+                  {
+                    value: 'https://www.example.com'
+                  }
+                ]
+              }
             }
-          }
-        ]
-      }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Related item with PURL' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <relatedItem>
+            <location>
+              <url>http://purl.stanford.edu/ng599nr9959</url>
+            </location>
+          </relatedItem>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <relatedItem>
+            <location>
+              <url usage="primary display">http://purl.stanford.edu/ng599nr9959</url>
+            </location>
+          </relatedItem>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          relatedResource: [
+            {
+              purl: 'http://purl.stanford.edu/ng599nr9959',
+              access: {
+
+                digitalRepository: [
+                  {
+                    value: 'Stanford Digital Repository'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      end
     end
   end
 

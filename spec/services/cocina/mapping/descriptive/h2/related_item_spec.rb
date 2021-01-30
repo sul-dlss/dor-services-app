@@ -48,41 +48,40 @@ RSpec.describe 'Cocina --> MODS mappings for relatedItem' do
   end
 
   describe 'Related link' do
-    let(:mods) do
-      <<~XML
-        <relatedItem>
-          <titleInfo>
-            <title>A paper</title>
-          </titleInfo>
-          <location>
-            <url>https://www.example.com/paper.html</url>
-          </location>
-        </relatedItem>
-      XML
-    end
+    it_behaves_like 'cocina MODS mapping' do
+      let(:mods) do
+        <<~XML
+          <relatedItem>
+            <titleInfo>
+              <title>A paper</title>
+            </titleInfo>
+            <location>
+              <url>https://www.example.com/paper.html</url>
+            </location>
+          </relatedItem>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        "relatedResource": [
-          {
-            "type": 'related to',
-            "title": [
-              {
-                "value": 'A paper'
-              }
-            ],
-            "access": {
-              "url": [
+      let(:cocina) do
+        {
+          "relatedResource": [
+            {
+              "title": [
                 {
-                  "value": 'https://www.example.com/paper.html'
+                  "value": 'A paper'
                 }
-              ]
+              ],
+              "access": {
+                "url": [
+                  {
+                    "value": 'https://www.example.com/paper.html'
+                  }
+                ]
+              }
             }
-          }
-        ]
-      }
+          ]
+        }
+      end
     end
-
-    xit 'broken'
   end
 end
