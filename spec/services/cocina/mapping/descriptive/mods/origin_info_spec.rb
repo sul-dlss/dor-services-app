@@ -328,15 +328,14 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                     {
                       value: '1940',
                       type: 'start',
-                      status: 'primary',
-                      qualifier: 'approximate'
+                      status: 'primary'
                     },
                     {
                       value: '1945',
-                      type: 'end',
-                      qualifier: 'approximate'
+                      type: 'end'
                     }
-                  ]
+                  ],
+                  qualifier: 'approximate'
                 }
               ]
             }
@@ -675,19 +674,16 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                   structuredValue: [
                     {
                       value: '-0499',
-                      type: 'start',
-                      encoding: {
-                        code: 'edtf'
-                      }
+                      type: 'start'
                     },
                     {
                       value: '-0599',
-                      type: 'end',
-                      encoding: {
-                        code: 'edtf'
-                      }
+                      type: 'end'
                     }
-                  ]
+                  ],
+                  encoding: {
+                    code: 'edtf'
+                  }
                 }
               ]
             }
@@ -765,19 +761,16 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                   structuredValue: [
                     {
                       value: '0800',
-                      type: 'start',
-                      encoding: {
-                        code: 'edtf'
-                      }
+                      type: 'start'
                     },
                     {
                       value: '1000',
-                      type: 'end',
-                      encoding: {
-                        code: 'edtf'
-                      }
+                      type: 'end'
                     }
-                  ]
+                  ],
+                  encoding: {
+                    code: 'edtf'
+                  }
                 }
               ]
             }
@@ -2055,19 +2048,16 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                   structuredValue: [
                     {
                       value: '1933',
-                      type: 'start',
-                      encoding: {
-                        code: 'marc'
-                      }
+                      type: 'start'
                     },
                     {
                       value: 'uuuu',
-                      type: 'end',
-                      encoding: {
-                        code: 'marc'
-                      }
+                      type: 'end'
                     }
-                  ]
+                  ],
+                  encoding: {
+                    code: 'marc'
+                  }
                 }
               ],
               contributor: [
@@ -2249,19 +2239,16 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                   structuredValue: [
                     {
                       value: '1922',
-                      type: 'start',
-                      encoding: {
-                        code: 'marc'
-                      }
+                      type: 'start'
                     },
                     {
                       value: '1929',
-                      type: 'end',
-                      encoding: {
-                        code: 'marc'
-                      }
+                      type: 'end'
                     }
-                  ]
+                  ],
+                  encoding: {
+                    code: 'marc'
+                  }
                 }
               ],
               note: [
