@@ -242,18 +242,24 @@ module Cocina
 
         def write_basic_date(date, cocina_event_type)
           if date.structuredValue
-            date_range(date.structuredValue, cocina_event_type)
+            structured_val_attribs = {
+              encoding: date.encoding,
+              qualifier: date.qualifier
+            }
+            date_range(date.structuredValue, cocina_event_type, structured_val_attribs)
           else
             date_tag(date, cocina_event_type)
           end
         end
 
-        def date_tag(date, cocina_event_type)
+        # @param [Hash] structured_val_attribs - populated when structuredValue parent has attributes for individual date elements
+        def date_tag(date, cocina_event_type, structured_val_attribs = {})
           value = date.value
           tag = date_type_value_for(date) ? :dateOther : TAG_NAME.fetch(cocina_event_type, :dateOther)
+
           attributes = {
-            encoding: date.encoding&.code,
-            qualifier: date.qualifier
+            encoding: (date.encoding&.code || structured_val_attribs[:encoding]&.code),
+            qualifier: date.qualifier || structured_val_attribs[:qualifier]
           }.tap do |attrs|
             attrs[:keyDate] = 'yes' if date.status == 'primary'
             attrs[:type] = date_type_for(date, cocina_event_type) if value.present?
@@ -273,9 +279,9 @@ module Cocina
           DATE_OTHER_TYPE[cocina_event_type]
         end
 
-        def date_range(dates, cocina_event_type)
+        def date_range(dates, cocina_event_type, structured_val_attribs)
           dates.each do |date|
-            date_tag(date, cocina_event_type)
+            date_tag(date, cocina_event_type, structured_val_attribs)
           end
         end
 

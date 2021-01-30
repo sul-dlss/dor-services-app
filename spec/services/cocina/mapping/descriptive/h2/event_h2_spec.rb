@@ -64,86 +64,87 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Creation date range: 2020-01-01 to 2021-01-01' do
-    xit 'not implemented: date encoding is in wrong place for structuredValue'
-    # date encoding is in wrong place for structuredValue.
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
 
-    let(:cocina) do
-      {
-        event: [
-          {
-            type: 'creation',
-            date: [
-              {
-                structuredValue: [
-                  {
-                    value: '2020-01-01',
-                    type: 'start'
-                  },
-                  {
-                    value: '2021-01-01',
-                    type: 'end'
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'creation',
+              date: [
+                {
+                  structuredValue: [
+                    {
+                      value: '2020-01-01',
+                      type: 'start'
+                    },
+                    {
+                      value: '2021-01-01',
+                      type: 'end'
+                    }
+                  ],
+                  encoding: {
+                    code: 'w3cdtf'
                   }
-                ],
-                encoding: {
-                  code: 'w3cdtf'
                 }
-              }
-            ]
-          }
-        ]
-      }
-    end
+              ]
+            }
+          ]
+        }
+      end
 
-    let(:mods) do
-      <<~XML
-        <originInfo eventType="production">
-          <dateCreated point="start" encoding="w3cdtf">2020-01-01</dateCreated>
-          <dateCreated point="end" encoding="w3cdtf">2021-01-01</dateCreated>
-        </originInfo>
-      XML
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="production">
+            <dateCreated point="start" encoding="w3cdtf">2020-01-01</dateCreated>
+            <dateCreated point="end" encoding="w3cdtf">2021-01-01</dateCreated>
+          </originInfo>
+        XML
+      end
     end
   end
 
   describe 'Approximate creation date: approx. 1900' do
-    xit 'not implemented: date encoding and qualifier in wrong place for structuredValue'
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
 
-    let(:cocina) do
-      {
-        event: [
-          {
-            type: 'creation',
-            date: [
-              {
-                structuredValue: [
-                  {
-                    value: '1900',
-                    type: 'start'
-                  },
-                  {
-                    value: '1910',
-                    type: 'end'
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'creation',
+              date: [
+                {
+                  structuredValue: [
+                    {
+                      value: '1900',
+                      type: 'start'
+                    },
+                    {
+                      value: '1910',
+                      type: 'end'
+                    }
+                  ],
+                  qualifier: 'approximate',
+                  encoding: {
+                    code: 'w3cdtf'
                   }
-                ],
-                qualifier: 'approximate',
-                encoding: {
-                  code: 'w3cdtf'
                 }
-              }
-            ]
-          }
-        ]
-      }
-    end
+              ]
+            }
+          ]
+        }
+      end
 
-    let(:mods) do
-      <<~XML
-        <originInfo eventType="production">
-          <dateCreated qualifier="approximate" point="start" encoding="w3cdtf">1900</dateCreated>
-          <dateCreated qualifier="approximate" point="end" encoding="w3cdtf">1910</dateCreated>
-        </originInfo>
-      XML
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="production">
+            <dateCreated qualifier="approximate" point="start" encoding="w3cdtf">1900</dateCreated>
+            <dateCreated qualifier="approximate" point="end" encoding="w3cdtf">1910</dateCreated>
+          </originInfo>
+        XML
+      end
     end
   end
 
