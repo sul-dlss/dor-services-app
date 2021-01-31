@@ -402,90 +402,89 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Name-title authority plus additional contributor not part of uniform title' do
-    xit 'not implemented: "both type and status should be siblings to name, as they apply to the contributor entity."'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo usage="primary">
+            <title>Hamlet</title>
+          </titleInfo>
+          <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+            valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="1">
+            <title>Hamlet</title>
+          </titleInfo>
+          <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+            valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="1">
+            <namePart>Shakespeare, William, 1564-1616</namePart>
+          </name>
+          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+            valueURI="http://id.loc.gov/authorities/names/n78088956">
+            <namePart>Marlowe, Christopher, 1564-1593</namePart>
+          </name>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <titleInfo usage="primary">
-          <title>Hamlet</title>
-        </titleInfo>
-        <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
-          valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="0">
-          <title>Hamlet</title>
-        </titleInfo>
-        <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
-          valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="0">
-          <namePart>Shakespeare, William, 1564-1616</namePart>
-        </name>
-        <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
-          valueURI="http://id.loc.gov/authorities/names/n78088956">
-          <namePart>Marlowe, Christopher, 1564-1593</namePart>
-        </name>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        title: [
-          {
-            value: 'Hamlet',
-            status: 'primary'
-          },
-          {
-            structuredValue: [
-              {
-                value: 'Hamlet',
-                type: 'title'
-              },
-              {
-                value: 'Shakespeare, William, 1564-1616',
-                type: 'name',
-                uri: 'http://id.loc.gov/authorities/names/n78095332',
-                source: {
-                  uri: 'http://id.loc.gov/authorities/names/',
-                  code: 'naf'
+      let(:cocina) do
+        {
+          title: [
+            {
+              value: 'Hamlet',
+              status: 'primary'
+            },
+            {
+              structuredValue: [
+                {
+                  value: 'Hamlet',
+                  type: 'title'
+                },
+                {
+                  value: 'Shakespeare, William, 1564-1616',
+                  type: 'name',
+                  uri: 'http://id.loc.gov/authorities/names/n78095332',
+                  source: {
+                    uri: 'http://id.loc.gov/authorities/names/',
+                    code: 'naf'
+                  }
                 }
+              ],
+              type: 'uniform',
+              uri: 'http://id.loc.gov/authorities/names/n80008522',
+              source: {
+                uri: 'http://id.loc.gov/authorities/names/',
+                code: 'naf'
               }
-            ],
-            type: 'uniform',
-            uri: 'http://id.loc.gov/authorities/names/n80008522',
-            source: {
-              uri: 'http://id.loc.gov/authorities/names/',
-              code: 'naf'
             }
-          }
-        ],
-        contributor: [
-          {
-            name: [
-              {
-                value: 'Shakespeare, William, 1564-1616',
-                type: 'person',
-                status: 'primary',
-                uri: 'http://id.loc.gov/authorities/names/n78095332',
-                source: {
-                  uri: 'http://id.loc.gov/authorities/names/',
-                  code: 'naf'
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Shakespeare, William, 1564-1616',
+                  uri: 'http://id.loc.gov/authorities/names/n78095332',
+                  source: {
+                    uri: 'http://id.loc.gov/authorities/names/',
+                    code: 'naf'
+                  }
                 }
-              }
-            ]
-          },
-          {
-            name: [
-              {
-                value: 'Marlowe, Christopher, 1564-1593',
-                type: 'person',
-                status: 'primary',
-                uri: 'http://id.loc.gov/authorities/names/n78088956',
-                source: {
-                  uri: 'http://id.loc.gov/authorities/names/',
-                  code: 'naf'
+              ],
+              type: 'person',
+              status: 'primary'
+            },
+            {
+              name: [
+                {
+                  value: 'Marlowe, Christopher, 1564-1593',
+                  uri: 'http://id.loc.gov/authorities/names/n78088956',
+                  source: {
+                    uri: 'http://id.loc.gov/authorities/names/',
+                    code: 'naf'
+                  }
                 }
-              }
-            ]
-          }
-        ]
-      }
+              ],
+              type: 'person'
+            }
+          ]
+        }
+      end
     end
   end
 
