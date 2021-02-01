@@ -44,7 +44,7 @@ module Cocina
               end
             end
           else
-            write_basic(nil, is_manuscript: is_manuscript, is_collection: is_collection)
+            write_attributes_only(is_manuscript, is_collection)
           end
 
           physical_description_forms = Array(forms).select { |form| physical_description_member?(form) }
@@ -90,7 +90,6 @@ module Cocina
         end
 
         def write_basic(form, is_manuscript: false, is_collection: false)
-          return write_attributes_only(is_manuscript, is_collection) if form.nil?
           return nil if form.source&.value&.match?(/DataCite/i)
           return note(form) if form.note
 
