@@ -261,6 +261,102 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     end
   end
 
+  describe 'Date range, empty qualifier attribute' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <dateCreated keyDate="yes" point="start" qualifier="">1920</dateCreated>
+            <dateCreated point="end">1925</dateCreated>
+          </originInfo>
+        XML
+      end
+
+      # remove empty qualifier attribute
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo eventType="production">
+            <dateCreated keyDate="yes" point="start">1920</dateCreated>
+            <dateCreated point="end">1925</dateCreated>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'creation',
+              date: [
+                {
+                  structuredValue: [
+                    {
+                      value: '1920',
+                      type: 'start',
+                      status: 'primary'
+                    },
+                    {
+                      value: '1925',
+                      type: 'end'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Date range, empty encoding attribute' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <dateCreated keyDate="yes" point="start" encoding="">1920</dateCreated>
+            <dateCreated point="end">1925</dateCreated>
+          </originInfo>
+        XML
+      end
+
+      # remove empty encoding attribute
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo eventType="production">
+            <dateCreated keyDate="yes" point="start">1920</dateCreated>
+            <dateCreated point="end">1925</dateCreated>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'creation',
+              date: [
+                {
+                  structuredValue: [
+                    {
+                      value: '1920',
+                      type: 'start',
+                      status: 'primary'
+                    },
+                    {
+                      value: '1925',
+                      type: 'end'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Approximate date' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do

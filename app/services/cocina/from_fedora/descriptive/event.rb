@@ -372,8 +372,8 @@ module Cocina
 
           dates = node_set.map do |node|
             new_node = node.deep_dup
-            new_node.remove_attribute('encoding') if common_attribs[:encoding].present?
-            new_node.remove_attribute('qualifier') if common_attribs[:qualifier].present?
+            new_node.remove_attribute('encoding') if common_attribs[:encoding].present? || node[:encoding]&.size&.zero?
+            new_node.remove_attribute('qualifier') if common_attribs[:qualifier].present? || node[:qualifier]&.size&.zero?
             build_date(type, new_node)
           end
           { structuredValue: dates }.merge(common_attribs).compact
@@ -382,12 +382,12 @@ module Cocina
         def common_date_attributes(node_set)
           first_encoding = node_set.first['encoding']
           first_qualifier = node_set.first['qualifier']
-          encoding_is_common = node_set.all? { |node| node['encoding'] == first_encoding } if first_encoding.present?
-          qualifier_is_common = node_set.all? { |node| node['qualifier'] == first_qualifier } if first_qualifier.present?
-          {
-            qualifier: (first_qualifier if qualifier_is_common),
-            encoding: ({ code: first_encoding } if encoding_is_common)
-          }.compact
+          encoding_is_common = node_set.all? { |node| node['encoding'] == first_encoding }
+          qualifier_is_common = node_set.all? { |node| node['qualifier'] == first_qualifier }
+          attribs = {}
+          attribs[:qualifier] = first_qualifier if qualifier_is_common && first_qualifier.present?
+          attribs[:encoding] = { code: first_encoding } if encoding_is_common && first_encoding.present?
+          attribs
         end
 
         def build_date(event_type, node)
