@@ -368,8 +368,26 @@ module Cocina
         def build_structured_date(type, node_set)
           return nil if node_set.blank?
 
-          dates = node_set.map { |node| build_date(type, node) }
-          { structuredValue: dates }
+          common_attribs = common_date_attributes(node_set)
+
+          dates = node_set.map do |node|
+            new_node = node.deep_dup
+            new_node.remove_attribute('encoding') if common_attribs[:encoding].present? || node[:encoding]&.size&.zero?
+            new_node.remove_attribute('qualifier') if common_attribs[:qualifier].present? || node[:qualifier]&.size&.zero?
+            build_date(type, new_node)
+          end
+          { structuredValue: dates }.merge(common_attribs).compact
+        end
+
+        def common_date_attributes(node_set)
+          first_encoding = node_set.first['encoding']
+          first_qualifier = node_set.first['qualifier']
+          encoding_is_common = node_set.all? { |node| node['encoding'] == first_encoding }
+          qualifier_is_common = node_set.all? { |node| node['qualifier'] == first_qualifier }
+          attribs = {}
+          attribs[:qualifier] = first_qualifier if qualifier_is_common && first_qualifier.present?
+          attribs[:encoding] = { code: first_encoding } if encoding_is_common && first_encoding.present?
+          attribs
         end
 
         def build_date(event_type, node)
