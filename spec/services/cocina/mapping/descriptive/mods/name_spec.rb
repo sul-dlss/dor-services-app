@@ -1123,7 +1123,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Transliterated name with role' do
-    xit('not mapped: status primary is both inside a parallel value and outside it.')
+    xit 'not implemented'
 
     let(:mods) do
       <<~XML
