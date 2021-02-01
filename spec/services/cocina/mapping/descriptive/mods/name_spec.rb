@@ -1349,8 +1349,28 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
+  describe 'Name with external link to value only' do
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <name xlink:href="http://name.org/name" />
+      XML
+    end
+
+    let(:cocina) do
+      {
+        contributor: [
+          {
+            uri: 'http://name.org/name'
+          }
+        ]
+      }
+    end
+  end
+
   describe 'Full name with additional subelements' do
-    xit 'not mapped: needs status primary and name type personal (and implementation)'
+    xit 'not implemented: needs status primary and name type personal'
 
     let(:mods) do
       <<~XML
@@ -1378,7 +1398,9 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                   }
                 ]
               }
-            ]
+            ],
+            status: 'primary',
+            type: 'person'
           }
         ]
       }
@@ -1452,7 +1474,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with approximate date' do
-    xit 'not mapped: needs cocina name type personal, implementation needs structuredVaue type name'
+    xit 'not implemented: needs cocina name type personal, structuredVaue type name'
 
     let(:mods) do
       <<~XML
@@ -1480,7 +1502,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                   }
                 ]
               }
-            ]
+            ],
+            type: 'person'
           }
         ]
       }
