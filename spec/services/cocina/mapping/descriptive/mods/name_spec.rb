@@ -1489,70 +1489,70 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with language' do
-    xit 'not implemented: "both type and status should be siblings to name, as they apply to the contributor entity."'
+    it_behaves_like 'MODS cocina mapping' do
+      # adapted from cp049zn0898
+      let(:mods) do
+        <<~XML
+          <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
+            <namePart>Rea Metaru Shigen Saisei Gijutsu Kenkyūkai in Japanese characters</namePart>
+          </name>
+          <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
+            <namePart>Rea Metaru Shigen Saisei Gijutsu Kenkyūkai</namePart>
+          </name>
+        XML
+      end
 
-    # adapted from cp049zn0898
-    let(:mods) do
-      <<~XML
-        <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
-          <namePart>Rea Metaru Shigen Saisei Gijutsu Kenkyūkai in Japanese characters</namePart>
-        </name>
-        <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
-          <namePart>Rea Metaru Shigen Saisei Gijutsu Kenkyūkai</namePart>
-        </name>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                parallelValue: [
-                  {
-                    value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai in Japanese characters',
-                    status: 'primary',
-                    valueLanguage: {
-                      code: 'jpn',
-                      source: {
-                        code: 'iso639-2b'
-                      },
-                      valueScript: {
-                        code: 'Jpan',
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  parallelValue: [
+                    {
+                      value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai in Japanese characters',
+                      status: 'primary',
+                      valueLanguage: {
+                        code: 'jpn',
                         source: {
-                          code: 'iso15924'
-                        }
-                      }
-                    }
-                  },
-                  {
-                    value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai',
-                    type: 'transliteration',
-                    valueLanguage: {
-                      code: 'jpn',
-                      source: {
-                        code: 'iso639-2b'
-                      },
-                      valueScript: {
-                        code: 'Latn',
-                        source: {
-                          code: 'iso15924'
+                          code: 'iso639-2b'
+                        },
+                        valueScript: {
+                          code: 'Jpan',
+                          source: {
+                            code: 'iso15924'
+                          }
                         }
                       }
                     },
-                    standard: {
-                      value: 'ALA-LC Romanization Tables'
+                    {
+                      value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai',
+                      type: 'transliteration',
+                      valueLanguage: {
+                        code: 'jpn',
+                        source: {
+                          code: 'iso639-2b'
+                        },
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
+                          }
+                        }
+                      },
+                      standard: {
+                        value: 'ALA-LC Romanization Tables'
+                      }
                     }
-                  }
-                ]
-              }
-            ],
-            type: 'organization',
-            status: 'primary'
-          }
-        ]
-      }
+                  ],
+                  type: 'organization',
+                  status: 'primary'
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 end
