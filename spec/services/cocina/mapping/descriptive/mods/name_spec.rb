@@ -1123,89 +1123,88 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Transliterated name with role' do
-    xit 'not implemented: status primary is both inside a parallel value and outside it.'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
+            <namePart>レアメタル資源再生技術研究会</namePart>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/cre">cre</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/cre">creator</roleTerm>
+            </role>
+          </name>
+          <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
+            <namePart>Rea Metaru Shigen Saisei Gijutsu Kenky&#x16B;kai</namePart>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/cre">cre</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/cre">creator</roleTerm>
+            </role>
+          </name>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
-          <namePart>レアメタル資源再生技術研究会</namePart>
-          <role>
-            <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">cre</roleTerm>
-            <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">creator</roleTerm>
-          </role>
-        </name>
-        <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
-          <namePart>Rea Metaru Shigen Saisei Gijutsu Kenky&#x16B;kai</namePart>
-          <role>
-            <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">cre</roleTerm>
-            <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cre">creator</roleTerm>
-          </role>
-        </name>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                parallelValue: [
-                  {
-                    status: 'primary',
-                    valueLanguage: {
-                      code: 'jpn',
-                      source: {
-                        code: 'iso639-2b'
-                      },
-                      valueScript: {
-                        code: 'Jpan',
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  parallelValue: [
+                    {
+                      status: 'primary',
+                      valueLanguage: {
+                        code: 'jpn',
                         source: {
-                          code: 'iso15924'
+                          code: 'iso639-2b'
+                        },
+                        valueScript: {
+                          code: 'Jpan',
+                          source: {
+                            code: 'iso15924'
+                          }
                         }
-                      }
-                    },
-                    value: 'レアメタル資源再生技術研究会'
-                  },
-                  {
-                    valueLanguage: {
-                      code: 'jpn',
-                      source: {
-                        code: 'iso639-2b'
                       },
-                      valueScript: {
-                        code: 'Latn',
+                      value: 'レアメタル資源再生技術研究会'
+                    },
+                    {
+                      valueLanguage: {
+                        code: 'jpn',
                         source: {
-                          code: 'iso15924'
+                          code: 'iso639-2b'
+                        },
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
+                          }
                         }
-                      }
-                    },
-                    type: 'transliteration',
-                    standard: {
-                      value: 'ALA-LC Romanization Tables'
-                    },
-                    value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai'
-                  }
-                ],
-                type: 'organization'
-              }
-            ],
-            role: [
-              {
-                value: 'creator',
-                code: 'cre',
-                uri: 'http://id.loc.gov/vocabulary/relators/cre',
-                source: {
-                  code: 'marcrelator',
-                  uri: 'http://id.loc.gov/vocabulary/relators/'
+                      },
+                      type: 'transliteration',
+                      standard: {
+                        value: 'ALA-LC Romanization Tables'
+                      },
+                      value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai'
+                    }
+                  ],
+                  type: 'organization',
+                  status: 'primary'
                 }
-              }
-            ],
-            type: 'corporate',
-            status: 'primary'
-          }
-        ]
-      }
+              ],
+              role: [
+                {
+                  value: 'creator',
+                  code: 'cre',
+                  uri: 'http://id.loc.gov/vocabulary/relators/cre',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 
@@ -1512,70 +1511,70 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with language' do
-    xit 'not implemented: "both type and status should be siblings to name, as they apply to the contributor entity."'
+    it_behaves_like 'MODS cocina mapping' do
+      # adapted from cp049zn0898
+      let(:mods) do
+        <<~XML
+          <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
+            <namePart>Rea Metaru Shigen Saisei Gijutsu Kenkyūkai in Japanese characters</namePart>
+          </name>
+          <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
+            <namePart>Rea Metaru Shigen Saisei Gijutsu Kenkyūkai</namePart>
+          </name>
+        XML
+      end
 
-    # adapted from cp049zn0898
-    let(:mods) do
-      <<~XML
-        <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
-          <namePart>Rea Metaru Shigen Saisei Gijutsu Kenkyūkai in Japanese characters</namePart>
-        </name>
-        <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
-          <namePart>Rea Metaru Shigen Saisei Gijutsu Kenkyūkai</namePart>
-        </name>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                parallelValue: [
-                  {
-                    value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai in Japanese characters',
-                    status: 'primary',
-                    valueLanguage: {
-                      code: 'jpn',
-                      source: {
-                        code: 'iso639-2b'
-                      },
-                      valueScript: {
-                        code: 'Jpan',
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  parallelValue: [
+                    {
+                      value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai in Japanese characters',
+                      status: 'primary',
+                      valueLanguage: {
+                        code: 'jpn',
                         source: {
-                          code: 'iso15924'
-                        }
-                      }
-                    }
-                  },
-                  {
-                    value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai',
-                    type: 'transliteration',
-                    valueLanguage: {
-                      code: 'jpn',
-                      source: {
-                        code: 'iso639-2b'
-                      },
-                      valueScript: {
-                        code: 'Latn',
-                        source: {
-                          code: 'iso15924'
+                          code: 'iso639-2b'
+                        },
+                        valueScript: {
+                          code: 'Jpan',
+                          source: {
+                            code: 'iso15924'
+                          }
                         }
                       }
                     },
-                    standard: {
-                      value: 'ALA-LC Romanization Tables'
+                    {
+                      value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai',
+                      type: 'transliteration',
+                      valueLanguage: {
+                        code: 'jpn',
+                        source: {
+                          code: 'iso639-2b'
+                        },
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
+                          }
+                        }
+                      },
+                      standard: {
+                        value: 'ALA-LC Romanization Tables'
+                      }
                     }
-                  }
-                ]
-              }
-            ],
-            type: 'organization',
-            status: 'primary'
-          }
-        ]
-      }
+                  ],
+                  type: 'organization',
+                  status: 'primary'
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 end

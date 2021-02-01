@@ -125,4 +125,25 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Link to external value only' do
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <abstract xlink:href="http://hereistheabstract.com" />
+      XML
+    end
+
+    let(:cocina) do
+      {
+        note: [
+          {
+            valueAt: 'http://hereistheabstract.com',
+            type: 'summary'
+          }
+        ]
+      }
+    end
+  end
 end
