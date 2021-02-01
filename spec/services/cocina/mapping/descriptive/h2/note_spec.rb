@@ -3,6 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Cocina --> MODS mappings for note' do
+  xit 'not implemented: MODS mapping'
+
   describe 'Abstract' do
     let(:cocina) do
       {
@@ -17,8 +19,6 @@ RSpec.describe 'Cocina --> MODS mappings for note' do
     end
 
     let(:mods) do
-    xit 'not implemented'
-
       <<~XML
         <abstract>My paper is about dolphins.</abstract>
       XML
@@ -26,6 +26,8 @@ RSpec.describe 'Cocina --> MODS mappings for note' do
   end
 
   describe 'Preferred citation' do
+    xit 'not implemented: MODS mapping'
+    
     let(:cocina) do
       {
         "note": [
@@ -36,8 +38,6 @@ RSpec.describe 'Cocina --> MODS mappings for note' do
     end
 
     let(:mods) do
-    xit 'not implemented'
-
       <<~XML
         <note type="preferred citation" displayLabel="Preferred citation">Me (2002). Our friend the dolphin.</note>
       XML
