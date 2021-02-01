@@ -9,14 +9,20 @@ RSpec.describe 'Cocina --> MODS mappings for note' do
         "note": [
           {
             "type": 'summary',
-            "displayLabel": 'abstract',
+            "displayLabel": 'Abstract',
             "value": 'My paper is about dolphins.'
           }
         ]
       }
     end
 
-    xit 'not mapped'
+    let(:mods) do
+    xit 'not implemented'
+
+      <<~XML
+        <abstract>My paper is about dolphins.</abstract>
+      XML
+    end
   end
 
   describe 'Preferred citation' do
@@ -29,6 +35,12 @@ RSpec.describe 'Cocina --> MODS mappings for note' do
       }
     end
 
-    xit 'not mapped'
+    let(:mods) do
+    xit 'not implemented'
+
+      <<~XML
+        <note type="preferred citation" displayLabel="Preferred citation">Me (2002). Our friend the dolphin.</note>
+      XML
+    end
   end
 end
