@@ -1123,7 +1123,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Transliterated name with role' do
-    xit 'not implemented'
+    xit 'not implemented: status primary is both inside a parallel value and outside it.'
 
     let(:mods) do
       <<~XML
@@ -1351,7 +1351,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Full name with additional subelements' do
-    xit 'not mapped: needs status primary and name type personal (and implementation)'
+    xit 'not implemented: needs status primary and name type personal'
 
     let(:mods) do
       <<~XML
@@ -1379,7 +1379,9 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                   }
                 ]
               }
-            ]
+            ],
+            status: 'primary',
+            type: 'person'
           }
         ]
       }
