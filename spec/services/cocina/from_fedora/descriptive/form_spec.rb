@@ -19,6 +19,21 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
     XML
   end
 
+  describe 'typeOfResource' do
+    context 'with empty element' do
+      let(:xml) do
+        <<~XML
+          <typeOfResource></typeOfResource>
+          <typeOfResource/>
+        XML
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq []
+      end
+    end
+  end
+
   describe 'genre' do
     context 'with authority missing valueURI' do
       let(:xml) do
