@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> MODS mappings for access (H2 specific)' do
   describe 'Contact email' do
-    xit 'not mapped: email to MODS'
+    xit 'not implemented: email to MODS'
 
     let(:cocina) do
       {
@@ -24,10 +24,16 @@ RSpec.describe 'Cocina --> MODS mappings for access (H2 specific)' do
         }
       }
     end
+
+    let(:mods) do
+      <<~XML
+        <note type="contact" displayLabel="Contact">me@stanford.edu</note>
+      XML
+    end
   end
 
   describe 'Contact email not provided' do
-    xit 'not mapped: access.digitalRepository to MODS'
+    xit 'no MODS output'
 
     let(:cocina) do
       {
