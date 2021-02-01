@@ -3,9 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe 'Cocina --> MODS mappings for note' do
-  xit 'not implemented: MODS mapping'
 
   describe 'Abstract' do
+    xit 'not implemented: MODS mapping'
+    
     let(:cocina) do
       {
         "note": [
@@ -27,7 +28,7 @@ RSpec.describe 'Cocina --> MODS mappings for note' do
 
   describe 'Preferred citation' do
     xit 'not implemented: MODS mapping'
-    
+
     let(:cocina) do
       {
         "note": [
