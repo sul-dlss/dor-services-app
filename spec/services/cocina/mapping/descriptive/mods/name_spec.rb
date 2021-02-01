@@ -1350,6 +1350,26 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
+  describe 'Name with external link to value only' do
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <name xlink:href="http://name.org/name" />
+      XML
+    end
+
+    let(:cocina) do
+      {
+        contributor: [
+          {
+            uri: 'http://name.org/name'
+          }
+        ]
+      }
+    end
+  end
+
   describe 'Full name with additional subelements' do
     xit 'not implemented: needs status primary and name type personal'
 
