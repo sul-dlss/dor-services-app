@@ -1455,7 +1455,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with approximate date' do
-    xit 'not mapped: needs cocina name type personal, implementation needs structuredVaue type name'
+    xit 'not implemented: needs cocina name type personal, structuredVaue type name'
 
     let(:mods) do
       <<~XML
@@ -1483,7 +1483,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                   }
                 ]
               }
-            ]
+            ],
+            type: 'person'
           }
         ]
       }
