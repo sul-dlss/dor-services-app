@@ -118,14 +118,16 @@ module Cocina
 
         def add_types(forms)
           type_of_resource.each do |type|
-            forms << {
-              value: type.text,
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              },
-              displayLabel: type[:displayLabel].presence
-            }.compact
+            if type.text.present?
+              forms << {
+                value: type.text,
+                type: 'resource type',
+                source: {
+                  value: 'MODS resource types'
+                },
+                displayLabel: type[:displayLabel].presence
+              }.compact
+            end
 
             if type[:manuscript] == 'yes'
               forms << {

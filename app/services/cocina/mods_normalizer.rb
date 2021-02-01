@@ -59,6 +59,7 @@ module Cocina
       normalize_title_trailing
       normalize_gml_id
       normalize_empty_resource
+      normalize_empty_type_of_resource # Must be after normalize_empty_attributes
       normalize_abstract_summary
       # This should be last-ish.
       normalize_empty_related_items
@@ -319,6 +320,10 @@ module Cocina
 
     def normalize_empty_notes
       ng_xml.root.xpath('//mods:note[not(text())]', mods: MODS_NS).each(&:remove)
+    end
+
+    def normalize_empty_type_of_resource
+      ng_xml.root.xpath('//mods:typeOfResource[not(text())][not(@*)]', mods: MODS_NS).each(&:remove)
     end
 
     def normalize_unmatched_altrepgroup

@@ -35,12 +35,16 @@ module Cocina
           is_manuscript = Array(forms).any? { |form| manuscript?(form) }
           is_collection = Array(forms).any? { |form| collection?(form) }
 
-          other_forms.each do |form|
-            if form.structuredValue
-              write_structured(form)
-            elsif form.value
-              write_basic(form, is_manuscript: is_manuscript, is_collection: is_collection)
+          if other_forms.present?
+            other_forms.each do |form|
+              if form.structuredValue
+                write_structured(form)
+              elsif form.value
+                write_basic(form, is_manuscript: is_manuscript, is_collection: is_collection)
+              end
             end
+          else
+            write_basic(nil, is_manuscript: is_manuscript, is_collection: is_collection)
           end
 
           physical_description_forms = Array(forms).select { |form| physical_description_member?(form) }
@@ -86,6 +90,7 @@ module Cocina
         end
 
         def write_basic(form, is_manuscript: false, is_collection: false)
+          return write_attributes_only(is_manuscript, is_collection) if form.nil?
           return nil if form.source&.value&.match?(/DataCite/i)
           return note(form) if form.note
 
@@ -105,6 +110,15 @@ module Cocina
           else
             xml.genre form.value, with_uri_info(form, attributes.merge(type: form.type))
           end
+        end
+
+        def write_attributes_only(is_manuscript, is_collection)
+          return unless is_manuscript || is_collection
+
+          attributes = {}
+          attributes[:manuscript] = 'yes' if is_manuscript
+          attributes[:collection] = 'yes' if is_collection
+          xml.typeOfResource(nil, attributes)
         end
 
         def write_structured(form)
