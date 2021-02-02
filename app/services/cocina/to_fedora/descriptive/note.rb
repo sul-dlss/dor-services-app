@@ -70,10 +70,11 @@ module Cocina
 
         def note_attributes(note)
           {
-            lang: note.valueLanguage&.code,
-            script: note.valueLanguage&.valueScript&.code,
-            displayLabel: note.displayLabel,
-            authority: note.source&.code
+            'lang' => note.valueLanguage&.code,
+            'script' => note.valueLanguage&.valueScript&.code,
+            'displayLabel' => note.displayLabel,
+            'authority' => note.source&.code,
+            'xlink:href' => note.valueAt
           }.compact
         end
       end
