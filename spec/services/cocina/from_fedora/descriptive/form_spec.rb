@@ -150,9 +150,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
         expect(build).to eq [
           {
             "value": 'ink on paper',
-            "type": 'form'
-          },
-          {
+            "type": 'form',
             "note": [
               {
                 "value": 'Small tear at top right corner.'
