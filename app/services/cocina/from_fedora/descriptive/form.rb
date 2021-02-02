@@ -150,13 +150,29 @@ module Cocina
         end
 
         def add_physical_descriptions(forms)
-          physical_descriptions.each do |form_data|
-            add_forms(forms, form_data)
-            add_reformatting_quality(forms, form_data)
-            add_media_type(forms, form_data)
-            add_extent(forms, form_data)
-            add_digital_origin(forms, form_data)
-            add_note(forms, form_data)
+          new_forms = []
+          physical_descriptions.each do |physical_description_node|
+            add_forms(new_forms, physical_description_node)
+            add_reformatting_quality(new_forms, physical_description_node)
+            add_media_type(new_forms, physical_description_node)
+            add_extent(new_forms, physical_description_node)
+            add_digital_origin(new_forms, physical_description_node)
+            add_note(new_forms, physical_description_node)
+            forms.concat(forms_for_display_label(new_forms, physical_description_node))
+          end
+        end
+
+        def forms_for_display_label(forms, physical_description_node)
+          return forms if physical_description_node['displayLabel'].blank?
+
+          if forms.size == 1
+            forms.first[:displayLabel] = physical_description_node['displayLabel']
+            forms
+          else
+            [{
+              structuredValue: forms,
+              displayLabel: physical_description_node['displayLabel']
+            }]
           end
         end
 
