@@ -31,32 +31,25 @@ module Cocina
         end
 
         def write
-          other_forms = Array(forms).reject { |form| physical_description_member?(form) || manuscript?(form) || collection?(form) }
+          other_forms = Array(forms).reject { |form| physical_description?(form) || manuscript?(form) || collection?(form) }
           is_manuscript = Array(forms).any? { |form| manuscript?(form) }
           is_collection = Array(forms).any? { |form| collection?(form) }
 
           if other_forms.present?
-            other_forms.each do |form|
-              if form.structuredValue
-                write_structured(form)
-              elsif form.value
-                write_basic(form, is_manuscript: is_manuscript, is_collection: is_collection)
-              end
-            end
+            write_other_forms(other_forms, is_manuscript, is_collection)
           else
             write_attributes_only(is_manuscript, is_collection)
           end
 
-          physical_description_forms = Array(forms).select { |form| physical_description_member?(form) }
-          write_physical_description(physical_description_forms)
+          write_physical_descriptions
         end
 
         private
 
         attr_reader :xml, :forms
 
-        def physical_description_member?(form)
-          form.note.present? || PHYSICAL_DESCRIPTION_TAG.keys.include?(form.type)
+        def physical_description?(form)
+          form.note.present? || PHYSICAL_DESCRIPTION_TAG.keys.include?(form.type) || PHYSICAL_DESCRIPTION_TAG.keys.include?(form.structuredValue&.first&.type)
         end
 
         def manuscript?(form)
@@ -67,24 +60,59 @@ module Cocina
           form.to_h == { value: 'collection', source: { value: 'MODS resource types' } }
         end
 
-        def write_physical_description(forms)
+        def write_other_forms(forms, is_manuscript, is_collection)
+          forms.each do |form|
+            if form.structuredValue
+              write_structured(form)
+            elsif form.value
+              write_basic(form, is_manuscript: is_manuscript, is_collection: is_collection)
+            end
+          end
+        end
+
+        def write_physical_descriptions
+          structured_physical_description_forms = Array(forms).select { |form| physical_description?(form) && form.structuredValue }
+          structured_physical_description_forms.each { |form| write_structured_physical_description(form) }
+          basic_physical_description_forms = Array(forms).select { |form| physical_description?(form) && !form.structuredValue }
+          write_basic_physical_description(basic_physical_description_forms)
+        end
+
+        def write_basic_physical_description(forms)
           return if forms.empty?
 
-          xml.physicalDescription do
-            forms.each do |form|
-              if form.note
-                form.note.each do |val|
-                  attributes = {
-                    displayLabel: val.displayLabel,
-                    type: val.type
-                  }.compact
-                  xml.note val.value, attributes
-                end
-              else
-                attributes = {}
-                attributes[:type] = form.type if PHYSICAL_DESCRIPTION_TAG.fetch(form.type) == :form && form.type != 'form'
-                xml.public_send PHYSICAL_DESCRIPTION_TAG.fetch(form.type), form.value, with_uri_info(form, attributes)
+          physical_description_attrs = {
+            displayLabel: forms.find(&:displayLabel)&.displayLabel
+          }.compact
+
+          xml.physicalDescription physical_description_attrs do
+            write_physical_description_form_values(forms)
+          end
+        end
+
+        def write_structured_physical_description(form)
+          physical_description_attrs = {
+            displayLabel: form.displayLabel
+          }.compact
+
+          xml.physicalDescription physical_description_attrs do
+            write_physical_description_form_values(form.structuredValue)
+          end
+        end
+
+        def write_physical_description_form_values(form_values)
+          form_values.each do |form|
+            if form.note
+              form.note.each do |val|
+                attributes = {
+                  displayLabel: val.displayLabel,
+                  type: val.type
+                }.compact
+                xml.note val.value, attributes
               end
+            else
+              attributes = {}
+              attributes[:type] = form.type if PHYSICAL_DESCRIPTION_TAG.fetch(form.type) == :form && form.type != 'form'
+              xml.public_send PHYSICAL_DESCRIPTION_TAG.fetch(form.type), form.value, with_uri_info(form, attributes)
             end
           end
         end

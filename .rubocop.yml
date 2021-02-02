@@ -33,6 +33,7 @@ Metrics/ClassLength:
     - 'app/services/mods_equivalent_service.rb'
     - 'app/services/cocina/from_fedora/descriptive/identifier_type.rb'
     - 'app/services/cocina/to_fedora/descriptive/contributor_writer.rb'
+    - 'app/services/cocina/to_fedora/descriptive/form.rb'
 
 RSpec/DescribeClass:
   Exclude:

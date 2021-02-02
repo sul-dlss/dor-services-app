@@ -211,27 +211,62 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
     end
   end
 
-  describe 'Display label' do
-    xit 'not implemented: display label for physicalDescription'
+  describe 'Display label with single form' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <physicalDescription displayLabel="Medium">
+            <form>metal embossed on wood</form>
+          </physicalDescription>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <physicalDescription displayLabel="Medium">
-          <form>metal embossed on wood</form>
-        </physicalDescription>
-      XML
+      let(:cocina) do
+        {
+          form: [
+            {
+              value: 'metal embossed on wood',
+              type: 'form',
+              displayLabel: 'Medium'
+            }
+          ]
+        }
+      end
     end
+  end
 
-    let(:cocina) do
-      {
-        form: [
-          {
-            value: 'metal embossed on wood',
-            type: 'form',
-            displayLabel: 'Medium'
-          }
-        ]
-      }
+  describe 'Display label with multiple form' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <physicalDescription displayLabel="Medium">
+            <form>metal embossed on wood</form>
+            <form>mezzotints (prints)</form>
+          </physicalDescription>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          form: [
+            {
+              displayLabel: 'Medium',
+              structuredValue: [
+                {
+                  value: 'metal embossed on wood',
+                  type: 'form'
+                },
+                {
+                  value: 'mezzotints (prints)',
+                  type: 'form'
+                }
+
+              ]
+
+            }
+          ]
+        }
+      end
     end
   end
 end
