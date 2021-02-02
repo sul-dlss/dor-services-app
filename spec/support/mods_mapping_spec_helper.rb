@@ -220,6 +220,7 @@ def ng_mods_for(snippet)
     <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
       xmlns="http://www.loc.gov/mods/v3" version="3.7"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
       xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
       #{snippet}
     </mods>

@@ -25,7 +25,7 @@ module Cocina
         attr_reader :resource_element
 
         def abstracts
-          all_abstract_nodes = resource_element.xpath('mods:abstract', mods: DESC_METADATA_NS).select { |node| node.text.present? }
+          all_abstract_nodes = resource_element.xpath('mods:abstract', mods: DESC_METADATA_NS).select { |node| node.text.present? || node['xlink:href'] }
           altrepgroup_abstract_nodes, other_abstract_nodes = AltRepGroup.split(nodes: all_abstract_nodes)
           other_abstract_nodes.map { |node| common_note_for(node).merge({ type: 'summary' }) } + \
             altrepgroup_abstract_nodes.map { |parallel_nodes| parallel_abstract_for(parallel_nodes) }
@@ -40,9 +40,10 @@ module Cocina
 
         def common_note_for(node)
           {
-            value: node.content,
+            value: node.content.presence,
             displayLabel: node[:displayLabel].presence,
-            type: node[:type]
+            type: node[:type],
+            valueAt: node['xlink:href']
           }.tap do |attributes|
             value_language = LanguageScript.build(node: node)
             attributes[:valueLanguage] = value_language if value_language
