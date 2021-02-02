@@ -622,49 +622,49 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
   end
 
   describe 'Name subject with role' do
-    # druid bb945fn7289
-    xit 'not implemented'
+    # Adapted from bb945fn7289
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n84234111">
+              <role>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">depicted</roleTerm>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">dpc</roleTerm>
+              </role>
+              <namePart>Hugh Capet, King of France, approximately 938-996</namePart>
+            </name>
+          </subject>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <subject authority="lcsh">
-          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n84234111">
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">depicted</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">dpc</roleTerm>
-            </role>
-            <namePart>Hugh Capet, King of France, approximately 938-996</namePart>
-          </name>
-        </subject>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        subject: [
-          {
-            value: 'Hugh Capet, King of France, approximately 938-996',
-            type: 'person',
-            uri: 'http://id.loc.gov/authorities/names/n84234111',
-            source: {
-              code: 'naf',
-              uri: 'http://id.loc.gov/authorities/names/'
-            },
-            note: [
-              {
-                type: 'role',
-                value: 'depicted',
-                code: 'dpc',
-                uri: 'http://id.loc.gov/vocabulary/relators/dpc',
-                source: {
-                  code: 'marcrelator',
-                  uri: 'http://id.loc.gov/vocabulary/relators/'
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Hugh Capet, King of France, approximately 938-996',
+              type: 'person',
+              uri: 'http://id.loc.gov/authorities/names/n84234111',
+              source: {
+                code: 'naf',
+                uri: 'http://id.loc.gov/authorities/names/'
+              },
+              note: [
+                {
+                  type: 'role',
+                  value: 'depicted',
+                  code: 'dpc',
+                  uri: 'http://id.loc.gov/vocabulary/relators/dpc',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
                 }
-              }
-            ]
-          }
-        ]
-      }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 
