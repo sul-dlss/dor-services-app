@@ -1370,40 +1370,40 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Full name with additional subelements' do
-    xit 'not implemented: needs status primary and name type personal'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Sarmiento, Domingo Faustino</namePart>
+            <namePart type="date">1811-1888</namePart>
+          </name>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <name type="personal" usage="primary">
-          <namePart>Sarmiento, Domingo Faustino</namePart>
-          <namePart type="date">1811-1888</namePart>
-        </name>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                structuredValue: [
-                  {
-                    value: 'Sarmiento, Domingo Faustino',
-                    type: 'name'
-                  },
-                  {
-                    value: '1811-1888',
-                    type: 'life dates'
-                  }
-                ]
-              }
-            ],
-            status: 'primary',
-            type: 'person'
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Sarmiento, Domingo Faustino',
+                      type: 'name'
+                    },
+                    {
+                      value: '1811-1888',
+                      type: 'life dates'
+                    }
+                  ]
+                }
+              ],
+              status: 'primary',
+              type: 'person'
+            }
+          ]
+        }
+      end
     end
   end
 
