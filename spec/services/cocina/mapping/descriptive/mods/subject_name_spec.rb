@@ -739,40 +739,40 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
   # Data consistency fix
   describe 'Single subject subelement with authority code same as subject, no URI' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject authority="local">
+            <name type="personal" authority="local">
+              <namePart>Reinhold, John</namePart>
+            </name>
+          </subject>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <subject authority="local">
-          <name type="personal" authority="local">
-            <namePart>Reinhold, John</namePart>
-          </name>
-        </subject>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        subject: [
-          {
-            value: 'Reinhold, John',
-            type: 'person',
-            source: {
-              code: 'local'
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Reinhold, John',
+              type: 'person',
+              source: {
+                code: 'local'
+              }
             }
-          }
-        ]
-      }
-    end
+          ]
+        }
+      end
 
-    let(:roundtrip_mods) do
-      <<~XML
-        <subject authority="local">
-          <name type="personal">
-            <namePart>Reinhold, John</namePart>
-          </name>
-        </subject>
-      XML
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="local">
+            <name type="personal">
+              <namePart>Reinhold, John</namePart>
+            </name>
+          </subject>
+        XML
+      end
     end
   end
 end
