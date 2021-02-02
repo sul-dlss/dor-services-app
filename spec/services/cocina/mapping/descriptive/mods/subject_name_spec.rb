@@ -598,6 +598,29 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     end
   end
 
+  describe 'Link to external value only' do
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <subject>
+          <name xlink:href="http://name.org/name" />
+        </subject>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        subject: [
+          {
+            type: 'name',
+            valueAt: 'http://name.org/name'
+          }
+        ]
+      }
+    end
+  end
+
   describe 'Name subject with display form and role' do
     # Adapted from druid:vx363td7520
 
@@ -664,6 +687,45 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
           ]
         }
       end
+    end
+  end
+
+  # Data consistency fix
+  describe 'Single subject subelement with authority code same as subject, no URI' do
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <subject authority="local">
+          <name type="personal" authority="local">
+            <namePart>Reinhold, John</namePart>
+          </name>
+        </subject>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'Reinhold, John',
+            type: 'person',
+            source: {
+              code: 'local'
+            }
+          }
+        ]
+      }
+    end
+
+    let(:roundtrip_mods) do
+      <<~XML
+        <subject authority="local">
+          <name type="personal">
+            <namePart>Reinhold, John</namePart>
+          </name>
+        </subject>
+      XML
     end
   end
 end
