@@ -1474,39 +1474,39 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with approximate date' do
-    xit 'not implemented: needs cocina name type personal, structuredVaue type name'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Lassus, Rudolph de</namePart>
+            <namePart type="date">approximately 1563-1625</namePart>
+          </name>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <name type="personal">
-          <namePart>Lassus, Rudolph de</namePart>
-          <namePart type="date">approximately 1563-1625</namePart>
-        </name>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                structuredValue: [
-                  {
-                    value: 'Lassus, Rudolph de',
-                    type: 'name'
-                  },
-                  {
-                    value: 'approximately 1563-1625',
-                    type: 'life dates'
-                  }
-                ]
-              }
-            ],
-            type: 'person'
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Lassus, Rudolph de',
+                      type: 'name'
+                    },
+                    {
+                      value: 'approximately 1563-1625',
+                      type: 'life dates'
+                    }
+                  ]
+                }
+              ],
+              type: 'person'
+            }
+          ]
+        }
+      end
     end
   end
 
