@@ -75,6 +75,49 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
     end
   end
 
+  describe 'Hierarchical geographic subject with authority' do
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <subject authority="lcsh">
+          <hierarchicalGeographic>
+            <continent>North America</continent>
+            <country>Canada</country>
+            <city>Vancouver</city>
+          </hierarchicalGeographic>
+        </subject>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        subject: [
+          {
+            structuredValue: [
+              {
+                value: 'North America',
+                type: 'continent'
+              },
+              {
+                value: 'Canada',
+                type: 'country'
+              },
+              {
+                value: 'Vancouver',
+                type: 'city'
+              }
+            ],
+            type: 'place',
+            source: {
+              code: 'lcsh'
+            }
+          }
+        ]
+      }
+    end
+  end
+
   describe 'Geographic code subject' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
