@@ -25,7 +25,7 @@ module Cocina
         attr_reader :resource_element
 
         def abstracts
-          all_abstract_nodes = resource_element.xpath('mods:abstract', mods: DESC_METADATA_NS).select { |node| node.text.present? || node['xlink:href'] }
+          all_abstract_nodes = resource_element.xpath('mods:abstract', mods: DESC_METADATA_NS).select { |node| note_present?(node) }
           altrepgroup_abstract_nodes, other_abstract_nodes = AltRepGroup.split(nodes: all_abstract_nodes)
           other_abstract_nodes.map { |node| common_note_for(node).merge({ type: 'summary' }) } + \
             altrepgroup_abstract_nodes.map { |parallel_nodes| parallel_abstract_for(parallel_nodes) }
@@ -51,10 +51,14 @@ module Cocina
         end
 
         def notes
-          all_note_nodes = resource_element.xpath('mods:note', mods: DESC_METADATA_NS).select { |node| node.text.present? }
+          all_note_nodes = resource_element.xpath('mods:note', mods: DESC_METADATA_NS).select { |node| note_present?(node) }
           altrepgroup_note_nodes, other_note_nodes = AltRepGroup.split(nodes: all_note_nodes)
           other_note_nodes.map { |node| common_note_for(node) } + \
             altrepgroup_note_nodes.map { |parallel_nodes| parallel_note_for(parallel_nodes) }
+        end
+
+        def note_present?(node)
+          node.text.present? || node['xlink:href']
         end
 
         def parallel_note_for(note_nodes)
