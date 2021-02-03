@@ -111,23 +111,23 @@ RSpec.describe 'MODS tableOfContents <--> cocina mappings' do
   end
 
   describe 'Link to external value only' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <tableOfContents xlink:href="http://contents.org/contents" />
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <tableOfContents xlink:href="http://contents.org/contents" />
-      XML
-    end
-
-    let(:cocina) do
-      {
-        "note": [
-          {
-            "valueAt": 'http://contents.org/contents',
-            "type": 'table of contents'
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          "note": [
+            {
+              "valueAt": 'http://contents.org/contents',
+              "type": 'table of contents'
+            }
+          ]
+        }
+      end
     end
   end
 

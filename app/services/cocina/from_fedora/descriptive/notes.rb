@@ -79,7 +79,7 @@ module Cocina
         end
 
         def table_of_contents
-          all_toc_nodes = resource_element.xpath('mods:tableOfContents', mods: DESC_METADATA_NS).select { |node| node.text.present? }
+          all_toc_nodes = resource_element.xpath('mods:tableOfContents', mods: DESC_METADATA_NS).select { |node| note_present?(node) }
           altrepgroup_toc_nodes, other_toc_nodes = AltRepGroup.split(nodes: all_toc_nodes)
           other_toc_nodes.map { |node| toc_for(node).merge({ type: 'table of contents' }) } + \
             altrepgroup_toc_nodes.map { |parallel_nodes| parallel_toc_for(parallel_nodes) }
@@ -94,14 +94,15 @@ module Cocina
 
         def toc_for(node)
           {
-            displayLabel: node[:displayLabel].presence
+            displayLabel: node[:displayLabel].presence,
+            valueAt: node['xlink:href']
           }.tap do |attributes|
             value_language = LanguageScript.build(node: node)
             attributes[:valueLanguage] = value_language if value_language
             value_parts = node.content.split(' -- ')
             if value_parts.size == 1
               attributes[:value] = node.content
-            else
+            elsif value_parts.present?
               attributes[:structuredValue] = value_parts.map { |value_part| { value: value_part } }
             end
           end.compact
