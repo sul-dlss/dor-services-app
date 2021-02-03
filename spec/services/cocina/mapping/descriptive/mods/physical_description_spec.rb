@@ -29,104 +29,79 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
         {
           form: [
             {
-              value: 'ink on paper',
-              type: 'form'
-            },
-            {
-              value: 'access',
-              type: 'reformatting quality',
-              source: {
-                value: 'MODS reformatting quality terms'
-              }
-            },
-            {
-              value: 'image/jpeg',
-              type: 'media type',
-              source: {
-                value: 'IANA media types'
-              }
-            },
-            {
-              value: '1 sheet',
-              type: 'extent'
-            },
-            {
-              value: 'reformatted digital',
-              type: 'digital origin',
-              source: {
-                value: 'MODS digital origin terms'
-              }
-            },
-            {
+              structuredValue: [
+                {
+                  value: 'ink on paper',
+                  type: 'form'
+                },
+                {
+                  value: 'access',
+                  type: 'reformatting quality',
+                  source: {
+                    value: 'MODS reformatting quality terms'
+                  }
+                },
+                {
+                  value: 'image/jpeg',
+                  type: 'media type',
+                  source: {
+                    value: 'IANA media types'
+                  }
+                },
+                {
+                  value: '1 sheet',
+                  type: 'extent'
+                },
+                {
+                  value: 'reformatted digital',
+                  type: 'digital origin',
+                  source: {
+                    value: 'MODS digital origin terms'
+                  }
+                }
+              ],
               note: [
                 {
                   value: 'Small tear at top right corner.',
                   displayLabel: 'Condition'
-                }
-              ]
-            },
-            {
-              note: [
+                },
                 {
                   value: 'Paper',
                   displayLabel: 'Material',
                   type: 'material'
-                }
-              ]
-            },
-            {
-              note: [
+                },
                 {
                   value: '34 and 24 lines to a page',
                   displayLabel: 'Layout',
                   type: 'layout'
-                }
-              ]
-            },
-            {
-              note: [
+                },
                 {
                   value: '210',
                   displayLabel: 'Height (mm)',
                   type: 'dimensions'
-                }
-              ]
-            },
-            {
-              note: [
+                },
                 {
                   value: '146',
                   displayLabel: 'Width (mm)',
                   type: 'dimensions'
-                }
-              ]
-            },
-            {
-              note: [
+                },
                 {
                   value: '1(8) 2(10) 3(8) 4(8) 5 (two) || a(16) (wants 16).',
                   displayLabel: 'Collation',
                   type: 'collation'
-                }
-              ]
-            },
-            {
-              note: [
+                },
                 {
                   value: 'change of hand',
                   displayLabel: 'Writing',
                   type: 'handNote'
-                }
-              ]
-            },
-            {
-              note: [
+                },
                 {
                   value: 'ff. i + 1-51 + ii-iii',
                   displayLabel: 'Foliation',
                   type: 'foliation'
                 }
               ]
+
             }
           ]
         }
@@ -135,50 +110,50 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
   end
 
   describe 'Multiple physical descriptions' do
-    xit 'not implemented: multiple physical descriptions'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <physicalDescription>
+            <form>audio recording</form>
+            <extent>1 audiocassette</extent>
+          </physicalDescription>
+          <physicalDescription>
+            <form>transcript</form>
+            <extent>5 pages</extent>
+          </physicalDescription>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <physicalDescription>
-          <form>audio recording</form>
-          <extent>1 audiocassette</extent>
-        </physicalDescription>
-        <physicalDescription>
-          <form>transcript</form>
-          <extent>5 pages</extent>
-        </physicalDescription>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        form: [
-          {
-            structuredValue: [
-              {
-                value: 'audio recording',
-                type: 'form'
-              },
-              {
-                value: '1 audiocassette',
-                type: 'extent'
-              }
-            ]
-          },
-          {
-            structuredValue: [
-              {
-                value: 'transcript',
-                type: 'form'
-              },
-              {
-                value: '5 pages',
-                type: 'extent'
-              }
-            ]
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          form: [
+            {
+              structuredValue: [
+                {
+                  value: 'audio recording',
+                  type: 'form'
+                },
+                {
+                  value: '1 audiocassette',
+                  type: 'extent'
+                }
+              ]
+            },
+            {
+              structuredValue: [
+                {
+                  value: 'transcript',
+                  type: 'form'
+                },
+                {
+                  value: '5 pages',
+                  type: 'extent'
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 

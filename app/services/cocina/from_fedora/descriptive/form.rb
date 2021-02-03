@@ -150,43 +150,34 @@ module Cocina
         end
 
         def add_physical_descriptions(forms)
-          new_forms = []
           physical_descriptions.each do |physical_description_node|
-            add_forms(new_forms, physical_description_node)
-            add_reformatting_quality(new_forms, physical_description_node)
-            add_media_type(new_forms, physical_description_node)
-            add_extent(new_forms, physical_description_node)
-            add_digital_origin(new_forms, physical_description_node)
-            add_note(new_forms, physical_description_node)
-            forms.concat(forms_for_display_label(new_forms, physical_description_node))
+            form_values = []
+            add_forms(form_values, physical_description_node)
+            add_reformatting_quality(form_values, physical_description_node)
+            add_media_type(form_values, physical_description_node)
+            add_extent(form_values, physical_description_node)
+            add_digital_origin(form_values, physical_description_node)
+            form = if form_values.size == 1
+                     form_values.first
+                   else
+                     {
+                       structuredValue: form_values
+                     }
+                   end
+            form[:displayLabel] = physical_description_node['displayLabel'] if physical_description_node['displayLabel'].present?
+            notes = physical_description_notes_for(physical_description_node)
+            form[:note] = notes if notes.present?
+            forms << form
           end
         end
 
-        def forms_for_display_label(forms, physical_description_node)
-          return forms if physical_description_node['displayLabel'].blank?
-
-          if forms.size == 1
-            forms.first[:displayLabel] = physical_description_node['displayLabel']
-            forms
-          else
-            [{
-              structuredValue: forms,
-              displayLabel: physical_description_node['displayLabel']
-            }]
-          end
-        end
-
-        def add_note(forms, physical_description)
-          physical_description.xpath('mods:note', mods: DESC_METADATA_NS).each do |node|
-            note = {
+        def physical_description_notes_for(physical_description)
+          physical_description.xpath('mods:note', mods: DESC_METADATA_NS).map do |node|
+            {
               value: node.content,
               displayLabel: node['displayLabel'],
               type: node['type']
             }.compact
-
-            forms << {
-              note: [note]
-            }
           end
         end
 
