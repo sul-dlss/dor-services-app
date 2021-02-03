@@ -15,14 +15,14 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Marine biology',
-              "type": 'topic',
-              "uri": 'http://id.worldcat.org/fast/1009447',
-              "source": {
-                "code": 'fast',
-                "uri": 'http://id.worldcat.org/fast/'
+              value: 'Marine biology',
+              type: 'topic',
+              uri: 'http://id.worldcat.org/fast/1009447',
+              source: {
+                code: 'fast',
+                uri: 'http://id.worldcat.org/fast/'
               }
             }
           ]
@@ -45,14 +45,14 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Anning, Mary, 1799-1847',
-              "type": 'person',
-              "uri": 'http://id.worldcat.org/fast/270223',
-              "source": {
-                "code": 'fast',
-                "uri": 'http://id.worldcat.org/fast/'
+              value: 'Anning, Mary, 1799-1847',
+              type: 'person',
+              uri: 'http://id.worldcat.org/fast/270223',
+              source: {
+                code: 'fast',
+                uri: 'http://id.worldcat.org/fast/'
               }
             }
           ]
@@ -75,14 +75,14 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'United States. National Oceanic and Atmospheric Administration',
-              "type": 'organization',
-              "uri": 'http://id.worldcat.org/fast/529308',
-              "source": {
-                "code": 'fast',
-                "uri": 'http://id.worldcat.org/fast/'
+              value: 'United States. National Oceanic and Atmospheric Administration',
+              type: 'organization',
+              uri: 'http://id.worldcat.org/fast/529308',
+              source: {
+                code: 'fast',
+                uri: 'http://id.worldcat.org/fast/'
               }
             }
           ]
@@ -105,14 +105,14 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'International Conference on Port and Ocean Engineering Under Arctic Conditions',
-              "type": 'conference',
-              "uri": 'http://id.worldcat.org/fast/1405317',
-              "source": {
-                "code": 'fast',
-                "uri": 'http://id.worldcat.org/fast/'
+              value: 'International Conference on Port and Ocean Engineering Under Arctic Conditions',
+              type: 'conference',
+              uri: 'http://id.worldcat.org/fast/1405317',
+              source: {
+                code: 'fast',
+                uri: 'http://id.worldcat.org/fast/'
               }
             }
           ]
@@ -133,14 +133,14 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Pacific Ocean',
-              "type": 'place',
-              "uri": 'http://id.worldcat.org/fast/1243528',
-              "source": {
-                "code": 'fast',
-                "uri": 'http://id.worldcat.org/fast/'
+              value: 'Pacific Ocean',
+              type: 'place',
+              uri: 'http://id.worldcat.org/fast/1243528',
+              source: {
+                code: 'fast',
+                uri: 'http://id.worldcat.org/fast/'
               }
             }
           ]
@@ -161,14 +161,14 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'International Year of the Ocean (1998)',
-              "type": 'event',
-              "uri": 'http://id.worldcat.org/fast/976704',
-              "source": {
-                "code": 'fast',
-                "uri": 'http://id.worldcat.org/fast/'
+              value: 'International Year of the Ocean (1998)',
+              type: 'event',
+              uri: 'http://id.worldcat.org/fast/976704',
+              source: {
+                code: 'fast',
+                uri: 'http://id.worldcat.org/fast/'
               }
             }
           ]
@@ -178,14 +178,14 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
       # type will be submitted as "event" by H2. However, this will be lost in roundtrip to Cocina.
       let(:roundtrip_cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'International Year of the Ocean (1998)',
-              "type": 'topic',
-              "uri": 'http://id.worldcat.org/fast/976704',
-              "source": {
-                "code": 'fast',
-                "uri": 'http://id.worldcat.org/fast/'
+              value: 'International Year of the Ocean (1998)',
+              type: 'topic',
+              uri: 'http://id.worldcat.org/fast/976704',
+              source: {
+                code: 'fast',
+                uri: 'http://id.worldcat.org/fast/'
               }
             }
           ]
@@ -208,14 +208,14 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Missa Ave Maris Stella (Josquin, des Prez)',
-              "type": 'title',
-              "uri": 'http://id.worldcat.org/fast/1399391',
-              "source": {
-                "code": 'fast',
-                "uri": 'http://id.worldcat.org/fast/'
+              value: 'Missa Ave Maris Stella (Josquin, des Prez)',
+              type: 'title',
+              uri: 'http://id.worldcat.org/fast/1399391',
+              source: {
+                code: 'fast',
+                uri: 'http://id.worldcat.org/fast/'
               }
             }
           ]
@@ -236,14 +236,14 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": '1689-1725',
-              "type": 'time',
-              "uri": 'http://id.worldcat.org/fast/1355694',
-              "source": {
-                "code": 'fast',
-                "uri": 'http://id.worldcat.org/fast/'
+              value: '1689-1725',
+              type: 'time',
+              uri: 'http://id.worldcat.org/fast/1355694',
+              source: {
+                code: 'fast',
+                uri: 'http://id.worldcat.org/fast/'
               }
             }
           ]
@@ -264,14 +264,14 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
 
       let(:cocina) do
         {
-          "subject": [
+          subject: [
             {
-              "value": 'Watercolors',
-              "type": 'genre',
-              "uri": 'http://id.worldcat.org/fast/1986272',
-              "source": {
-                "code": 'fast',
-                "uri": 'http://id.worldcat.org/fast/'
+              value: 'Watercolors',
+              type: 'genre',
+              uri: 'http://id.worldcat.org/fast/1986272',
+              source: {
+                code: 'fast',
+                uri: 'http://id.worldcat.org/fast/'
               }
             }
           ]
@@ -281,14 +281,25 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
   end
 
   describe 'Non-FAST term' do
+    xit 'not implemented'
+
     let(:mods) do
       <<~XML
-        <subject authority="fast">
+        <subject>
           <topic>Brooding sea-stars</topic>
         </subject>
       XML
     end
 
-    xit 'not mapped'
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'Brooding sea stars',
+            type: 'topic'
+          }
+        ]
+      }
+    end
   end
 end
