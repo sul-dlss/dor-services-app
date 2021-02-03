@@ -138,6 +138,54 @@ RSpec.describe Cocina::ModsNormalizer do
       end
     end
 
+    context 'when normalizing subject with authority and authorityURI only for lcsh' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects">
+              <geographic authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n78089021">Japan</geographic>
+              <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh99001269">Maps</genre>
+            </subject>
+          </mods>
+        XML
+      end
+
+      it 'removes authorityURI from subject' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="lcsh">
+              <geographic authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78089021">Japan</geographic>
+              <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh99001269">Maps</genre>
+            </subject>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when normalizing subject with authority and authorityURI only' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="fast" authorityURI="http://id.worldcat.org/fast/">
+              <topic authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009447">Marine biology</topic>
+              <topic authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009448">Marine paleontology</topic>
+            </subject>
+          </mods>
+        XML
+      end
+
+      it 'removes authorityURI from subject' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{mods_attributes}>
+            <subject authority="fast">
+              <topic authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009447">Marine biology</topic>
+              <topic authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009448">Marine paleontology</topic>
+            </subject>
+          </mods>
+        XML
+      end
+    end
+
     context 'when normalizing name subject with authority only' do
       let(:mods_ng_xml) do
         Nokogiri::XML <<~XML

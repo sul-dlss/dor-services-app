@@ -66,7 +66,7 @@ module Cocina
           if subject.type == 'place'
             xml.subject do
               subject_values.each do |geo|
-                geographic(geo, is_parallel: true)
+                geographic(subject, geo, is_parallel: true)
               end
             end
           else
@@ -94,7 +94,7 @@ module Cocina
                     write_person(subject, component, display_values: display_values)
                   end
                 else
-                  write_topic(component, is_parallel: alt_rep_group.present?)
+                  write_topic(subject, component, is_parallel: alt_rep_group.present?)
                 end
               end
             end
@@ -108,18 +108,24 @@ module Cocina
             displayLabel: subject.displayLabel
           }.tap do |attrs|
             if subject.source
+              # If all values in structuredValue have uri, then authority only.
               attrs[:authority] = authority_for(subject)
-              attrs[:authorityURI] = subject.source.uri
-            elsif all_same_authority?(subject.structuredValue)
-              attrs[:authority] = authority_for(subject.structuredValue.first)
+              attrs[:authorityURI] = subject.source.uri if !all_values_have_uri?(subject.structuredValue) || subject.uri
+            elsif all_values_have_lcsh_authority?(subject.structuredValue)
+              # No source, but all values in structuredValue are lcsh or naf then add authority
+              attrs[:authority] = 'lcsh'
             end
             attrs[:lang] = subject.valueLanguage&.code
             attrs[:script] = subject.valueLanguage&.valueScript&.code
           end.compact
         end
 
-        def all_same_authority?(structured_value)
-          Array(structured_value).map { |value| authority_for(value) }.uniq.size == 1
+        def all_values_have_uri?(structured_value)
+          structured_value.present? && Array(structured_value).all?(&:uri)
+        end
+
+        def all_values_have_lcsh_authority?(structured_value)
+          structured_value.present? && Array(structured_value).all? { |value| authority_for(value) == 'lcsh' }
         end
 
         def write_basic(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
@@ -134,7 +140,7 @@ module Cocina
             end
           else
             xml.subject(subject_attributes) do
-              write_topic(subject_value, is_parallel: alt_rep_group.present?, is_basic: true)
+              write_topic(subject, subject_value, is_parallel: alt_rep_group.present?, is_basic: true)
             end
           end
         end
@@ -168,47 +174,49 @@ module Cocina
           xml.classification value, attrs
         end
 
-        def write_topic(subject, is_parallel: false, is_basic: false)
-          topic_attributes = topic_attributes_for(subject, is_parallel: is_parallel, is_basic: is_basic)
-          case subject.type
+        def write_topic(subject, subject_value, is_parallel: false, is_basic: false)
+          topic_attributes = topic_attributes_for(subject, subject_value, is_parallel: is_parallel, is_basic: is_basic)
+          case subject_value.type
           when 'person'
             xml.name topic_attributes.merge(type: 'personal') do
-              xml.namePart subject.value
+              xml.namePart subject_value.value
             end
           when 'title'
-            title = subject.to_h
+            title = subject_value.to_h
             title.delete(:type)
-            title[:source].delete(:code) if subject.source&.code && !topic_attributes[:authority]
+            title[:source].delete(:code) if subject_value.source&.code && !topic_attributes[:authority]
             Title.write(xml: xml, titles: [Cocina::Models::DescriptiveValue.new(title)], id_generator: id_generator, additional_attrs: topic_attributes)
           when 'place'
-            geographic(subject, is_parallel: is_parallel)
+            geographic(subject, subject_value, is_parallel: is_parallel)
           else
-            xml.public_send(TAG_NAME.fetch(subject.type, :topic), subject.value, topic_attributes)
+            xml.public_send(TAG_NAME.fetch(subject_value.type, :topic), subject_value.value, topic_attributes)
           end
         end
 
-        # rubocop:disable Metrics/CyclomaticComplexity
-        # rubocop:disable Metrics/PerceivedComplexity
-        def topic_attributes_for(subject, is_parallel: false, is_geo: false, is_basic: false)
+        def topic_attributes_for(_subject, subject_value, is_parallel: false, is_geo: false, is_basic: false)
           {}.tap do |topic_attributes|
-            topic_attributes[:authority] = subject.source&.code if subject.source&.uri || subject.uri || (is_geo && is_parallel)
-            topic_attributes[:authorityURI] = subject.source&.uri
-            topic_attributes[:encoding] = subject.encoding&.code
-            topic_attributes[:valueURI] = subject.uri
+            topic_attributes[:authority] = authority_for_topic(subject_value, is_geo, is_parallel)
+            topic_attributes[:authorityURI] = subject_value.source&.uri
+            topic_attributes[:encoding] = subject_value.encoding&.code
+            topic_attributes[:valueURI] = subject_value.uri
             if is_geo || (is_basic && !is_parallel)
-              topic_attributes[:lang] = subject.valueLanguage&.code
-              topic_attributes[:script] = subject.valueLanguage&.valueScript&.code
+              topic_attributes[:lang] = subject_value.valueLanguage&.code
+              topic_attributes[:script] = subject_value.valueLanguage&.valueScript&.code
             end
           end.compact
         end
-        # rubocop:enable Metrics/CyclomaticComplexity
-        # rubocop:enable Metrics/PerceivedComplexity
 
-        def geographic(subject, is_parallel: false)
-          if subject.code
-            xml.geographicCode subject.code, authority: subject.source.code
+        def authority_for_topic(subject_value, is_geo, is_parallel)
+          return nil unless subject_value.source&.uri || subject_value.uri || (is_geo && is_parallel)
+
+          subject_value.source&.code
+        end
+
+        def geographic(subject, subject_value, is_parallel: false)
+          if subject_value.code
+            xml.geographicCode subject_value.code, authority: subject_value.source.code
           else
-            xml.geographic subject.value, topic_attributes_for(subject, is_parallel: is_parallel, is_geo: true)
+            xml.geographic subject_value.value, topic_attributes_for(subject, subject_value, is_parallel: is_parallel, is_geo: true)
           end
         end
 
@@ -267,7 +275,7 @@ module Cocina
         end
 
         def write_person(subject, subject_value, display_values: nil)
-          name_attrs = topic_attributes_for(subject_value).tap do |attrs|
+          name_attrs = topic_attributes_for(subject, subject_value).tap do |attrs|
             attrs[:type] = name_type_for(subject_value.type)
           end.compact
 

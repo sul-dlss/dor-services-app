@@ -104,11 +104,12 @@ module Cocina
           values = node_set.map { |node| simple_item(node) }.compact
           if values.present?
             attrs = attrs.merge(structuredValue: values)
-            # Remove source if no source uri and all values have source and all are same type
-            attrs.delete(:source) if remove_source?(attrs)
+            adjust_source(attrs)
           end
+
           # Authority should be 'naf', not 'lcsh'
           attrs[:source][:code] = 'naf' if attrs.dig(:source, :uri) == 'http://id.loc.gov/authorities/names/'
+
           attrs.presence
         end
 
@@ -123,9 +124,18 @@ module Cocina
           attrs.presence
         end
 
+        def adjust_source(attrs)
+          attrs.delete(:source) if remove_source?(attrs)
+
+          # If attr has source, add to all values that have valueURI but no source.
+          attrs[:structuredValue].each do |value|
+            value[:source] ||= attrs[:source] if attrs[:source] && value[:uri]
+          end
+        end
+
         def remove_source?(attrs)
-          # Remove source if no source uri and all values have source and all are not same type
-          return false if attrs.dig(:source, :uri)
+          # Remove source if no uri and all values have source and all are not same type
+          return false if attrs[:uri]
           return false if attrs[:structuredValue].any? { |value| value[:source].nil? }
 
           types = attrs[:structuredValue].pluck(:type)

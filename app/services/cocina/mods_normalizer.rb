@@ -19,11 +19,11 @@ module Cocina
     end
 
     # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def normalize
       normalize_default_namespace
       normalize_version
       normalize_empty_attributes
-      normalize_subject
       normalize_authority_uris
       normalize_origin_info_split
       normalize_origin_info_event_types
@@ -34,6 +34,8 @@ module Cocina
       normalize_origin_info_publisher
       normalize_parallel_origin_info
       normalize_origin_info_lang_script
+      normalize_subject
+      normalize_subject_children
       normalize_subject_authority
       normalize_subject_authority_lcnaf
       normalize_subject_authority_naf
@@ -66,6 +68,7 @@ module Cocina
       ng_xml
     end
     # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
 
     private
 
@@ -97,32 +100,104 @@ module Cocina
       end
     end
 
-    # rubocop:disable Metrics/CyclomaticComplexity
     # rubocop:disable Metrics/PerceivedComplexity
-    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity
     def normalize_subject
-      ng_xml.root.xpath('//mods:subject[count(mods:name|mods:topic|mods:geographic) = 1 and count(mods:*) = 1]', mods: MODS_NS).each do |subject_node|
-        child_node = subject_node.xpath('mods:*', mods: MODS_NS).first
+      ng_xml.root.xpath('//mods:subject[not(mods:cartographics)]', mods: MODS_NS).each do |subject_node|
+        children_nodes = subject_node.xpath('mods:*', mods: MODS_NS)
 
-        if subject_node[:authorityURI] || subject_node[:valueURI]
+        if (have_authorityURI?(subject_node) || have_valueURI?(subject_node)) \
+          && children_nodes.size == 1
           # If subject has authority and child doesn't, copy to child.
-          child_node[:authority] = subject_node[:authority] if subject_node[:authority] && !child_node[:authority]
+          add_authority(children_nodes, subject_node) if have_authority?(subject_node) && !have_authority?(children_nodes)
           # If subject has authorityURI and child doesn't, move to child.
-          child_node[:authorityURI] = subject_node[:authorityURI] if subject_node[:authorityURI] && !child_node[:authorityURI]
+          add_authorityURI(children_nodes, subject_node) if have_authorityURI?(subject_node) && !have_authorityURI?(children_nodes)
           subject_node.delete('authorityURI')
           # If subject has valueURI and child doesn't, move to child.
-          child_node[:valueURI] = subject_node[:valueURI] if subject_node[:valueURI] && !child_node[:valueURI]
+          add_valueURI(children_nodes, subject_node) if have_valueURI?(subject_node) && !have_valueURI?(children_nodes)
           subject_node.delete('valueURI')
-        elsif child_node[:authority] && subject_node[:authority] == child_node[:authority] && !(child_node[:authorityURI] || child_node[:valueURI])
-          child_node.delete('authority')
-        elsif subject_node[:authority] && !child_node[:authority] && (child_node[:authorityURI] || child_node[:valueURI])
-          child_node[:authority] = subject_node[:authority]
         end
+
+        next unless have_authority?(subject_node) &&
+                    have_authorityURI?(subject_node) &&
+                    !have_valueURI?(subject_node)
+
+        have_authority?(children_nodes.first) &&
+          have_same_authority?(children_nodes, children_nodes.first)
+
+        delete_authorityURI(subject_node)
       end
     end
-    # rubocop:enable Metrics/CyclomaticComplexity
+
+    def normalize_subject_children
+      ng_xml.root.xpath('//mods:subject[not(mods:cartographics)]', mods: MODS_NS).each do |subject_node|
+        children_nodes = subject_node.xpath('mods:*', mods: MODS_NS)
+
+        if !have_authorityURI?(subject_node) &&
+           !have_valueURI?(subject_node) &&
+           have_authority?(children_nodes) &&
+           have_same_authority?(children_nodes, subject_node) &&
+           !(have_authorityURI?(children_nodes) || have_valueURI?(children_nodes))
+          delete_authority(children_nodes)
+        end
+
+        next unless !have_authorityURI?(subject_node) &&
+                    !have_valueURI?(subject_node) &&
+                    have_authority?(subject_node) &&
+                    !have_authority?(children_nodes) &&
+                    (have_authorityURI?(children_nodes) || have_valueURI?(children_nodes))
+
+        add_authority(children_nodes, subject_node)
+      end
+    end
     # rubocop:enable Metrics/PerceivedComplexity
-    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/CyclomaticComplexity
+
+    def have_authority?(nodes)
+      nodes_to_a(nodes).all? { |node| node[:authority] }
+    end
+
+    def have_same_authority?(nodes, same_node)
+      nodes_to_a(nodes).all? { |node| same_node[:authority] == node[:authority] || (lcsh_or_naf?(same_node) && lcsh_or_naf?(node)) }
+    end
+
+    def lcsh_or_naf?(node)
+      %w[lcsh naf].include?(node[:authority])
+    end
+
+    def add_authority(nodes, from_node)
+      nodes_to_a(nodes).each { |node| node[:authority] = from_node[:authority] }
+    end
+
+    def delete_authority(nodes)
+      nodes_to_a(nodes).each { |node| node.delete('authority') }
+    end
+
+    # rubocop:disable Naming/MethodName
+    def have_authorityURI?(nodes)
+      nodes_to_a(nodes).all? { |node| node[:authorityURI] }
+    end
+
+    def add_authorityURI(nodes, from_node)
+      nodes_to_a(nodes).each { |node| node[:authorityURI] = from_node[:authorityURI] }
+    end
+
+    def delete_authorityURI(nodes)
+      nodes_to_a(nodes).each { |node| node.delete('authorityURI') }
+    end
+
+    def have_valueURI?(nodes)
+      nodes_to_a(nodes).all? { |node| node[:valueURI] }
+    end
+
+    def add_valueURI(nodes, from_node)
+      nodes_to_a(nodes).each { |node| node[:valueURI] = from_node[:valueURI] }
+    end
+    # rubocop:enable Naming/MethodName
+
+    def nodes_to_a(nodes)
+      nodes.is_a?(Nokogiri::XML::NodeSet) ? nodes : [nodes]
+    end
 
     def normalize_coordinates
       ng_xml.root.xpath('//mods:coordinates[text()]', mods: MODS_NS).each do |coordinate_node|

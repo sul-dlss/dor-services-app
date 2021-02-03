@@ -130,6 +130,44 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
   end
 
+  context 'with a name-title subject where name has authority but subject and title does not' do
+    # From druid:zy660yj6499
+    let(:xml) do
+      <<~XML
+        <subject>
+          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/nr95000662">
+            <namePart>Gitai, Amos, 1950-</namePart>
+          </name>
+          <titleInfo>
+            <title>Tsili</title>
+          </titleInfo>
+        </subject>
+      XML
+    end
+
+    it 'builds the cocina data structure' do
+      expect(build).to eq [
+        {
+          "structuredValue": [
+            {
+              "value": 'Gitai, Amos, 1950-',
+              "uri": 'http://id.loc.gov/authorities/names/nr95000662',
+              "type": 'person',
+              "source": {
+                "code": 'naf',
+                "uri": 'http://id.loc.gov/authorities/names/'
+              }
+            },
+            {
+              "value": 'Tsili',
+              "type": 'title'
+            }
+          ]
+        }
+      ]
+    end
+  end
+
   context 'without name type' do
     let(:xml) do
       <<~XML
