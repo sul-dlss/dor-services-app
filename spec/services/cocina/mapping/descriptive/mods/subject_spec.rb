@@ -30,24 +30,24 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
         {
           subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "source": {
-                    "code": 'lcsh',
-                    "uri": 'http://id.loc.gov/authorities/subjects/'
+                  source: {
+                    code: 'lcsh',
+                    uri: 'http://id.loc.gov/authorities/subjects/'
                   },
-                  "uri": 'http://id.loc.gov/authorities/subjects/sh85001531',
-                  "value": 'Africa',
-                  "type": 'place'
+                  uri: 'http://id.loc.gov/authorities/subjects/sh85001531',
+                  value: 'Africa',
+                  type: 'place'
                 },
                 {
-                  "source": {
-                    "code": 'lcsh',
-                    "uri": 'http://id.loc.gov/authorities/subjects/'
+                  source: {
+                    code: 'lcsh',
+                    uri: 'http://id.loc.gov/authorities/subjects/'
                   },
-                  "uri": 'http://id.loc.gov/authorities/subjects/sh99001269',
-                  "value": 'Maps',
-                  "type": 'genre'
+                  uri: 'http://id.loc.gov/authorities/subjects/sh99001269',
+                  value: 'Maps',
+                  type: 'genre'
                 },
                 {
                   "source": {
