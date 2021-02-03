@@ -5,6 +5,7 @@ module Cocina
   # these adjustments have been approved by our metadata authority, Arcadia.
   class ModsNormalizer
     MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
+    XLINK_NS = 'http://www.w3.org/1999/xlink'
 
     # @param [Nokogiri::Document] mods_ng_xml MODS to be normalized
     # @param [String] druid
@@ -394,7 +395,7 @@ module Cocina
     end
 
     def normalize_empty_notes
-      ng_xml.root.xpath('//mods:note[not(text())]', mods: MODS_NS).each(&:remove)
+      ng_xml.root.xpath('//mods:note[not(text()) and not(@xlink:href)]', mods: MODS_NS, xlink: XLINK_NS).each(&:remove)
     end
 
     def normalize_empty_type_of_resource

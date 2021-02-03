@@ -85,22 +85,22 @@ RSpec.describe 'MODS note <--> cocina mappings' do
   end
 
   describe 'Link to external value only' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note xlink:href="http://note.org/note" />
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <note xlink:href="http://note.org/note" />
-      XML
-    end
-
-    let(:cocina) do
-      {
-        note: [
-          {
-            valueAt: 'http://note.org.note'
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          note: [
+            {
+              valueAt: 'http://note.org/note'
+            }
+          ]
+        }
+      end
     end
   end
 
