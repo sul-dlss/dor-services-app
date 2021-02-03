@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+MODS_ATTRIBUTES = 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" version="3.7"
+    xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd"'
+
 RSpec.shared_examples 'cocina to MODS' do |expected_xml|
   subject(:xml) { writer.to_xml }
 
