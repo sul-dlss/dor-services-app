@@ -1655,7 +1655,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
       XML
     end
 
-    let (:mods_roundtrip) do
+    let (:roundtrip_mods) do
       # Drop all instances of usage="primary" after first one
       <<~XML
         <name usage="primary" type="personal">

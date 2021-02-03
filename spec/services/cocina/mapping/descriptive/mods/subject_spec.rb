@@ -65,4 +65,52 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
       end
     end
   end
+
+  describe 'With multiple primary' do
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <subject usage="primary">
+          <topic>Trees</topic>
+        </subject>
+        <subject usage="primary">
+          <topic>Birds</topic>
+        </subject>
+      XML
+    end
+
+    let(:roundtrip_mods) do
+      <<~XML
+        <subject usage="primary">
+          <topic>Trees</topic>
+        </subject>
+        <subject>
+          <topic>Birds</topic>
+        </subject>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'Trees',
+            type: 'topic',
+            status: 'primary'
+          },
+          {
+            value: 'Birds',
+            type: 'topic'
+          }
+        ]
+      }
+    end
+
+    let (:warnings) do
+      [
+        Notification.new(msg: 'Multiple subjects marked as primary')
+      ]
+    end
+  end
 end

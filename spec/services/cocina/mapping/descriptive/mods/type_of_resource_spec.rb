@@ -212,7 +212,7 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
       XML
     end
 
-    let (:mods_roundtrip) do
+    let (:roundtrip_mods) do
       # Drop all instances of usage="primary" after first one
       <<~XML
         <typeOfResource usage="primary">text</typeOfResource>
