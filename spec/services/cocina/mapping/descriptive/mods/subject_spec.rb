@@ -81,6 +81,7 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
     end
 
     let(:roundtrip_mods) do
+      # Drop all instances of usage="primary" after first one
       <<~XML
         <subject usage="primary">
           <topic>Trees</topic>
@@ -107,7 +108,7 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
       }
     end
 
-    let (:warnings) do
+    let(:warnings) do
       [
         Notification.new(msg: 'Multiple subjects marked as primary')
       ]

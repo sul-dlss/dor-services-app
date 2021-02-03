@@ -1587,7 +1587,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   describe 'Multiple names with primary and matching altRepGroup' do
     xit 'not implemented'
 
-    let (:mods) do
+    let(:mods) do
       <<~XML
         <name usage="primary" altRepGroup="1" type="personal">
           <namePart>Name v1</namePart>
@@ -1598,7 +1598,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
       XML
     end
 
-    let (:roundtrip_mods) do
+    let(:roundtrip_mods) do
       # Drop all instances of usage="primary" after first one
       <<~XML
         <name usage="primary" altRepGroup="1" type="personal">
@@ -1610,7 +1610,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
       XML
     end
 
-    let (:cocina) do
+    let(:cocina) do
       {
         contributor: [
           {
@@ -1634,7 +1634,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
       }
     end
 
-    let (:warnings) do
+    let(:warnings) do
       [
         Notification.new(msg: 'Multiple names marked as primary')
       ]
@@ -1644,7 +1644,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   describe 'Multiple names with primary and no matching altRepGroup' do
     xit 'not implemented'
 
-    let (:mods) do
+    let(:mods) do
       <<~XML
         <name usage="primary" type="personal">
           <namePart>Name 1</namePart>
@@ -1655,7 +1655,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
       XML
     end
 
-    let (:roundtrip_mods) do
+    let(:roundtrip_mods) do
       # Drop all instances of usage="primary" after first one
       <<~XML
         <name usage="primary" type="personal">
@@ -1667,7 +1667,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
       XML
     end
 
-    let (:cocina) do
+    let(:cocina) do
       {
         contributor: [
           {
@@ -1689,7 +1689,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
       }
     end
 
-    let (:warnings) do
+    let(:warnings) do
       [
         Notification.new(msg: 'Multiple contributors marked as primary')
       ]

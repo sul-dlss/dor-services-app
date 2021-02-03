@@ -205,14 +205,14 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
   describe 'With multiple primary' do
     xit 'not implemented'
 
-    let (:mods) do
+    let(:mods) do
       <<~XML
         <typeOfResource usage="primary">text</typeOfResource>
         <typeOfResource usage="primary">moving image</typeOfResource>
       XML
     end
 
-    let (:roundtrip_mods) do
+    let(:roundtrip_mods) do
       # Drop all instances of usage="primary" after first one
       <<~XML
         <typeOfResource usage="primary">text</typeOfResource>
@@ -220,7 +220,7 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
       XML
     end
 
-    let (:cocina) do
+    let(:cocina) do
       {
         form: [
           {
@@ -242,7 +242,7 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
       }
     end
 
-    let (:warnings) do
+    let(:warnings) do
       [
         Notification.new(msg: 'Multiple resource types marked as primary')
       ]

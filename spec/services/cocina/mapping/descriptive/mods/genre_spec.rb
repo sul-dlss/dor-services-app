@@ -209,22 +209,22 @@ RSpec.describe 'MODS genre <--> cocina mappings' do
   describe 'With multiple primary' do
     xit 'not implemented'
 
-    let (:mods) do
+    let(:mods) do
       <<~XML
         <genre usage="primary">poetry</genre>
         <genre usage="primary">prose</genre>
       XML
     end
 
-    let (:roundtrip_mods) do
+    let(:roundtrip_mods) do
       # Drop all instances of usage="primary" after first one
       <<~XML
-      <genre usage="primary">poetry</genre>
-      <genre>prose</genre>
+        <genre usage="primary">poetry</genre>
+        <genre>prose</genre>
       XML
     end
 
-    let (:cocina) do
+    let(:cocina) do
       {
         form: [
           {
@@ -240,7 +240,7 @@ RSpec.describe 'MODS genre <--> cocina mappings' do
       }
     end
 
-    let (:warnings) do
+    let(:warnings) do
       [
         Notification.new(msg: 'Multiple genres marked as primary')
       ]

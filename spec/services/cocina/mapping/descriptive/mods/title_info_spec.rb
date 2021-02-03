@@ -961,7 +961,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     end
   end
 
-# Data error handling
+  # Data error handling
 
   describe 'Complex multilingual title' do
     it_behaves_like 'MODS cocina mapping' do
@@ -1093,7 +1093,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   describe 'Multiple titles with primary' do
     xit 'not implemented'
 
-    let (:mods) do
+    let(:mods) do
       <<~XML
         <titleInfo usage="primary">
           <title>Title 1</title>
@@ -1104,7 +1104,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
       XML
     end
 
-    let (:roundtrip_mods) do
+    let(:roundtrip_mods) do
       # Drop all instances of usage="primary" after first one
       <<~XML
         <titleInfo usage="primary">
@@ -1116,7 +1116,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
       XML
     end
 
-    let (:cocina) do
+    let(:cocina) do
       {
         title: [
           {
@@ -1130,7 +1130,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
       }
     end
 
-    let (:warnings) do
+    let(:warnings) do
       [
         Notification.new(msg: 'Multiple titles marked as primary')
       ]
