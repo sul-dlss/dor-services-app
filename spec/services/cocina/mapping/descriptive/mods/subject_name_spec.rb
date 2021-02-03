@@ -599,25 +599,25 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
   end
 
   describe 'Link to external value only' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <name xlink:href="http://name.org/name" />
+          </subject>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <subject>
-          <name xlink:href="http://name.org/name" />
-        </subject>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        subject: [
-          {
-            type: 'name',
-            valueAt: 'http://name.org/name'
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          subject: [
+            {
+              type: 'name',
+              valueAt: 'http://name.org/name'
+            }
+          ]
+        }
+      end
     end
   end
 

@@ -92,7 +92,7 @@ module Cocina
             name_part_nodes = name_node.xpath('mods:namePart', mods: DESC_METADATA_NS)
             case name_part_nodes.size
             when 0
-              next # NOTE: #tap will return [] when there are no name parts
+              parts << { valueAt: name_node['xlink:href'] } if name_node['xlink:href']
             when 1
               parts << build_name_part(name_part_nodes.first, default_type: false).merge(authority_attrs_for(name_node)).presence
             else
@@ -129,16 +129,29 @@ module Cocina
         end
 
         def authority_attrs_for(name_node)
-          notifier.warn('Name has an xlink:href property') if name_node['xlink:href']
           {
-            uri: ValueURI.sniff(name_node['valueURI'] || name_node['xlink:href'], notifier)
+            uri: ValueURI.sniff(uri_for(name_node), notifier)
           }.tap do |attrs|
             source = {
               code: Authority.normalize_code(name_node['authority'], notifier),
               uri: Authority.normalize_uri(name_node['authorityURI'])
             }.compact
             attrs[:source] = source unless source.empty?
+            attrs[:valueAt] = name_node['xlink:href'] unless xlink_is_value_uri?(name_node)
           end.compact
+        end
+
+        def uri_for(name_node)
+          return name_node['valueURI'] if name_node['valueURI']
+
+          return nil unless name_node['xlink:href'] && xlink_is_value_uri?(name_node)
+
+          notifier.warn('Name has an xlink:href property')
+          name_node['xlink:href']
+        end
+
+        def xlink_is_value_uri?(name_node)
+          name_node['authority'] || name_node['authorityURI']
         end
 
         def build_identifier(name_node)

@@ -1350,26 +1350,27 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with external link to value only' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      # Note this handling of xlink:href is ONLY for when it is the only attribute and there are no children.
+      let(:mods) do
+        <<~XML
+          <name xlink:href="http://name.org/name" />
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <name xlink:href="http://name.org/name" />
-      XML
-    end
-
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                valueAt: 'http://name.org/name'
-              }
-            ]
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  valueAt: 'http://name.org/name'
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 

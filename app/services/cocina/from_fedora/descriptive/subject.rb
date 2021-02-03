@@ -189,7 +189,7 @@ module Cocina
         end
 
         def name(node, attrs)
-          name_type = name_type_for_subject(node[:type])
+          name_type = name_type_for_subject(node)
           attrs[:type] = name_type if name_type
           full_name = NameBuilder.build(name_elements: [node], notifier: notifier)
           return nil if full_name[:name].nil?
@@ -212,9 +212,11 @@ module Cocina
           nil
         end
 
-        def name_type_for_subject(name_type)
+        def name_type_for_subject(node)
+          name_type = node[:type]
+
           unless name_type
-            notifier.warn('Subject contains a <name> element without a type attribute')
+            notifier.warn('Subject contains a <name> element without a type attribute') unless node['xlink:href']
             return 'name'
           end
 
