@@ -259,4 +259,65 @@ RSpec.describe 'MODS language <--> cocina mappings' do
       end
     end
   end
+
+  # Bad data handling
+
+  describe 'With multiple primary' do
+    xit 'not implemented'
+
+    let (:mods) do
+      <<~XML
+        <language usage="primary">
+          <languageTerm type="text" authority="iso639-2b">English</languageTerm>
+          <languageTerm type="code" authority="iso639-2b">eng</languageTerm>
+        </language>
+        <language usage="primary">
+          <languageTerm type="text" authority="iso639-2b">French</languageTerm>
+          <languageTerm type="code" authority="iso639-2b">fre</languageTerm>
+        </language>
+      XML
+    end
+
+    let (:mods_roundtrip) do
+      # Drop all instances of usage="primary" after first one
+      <<~XML
+      <language usage="primary">
+        <languageTerm type="text" authority="iso639-2b">English</languageTerm>
+        <languageTerm type="code" authority="iso639-2b">eng</languageTerm>
+      </language>
+      <language>
+        <languageTerm type="text" authority="iso639-2b">French</languageTerm>
+        <languageTerm type="code" authority="iso639-2b">fre</languageTerm>
+      </language>
+      XML
+    end
+
+    let (:cocina) do
+      {
+        language: [
+          {
+            value: 'English',
+            code: 'eng',
+            status: 'primary',
+            source: {
+              'code': 'iso639-2b'
+            }
+          },
+          {
+            value: 'French',
+            code: 'fre',
+            source: {
+              'code': 'iso639-2b'
+            }
+          }
+        ]
+      }
+    end
+
+    let (:warnings) do
+      [
+        Notification.new(msg: 'Multiple languages marked as primary')
+      ]
+    end
+  end
 end
