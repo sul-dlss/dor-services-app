@@ -748,7 +748,7 @@ module Cocina
         COUNTRY_CODES = %w[
           marccountry
           iso3166
-          iso3166-2
+          iso3166-1
           iso3166-2
         ].freeze
 
