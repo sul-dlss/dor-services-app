@@ -44,7 +44,7 @@ module Cocina
         attr_reader :resource_element, :notifier
 
         def build_name_nodes(name_nodes)
-          name_nodes.each { |name_node| notifier.warn('Missing or empty name type attribute') if name_node['type'].blank? }
+          name_nodes.each { |name_node| notifier.warn('Missing or empty name type attribute') if name_node['type'].blank? && name_node['xlink:href'].blank? }
           NameBuilder.build(name_elements: name_nodes, notifier: notifier).presence
         end
       end

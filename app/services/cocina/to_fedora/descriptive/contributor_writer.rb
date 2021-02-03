@@ -84,6 +84,7 @@ module Cocina
           }.tap do |attributes|
             attributes[:usage] = 'primary' if parallel_name.status == 'primary'
             attributes[:transliteration] = parallel_name.standard&.value if parallel_name.type == 'transliteration'
+            attributes['xlink:href'] = name.valueAt
           end.compact
         end
 
@@ -97,6 +98,7 @@ module Cocina
             authorityURI: name.source&.uri
           }.tap do |attributes|
             attributes[:usage] = 'primary' if contributor.status == 'primary'
+            attributes['xlink:href'] = name.valueAt
           end.compact
         end
 

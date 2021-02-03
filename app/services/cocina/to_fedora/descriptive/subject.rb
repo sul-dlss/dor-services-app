@@ -179,7 +179,7 @@ module Cocina
           case subject_value.type
           when 'person'
             xml.name topic_attributes.merge(type: 'personal') do
-              xml.namePart subject_value.value
+              xml.namePart(subject_value.value) if subject_value.value
             end
           when 'title'
             title = subject_value.to_h
@@ -199,6 +199,7 @@ module Cocina
             topic_attributes[:authorityURI] = subject_value.source&.uri
             topic_attributes[:encoding] = subject_value.encoding&.code
             topic_attributes[:valueURI] = subject_value.uri
+            topic_attributes['xlink:href'] = subject_value.valueAt
             if is_geo || (is_basic && !is_parallel)
               topic_attributes[:lang] = subject_value.valueLanguage&.code
               topic_attributes[:script] = subject_value.valueLanguage&.valueScript&.code
@@ -280,7 +281,7 @@ module Cocina
           end.compact
 
           xml.name name_attrs do
-            xml.namePart subject_value.value
+            xml.namePart subject_value.value if subject_value.value
             write_display_form(display_values)
             write_roles(subject.note)
           end
