@@ -1362,7 +1362,11 @@ RSpec.describe 'MODS name <--> cocina mappings' do
       {
         contributor: [
           {
-            uri: 'http://name.org/name'
+            name: [
+              {
+                valueAt: 'http://name.org/name'
+              }
+            ]
           }
         ]
       }
