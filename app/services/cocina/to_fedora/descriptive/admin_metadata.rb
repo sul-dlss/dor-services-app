@@ -40,7 +40,7 @@ module Cocina
         def build_content_source
           Array(admin_metadata.contributor).each do |contributor|
             source = contributor.name.first
-            xml.recordContentSource source.code, with_uri_info(source)
+            xml.recordContentSource source.code || source.value, with_uri_info(source)
           end
         end
 

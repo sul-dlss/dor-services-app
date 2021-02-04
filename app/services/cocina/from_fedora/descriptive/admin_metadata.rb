@@ -94,20 +94,36 @@ module Cocina
         end
 
         def build_contributor
-          return unless record_content_source
+          record_content_sources.map do |record_content_source|
+            if record_content_source['authority'] == 'marcorg'
+              build_contributor_code(record_content_source)
+            else
+              build_contributor_value(record_content_source)
+            end
+          end.presence
+        end
 
-          [{
+        def build_contributor_value(record_content_source)
+          {
+            name: [
+              {
+                value: record_content_source.text,
+                uri: ValueURI.sniff(record_content_source['valueURI'], notifier),
+                source: source_for(record_content_source)
+
+              }.compact
+            ]
+          }
+        end
+
+        def build_contributor_code(record_content_source)
+          {
             name: [
               {
                 code: record_content_source.text,
-                uri: ValueURI.sniff(record_content_source['valueURI'], notifier)
-              }.tap do |name_attrs|
-                source = {
-                  code: record_content_source['authority'],
-                  uri: record_content_source['authorityURI']
-                }.compact
-                name_attrs[:source] = source unless source.empty?
-              end.compact
+                uri: ValueURI.sniff(record_content_source['valueURI'], notifier),
+                source: source_for(record_content_source)
+              }.compact
             ],
             type: 'organization',
             role: [
@@ -115,7 +131,14 @@ module Cocina
                 value: 'original cataloging agency'
               }
             ]
-          }]
+          }
+        end
+
+        def source_for(record_content_source)
+          {
+            code: record_content_source['authority'],
+            uri: record_content_source['authorityURI']
+          }.compact.presence
         end
 
         def build_language
@@ -137,8 +160,8 @@ module Cocina
           @language_of_cataloging ||= record_info.xpath('mods:languageOfCataloging', mods: DESC_METADATA_NS)
         end
 
-        def record_content_source
-          @record_content_source ||= record_info.xpath('mods:recordContentSource', mods: DESC_METADATA_NS).first
+        def record_content_sources
+          @record_content_sources ||= record_info.xpath('mods:recordContentSource', mods: DESC_METADATA_NS)
         end
 
         def description_standards

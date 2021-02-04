@@ -194,15 +194,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
             {
               name: [
                 {
-                  code: 'DOR_MARC2MODS3-3.xsl Revision 1.1'
+                  value: 'DOR_MARC2MODS3-3.xsl Revision 1.1'
                 }
-              ],
-              role: [
-                {
-                  value: 'original cataloging agency'
-                }
-              ],
-              type: 'organization'
+              ]
             }
           ],
           event: [
