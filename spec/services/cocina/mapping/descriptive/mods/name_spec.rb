@@ -759,7 +759,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
-  describe 'Name with authority' do
+  describe 'Personal name with authority' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -790,6 +790,40 @@ RSpec.describe 'MODS name <--> cocina mappings' do
           ]
         }
       end
+    end
+  end
+
+  describe 'Corporate name with authority' do
+    # Example adapted from gq991tw6162
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <name type="corporate" usage="primary" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n85809720">
+          <namePart>Monterey Jazz Festival</namePart>
+        </name>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        contributor: [
+          {
+            name: [
+              {
+                value: 'Monterey Jazz Festival',
+                uri: 'http://id.loc.gov/authorities/names/n85809720',
+                source: {
+                  code: 'naf',
+                  uri: 'http://id.loc.gov/authorities/names/'
+                }
+              }
+            ],
+            type: 'organization',
+            status: 'primary'
+          }
+        ]
+      }
     end
   end
 
