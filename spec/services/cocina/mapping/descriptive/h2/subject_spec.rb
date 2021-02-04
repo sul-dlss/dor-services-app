@@ -281,25 +281,25 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
   end
 
   describe 'Non-FAST term' do
-    xit 'not implemented'
+    it_behaves_like 'cocina MODS mapping' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <topic>Brooding sea stars</topic>
+          </subject>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <subject>
-          <topic>Brooding sea-stars</topic>
-        </subject>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        subject: [
-          {
-            value: 'Brooding sea stars',
-            type: 'topic'
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Brooding sea stars',
+              type: 'topic'
+            }
+          ]
+        }
+      end
     end
   end
 end
