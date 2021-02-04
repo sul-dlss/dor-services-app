@@ -331,60 +331,74 @@ RSpec.describe 'MODS recordInfo <--> cocina mappings' do
 
   describe 'From Metadata Toolkit (2012)' do
     # Adapted from pc933rc9605
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <recordInfo>
+            <languageOfCataloging>
+              <languageTerm type="code" authority="iso639-2b">eng</languageTerm>
+            </languageOfCataloging>
+            <recordContentSource authority="marcorg">CSt</recordContentSource>
+            <recordContentSource>Lyberteam Metadata ToolKit</recordContentSource>
+            <recordCreationDate encoding="iso8601">2012-05-23T22:30:52.571Z</recordCreationDate>
+          </recordInfo>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <recordInfo>
-          <languageOfCataloging>
-            <languageTerm type="code" authority="iso639-2b">eng</languageTerm>
-          </languageOfCataloging>
-          <recordContentSource authority="marcorg">CSt</recordContentSource>
-          <recordContentSource>Lyberteam Metadata ToolKit</recordContentSource>
-          <recordCreationDate encoding="iso8601">2012-05-23T22:30:52.571Z</recordCreationDate>
-        </recordInfo>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        adminMetadata: {
-          language: [
-            {
-              code: 'eng',
-              source: {
-                code: 'iso639-2b'
-              }
-            }
-          ],
-          contributor: [
-            # If authority="marcorg", treat it as a code
-            {
-              code: 'CSt',
-              source: {
-                code: 'marcorg'
-              }
-            },
-            # Otherwise treat it as text
-            {
-              value: 'Lyberteam Metadata ToolKit'
-            }
-          ],
-          event: [
-            {
-              type: 'creation',
-              date: [
-                {
-                  value: '2012-05-23T22:30:52.571Z',
-                  encoding: {
-                    code: 'iso8601'
-                  }
+      let(:cocina) do
+        {
+          adminMetadata: {
+            language: [
+              {
+                code: 'eng',
+                source: {
+                  code: 'iso639-2b'
                 }
-              ]
-            }
-          ]
+              }
+            ],
+            contributor: [
+              # If authority="marcorg", treat it as a code
+              {
+                name: [
+                  {
+                    code: 'CSt',
+                    source: {
+                      code: 'marcorg'
+                    }
+                  }
+                ],
+                type: 'organization',
+                role: [
+                  {
+                    value: 'original cataloging agency'
+                  }
+                ]
+              },
+              # Otherwise treat it as text
+              {
+                name: [
+                  {
+                    value: 'Lyberteam Metadata ToolKit'
+                  }
+                ]
+              }
+            ],
+            event: [
+              {
+                type: 'creation',
+                date: [
+                  {
+                    value: '2012-05-23T22:30:52.571Z',
+                    encoding: {
+                      code: 'iso8601'
+                    }
+                  }
+                ]
+              }
+            ]
+          }
         }
-      }
+      end
     end
   end
 end
