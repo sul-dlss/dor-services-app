@@ -827,6 +827,39 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
+  describe 'Family name with authority' do
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <name type="family" usage="primary" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n000000">
+          <namePart>Stanford family</namePart>
+        </name>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        contributor: [
+          {
+            name: [
+              {
+                value: 'Stanford family',
+                uri: 'http://id.loc.gov/authorities/names/n000000',
+                source: {
+                  code: 'naf',
+                  uri: 'http://id.loc.gov/authorities/names/'
+                }
+              }
+            ],
+            type: 'family',
+            status: 'primary'
+          }
+        ]
+      }
+    end
+  end
+
   describe 'Multiple names, one primary' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
