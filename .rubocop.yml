@@ -34,6 +34,8 @@ Metrics/ClassLength:
     - 'app/services/cocina/from_fedora/descriptive/identifier_type.rb'
     - 'app/services/cocina/to_fedora/descriptive/contributor_writer.rb'
     - 'app/services/cocina/to_fedora/descriptive/form.rb'
+    - 'app/services/cocina/mods_normalizers/subject_normalizer.rb'
+    - 'app/services/cocina/mods_normalizers/origin_info_normalizer.rb'
 
 RSpec/DescribeClass:
   Exclude:
