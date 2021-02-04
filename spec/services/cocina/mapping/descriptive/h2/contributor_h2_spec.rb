@@ -436,8 +436,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
 
   describe 'Conference as contributor' do
     # LDCX. Conference.
-    xit 'not implemented: cocina form is missing on MODS to cocina roundtrip'
-
     it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
@@ -501,8 +499,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
 
   describe 'Event as contributor' do
     # San Francisco Symphony Concert. Event.
-
-    xit 'not implemented: cocina form is missing on MODS to cocina roundtrip, type should be event'
 
     it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
