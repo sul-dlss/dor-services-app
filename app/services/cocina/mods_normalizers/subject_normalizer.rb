@@ -23,6 +23,7 @@ module Cocina
         normalize_subject_authority_tgm
         normalize_coordinates # Must be before normalize_subject_cartographics
         normalize_subject_cartographics
+        normalize_subject_genres
         ng_xml
       end
 
@@ -207,6 +208,25 @@ module Cocina
         ng_xml.root.xpath("//mods:subject[@authority='naf']", mods: ModsNormalizer::MODS_NS).each do |subject_node|
           subject_node[:authority] = 'lcsh'
         end
+      end
+
+      def normalize_subject_genres
+        normalize_subject_genre_for(ng_xml.root)
+        ng_xml.root.xpath('mods:relatedItem', mods: ModsNormalizer::MODS_NS).each { |related_item_node| normalize_subject_genre_for(related_item_node) }
+      end
+
+      def normalize_subject_genre_for(base_node)
+        base_node.xpath('mods:subject/mods:genre', mods: ModsNormalizer::MODS_NS).each do |genre_node|
+          next if existing_genre?(base_node, genre_node)
+
+          new_genre_node = Nokogiri::XML::Node.new('genre', Nokogiri::XML(nil))
+          new_genre_node.content = genre_node.content
+          base_node << new_genre_node
+        end
+      end
+
+      def existing_genre?(base_node, genre_node)
+        base_node.xpath('mods:genre', mods: ModsNormalizer::MODS_NS).any? { |check_genre_node| check_genre_node.content == genre_node.content }
       end
     end
   end

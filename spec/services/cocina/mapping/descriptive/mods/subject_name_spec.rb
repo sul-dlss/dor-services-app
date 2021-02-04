@@ -400,155 +400,155 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
   describe 'Name-title subject with additional terms including genre subdivision, authority for set' do
     # Authority is not applied to form because the term may be a subject subdivision, with a different term for being used alone.
-    let(:mods) do
-      <<~XML
-        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
-          valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
-          <name type="personal">
-            <namePart>Shakespeare, William, 1564-1616</namePart>
-          </name>
-          <titleInfo>
-            <title>Hamlet</title>
-          </titleInfo>
-          <genre>Bibliographies</genre>
-        </subject>
-      XML
-    end
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+            valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
+            <name type="personal">
+              <namePart>Shakespeare, William, 1564-1616</namePart>
+            </name>
+            <titleInfo>
+              <title>Hamlet</title>
+            </titleInfo>
+            <genre>Bibliographies</genre>
+          </subject>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      <<~XML
-        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
-          valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
-          <name type="personal">
-            <namePart>Shakespeare, William, 1564-1616</namePart>
-          </name>
-          <titleInfo>
-            <title>Hamlet</title>
-          </titleInfo>
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+            valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
+            <name type="personal">
+              <namePart>Shakespeare, William, 1564-1616</namePart>
+            </name>
+            <titleInfo>
+              <title>Hamlet</title>
+            </titleInfo>
+            <genre>Bibliographies</genre>
+          </subject>
           <genre>Bibliographies</genre>
-        </subject>
-        <genre>Bibliographies</genre>
-      XML
-    end
+        XML
+      end
 
-    let(:cocina) do
-      {
-        subject: [
-          {
-            structuredValue: [
-              {
-                value: 'Shakespeare, William, 1564-1616',
-                type: 'person'
-              },
-              {
-                value: 'Hamlet',
-                type: 'title'
-              },
-              {
-                value: 'Bibliographies',
-                type: 'genre'
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  value: 'Shakespeare, William, 1564-1616',
+                  type: 'person'
+                },
+                {
+                  value: 'Hamlet',
+                  type: 'title'
+                },
+                {
+                  value: 'Bibliographies',
+                  type: 'genre'
+                }
+              ],
+              uri: 'http://id.loc.gov/authorities/subjects/sh85120809',
+              source: {
+                code: 'lcsh',
+                uri: 'http://id.loc.gov/authorities/subjects/'
               }
-            ],
-            uri: 'http://id.loc.gov/authorities/subjects/sh85120809',
-            source: {
-              code: 'lcsh',
-              uri: 'http://id.loc.gov/authorities/subjects/'
             }
-          }
-        ],
-        form: [
-          {
-            value: 'Bibliographies',
-            type: 'genre'
-          }
-        ]
-      }
+          ],
+          form: [
+            {
+              value: 'Bibliographies',
+              type: 'genre'
+            }
+          ]
+        }
+      end
     end
-
-    xit 'not implemented'
   end
 
   describe 'Name-title subject with additional terms including genre subdivision, authority for terms' do
-    let(:mods) do
-      <<~XML
-        <subject authority="lcsh">
-          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
-            valueURI="http://id.loc.gov/authorities/names/n78095332">
-            <namePart>Shakespeare, William, 1564-1616</namePart>
-          </name>
-          <titleInfo authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
-            valueURI="http://id.loc.gov/authorities/names/n80008522">
-            <title>Hamlet</title>
-          </titleInfo>
-          <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
-            valueURI="http://id.loc.gov/authorities/subjects/sh99001362">Bibliographies</genre>
-        </subject>
-      XML
-    end
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+              valueURI="http://id.loc.gov/authorities/names/n78095332">
+              <namePart>Shakespeare, William, 1564-1616</namePart>
+            </name>
+            <titleInfo authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+              valueURI="http://id.loc.gov/authorities/names/n80008522">
+              <title>Hamlet</title>
+            </titleInfo>
+            <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+              valueURI="http://id.loc.gov/authorities/subjects/sh99001362">Bibliographies</genre>
+          </subject>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      <<~XML
-        <subject authority="lcsh">
-          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names"
-            valueURI="http://id.loc.gov/authorities/names/n78095332">
-            <namePart>Shakespeare, William, 1564-1616</namePart>
-          </name>
-          <titleInfo authority="naf" authorityURI="http://id.loc.gov/authorities/names"
-            valueURI="http://id.loc.gov/authorities/names/n80008522">
-            <title>Hamlet</title>
-          </titleInfo>
-          <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects"
-            valueURI="http://id.loc.gov/authorities/subjects/sh99001362">Bibliographies</genre>
-        </subject>
-        <genre>Bibliographies</genre>
-      XML
-    end
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+              valueURI="http://id.loc.gov/authorities/names/n78095332">
+              <namePart>Shakespeare, William, 1564-1616</namePart>
+            </name>
+            <titleInfo authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
+              valueURI="http://id.loc.gov/authorities/names/n80008522">
+              <title>Hamlet</title>
+            </titleInfo>
+            <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+              valueURI="http://id.loc.gov/authorities/subjects/sh99001362">Bibliographies</genre>
+          </subject>
+          <genre>Bibliographies</genre>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        subject: [
-          {
-            structuredValue: [
-              {
-                value: 'Shakespeare, William, 1564-1616',
-                type: 'person',
-                uri: 'http://id.loc.gov/authorities/names/n78095332',
-                source: {
-                  code: 'naf',
-                  uri: 'http://id.loc.gov/authorities/names/'
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  value: 'Shakespeare, William, 1564-1616',
+                  type: 'person',
+                  uri: 'http://id.loc.gov/authorities/names/n78095332',
+                  source: {
+                    code: 'naf',
+                    uri: 'http://id.loc.gov/authorities/names/'
+                  }
+                },
+                {
+                  value: 'Hamlet',
+                  type: 'title',
+                  uri: 'http://id.loc.gov/authorities/names/n80008522',
+                  source: {
+                    code: 'naf',
+                    uri: 'http://id.loc.gov/authorities/names/'
+                  }
+                },
+                {
+                  value: 'Bibliographies',
+                  type: 'genre',
+                  uri: 'http://id.loc.gov/authorities/subjects/sh99001362',
+                  source: {
+                    code: 'lcsh',
+                    uri: 'http://id.loc.gov/authorities/subjects/'
+                  }
                 }
-              },
-              {
-                value: 'Hamlet',
-                type: 'title',
-                uri: 'http://id.loc.gov/authorities/names/n80008522',
-                source: {
-                  code: 'naf',
-                  uri: 'http://id.loc.gov/authorities/names/'
-                }
-              },
-              {
-                value: 'Bibliographies',
-                type: 'genre',
-                uri: 'http://id.loc.gov/authorities/subjects/sh99001362',
-                source: {
-                  code: 'lcsh',
-                  uri: 'http://id.loc.gov/authorities/subjects/'
-                }
-              }
-            ]
-          }
-        ],
-        form: [
-          {
-            value: 'Bibliographies',
-            type: 'genre'
-          }
-        ]
-      }
+              ]
+            }
+          ],
+          form: [
+            {
+              value: 'Bibliographies',
+              type: 'genre'
+            }
+          ]
+        }
+      end
     end
-
-    xit 'not implemented'
   end
 
   describe 'Name subject with parts and genre subdivision' do
