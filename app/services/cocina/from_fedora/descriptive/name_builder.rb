@@ -160,8 +160,9 @@ module Cocina
 
         def build_notes(name_node)
           [].tap do |parts|
-            affiliation = name_node.xpath('mods:affiliation', mods: DESC_METADATA_NS).first
-            parts << { value: affiliation.text, type: 'affiliation' } if affiliation
+            name_node.xpath('mods:affiliation', mods: DESC_METADATA_NS).each do |affiliation_node|
+              parts << { value: affiliation_node.text, type: 'affiliation' }
+            end
 
             description = name_node.xpath('mods:description', mods: DESC_METADATA_NS).first
             parts << { value: description.text, type: 'description' } if description
