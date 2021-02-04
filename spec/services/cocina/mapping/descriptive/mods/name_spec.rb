@@ -221,41 +221,41 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
   describe 'Name with multiple affiliations' do
     # adapted from df430tk5419
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Schmedders, Karl</namePart>
+            <affiliation>University of Zurich</affiliation>
+            <affiliation>Swiss Finance Institute</affiliation>
+          </name>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <name type="personal">
-          <namePart>Schmedders, Karl</namePart>
-          <affiliation>University of Zurich</affiliation>
-          <affiliation>Swiss Finance Institute</affiliation>
-        </name>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                value: 'Schmedders, Karl'
-              }
-            ],
-            type: 'person',
-            note: [
-              {
-                value: 'University of Zurich',
-                type: 'affiliation'
-              },
-              {
-                value: 'Swiss Finance Institute',
-                type: 'affiliation'
-              }
-            ]
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Schmedders, Karl'
+                }
+              ],
+              type: 'person',
+              note: [
+                {
+                  value: 'University of Zurich',
+                  type: 'affiliation'
+                },
+                {
+                  value: 'Swiss Finance Institute',
+                  type: 'affiliation'
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 
