@@ -219,6 +219,46 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
+  describe 'Name with multiple affiliations' do
+    # adapted from df430tk5419
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <name type="personal">
+          <namePart>Schmedders, Karl</namePart>
+          <affiliation>University of Zurich</affiliation>
+          <affiliation>Swiss Finance Institute</affiliation>
+        </name>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        contributor: [
+          {
+            name: [
+              {
+                value: 'Schmedders, Karl'
+              }
+            ],
+            type: 'person',
+            note: [
+              {
+                value: 'University of Zurich',
+                type: 'affiliation'
+              },
+              {
+                value: 'Swiss Finance Institute',
+                type: 'affiliation'
+              }
+            ]
+          }
+        ]
+      }
+    end
+  end
+
   describe 'Name with untyped nameIdentifier' do
     # NOTE: name identifiers that are uris, for mods mapping purposes are 'value' rather than uri
     #  in identifier and nameIdentifier mods doesn't distinguish between a uri and other non-uri identifiers
