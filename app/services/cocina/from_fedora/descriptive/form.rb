@@ -82,21 +82,41 @@ module Cocina
 
         def add_genre(forms)
           add_structured_genre(forms) if structured_genre.any?
+          # Basic must occur before subject to allow de-duping.
+          add_basic_genre(forms)
+          add_subject_genre(forms)
+        end
 
-          basic_genre.each do |type|
-            forms << {
-              value: type.text,
-              type: type['type'] || 'genre',
-              uri: ValueURI.sniff(type[:valueURI], notifier),
-              displayLabel: type[:displayLabel]
-            }.tap do |item|
-              source = {
-                code: Authority.normalize_code(type[:authority], notifier),
-                uri: Authority.normalize_uri(type[:authorityURI])
-              }.compact
-              item[:source] = source if source.present?
-            end.compact
+        def add_basic_genre(forms)
+          basic_genre.each do |genre|
+            source = {
+              code: Authority.normalize_code(genre[:authority], notifier),
+              uri: Authority.normalize_uri(genre[:authorityURI])
+            }.compact.presence
+            forms << common_genre_attrs(genre).merge({
+              uri: ValueURI.sniff(genre[:valueURI], notifier),
+              source: source
+            }.compact)
           end
+        end
+
+        def add_subject_genre(forms)
+          subject_genre.each do |genre|
+            form = common_genre_attrs(genre)
+            forms << form unless form_exists?(form, forms)
+          end
+        end
+
+        def form_exists?(form, forms)
+          forms.any? { |check_form| check_form[:value] == form[:value] && check_form[:type] == form[:type] }
+        end
+
+        def common_genre_attrs(genre)
+          {
+            value: genre.text,
+            type: genre['type'] || 'genre',
+            displayLabel: genre[:displayLabel]
+          }.compact
         end
 
         def add_structured_genre(forms)
@@ -246,6 +266,10 @@ module Cocina
         # returns genre at the root and inside subjects excluding structured genres
         def basic_genre
           resource_element.xpath("mods:genre[not(@type) or not(starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}'))]", mods: DESC_METADATA_NS)
+        end
+
+        def subject_genre
+          resource_element.xpath('mods:subject/mods:genre', mods: DESC_METADATA_NS)
         end
 
         # returns structured genres at the root and inside subjects, which are combined to form a single, structured Cocina element

@@ -99,7 +99,7 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
         <mods #{MODS_ATTRIBUTES}>
           <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects">
             <geographic authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n78089021">Japan</geographic>
-            <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh99001269">Maps</genre>
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh99001269">Maps</topic>
           </subject>
         </mods>
       XML
@@ -110,7 +110,7 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
         <mods #{MODS_ATTRIBUTES}>
           <subject authority="lcsh">
             <geographic authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78089021">Japan</geographic>
-            <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh99001269">Maps</genre>
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh99001269">Maps</topic>
           </subject>
         </mods>
       XML
@@ -575,6 +575,55 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
           </subject>
         </mods>
       XML
+    end
+  end
+
+  context 'when normalizing subject genre' do
+    context 'without an existing form' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <subject authority="fast">
+              <genre authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1986272">Watercolors</genre>
+            </subject>
+          </mods>
+        XML
+      end
+
+      it 'adds genre' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <subject authority="fast">
+              <genre authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1986272">Watercolors</genre>
+            </subject>
+            <genre>Watercolors</genre>
+          </mods>
+        XML
+      end
+    end
+
+    context 'with an existing form' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <subject authority="fast">
+              <genre authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1986272">Watercolors</genre>
+            </subject>
+          </mods>
+          <genre>Watercolors</genre>
+        XML
+      end
+
+      it 'does not add genre' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <subject authority="fast">
+              <genre authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1986272">Watercolors</genre>
+            </subject>
+            <genre>Watercolors</genre>
+          </mods>
+        XML
+      end
     end
   end
 end
