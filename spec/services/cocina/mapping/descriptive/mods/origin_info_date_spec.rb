@@ -1307,4 +1307,112 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Date mapping for recording event type' do
+    xit 'not implemented'
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'recording',
+            date: [
+              {
+                value: '1990'
+              }
+            ]
+          }
+        ]
+      }
+    end
+
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="recording">
+          <dateCreated>1990</dateCreated>
+        </originInfo>
+      XML
+    end
+  end
+
+  describe 'Date mapping for presentation event type' do
+    xit 'not implemented'
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'presentation',
+            date: [
+              {
+                value: '1990'
+              }
+            ]
+          }
+        ]
+      }
+    end
+
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="presentation">
+          <dateCreated>1990</dateCreated>
+        </originInfo>
+      XML
+    end
+  end
+
+  describe 'Date mapping for performance event type' do
+    xit 'not implemented'
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'performance',
+            date: [
+              {
+                value: '1990'
+              }
+            ]
+          }
+        ]
+      }
+    end
+
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="performance">
+          <dateCreated>1990</dateCreated>
+        </originInfo>
+      XML
+    end
+  end
+
+  describe 'Date mapping for release event type' do
+    xit 'not implemented' # also mapped in H2
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'release',
+            date: [
+              {
+                value: '1990'
+              }
+            ]
+          }
+        ]
+      }
+    end
+
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="release">
+          <dateIssued>1990</dateIssued>
+        </originInfo>
+      XML
+    end
+  end
 end
