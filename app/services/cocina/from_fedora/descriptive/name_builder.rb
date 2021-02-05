@@ -198,8 +198,7 @@ module Cocina
 
             role[:uri] = ValueURI.sniff(authority_value, notifier)
             role[:code] = code&.content
-            marcrelator = marc_relator_role?(authority, authority_uri, authority_value)
-            role[:value] = normalized_role_value(text.content, marcrelator) if text
+            role[:value] = text.content if text
 
             if role[:code].blank? && role[:value].blank?
               notifier.warn('name/role/roleTerm missing value')
@@ -230,16 +229,6 @@ module Cocina
           end
 
           notifier.error('Contributor role code has unexpected value', role: role_code.content)
-        end
-
-        # ensure value is downcased if it's a marcrelator value
-        def normalized_role_value(value, marc_relator)
-          marc_relator ? value.downcase : value
-        end
-
-        def marc_relator_role?(role_authority, role_authority_uri, role_authority_value)
-          role_authority == 'marcrelator' ||
-            [role_authority_uri, role_authority_value].compact.any? { |check| check.include?('id.loc.gov/vocabulary/relators') }
         end
       end
     end

@@ -25,10 +25,6 @@ module Cocina
       attr_reader :ng_xml
 
       def normalize_text_role_term
-        ng_xml.root.xpath("//mods:roleTerm[@type='text']", mods: ModsNormalizer::MODS_NS).each do |role_term_node|
-          role_term_node.content = role_term_node.content.downcase
-        end
-
         # Add the type="text" attribute to roleTerms that don't have a type (seen in MODS 3.3 druid:yy910cj7795)
         ng_xml.root.xpath('//mods:roleTerm[not(@type)]', mods: ModsNormalizer::MODS_NS).each do |role_term_node|
           role_term_node['type'] = 'text'
