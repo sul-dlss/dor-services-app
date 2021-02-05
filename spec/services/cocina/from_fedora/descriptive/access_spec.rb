@@ -36,11 +36,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Access do
               "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
               "type": 'repository'
             }
-          ],
-          digitalRepository: [
-            {
-              value: 'Stanford Digital Repository'
-            }
           ]
         }
       )
@@ -61,11 +56,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Access do
         "url": [
           {
             "value": 'https://www.davidrumsey.com/luna/servlet/view/search?q=pub_list_no=%2211728.000'
-          }
-        ],
-        digitalRepository: [
-          {
-            value: 'Stanford Digital Repository'
           }
         ]
       )
@@ -139,11 +129,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Access do
         "physicalLocation": [
           {
             "value": 'Call Number: SC0340, Accession 2005-101, Box: 51, Folder: 3'
-          }
-        ],
-        digitalRepository: [
-          {
-            value: 'Stanford Digital Repository'
           }
         ]
       )

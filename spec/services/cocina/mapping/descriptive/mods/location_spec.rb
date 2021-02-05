@@ -27,9 +27,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                   uri: 'http://id.loc.gov/authorities/names/'
                 }
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           }
         }
@@ -57,9 +54,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                   code: 'marcorg'
                 }
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           }
         }
@@ -91,9 +85,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                   code: 'naf'
                 }
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           }
         }
@@ -120,9 +111,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                 value: 'https://www.davidrumsey.com/luna/servlet/view/search?q=pub_list_no=%2211728.000',
                 status: 'primary'
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           }
         }
@@ -235,9 +223,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                 value: 'SC080',
                 type: 'shelf locator'
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           }
         }
@@ -268,9 +253,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                   value: 'Online table of contents from PCI available to Stanford-affiliated users:'
                 ]
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           }
         }
@@ -314,9 +296,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                   code: 'naf'
                 }
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           }
         }
@@ -432,9 +411,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
               {
                 value: 'Call Number: SC0340, Accession 2005-101, Box: 51, Folder: 3'
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           }
         }
@@ -578,9 +554,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                 value: 'SC1071',
                 type: 'shelf locator'
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           }
         }

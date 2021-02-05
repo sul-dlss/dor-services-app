@@ -86,7 +86,7 @@ RSpec.describe Cocina::ObjectCreator do
                 "value": 'I am an abstract'
               },
               {
-                "type": 'contact',
+                "type": 'email',
                 "value": 'marypoppins@umbrellas.org',
                 "displayLabel": 'Contact'
               },
@@ -162,10 +162,9 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'contact (note of type contact) is set' do
-        contact_note = result.description.note.find { |note| note.type == 'contact' }
+        contact_note = result.description.note.find { |note| note.type == 'email' }
         expect(contact_note.value).to eq 'marypoppins@umbrellas.org'
-        skip 'TODO: need ToFedora map of displayLabel for note'
-        # expect(contact_note.displayLabel).to eq 'Contact'
+        expect(contact_note.displayLabel).to eq 'Contact'
       end
 
       it 'preferred citation is set with the link placeholder replaced' do
