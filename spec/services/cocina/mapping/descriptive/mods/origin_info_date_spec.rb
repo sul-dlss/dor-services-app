@@ -1038,7 +1038,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     end
   end
 
-
   describe 'dateOther with type="developed"' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
