@@ -51,7 +51,7 @@ module Cocina
         end
 
         def notes
-          all_note_nodes = resource_element.xpath('mods:note', mods: DESC_METADATA_NS).select { |node| note_present?(node) }
+          all_note_nodes = resource_element.xpath('mods:note', mods: DESC_METADATA_NS).select { |node| note_present?(node) && node[:type] != 'contact' }
           altrepgroup_note_nodes, other_note_nodes = AltRepGroup.split(nodes: all_note_nodes)
           other_note_nodes.map { |node| common_note_for(node) } + \
             altrepgroup_note_nodes.map { |parallel_nodes| parallel_note_for(parallel_nodes) }

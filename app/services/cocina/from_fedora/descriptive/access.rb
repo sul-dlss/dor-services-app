@@ -16,7 +16,7 @@ module Cocina
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder:, add_sdr: true)
+        def self.build(resource_element:, descriptive_builder:)
           new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
         end
 
@@ -34,7 +34,7 @@ module Cocina
             access[:url] = url.presence
             access[:note] = (note + purl_note).presence
             # Without the count check, this node winds up all over the damn place and breaks dozens of tests
-            access[:digitalRepository] = [{ value: 'Stanford Digital Repository' }] if add_sdr?
+            access[:digitalRepository] = [{ value: 'Stanford Digital Repository' }] if all_purl_nodes.present?
           end.compact
         end
 
@@ -42,15 +42,7 @@ module Cocina
 
         attr_reader :resource_element, :notifier, :add_sdr
 
-        def add_sdr?
-          if resource_element.name == 'relatedItem'
-            all_purl_nodes.present?
-          else
-            location_nodes.present?
-          end
-        end
-
-        # Hydrus is know to create location nodes with no children.
+        # Hydrus is known to create location nodes with no children.
         def location_nodes
           resource_element.xpath('mods:location[*]', mods: DESC_METADATA_NS)
         end
@@ -64,7 +56,8 @@ module Cocina
         end
 
         def access_contact
-          descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[@type='repository']", mods: DESC_METADATA_NS))
+          descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[@type='repository']", mods: DESC_METADATA_NS)) +
+            descriptive_value_for(resource_element.xpath("mods:note[@type='contact']", mods: DESC_METADATA_NS), type: 'email')
         end
 
         def shelf_location
@@ -125,7 +118,7 @@ module Cocina
           end
         end
 
-        def descriptive_value_for(nodes)
+        def descriptive_value_for(nodes, type: nil)
           nodes.map do |node|
             {}.tap do |attrs|
               if node[:authority] && !node[:valueURI]
@@ -139,7 +132,7 @@ module Cocina
                 uri: Authority.normalize_uri(node[:authorityURI])
               }.compact
               attrs[:source] = source unless source.empty?
-              attrs[:type] = node[:type]
+              attrs[:type] = type || node[:type]
               attrs[:displayLabel] = node[:displayLabel]
               attrs[:valueLanguage] = LanguageScript.build(node: node)
             end.compact
