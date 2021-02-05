@@ -83,6 +83,11 @@ module Cocina
               hierarchical_geographic(subject_value)
             elsif type == 'time'
               time_range(subject_value)
+            elsif type == 'title'
+              title = subject_value.to_h
+              title.delete(:type)
+              title.delete(:source)
+              Title.write(xml: xml, titles: [Cocina::Models::DescriptiveValue.new(title)], id_generator: id_generator)
             elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(type)
               write_structured_person(subject, subject_value, type: type, display_values: display_values)
             else
