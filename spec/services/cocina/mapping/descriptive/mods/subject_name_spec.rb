@@ -691,6 +691,63 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     end
   end
 
+  describe 'Name subject with name type' do
+    # Example from bt573bx7287
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n83172096" altRepGroup="1">
+          <name type="personal">
+            <namePart>Wang, Jingwei, 1883-1944</namePart>
+          </name>
+        </subject>
+        <subject authority="lcsh" altRepGroup="1">
+          <name type="personal" lang="chi" script="Hant">
+            <namePart>汪精衛, 1883-1944</namePart>
+          </name>
+        </subject>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        subject: [
+          {
+            parallelValue: [
+              {
+                value: 'Wang, Jingwei, 1883-1944',
+                uri: 'http://id.loc.gov/authorities/names/n83172096',
+                source: {
+                  uri: 'http://id.loc.gov/authorities/names/'
+                }
+              },
+              {
+                value: '汪精衛, 1883-1944',
+                valueLanguage: {
+                  code: 'chi',
+                  source: {
+                    code: 'iso639-2b'
+                  },
+                  valueScript: {
+                    code: 'Hant',
+                    source: {
+                      code: 'iso15924'
+                    }
+                  }
+                }
+              }
+            ],
+            type: 'person',
+            source: {
+              code: 'lcsh'
+            }
+          }
+        ]
+      }
+    end
+  end
+
   # Data consistency fix
   describe 'Single subject subelement with authority code same as subject, no URI' do
     it_behaves_like 'MODS cocina mapping' do
