@@ -23,7 +23,6 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
             <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh99001269">Maps</genre>
             <temporal authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh2002012475">19th century</temporal>
           </subject>
-          <genre>Maps</genre>
         XML
       end
 
@@ -60,12 +59,6 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
                   "type": 'time'
                 }
               ]
-            }
-          ],
-          form: [
-            {
-              value: 'Maps',
-              type: 'genre'
             }
           ]
         }

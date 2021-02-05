@@ -277,28 +277,6 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
           ]
         }
       end
-
-      let(:roundtrip_cocina) do
-        {
-          subject: [
-            {
-              value: 'Watercolors',
-              type: 'genre',
-              uri: 'http://id.worldcat.org/fast/1986272',
-              source: {
-                code: 'fast',
-                uri: 'http://id.worldcat.org/fast/'
-              }
-            }
-          ],
-          form: [
-            {
-              value: 'Watercolors',
-              type: 'genre'
-            }
-          ]
-        }
-      end
     end
   end
 

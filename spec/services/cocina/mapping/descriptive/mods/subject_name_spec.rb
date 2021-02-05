@@ -416,22 +416,6 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
         XML
       end
 
-      let(:roundtrip_mods) do
-        <<~XML
-          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
-            valueURI="http://id.loc.gov/authorities/subjects/sh85120809">
-            <name type="personal">
-              <namePart>Shakespeare, William, 1564-1616</namePart>
-            </name>
-            <titleInfo>
-              <title>Hamlet</title>
-            </titleInfo>
-            <genre>Bibliographies</genre>
-          </subject>
-          <genre>Bibliographies</genre>
-        XML
-      end
-
       let(:cocina) do
         {
           subject: [
@@ -456,12 +440,6 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
                 uri: 'http://id.loc.gov/authorities/subjects/'
               }
             }
-          ],
-          form: [
-            {
-              value: 'Bibliographies',
-              type: 'genre'
-            }
           ]
         }
       end
@@ -484,24 +462,6 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
             <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
               valueURI="http://id.loc.gov/authorities/subjects/sh99001362">Bibliographies</genre>
           </subject>
-        XML
-      end
-
-      let(:roundtrip_mods) do
-        <<~XML
-          <subject authority="lcsh">
-            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
-              valueURI="http://id.loc.gov/authorities/names/n78095332">
-              <namePart>Shakespeare, William, 1564-1616</namePart>
-            </name>
-            <titleInfo authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
-              valueURI="http://id.loc.gov/authorities/names/n80008522">
-              <title>Hamlet</title>
-            </titleInfo>
-            <genre authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
-              valueURI="http://id.loc.gov/authorities/subjects/sh99001362">Bibliographies</genre>
-          </subject>
-          <genre>Bibliographies</genre>
         XML
       end
 
@@ -539,19 +499,13 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
                 }
               ]
             }
-          ],
-          form: [
-            {
-              value: 'Bibliographies',
-              type: 'genre'
-            }
           ]
         }
       end
     end
   end
 
-  describe 'Name subject with parts and genre subdivision' do
+  describe 'Name subject with parts and topic subdivision' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML

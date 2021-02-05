@@ -82,41 +82,21 @@ module Cocina
 
         def add_genre(forms)
           add_structured_genre(forms) if structured_genre.any?
-          # Basic must occur before subject to allow de-duping.
-          add_basic_genre(forms)
-          add_subject_genre(forms)
-        end
 
-        def add_basic_genre(forms)
           basic_genre.each do |genre|
             source = {
               code: Authority.normalize_code(genre[:authority], notifier),
               uri: Authority.normalize_uri(genre[:authorityURI])
             }.compact.presence
-            forms << common_genre_attrs(genre).merge({
+            forms << {
+              value: genre.text,
+              type: genre['type'] || 'genre',
+              displayLabel: genre[:displayLabel],
+
               uri: ValueURI.sniff(genre[:valueURI], notifier),
               source: source
-            }.compact)
+            }.compact
           end
-        end
-
-        def add_subject_genre(forms)
-          subject_genre.each do |genre|
-            form = common_genre_attrs(genre)
-            forms << form unless form_exists?(form, forms)
-          end
-        end
-
-        def form_exists?(form, forms)
-          forms.any? { |check_form| check_form[:value] == form[:value] && check_form[:type] == form[:type] }
-        end
-
-        def common_genre_attrs(genre)
-          {
-            value: genre.text,
-            type: genre['type'] || 'genre',
-            displayLabel: genre[:displayLabel]
-          }.compact
         end
 
         def add_structured_genre(forms)
