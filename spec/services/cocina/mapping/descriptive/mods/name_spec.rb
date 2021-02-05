@@ -1481,6 +1481,78 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
+  describe 'Alternative name' do
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <name usage="primary">
+          <namePart>Strachey, Dorothy</namePart>
+          <alternativeName altType="pseudonym">Olivia</alternativeName>
+        </name>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        contributor: [
+          {
+            name: [
+              {
+                structuredValue: [
+                  {
+                    value: 'Strachey, Dorothy'
+                  },
+                  {
+                    value: 'Olivia',
+                    type: 'pseudonym'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    end
+  end
+
+  describe 'Alternative name with external link to value only' do
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <name usage="primary">
+          <namePart>Strachey, Dorothy</namePart>
+          <alternativeName xlink:href="http://name.org/olivia" />
+        </name>
+      XML
+    end
+
+    # Use type: alternative if altType not in source data, and drop in roundtrip
+    let(:cocina) do
+      {
+        contributor: [
+          {
+            name: [
+              {
+                structuredValue: [
+                  {
+                    value: 'Strachey, Dorothy',
+                    status: 'primary'
+                  },
+                  {
+                    valueAt: 'http://name.org/olivia',
+                    type: 'alternative'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    end
+  end
+
   describe 'Full name with additional subelements' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
