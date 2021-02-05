@@ -5,63 +5,31 @@ require 'rails_helper'
 RSpec.describe Cocina::ModsNormalizers::NameNormalizer do
   let(:normalized_ng_xml) { Cocina::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: 'druid:pf694bk4862') }
 
-  context 'when normalizing text roleTerm' do
-    context 'when the content has capital letters' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <name>
-              <namePart>Dunnett, Dorothy</namePart>
-              <role>
-                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
-                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">Photographer</roleTerm>
-              </role>
-            </name>
-          </mods>
-        XML
-      end
-
-      it 'downcases text' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <name>
-              <namePart>Dunnett, Dorothy</namePart>
-              <role>
-                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">pht</roleTerm>
-                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pht">photographer</roleTerm>
-              </role>
-            </name>
-          </mods>
-        XML
-      end
+  context 'when the role term has no type' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name>
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm>photographer</roleTerm>
+            </role>
+          </name>
+        </mods>
+      XML
     end
 
-    context 'when the role term has no type' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <name>
-              <namePart>Dunnett, Dorothy</namePart>
-              <role>
-                <roleTerm>photographer</roleTerm>
-              </role>
-            </name>
-          </mods>
-        XML
-      end
-
-      it 'add type="text"' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <name>
-              <namePart>Dunnett, Dorothy</namePart>
-              <role>
-                <roleTerm type="text">photographer</roleTerm>
-              </role>
-            </name>
-          </mods>
-        XML
-      end
+    it 'add type="text"' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name>
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text">photographer</roleTerm>
+            </role>
+          </name>
+        </mods>
+      XML
     end
   end
 
