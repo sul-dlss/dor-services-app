@@ -1336,7 +1336,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Date mapping for presentation event type' do
-    xit 'not implemented'
+    xit 'not implemented' # or is it?
 
     let(:cocina) do
       {
