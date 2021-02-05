@@ -4,49 +4,49 @@ require 'rails_helper'
 
 RSpec.describe 'MODS subject topic <--> cocina mappings' do
   describe 'Subject with only genre subelement' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <genre>Melodrama</genre>
+          </subject>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <subject>
-          <genre>Melodrama</genre>
-        </subject>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        subject: [
-          {
-            value: 'Melodrama',
-            type: 'genre'
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Melodrama',
+              type: 'genre'
+            }
+          ]
+        }
+      end
     end
   end
 
   describe 'Genre subject with display label on subelement' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <genre displayLabel="Drama type">Melodrama</genre>
+          </subject>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <subject>
-          <genre displayLabel="Drama type">Melodrama</genre>
-        </subject>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        subject: [
-          {
-            value: 'Melodrama',
-            type: 'genre',
-            displayLabel: 'Drama type'
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Melodrama',
+              type: 'genre',
+              displayLabel: 'Drama type'
+            }
+          ]
+        }
+      end
     end
   end
 
