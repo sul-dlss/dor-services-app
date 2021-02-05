@@ -183,6 +183,35 @@ RSpec.describe 'MODS recordInfo <--> cocina mappings' do
     end
   end
 
+  describe 'Description standard with authority' do
+    # Adapted from fw201vw9681
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <recordInfo>
+          <descriptionStandard authorityURI="http://id.loc.gov/vocabulary/descriptionConventions" valueURI="http://id.loc.gov/vocabulary/descriptionConventions/dcrmg">dcrmg</descriptionStandard>
+        </recordInfo>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        adminMetadata: {
+          metadataStandard: [
+            {
+              code: 'dcrmg',
+              uri: 'http://id.loc.gov/vocabulary/descriptionConventions/dcrmg',
+              source: {
+                uri: 'http://id.loc.gov/vocabulary/descriptionConventions/'
+              }
+            }
+          ]
+        }
+      }
+    end
+  end
+
   describe 'Converted from MARC' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
