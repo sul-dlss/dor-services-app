@@ -4,6 +4,7 @@
 require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
 require 'optparse'
+require 'set'
 
 MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
 
@@ -15,9 +16,36 @@ def has_xlink_href?(ng_xml)
   ng_xml.xpath('//mods:*[@xlink:href]', mods: MODS_NS, xlink: 'http://www.w3.org/1999/xlink').present?
 end
 
+# rubocop:disable Layout/LineLength
+MODS_ELEMENTS = %w[abstract accessCondition affiliation alternativeName area caption cartographicExtension cartographics city citySection classification continent coordinates copyInformation copyrightDate country county date dateCaptured dateCreated dateIssued dateModified dateOther dateValid description descriptionStandard detail digitalOrigin displayForm edition electronicLocator end enumerationAndChronology etal extension extent extraTerrestrialArea form frequency genre geographic geographicCode hierarchicalGeographic holdingExternal holdingSimple identifier internetMediaType island issuance itemIdentifier language languageOfCataloging languageTerm list location mods modsCollection name nameIdentifier namePart nonSort note number occupation originInfo part partName partNumber physicalDescription physicalLocation place placeTerm projection province publisher recordChangeDate recordContentSource recordCreationDate recordIdentifier recordInfo recordInfoNote recordOrigin reformattingQuality region relatedItem role roleTerm scale scriptTerm shelfLocator start state subLocation subTitle subject tableOfContents targetAudience temporal territory text title titleInfo topic total typeOfResource url].freeze
+# rubocop:enable Layout/LineLength
+
+def check_elements(ng_xml)
+  bad_elements = Set.new
+  ng_xml.xpath('//mods:*', mods: MODS_NS).each do |element|
+    bad_elements << element.name if MODS_ELEMENTS.exclude?(element.name)
+  end
+  bad_elements.present? ? bad_elements.to_a.join(', ') : false
+end
+
+# rubocop:disable Layout/LineLength
+MODS_ATTRS = %w[ID access altFormat altRepGroup altType areaType authority authorityURI calendar citySectionType collection contentType dateLastAccessed displayLabel edition encoding eventType generator invalid keyDate lang level manuscript nameTitleGroup note objectPart order otherType otherTypeAuth otherTypeAuthURI otherTypeURI period point qualifier regionType script shareable source supplied transliteration type typeURI unit unitType usage valueURI version].freeze
+# rubocop:enable Layout/LineLength
+
+def check_attrs(ng_xml)
+  bad_attrs = Set.new
+  ng_xml.xpath('//@*').each do |attr|
+    # Namespace is nil for MODS
+    bad_attrs << attr.name if MODS_ATTRS.exclude?(attr.name) && attr.namespace.nil?
+  end
+  bad_attrs.present? ? bad_attrs.to_a.join(', ') : false
+end
+
 REPORTS = {
   parts: method(:has_part?),
-  xlink_href: method(:has_xlink_href?)
+  xlink_href: method(:has_xlink_href?),
+  mods_elements: method(:check_elements),
+  mods_attrs: method(:check_attrs)
 }.with_indifferent_access
 
 options = { local: false, reports: REPORTS.keys }
@@ -44,20 +72,23 @@ Result = Struct.new(:druid, :apo, :collections, :catkey, :reports)
 run_reports = options[:reports].select { |name| REPORTS.keys.include?(name) }
 results = Parallel.map(druids, progress: 'Testing') do |druid|
   ng_xml = cache.descmd_xml(druid)
-  reports = []
+  report_results = {}
   run_reports.each do |name|
-    reports << name if REPORTS[name].call(ng_xml)
+    report_result = REPORTS[name].call(ng_xml)
+    report_results[name] = report_result if report_result
   end
-  if reports.empty?
+  if report_results.empty?
     nil
   elsif options[:local]
-    Result.new(druid, nil, nil, nil, reports)
+    Result.new(druid, nil, nil, nil, report_results)
   else
     item = Dor.find(druid)
-    Result.new(druid, item.admin_policy_object_id, item.collections.map(&:pid), item.catkey, reports)
+    Result.new(druid, item.admin_policy_object_id, item.collections.map(&:pid), item.catkey, report_results)
   end
 rescue Errno::EBUSY
   retry
+rescue ActiveFedora::ObjectNotFoundError
+  # noop
 rescue StandardError => e
   raise if e.message != 'Missing item'
 
@@ -66,9 +97,15 @@ end.compact
 
 run_reports.each do |name|
   CSV.open("#{name}.csv", 'w') do |writer|
-    writer << %w[druid apo collections catkey]
+    writer << %w[druid apo collections catkey message]
     results.each do |result|
-      writer << [result.druid, result.apo, result.collections&.join(', '), result.catkey] if result.reports.include?(name)
+      next unless result.reports.keys.include?(name)
+
+      writer << [result.druid,
+                 result.apo,
+                 result.collections&.join(', '),
+                 result.catkey,
+                 result.reports[name].is_a?(String) ? result.reports[name] : nil]
     end
   end
 end
