@@ -710,6 +710,21 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
       XML
     end
 
+    let(:roundtrip_mods) do
+      <<~XML
+        <subject authority="lcsh" altRepGroup="1">
+          <name type="personal" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n83172096">
+            <namePart>Wang, Jingwei, 1883-1944</namePart>
+          </name>
+        </subject>
+        <subject authority="lcsh" altRepGroup="1" lang="chi" script="Hant">
+          <name type="personal">
+            <namePart>汪精衛, 1883-1944</namePart>
+          </name>
+        </subject>
+      XML
+    end
+
     let(:cocina) do
       {
         subject: [
