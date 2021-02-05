@@ -695,6 +695,26 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     end
   end
 
+  describe 'Link to external value only' do
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <titleInfo xlink:href="http://title.org/title" />
+      XML
+    end
+
+    let(:cocina) do
+      {
+        title: [
+          {
+            valueAt: 'http://title.org/title'
+          }
+        ]
+      }
+    end
+  end
+
   describe 'Multilingual uniform title' do
     it_behaves_like 'MODS cocina mapping' do
       # Both <name> elements have usage="primary" so "status": "primary" maps to contributor rather than name.
