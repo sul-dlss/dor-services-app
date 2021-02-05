@@ -33,7 +33,7 @@ module Cocina
         end
 
         def build
-          grouped_altrepgroup_name_nodes, other_name_nodes = AltRepGroup.split(nodes: resource_element.xpath('mods:name', mods: DESC_METADATA_NS))
+          grouped_altrepgroup_name_nodes, other_name_nodes = AltRepGroup.split(nodes: deduped_name_nodes)
           contributors = grouped_altrepgroup_name_nodes.map { |name_nodes| build_name_nodes(name_nodes) } + \
                          other_name_nodes.map { |name_node| build_name_nodes([name_node]) }
           contributors.compact.presence
@@ -42,6 +42,14 @@ module Cocina
         private
 
         attr_reader :resource_element, :notifier
+
+        def deduped_name_nodes
+          name_nodes = resource_element.xpath('mods:name', mods: DESC_METADATA_NS)
+          uniq_name_nodes = name_nodes.uniq(&:to_s)
+
+          notifier.warn('Duplicate name entry') if name_nodes.size != uniq_name_nodes.size
+          uniq_name_nodes
+        end
 
         def build_name_nodes(name_nodes)
           name_nodes.each { |name_node| notifier.warn('Missing or empty name type attribute') if name_node['type'].blank? && name_node['xlink:href'].blank? }

@@ -1803,4 +1803,48 @@ RSpec.describe 'MODS name <--> cocina mappings' do
       ]
     end
   end
+
+  describe 'Duplicate names' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Dunnett, Dorothy'
+                }
+              ],
+              type: 'person'
+            }
+          ]
+        }
+      end
+
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Duplicate name entry')
+        ]
+      end
+    end
+  end
 end

@@ -17,6 +17,7 @@ module Cocina
       def normalize
         normalize_text_role_term
         normalize_name
+        normalize_dupes
         ng_xml
       end
 
@@ -39,6 +40,20 @@ module Cocina
         # Move them only when there are children.
         ng_xml.xpath('//mods:name[@xlink:href and mods:*]', mods: ModsNormalizer::MODS_NS, xlink: ModsNormalizer::XLINK_NS).each do |node|
           node['valueURI'] = node.remove_attribute('href').value
+        end
+      end
+
+      def normalize_dupes
+        normalize_dupes_for(ng_xml.root)
+        ng_xml.root.xpath('mods:relatedItem', mods: ModsNormalizer::MODS_NS).each { |related_item_node| normalize_dupes_for(related_item_node) }
+      end
+
+      def normalize_dupes_for(base_node)
+        name_nodes = base_node.xpath('mods:name', mods: ModsNormalizer::MODS_NS)
+
+        dupe_name_nodes_groups = name_nodes.group_by(&:to_s).values.select { |grouped_name_nodes| grouped_name_nodes.size > 1 }
+        dupe_name_nodes_groups.each do |dupe_name_nodes|
+          dupe_name_nodes[1..].each(&:remove)
         end
       end
     end
