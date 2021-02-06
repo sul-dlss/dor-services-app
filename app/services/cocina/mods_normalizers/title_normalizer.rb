@@ -28,7 +28,8 @@ module Cocina
       def normalize_empty_titles
         ng_xml.root.xpath('//mods:title[not(text())]', mods: ModsNormalizer::MODS_NS).each(&:remove)
         ng_xml.root.xpath('//mods:subTitle[not(text())]', mods: ModsNormalizer::MODS_NS).each(&:remove)
-        ng_xml.root.xpath('//mods:titleInfo[not(mods:*)]', mods: ModsNormalizer::MODS_NS).each(&:remove)
+        ng_xml.root.xpath('//mods:titleInfo[not(mods:*) and not(@xlink:href)]',
+                          mods: ModsNormalizer::MODS_NS, xlink: ModsNormalizer::XLINK_NS).each(&:remove)
       end
 
       def normalize_title_type

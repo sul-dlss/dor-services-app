@@ -18,6 +18,8 @@ module Cocina
         end
 
         def build
+          return { valueAt: title_info_element['xlink:href'] } if title_info_element['xlink:href']
+
           # Find all the child nodes that have text
           return nil if title_info_element.children.empty?
 
