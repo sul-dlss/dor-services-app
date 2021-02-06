@@ -145,7 +145,7 @@ module Cocina
             end
           else
             xml.subject(subject_attributes) do
-              write_topic(subject, subject_value, is_parallel: alt_rep_group.present?, is_basic: true)
+              write_topic(subject, subject_value, is_parallel: alt_rep_group.present?)
             end
           end
         end
@@ -153,14 +153,12 @@ module Cocina
         def subject_attributes_for(subject, alt_rep_group)
           {
             altRepGroup: alt_rep_group,
-            authority: authority_for(subject)
+            authority: authority_for(subject),
+            lang: subject.valueLanguage&.code,
+            script: subject.valueLanguage&.valueScript&.code
           }.tap do |attrs|
             attrs[:displayLabel] = subject.displayLabel unless subject.type == 'genre'
             attrs[:edition] = edition(subject.source.version) if subject.source&.version
-            if alt_rep_group
-              attrs[:lang] = subject.valueLanguage&.code
-              attrs[:script] = subject.valueLanguage&.valueScript&.code
-            end
           end.compact
         end
 
@@ -179,8 +177,8 @@ module Cocina
           xml.classification value, attrs
         end
 
-        def write_topic(subject, subject_value, is_parallel: false, is_basic: false)
-          topic_attributes = topic_attributes_for(subject_value, is_parallel: is_parallel, is_basic: is_basic)
+        def write_topic(subject, subject_value, is_parallel: false)
+          topic_attributes = topic_attributes_for(subject_value, is_parallel: is_parallel)
           case subject_value.type
           when 'person'
             xml.name topic_attributes.merge(type: 'personal') do
@@ -198,17 +196,13 @@ module Cocina
           end
         end
 
-        def topic_attributes_for(subject_value, is_parallel: false, is_geo: false, is_basic: false)
+        def topic_attributes_for(subject_value, is_parallel: false, is_geo: false)
           {}.tap do |topic_attributes|
             topic_attributes[:authority] = authority_for_topic(subject_value, is_geo, is_parallel)
             topic_attributes[:authorityURI] = subject_value.source&.uri
             topic_attributes[:encoding] = subject_value.encoding&.code
             topic_attributes[:valueURI] = subject_value.uri
             topic_attributes['xlink:href'] = subject_value.valueAt
-            if is_geo || (is_basic && !is_parallel)
-              topic_attributes[:lang] = subject_value.valueLanguage&.code
-              topic_attributes[:script] = subject_value.valueLanguage&.valueScript&.code
-            end
             topic_attributes[:displayLabel] = subject_value.displayLabel if subject_value.type == 'genre'
           end.compact
         end
@@ -283,9 +277,8 @@ module Cocina
 
         def write_person(subject, subject_value, display_values: nil)
           name_attrs = topic_attributes_for(subject_value).tap do |attrs|
-            attrs[:type] = name_type_for(subject_value.type)
+            attrs[:type] = name_type_for(subject_value.type || subject.type)
           end.compact
-
           xml.name name_attrs do
             xml.namePart subject_value.value if subject_value.value
             write_display_form(display_values)

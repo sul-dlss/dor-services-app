@@ -46,8 +46,9 @@ module Cocina
       def altrepgroup_error?(nodes)
         return true if nodes.map(&:name).uniq.size != 1
 
-        scripts = nodes.map { |node| node['script'] }.uniq
-        langs = nodes.map { |node| node['lang'] }.uniq
+        # For subjects, script/lang may be in child so looking in both locations.
+        scripts = nodes.map { |node| node['script'] || node.elements.first&.attribute('script') }.uniq
+        langs = nodes.map { |node| node['lang'] || node.elements.first&.attribute('lang') }.uniq
         return false if scripts.size == nodes.size || langs.size == nodes.size
 
         true

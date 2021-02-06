@@ -693,73 +693,75 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
   describe 'Name subject with name type' do
     # Example from bt573bx7287
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n83172096" altRepGroup="1">
+            <name type="personal">
+              <namePart>Wang, Jingwei, 1883-1944</namePart>
+            </name>
+          </subject>
+          <subject authority="lcsh" altRepGroup="1">
+            <name type="personal" lang="chi" script="Hant">
+              <namePart>汪精衛, 1883-1944</namePart>
+            </name>
+          </subject>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n83172096" altRepGroup="1">
-          <name type="personal">
-            <namePart>Wang, Jingwei, 1883-1944</namePart>
-          </name>
-        </subject>
-        <subject authority="lcsh" altRepGroup="1">
-          <name type="personal" lang="chi" script="Hant">
-            <namePart>汪精衛, 1883-1944</namePart>
-          </name>
-        </subject>
-      XML
-    end
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="lcsh" altRepGroup="1">
+            <name type="personal" authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n83172096">
+              <namePart>Wang, Jingwei, 1883-1944</namePart>
+            </name>
+          </subject>
+          <subject authority="lcsh" altRepGroup="1" lang="chi" script="Hant">
+            <name type="personal">
+              <namePart>汪精衛, 1883-1944</namePart>
+            </name>
+          </subject>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      <<~XML
-        <subject authority="lcsh" altRepGroup="1">
-          <name type="personal" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n83172096">
-            <namePart>Wang, Jingwei, 1883-1944</namePart>
-          </name>
-        </subject>
-        <subject authority="lcsh" altRepGroup="1" lang="chi" script="Hant">
-          <name type="personal">
-            <namePart>汪精衛, 1883-1944</namePart>
-          </name>
-        </subject>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        subject: [
-          {
-            parallelValue: [
-              {
-                value: 'Wang, Jingwei, 1883-1944',
-                uri: 'http://id.loc.gov/authorities/names/n83172096',
-                source: {
-                  uri: 'http://id.loc.gov/authorities/names/'
-                }
-              },
-              {
-                value: '汪精衛, 1883-1944',
-                valueLanguage: {
-                  code: 'chi',
+      let(:cocina) do
+        {
+          subject: [
+            {
+              parallelValue: [
+                {
+                  value: 'Wang, Jingwei, 1883-1944',
+                  uri: 'http://id.loc.gov/authorities/names/n83172096',
                   source: {
-                    code: 'iso639-2b'
-                  },
-                  valueScript: {
-                    code: 'Hant',
+                    code: 'lcsh',
+                    uri: 'http://id.loc.gov/authorities/names/'
+                  }
+                },
+                {
+                  value: '汪精衛, 1883-1944',
+                  valueLanguage: {
+                    code: 'chi',
                     source: {
-                      code: 'iso15924'
+                      code: 'iso639-2b'
+                    },
+                    valueScript: {
+                      code: 'Hant',
+                      source: {
+                        code: 'iso15924'
+                      }
                     }
+                  },
+                  source: {
+                    code: 'lcsh'
                   }
                 }
-              }
-            ],
-            type: 'person',
-            source: {
-              code: 'lcsh'
+              ],
+              type: 'person'
+
             }
-          }
-        ]
-      }
+          ]
+        }
+      end
     end
   end
 
