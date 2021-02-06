@@ -10,7 +10,8 @@ module Cocina
           'http://id.loc.gov/authorities/subjects',
           'http://id.loc.gov/vocabulary/relators',
           'http://id.loc.gov/vocabulary/countries',
-          'http://id.loc.gov/authorities/genreForms'
+          'http://id.loc.gov/authorities/genreForms',
+          'http://id.loc.gov/vocabulary/descriptionConventions'
         ].freeze
 
         def self.normalize_uri(uri)

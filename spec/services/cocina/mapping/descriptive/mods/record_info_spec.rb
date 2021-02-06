@@ -70,10 +70,11 @@ RSpec.describe 'MODS recordInfo <--> cocina mappings' do
             ],
             metadataStandard: [
               {
-                code: 'dacs',
                 uri: 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
                 source: {
-                  uri: 'http://id.loc.gov/vocabulary/descriptionConventions/'
+                  uri: 'http://id.loc.gov/vocabulary/descriptionConventions/',
+                  # This isn't really the code for the authority. However, carrying through bad data.
+                  code: 'dacs'
                 }
               },
               {
@@ -185,30 +186,30 @@ RSpec.describe 'MODS recordInfo <--> cocina mappings' do
 
   describe 'Description standard with authority' do
     # Adapted from fw201vw9681
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <recordInfo>
+            <descriptionStandard authorityURI="http://id.loc.gov/vocabulary/descriptionConventions/" valueURI="http://id.loc.gov/vocabulary/descriptionConventions/dcrmg">dcrmg</descriptionStandard>
+          </recordInfo>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <recordInfo>
-          <descriptionStandard authorityURI="http://id.loc.gov/vocabulary/descriptionConventions" valueURI="http://id.loc.gov/vocabulary/descriptionConventions/dcrmg">dcrmg</descriptionStandard>
-        </recordInfo>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        adminMetadata: {
-          metadataStandard: [
-            {
-              code: 'dcrmg',
-              uri: 'http://id.loc.gov/vocabulary/descriptionConventions/dcrmg',
-              source: {
-                uri: 'http://id.loc.gov/vocabulary/descriptionConventions/'
+      let(:cocina) do
+        {
+          adminMetadata: {
+            metadataStandard: [
+              {
+                code: 'dcrmg',
+                uri: 'http://id.loc.gov/vocabulary/descriptionConventions/dcrmg',
+                source: {
+                  uri: 'http://id.loc.gov/vocabulary/descriptionConventions/'
+                }
               }
-            }
-          ]
+            ]
+          }
         }
-      }
+      end
     end
   end
 

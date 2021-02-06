@@ -48,11 +48,7 @@ module Cocina
           return if admin_metadata.metadataStandard.blank?
 
           admin_metadata.metadataStandard.each do |standard|
-            if standard.uri
-              xml.descriptionStandard standard.value, with_uri_info(standard).merge(authority: standard.code)
-            else
-              xml.descriptionStandard standard.code
-            end
+            xml.descriptionStandard standard.code || standard.value, with_uri_info(standard)
           end
         end
 

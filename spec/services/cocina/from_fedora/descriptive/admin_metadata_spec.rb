@@ -68,14 +68,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
         ],
         metadataStandard: [
           {
-            code: 'dacs',
             uri: 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
             value: "Describing archives: a content standard\u00A0(Chicago: Society of American Archivists)",
             source: {
-              uri: 'http://id.loc.gov/vocabulary/descriptionConventions'
+              uri: 'http://id.loc.gov/vocabulary/descriptionConventions/',
+              code: 'dacs'
             }
           }
-
         ],
         note: [
           { type: 'record origin', value: 'human prepared' }
