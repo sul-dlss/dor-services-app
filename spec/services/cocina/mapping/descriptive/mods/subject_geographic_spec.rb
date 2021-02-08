@@ -229,8 +229,8 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
 
       let(:roundtrip_mods) do
         <<~XML
-           <subject authority="geonames">
-            <geographic authority="geonames" authorityURI="http://www.geonames.org/ontology#" valueURI="http://sws.geonames.org/2960860/" lang="eng">Arctic Ocean</geographic>
+           <subject authority="geonames" lang="eng">
+            <geographic authority="geonames" authorityURI="http://www.geonames.org/ontology#" valueURI="http://sws.geonames.org/2960860/">Arctic Ocean</geographic>
           </subject>
         XML
       end

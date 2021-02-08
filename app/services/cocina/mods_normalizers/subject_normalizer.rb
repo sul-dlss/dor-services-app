@@ -23,6 +23,7 @@ module Cocina
         normalize_subject_authority_tgm
         normalize_coordinates # Must be before normalize_subject_cartographics
         normalize_subject_cartographics
+        normalize_subject_lang_and_script
         ng_xml
       end
 
@@ -206,6 +207,22 @@ module Cocina
       def normalize_subject_authority_naf
         ng_xml.root.xpath("//mods:subject[@authority='naf']", mods: ModsNormalizer::MODS_NS).each do |subject_node|
           subject_node[:authority] = 'lcsh'
+        end
+      end
+
+      def normalize_subject_lang_and_script
+        ng_xml.root.xpath('//mods:subject[count(mods:*) = 1]', mods: ModsNormalizer::MODS_NS).each do |subject_node|
+          child_node = subject_node.elements.first
+          # If all children have the same lang, then move to subject and delete from children.
+          if child_node['lang'] && subject_node.elements.all? { |node| node['lang'] == child_node['lang'] }
+            subject_node['lang'] = child_node['lang']
+            child_node.delete('lang')
+          end
+          # If all children have the same script, then move to subject and delete from children.
+          if child_node['script'] && subject_node.elements.all? { |node| node['script'] == child_node['script'] }
+            subject_node['script'] = child_node['script']
+            child_node.delete('script')
+          end
         end
       end
     end

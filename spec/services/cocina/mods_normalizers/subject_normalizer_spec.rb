@@ -577,4 +577,30 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
       XML
     end
   end
+
+  context 'when normalizing lang and script' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject>
+            <name type="personal" lang="chi" script="Hant">
+              <namePart>汪精衛, 1883-1944</namePart>
+            </name>
+          </subject>
+        </mods>
+      XML
+    end
+
+    it 'moves to subject' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject lang="chi" script="Hant">
+            <name type="personal">
+              <namePart>汪精衛, 1883-1944</namePart>
+            </name>
+          </subject>
+        </mods>
+      XML
+    end
+  end
 end
