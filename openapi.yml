@@ -1386,6 +1386,7 @@ components:
       allOf:
         - $ref: "#/components/schemas/DescriptiveStructuredValue"
         - $ref: "#/components/schemas/DescriptiveParallelValue"
+        - $ref: "#/components/schemas/DescriptiveGroupedValue"
         - type: object
           additionalProperties: false
           properties:
@@ -1454,6 +1455,15 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DescriptiveValue"
+    DescriptiveGroupedValue:
+      description: Value model for a set of descriptive elements grouped together in an unstructured way.
+      type: object
+      additionalProperties: false
+      properties:
+        groupedValue:
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
     DescriptiveParallelValue:
       description: Value model for multiple representations of the same information (e.g. in different languages).
       type: object
@@ -1506,6 +1516,12 @@ components:
             - type: object
               required:
                 - parallelValue
+            - type: object
+              required:
+                - groupedValue
+            - type: object
+              required:
+                - valueAt
     DRO:
       description: Domain-defined abstraction of a 'work'. Digital Repository Objects' abstraction is describable for our domain’s purposes, i.e. for management needs within our system.
       type: object
@@ -1878,6 +1894,11 @@ components:
         encoding:
           # description: present for mapping to additional schemas in the future and for consistency but not otherwise used
           $ref: "#/components/schemas/Standard"
+        groupedValue:
+          description: present for mapping to additional schemas in the future and for consistency but not otherwise used
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
         note:
           description: present for mapping to additional schemas in the future and for consistency but not otherwise used
           type: array
