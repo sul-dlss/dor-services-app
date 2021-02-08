@@ -76,4 +76,42 @@ RSpec.describe Cocina::ModsNormalizers::NameNormalizer do
       XML
     end
   end
+
+  context 'when duplicate names' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name>
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+          <name>
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+          <relatedItem>
+            <name>
+              <namePart>Dunnett, Dorothy</namePart>
+            </name>
+            <name>
+              <namePart>Dunnett, Dorothy</namePart>
+            </name>
+          </relatedItem>
+        </mods>
+      XML
+    end
+
+    it 'duplicates are removed' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name>
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+          <relatedItem>
+            <name>
+              <namePart>Dunnett, Dorothy</namePart>
+            </name>
+          </relatedItem>
+        </mods>
+      XML
+    end
+  end
 end
