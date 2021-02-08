@@ -1341,7 +1341,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             type: 'person'
           },
           {
-            type: 'unspeciied others'
+            type: 'unspecified others'
           }
         ]
       }
@@ -1349,40 +1349,39 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with display label' do
-    xit 'not implemented: displayLabel for contributor'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal" displayLabel="Pseudonym">
+            <namePart>Westmacott, Mary</namePart>
+          </name>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <name type="personal" displayLabel="Pseudonym">
-          <namePart>Westmacott, Mary</namePart>
-        </name>
-      XML
-    end
+      # OK to omit type: pseudonym in MODS mapping.
+      let(:roundtrip_mods) do
+        <<~XML
+          <name type="personal" displayLabel="Pseudonym">
+            <namePart>Westmacott, Mary</namePart>
+          </name>
+        XML
+      end
 
-    # OK to omit type: pseudonym in MODS mapping.
-    let(:roundtrip_mods) do
-      <<~XML
-        <name type="personal" displayLabel="Pseudonym">
-          <namePart>Westmacott, Mary</namePart>
-        </name>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                value: 'Westmacott, Mary',
-                type: 'pseudonym',
-                displayLabel: 'Pseudonym'
-              }
-            ],
-            type: 'person'
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Westmacott, Mary',
+                  displayLabel: 'Pseudonym'
+                }
+              ],
+              type: 'person'
+            }
+          ]
+        }
+      end
     end
   end
 

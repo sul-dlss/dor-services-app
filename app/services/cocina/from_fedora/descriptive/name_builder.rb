@@ -94,9 +94,9 @@ module Cocina
             when 0
               parts << { valueAt: name_node['xlink:href'] } if name_node['xlink:href']
             when 1
-              parts << build_name_part(name_part_nodes.first, default_type: false).merge(authority_attrs_for(name_node)).presence
+              parts << build_name_part(name_node, name_part_nodes.first, default_type: false).merge(authority_attrs_for(name_node)).presence
             else
-              vals = name_part_nodes.map { |name_part| build_name_part(name_part).presence }.compact
+              vals = name_part_nodes.map { |name_part| build_name_part(name_node, name_part).presence }.compact
               parts << { structuredValue: vals }.merge(authority_attrs_for(name_node))
             end
 
@@ -105,7 +105,7 @@ module Cocina
           end.compact
         end
 
-        def build_name_part(name_part_node, default_type: true)
+        def build_name_part(name_node, name_part_node, default_type: true)
           if name_part_node.content.blank?
             notifier.warn('name/namePart missing value')
             return {}
@@ -113,7 +113,8 @@ module Cocina
 
           {
             value: name_part_node.content,
-            type: name_part_type_for(name_part_node['type'], default_type)
+            type: name_part_type_for(name_part_node['type'], default_type),
+            displayLabel: name_node['displayLabel']
           }.compact
         end
 
