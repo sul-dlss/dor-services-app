@@ -1417,12 +1417,12 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         let(:mods) do
           <<~XML
             <originInfo displayLabel="Presented" eventType="presentation">
-               <place>
-                 <placeTerm type="text" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
-               </place>
-               <publisher>Stanford Institute for Theoretical Economics</publisher>
-               <dateIssued keyDate="yes" encoding="w3cdtf">2018</dateIssued>
-             </originInfo>
+              <place>
+                <placeTerm type="text" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+              </place>
+              <publisher>Stanford Institute for Theoretical Economics</publisher>
+              <dateIssued keyDate="yes" encoding="w3cdtf">2018</dateIssued>
+            </originInfo>
           XML
         end
       end
