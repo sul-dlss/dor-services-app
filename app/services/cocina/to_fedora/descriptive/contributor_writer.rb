@@ -95,7 +95,8 @@ module Cocina
             script: name.valueLanguage&.valueScript&.code,
             valueURI: name.uri,
             authority: name.source&.code,
-            authorityURI: name.source&.uri
+            authorityURI: name.source&.uri,
+            displayLabel: name.displayLabel
           }.tap do |attributes|
             attributes[:usage] = 'primary' if contributor.status == 'primary'
             attributes['xlink:href'] = name.valueAt
@@ -124,9 +125,9 @@ module Cocina
         end
 
         def name_part_attributes(part)
-          {}.tap do |attributes|
-            attributes[:type] = NAME_PART[part.type] if part.type
-          end.compact
+          {
+            type: NAME_PART[part.type]
+          }.compact
         end
 
         def write_structured(name)
