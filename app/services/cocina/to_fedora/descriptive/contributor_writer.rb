@@ -46,14 +46,21 @@ module Cocina
         def write_contributor(contributor)
           xml.name name_attributes(contributor, contributor.name.first, name_title_group_indexes[0]) do
             contributor.name.each do |name|
-              write_structured(name) if name.structuredValue
-              if name.value
-                name.type == 'display' ? write_display_form(name) : write_basic(name)
-              end
+              write_name(name)
             end
             write_identifier(contributor) if contributor.identifier
             write_note(contributor)
             write_roles(contributor)
+          end
+        end
+
+        def write_name(name)
+          if name.structuredValue
+            write_structured(name)
+          elsif name.groupedValue
+            write_grouped(name)
+          elsif name.value
+            name.type == 'display' ? write_display_form(name) : write_basic(name)
           end
         end
 
@@ -127,12 +134,26 @@ module Cocina
         def name_part_attributes(part)
           {
             type: NAME_PART[part.type]
-          }.compact
+          }.tap do |attributes|
+            attributes['xlink:href'] = part.valueAt
+          end.compact
         end
 
         def write_structured(name)
           Array(name.structuredValue).each do |part|
             xml.namePart part.value, name_part_attributes(part)
+          end
+        end
+
+        def write_grouped(name)
+          Array(name.groupedValue).each do |part|
+            if part.type == 'pseudonym'
+              xml.alternativeName part.value, name_part_attributes(part).merge({ altType: 'pseudonym' })
+            elsif part.type == 'alternative'
+              xml.alternativeName part.value, name_part_attributes(part)
+            else
+              write_name(part)
+            end
           end
         end
 

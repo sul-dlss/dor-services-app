@@ -1481,74 +1481,79 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Alternative name' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Strachey, Dorothy</namePart>
+            <alternativeName altType="pseudonym">Olivia</alternativeName>
+          </name>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <name usage="primary">
-          <namePart>Strachey, Dorothy</namePart>
-          <alternativeName altType="pseudonym">Olivia</alternativeName>
-        </name>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                groupedValue: [
-                  {
-                    value: 'Strachey, Dorothy'
-                  },
-                  {
-                    value: 'Olivia',
-                    type: 'pseudonym'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  groupedValue: [
+                    {
+                      value: 'Strachey, Dorothy',
+                      type: 'name'
+                    },
+                    {
+                      value: 'Olivia',
+                      type: 'pseudonym'
+                    }
+                  ]
+                }
+              ],
+              status: 'primary',
+              type: 'person'
+            }
+          ]
+        }
+      end
     end
   end
 
   describe 'Alternative name with external link to value only' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Strachey, Dorothy</namePart>
+            <alternativeName xlink:href="http://name.org/olivia" />
+          </name>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <name usage="primary">
-          <namePart>Strachey, Dorothy</namePart>
-          <alternativeName xlink:href="http://name.org/olivia" />
-        </name>
-      XML
-    end
-
-    # Use type: alternative if altType not in source data, and drop in roundtrip
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                groupedValue: [
-                  {
-                    value: 'Strachey, Dorothy',
-                    status: 'primary'
-                  },
-                  {
-                    valueAt: 'http://name.org/olivia',
-                    type: 'alternative'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      # Use type: alternative if altType not in source data, and drop in roundtrip
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  groupedValue: [
+                    {
+                      value: 'Strachey, Dorothy',
+                      type: 'name'
+                    },
+                    {
+                      valueAt: 'http://name.org/olivia',
+                      type: 'alternative'
+                    }
+                  ]
+                }
+              ],
+              status: 'primary',
+              type: 'person'
+            }
+          ]
+        }
+      end
     end
   end
 
