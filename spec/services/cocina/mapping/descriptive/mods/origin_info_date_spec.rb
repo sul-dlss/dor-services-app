@@ -1336,7 +1336,9 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
   describe 'Date mapping for presentation event type' do
     context 'event type and date only' do
-      it_behaves_like 'cocina MODS mapping' do
+      xit 'to be implemented: presentation currently maps to MODS dateIssued, not dateCreated - what do we want?'
+
+      # it_behaves_like 'cocina MODS mapping' do
         let(:cocina) do
           {
             event: [
@@ -1359,7 +1361,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
             </originInfo>
           XML
         end
-      end
+      # end
     end
 
     context 'with more complex presentation' do
