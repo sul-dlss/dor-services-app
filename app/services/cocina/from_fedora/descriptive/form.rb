@@ -22,12 +22,13 @@ module Cocina
         end
 
         def build
-          [].tap do |forms|
-            add_genre(forms)
-            add_types(forms)
-            add_physical_descriptions(forms)
-            add_subject_cartographics(forms)
-          end
+          forms = []
+          add_genre(forms)
+          add_types(forms)
+          add_physical_descriptions(forms)
+          add_subject_cartographics(forms)
+          Primary.adjust(forms, 'genre', notifier, match_type: true)
+          Primary.adjust(forms, 'resource type', notifier, match_type: true)
         end
 
         private
@@ -95,7 +96,9 @@ module Cocina
 
               uri: ValueURI.sniff(genre[:valueURI], notifier),
               source: source
-            }.compact
+            }.tap do |attrs|
+              attrs[:status] = 'primary' if genre['usage'] == 'primary'
+            end.compact
           end
         end
 
@@ -118,35 +121,44 @@ module Cocina
 
         def add_types(forms)
           type_of_resource.each do |type|
-            if type.text.present?
-              forms << {
-                value: type.text,
-                type: 'resource type',
-                source: {
-                  value: 'MODS resource types'
-                },
-                displayLabel: type[:displayLabel].presence
-              }.compact
-            end
+            forms << resource_type_form(type) if type.text.present?
 
-            if type[:manuscript] == 'yes'
-              forms << {
-                value: 'manuscript',
-                source: {
-                  value: 'MODS resource types'
-                }
-              }
-            end
+            forms << manuscript_form if type[:manuscript] == 'yes'
 
-            next unless type[:collection] == 'yes'
-
-            forms << {
-              value: 'collection',
-              source: {
-                value: 'MODS resource types'
-              }
-            }
+            forms << collection_form if type[:collection] == 'yes'
           end
+        end
+
+        def resource_type_form(type)
+          {
+            value: type.text,
+            type: 'resource type',
+            source: {
+              value: 'MODS resource types'
+            },
+            displayLabel: type[:displayLabel].presence
+
+          }.tap do |attrs|
+            attrs[:status] = 'primary' if type['usage'] == 'primary'
+          end.compact
+        end
+
+        def manuscript_form
+          {
+            value: 'manuscript',
+            source: {
+              value: 'MODS resource types'
+            }
+          }
+        end
+
+        def collection_form
+          {
+            value: 'collection',
+            source: {
+              value: 'MODS resource types'
+            }
+          }
         end
 
         def add_physical_descriptions(forms)

@@ -67,51 +67,51 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
   end
 
   describe 'With multiple primary' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject usage="primary">
+            <topic>Trees</topic>
+          </subject>
+          <subject usage="primary">
+            <topic>Birds</topic>
+          </subject>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <subject usage="primary">
-          <topic>Trees</topic>
-        </subject>
-        <subject usage="primary">
-          <topic>Birds</topic>
-        </subject>
-      XML
-    end
+      let(:roundtrip_mods) do
+        # Drop all instances of usage="primary" after first one
+        <<~XML
+          <subject usage="primary">
+            <topic>Trees</topic>
+          </subject>
+          <subject>
+            <topic>Birds</topic>
+          </subject>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      # Drop all instances of usage="primary" after first one
-      <<~XML
-        <subject usage="primary">
-          <topic>Trees</topic>
-        </subject>
-        <subject>
-          <topic>Birds</topic>
-        </subject>
-      XML
-    end
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Trees',
+              type: 'topic',
+              status: 'primary'
+            },
+            {
+              value: 'Birds',
+              type: 'topic'
+            }
+          ]
+        }
+      end
 
-    let(:cocina) do
-      {
-        subject: [
-          {
-            value: 'Trees',
-            type: 'topic',
-            status: 'primary'
-          },
-          {
-            value: 'Birds',
-            type: 'topic'
-          }
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Multiple marked as primary', context: { type: 'subject' })
         ]
-      }
-    end
-
-    let(:warnings) do
-      [
-        Notification.new(msg: 'Multiple subjects marked as primary')
-      ]
+      end
     end
   end
 end

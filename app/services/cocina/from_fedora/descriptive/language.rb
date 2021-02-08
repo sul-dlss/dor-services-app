@@ -18,9 +18,10 @@ module Cocina
         end
 
         def build
-          resource_element.xpath('mods:language', mods: DESC_METADATA_NS).map do |lang_node|
+          languages = resource_element.xpath('mods:language', mods: DESC_METADATA_NS).map do |lang_node|
             Cocina::FromFedora::Descriptive::LanguageTerm.build(language_element: lang_node, notifier: notifier)
           end
+          Primary.adjust(languages, 'language', notifier)
         end
 
         private

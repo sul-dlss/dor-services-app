@@ -203,49 +203,49 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
   # Bad data handling
 
   describe 'With multiple primary' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <typeOfResource usage="primary">text</typeOfResource>
+          <typeOfResource usage="primary">moving image</typeOfResource>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <typeOfResource usage="primary">text</typeOfResource>
-        <typeOfResource usage="primary">moving image</typeOfResource>
-      XML
-    end
+      let(:roundtrip_mods) do
+        # Drop all instances of usage="primary" after first one
+        <<~XML
+          <typeOfResource usage="primary">text</typeOfResource>
+          <typeOfResource>moving image</typeOfResource>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      # Drop all instances of usage="primary" after first one
-      <<~XML
-        <typeOfResource usage="primary">text</typeOfResource>
-        <typeOfResource>moving image</typeOfResource>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        form: [
-          {
-            value: 'text',
-            type: 'resource type',
-            status: 'primary',
-            source: {
-              value: 'MODS resource types'
+      let(:cocina) do
+        {
+          form: [
+            {
+              value: 'text',
+              type: 'resource type',
+              status: 'primary',
+              source: {
+                value: 'MODS resource types'
+              }
+            },
+            {
+              value: 'moving image',
+              type: 'resource type',
+              source: {
+                value: 'MODS resource types'
+              }
             }
-          },
-          {
-            value: 'moving image',
-            type: 'resource type',
-            source: {
-              value: 'MODS resource types'
-            }
-          }
+          ]
+        }
+      end
+
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Multiple marked as primary', context: { type: 'resource type' })
         ]
-      }
-    end
-
-    let(:warnings) do
-      [
-        Notification.new(msg: 'Multiple resource types marked as primary')
-      ]
+      end
     end
   end
 end

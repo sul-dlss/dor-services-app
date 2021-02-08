@@ -249,7 +249,7 @@ RSpec.describe Cocina::ModsNormalizer do
           <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="0">
             <namePart>Shakespeare, William, 1564-1616</namePart>
           </name>
-          <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332">
+          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332">
             <namePart>Vonnegut, Kurt</namePart>
           </name>
         </mods>
@@ -544,6 +544,98 @@ RSpec.describe Cocina::ModsNormalizer do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <abstract>This is a summary.</abstract>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing usage=primary' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <genre usage="primary">poetry</genre>
+          <genre usage="primary">prose</genre>
+          <language usage="primary">
+            <languageTerm type="text" authority="iso639-2b">English</languageTerm>
+          </language>
+          <language usage="primary">
+            <languageTerm type="text" authority="iso639-2b">French</languageTerm>
+          </language>
+          <classification usage="primary" authority="ddc" edition="11">683</classification>
+          <classification usage="primary" authority="ddc" edition="12">684</classification>
+          <subject>
+            <genre usage="primary">Poetry</genre>
+            <genre usage="primary">Prose</genre>
+          </subject>
+          <subject usage="primary">
+            <topic>Trees</topic>
+          </subject>
+          <subject usage="primary">
+            <topic>Birds</topic>
+          </subject>
+          <titleInfo usage="primary">
+            <title>Title 1</title>
+          </titleInfo>
+          <titleInfo usage="primary">
+            <title>Title 2</title>
+          </titleInfo>
+          <typeOfResource usage="primary">text</typeOfResource>
+          <typeOfResource usage="primary">moving image</typeOfResource>
+          <name usage="primary" type="personal">
+            <namePart>Name 1</namePart>
+          </name>
+          <name usage="primary" type="personal">
+            <namePart>Name 2</namePart>
+          </name>
+          <relatedItem>
+            <genre usage="primary">poetry</genre>
+            <genre usage="primary">prose</genre>
+          </relatedItem>
+        </mods>
+      XML
+    end
+
+    it 'removes duplicates' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <genre usage="primary">poetry</genre>
+          <genre>prose</genre>
+          <language usage="primary">
+            <languageTerm type="text" authority="iso639-2b">English</languageTerm>
+          </language>
+          <language>
+            <languageTerm type="text" authority="iso639-2b">French</languageTerm>
+          </language>
+          <classification usage="primary" authority="ddc" edition="11">683</classification>
+          <classification authority="ddc" edition="12">684</classification>
+          <subject>
+            <genre usage="primary">Poetry</genre>
+            <genre>Prose</genre>
+          </subject>
+          <subject usage="primary">
+            <topic>Trees</topic>
+          </subject>
+          <subject>
+            <topic>Birds</topic>
+          </subject>
+          <titleInfo usage="primary">
+            <title>Title 1</title>
+          </titleInfo>
+          <titleInfo>
+            <title>Title 2</title>
+          </titleInfo>
+          <typeOfResource usage="primary">text</typeOfResource>
+          <typeOfResource>moving image</typeOfResource>
+          <name usage="primary" type="personal">
+            <namePart>Name 1</namePart>
+          </name>
+          <name type="personal">
+            <namePart>Name 2</namePart>
+          </name>
+          <relatedItem>
+            <genre usage="primary">poetry</genre>
+            <genre>prose</genre>
+          </relatedItem>
         </mods>
       XML
     end

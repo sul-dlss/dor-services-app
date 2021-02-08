@@ -155,7 +155,8 @@ module Cocina
             altRepGroup: alt_rep_group,
             authority: authority_for(subject),
             lang: subject.valueLanguage&.code,
-            script: subject.valueLanguage&.valueScript&.code
+            script: subject.valueLanguage&.valueScript&.code,
+            usage: subject.status
           }.tap do |attrs|
             attrs[:displayLabel] = subject.displayLabel unless subject.type == 'genre'
             attrs[:edition] = edition(subject.source.version) if subject.source&.version
@@ -197,13 +198,17 @@ module Cocina
         end
 
         def topic_attributes_for(subject_value, is_parallel: false, is_geo: false)
-          {}.tap do |topic_attributes|
-            topic_attributes[:authority] = authority_for_topic(subject_value, is_geo, is_parallel)
-            topic_attributes[:authorityURI] = subject_value.source&.uri
-            topic_attributes[:encoding] = subject_value.encoding&.code
-            topic_attributes[:valueURI] = subject_value.uri
+          {
+            authority: authority_for_topic(subject_value, is_geo, is_parallel),
+            authorityURI: subject_value.source&.uri,
+            encoding: subject_value.encoding&.code,
+            valueURI: subject_value.uri
+          }.tap do |topic_attributes|
+            if subject_value.type == 'genre'
+              topic_attributes[:displayLabel] = subject_value.displayLabel
+              topic_attributes[:usage] = subject_value.status
+            end
             topic_attributes['xlink:href'] = subject_value.valueAt
-            topic_attributes[:displayLabel] = subject_value.displayLabel if subject_value.type == 'genre'
           end.compact
         end
 

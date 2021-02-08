@@ -238,8 +238,12 @@ class TestTitleBuilder
   # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
   # @param [Cocina::FromFedora::DataErrorNotifier] notifier
   # @return [Hash] a hash that can be mapped to a cocina model
-  def self.build(resource_element:, notifier:, require_title: nil)
+  def self.build(resource_element:, notifier:, require_title:)
     titles = resource_element.xpath('mods:titleInfo', mods: Dor::DescMetadataDS::MODS_NS)
-    return [{ value: 'Placeholder title for specs' }] if titles.empty?
+    if titles.empty?
+      [{ value: 'Placeholder title for specs' }]
+    else
+      Cocina::FromFedora::Descriptive::Titles.build(resource_element: resource_element, notifier: notifier, require_title: require_title)
+    end
   end
 end
