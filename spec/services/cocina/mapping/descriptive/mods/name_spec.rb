@@ -1499,7 +1499,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
           {
             name: [
               {
-                structuredValue: [
+                groupedValue: [
                   {
                     value: 'Strachey, Dorothy'
                   },
@@ -1535,7 +1535,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
           {
             name: [
               {
-                structuredValue: [
+                groupedValue: [
                   {
                     value: 'Strachey, Dorothy',
                     status: 'primary'
