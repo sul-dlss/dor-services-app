@@ -537,7 +537,6 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
           </originInfo>
         XML
       end
-
     end
   end
 end

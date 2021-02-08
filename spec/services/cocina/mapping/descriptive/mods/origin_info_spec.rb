@@ -1381,7 +1381,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
   # specs added by devs below
 
-  context 'parallel values with example adapted from hn285fy7937' do
+  describe 'parallel values with example adapted from hn285fy7937' do
     # example adapted from hn285fy7937 after normalization
 
     it_behaves_like 'MODS cocina mapping' do
@@ -1501,7 +1501,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     end
   end
 
-  context 'parallel values - originInfo with additional elements in the second position' do
+  describe 'parallel values - originInfo with additional elements in the second position' do
     # example adapted from bh212vz9239 in different order
 
     it_behaves_like 'MODS cocina mapping' do
@@ -1658,7 +1658,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     end
   end
 
-  context 'parallel value - with second originInfo that would not get an event type' do
+  describe 'parallel value - with second originInfo that would not get an event type' do
     # from druid:mm706hr7414
 
     it_behaves_like 'MODS cocina mapping' do
