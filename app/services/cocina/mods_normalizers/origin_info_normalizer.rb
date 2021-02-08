@@ -15,6 +15,7 @@ module Cocina
       end
 
       def normalize
+        normalize_empty_origin_info
         normalize_origin_info_split
         normalize_origin_info_event_types
         normalize_origin_info_date_other_types
@@ -30,6 +31,10 @@ module Cocina
       private
 
       attr_reader :ng_xml
+
+      def normalize_empty_origin_info
+        ng_xml.root.xpath('//mods:originInfo[not(mods:*) and not(@*)]', mods: ModsNormalizer::MODS_NS).each(&:remove)
+      end
 
       def normalize_origin_info_split
         # Split a single originInfo into multiple.

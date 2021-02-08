@@ -562,4 +562,63 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       XML
     end
   end
+
+  context 'when empty originInfo element' do
+    context 'when no attributes no children' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo/>
+          </mods>
+        XML
+      end
+
+      it 'removes it' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when attributes attribute but no children' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="publication"/>
+          </mods>
+        XML
+      end
+
+      it 'does not remove it' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="publication"/>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when no attributes but (empty) child' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <publisher/>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'does not remove it' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="publication">
+              <publisher/>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+  end
 end
