@@ -1414,4 +1414,324 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
       XML
     end
   end
+
+  # specs added by devs
+
+  context 'with a simple dateCreated with a trailing period' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <dateCreated>1980.</dateCreated>
+          </originInfo>
+        XML
+      end
+
+      # add eventType, remove trailing period
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo eventType="production">
+            <dateCreated>1980</dateCreated>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'creation',
+              date: [
+                {
+                  value: '1980'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  context 'with a single dateOther' do
+    describe 'with type attribute on the dateOther element' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo>
+              <dateOther type="Islamic">1441 AH</dateOther>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                date: [
+                  {
+                    value: '1441 AH',
+                    note: [
+                      {
+                        value: 'Islamic',
+                        type: 'date type'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        let(:warnings) { [Notification.new(msg: 'originInfo/dateOther missing eventType')] }
+      end
+    end
+
+    describe 'with eventType attribute at the originInfo level' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="acquisition" displayLabel="Acquisition date">
+              <dateOther encoding="w3cdtf">1992</dateOther>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'acquisition',
+                displayLabel: 'Acquisition date',
+                date: [
+                  {
+                    value: '1992',
+                    encoding: {
+                      code: 'w3cdtf'
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    describe 'with eventType="production" dateOther type="Julian" (MODS 3.6 and before)' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="production">
+              <dateOther type="Julian">1544-02-02</dateOther>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'creation',
+                date: [
+                  {
+                    value: '1544-02-02',
+                    note: [
+                      {
+                        value: 'Julian',
+                        type: 'date type'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    describe 'with eventType="production" dateCreated calendar="Julian" (MODS 3.7)' do
+      xit 'to be implemented: roundtripping loses calendar Julian note / attrib'
+      # it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="production">
+              <dateCreated calendar="Julian">1544-02-02</dateCreated>
+            </originInfo>
+          XML
+        end
+
+        # FIXME:  missing calendar attribute on dateCreated
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="production">
+              <dateCreated>1544-02-02</dateCreated>
+            </originInfo>
+          XML
+        end
+
+        # FIXME: loses Julian note
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'creation',
+                date: [
+                  {
+                    value: '1544-02-02',
+                    note: [
+                      {
+                        value: 'Julian',
+                        type: 'calendar'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      # end
+    end
+
+    describe 'without any type attribute, with displayLabel' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="Acquisition date">
+              <dateOther keyDate="yes" encoding="w3cdtf">1970-11-23</dateOther>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                displayLabel: 'Acquisition date',
+                date: [
+                  {
+                    value: '1970-11-23',
+                    encoding: {
+                      code: 'w3cdtf'
+                    },
+                    status: 'primary'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        let(:warnings) { [Notification.new(msg: 'originInfo/dateOther missing eventType')] }
+      end
+    end
+  end
+
+  context 'with issuance for a creation event' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="production">
+            <dateCreated encoding="w3cdtf" keyDate="yes">1988-08-03</dateCreated>
+            <issuance>monographic</issuance>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'creation',
+              date: [
+                {
+                  value: '1988-08-03',
+                  status: 'primary',
+                  encoding: {
+                    code: 'w3cdtf'
+                  }
+                }
+              ],
+              note: [
+                {
+                  value: 'monographic',
+                  type: 'issuance',
+                  source: {
+                    value: 'MODS issuance terms'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  context 'with an originInfo that is a presentation' do
+    # from druid:ht706sj6651
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo displayLabel="Presented" eventType="presentation">
+            <place>
+              <placeTerm type="text" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+            </place>
+            <publisher>Stanford Institute for Theoretical Economics</publisher>
+            <dateIssued keyDate="yes" encoding="w3cdtf">2018</dateIssued>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'presentation',
+              date: [
+                {
+                  value: '2018',
+                  encoding: {
+                    code: 'w3cdtf'
+                  },
+                  status: 'primary'
+                }
+              ],
+              displayLabel: 'Presented',
+              contributor: [
+                {
+                  name: [
+                    {
+                      value: 'Stanford Institute for Theoretical Economics'
+                    }
+                  ],
+                  type: 'organization',
+                  role: [
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
+                }
+              ],
+              location: [
+                {
+                  uri: 'http://id.loc.gov/authorities/names/n50046557',
+                  value: 'Stanford (Calif.)'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
 end
