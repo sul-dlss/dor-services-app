@@ -119,6 +119,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
   end
 
   describe 'PURL' do
+    # if purl is only url in record or no other url has usage="primary display", assign to purl
     it_behaves_like 'MODS cocina mapping' do
       let(:druid) { 'ys701qw6956' }
 
@@ -418,85 +419,85 @@ RSpec.describe 'MODS location <--> cocina mappings' do
     end
   end
 
-  describe 'Multiple locations and URLs with usage="primary display"' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:druid) { 'cy979mw6316' }
+  describe 'Multiple locations and non-purl with usage="primary display"' do
+    xit 'updated 2021-08-02'
+    let(:druid) { 'cy979mw6316' }
 
-      let(:mods) do
-        <<~XML
-          <location>
-            <url usage="primary display" note="Available to Stanford-affiliated users at READEX:"
-              >http://infoweb.newsbank.com/?db=SERIAL</url>
-          </location>
-          <location>
-            <url note="Available to Stanford-affiliated users at:"
-              >http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps&amp;srcboxes=SerialSet</url>
-          </location>
-          <location>
-            <url>http://purl.access.gpo.gov/GPO/LPS839</url>
-          </location>
-          <location>
-            <physicalLocation>Stanford University Libraries</physicalLocation>
-            <url>http://purl.stanford.edu/cy979mw6316</url>
-          </location>
-        XML
-      end
+    let(:mods) do
+      <<~XML
+        <location>
+          <url usage="primary display" note="Available to Stanford-affiliated users at READEX:"
+            >http://infoweb.newsbank.com/?db=SERIAL</url>
+        </location>
+        <location>
+          <url note="Available to Stanford-affiliated users at:"
+            >http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps&amp;srcboxes=SerialSet</url>
+        </location>
+        <location>
+          <url>http://purl.access.gpo.gov/GPO/LPS839</url>
+        </location>
+        <location>
+          <physicalLocation>Stanford University Libraries</physicalLocation>
+          <url>http://purl.stanford.edu/cy979mw6316</url>
+        </location>
+      XML
+    end
 
-      # usage="primary display" moved to Stanford purl, separate location elements
-      let(:roundtrip_mods) do
-        <<~XML
-          <location>
-            <url note="Available to Stanford-affiliated users at READEX:"
-              >http://infoweb.newsbank.com/?db=SERIAL</url>
-          </location>
-          <location>
-            <url note="Available to Stanford-affiliated users at:"
-              >http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps&amp;srcboxes=SerialSet</url>
-          </location>
-          <location>
-            <url>http://purl.access.gpo.gov/GPO/LPS839</url>
-          </location>
-          <location>
-            <url usage="primary display">http://purl.stanford.edu/cy979mw6316</url>
-          </location>
-          <location>
-            <physicalLocation>Stanford University Libraries</physicalLocation>
-          </location>
-        XML
-      end
+    # physicalLocation goes in same location element as Stanford purl
+    let(:roundtrip_mods) do
+      <<~XML
+        <location>
+          <url note="Available to Stanford-affiliated users at READEX:" usage="primary display"
+            >http://infoweb.newsbank.com/?db=SERIAL</url>
+        </location>
+        <location>
+          <url note="Available to Stanford-affiliated users at:"
+            >http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps&amp;srcboxes=SerialSet</url>
+        </location>
+        <location>
+          <url>http://purl.access.gpo.gov/GPO/LPS839</url>
+        </location>
+        <location>
+          <url>http://purl.stanford.edu/cy979mw6316</url>
+        </location>
+        <location>
+          <physicalLocation>Stanford University Libraries</physicalLocation>
+        </location>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          purl: 'http://purl.stanford.edu/cy979mw6316',
-          access: {
-            url: [
-              {
-                value: 'http://infoweb.newsbank.com/?db=SERIAL',
-                note: [
-                  value: 'Available to Stanford-affiliated users at READEX:'
-                ]
-              },
-              {
-                value: 'http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps&srcboxes=SerialSet',
-                note: [
-                  value: 'Available to Stanford-affiliated users at:'
-                ]
-              },
-              {
-                value: 'http://purl.access.gpo.gov/GPO/LPS839'
-              }
-            ],
-            physicalLocation: [
-              {
-                value: 'Stanford University Libraries'
-              }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
-            ]
-          }
+    let(:cocina) do
+      {
+        purl: 'http://purl.stanford.edu/cy979mw6316',
+        access: {
+          url: [
+            {
+              value: 'http://infoweb.newsbank.com/?db=SERIAL',
+              note: [
+                value: 'Available to Stanford-affiliated users at READEX:'
+              ],
+              status: 'primary'
+            },
+            {
+              value: 'http://web.lexis-nexis.com/congcomp/form/cong/s_pubadvanced.html?srcboxes=SSMaps&srcboxes=SerialSet',
+              note: [
+                value: 'Available to Stanford-affiliated users at:'
+              ]
+            },
+            {
+              value: 'http://purl.access.gpo.gov/GPO/LPS839'
+            }
+          ],
+          physicalLocation: [
+            {
+              value: 'Stanford University Libraries'
+            }
+          ],
+          digitalRepository: [
+            value: 'Stanford Digital Repository'
+          ]
         }
-      end
+      }
     end
   end
 
