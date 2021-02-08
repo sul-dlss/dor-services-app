@@ -73,7 +73,6 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
         ],
         "metadataStandard": [
           {
-            "code": 'dacs',
             "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
             "value": "Describing archives: a content standard\u00A0(Chicago: Society of American Archivists)",
             "source": {
@@ -103,7 +102,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
               <scriptTerm type="code" authority="iso15924">Latn</scriptTerm>
             </languageOfCataloging>
             <recordContentSource authority="marcorg" authorityURI="http://id.loc.gov/vocabulary/organizations/" valueURI="http://id.loc.gov/vocabulary/organizations/cst">CSt</recordContentSource>
-            <descriptionStandard authority="dacs" authorityURI="http://id.loc.gov/vocabulary/descriptionConventions/" valueURI="http://id.loc.gov/vocabulary/descriptionConventions/dacs">Describing archives: a content standard&#xA0;(Chicago: Society of American Archivists)</descriptionStandard>
+            <descriptionStandard authorityURI="http://id.loc.gov/vocabulary/descriptionConventions/" valueURI="http://id.loc.gov/vocabulary/descriptionConventions/dacs">Describing archives: a content standard&#xA0;(Chicago: Society of American Archivists)</descriptionStandard>
             <recordOrigin>human prepared</recordOrigin>
           </recordInfo>
         </mods>

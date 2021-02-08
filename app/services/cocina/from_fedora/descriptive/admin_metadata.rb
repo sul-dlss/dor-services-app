@@ -80,16 +80,22 @@ module Cocina
           return unless description_standards
 
           description_standards.map do |description_standard|
-            if description_standard['authority']
-              {
-                code: description_standard['authority'],
-                uri: ValueURI.sniff(description_standard['valueURI'], notifier),
-                value: description_standard.text.presence,
-                source: { uri: description_standard['authorityURI'] }
-              }.compact
-            else
-              { code: description_standard.text }
-            end
+            source = {
+              uri: Authority.normalize_uri(description_standard['authorityURI']),
+              code: description_standard['authority']
+            }.compact
+            {
+              uri: ValueURI.sniff(description_standard['valueURI'], notifier),
+              source: source.presence
+            }.tap do |attrs|
+              if description_standard.text.present?
+                if description_standard.text == description_standard.text.downcase
+                  attrs[:code] = description_standard.text
+                else
+                  attrs[:value] = description_standard.text
+                end
+              end
+            end.compact
           end.presence
         end
 
