@@ -474,4 +474,69 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
       end
     end
   end
+
+  # specs added by devs below
+
+  context 'when it has a publisher that is not marcrelator' do
+    # NOTE: cocina -> MODS
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'publication',
+              contributor: [
+                {
+                  name: [{ value: 'Stanford University Press' }],
+                  type: 'organization',
+                  role: [
+                    {
+                      value: 'Publisher',
+                      source: { value: 'Stanford self-deposit contributor types' }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      # NOTE: is this difference ok?
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'publication',
+              contributor: [
+                {
+                  name: [{ value: 'Stanford University Press' }],
+                  type: 'organization',
+                  role: [
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="publication">
+            <publisher>Stanford University Press</publisher>
+          </originInfo>
+        XML
+      end
+    end
+  end
 end

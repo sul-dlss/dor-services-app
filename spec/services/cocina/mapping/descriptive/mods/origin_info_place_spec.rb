@@ -248,4 +248,145 @@ RSpec.describe 'MODS originInfo place <--> cocina mappings' do
       end
     end
   end
+
+  # specs added by devs below
+
+  context 'when event location missing source' do
+    # NOTE: cocina -> MODS
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              location: [
+                {
+                  code: 'xxu'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      # add eventType
+      let(:roundtrip_cocina) do
+        {
+          event: [
+            {
+              type: 'publication',
+              location: [
+                {
+                  code: 'xxu'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <place>
+              <placeTerm type="code">xxu</placeTerm>
+            </place>
+          </originInfo>
+        XML
+      end
+    end
+  end
+
+  context 'when event location with code missing source' do
+    # NOTE: cocina -> MODS
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              location: [
+                {
+                  code: 'cau',
+                  uri: 'http://id.loc.gov/vocabulary/countries/cau'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      # add eventType publication
+      let(:roundtrip_cocina) do
+        {
+          event: [
+            {
+              type: 'publication',
+              location: [
+                {
+                  code: 'cau',
+                  uri: 'http://id.loc.gov/vocabulary/countries/cau'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <place>
+              <placeTerm type="code" valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+            </place>
+          </originInfo>
+        XML
+      end
+    end
+  end
+
+  context 'when event location with value missing source' do
+    # NOTE: cocina -> MODS
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              location: [
+                {
+                  value: 'California',
+                  uri: 'http://id.loc.gov/vocabulary/countries/cau'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      # add eventType
+      let(:roundtrip_cocina) do
+        {
+          event: [
+            {
+              type: 'publication',
+              location: [
+                {
+                  value: 'California',
+                  uri: 'http://id.loc.gov/vocabulary/countries/cau'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <place>
+              <placeTerm type="text" valueURI="http://id.loc.gov/vocabulary/countries/cau">California</placeTerm>
+            </place>
+          </originInfo>
+        XML
+      end
+    end
+  end
 end
