@@ -152,4 +152,201 @@ RSpec.describe 'MODS note <--> cocina mappings' do
       XML
     end
   end
+
+  # devs added specs below
+
+  context 'with a multilingual note with a script for one language' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note lang="eng" altRepGroup="1" script="Latn">This is a note.</note>
+          <note lang="fre" altRepGroup="1">C'est une note.</note>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              parallelValue: [
+                {
+                  value: 'This is a note.',
+                  valueLanguage:
+                    {
+                      code: 'eng',
+                      source: {
+                        code: 'iso639-2b'
+                      },
+                      valueScript: {
+                        code: 'Latn',
+                        source: {
+                          code: 'iso15924'
+                        }
+                      }
+                    }
+                },
+                {
+                  value: "C'est une note.",
+                  valueLanguage:
+                    {
+                      code: 'fre',
+                      source: {
+                        code: 'iso639-2b'
+                      }
+                    }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+
+    # Note: cocina -> MODS
+    it_behaves_like 'cocina MODS mapping' do
+      let(:mods) do
+        <<~XML
+          <note lang="eng" altRepGroup="1" script="Latn">This is a note.</note>
+          <note lang="fre" altRepGroup="1">C'est une note.</note>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              parallelValue: [
+                {
+                  value: 'This is a note.',
+                  valueLanguage:
+                    {
+                      code: 'eng',
+                      source: {
+                        code: 'iso639-2b'
+                      },
+                      valueScript: {
+                        code: 'Latn',
+                        source: {
+                          code: 'iso15924'
+                        }
+                      }
+                    }
+                },
+                {
+                  value: "C'est une note.",
+                  valueLanguage:
+                    {
+                      code: 'fre',
+                      source: {
+                        code: 'iso639-2b'
+                      }
+                    }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  context 'with an empty displayLabel' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <abstract displayLabel="">This is a synopsis.</abstract>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <abstract>This is a synopsis.</abstract>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'This is a synopsis.',
+              type: 'summary'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  context 'when note is various flavors of missing' do
+    context 'when cocina note is empty array' do
+      # NOTE: cocina -> MODS
+      it_behaves_like 'cocina MODS mapping' do
+        let(:cocina) do
+          {
+            note: []
+          }
+        end
+
+        let(:roundtrip_cocina) do
+          {
+          }
+        end
+
+        let(:mods) { '' }
+      end
+    end
+
+    context 'when MODS has no elements' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) { '' }
+
+        let(:cocina) do
+          {
+          }
+        end
+      end
+    end
+
+    context 'when cocina note is array with empty hash' do
+      # NOTE: cocina -> MODS
+      it_behaves_like 'cocina MODS mapping' do
+        let(:cocina) do
+          {
+            note: [{}]
+          }
+        end
+
+        let(:roundtrip_cocina) do
+          {
+          }
+        end
+
+        let(:mods) do
+          <<~XML
+            <note/>
+          XML
+        end
+      end
+    end
+
+    context 'when MODS is empty note element with no attributes' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <note/>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+          XML
+        end
+
+        let(:cocina) do
+          {
+          }
+        end
+      end
+    end
+  end
 end
