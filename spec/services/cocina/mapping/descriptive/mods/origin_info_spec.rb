@@ -597,101 +597,99 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Multiscript originInfo with eventType production' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="1">
-            <dateCreated keyDate="yes" encoding="w3cdtf">1999-09-09</dateCreated>
-            <place>
-              <placeTerm authorityURI="http://id.loc.gov/authorities/names/"
-                valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
-            </place>
-          </originInfo>
-          <originInfo eventType="production" lang="rus" script="Cyrl" altRepGroup="1">
-            <place>
-              <placeTerm>Москва</placeTerm>
-            </place>
-          </originInfo>
-        XML
-      end
+    xit 'updated spec'
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="1">
+          <dateCreated keyDate="yes" encoding="w3cdtf">1999-09-09</dateCreated>
+          <place>
+            <placeTerm authorityURI="http://id.loc.gov/authorities/names/"
+              valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
+          </place>
+        </originInfo>
+        <originInfo eventType="production" lang="rus" script="Cyrl" altRepGroup="1">
+          <place>
+            <placeTerm>Москва</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
 
-      let(:roundtrip_mods) do
-        <<~XML
-           <originInfo script="Latn" lang="eng" altRepGroup="1" eventType="production">
-            <dateCreated encoding="w3cdtf" keyDate="yes">1999-09-09</dateCreated>
-            <place>
-              <placeTerm type="text" authorityURI="http://id.loc.gov/authorities/names/"
-                valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
-            </place>
-          </originInfo>
-          <originInfo script="Cyrl" lang="rus" altRepGroup="1" eventType="production">
-            <place>
-              <placeTerm type="text">Москва</placeTerm>
-            </place>
-          </originInfo>
-        XML
-      end
+    let(:roundtrip_mods) do
+      # Same except placeTerm gets type "text"
+      <<~XML
+         <originInfo script="Latn" lang="eng" altRepGroup="1" eventType="production">
+          <dateCreated encoding="w3cdtf" keyDate="yes">1999-09-09</dateCreated>
+          <place>
+            <placeTerm type="text" authorityURI="http://id.loc.gov/authorities/names/"
+              valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
+          </place>
+        </originInfo>
+        <originInfo script="Cyrl" lang="rus" altRepGroup="1" eventType="production">
+          <place>
+            <placeTerm type="text">Москва</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
 
-      # Round trip maps back to original. Rule: same as Origin info - multilingual.
-
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'creation',
-              date: [
-                {
-                  value: '1999-09-09',
-                  status: 'primary',
-                  encoding: {
-                    code: 'w3cdtf'
-                  }
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'production',
+            date: [
+              {
+                value: '1999-09-09',
+                status: 'primary',
+                encoding: {
+                  code: 'w3cdtf'
                 }
-              ],
-              location: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Moscow',
-                      uri: 'http://id.loc.gov/authorities/names/n79076156',
-                      source: {
-                        uri: 'http://id.loc.gov/authorities/names/'
-                      },
-                      valueLanguage: {
-                        code: 'eng',
-                        source: {
-                          code: 'iso639-2b'
-                        },
-                        valueScript: {
-                          code: 'Latn',
-                          source: {
-                            code: 'iso15924'
-                          }
-                        }
-                      }
+              }
+            ],
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Moscow',
+                    uri: 'http://id.loc.gov/authorities/names/n79076156',
+                    source: {
+                      uri: 'http://id.loc.gov/authorities/names/'
                     },
-                    {
-                      value: 'Москва',
-                      valueLanguage: {
-                        code: 'rus',
+                    valueLanguage: {
+                      code: 'eng',
+                      source: {
+                        code: 'iso639-2b'
+                      },
+                      valueScript: {
+                        code: 'Latn',
                         source: {
-                          code: 'iso639-2b'
-                        },
-                        valueScript: {
-                          code: 'Cyrl',
-                          source: {
-                            code: 'iso15924'
-                          }
+                          code: 'iso15924'
                         }
                       }
                     }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      end
+                  },
+                  {
+                    value: 'Москва',
+                    valueLanguage: {
+                      code: 'rus',
+                      source: {
+                        code: 'iso639-2b'
+                      },
+                      valueScript: {
+                        code: 'Cyrl',
+                        source: {
+                          code: 'iso15924'
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
