@@ -33,6 +33,55 @@ RSpec.describe Cocina::ModsNormalizers::NameNormalizer do
     end
   end
 
+  context 'when the roleTerm is empty and no valueURI or URI attribute' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name type="personal" authority="local">
+            <namePart>Burke, Andy</namePart>
+            <role>
+              <roleTerm authority="marcrelator" type="text"/>
+            </role>
+          </name>
+        </mods>
+      XML
+    end
+
+    it 'removes the roleTerm (and role, if empty)' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name type="personal" authority="local">
+            <namePart>Burke, Andy</namePart>
+          </name>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when the role has no subelement, no attributes' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name type="personal" authority="local">
+            <namePart>Burke, Andy</namePart>
+            <role>
+            </role>
+          </name>
+        </mods>
+      XML
+    end
+
+    it 'removes the role' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name type="personal" authority="local">
+            <namePart>Burke, Andy</namePart>
+          </name>
+        </mods>
+      XML
+    end
+  end
+
   context 'when normalizing empty names' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
@@ -41,6 +90,28 @@ RSpec.describe Cocina::ModsNormalizers::NameNormalizer do
             <namePart/>
             <role>
               <roleTerm authority="marcrelator" type="text">author</roleTerm>
+            </role>
+          </name>
+        </mods>
+      XML
+    end
+
+    it 'removes name' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+        </mods>
+      XML
+    end
+  end
+
+  context 'with missing namePart element' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/spn">Sponsor</roleTerm>
             </role>
           </name>
         </mods>

@@ -16,6 +16,8 @@ module Cocina
 
       def normalize
         normalize_text_role_term
+        normalize_role_term
+        normalize_role # must be after normalize_role_term
         normalize_name
         normalize_dupes
         normalize_type
@@ -82,6 +84,16 @@ module Cocina
 
           name_part_node.remove_attribute('type')
         end
+      end
+
+      # remove the roleTerm when there is no text value and no valueURI or URI attribute
+      def normalize_role_term
+        ng_xml.root.xpath('//mods:roleTerm[not(text()) and not(@valueURI) and not(@authorityURI)]', mods: ModsNormalizer::MODS_NS).each(&:remove)
+      end
+
+      # remove the role when there are no child elements and no attributes
+      def normalize_role
+        ng_xml.root.xpath('//mods:role[not(mods:*) and not(@*)]', mods: ModsNormalizer::MODS_NS).each(&:remove)
       end
     end
   end
