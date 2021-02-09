@@ -1829,6 +1829,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
   context 'with an originInfo that has place and publisher, but no date (type publication)' do
     # From druid:bs861pk7886
+    # bad data mapping
 
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
