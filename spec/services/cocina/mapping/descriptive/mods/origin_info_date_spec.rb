@@ -1335,29 +1335,162 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Date mapping for presentation event type' do
-    xit 'not implemented' # or is it?
+    context 'with event type and date only' do
+      xit 'to be implemented: presentation currently maps to MODS dateIssued, not dateCreated - what do we want?'
 
-    let(:cocina) do
-      {
-        event: [
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'presentation',
+              date: [
+                {
+                  value: '1990'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="presentation">
+            <dateCreated>1990</dateCreated>
+          </originInfo>
+        XML
+      end
+    end
+
+    context 'with more complex presentation' do
+      # from druid:ht706sj6651
+
+      # NOTE: cocina -> MODS
+      it_behaves_like 'cocina MODS mapping' do
+        let(:cocina) do
           {
-            type: 'presentation',
-            date: [
+            event: [
               {
-                value: '1990'
+                type: 'presentation',
+                date: [
+                  {
+                    value: '2018',
+                    encoding: {
+                      code: 'w3cdtf'
+                    },
+                    status: 'primary'
+                  }
+                ],
+                displayLabel: 'Presented',
+                contributor: [
+                  {
+                    name: [
+                      {
+                        value: 'Stanford Institute for Theoretical Economics'
+                      }
+                    ],
+                    type: 'organization',
+                    role: [
+                      {
+                        value: 'publisher',
+                        code: 'pbl',
+                        uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                        source: {
+                          code: 'marcrelator',
+                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                        }
+                      }
+                    ]
+                  }
+                ],
+                location: [
+                  {
+                    uri: 'http://id.loc.gov/authorities/names/n50046557',
+                    value: 'Stanford (Calif.)'
+                  }
+                ]
               }
             ]
           }
-        ]
-      }
+        end
+
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="Presented" eventType="presentation">
+              <place>
+                <placeTerm type="text" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+              </place>
+              <publisher>Stanford Institute for Theoretical Economics</publisher>
+              <dateIssued keyDate="yes" encoding="w3cdtf">2018</dateIssued>
+            </originInfo>
+          XML
+        end
+      end
     end
 
-    let(:mods) do
-      <<~XML
-        <originInfo eventType="presentation">
-          <dateCreated>1990</dateCreated>
-        </originInfo>
-      XML
+    context 'with an originInfo that is a presentation' do
+      # from druid:ht706sj6651
+
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="Presented" eventType="presentation">
+              <place>
+                <placeTerm type="text" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+              </place>
+              <publisher>Stanford Institute for Theoretical Economics</publisher>
+              <dateIssued keyDate="yes" encoding="w3cdtf">2018</dateIssued>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'presentation',
+                date: [
+                  {
+                    value: '2018',
+                    encoding: {
+                      code: 'w3cdtf'
+                    },
+                    status: 'primary'
+                  }
+                ],
+                displayLabel: 'Presented',
+                contributor: [
+                  {
+                    name: [
+                      {
+                        value: 'Stanford Institute for Theoretical Economics'
+                      }
+                    ],
+                    type: 'organization',
+                    role: [
+                      {
+                        value: 'publisher',
+                        code: 'pbl',
+                        uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                        source: {
+                          code: 'marcrelator',
+                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                        }
+                      }
+                    ]
+                  }
+                ],
+                location: [
+                  {
+                    uri: 'http://id.loc.gov/authorities/names/n50046557',
+                    value: 'Stanford (Calif.)'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
     end
   end
 
@@ -1594,71 +1727,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     end
   end
 
-  context 'with an originInfo that is a presentation' do
-    # from druid:ht706sj6651
-
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo displayLabel="Presented" eventType="presentation">
-            <place>
-              <placeTerm type="text" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
-            </place>
-            <publisher>Stanford Institute for Theoretical Economics</publisher>
-            <dateIssued keyDate="yes" encoding="w3cdtf">2018</dateIssued>
-          </originInfo>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'presentation',
-              date: [
-                {
-                  value: '2018',
-                  encoding: {
-                    code: 'w3cdtf'
-                  },
-                  status: 'primary'
-                }
-              ],
-              displayLabel: 'Presented',
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: 'Stanford Institute for Theoretical Economics'
-                    }
-                  ],
-                  type: 'organization',
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              location: [
-                {
-                  uri: 'http://id.loc.gov/authorities/names/n50046557',
-                  value: 'Stanford (Calif.)'
-                }
-              ]
-            }
-          ]
-        }
-      end
-    end
-  end
-
   context 'when it has a single dateOther' do
     context 'with eventType="acquisition"' do
       # NOTE: cocina -> MODS
@@ -1812,72 +1880,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                     code: 'marccountry'
                   },
                   code: 'enk'
-                }
-              ]
-            }
-          ]
-        }
-      end
-    end
-  end
-
-  context 'with presentation' do
-    # from druid:ht706sj6651
-
-    # NOTE: cocina -> MODS
-    it_behaves_like 'cocina MODS mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo displayLabel="Presented" eventType="presentation">
-             <place>
-               <placeTerm type="text" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
-             </place>
-             <publisher>Stanford Institute for Theoretical Economics</publisher>
-             <dateIssued keyDate="yes" encoding="w3cdtf">2018</dateIssued>
-           </originInfo>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'presentation',
-              date: [
-                {
-                  value: '2018',
-                  encoding: {
-                    code: 'w3cdtf'
-                  },
-                  status: 'primary'
-                }
-              ],
-              displayLabel: 'Presented',
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: 'Stanford Institute for Theoretical Economics'
-                    }
-                  ],
-                  type: 'organization',
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              location: [
-                {
-                  uri: 'http://id.loc.gov/authorities/names/n50046557',
-                  value: 'Stanford (Calif.)'
                 }
               ]
             }
