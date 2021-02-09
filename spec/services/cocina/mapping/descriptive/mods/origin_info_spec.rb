@@ -31,179 +31,170 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'originInfo eventType differs from date type' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo eventType="publication">
-            <copyrightDate>1980</copyrightDate>
-          </originInfo>
-        XML
-      end
+    xit 'updated spec'
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="publication">
+          <copyrightDate>1980</copyrightDate>
+        </originInfo>
+      XML
+    end
 
-      let(:roundtrip_mods) do
-        <<~XML
-          <originInfo eventType="copyright">
-            <copyrightDate>1980</copyrightDate>
-          </originInfo>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'copyright',
-              date: [
-                {
-                  value: '1980'
-                }
-              ]
-            }
-          ]
-        }
-      end
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            date: [
+              {
+                value: '1980',
+                type: 'copyright'
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
   describe 'originInfo eventType differs from date type, copyright and copyright notice events, converted from MARC record with multiple 264s' do
-    it_behaves_like 'MODS cocina mapping' do
-      # eventType="copyright" maps to event.date, "copyright notice" maps to event.note
-      let(:mods) do
-        <<~XML
-          <originInfo>
-             <place>
-                <placeTerm type="code" authority="marccountry">ru</placeTerm>
-             </place>
-             <dateIssued encoding="marc">2019</dateIssued>
-             <copyrightDate encoding="marc">2018</copyrightDate>
-             <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="publication">
-             <place>
-                <placeTerm type="text">Moskva</placeTerm>
-             </place>
-             <publisher>Izdatelʹstvo "Vesʹ Mir"</publisher>
-             <dateIssued>2019</dateIssued>
-          </originInfo>
-          <originInfo eventType="copyright notice">
-             <copyrightDate>©2018</copyrightDate>
-          </originInfo>
-        XML
-      end
+    xit 'updated spec'
+    # eventType="copyright" maps to event.date, "copyright notice" maps to event.note
+    let(:mods) do
+      <<~XML
+        <originInfo>
+           <place>
+              <placeTerm type="code" authority="marccountry">ru</placeTerm>
+           </place>
+           <dateIssued encoding="marc">2019</dateIssued>
+           <copyrightDate encoding="marc">2018</copyrightDate>
+           <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo eventType="publication">
+           <place>
+              <placeTerm type="text">Moskva</placeTerm>
+           </place>
+           <publisher>Izdatelʹstvo "Vesʹ Mir"</publisher>
+           <dateIssued>2019</dateIssued>
+        </originInfo>
+        <originInfo eventType="copyright notice">
+           <copyrightDate>©2018</copyrightDate>
+        </originInfo>
+      XML
+    end
 
-      let(:roundtrip_mods) do
-        <<~XML
-          <originInfo eventType="publication">
-             <place>
-                <placeTerm type="code" authority="marccountry">ru</placeTerm>
-             </place>
-             <dateIssued encoding="marc">2019</dateIssued>
-             <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="copyright">
-            <copyrightDate encoding="marc">2018</copyrightDate>
-          </originInfo>
-          <originInfo eventType="publication">
-             <place>
-                <placeTerm type="text">Moskva</placeTerm>
-             </place>
-             <publisher>Izdatelʹstvo "Vesʹ Mir"</publisher>
-             <dateIssued>2019</dateIssued>
-          </originInfo>
-          <originInfo eventType="copyright notice">
-             <copyrightDate>©2018</copyrightDate>
-          </originInfo>
-        XML
-      end
+    let(:roundtrip_mods) do
+      <<~XML
+        <originInfo eventType="publication">
+           <place>
+              <placeTerm type="code" authority="marccountry">ru</placeTerm>
+           </place>
+           <dateIssued encoding="marc">2019</dateIssued>
+           <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo eventType="copyright">
+          <copyrightDate encoding="marc">2018</copyrightDate>
+        </originInfo>
+        <originInfo eventType="publication">
+           <place>
+              <placeTerm type="text">Moskva</placeTerm>
+           </place>
+           <publisher>Izdatelʹstvo "Vesʹ Mir"</publisher>
+           <dateIssued>2019</dateIssued>
+        </originInfo>
+        <originInfo eventType="copyright notice">
+           <copyrightDate>©2018</copyrightDate>
+        </originInfo>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  code: 'ru',
-                  source: {
-                    code: 'marccountry'
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                code: 'ru',
+                source: {
+                  code: 'marccountry'
+                }
+              }
+            ],
+            date: [
+              {
+                value: '2019',
+                encoding: {
+                  code: 'marc'
+                }
+              }
+            ],
+            note: [
+              {
+                value: 'monographic',
+                type: 'issuance',
+                source: {
+                  value: 'MODS issuance terms'
+                }
+              }
+            ]
+          },
+          {
+            type: 'copyright',
+            date: [
+              {
+                value: '2018',
+                encoding: {
+                  code: 'marc'
+                }
+              }
+            ]
+          },
+          {
+            type: 'publication',
+            location: [
+              {
+                value: 'Moskva'
+              }
+            ],
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'Izdatelʹstvo "Vesʹ Mir"'
                   }
-                }
-              ],
-              date: [
-                {
-                  value: '2019',
-                  encoding: {
-                    code: 'marc'
-                  }
-                }
-              ],
-              note: [
-                {
-                  value: 'monographic',
-                  type: 'issuance',
-                  source: {
-                    value: 'MODS issuance terms'
-                  }
-                }
-              ]
-            },
-            {
-              type: 'copyright',
-              date: [
-                {
-                  value: '2018',
-                  encoding: {
-                    code: 'marc'
-                  }
-                }
-              ]
-            },
-            {
-              type: 'publication',
-              location: [
-                {
-                  value: 'Moskva'
-                }
-              ],
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: 'Izdatelʹstvo "Vesʹ Mir"'
+                ],
+                type: 'organization',
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
                     }
-                  ],
-                  type: 'organization',
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  value: '2019'
-                }
-              ]
-            },
-            {
-              type: 'copyright',
-              note: [
-                {
-                  value: '©2018',
-                  type: 'copyright statement'
-                }
-              ]
-            }
-          ]
-        }
-      end
+                  }
+                ]
+              }
+            ],
+            date: [
+              {
+                value: '2019'
+              }
+            ]
+          },
+          {
+            type: 'copyright notice',
+            note: [
+              {
+                value: '©2018',
+                type: 'copyright statement'
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
