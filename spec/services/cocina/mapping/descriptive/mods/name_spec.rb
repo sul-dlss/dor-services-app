@@ -1241,7 +1241,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             </role>
           </name>
           <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
-            <namePart>Rea Metaru Shigen Saisei Gijutsu Kenky&#x16B;kai</namePart>
+            <namePart>Rea Metaru Shigen Saisei Gijutsu Kenkyūkai</namePart>
             <role>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/cre">cre</roleTerm>
               <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/cre">creator</roleTerm>
@@ -1916,6 +1916,482 @@ RSpec.describe 'MODS name <--> cocina mappings' do
         [
           Notification.new(msg: 'Duplicate name entry')
         ]
+      end
+    end
+  end
+
+  # devs added specs below
+
+  context 'with an invalid type' do
+    context 'when miscapitalized' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <name type="Personal" usage="primary">
+              <namePart>Dunnett, Dorothy</namePart>
+            </name>
+          XML
+        end
+
+        # lowercase p in personal
+        let(:roundtrip_mods) do
+          <<~XML
+            <name type="personal" usage="primary">
+              <namePart>Dunnett, Dorothy</namePart>
+            </name>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'Dunnett, Dorothy'
+                  }
+                ],
+                type: 'person',
+                status: 'primary'
+              }
+            ]
+          }
+        end
+
+        let(:warnings) { [Notification.new(msg: 'Name type incorrectly capitalized', context: { type: 'Personal' })] }
+      end
+    end
+
+    context 'when name type is unrecognized' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <name type="primary">
+              <namePart>Vickery, Claire</namePart>
+            </name>
+          XML
+        end
+
+        # type primary removed
+        let(:roundtrip_mods) do
+          <<~XML
+            <name>
+              <namePart>Vickery, Claire</namePart>
+            </name>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'Vickery, Claire'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        let(:warnings) { [Notification.new(msg: 'Name type unrecognized', context: { type: 'primary' })] }
+      end
+    end
+  end
+
+  context 'with empty type attribute and other empty goodness' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="">
+            <namePart/>
+            <role>
+              <roleTerm authority="marcrelator" type="code" valueURI=""/>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+        XML
+      end
+
+      let(:cocina) do
+        {
+        }
+      end
+
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Missing or empty name type attribute'),
+          Notification.new(msg: 'name/namePart missing value'),
+          Notification.new(msg: 'Missing name/namePart element')
+        ]
+      end
+    end
+  end
+
+  context 'with namePart with empty type attribute' do
+    context 'without role' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <name type="personal" authority="local">
+              <namePart type="">Burke, Andy</namePart>
+            </name>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <name type="personal" authority="local">
+              <namePart>Burke, Andy</namePart>
+            </name>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'Burke, Andy',
+                    source: {
+                      code: 'local'
+                    }
+                  }
+                ],
+                type: 'person'
+              }
+            ]
+          }
+        end
+
+        let(:warnings) { [Notification.new(msg: 'Name/namePart type attribute set to ""')] }
+      end
+    end
+
+    context 'with an invalid type on the namePart node' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <name>
+              <namePart type="personal">Dunnett, Dorothy</namePart>
+            </name>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <name>
+              <namePart>Dunnett, Dorothy</namePart>
+            </name>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'Dunnett, Dorothy'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        let(:warnings) { [Notification.new(msg: 'namePart has unknown type assigned', context: { type: 'personal' })] }
+      end
+    end
+  end
+
+  context 'when namePart with type but no value' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Kielmansegg, Erich Ludwig Friedrich Christian</namePart>
+            <namePart type="termsOfAddress">Graf von</namePart>
+            <namePart type="date">1847-1923</namePart>
+            <namePart type="date"/>
+          </name>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Kielmansegg, Erich Ludwig Friedrich Christian</namePart>
+            <namePart type="termsOfAddress">Graf von</namePart>
+            <namePart type="date">1847-1923</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Kielmansegg, Erich Ludwig Friedrich Christian',
+                      type: 'name'
+                    },
+                    {
+                      type: 'term of address',
+                      value: 'Graf von'
+                    },
+                    {
+                      type: 'life dates',
+                      value: '1847-1923'
+                    }
+                  ]
+                }
+              ],
+              type: 'person'
+            }
+          ]
+        }
+      end
+
+      let(:warnings) { [Notification.new(msg: 'name/namePart missing value')] }
+    end
+  end
+
+  context 'with role' do
+    context 'with empty roleTerm' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <name type="personal" authority="local">
+              <namePart type="">Burke, Andy</namePart>
+              <role>
+                <roleTerm authority="marcrelator" type="text"/>
+              </role>
+            </name>
+          XML
+        end
+
+        # remove empty roleTerm and empty type attribute on namePart
+        let(:roundtrip_mods) do
+          <<~XML
+            <name type="personal" authority="local">
+              <namePart>Burke, Andy</namePart>
+            </name>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'Burke, Andy',
+                    source: {
+                      code: 'local'
+                    }
+                  }
+                ],
+                type: 'person'
+              }
+            ]
+          }
+        end
+
+        let(:warnings) do
+          [
+            Notification.new(msg: 'Name/namePart type attribute set to ""'),
+            Notification.new(msg: 'name/role/roleTerm missing value')
+          ]
+        end
+      end
+    end
+
+    context 'with a role that has no URI and has xlink uris from MODS 3.3' do
+      # MODS 3.3 header from druid:yy910cj7795
+
+      subject(:build) { Cocina::FromFedora::Descriptive::Contributor.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+
+      let(:descriptive_builder) { Cocina::FromFedora::Descriptive::DescriptiveBuilder.new(notifier: notifier) }
+
+      let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
+
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns="http://www.loc.gov/mods/v3" version="3.3"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+            <name type="personal" authority="naf" xlink:href="http://id.loc.gov/authorities/names/n82087745">
+              <role>
+                <roleTerm>creator</roleTerm>
+              </role>
+              <namePart>Tirion, Isaak</namePart>
+            </name>
+          </mods>
+        XML
+      end
+
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'builds the cocina data structure' do
+        expect(build).to eq [
+          {
+            name: [
+              {
+                value: 'Tirion, Isaak',
+                uri: 'http://id.loc.gov/authorities/names/n82087745',
+                source: {
+                  code: 'naf'
+                }
+              }
+            ],
+            role: [
+              {
+                value: 'creator'
+              }
+            ],
+            type: 'person'
+          }
+        ]
+      end
+
+      it 'warns' do
+        build
+        expect(notifier).to have_received(:warn).with('Name has an xlink:href property')
+      end
+    end
+
+    context 'with missing namePart element' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <name>
+              <role>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/spn">Sponsor</roleTerm>
+              </role>
+            </name>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+          XML
+        end
+
+        let(:cocina) do
+          {
+          }
+        end
+
+        let(:warnings) { [Notification.new(msg: 'Missing name/namePart element')] }
+      end
+    end
+
+    context 'when the role code is missing the authority and length is not 3' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <name valueURI="corporate">
+              <namePart>Selective Service System</namePart>
+              <role>
+                <roleTerm type="code">isbx</roleTerm>
+              </role>
+            </name>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'Selective Service System',
+                    uri: 'corporate'
+                  }
+                ],
+                role: [
+                  {
+                    code: 'isbx'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        let(:warnings) do
+          [
+            Notification.new(msg: 'Missing or empty name type attribute'),
+            Notification.new(msg: 'Value URI has unexpected value', context: { uri: 'corporate' })
+          ]
+        end
+
+        let(:errors) do
+          [
+            Notification.new(msg: 'Contributor role code has unexpected value', context: { role: 'isbx' })
+          ]
+        end
+      end
+    end
+  end
+
+  context 'with multiple names, no primary, no roles' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="corporate">
+            <namePart>Hawaii International Services Agency</namePart>
+          </name>
+          <name type="corporate">
+            <namePart>United States</namePart>
+            <namePart>Office of Foreign Investment in the United States.</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Hawaii International Services Agency'
+                }
+              ],
+              type: 'organization'
+            },
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'United States',
+                      type: 'name'
+                    },
+                    {
+                      value: 'Office of Foreign Investment in the United States.',
+                      type: 'name'
+                    }
+                  ]
+                }
+              ],
+              type: 'organization'
+            }
+          ]
+        }
       end
     end
   end
