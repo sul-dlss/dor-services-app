@@ -759,152 +759,151 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     # Example adapted from druid:hn285fy7937
 
     # First <place> not included in parallelValue because it's type="code"
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo altRepGroup="1">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Chengdu</placeTerm>
-            </place>
-            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>Di 1 ban.</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo altRepGroup="1">
-            <place>
-              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
-            </place>
-            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
-            <dateIssued>2005.</dateIssued>
-            <edition>[Di 1 ban in Chinese]</edition>
-          </originInfo>
-        XML
-      end
+    xit 'updated warning message'
+    let(:mods) do
+      <<~XML
+        <originInfo altRepGroup="1">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Chengdu</placeTerm>
+          </place>
+          <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>Di 1 ban.</edition>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo altRepGroup="1">
+          <place>
+            <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+          </place>
+          <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+          <dateIssued>2005.</dateIssued>
+          <edition>[Di 1 ban in Chinese]</edition>
+        </originInfo>
+      XML
+    end
 
-      # We don't know which originInfo is eng/Latn, so we don't know where to put the unpaired values.
-      # Instead, put all values that are not parallel values in both originInfo elements.
-      # Parallel values are grouped by index (i.e. the first of each pair is in the first originInfo, the second in the second one).
-      let(:roundtrip_mods) do
-        <<~XML
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Chengdu</placeTerm>
-            </place>
-            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>Di 1 ban.</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
-            </place>
-            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>[Di 1 ban in Chinese]</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-        XML
-      end
-      # When converting back to COCINA, duplicate values across the originInfos should be collapsed into one to generate the same record as above.
+    # We don't know which originInfo is eng/Latn, so we don't know where to put the unpaired values.
+    # Instead, put all values that are not parallel values in both originInfo elements.
+    # Parallel values are grouped by index (i.e. the first of each pair is in the first originInfo, the second in the second one).
+    let(:roundtrip_mods) do
+      <<~XML
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Chengdu</placeTerm>
+          </place>
+          <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>Di 1 ban.</edition>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+          </place>
+          <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>[Di 1 ban in Chinese]</edition>
+          <issuance>monographic</issuance>
+        </originInfo>
+      XML
+    end
+    # When converting back to COCINA, duplicate values across the originInfos should be collapsed into one to generate the same record as above.
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Chengdu'
-                    },
-                    {
-                      value: '[Chengdu in Chinese]'
-                    }
-                  ]
-                },
-                {
-                  code: 'cc',
-                  source: {
-                    code: 'marccountry'
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Chengdu'
+                  },
+                  {
+                    value: '[Chengdu in Chinese]'
                   }
+                ]
+              },
+              {
+                code: 'cc',
+                source: {
+                  code: 'marccountry'
                 }
-              ],
-              contributor: [
-                {
-                  type: 'organization',
-                  name: [
-                    {
-                      parallelValue: [
-                        {
-                          value: 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
-                        },
-                        {
-                          value: '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
-                        }
-                      ]
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
+              }
+            ],
+            contributor: [
+              {
+                type: 'organization',
+                name: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
+                      },
+                      {
+                        value: '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
                       }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  value: '2005'
-                }
-              ],
-              note: [
-                {
-                  type: 'edition',
-                  parallelValue: [
-                    {
-                      value: 'Di 1 ban.'
-                    },
-                    {
-                      value: '[Di 1 ban in Chinese]'
-                    }
-                  ]
-                },
-                {
-                  type: 'issuance',
-                  value: 'monographic',
-                  source: {
-                    value: 'MODS issuance terms'
+                    ]
                   }
-
+                ],
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ],
+            date: [
+              {
+                value: '2005'
+              }
+            ],
+            note: [
+              {
+                type: 'edition',
+                parallelValue: [
+                  {
+                    value: 'Di 1 ban.'
+                  },
+                  {
+                    value: '[Di 1 ban in Chinese]'
+                  }
+                ]
+              },
+              {
+                type: 'issuance',
+                value: 'monographic',
+                source: {
+                  value: 'MODS issuance terms'
                 }
-              ]
-            }
-          ]
-        }
-      end
 
-      let(:warnings) do
-        [
-          Notification.new(msg: 'altRepGroup missing lang/script')
+              }
+            ]
+          }
         ]
-      end
+      }
+    end
+
+    let(:warnings) do
+      [
+        Notification.new(msg: 'altRepGroup missing lang/script')
+      ]
     end
   end
 
@@ -942,7 +941,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         XML
       end
 
-      let(:mods) do
+      let(:roundtrip_mods) do
         <<~XML
           <originInfo altRepGroup="1" eventType="publication">
              <place>
