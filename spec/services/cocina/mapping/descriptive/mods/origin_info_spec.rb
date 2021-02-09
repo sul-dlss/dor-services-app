@@ -785,7 +785,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         XML
       end
 
-      # We don't know which originInfo is eng/Latn, so the rule in #39 cannot apply.
+      # We don't know which originInfo is eng/Latn, so we don't know where to put the unpaired values.
       # Instead, put all values that are not parallel values in both originInfo elements.
       # Parallel values are grouped by index (i.e. the first of each pair is in the first originInfo, the second in the second one).
       let(:roundtrip_mods) do
@@ -902,7 +902,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:warnings) do
         [
-          Notification.new(msg: 'Bad altRepGroup')
+          Notification.new(msg: 'altRepGroup missing lang/script')
         ]
       end
     end
