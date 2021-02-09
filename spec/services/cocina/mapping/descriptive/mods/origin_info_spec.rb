@@ -1067,160 +1067,159 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
   describe 'Parallel value with no script given in MODS - C' do
     # Example adapted from druid:bh212vz9239
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo altRepGroup="1">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Guangdong</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
-            <dateIssued encoding="marc" point="start">1922</dateIssued>
-            <dateIssued encoding="marc" point="end">1929</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo altRepGroup="1">
-            <place>
-              <placeTerm type="text">Guangdong in Chinese</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
-          </originInfo>
-        XML
-      end
+    xit 'updated error message'
+    let(:mods) do
+      <<~XML
+        <originInfo altRepGroup="1">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo altRepGroup="1">
+          <place>
+            <placeTerm type="text">Guangdong in Chinese</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
+        </originInfo>
+      XML
+    end
 
-      let(:roundtrip_mods) do
-        <<~XML
-          <originInfo eventType="publication" altRepGroup="1">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Guangdong</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
-            <dateIssued encoding="marc" point="start">1922</dateIssued>
-            <dateIssued encoding="marc" point="end">1929</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="publication" altRepGroup="1">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Guangdong in Chinese</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
-            <dateIssued encoding="marc" point="start">1922</dateIssued>
-            <dateIssued encoding="marc" point="end">1929</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-        XML
-      end
+    let(:roundtrip_mods) do
+      <<~XML
+        <originInfo eventType="publication" altRepGroup="1">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo eventType="publication" altRepGroup="1">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong in Chinese</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Guangdong'
-                    },
-                    {
-                      value: 'Guangdong in Chinese'
-                    }
-                  ]
-                },
-                {
-                  code: 'cc',
-                  source: {
-                    code: 'marccountry'
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Guangdong'
+                  },
+                  {
+                    value: 'Guangdong in Chinese'
                   }
+                ]
+              },
+              {
+                code: 'cc',
+                source: {
+                  code: 'marccountry'
                 }
-              ],
-              contributor: [
-                {
-                  type: 'organization',
-                  name: [
-                    {
-                      parallelValue: [
-                        {
-                          value: 'Guangdong lu jun ce liang ju'
-                        },
-                        {
-                          value: 'Guangdong lu jun ce liang ju in Chinese'
-                        }
-                      ]
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
+              }
+            ],
+            contributor: [
+              {
+                type: 'organization',
+                name: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'Guangdong lu jun ce liang ju'
+                      },
+                      {
+                        value: 'Guangdong lu jun ce liang ju in Chinese'
                       }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Minguo 11-18 [1922-1929]'
-                    },
-                    {
-                      value: 'Minguo 11-18 [1922-1929] in Chinese'
-                    }
-                  ]
-                },
-                {
-                  structuredValue: [
-                    {
-                      value: '1922',
-                      type: 'start'
-                    },
-                    {
-                      value: '1929',
-                      type: 'end'
-                    }
-                  ],
-                  encoding: {
-                    code: 'marc'
+                    ]
                   }
-                }
-              ],
-              note: [
-                {
-                  type: 'issuance',
-                  value: 'monographic',
-                  source: {
-                    value: 'MODS issuance terms'
+                ],
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
+                    }
                   }
+                ]
+              }
+            ],
+            date: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Minguo 11-18 [1922-1929]'
+                  },
+                  {
+                    value: 'Minguo 11-18 [1922-1929] in Chinese'
+                  }
+                ]
+              },
+              {
+                structuredValue: [
+                  {
+                    value: '1922',
+                    type: 'start'
+                  },
+                  {
+                    value: '1929',
+                    type: 'end'
+                  }
+                ],
+                encoding: {
+                  code: 'marc'
                 }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:warnings) do
-        [
-          Notification.new(msg: 'Bad altRepGroup')
+              }
+            ],
+            note: [
+              {
+                type: 'issuance',
+                value: 'monographic',
+                source: {
+                  value: 'MODS issuance terms'
+                }
+              }
+            ]
+          }
         ]
-      end
+      }
+    end
+
+    let(:warnings) do
+      [
+        Notification.new(msg: 'altRepGroup missing lang/script')
+      ]
     end
   end
 
