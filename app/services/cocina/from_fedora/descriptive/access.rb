@@ -5,8 +5,6 @@ module Cocina
     class Descriptive
       # Maps access conditions
       class Access
-        PURL_REGEX = %r{^https?://purl.stanford.edu/}.freeze
-
         ACCESS_CONDITION_TYPES = {
           'restriction on access' => 'access restriction',
           'restrictionOnAccess' => 'access restriction',
@@ -75,33 +73,45 @@ module Cocina
               value: url_node.text,
               displayLabel: url_node[:displayLabel]
             }.tap do |attrs|
-              attrs[:status] = 'primary' if url_node[:usage] == 'primary display' && (url_node == primary_purl_node || primary_purl_node.nil?)
+              attrs[:status] = 'primary' if url_node == primary_url_node
               attrs[:note] = [{ value: url_node[:note] }] if url_node[:note]
             end.compact
           end
         end
 
-        def primary_purl_node
-          @primary_purl_node ||= all_purl_nodes.size == 1 ? all_purl_nodes.first : all_purl_nodes.find { |purl_node| purl_node[:usage] == 'primary display' }
+        def primary_url_node
+          all_primary_purl_nodes.first || all_primary_url_nodes.first || all_purl_nodes.first
+        end
+
+        def all_primary_url_nodes
+          @all_primary_url_nodes ||= all_url_nodes.select { |url_node| url_node[:usage] == 'primary display' }
+        end
+
+        def all_primary_purl_nodes
+          @all_primary_purl_nodes ||= all_purl_nodes.select { |purl_node| purl_node[:usage] == 'primary display' }
         end
 
         def all_purl_nodes
-          @all_purl_nodes ||= all_url_nodes.select { |url_node| PURL_REGEX.match(url_node.text) }
+          @all_purl_nodes ||= all_url_nodes.select { |url_node| Purl.purl?(url_node) }
         end
 
         def all_url_nodes
           @all_url_nodes ||= resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS)
         end
 
+        def primary_purl_node
+          @primary_purl_node ||= Purl.primary_purl_node(resource_element)
+        end
+
         def url_nodes
-          all_url_nodes.reject { |url_node| url_node == primary_purl_node }
+          @url_nodes ||= all_url_nodes.reject { |url_node| url_node == primary_purl_node }
         end
 
         def purl_note
-          if primary_purl_node && primary_purl_node[:note]
+          if all_primary_purl_nodes.include?(primary_url_node) && primary_url_node[:note]
             [{
               type: 'purl access',
-              value: primary_purl_node[:note]
+              value: primary_url_node[:note]
             }]
           else
             []

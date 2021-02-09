@@ -92,14 +92,14 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
 
-    it 'moves primary display' do
+    it 'leaves primary display' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <location>
-            <url usage="primary display">http://purl.stanford.edu/bw502ns3302</url>
+            <url>http://purl.stanford.edu/bw502ns3302</url>
           </location>
           <location>
-            <url>http://www.stanford.edu</url>
+            <url usage="primary display">http://www.stanford.edu</url>
           </location>
         </mods>
       XML
@@ -122,14 +122,14 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
 
-    it 'moves primary display' do
+    it 'leaves primary display' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <location>
-            <url usage="primary display">http://purl.stanford.edu/bw502ns3302</url>
+            <url>http://purl.stanford.edu/bw502ns3302</url>
           </location>
           <location>
-            <url note="Available to Stanford-affiliated users at READEX:">http://infoweb.newsbank.com/?db=SERIAL</url>
+            <url usage="primary display" note="Available to Stanford-affiliated users at READEX:">http://infoweb.newsbank.com/?db=SERIAL</url>
           </location>
         </mods>
       XML
