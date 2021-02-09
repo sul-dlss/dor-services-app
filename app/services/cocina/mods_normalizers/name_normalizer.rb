@@ -62,12 +62,9 @@ module Cocina
       end
 
       def normalize_type
-        # if this require is at the top, we get "undefined method `normalize' for Cocina::ModsNormalizer:Class"
-        require_relative '../from_fedora/descriptive/contributor.rb'
-
-        ng_xml.root.xpath('//mods:name[(@type)]', mods: ModsNormalizer::MODS_NS).each do |name_node_w_type|
+        ng_xml.root.xpath('//mods:name[@type]', mods: ModsNormalizer::MODS_NS).each do |name_node_w_type|
           raw_type = name_node_w_type['type']
-          return if FromFedora::Descriptive::Contributor::ROLES.keys.include?(raw_type)
+          next if FromFedora::Descriptive::Contributor::ROLES.keys.include?(raw_type)
 
           if FromFedora::Descriptive::Contributor::ROLES.keys.include?(raw_type.downcase)
             name_node_w_type['type'] = raw_type.downcase
@@ -80,7 +77,7 @@ module Cocina
       def normalize_name_part_type
         ng_xml.root.xpath('//mods:namePart[(@type)]', mods: ModsNormalizer::MODS_NS).each do |name_part_node|
           raw_type = name_part_node['type']
-          return if FromFedora::Descriptive::Contributor::NAME_PART.keys.include?(raw_type)
+          next if FromFedora::Descriptive::Contributor::NAME_PART.keys.include?(raw_type)
 
           name_part_node.remove_attribute('type')
         end
