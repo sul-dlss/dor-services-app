@@ -114,4 +114,48 @@ RSpec.describe Cocina::ModsNormalizers::NameNormalizer do
       XML
     end
   end
+
+  context 'when name@type value incorrectly capitalized' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name type="Personal" usage="primary">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+        </mods>
+      XML
+    end
+
+    it 'corrects value to lower case' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name type="personal" usage="primary">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when name@type not recognized' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name type="fred">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+        </mods>
+      XML
+    end
+
+    it 'removes type attribute' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name>
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+        </mods>
+      XML
+    end
+  end
 end

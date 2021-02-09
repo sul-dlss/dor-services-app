@@ -18,6 +18,7 @@ module Cocina
         normalize_text_role_term
         normalize_name
         normalize_dupes
+        normalize_type
         ng_xml
       end
 
@@ -54,6 +55,22 @@ module Cocina
         dupe_name_nodes_groups = name_nodes.group_by(&:to_s).values.select { |grouped_name_nodes| grouped_name_nodes.size > 1 }
         dupe_name_nodes_groups.each do |dupe_name_nodes|
           dupe_name_nodes[1..].each(&:remove)
+        end
+      end
+
+      def normalize_type
+        # if this require is at the top, we get "undefined method `normalize' for Cocina::ModsNormalizer:Class"
+        require_relative '../from_fedora/descriptive/contributor.rb'
+
+        ng_xml.root.xpath('//mods:name[(@type)]', mods: ModsNormalizer::MODS_NS).each do |name_node_w_type|
+          raw_type = name_node_w_type['type']
+          return if FromFedora::Descriptive::Contributor::ROLES.keys.include?(raw_type)
+
+          if FromFedora::Descriptive::Contributor::ROLES.keys.include?(raw_type.downcase)
+            name_node_w_type['type'] = raw_type.downcase
+          else
+            name_node_w_type.remove_attribute('type')
+          end
         end
       end
     end
