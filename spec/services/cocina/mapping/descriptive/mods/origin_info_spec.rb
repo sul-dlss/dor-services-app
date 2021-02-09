@@ -1991,6 +1991,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     end
   end
 
+  # Something goes wrong here with formatting
   context 'when originInfo / event is various flavors of missing' do
     context 'when cocina event is empty array' do
       # NOTE: cocina -> MODS
