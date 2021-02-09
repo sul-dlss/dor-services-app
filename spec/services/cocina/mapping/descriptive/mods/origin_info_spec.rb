@@ -328,56 +328,55 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Multiple originInfo elements for different events' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo eventType="production">
-            <dateCreated>1899</dateCreated>
-            <place>
-              <placeTerm type="text">York</placeTerm>
-            </place>
-          </originInfo>
-          <originInfo eventType="publication">
-            <dateIssued>1901</dateIssued>
-            <place>
-              <placeTerm type="text">London</placeTerm>
-            </place>
-          </originInfo>
-        XML
-      end
+    xit 'updated spec'
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="production">
+          <dateCreated>1899</dateCreated>
+          <place>
+            <placeTerm type="text">York</placeTerm>
+          </place>
+        </originInfo>
+        <originInfo eventType="publication">
+          <dateIssued>1901</dateIssued>
+          <place>
+            <placeTerm type="text">London</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'creation',
-              date: [
-                {
-                  value: '1899'
-                }
-              ],
-              location: [
-                {
-                  value: 'York'
-                }
-              ]
-            },
-            {
-              type: 'publication',
-              date: [
-                {
-                  value: '1901'
-                }
-              ],
-              location: [
-                {
-                  value: 'London'
-                }
-              ]
-            }
-          ]
-        }
-      end
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'production',
+            date: [
+              {
+                value: '1899'
+              }
+            ],
+            location: [
+              {
+                value: 'York'
+              }
+            ]
+          },
+          {
+            type: 'publication',
+            date: [
+              {
+                value: '1901'
+              }
+            ],
+            location: [
+              {
+                value: 'London'
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
