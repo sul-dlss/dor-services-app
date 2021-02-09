@@ -909,160 +909,159 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
   describe 'Parallel value with no script given in MODS - B' do
     # Example adapted from druid:yc052ns4738
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo altRepGroup="1">
-             <place>
-                <placeTerm type="code" authority="marccountry">cc</placeTerm>
-             </place>
-             <dateIssued encoding="marc" point="start">1933</dateIssued>
-             <dateIssued encoding="marc" point="end">uuuu</dateIssued>
-             <issuance>serial</issuance>
-             <frequency>Irregular</frequency>
-             <place>
-                <placeTerm type="text">[Ruijin]</placeTerm>
-             </place>
-             <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu</publisher>
-          </originInfo>
-          <originInfo altRepGroup="1">
-             <place>
-                <placeTerm type="code" authority="marccountry">cc</placeTerm>
-             </place>
-             <dateIssued encoding="marc" point="start">1933</dateIssued>
-             <dateIssued encoding="marc" point="end">uuuu</dateIssued>
-             <issuance>serial</issuance>
-             <frequency>Irregular</frequency>
-             <place>
-                <placeTerm type="text">[Ruijin] in Chinese</placeTerm>
-             </place>
-             <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese</publisher>
-          </originInfo>
-        XML
-      end
+    xit 'updated warning message'
+    let(:mods) do
+      <<~XML
+        <originInfo altRepGroup="1">
+           <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+           </place>
+           <dateIssued encoding="marc" point="start">1933</dateIssued>
+           <dateIssued encoding="marc" point="end">uuuu</dateIssued>
+           <issuance>serial</issuance>
+           <frequency>Irregular</frequency>
+           <place>
+              <placeTerm type="text">[Ruijin]</placeTerm>
+           </place>
+           <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu</publisher>
+        </originInfo>
+        <originInfo altRepGroup="1">
+           <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+           </place>
+           <dateIssued encoding="marc" point="start">1933</dateIssued>
+           <dateIssued encoding="marc" point="end">uuuu</dateIssued>
+           <issuance>serial</issuance>
+           <frequency>Irregular</frequency>
+           <place>
+              <placeTerm type="text">[Ruijin] in Chinese</placeTerm>
+           </place>
+           <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese</publisher>
+        </originInfo>
+      XML
+    end
 
-      let(:roundtrip_mods) do
-        <<~XML
-          <originInfo altRepGroup="1" eventType="publication">
-             <place>
-                <placeTerm type="code" authority="marccountry">cc</placeTerm>
-             </place>
-             <dateIssued encoding="marc" point="start">1933</dateIssued>
-             <dateIssued encoding="marc" point="end">uuuu</dateIssued>
-             <issuance>serial</issuance>
-             <place>
-                <placeTerm type="text">[Ruijin]</placeTerm>
-             </place>
-             <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu</publisher>
-             <frequency>Irregular</frequency>
-          </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-             <place>
-                <placeTerm type="code" authority="marccountry">cc</placeTerm>
-             </place>
-             <dateIssued encoding="marc" point="start">1933</dateIssued>
-             <dateIssued encoding="marc" point="end">uuuu</dateIssued>
-             <issuance>serial</issuance>
-             <place>
-                <placeTerm type="text">[Ruijin] in Chinese</placeTerm>
-             </place>
-             <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese</publisher>
-             <frequency>Irregular</frequency>
-          </originInfo>
-        XML
-      end
+    let(:roundtrip_mods) do
+      <<~XML
+        <originInfo altRepGroup="1" eventType="publication">
+           <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+           </place>
+           <dateIssued encoding="marc" point="start">1933</dateIssued>
+           <dateIssued encoding="marc" point="end">uuuu</dateIssued>
+           <issuance>serial</issuance>
+           <place>
+              <placeTerm type="text">[Ruijin]</placeTerm>
+           </place>
+           <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu</publisher>
+           <frequency>Irregular</frequency>
+        </originInfo>
+        <originInfo altRepGroup="1" eventType="publication">
+           <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+           </place>
+           <dateIssued encoding="marc" point="start">1933</dateIssued>
+           <dateIssued encoding="marc" point="end">uuuu</dateIssued>
+           <issuance>serial</issuance>
+           <place>
+              <placeTerm type="text">[Ruijin] in Chinese</placeTerm>
+           </place>
+           <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese</publisher>
+           <frequency>Irregular</frequency>
+        </originInfo>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  parallelValue: [
-                    {
-                      value: '[Ruijin]'
-                    },
-                    {
-                      value: '[Ruijin] in Chinese'
-                    }
-                  ]
-                },
-                {
-                  code: 'cc',
-                  source: {
-                    code: 'marccountry'
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: '[Ruijin]'
+                  },
+                  {
+                    value: '[Ruijin] in Chinese'
                   }
+                ]
+              },
+              {
+                code: 'cc',
+                source: {
+                  code: 'marccountry'
                 }
-              ],
-              date: [
-                {
-                  structuredValue: [
-                    {
-                      value: '1933',
-                      type: 'start'
-                    },
-                    {
-                      value: 'uuuu',
-                      type: 'end'
-                    }
-                  ],
-                  encoding: {
-                    code: 'marc'
+              }
+            ],
+            date: [
+              {
+                structuredValue: [
+                  {
+                    value: '1933',
+                    type: 'start'
+                  },
+                  {
+                    value: 'uuuu',
+                    type: 'end'
                   }
+                ],
+                encoding: {
+                  code: 'marc'
                 }
-              ],
-              contributor: [
-                {
-                  type: 'organization',
-                  name: [
-                    {
-                      parallelValue: [
-                        {
-                          value: 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu'
-                        },
-                        {
-                          value: 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese'
-                        }
-                      ]
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
+              }
+            ],
+            contributor: [
+              {
+                type: 'organization',
+                name: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu'
+                      },
+                      {
+                        value: 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese'
                       }
-                    }
-                  ]
-                }
-              ],
-              note: [
-                {
-                  type: 'issuance',
-                  value: 'serial',
-                  source: {
-                    value: 'MODS issuance terms'
+                    ]
                   }
-                },
-                {
-                  type: 'frequency',
-                  value: 'Irregular'
+                ],
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ],
+            note: [
+              {
+                type: 'issuance',
+                value: 'serial',
+                source: {
+                  value: 'MODS issuance terms'
                 }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:warnings) do
-        [
-          Notification.new(msg: 'Bad altRepGroup')
+              },
+              {
+                type: 'frequency',
+                value: 'Irregular'
+              }
+            ]
+          }
         ]
-      end
+      }
+    end
+
+    let(:warnings) do
+      [
+        Notification.new(msg: 'altRepGroup missing lang/script')
+      ]
     end
   end
 
