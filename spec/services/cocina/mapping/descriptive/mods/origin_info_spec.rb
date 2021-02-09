@@ -1907,7 +1907,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         {
           event: [
             {
-              type: 'creation',
+              type: 'production',
               date: [
                 {
                   value: '1899'
@@ -1936,11 +1936,12 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
       end
 
       # FIXME:  3 events - the second date splits to event without type, and location gets type publication
+      # Updated by Arcadia to match current model, replaces above specification
       let(:roundtrip_cocina) do
         {
           event: [
             {
-              type: 'creation',
+              type: 'production',
               date: [
                 {
                   value: '1899'
@@ -1953,17 +1954,15 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
               ]
             },
             {
-              date: [
-                {
-                  value: '1901'
-                }
-              ]
-            },
-            {
-              type: 'publication',
               location: [
                 {
                   value: 'London'
+                }
+              ],
+              date: [
+                {
+                  value: '1901',
+                  type: 'other'
                 }
               ]
             }
