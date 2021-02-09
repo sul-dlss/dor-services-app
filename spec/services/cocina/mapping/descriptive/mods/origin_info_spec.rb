@@ -432,7 +432,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       # Round trip maps back to original plus eventTypes. Rule: anything in an event that does not have an explicit language/script
       # goes in the eng and/or Latn originInfo.
-      # Elements paired in parallelValue should have same type or encoding attribute value if present.
+      # If multiple instances of same subelement, pair the ones that have the same type or encoding attribute value if present.
       # See Parallel value with no script given in MODS for mapping when both attributes are absent.
       let(:cocina) do
         {
