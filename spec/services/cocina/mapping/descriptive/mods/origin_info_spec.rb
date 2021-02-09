@@ -1093,7 +1093,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         XML
       end
 
-      let(:mods) do
+      let(:roundtrip_mods) do
         <<~XML
           <originInfo eventType="publication" altRepGroup="1">
             <place>
