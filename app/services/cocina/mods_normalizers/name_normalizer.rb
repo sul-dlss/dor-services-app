@@ -19,6 +19,7 @@ module Cocina
         normalize_name
         normalize_dupes
         normalize_type
+        normalize_name_part_type
         ng_xml
       end
 
@@ -71,6 +72,15 @@ module Cocina
           else
             name_node_w_type.remove_attribute('type')
           end
+        end
+      end
+
+      def normalize_name_part_type
+        ng_xml.root.xpath('//mods:namePart[(@type)]', mods: ModsNormalizer::MODS_NS).each do |name_part_node|
+          raw_type = name_part_node['type']
+          return if FromFedora::Descriptive::Contributor::NAME_PART.keys.include?(raw_type)
+
+          name_part_node.remove_attribute('type')
         end
       end
     end

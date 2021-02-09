@@ -158,4 +158,26 @@ RSpec.describe Cocina::ModsNormalizers::NameNormalizer do
       XML
     end
   end
+
+  context 'when namePart has a invalid type attribute' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name>
+            <namePart type="personal">Dunnett, Dorothy</namePart>
+          </name>
+        </mods>
+      XML
+    end
+
+    it 'removes invalid type attribute' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name>
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+        </mods>
+      XML
+    end
+  end
 end
