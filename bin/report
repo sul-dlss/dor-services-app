@@ -41,11 +41,22 @@ def check_attrs(ng_xml)
   bad_attrs.present? ? bad_attrs.to_a.join(', ') : false
 end
 
+def date_other(ng_xml)
+  date_other_types = Set.new
+  ng_xml.root.xpath('mods:originInfo/mods:dateOther', mods: MODS_NS).each do |element|
+    date_other_types << "#{element['type'] || 'NONE'} - #{element.parent['eventType'] || 'NONE'}"
+  end
+  return false if date_other_types.empty?
+
+  date_other_types.to_a.join(', ')
+end
+
 REPORTS = {
   parts: method(:has_part?),
   xlink_href: method(:has_xlink_href?),
   mods_elements: method(:check_elements),
-  mods_attrs: method(:check_attrs)
+  mods_attrs: method(:check_attrs),
+  date_other: method(:date_other)
 }.with_indifferent_access
 
 options = { local: false, reports: REPORTS.keys }
