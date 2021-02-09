@@ -568,32 +568,31 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'originInfo with displayLabel' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo displayLabel="Origin" eventType="production">
-            <place>
-              <placeTerm type="text">Stanford (Calif.)</placeTerm>
-            </place>
-          </originInfo>
-        XML
-      end
+    xit 'updated spec'
+    let(:mods) do
+      <<~XML
+        <originInfo displayLabel="Origin" eventType="production">
+          <place>
+            <placeTerm type="text">Stanford (Calif.)</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'creation',
-              displayLabel: 'Origin',
-              location: [
-                {
-                  value: 'Stanford (Calif.)'
-                }
-              ]
-            }
-          ]
-        }
-      end
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'production',
+            displayLabel: 'Origin',
+            location: [
+              {
+                value: 'Stanford (Calif.)'
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
