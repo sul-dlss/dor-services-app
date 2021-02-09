@@ -1067,7 +1067,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
   describe 'Parallel value with no script given in MODS - C' do
     # Example adapted from druid:bh212vz9239
-    xit 'updated error message'
+    xit 'updated warning message'
     let(:mods) do
       <<~XML
         <originInfo altRepGroup="1">
@@ -1224,143 +1224,142 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Multiple originInfo elements with and without eventTypes' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo>
-            <place>
-              <placeTerm type="code" authority="marccountry">cau</placeTerm>
-            </place>
-            <dateIssued encoding="marc">2020</dateIssued>
-            <copyrightDate encoding="marc">2020</copyrightDate>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="text">[Stanford, Calif.]</placeTerm>
-            </place>
-            <publisher>[Stanford University]</publisher>
-            <dateIssued>2020</dateIssued>
-          </originInfo>
-          <originInfo eventType="copyright notice">
-            <copyrightDate>&#xA9;2020</copyrightDate>
-          </originInfo>
-        XML
-      end
+    xit 'updated spec'
+    let(:mods) do
+      <<~XML
+        <originInfo>
+          <place>
+            <placeTerm type="code" authority="marccountry">cau</placeTerm>
+          </place>
+          <dateIssued encoding="marc">2020</dateIssued>
+          <copyrightDate encoding="marc">2020</copyrightDate>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo eventType="publication">
+          <place>
+            <placeTerm type="text">[Stanford, Calif.]</placeTerm>
+          </place>
+          <publisher>[Stanford University]</publisher>
+          <dateIssued>2020</dateIssued>
+        </originInfo>
+        <originInfo eventType="copyright notice">
+          <copyrightDate>©2020</copyrightDate>
+        </originInfo>
+      XML
+    end
 
-      let(:roundtrip_mods) do
-        <<~XML
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cau</placeTerm>
-            </place>
-            <dateIssued encoding="marc">2020</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="text">[Stanford, Calif.]</placeTerm>
-            </place>
-            <publisher>[Stanford University]</publisher>
-            <dateIssued>2020</dateIssued>
-          </originInfo>
-          <originInfo eventType="copyright">
-            <copyrightDate encoding="marc">2020</copyrightDate>
-          </originInfo>
-          <originInfo eventType="copyright notice">
-            <copyrightDate>&#xA9;2020</copyrightDate>
-          </originInfo>
-        XML
-      end
+    let(:roundtrip_mods) do
+      <<~XML
+        <originInfo eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cau</placeTerm>
+          </place>
+          <dateIssued encoding="marc">2020</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo eventType="publication">
+          <place>
+            <placeTerm type="text">[Stanford, Calif.]</placeTerm>
+          </place>
+          <publisher>[Stanford University]</publisher>
+          <dateIssued>2020</dateIssued>
+        </originInfo>
+        <originInfo eventType="copyright">
+          <copyrightDate encoding="marc">2020</copyrightDate>
+        </originInfo>
+        <originInfo eventType="copyright notice">
+          <copyrightDate>©2020</copyrightDate>
+        </originInfo>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  code: 'cau',
-                  source: {
-                    code: 'marccountry'
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                code: 'cau',
+                source: {
+                  code: 'marccountry'
+                }
+              }
+            ],
+            date: [
+              {
+                value: '2020',
+                encoding: {
+                  code: 'marc'
+                }
+              }
+            ],
+            note: [
+              {
+                type: 'issuance',
+                value: 'monographic',
+                source: {
+                  value: 'MODS issuance terms'
+                }
+              }
+            ]
+          },
+          {
+            type: 'copyright',
+            date: [
+              {
+                value: '2020',
+                encoding: {
+                  code: 'marc'
+                }
+              }
+            ]
+          },
+          {
+            type: 'publication',
+            location: [
+              {
+                value: '[Stanford, Calif.]'
+              }
+            ],
+            contributor: [
+              {
+                name: [
+                  {
+                    value: '[Stanford University]'
                   }
-                }
-              ],
-              date: [
-                {
-                  value: '2020',
-                  encoding: {
-                    code: 'marc'
-                  }
-                }
-              ],
-              note: [
-                {
-                  type: 'issuance',
-                  value: 'monographic',
-                  source: {
-                    value: 'MODS issuance terms'
-                  }
-                }
-              ]
-            },
-            {
-              type: 'copyright',
-              date: [
-                {
-                  value: '2020',
-                  encoding: {
-                    code: 'marc'
-                  }
-                }
-              ]
-            },
-            {
-              type: 'publication',
-              location: [
-                {
-                  value: '[Stanford, Calif.]'
-                }
-              ],
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: '[Stanford University]'
+                ],
+                type: 'organization',
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
                     }
-                  ],
-                  type: 'organization',
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  value: '2020'
-                }
-              ]
-            },
-            {
-              type: 'copyright',
-              note: [
-                {
-                  value: '©2020',
-                  type: 'copyright statement'
-                }
-              ]
-            }
-          ]
-        }
-      end
+                  }
+                ]
+              }
+            ],
+            date: [
+              {
+                value: '2020'
+              }
+            ]
+          },
+          {
+            type: 'copyright notice',
+            note: [
+              {
+                value: '©2020',
+                type: 'copyright statement'
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
@@ -1369,121 +1368,120 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   describe 'parallel values with example adapted from hn285fy7937' do
     # example adapted from hn285fy7937 after normalization
 
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Chengdu</placeTerm>
-            </place>
-            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>Di 1 ban.</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
-            </place>
-            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>[Di 1 ban in Chinese]</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Chengdu'
-                    },
-                    {
-                      value: '[Chengdu in Chinese]'
-                    }
-                  ]
-                },
-                {
-                  code: 'cc',
-                  source: {
-                    code: 'marccountry'
-                  }
-                }
-              ],
-              contributor: [
-                {
-                  type: 'organization',
-                  name: [
-                    {
-                      parallelValue: [
-                        {
-                          value: 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
-                        },
-                        {
-                          value: '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
-                        }
-                      ]
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  value: '2005'
-                }
-              ],
-              note: [
-                {
-                  type: 'edition',
-                  parallelValue: [
-                    {
-                      value: 'Di 1 ban.'
-                    },
-                    {
-                      value: '[Di 1 ban in Chinese]'
-                    }
-                  ]
-                },
-                {
-                  type: 'issuance',
-                  value: 'monographic',
-                  source: {
-                    value: 'MODS issuance terms'
-                  }
-
-                }
-
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:warnings) { [Notification.new(msg: 'Bad altRepGroup')] }
+    xit 'updated warning message'
+    let(:mods) do
+      <<~XML
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Chengdu</placeTerm>
+          </place>
+          <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>Di 1 ban.</edition>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+          </place>
+          <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>[Di 1 ban in Chinese]</edition>
+          <issuance>monographic</issuance>
+        </originInfo>
+      XML
     end
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Chengdu'
+                  },
+                  {
+                    value: '[Chengdu in Chinese]'
+                  }
+                ]
+              },
+              {
+                code: 'cc',
+                source: {
+                  code: 'marccountry'
+                }
+              }
+            ],
+            contributor: [
+              {
+                type: 'organization',
+                name: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
+                      },
+                      {
+                        value: '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
+                      }
+                    ]
+                  }
+                ],
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ],
+            date: [
+              {
+                value: '2005'
+              }
+            ],
+            note: [
+              {
+                type: 'edition',
+                parallelValue: [
+                  {
+                    value: 'Di 1 ban.'
+                  },
+                  {
+                    value: '[Di 1 ban in Chinese]'
+                  }
+                ]
+              },
+              {
+                type: 'issuance',
+                value: 'monographic',
+                source: {
+                  value: 'MODS issuance terms'
+                }
+
+              }
+
+            ]
+          }
+        ]
+      }
+    end
+
+    let(:warnings) { [Notification.new(msg: 'altRepGroup missing lang/script')] }
   end
 
   describe 'parallel values - originInfo with additional elements in the second position' do
