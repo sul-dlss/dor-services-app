@@ -1991,7 +1991,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     end
   end
 
-  # Something goes wrong here with formatting
   context 'when originInfo / event is various flavors of missing' do
     context 'when cocina event is empty array' do
       # NOTE: cocina -> MODS
@@ -2024,43 +2023,34 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
     context 'when cocina event is array with empty hash' do
       # NOTE: cocina -> MODS
-      it_behaves_like 'cocina MODS mapping' do
-        let(:cocina) do
-          {
-            event: [{}]
-          }
-        end
-
-        let(:roundtrip_cocina) do
-          {
-          }
-        end
-
-        let(:mods) do
-          <<~XML
-            <originInfo/>
-          XML
-        end
+      xit 'updated spec'
+      let(:cocina) do
+        {
+          event: [{}]
+        }
       end
+
+      let(:roundtrip_cocina) do
+        {
+        }
+      end
+
+      let(:mods) { '' }
     end
 
     context 'when MODS is empty originInfo element with no attributes' do
-      it_behaves_like 'MODS cocina mapping' do
-        let(:mods) do
-          <<~XML
-            <originInfo/>
-          XML
-        end
+      xit 'updated spec'
+      let(:mods) do
+        <<~XML
+          <originInfo/>
+        XML
+      end
 
-        let(:roundtrip_mods) do
-          <<~XML
-          XML
-        end
+      let(:roundtrip_mods) { '' }
 
-        let(:cocina) do
-          {
-          }
-        end
+      let(:cocina) do
+        {
+        }
       end
     end
   end
