@@ -1768,6 +1768,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   context 'when eventType matches date type "distribution"' do
+    # bad data mapping (?)
     # NOTE: cocina -> MODS mapping
     it_behaves_like 'cocina MODS mapping' do
       let(:mods) do
