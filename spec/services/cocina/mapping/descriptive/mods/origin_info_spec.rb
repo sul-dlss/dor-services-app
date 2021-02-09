@@ -1487,284 +1487,284 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   describe 'parallel values - originInfo with additional elements in the second position' do
     # example adapted from bh212vz9239 in different order
 
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo altRepGroup="1">
-            <place>
-              <placeTerm type="text">Guangdong in Chinese</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
-          </originInfo>
-          <originInfo altRepGroup="1">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Guangdong</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
-            <dateIssued encoding="marc" point="start">1922</dateIssued>
-            <dateIssued encoding="marc" point="end">1929</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-        XML
-      end
-
-      # all parallel elements in both originInfo elements + eventType
-      let(:roundtrip_mods) do
-        <<~XML
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Guangdong in Chinese</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
-            <dateIssued encoding="marc" point="start">1922</dateIssued>
-            <dateIssued encoding="marc" point="end">1929</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Guangdong</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
-            <dateIssued encoding="marc" point="start">1922</dateIssued>
-            <dateIssued encoding="marc" point="end">1929</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Guangdong in Chinese'
-                    },
-                    {
-                      value: 'Guangdong'
-                    }
-                  ]
-                },
-                {
-                  code: 'cc',
-                  source: {
-                    code: 'marccountry'
-                  }
-                }
-              ],
-              contributor: [
-                {
-                  type: 'organization',
-                  name: [
-                    {
-                      parallelValue: [
-                        {
-                          value: 'Guangdong lu jun ce liang ju in Chinese'
-                        },
-                        {
-                          value: 'Guangdong lu jun ce liang ju'
-                        }
-                      ]
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Minguo 11-18 [1922-1929] in Chinese'
-                    },
-                    {
-                      value: 'Minguo 11-18 [1922-1929]'
-                    }
-                  ]
-                },
-                {
-                  structuredValue: [
-                    {
-                      value: '1922',
-                      type: 'start'
-                    },
-                    {
-                      value: '1929',
-                      type: 'end'
-                    }
-                  ],
-                  encoding: {
-                    code: 'marc'
-                  }
-                }
-              ],
-              note: [
-                {
-                  type: 'issuance',
-                  value: 'monographic',
-                  source: {
-                    value: 'MODS issuance terms'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:warnings) { [Notification.new(msg: 'Bad altRepGroup')] }
+    xit 'updated warning message'
+    let(:mods) do
+      <<~XML
+        <originInfo altRepGroup="1">
+          <place>
+            <placeTerm type="text">Guangdong in Chinese</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
+        </originInfo>
+        <originInfo altRepGroup="1">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+      XML
     end
+
+    # all parallel elements in both originInfo elements + eventType
+    let(:roundtrip_mods) do
+      <<~XML
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong in Chinese</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Guangdong in Chinese'
+                  },
+                  {
+                    value: 'Guangdong'
+                  }
+                ]
+              },
+              {
+                code: 'cc',
+                source: {
+                  code: 'marccountry'
+                }
+              }
+            ],
+            contributor: [
+              {
+                type: 'organization',
+                name: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'Guangdong lu jun ce liang ju in Chinese'
+                      },
+                      {
+                        value: 'Guangdong lu jun ce liang ju'
+                      }
+                    ]
+                  }
+                ],
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ],
+            date: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Minguo 11-18 [1922-1929] in Chinese'
+                  },
+                  {
+                    value: 'Minguo 11-18 [1922-1929]'
+                  }
+                ]
+              },
+              {
+                structuredValue: [
+                  {
+                    value: '1922',
+                    type: 'start'
+                  },
+                  {
+                    value: '1929',
+                    type: 'end'
+                  }
+                ],
+                encoding: {
+                  code: 'marc'
+                }
+              }
+            ],
+            note: [
+              {
+                type: 'issuance',
+                value: 'monographic',
+                source: {
+                  value: 'MODS issuance terms'
+                }
+              }
+            ]
+          }
+        ]
+      }
+    end
+
+    let(:warnings) { [Notification.new(msg: 'altRepGroup missing lang/script')] }
   end
 
   describe 'parallel value - with second originInfo that would not get an event type' do
     # from druid:mm706hr7414
 
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-            <originInfo altRepGroup="1">
-              <place>
-                <placeTerm type="code" authority="marccountry">is</placeTerm>
-              </place>
-              <place>
-                <placeTerm type="text">Tel-Aviv</placeTerm>
-              </place>
-              <publisher>A. Shṭibel</publisher>
-              <dateIssued>1939</dateIssued>
-              <issuance>monographic</issuance>
-            </originInfo>
-            <originInfo script="" altRepGroup="1">
-              <place>
-                <placeTerm type="text">תל־אביב :</placeTerm>
-              </place>
-              <publisher>ש. שטיבל,1939.</publisher>
+    xit 'added warning'
+    let(:mods) do
+      <<~XML
+          <originInfo altRepGroup="1">
+            <place>
+              <placeTerm type="code" authority="marccountry">is</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">Tel-Aviv</placeTerm>
+            </place>
+            <publisher>A. Shṭibel</publisher>
+            <dateIssued>1939</dateIssued>
+            <issuance>monographic</issuance>
           </originInfo>
-        XML
-      end
-
-      # add eventType, all elements must be present in all group members, remove empty script attrib
-      let(:roundtrip_mods) do
-        <<~XML
-            <originInfo altRepGroup="1" eventType="publication">
-              <place>
-                <placeTerm type="code" authority="marccountry">is</placeTerm>
-              </place>
-              <place>
-                <placeTerm type="text">Tel-Aviv</placeTerm>
-              </place>
-              <publisher>A. Shṭibel</publisher>
-              <dateIssued>1939</dateIssued>
-              <issuance>monographic</issuance>
-            </originInfo>
-            <originInfo altRepGroup="1" eventType="publication">
-              <place>
-                <placeTerm type="code" authority="marccountry">is</placeTerm>
-              </place>
-              <place>
-                <placeTerm type="text">תל־אביב :</placeTerm>
-              </place>
-              <publisher>ש. שטיבל,1939.</publisher>
-              <dateIssued>1939</dateIssued>
-              <issuance>monographic</issuance>
-          </originInfo>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              date: [
-                {
-                  value: '1939'
-                }
-              ],
-              location: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Tel-Aviv'
-                    },
-                    {
-                      value: 'תל־אביב :'
-                    }
-                  ]
-                },
-                {
-                  source: {
-                    code: 'marccountry'
-                  },
-                  code: 'is'
-                }
-              ],
-              note: [
-                {
-                  source: {
-                    value: 'MODS issuance terms'
-                  },
-                  type: 'issuance',
-                  value: 'monographic'
-                }
-              ],
-              contributor: [
-                {
-                  name: [
-                    {
-                      parallelValue: [
-                        {
-                          value: 'A. Shṭibel'
-                        },
-                        {
-                          value: 'ש. שטיבל,1939.'
-                        }
-                      ]
-                    }
-                  ],
-                  type: 'organization',
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      end
+          <originInfo script="" altRepGroup="1">
+            <place>
+              <placeTerm type="text">תל־אביב :</placeTerm>
+            </place>
+            <publisher>ש. שטיבל,1939.</publisher>
+        </originInfo>
+      XML
     end
+
+    # add eventType, all elements must be present in all group members, remove empty script attrib
+    let(:roundtrip_mods) do
+      <<~XML
+          <originInfo altRepGroup="1" eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">is</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">Tel-Aviv</placeTerm>
+            </place>
+            <publisher>A. Shṭibel</publisher>
+            <dateIssued>1939</dateIssued>
+            <issuance>monographic</issuance>
+          </originInfo>
+          <originInfo altRepGroup="1" eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">is</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">תל־אביב :</placeTerm>
+            </place>
+            <publisher>ש. שטיבל,1939.</publisher>
+            <dateIssued>1939</dateIssued>
+            <issuance>monographic</issuance>
+        </originInfo>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            date: [
+              {
+                value: '1939'
+              }
+            ],
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Tel-Aviv'
+                  },
+                  {
+                    value: 'תל־אביב :'
+                  }
+                ]
+              },
+              {
+                source: {
+                  code: 'marccountry'
+                },
+                code: 'is'
+              }
+            ],
+            note: [
+              {
+                source: {
+                  value: 'MODS issuance terms'
+                },
+                type: 'issuance',
+                value: 'monographic'
+              }
+            ],
+            contributor: [
+              {
+                name: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'A. Shṭibel'
+                      },
+                      {
+                        value: 'ש. שטיבל,1939.'
+                      }
+                    ]
+                  }
+                ],
+                type: 'organization',
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    end
+
+    let(:warnings) { [Notification.new(msg: 'altRepGroup missing lang/script')] }
   end
 
   context 'when eventType matches date type "distribution"' do
