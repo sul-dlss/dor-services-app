@@ -207,43 +207,43 @@ RSpec.describe 'MODS genre <--> cocina mappings' do
   # Bad data handling
 
   describe 'With multiple primary' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <genre usage="primary">poetry</genre>
+          <genre usage="primary">prose</genre>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <genre usage="primary">poetry</genre>
-        <genre usage="primary">prose</genre>
-      XML
-    end
+      let(:roundtrip_mods) do
+        # Drop all instances of usage="primary" after first one
+        <<~XML
+          <genre usage="primary">poetry</genre>
+          <genre>prose</genre>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      # Drop all instances of usage="primary" after first one
-      <<~XML
-        <genre usage="primary">poetry</genre>
-        <genre>prose</genre>
-      XML
-    end
+      let(:cocina) do
+        {
+          form: [
+            {
+              value: 'poetry',
+              type: 'genre',
+              status: 'primary'
+            },
+            {
+              value: 'prose',
+              type: 'genre'
+            }
+          ]
+        }
+      end
 
-    let(:cocina) do
-      {
-        form: [
-          {
-            value: 'poetry',
-            type: 'genre',
-            status: 'primary'
-          },
-          {
-            value: 'prose',
-            type: 'genre'
-          }
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Multiple marked as primary', context: { type: 'genre' })
         ]
-      }
-    end
-
-    let(:warnings) do
-      [
-        Notification.new(msg: 'Multiple genres marked as primary')
-      ]
+      end
     end
   end
 end

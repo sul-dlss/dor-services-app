@@ -1764,114 +1764,115 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   # Bad data handling
 
   describe 'Multiple names with primary and matching altRepGroup' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name usage="primary" altRepGroup="1" type="personal">
+            <namePart>Name v1</namePart>
+          </name>
+          <name usage="primary" altRepGroup="1" type="personal">
+            <namePart>Name v2</namePart>
+          </name>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <name usage="primary" altRepGroup="1" type="personal">
-          <namePart>Name v1</namePart>
-        </name>
-        <name usage="primary" altRepGroup="1" type="personal">
-          <namePart>Name v2</namePart>
-        </name>
-      XML
-    end
+      let(:roundtrip_mods) do
+        # Drop all instances of usage="primary" after first one
+        <<~XML
+          <name usage="primary" altRepGroup="1" type="personal">
+            <namePart>Name v1</namePart>
+          </name>
+          <name altRepGroup="1" type="personal">
+            <namePart>Name v2</namePart>
+          </name>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      # Drop all instances of usage="primary" after first one
-      <<~XML
-        <name usage="primary" altRepGroup="1" type="personal">
-          <namePart>Name v1</namePart>
-        </name>
-        <name altRepGroup="1" type="personal">
-          <namePart>Name v2</namePart>
-        </name>
-      XML
-    end
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  parallelValue: [
+                    {
+                      value: 'Name v1',
+                      status: 'primary'
+                    },
+                    {
+                      value: 'Name v2'
+                    }
+                  ],
+                  status: 'primary',
+                  type: 'person'
+                }
+              ]
+            }
+          ]
+        }
+      end
 
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                parallelValue: [
-                  {
-                    value: 'Name v1',
-                    status: 'primary'
-                  },
-                  {
-                    value: 'Name v2'
-                  }
-                ]
-              }
-            ],
-            status: 'primary',
-            type: 'person'
-          }
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Multiple marked as primary', context: { type: 'name' }),
+          Notification.new(msg: 'Bad altRepGroup')
         ]
-      }
-    end
-
-    let(:warnings) do
-      [
-        Notification.new(msg: 'Multiple names marked as primary')
-      ]
+      end
     end
   end
 
   describe 'Multiple names with primary and no matching altRepGroup' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name usage="primary" type="personal">
+            <namePart>Name 1</namePart>
+          </name>
+          <name usage="primary" type="personal">
+            <namePart>Name 2</namePart>
+          </name>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <name usage="primary" type="personal">
-          <namePart>Name 1</namePart>
-        </name>
-        <name usage="primary" type="personal">
-          <namePart>Name 2</namePart>
-        </name>
-      XML
-    end
+      let(:roundtrip_mods) do
+        # Drop all instances of usage="primary" after first one
+        <<~XML
+          <name usage="primary" type="personal">
+            <namePart>Name 1</namePart>
+          </name>
+          <name type="personal">
+            <namePart>Name 2</namePart>
+          </name>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      # Drop all instances of usage="primary" after first one
-      <<~XML
-        <name usage="primary" type="personal">
-          <namePart>Name 1</namePart>
-        </name>
-        <name type="personal">
-          <namePart>Name 2</namePart>
-        </name>
-      XML
-    end
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Name 1'
+                }
+              ],
+              status: 'primary',
+              type: 'person'
+            },
+            {
+              name: [
+                value: 'Name 2'
+              ],
+              type: 'person'
+            }
+          ]
+        }
+      end
 
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                value: 'Name 1'
-              }
-            ],
-            status: 'primary',
-            type: 'person'
-          },
-          {
-            name: [
-              value: 'Name 2'
-            ],
-            type: 'person'
-          }
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Multiple marked as primary', context: { type: 'name' })
         ]
-      }
-    end
-
-    let(:warnings) do
-      [
-        Notification.new(msg: 'Multiple contributors marked as primary')
-      ]
+      end
     end
   end
 

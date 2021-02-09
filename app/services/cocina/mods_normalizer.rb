@@ -41,6 +41,7 @@ module Cocina
       @ng_xml = ModsNormalizers::GeoExtensionNormalizer.normalize(mods_ng_xml: ng_xml, druid: druid)
       normalize_empty_type_of_resource # Must be after normalize_empty_attributes
       normalize_abstract_summary
+      normalize_usage_primary
       # This should be last-ish.
       normalize_empty_related_items
       ng_xml
@@ -228,6 +229,21 @@ module Cocina
     def normalize_abstract_summary
       ng_xml.root.xpath('//mods:abstract[@type="summary"]', mods: MODS_NS).each do |abstract_node|
         abstract_node.delete('type')
+      end
+    end
+
+    def normalize_usage_primary
+      normalize_usage_primary_for(ng_xml.root)
+      ng_xml.root.xpath('mods:relatedItem', mods: ModsNormalizer::MODS_NS).each { |related_item_node| normalize_usage_primary_for(related_item_node) }
+      ng_xml.root.xpath('//mods:subject', mods: ModsNormalizer::MODS_NS).each { |subject_node| normalize_usage_primary_for(subject_node) }
+    end
+
+    def normalize_usage_primary_for(base_node)
+      %w[genre language classification subject titleInfo typeOfResource name].each do |node_name|
+        primary_nodes = base_node.xpath("mods:#{node_name}[@usage=\"primary\"]", mods: MODS_NS)
+        next if primary_nodes.size < 2
+
+        primary_nodes[1..].each { |primary_node| primary_node.delete('usage') }
       end
     end
   end

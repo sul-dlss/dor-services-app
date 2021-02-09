@@ -36,7 +36,7 @@ module Cocina
           grouped_altrepgroup_name_nodes, other_name_nodes = AltRepGroup.split(nodes: deduped_name_nodes)
           contributors = grouped_altrepgroup_name_nodes.map { |name_nodes| build_name_nodes(name_nodes) } + \
                          other_name_nodes.map { |name_node| build_name_nodes([name_node]) }
-          contributors.compact.presence
+          adjust_primary(contributors.compact).presence
         end
 
         private
@@ -54,6 +54,16 @@ module Cocina
         def build_name_nodes(name_nodes)
           name_nodes.each { |name_node| notifier.warn('Missing or empty name type attribute') if name_node['type'].blank? && name_node['xlink:href'].blank? }
           NameBuilder.build(name_elements: name_nodes, notifier: notifier).presence
+        end
+
+        def adjust_primary(contributors)
+          Primary.adjust(contributors, 'name', notifier)
+          contributors.each do |contributor|
+            contributor[:name].each do |name|
+              Primary.adjust(name[:parallelValue], 'name', notifier) if name[:parallelValue]
+            end
+          end
+          contributors
         end
       end
     end

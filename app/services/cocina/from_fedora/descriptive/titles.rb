@@ -39,6 +39,7 @@ module Cocina
 
           result = altrepgroup_title_info_nodes.map { |title_info_nodes| parallel(title_info_nodes) } \
             + simple_or_structured(other_title_info_nodes)
+          Primary.adjust(result, 'title', notifier)
 
           notifier.error('Missing title') if result.empty? && require_title
 

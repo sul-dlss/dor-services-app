@@ -30,9 +30,12 @@ module Cocina
         def build
           altrepgroup_subject_nodes, other_subject_nodes = AltRepGroup.split(nodes: subject_nodes)
 
-          (altrepgroup_subject_nodes.map { |subject_nodes| build_parallel_subject(subject_nodes) } +
+          subjects = (altrepgroup_subject_nodes.map { |subject_nodes| build_parallel_subject(subject_nodes) } +
             other_subject_nodes.map { |subject_node| build_subject(subject_node) }.compact +
             build_cartographics).compact
+          Primary.adjust(subjects, 'classification', notifier, match_type: true)
+          Primary.adjust(subjects.reject { |subject| subject[:type] == 'classification' }, 'subject', notifier)
+          subjects
         end
 
         private
@@ -87,6 +90,7 @@ module Cocina
             attrs[:encoding] = { code: subject[:encoding] } if subject[:encoding]
             language_script = LanguageScript.build(node: subject)
             attrs[:valueLanguage] = language_script if language_script
+            attrs[:status] = 'primary' if subject['usage'] == 'primary'
           end.compact
         end
 
@@ -103,6 +107,7 @@ module Cocina
         def structured_value(node_set, attrs)
           values = node_set.map { |node| simple_item(node) }.compact
           if values.present?
+            Primary.adjust(values, 'genre', notifier, match_type: true)
             attrs = attrs.merge(structuredValue: values)
             adjust_source(attrs)
           end
@@ -158,12 +163,13 @@ module Cocina
         def subject_classification(subject_classification_node, attrs)
           notifier.warn('No source given for classification value', value: subject_classification_node.text) unless attrs[:uri] || attrs.dig(:source, :code) || attrs.dig(:source, :uri)
 
-          values = {}.tap do |content|
-            content[:type] = 'classification'
-            content[:value] = subject_classification_node.text
-            content[:displayLabel] = subject_classification_node[:displayLabel] if subject_classification_node[:displayLabel]
+          classification_attributes = {}.tap do |attributes|
+            attributes[:type] = 'classification'
+            attributes[:value] = subject_classification_node.text
+            attributes[:displayLabel] = subject_classification_node[:displayLabel] if subject_classification_node[:displayLabel]
+            attributes[:status] = 'primary' if subject_classification_node['usage'] == 'primary'
           end
-          attrs.merge(values)
+          attrs.merge(classification_attributes)
         end
 
         # @return [Hash, NilClass]

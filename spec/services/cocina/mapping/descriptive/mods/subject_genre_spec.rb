@@ -53,47 +53,49 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
   # Bad data handling
 
   describe 'With multiple primary' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <genre usage="primary">Poetry</genre>
+            <genre usage="primary">Prose</genre>
+          </subject>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <subject>
-          <genre usage="primary">Poetry</genre>
-          <genre usage="primary">Prose</genre>
-        </subject>
-      XML
-    end
+      let(:roundtrip_mods) do
+        # Drop all instances of usage="primary" after first one
+        <<~XML
+          <subject>
+            <genre usage="primary">Poetry</genre>
+            <genre>Prose</genre>
+          </subject>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      # Drop all instances of usage="primary" after first one
-      <<~XML
-        <subject>
-          <genre usage="primary">Poetry</genre>
-          <genre usage="primary">Prose</genre>
-        </subject>
-      XML
-    end
+      let(:cocina) do
+        {
+          subject: [
+            structuredValue: [
+              {
+                value: 'Poetry',
+                type: 'genre',
+                status: 'primary'
+              },
+              {
+                value: 'Prose',
+                type: 'genre'
+              }
+            ]
+          ]
+        }
+      end
 
-    let(:cocina) do
-      {
-        subject: [
-          {
-            value: 'Poetry',
-            type: 'genre',
-            status: 'primary'
-          },
-          {
-            value: 'Prose',
-            type: 'genre'
-          }
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Multiple marked as primary', context: { type: 'genre' })
         ]
-      }
-    end
-
-    let(:warnings) do
-      [
-        Notification.new(msg: 'Multiple genre subjects marked as primary')
-      ]
+      end
     end
   end
 end

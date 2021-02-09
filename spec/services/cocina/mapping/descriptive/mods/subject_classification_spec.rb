@@ -139,88 +139,88 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
   end
 
   describe 'Multiple classifications, one primary' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <classification usage="primary" authority="ddc" edition="11">683</classification>
+          <classification authority="ddc" edition="12">684</classification>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <classification usage="primary" authority="ddc" edition="11">683</classification>
-        <classification authority="ddc" edition="12">684</classification>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        subject: [
-          {
-            type: 'classification',
-            value: '683',
-            usage: 'primary',
-            source: {
-              code: 'ddc',
-              version: '11th edition'
+      let(:cocina) do
+        {
+          subject: [
+            {
+              type: 'classification',
+              value: '683',
+              status: 'primary',
+              source: {
+                code: 'ddc',
+                version: '11th edition'
+              }
+            },
+            {
+              type: 'classification',
+              value: '684',
+              source: {
+                code: 'ddc',
+                version: '12th edition'
+              }
             }
-          },
-          {
-            type: 'classification',
-            value: '684',
-            source: {
-              code: 'ddc',
-              version: '12th edition'
-            }
-          }
-        ]
-      }
+          ]
+        }
+      end
     end
   end
 
   # Bad data handling
 
   describe 'Multiple classifications, multiple primary' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <classification usage="primary" authority="ddc" edition="11">683</classification>
+          <classification usage="primary" authority="ddc" edition="12">684</classification>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <classification usage="primary" authority="ddc" edition="11">683</classification>
-        <classification usage="primary" authority="ddc" edition="12">684</classification>
-      XML
-    end
+      let(:roundtrip_mods) do
+        # Drop all instances of usage="primary" after first one
+        <<~XML
+          <classification usage="primary" authority="ddc" edition="11">683</classification>
+          <classification authority="ddc" edition="12">684</classification>
+        XML
+      end
 
-    let(:roundtrip_mods) do
-      # Drop all instances of usage="primary" after first one
-      <<~XML
-        <classification usage="primary" authority="ddc" edition="11">683</classification>
-        <classification authority="ddc" edition="12">684</classification>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        subject: [
-          {
-            type: 'classification',
-            value: '683',
-            usage: 'primary',
-            source: {
-              code: 'ddc',
-              version: '11th edition'
+      let(:cocina) do
+        {
+          subject: [
+            {
+              type: 'classification',
+              value: '683',
+              status: 'primary',
+              source: {
+                code: 'ddc',
+                version: '11th edition'
+              }
+            },
+            {
+              type: 'classification',
+              value: '684',
+              source: {
+                code: 'ddc',
+                version: '12th edition'
+              }
             }
-          },
-          {
-            type: 'classification',
-            value: '684',
-            source: {
-              code: 'ddc',
-              version: '12th edition'
-            }
-          }
+          ]
+        }
+      end
+
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Multiple marked as primary', context: { type: 'classification' })
         ]
-      }
-    end
-
-    let(:warnings) do
-      [
-        Notification.new(msg: 'Multiple classifications marked as primary')
-      ]
+      end
     end
   end
 end

@@ -126,6 +126,7 @@ module Cocina
 
           attributes = {}.tap do |attrs|
             attrs[:displayLabel] = form.displayLabel
+            attrs[:usage] = form.status
           end.compact
 
           case form.type
