@@ -251,7 +251,7 @@ module Cocina
           coordinates = subject_nodes.map do |subject_node|
             subject_node.xpath('mods:cartographics/mods:coordinates', mods: DESC_METADATA_NS).map do |coordinate_node|
               coordinate = coordinate_node.content
-              return nil if coordinate.blank?
+              next nil if coordinate.blank?
 
               coordinate.delete_prefix('(').delete_suffix(')')
             end.compact
