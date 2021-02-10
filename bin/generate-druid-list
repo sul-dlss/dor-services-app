@@ -5,26 +5,25 @@ require_relative '../config/environment'
 require 'set'
 
 if ARGV.length != 1
-  puts 'Usage: bin/generate-druid-list <SAMPLE_SIZE>'
+  puts 'Usage: bin/generate-druid-list \'<QUERY, e.g., project_tag_ssim:"Naxos : born digital audio">\''
   exit(false)
 end
 
-sample_size = Integer(ARGV[0])
-REQUEST_SIZE = 250
+query = ARGV[0]
 
-druids = Set.new
+druids = []
 
-druids.merge(File.read('druids.txt').split) if File.exist?('druids.txt')
+loop do
+  results = ActiveFedora::SolrService.query('*:*', fl: 'id', rows: 10000, fq: query, start: druids.length, sort: 'id asc')
+  break if results.empty?
 
-while druids.length < sample_size
-  results = ActiveFedora::SolrService.query('*:*', sort: 'random asc', fl: 'id', rows: REQUEST_SIZE, fq: '-has_model_ssim:"info:fedora%2Fafmodel:Part"')
   results.each { |r| druids << r['id'] }
   puts "Retrieved #{druids.length} druids"
-  sleep(1)
+  sleep(0.5)
 end
 
 File.open('druids.txt', 'w') do |file|
-  druids.to_a.take(sample_size).each do |druid|
+  druids.each do |druid|
     file.write("#{druid}\n")
   end
 end

@@ -1,0 +1,63 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+require 'optparse'
+
+OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/refresh-metadata [options]'
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+
+druids = File.read('refresh.txt').split
+
+success = []
+errors = []
+retry_count = 0
+
+druids.each_with_index do |druid, index|
+  puts "#{druid} (#{index + 1})\n"
+  object = Dor.find(druid)
+  orig_xml = object.descMetadata.ng_xml.canonicalize
+  status = RefreshMetadataAction.run(identifiers: object.identityMetadata.otherId.collect(&:to_s), datastream: object.descMetadata)
+  if status
+    object.save! unless orig_xml == object.descMetadata.ng_xml.canonicalize
+    success << druid
+  else
+    errors << [druid, 'No resolvable identifiers']
+  end
+  retry_count = 0
+rescue Faraday::ConnectionFailed
+  # Retry during nightly Symphony restart.
+  if retry_count < 90
+    retry_count += 1
+    puts "Retry #{retry_count}"
+    sleep(60)
+    retry
+  end
+
+  errors << [druid, e.inspect]
+rescue StandardError => e
+  errors << [druid, e.inspect]
+end
+
+File.open('refresh-success.txt', 'w') do |file|
+  success.each do |druid|
+    file.write("#{druid}\n")
+  end
+end
+
+File.open('refresh-error.txt', 'w') do |file|
+  errors.each do |error|
+    file.write("#{error.first}\n")
+  end
+end
+
+File.open('refresh-error.log', 'w') do |file|
+  errors.each do |error|
+    file.write("#{error.first}: #{error.second}\n")
+  end
+end
