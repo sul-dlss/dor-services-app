@@ -99,29 +99,29 @@ RSpec.describe 'MODS genre <--> cocina mappings' do
   end
 
   describe 'With usage' do
-    xit 'not implemented: genre with usage'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <genre usage="primary">photographs</genre>
+          <genre>prints</genre>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <genre usage="primary">photographs</genre>
-        <genre>prints</genre>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        form: [
-          {
-            value: 'photographs',
-            status: 'primary',
-            type: 'genre'
-          },
-          {
-            value: 'prints',
-            type: 'genre'
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          form: [
+            {
+              value: 'photographs',
+              status: 'primary',
+              type: 'genre'
+            },
+            {
+              value: 'prints',
+              type: 'genre'
+            }
+          ]
+        }
+      end
     end
   end
 
