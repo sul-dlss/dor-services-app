@@ -24,6 +24,8 @@ module Cocina
         def build
           related_items.map do |related_item|
             check_other_type(related_item)
+            next nil if related_item.elements.empty?
+
             descriptive_builder.build(resource_element: related_item, require_title: false).tap do |item|
               item[:displayLabel] = related_item['displayLabel']
               notes = build_notes(related_item)

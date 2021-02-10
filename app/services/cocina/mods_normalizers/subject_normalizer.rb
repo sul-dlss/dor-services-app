@@ -15,6 +15,8 @@ module Cocina
       end
 
       def normalize
+        normalize_empty_geographic
+        normalize_empty_temporal
         normalize_subject
         normalize_subject_children
         normalize_subject_authority
@@ -221,6 +223,22 @@ module Cocina
             subject_node['script'] = child_node['script']
             child_node.delete('script')
           end
+        end
+      end
+
+      def normalize_empty_temporal
+        ng_xml.root.xpath('//mods:subject/mods:temporal[not(text())]', mods: ModsNormalizer::MODS_NS).each do |temporal_node|
+          subject_node = temporal_node.parent
+          temporal_node.remove
+          subject_node.remove if subject_node.elements.empty?
+        end
+      end
+
+      def normalize_empty_geographic
+        ng_xml.root.xpath('//mods:subject/mods:geographic[not(text())]', mods: ModsNormalizer::MODS_NS).each do |temporal_node|
+          subject_node = temporal_node.parent
+          temporal_node.remove
+          subject_node.remove if subject_node.elements.empty? && subject_node.attributes.empty?
         end
       end
     end

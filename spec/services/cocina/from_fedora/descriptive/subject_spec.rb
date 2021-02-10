@@ -551,13 +551,21 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     end
 
     before do
-      allow(notifier).to receive(:error)
+      allow(notifier).to receive(:warn)
     end
 
     it 'builds the cocina data structure and errors' do
-      expect(build).to be_empty
-      expect(notifier).to have_received(:error).with('Subject has no children nodes',
-                                                     { subject: '<subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" ' \
+      expect(build).to eq [
+        {
+          source: {
+            code: 'lcsh',
+            uri: 'http://id.loc.gov/authorities/subjects/'
+          },
+          uri: 'http://id.loc.gov/authorities/subjects/sh2002009897'
+        }
+      ]
+      expect(notifier).to have_received(:warn).with('Subject has text',
+                                                    { subject: '<subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" ' \
 'valueURI="http://id.loc.gov/authorities/subjects/sh2002009897">authority="" authorityURI="" valueURI=""&gt;Improvisation (Acting)</subject>' })
     end
   end

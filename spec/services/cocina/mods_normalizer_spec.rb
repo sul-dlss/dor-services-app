@@ -292,20 +292,162 @@ RSpec.describe Cocina::ModsNormalizer do
   end
 
   context 'when normalizing empty attributes' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <classification authority="">Y 1.1/2:</mods:classification>
-        </mods>
-      XML
+    context 'when outer element' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <classification authority="">Y 1.1/2:</mods:classification>
+          </mods>
+        XML
+      end
+
+      it 'removes empty attributes' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <classification>Y 1.1/2:</mods:classification>
+          </mods>
+        XML
+      end
     end
 
-    it 'removes unmatched' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <classification>Y 1.1/2:</mods:classification>
-        </mods>
-      XML
+    context 'when in nested elements - originInfo' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="production" displayLabel="">
+              <place supplied="">
+                <placeTerm authorityURI=""
+                  valueURI="http://id.loc.gov/authorities/names/n81127564" type="">Selma (Ala.)</placeTerm>
+              </place>
+              <dateCreated keyDate="" encoding="w3cdtf">1965</dateCreated>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes empty elements and attributes' do
+        # note that placeTerm type="text" is assigned when type is missing
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="production">
+              <place>
+                <placeTerm valueURI="http://id.loc.gov/authorities/names/n81127564" type="text">Selma (Ala.)</placeTerm>
+              </place>
+              <dateCreated encoding="w3cdtf">1965</dateCreated>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+  end
+
+  context 'when normalizing elements with no content and no attributes' do
+    context 'when nested elements - originInfo' do
+      xit 'not implemented: remove when <originInfo eventType="blah"/> is only attribute / value'
+
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="" displayLabel="">
+              <place supplied="">
+                <placeTerm authorityURI=""
+                  valueURI="" type=""></placeTerm>
+              </place>
+              <dateCreated keyDate="" encoding=""/>
+              <dateIssued/>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
+      xit 'removes empty attributes and attributes' do
+        # note that placeTerm type="text" is assigned when type is missing
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="publication"/>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when nested elements - name' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <name type="" usage="">
+              <namePart></namePart>
+              <role>
+                <roleTerm type=""></roleTerm>
+                <roleTerm/>
+              </role>
+            </name>
+          </mods>
+        XML
+      end
+
+      it 'removes empty elements and attributes' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when nested elements - language' do
+      xit 'not implemented: remove when <languageTerm type="code"/> is only attribute / value'
+
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <language>
+              <languageTerm type="" authority="" authorityURI="" valueURI=""></languageTerm>
+              <languageTerm type=""></languageTerm>
+              <scriptTerm type="" authority=""></scriptTerm>
+              <scriptTerm/>
+            </language>
+          </mods>
+        XML
+      end
+
+      it 'removes empty elements and attributes' do
+        # note that languageTerm type="code" is assigned when type is missing
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <language>
+              <languageTerm type="code"/>
+              <languageTerm type="code"/>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when nested elements - relatedItem' do
+      # based on nj954ht3332
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <note type="contact" displayLabel="Contact">pwrcourses@stanford.edu</note>
+            <relatedItem>
+              <titleInfo>
+                <title/>
+              </titleInfo>
+              <location>
+                <url/>
+              </location>
+            </relatedItem>
+          </mods>
+        XML
+      end
+
+      it 'removes empty elements and attributes and their empty parents' do
+        # note that languageTerm type="code" is assigned when type is missing
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <note type="contact" displayLabel="Contact">pwrcourses@stanford.edu</note>
+          </mods>
+        XML
+      end
     end
   end
 

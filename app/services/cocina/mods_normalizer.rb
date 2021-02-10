@@ -5,7 +5,7 @@ module Cocina
   # these adjustments have been approved by our metadata authority, Arcadia.
   class ModsNormalizer
     MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
-    XLINK_NS = 'http://www.w3.org/1999/xlink'
+    XLINK_NS = Cocina::FromFedora::Descriptive::XLINK_NS
 
     # @param [Nokogiri::Document] mods_ng_xml MODS to be normalized
     # @param [String] druid
@@ -45,6 +45,7 @@ module Cocina
       normalize_usage_primary
       # This should be last-ish.
       normalize_empty_related_items
+      remove_empty_elements(ng_xml.root) # this must be last
       ng_xml
     end
 
@@ -261,6 +262,27 @@ module Cocina
         next if primary_nodes.size < 2
 
         primary_nodes[1..].each { |primary_node| primary_node.delete('usage') }
+      end
+    end
+
+    # remove all empty elements that have no attributes and no children, recursively
+    def remove_empty_elements(start_node)
+      return unless start_node
+
+      # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
+      # See also xited specs in mods_normalizer_spec.rb and origin_info_normalizer_spec.rb.
+      return if start_node.ancestors('originInfo').present?
+
+      # remove node if there are no element children, there is no text value and there are no attributes
+      if start_node.elements.size.zero? &&
+         start_node.text.blank? &&
+         start_node.attributes.size.zero? &&
+         start_node.name != 'etal'
+        parent = start_node.parent
+        start_node.remove
+        remove_empty_elements(parent) # need to call again after child has been deleted
+      else
+        start_node.element_children.each { |e| remove_empty_elements(e) }
       end
     end
   end

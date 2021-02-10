@@ -53,27 +53,48 @@ module Cocina
           }.compact.presence
         end
 
+        # rubocop:disable Metrics/CyclomaticComplexity
+        # rubocop:disable Metrics/PerceivedComplexity
         def build_subject(subject_node)
           attrs = common_attrs(subject_node)
           return subject_classification(subject_node, attrs) if subject_node.name == 'classification'
 
-          children_nodes = subject_node.xpath('*')
-          if children_nodes.empty?
-            notifier.error('Subject has no children nodes', { subject: subject_node.to_s })
-            return nil
+          if subject_node.elements.empty?
+            unless subject_node[:valueURI]
+              notifier.error('Subject has no children nodes', { subject: subject_node.to_s })
+              return nil
+            end
+            notifier.warn('Subject has text', { subject: subject_node.to_s }) if subject_node.content.present?
           end
 
-          return temporal_range(children_nodes, attrs) if children_nodes.all? { |node| node.name == 'temporal' && node['point'] }
-
-          is_geo_code = children_nodes.any? { |node| node.name == 'geographicCode' }
-          return geo_code_and_terms(children_nodes, attrs) if children_nodes.size != 1 && is_geo_code
-
-          return structured_value(children_nodes, attrs) if children_nodes.size != 1 && !is_geo_code
-
+          children_nodes = subject_node.xpath('mods:*', mods: DESC_METADATA_NS).to_a.reject { |child_node| child_node.children.empty? && child_node.attributes.empty? }
           first_child_node = children_nodes.first
-          return hierarchical_geographic(first_child_node, attrs) if first_child_node.name == 'hierarchicalGeographic'
 
-          simple_item(first_child_node, attrs)
+          if children_nodes.empty?
+            attrs if subject_node[:valueURI]
+          elsif temporal_range?(children_nodes)
+            temporal_range(children_nodes, attrs)
+          elsif children_nodes.size != 1
+            if geo_code?(children_nodes)
+              geo_code_and_terms(children_nodes, attrs)
+            else
+              structured_value(children_nodes, attrs)
+            end
+          elsif first_child_node.name == 'hierarchicalGeographic'
+            hierarchical_geographic(first_child_node, attrs)
+          else
+            simple_item(first_child_node, attrs)
+          end
+        end
+        # rubocop:enable Metrics/CyclomaticComplexity
+        # rubocop:enable Metrics/PerceivedComplexity
+
+        def temporal_range?(children_nodes)
+          children_nodes.all? { |node| node.name == 'temporal' && node['point'] }
+        end
+
+        def geo_code?(children_nodes)
+          children_nodes.any? { |node| node.name == 'geographicCode' }
         end
 
         def common_attrs(subject)
@@ -242,7 +263,7 @@ module Cocina
         end
 
         def temporal_range(children_nodes, attrs)
-          attrs[:structuredValue] = children_nodes.map do |node|
+          attrs[:structuredValue] = children_nodes.select { |node| node.content.present? }.map do |node|
             {
               type: node['point'],
               value: node.content

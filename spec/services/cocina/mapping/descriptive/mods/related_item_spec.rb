@@ -517,4 +517,45 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Empty related item' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <relatedItem>
+            <titleInfo>
+              <title/>
+            </titleInfo>
+            <location>
+              <url/>
+            </location>
+          </relatedItem>
+        XML
+      end
+
+      let(:cocina) { {} }
+
+      let(:roundtrip_mods) { '' }
+
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Empty title node')
+        ]
+      end
+    end
+  end
+
+  describe 'Another empty related item' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <relatedItem type="original"/>
+        XML
+      end
+
+      let(:cocina) { {} }
+
+      let(:roundtrip_mods) { '' }
+    end
+  end
 end

@@ -30,6 +30,8 @@ module Cocina
         end
 
         def build
+          return if identifier_element.text.blank? && identifier_element.attributes.size.zero?
+
           {
             displayLabel: identifier_element['displayLabel']
           }.tap do |attrs|

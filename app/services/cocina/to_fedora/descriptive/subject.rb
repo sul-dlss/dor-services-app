@@ -143,6 +143,9 @@ module Cocina
             xml.subject(subject_attributes) do
               write_person(subject, subject_value, display_values: display_values)
             end
+          elsif !type && !subject_value.value
+            # For subject only (no children).
+            xml.subject topic_attributes_for(subject_value)
           else
             xml.subject(subject_attributes) do
               write_topic(subject, subject_value, is_parallel: alt_rep_group.present?)
