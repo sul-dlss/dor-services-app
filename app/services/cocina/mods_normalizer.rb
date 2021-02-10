@@ -78,24 +78,25 @@ module Cocina
     end
 
     def normalize_purl
-      normalize_purl_for(ng_xml.root, true)
-      ng_xml.root.xpath('mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_purl_for(related_item_node, false) }
+      normalize_purl_for(ng_xml.root)
+      ng_xml.root.xpath('mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_purl_for(related_item_node) }
     end
 
-    def normalize_purl_for(base_node, match_purl)
+    def normalize_purl_for(base_node)
       url_nodes, purl_nodes = partition_url_nodes(base_node)
 
-      any_purl_primary_usage = any_purl_primary_usage?(base_node)
+      primary_url_node = primary_url_node_for(base_node)
       purl_nodes.each do |purl_node|
-        if !any_purl_primary_usage && (!match_purl || purl_node.text.ends_with?(druid.delete_prefix('druid:')))
+        if purl_node == primary_url_node
           purl_node[:usage] = 'primary display'
-          any_purl_primary_usage = true
+        elsif purl_node[:usage] == 'primary display'
+          purl_node.delete('usage')
         end
         purl_node.delete('displayLabel') if purl_node[:displayLabel] == 'electronic resource' && purl_node[:usage] == 'primary display'
       end
 
       url_nodes.each do |url_node|
-        url_node.delete('usage') if url_node[:usage] == 'primary display' && any_purl_primary_usage
+        url_node.delete('usage') if url_node[:usage] == 'primary display' && url_node != primary_url_node
       end
     end
 
@@ -104,7 +105,7 @@ module Cocina
       url_nodes = []
       base_node.xpath('mods:location', mods: MODS_NS).each do |location_node|
         location_node.xpath('mods:url', mods: MODS_NS).each do |url_node|
-          if purl?(url_node)
+          if Cocina::FromFedora::Descriptive::Purl.purl?(url_node)
             purl_nodes << url_node
           else
             url_nodes << url_node
@@ -114,12 +115,13 @@ module Cocina
       [url_nodes, purl_nodes]
     end
 
-    def any_purl_primary_usage?(base_node)
-      base_node.xpath('mods:location/mods:url[@usage="primary display"]', mods: MODS_NS).any? { |url_node| purl?(url_node) }
-    end
+    def primary_url_node_for(base_node)
+      primary_purl_nodes, primary_url_nodes = base_node.xpath('mods:location/mods:url[@usage="primary display"]', mods: MODS_NS)
+                                                       .partition { |url_node| Cocina::FromFedora::Descriptive::Purl.purl?(url_node) }
+      all_purl_nodes = base_node.xpath('mods:location/mods:url', mods: MODS_NS)
+                                .select { |url_node| Cocina::FromFedora::Descriptive::Purl.purl?(url_node) }
 
-    def purl?(url_node)
-      Cocina::FromFedora::Descriptive::Access::PURL_REGEX.match(url_node.text)
+      primary_purl_nodes.first || primary_url_nodes.first || all_purl_nodes.first
     end
 
     def normalize_related_item_other_type
