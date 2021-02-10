@@ -2,6 +2,7 @@
 
 MODS_ATTRIBUTES = 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" version="3.7"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
     xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd"'
 
 RSpec.shared_examples 'cocina to MODS' do |expected_xml|
@@ -32,14 +33,16 @@ end
 # When starting from MODS.
 RSpec.shared_examples 'MODS cocina mapping' do
   # Required: mods, cocina
-  # Optional: druid, roundtrip_mods, warnings, errors
+  # Optional: druid, roundtrip_mods, warnings, errors, mods_attributes
 
   # Note that this instantiation of Description does NOT validate against OpenAPI due to title validation issues.
   let(:orig_cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
 
-  let(:orig_mods_ng) { ng_mods_for(mods) }
+  let(:orig_mods_ng) { ng_mods_for(mods, mods_attributes) }
 
-  let(:roundtrip_mods_ng) { defined?(roundtrip_mods) ? ng_mods_for(roundtrip_mods) : nil }
+  let(:mods_attributes) { MODS_ATTRIBUTES }
+
+  let(:roundtrip_mods_ng) { defined?(roundtrip_mods) ? ng_mods_for(roundtrip_mods, MODS_ATTRIBUTES) : nil }
 
   let(:local_druid) { defined?(druid) ? druid : 'no-druid-given' }
 
@@ -141,12 +144,14 @@ end
 # When starting from cocina, e.g., H2.
 RSpec.shared_examples 'cocina MODS mapping' do
   # Required: mods, cocina
-  # Optional: druid, roundtrip_cocina, warnings, errors
+  # Optional: druid, roundtrip_cocina, warnings, errors, mods_attributes
 
   # Note that this instantiation of Description does NOT validate against OpenAPI due to title validation issues.
   let(:orig_cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
 
-  let(:mods_ng) { ng_mods_for(mods) }
+  let(:mods_attributes) { MODS_ATTRIBUTES }
+
+  let(:mods_ng) { ng_mods_for(mods, mods_attributes) }
 
   let(:local_druid) { defined?(druid) ? druid : 'no-druid-given' }
 
@@ -219,13 +224,9 @@ RSpec.shared_examples 'cocina MODS mapping' do
   end
 end
 
-def ng_mods_for(snippet)
+def ng_mods_for(snippet, mods_attributes)
   xml = <<~XML
-    <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-      xmlns="http://www.loc.gov/mods/v3" version="3.7"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-      xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+    <mods #{mods_attributes}>
       #{snippet}
     </mods>
   XML
