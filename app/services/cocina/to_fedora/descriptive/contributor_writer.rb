@@ -25,23 +25,31 @@ module Cocina
         end
 
         def write
-          return unless contributor.name
-
-          parallel_values = contributor.name.first.parallelValue
-          if parallel_values
-            altrepgroup_id = id_generator.next_altrepgroup
-            parallel_values.each_with_index do |parallel_value, index|
-              name_title_group = name_title_group_indexes.dig(0, index)
-              write_parallel_contributor(contributor, contributor.name.first, parallel_value, name_title_group, altrepgroup_id)
+          if contributor.type == 'unspecified others'
+            write_etal
+          elsif contributor.name
+            parallel_values = contributor.name.first.parallelValue
+            if parallel_values
+              altrepgroup_id = id_generator.next_altrepgroup
+              parallel_values.each_with_index do |parallel_value, index|
+                name_title_group = name_title_group_indexes.dig(0, index)
+                write_parallel_contributor(contributor, contributor.name.first, parallel_value, name_title_group, altrepgroup_id)
+              end
+            else
+              write_contributor(contributor)
             end
-          else
-            write_contributor(contributor)
           end
         end
 
         private
 
         attr_reader :xml, :contributor, :name_title_group_indexes, :id_generator
+
+        def write_etal
+          xml.name do
+            xml.etal
+          end
+        end
 
         def write_contributor(contributor)
           xml.name name_attributes(contributor, contributor.name.first, name_title_group_indexes[0]) do
@@ -51,6 +59,7 @@ module Cocina
             write_identifier(contributor) if contributor.identifier
             write_note(contributor)
             write_roles(contributor)
+            xml.etal if contributor.type == 'unspecified others'
           end
         end
 
