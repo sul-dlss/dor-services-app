@@ -1934,8 +1934,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
               ],
               date: [
                 {
-                  value: '1901',
-                  type: 'other'
+                  value: '1901'
                 }
               ]
             }
@@ -1960,7 +1959,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         XML
       end
 
-      let(:warnings) { [Notification.new(msg: 'originInfo/dateOther missing eventType')] }
+      let(:warnings) { [Notification.new(msg: 'Undetermined event type')] }
     end
   end
 
