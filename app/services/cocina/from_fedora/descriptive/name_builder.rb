@@ -88,37 +88,56 @@ module Cocina
         end
 
         def build_name_parts(name_node)
-          [].tap do |parts|
-            name_part_nodes = name_node.xpath('mods:namePart', mods: DESC_METADATA_NS)
-            case name_part_nodes.size
-            when 0
-              parts << { valueAt: name_node['xlink:href'] } if name_node['xlink:href']
-            when 1
-              parts << build_name_part(name_node, name_part_nodes.first, default_type: false).merge(authority_attrs_for(name_node)).presence
-            else
-              vals = name_part_nodes.map { |name_part| build_name_part(name_node, name_part).presence }.compact
-              parts << { structuredValue: vals }.merge(authority_attrs_for(name_node))
-            end
+          name_part_nodes = name_node.xpath('mods:namePart', mods: DESC_METADATA_NS)
+          alternative_name_nodes = name_node.xpath('mods:alternativeName', mods: DESC_METADATA_NS)
 
-            display_form = name_node.xpath('mods:displayForm', mods: DESC_METADATA_NS).first
-            parts << { value: display_form.text, type: 'display' } if display_form
-          end.compact
+          parts = []
+          case name_part_nodes.size
+          when 0
+            parts << { valueAt: name_node['xlink:href'] } if name_node['xlink:href']
+          when 1
+            parts << build_name_part(name_node, name_part_nodes.first, default_type: alternative_name_nodes.present?)
+                     .merge(authority_attrs_for(name_node)).presence
+          else
+            vals = name_part_nodes.map { |name_part| build_name_part(name_node, name_part).presence }.compact
+            parts << { structuredValue: vals }.merge(authority_attrs_for(name_node))
+          end
+
+          parts = build_alternative_name(alternative_name_nodes, parts) if alternative_name_nodes.present?
+
+          display_form = name_node.xpath('mods:displayForm', mods: DESC_METADATA_NS).first
+          parts << { value: display_form.text, type: 'display' } if display_form
+          parts.compact
         end
 
         def build_name_part(name_node, name_part_node, default_type: true)
-          if name_part_node.content.blank?
+          if name_part_node.content.blank? && !name_part_node['xlink:href']
             notifier.warn('name/namePart missing value')
             return {}
           end
 
           {
             value: name_part_node.content,
-            type: name_part_type_for(name_part_node['type'], default_type),
+            type: name_part_type_for(name_part_node, default_type),
+            valueAt: name_part_node['xlink:href'],
             displayLabel: name_node['displayLabel']
           }.compact
         end
 
-        def name_part_type_for(type, default_type)
+        def build_alternative_name(alternative_name_nodes, parts)
+          alternative_name_nodes.each do |alternative_name_node|
+            parts << {
+              type: alternative_name_node['altType'] || 'alternative',
+              value: alternative_name_node.content.presence,
+              valueAt: alternative_name_node['xlink:href']
+            }.compact
+          end
+          [{ groupedValue: parts }]
+        end
+
+        def name_part_type_for(name_part_node, default_type)
+          type = name_part_node['type']
+
           notifier.warn('Name/namePart type attribute set to ""') if type == ''
           notifier.warn('namePart has unknown type assigned', type: type) if type.present? && !Contributor::NAME_PART.key?(type)
 
