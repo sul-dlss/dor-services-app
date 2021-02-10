@@ -28,7 +28,9 @@ module Cocina
 
         def write
           titles.each do |title|
-            if title.parallelValue
+            if title.valueAt
+              write_xlink(title: title)
+            elsif title.parallelValue
               write_parallel(title: title, title_info_attrs: additional_attrs.dup)
             else
               title_info_attrs = {
@@ -50,6 +52,11 @@ module Cocina
         private
 
         attr_reader :xml, :titles, :contributors, :name_title_groups, :id_generator, :additional_attrs
+
+        def write_xlink(title:)
+          attrs = { 'xlink:href' => title.valueAt }
+          xml.titleInfo attrs
+        end
 
         def write_basic(title:, title_info_attrs: {})
           title_info_attrs = title_info_attrs_for(title).merge(title_info_attrs)

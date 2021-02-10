@@ -696,22 +696,22 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Link to external value only' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo xlink:href="http://title.org/title" />
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <titleInfo xlink:href="http://title.org/title" />
-      XML
-    end
-
-    let(:cocina) do
-      {
-        title: [
-          {
-            valueAt: 'http://title.org/title'
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          title: [
+            {
+              valueAt: 'http://title.org/title'
+            }
+          ]
+        }
+      end
     end
   end
 
