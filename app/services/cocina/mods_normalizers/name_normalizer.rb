@@ -38,7 +38,8 @@ module Cocina
 
       def normalize_name
         ng_xml.root.xpath('//mods:namePart[not(text())]', mods: ModsNormalizer::MODS_NS).each(&:remove)
-        ng_xml.root.xpath('//mods:name[not(mods:namePart) and not(@xlink:href)]', mods: ModsNormalizer::MODS_NS, xlink: ModsNormalizer::XLINK_NS).each(&:remove)
+        ng_xml.root.xpath('//mods:name[not(mods:namePart) and not(@xlink:href) and not(mods:etal)]',
+                          mods: ModsNormalizer::MODS_NS, xlink: ModsNormalizer::XLINK_NS).each(&:remove)
 
         # Some MODS 3.3 items have xlink:href attributes. See https://argo.stanford.edu/view/druid:yy910cj7795
         # Move them only when there are children.
