@@ -1469,7 +1469,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   describe 'parallel values - originInfo with additional elements in the second position' do
     # example adapted from bh212vz9239 in different order
 
-    xit 'updated warning message'
+    xit 'removed warning'
     let(:mods) do
       <<~XML
         <originInfo altRepGroup="1">
@@ -1618,141 +1618,137 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         ]
       }
     end
-
-    let(:warnings) { [Notification.new(msg: 'altRepGroup missing lang/script')] }
   end
 
   describe 'parallel value - with second originInfo that would not get an event type' do
     # from druid:mm706hr7414
-
-    xit 'added warning'
-    let(:mods) do
-      <<~XML
-          <originInfo altRepGroup="1">
-            <place>
-              <placeTerm type="code" authority="marccountry">is</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Tel-Aviv</placeTerm>
-            </place>
-            <publisher>A. Shṭibel</publisher>
-            <dateIssued>1939</dateIssued>
-            <issuance>monographic</issuance>
+    it_behaves_like 'cocina mods mapping' do
+      let(:mods) do
+        <<~XML
+            <originInfo altRepGroup="1">
+              <place>
+                <placeTerm type="code" authority="marccountry">is</placeTerm>
+              </place>
+              <place>
+                <placeTerm type="text">Tel-Aviv</placeTerm>
+              </place>
+              <publisher>A. Shṭibel</publisher>
+              <dateIssued>1939</dateIssued>
+              <issuance>monographic</issuance>
+            </originInfo>
+            <originInfo script="" altRepGroup="1">
+              <place>
+                <placeTerm type="text">תל־אביב :</placeTerm>
+              </place>
+              <publisher>ש. שטיבל,1939.</publisher>
           </originInfo>
-          <originInfo script="" altRepGroup="1">
-            <place>
-              <placeTerm type="text">תל־אביב :</placeTerm>
-            </place>
-            <publisher>ש. שטיבל,1939.</publisher>
-        </originInfo>
-      XML
-    end
+        XML
+      end
 
-    # add eventType, all elements must be present in all group members, remove empty script attrib
-    let(:roundtrip_mods) do
-      <<~XML
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">is</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Tel-Aviv</placeTerm>
-            </place>
-            <publisher>A. Shṭibel</publisher>
-            <dateIssued>1939</dateIssued>
-            <issuance>monographic</issuance>
+      # add eventType, all elements must be present in all group members, remove empty script attrib
+      let(:roundtrip_mods) do
+        <<~XML
+            <originInfo altRepGroup="1" eventType="publication">
+              <place>
+                <placeTerm type="code" authority="marccountry">is</placeTerm>
+              </place>
+              <place>
+                <placeTerm type="text">Tel-Aviv</placeTerm>
+              </place>
+              <publisher>A. Shṭibel</publisher>
+              <dateIssued>1939</dateIssued>
+              <issuance>monographic</issuance>
+            </originInfo>
+            <originInfo altRepGroup="1" eventType="publication">
+              <place>
+                <placeTerm type="code" authority="marccountry">is</placeTerm>
+              </place>
+              <place>
+                <placeTerm type="text">תל־אביב :</placeTerm>
+              </place>
+              <publisher>ש. שטיבל,1939.</publisher>
+              <dateIssued>1939</dateIssued>
+              <issuance>monographic</issuance>
           </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">is</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">תל־אביב :</placeTerm>
-            </place>
-            <publisher>ש. שטיבל,1939.</publisher>
-            <dateIssued>1939</dateIssued>
-            <issuance>monographic</issuance>
-        </originInfo>
-      XML
-    end
+        XML
+      end
 
-    let(:cocina) do
-      {
-        event: [
-          {
-            type: 'publication',
-            date: [
-              {
-                value: '1939'
-              }
-            ],
-            location: [
-              {
-                parallelValue: [
-                  {
-                    value: 'Tel-Aviv'
-                  },
-                  {
-                    value: 'תל־אביב :'
-                  }
-                ]
-              },
-              {
-                source: {
-                  code: 'marccountry'
-                },
-                code: 'is'
-              }
-            ],
-            note: [
-              {
-                source: {
-                  value: 'MODS issuance terms'
-                },
-                type: 'issuance',
-                value: 'monographic'
-              }
-            ],
-            contributor: [
-              {
-                name: [
-                  {
-                    parallelValue: [
-                      {
-                        value: 'A. Shṭibel'
-                      },
-                      {
-                        value: 'ש. שטיבל,1939.'
-                      }
-                    ]
-                  }
-                ],
-                type: 'organization',
-                role: [
-                  {
-                    value: 'publisher',
-                    code: 'pbl',
-                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                    source: {
-                      code: 'marcrelator',
-                      uri: 'http://id.loc.gov/vocabulary/relators/'
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'publication',
+              date: [
+                {
+                  value: '1939'
+                }
+              ],
+              location: [
+                {
+                  parallelValue: [
+                    {
+                      value: 'Tel-Aviv'
+                    },
+                    {
+                      value: 'תל־אביב :'
                     }
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                  ]
+                },
+                {
+                  source: {
+                    code: 'marccountry'
+                  },
+                  code: 'is'
+                }
+              ],
+              note: [
+                {
+                  source: {
+                    value: 'MODS issuance terms'
+                  },
+                  type: 'issuance',
+                  value: 'monographic'
+                }
+              ],
+              contributor: [
+                {
+                  name: [
+                    {
+                      parallelValue: [
+                        {
+                          value: 'A. Shṭibel'
+                        },
+                        {
+                          value: 'ש. שטיבל,1939.'
+                        }
+                      ]
+                    }
+                  ],
+                  type: 'organization',
+                  role: [
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
-
-    let(:warnings) { [Notification.new(msg: 'altRepGroup missing lang/script')] }
   end
 
   context 'when eventType matches date type "distribution"' do
     # bad data mapping (?)
     # NOTE: cocina -> MODS mapping
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'updated spec'
       let(:mods) do
         <<~XML
           <originInfo eventType="distribution">
