@@ -12,11 +12,11 @@ module Cocina
           # ID Generator makes sure that different writers create unique altRepGroups and nameTitleGroups.
           Title.write(xml: xml, titles: descriptive.title, contributors: descriptive.contributor, id_generator: id_generator) if descriptive.title
           Contributor.write(xml: xml, contributors: descriptive.contributor, titles: descriptive.title, id_generator: id_generator)
-          Form.write(xml: xml, forms: descriptive.form)
+          Form.write(xml: xml, forms: descriptive.form, id_generator: id_generator)
           Language.write(xml: xml, languages: descriptive.language)
           Note.write(xml: xml, notes: descriptive.note, id_generator: id_generator)
           Subject.write(xml: xml, subjects: descriptive.subject, forms: descriptive.form, id_generator: id_generator)
-          Event.write(xml: xml, events: descriptive.event, id_generator: id_generator)
+          Descriptive::Event.write(xml: xml, events: descriptive.event, id_generator: id_generator)
           Identifier.write(xml: xml, identifiers: descriptive.identifier)
           Descriptive::Access.write(xml: xml, access: descriptive.access, purl: descriptive.purl)
           AdminMetadata.write(xml: xml, admin_metadata: descriptive.adminMetadata)

@@ -126,59 +126,55 @@ RSpec.describe 'MODS genre <--> cocina mappings' do
   end
 
   describe 'Multilingual' do
-    xit 'not implemented: multilingual genre'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <genre lang="eng" script="Latn" altRepGroup="1">photographs</genre>
+          <genre lang="rus" script="Cyrl" altRepGroup="1">фотографии</genre>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <genre lang="eng" script="Latn" altRepGroup="1">photographs</genre>
-        <genre lang="rus" script="Cyrl" altRepGroup="1">фотографии</genre>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        form: [
-          {
-            type: 'genre',
-            parallelValue: [
-              {
-                value: 'photographs',
-                valueLanguage: {
-                  code: 'eng',
-                  uri: 'http://id.loc.gov/vocabulary/iso639-2/eng',
-                  source: {
-                    code: 'iso639-2b',
-                    uri: 'http://id.loc.gov/vocabulary/iso639-2/'
+      let(:cocina) do
+        {
+          form: [
+            {
+              type: 'genre',
+              parallelValue: [
+                {
+                  value: 'photographs',
+                  valueLanguage: {
+                    code: 'eng',
+                    source: {
+                      code: 'iso639-2b'
+                    },
+                    valueScript: {
+                      code: 'Latn',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
                   }
                 },
-                valueScript: {
-                  code: 'Latn',
-                  source: {
-                    value: 'ISO 15924'
+                {
+                  value: 'фотографии',
+                  valueLanguage: {
+                    code: 'rus',
+                    source: {
+                      code: 'iso639-2b'
+                    },
+                    valueScript: {
+                      code: 'Cyrl',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
                   }
                 }
-              },
-              {
-                value: 'фотографии',
-                valueLanguage: {
-                  code: 'rus',
-                  uri: 'http://id.loc.gov/vocabulary/iso639-2/rus',
-                  source: {
-                    code: 'iso639-2b',
-                    uri: 'http://id.loc.gov/vocabulary/iso639-2/'
-                  }
-                },
-                valueScript: {
-                  code: 'Cyrl',
-                  source: {
-                    value: 'ISO 15924'
-                  }
-                }
-              }
-            ]
-          }
-        ]
-      }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 
