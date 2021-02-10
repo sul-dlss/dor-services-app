@@ -65,7 +65,7 @@ group :test, :development do
   gem 'rubocop-rails'
   gem 'rubocop-rspec', '~> 1.32.0'
   gem 'simplecov', '~> 0.17.1' # https://github.com/codeclimate/test-reporter/issues/413
-  gem 'super_diff'
+  gem 'super_diff', '~> 0.5.3' # 0.6.0 breaks CircleCI build (but not local), see https://github.com/sul-dlss/dor-services-app/issues/2131
   gem 'webmock'
 end
 
