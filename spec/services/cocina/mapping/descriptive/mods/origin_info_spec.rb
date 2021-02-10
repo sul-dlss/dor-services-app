@@ -1767,11 +1767,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
           event: [
             {
               type: 'distribution',
-              date: [
-                {
-                  value: ''
-                }
-              ],
               contributor: [
                 {
                   name: [
