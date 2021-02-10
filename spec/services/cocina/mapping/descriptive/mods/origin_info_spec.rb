@@ -759,7 +759,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     # Example adapted from druid:hn285fy7937
 
     # First <place> not included in parallelValue because it's type="code"
-    xit 'updated warning message'
+    xit 'removed warning'
     let(:mods) do
       <<~XML
         <originInfo altRepGroup="1">
@@ -899,17 +899,11 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         ]
       }
     end
-
-    let(:warnings) do
-      [
-        Notification.new(msg: 'altRepGroup missing lang/script')
-      ]
-    end
   end
 
   describe 'Parallel value with no script given in MODS - B' do
     # Example adapted from druid:yc052ns4738
-    xit 'updated warning message'
+    xit 'removed warning'
     let(:mods) do
       <<~XML
         <originInfo altRepGroup="1">
@@ -1057,17 +1051,11 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         ]
       }
     end
-
-    let(:warnings) do
-      [
-        Notification.new(msg: 'altRepGroup missing lang/script')
-      ]
-    end
   end
 
   describe 'Parallel value with no script given in MODS - C' do
     # Example adapted from druid:bh212vz9239
-    xit 'updated warning message'
+    xit 'removed warning'
     let(:mods) do
       <<~XML
         <originInfo altRepGroup="1">
@@ -1214,12 +1202,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
           }
         ]
       }
-    end
-
-    let(:warnings) do
-      [
-        Notification.new(msg: 'altRepGroup missing lang/script')
-      ]
     end
   end
 
