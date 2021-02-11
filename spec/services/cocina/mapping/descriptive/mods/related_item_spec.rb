@@ -465,4 +465,56 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
       }
     end
   end
+
+  describe 'Related item with untyped name' do
+    # Certain related items mapped from MARC don't indicate name type in source data
+    # Do not warn for untyped names in relatedItem
+    xit 'not implemented'
+
+    let(:druid) { 'kv699vs9767' }
+
+    let(:mods) do
+      <<~XML
+        <relatedItem type="otherFormat" displayLabel="Online version:">
+          <titleInfo>
+            <title>Hearing 1., VA's compliance with year 2000 requirements</title>
+          </titleInfo>
+          <identifier>(OCoLC)808865049</identifier>
+          <name>
+            <namePart>United States. Congress. House. Committee on Veterans' Affairs. Subcommittee on Oversight and Investigations</namePart>
+          </name>
+        </relatedItem>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        relatedResource: [
+          {
+            type: 'has other format',
+            displayLabel: 'Online version:',
+            title: [
+              {
+                value: 'Hearing 1., VA's compliance with year 2000 requirements'
+              }
+            ],
+            identifier: [
+              {
+                value: '(OCoLC)808865049'
+              }
+            ],
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'United States. Congress. House. Committee on Veterans\' Affairs. Subcommittee on Oversight and Investigations'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    end
+  end
 end
