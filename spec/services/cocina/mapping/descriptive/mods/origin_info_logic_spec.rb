@@ -2,20 +2,13 @@
 
 require 'rails_helper'
 
+# rubocop:disable RSpec/OverwritingSetup
+# TODO: remove these rubocop exceptions when implementation uncomments spec lines, but keep the one above
+# rubocop:disable Layout/CommentIndentation
+# rubocop:disable Layout/IndentationConsistency
 RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
   describe 'Multiple date types, no event type' do
-    xit 'check implementation'
-
-    let(:mods) do
-      <<~XML
-        <originInfo>
-          <dateIssued>1930</dateIssued>
-          <copyrightDate>1929</copyrightDate>
-        </originInfo>
-      XML
-    end
-
-    let(:roundtrip_mods) do
+    let(:my_roundtrip_mods) do
       <<~XML
         <originInfo eventType="publication">
           <dateIssued>1930</dateIssued>
@@ -26,7 +19,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
       XML
     end
 
-    let(:cocina) do
+    let(:my_cocina) do
       {
         event: [
           {
@@ -47,22 +40,29 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
           }
         ]
       }
+    end
+
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <dateIssued>1930</dateIssued>
+            <copyrightDate>1929</copyrightDate>
+          </originInfo>
+        XML
+      end
+      let(:roundtrip_mods) { my_roundtrip_mods }
+      let(:cocina) { my_cocina }
+    end
+
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) { my_cocina }
+      let(:mods) { my_roundtrip_mods }
     end
   end
 
   describe 'Multiple date types, matching event type' do
-    xit 'check implementation'
-
-    let(:mods) do
-      <<~XML
-        <originInfo eventType="publication">
-          <dateIssued>1930</dateIssued>
-          <copyrightDate>1929</copyrightDate>
-        </originInfo>
-      XML
-    end
-
-    let(:roundtrip_mods) do
+    let(:my_roundtrip_mods) do
       <<~XML
         <originInfo eventType="publication">
           <dateIssued>1930</dateIssued>
@@ -73,7 +73,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
       XML
     end
 
-    let(:cocina) do
+    let(:my_cocina) do
       {
         event: [
           {
@@ -95,12 +95,30 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
         ]
       }
     end
+
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="publication">
+            <dateIssued>1930</dateIssued>
+            <copyrightDate>1929</copyrightDate>
+          </originInfo>
+        XML
+      end
+      let(:roundtrip_mods) { my_roundtrip_mods }
+      let(:cocina) { my_cocina }
+    end
+
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) { my_cocina }
+      let(:mods) { my_roundtrip_mods }
+    end
   end
 
   describe 'Single date type, nonmatching event type' do
-    xit 'check implementation'
+    xit 'to be implemented'
 
-    let(:mods) do
+    let(:my_mods) do
       <<~XML
         <originInfo eventType="publication">
           <copyrightDate>1929</copyrightDate>
@@ -108,7 +126,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
       XML
     end
 
-    let(:cocina) do
+    let(:my_cocina) do
       {
         event: [
           {
@@ -123,20 +141,30 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
         ]
       }
     end
+
+    # it_behaves_like 'MODS cocina mapping' do
+      let(:mods) { my_mods }
+      let(:cocina) { my_cocina }
+    # end
+
+    # it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) { my_cocina }
+      let(:mods) { my_mods }
+    # end
   end
 
   describe 'Single dateOther, nonmatching event type' do
-    xit 'check implementation'
+    xit 'to be implemented'
 
-    let(:mods) do
+    let(:my_mods) do
       <<~XML
-        <originInfo type="production">
+        <originInfo eventType="production">
           <dateOther type="development">1930</dateOther>
         </originInfo>
       XML
     end
 
-    let(:cocina) do
+    let(:my_cocina) do
       {
         event: [
           {
@@ -151,24 +179,20 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
         ]
       }
     end
+
+    # it_behaves_like 'MODS cocina mapping' do
+      let(:mods) { my_mods }
+      let(:cocina) { my_cocina }
+    # end
+
+    # it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) { my_cocina }
+      let(:mods) { my_mods }
+    # end
   end
 
   describe 'No date, no event type, publication subelements' do
-    xit 'check implementation'
-
-    let(:mods) do
-      <<~XML
-        <originInfo>
-          <publisher>Virago</publisher>
-          <edition>1st edition</edition>
-          <place>
-            <placeTerm type="text">London</placeTerm>
-          </place>
-        </originInfo>
-      XML
-    end
-
-    let(:roundtrip_mods) do
+    let(:my_roundtrip_mods) do
       <<~XML
         <originInfo eventType="publication">
           <publisher>Virago</publisher>
@@ -179,28 +203,83 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
         </originInfo>
       XML
     end
+
+    let(:my_cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'Virago'
+                  }
+                ],
+                type: 'organization',
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ],
+            location: [
+              {
+                value: 'London'
+              }
+            ],
+            note: [
+              {
+                value: '1st edition',
+                type: 'edition'
+              }
+            ]
+          }
+        ]
+      }
+    end
+
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <publisher>Virago</publisher>
+            <edition>1st edition</edition>
+            <place>
+              <placeTerm type="text">London</placeTerm>
+            </place>
+          </originInfo>
+        XML
+      end
+      let(:roundtrip_mods) { my_roundtrip_mods }
+      let(:cocina) { my_cocina }
+    end
+
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) { my_cocina }
+      let(:mods) { my_roundtrip_mods }
+    end
   end
 
   describe 'dateCreated, no event type' do
-    xit 'check implementation'
+    xit 'to be implemented'
 
-    let(:mods) do
+    let(:my_roundtrip_mods) do
       <<~XML
-        <originInfo>
+        <originInfo eventType="creation">
           <dateCreated>1930</dateCreated>
         </originInfo>
       XML
     end
 
-    let(:roundtrip_mods) do
-      <<~XML
-        <originInfo eventType="creation">
-          <dateCreated>1930</dateCreated>
-        </originInfo>{
-      XML
-    end
-
-    let(:cocina) do
+    let(:my_cocina) do
       {
         event: [
           {
@@ -214,20 +293,29 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
         ]
       }
     end
+
+    # it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <dateCreated>1930</dateCreated>
+          </originInfo>
+        XML
+      end
+      let(:roundtrip_mods) { my_roundtrip_mods }
+      let(:cocina) { my_cocina }
+    # end
+
+    # it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) { my_cocina }
+      let(:mods) { my_roundtrip_mods }
+    # end
   end
 
   describe 'dateOther with type, no event type' do
-    xit 'check implementation'
+    xit 'to be implemented: MODS cocina mapping'
 
-    let(:mods) do
-      <<~XML
-        <originInfo>
-          <dateOther type="acquisition">1930</dateOther>
-        </originInfo>
-      XML
-    end
-
-    let(:roundtrip_mods) do
+    let(:my_roundtrip_mods) do
       <<~XML
         <originInfo eventType="acquisition">
           <dateOther>1930</dateOther>
@@ -235,7 +323,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
       XML
     end
 
-    let(:cocina) do
+    let(:my_cocina) do
       {
         event: [
           {
@@ -249,12 +337,31 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
         ]
       }
     end
+
+    # it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <dateOther type="acquisition">1930</dateOther>
+          </originInfo>
+        XML
+      end
+
+      let(:roundtrip_mods) { my_roundtrip_mods }
+
+      let(:cocina) { my_cocina }
+    # end
+
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) { my_cocina }
+      let(:mods) { my_roundtrip_mods }
+    end
   end
 
   describe 'Only place subelement, no event type' do
-    xit 'check implementation'
+    xit 'to be implemented'
 
-    let(:mods) do
+    let(:my_mods) do
       <<~XML
         <originInfo>
           <place>
@@ -264,7 +371,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
       XML
     end
 
-    let(:cocina) do
+    let(:my_cocina) do
       {
         event: [
           {
@@ -278,28 +385,20 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
       }
     end
 
-    let(:warnings) do
-      Notification.new(msg: 'Undetermined event type')
-    end
+    # it_behaves_like 'MODS cocina mapping' do
+      let(:mods) { my_mods }
+      let(:cocina) { my_cocina }
+      let(:warnings) { [Notification.new(msg: 'Undetermined event type')] }
+    # end
+
+    # it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) { my_cocina }
+      let(:mods) { my_mods }
+    # end
   end
 
   describe 'Multiple date types, additional publication subelements' do
-    xit 'check implementation'
-
-    let(:mods) do
-      <<~XML
-        <originInfo>
-          <dateIssued>1930</dateIssued>
-          <place>
-            <placeTerm type="text">London</placeTerm>
-          </place>
-          <edition>1st edition</edition>
-          <copyrightDate>1929</copyrightDate>
-        </originInfo>
-      XML
-    end
-
-    let(:roundtrip_mods) do
+    let(:my_roundtrip_mods) do
       <<~XML
         <originInfo eventType="publication">
           <dateIssued>1930</dateIssued>
@@ -314,7 +413,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
       XML
     end
 
-    let(:cocina) do
+    let(:my_cocina) do
       {
         event: [
           {
@@ -347,12 +446,35 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
         ]
       }
     end
+
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <dateIssued>1930</dateIssued>
+            <place>
+              <placeTerm type="text">London</placeTerm>
+            </place>
+            <edition>1st edition</edition>
+            <copyrightDate>1929</copyrightDate>
+          </originInfo>
+        XML
+      end
+
+      let(:roundtrip_mods) { my_roundtrip_mods }
+      let(:cocina) { my_cocina }
+    end
+
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) { my_cocina }
+      let(:mods) { my_roundtrip_mods }
+    end
   end
 
   describe 'Unmapped event type' do
-    xit 'check implementation'
+    xit 'to be implemented'
 
-    let(:mods) do
+    let(:my_mods) do
       <<~XML
         <originInfo eventType="deaccession">
           <dateOther>1930</dateOther>
@@ -360,7 +482,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
       XML
     end
 
-    let(:cocina) do
+    let(:my_cocina) do
       {
         event: [
           {
@@ -375,15 +497,22 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
       }
     end
 
-    let(:warnings) do
-      Notification.new(msg: 'Unmapped event type')
-    end
+    # it_behaves_like 'MODS cocina mapping' do
+      let(:mods) { my_mods }
+      let(:cocina) { my_cocina }
+      let(:warnings) { [Notification.new(msg: 'Unmapped event type')] }
+    # end
+
+    # it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) { my_cocina }
+      let(:mods) { my_mods }
+    # end
   end
 
   describe 'No event type' do
-    xit 'check implementation'
+    xit 'to be implemented: warning message'
 
-    let(:mods) do
+    let(:my_mods) do
       <<~XML
         <originInfo>
           <dateOther>1930</dateOther>
@@ -391,7 +520,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
       XML
     end
 
-    let(:cocina) do
+    let(:my_cocina) do
       {
         event: [
           {
@@ -405,8 +534,19 @@ RSpec.describe 'MODS originInfo <--> cocina mappings LOGIC' do
       }
     end
 
-    let(:warnings) do
-      Notification.new(msg: 'Undetermined event type')
-    end
+    # it_behaves_like 'MODS cocina mapping' do
+      let(:mods) { my_mods }
+      let(:cocina) { my_cocina }
+      let(:warnings) { [Notification.new(msg: 'Undetermined event type')] }
+    # end
+
+    # it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) { my_cocina }
+      let(:mods) { my_mods }
+      let(:warnings) { [Notification.new(msg: 'Undetermined event type')] }
+    # end
   end
 end
+# rubocop:enable RSpec/OverwritingSetup
+# rubocop:enable Layout/CommentIndentation
+# rubocop:enable Layout/IndentationConsistency
