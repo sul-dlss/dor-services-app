@@ -70,6 +70,8 @@ module Cocina
         end
 
         # rubocop:disable Metrics/AbcSize
+        # the lambda is to describe what things will be grouped into parallelValues
+        # if nothing matches, nothing will be grouped
         def merge_descriptive_value(key, base_event, grouped_event, filter = ->(_value) { true })
           return if grouped_event.nil?
 
@@ -200,6 +202,8 @@ module Cocina
           }
         end
 
+        # placeTerm can have type=code or type=text or neither; placeTerms of type code and text may combine into a single
+        #  cocina location, or they might need to be split into two separate cocina locations (e.g. when the uri attributes aren't for codes)
         def add_place_info(event, places, language_script)
           # Text then code.
           text_places = places.select { |place| place.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).present? }

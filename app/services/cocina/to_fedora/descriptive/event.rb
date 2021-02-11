@@ -15,10 +15,10 @@ module Cocina
         }.freeze
 
         DATE_OTHER_TYPE = {
-          'production' => 'production',
           'development' => 'developed',
           'distribution' => 'distribution',
-          'manufacture' => 'distribution'
+          'manufacture' => 'distribution',
+          'production' => 'production'
         }.freeze
 
         EVENT_TYPE = {
