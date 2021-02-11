@@ -24,6 +24,13 @@ def bad_event_type?(ng_xml)
   ng_xml.root.xpath('mods:originInfo[@eventType = "Production" or @eventType = "publisher"]', mods: MODS_NS).present?
 end
 
+def elements_with_bad_value_uri(ng_xml)
+  bad_elements = ng_xml.root.xpath('mods:*[@valueURI and not(starts-with(@valueURI, "http"))]', mods: MODS_NS)
+  return false if bad_elements.empty?
+
+  bad_elements.map(&:name).uniq.join(', ')
+end
+
 # rubocop:disable Layout/LineLength
 MODS_ELEMENTS = %w[abstract accessCondition affiliation alternativeName area caption cartographicExtension cartographics city citySection classification continent coordinates copyInformation copyrightDate country county date dateCaptured dateCreated dateIssued dateModified dateOther dateValid description descriptionStandard detail digitalOrigin displayForm edition electronicLocator end enumerationAndChronology etal extension extent extraTerrestrialArea form frequency genre geographic geographicCode hierarchicalGeographic holdingExternal holdingSimple identifier internetMediaType island issuance itemIdentifier language languageOfCataloging languageTerm list location mods modsCollection name nameIdentifier namePart nonSort note number occupation originInfo part partName partNumber physicalDescription physicalLocation place placeTerm projection province publisher recordChangeDate recordContentSource recordCreationDate recordIdentifier recordInfo recordInfoNote recordOrigin reformattingQuality region relatedItem role roleTerm scale scriptTerm shelfLocator start state subLocation subTitle subject tableOfContents targetAudience temporal territory text title titleInfo topic total typeOfResource url].freeze
 # rubocop:enable Layout/LineLength
@@ -66,7 +73,8 @@ REPORTS = {
   mods_attrs: method(:check_attrs),
   date_other: method(:date_other),
   frequency: method(:has_frequency?),
-  bad_event_type: method(:bad_event_type?)
+  bad_event_type: method(:bad_event_type?),
+  bad_value_uri: method(:elements_with_bad_value_uri)
 }.with_indifferent_access
 
 options = { local: false, reports: REPORTS.keys }
