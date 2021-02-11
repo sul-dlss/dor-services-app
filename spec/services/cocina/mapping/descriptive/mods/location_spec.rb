@@ -674,7 +674,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
     end
   end
 
-  describe 'Multiple purls with display label and usage, none match resource purl' do
+  describe 'Multiple purls with display label and usage, none match object purl' do
     xit 'not implemented'
 
     let(:druid) { 'bq367mn3764' }
@@ -695,6 +695,9 @@ RSpec.describe 'MODS location <--> cocina mappings' do
 
     let(:roundtrip_mods) do
       <<~XML
+        <location>
+          <url usage="primary display">http://purl.stanford.edu/bq367mn3764</url>
+        </location>
         <relatedItem>
           <location>
             <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/cj288sh2297</url>
@@ -791,8 +794,12 @@ RSpec.describe 'MODS location <--> cocina mappings' do
       XML
     end
 
+    # usage="primary display" already assigned, so does not get added to purl
     let(:roundtrip_mods) do
       <<~XML
+        <location>
+          <url>http://purl.stanford.edu/gr134wb6457</url>
+        </location>
         <location>
           <url displayLabel="electronic resource" usage="primary display">http://clerk.assembly.ca.gov/archive-list</url>
         </location>
