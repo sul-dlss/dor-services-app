@@ -472,7 +472,7 @@ GEM
     stanford-mods-normalizer (0.1.0)
       nokogiri (~> 1.8)
     stomp (1.4.10)
-    super_diff (0.5.3)
+    super_diff (0.6.1)
       attr_extras (>= 6.2.4)
       diff-lcs
       patience_diff
@@ -557,7 +557,7 @@ DEPENDENCIES
   simplecov (~> 0.17.1)
   spring
   spring-watcher-listen (~> 2.0.0)
-  super_diff (~> 0.5.3)
+  super_diff
   uuidtools (~> 2.1.4)
   webmock
   whenever
