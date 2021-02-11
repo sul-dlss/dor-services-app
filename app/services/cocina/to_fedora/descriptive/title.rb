@@ -154,7 +154,6 @@ module Cocina
 
         def title_info_attrs_for(title)
           {
-            type: title.type,
             usage: title.status,
             script: title.valueLanguage&.valueScript&.code,
             lang: title.valueLanguage&.code,
@@ -162,7 +161,13 @@ module Cocina
             valueURI: title.uri,
             authorityURI: title.source&.uri,
             authority: title.source&.code
-          }.compact
+          }.tap do |attrs|
+            if title.type == 'supplied'
+              attrs[:supplied] = 'yes'
+            else
+              attrs[:type] = title.type
+            end
+          end.compact
         end
       end
     end
