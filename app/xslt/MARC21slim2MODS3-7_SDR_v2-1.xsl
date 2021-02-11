@@ -2875,11 +2875,16 @@
 						<!-- subjects -->
 						<xsl:apply-templates select="marc:subfield[@code = 'j']" mode="relatedItem"/>
 						<!-- identifiers -->
-						<xsl:apply-templates select="marc:subfield[@code = 'o']" mode="relatedItem"/>
-						<xsl:apply-templates select="marc:subfield[@code = 'x']" mode="relatedItem"/>
-						<!--  1.120 - @76X-78X$z -->
-						<xsl:apply-templates select="marc:subfield[@code = 'z']" mode="relatedItem"/>
-						<xsl:apply-templates select="marc:subfield[@code = 'w']" mode="relatedItem"/>
+						<!-- SUL edit 20210211 issue #2143 -->
+						<xsl:if
+							test="@tag != 880">
+							<xsl:apply-templates select="marc:subfield[@code = 'o']" mode="relatedItem"/>
+							<xsl:apply-templates select="marc:subfield[@code = 'x']" mode="relatedItem"/>
+							<!--  1.120 - @76X-78X$z -->
+							<xsl:apply-templates select="marc:subfield[@code = 'z']" mode="relatedItem"/>
+							<xsl:apply-templates select="marc:subfield[@code = 'w']" mode="relatedItem"/>
+						</xsl:if>
+
 						<!-- related part -->
 						<xsl:if test="@tag = '773'">
 							<xsl:for-each select="marc:subfield[@code = 'g']">
