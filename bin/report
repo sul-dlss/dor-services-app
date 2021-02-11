@@ -16,6 +16,10 @@ def has_xlink_href?(ng_xml)
   ng_xml.xpath('//mods:*[@xlink:href]', mods: MODS_NS, xlink: 'http://www.w3.org/1999/xlink').present?
 end
 
+def has_frequency?(ng_xml)
+  ng_xml.root.xpath('mods:frequency', mods: MODS_NS).present?
+end
+
 # rubocop:disable Layout/LineLength
 MODS_ELEMENTS = %w[abstract accessCondition affiliation alternativeName area caption cartographicExtension cartographics city citySection classification continent coordinates copyInformation copyrightDate country county date dateCaptured dateCreated dateIssued dateModified dateOther dateValid description descriptionStandard detail digitalOrigin displayForm edition electronicLocator end enumerationAndChronology etal extension extent extraTerrestrialArea form frequency genre geographic geographicCode hierarchicalGeographic holdingExternal holdingSimple identifier internetMediaType island issuance itemIdentifier language languageOfCataloging languageTerm list location mods modsCollection name nameIdentifier namePart nonSort note number occupation originInfo part partName partNumber physicalDescription physicalLocation place placeTerm projection province publisher recordChangeDate recordContentSource recordCreationDate recordIdentifier recordInfo recordInfoNote recordOrigin reformattingQuality region relatedItem role roleTerm scale scriptTerm shelfLocator start state subLocation subTitle subject tableOfContents targetAudience temporal territory text title titleInfo topic total typeOfResource url].freeze
 # rubocop:enable Layout/LineLength
@@ -56,7 +60,8 @@ REPORTS = {
   xlink_href: method(:has_xlink_href?),
   mods_elements: method(:check_elements),
   mods_attrs: method(:check_attrs),
-  date_other: method(:date_other)
+  date_other: method(:date_other),
+  frequency: method(:has_frequency?)
 }.with_indifferent_access
 
 options = { local: false, reports: REPORTS.keys }
