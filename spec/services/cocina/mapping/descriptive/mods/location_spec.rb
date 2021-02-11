@@ -564,44 +564,38 @@ RSpec.describe 'MODS location <--> cocina mappings' do
   end
 
   describe 'Purl with displayLabel and note' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:druid) { 'nd782fm8171' }
+    xit 'updated spec, not implemented'
+    let(:druid) { 'nd782fm8171' }
 
-      let(:mods) do
-        <<~XML
-          <location>
-            <url displayLabel="electronic resource" usage="primary display"
-              note="Available to Stanford-affiliated users.">http://purl.stanford.edu/nd782fm8171</url>
-          </location>
-        XML
-      end
+    let(:mods) do
+      <<~XML
+        <location>
+          <url displayLabel="electronic resource" usage="primary display"
+            note="Available to Stanford-affiliated users.">http://purl.stanford.edu/nd782fm8171</url>
+        </location>
+      XML
+    end
 
-      # no displayLabel
-      let(:roundtrip_mods) do
-        <<~XML
-          <location>
-            <url usage="primary display"
-              note="Available to Stanford-affiliated users.">http://purl.stanford.edu/nd782fm8171</url>
-          </location>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          purl: 'http://purl.stanford.edu/nd782fm8171',
-          access: {
-            note: [
-              {
-                value: 'Available to Stanford-affiliated users.',
-                type: 'purl access'
-              }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
-            ]
-          }
+    let(:cocina) do
+      {
+        purl: 'http://purl.stanford.edu/nd782fm8171',
+        access: {
+          note: [
+            {
+              value: 'Available to Stanford-affiliated users.',
+              appliesTo: 'purl'
+            },
+            {
+              note: 'electronic resource',
+              type: 'display label',
+              appliesTo: 'purl'
+            }
+          ],
+          digitalRepository: [
+            value: 'Stanford Digital Repository'
+          ]
         }
-      end
+      }
     end
   end
 end
