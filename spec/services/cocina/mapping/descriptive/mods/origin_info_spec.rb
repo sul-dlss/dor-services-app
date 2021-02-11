@@ -31,7 +31,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'originInfo eventType differs from date type' do
-    xit 'updated spec'
+    xit 'to be implemented: updated spec'
+
     let(:mods) do
       <<~XML
         <originInfo eventType="publication">
@@ -58,7 +59,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'originInfo eventType differs from date type, copyright and copyright notice events, converted from MARC record with multiple 264s' do
-    xit 'updated spec'
+    xit 'to be implemented: updated spec'
+
     # eventType="copyright" maps to event.date, "copyright notice" maps to event.note
     let(:mods) do
       <<~XML
@@ -328,7 +330,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Multiple originInfo elements for different events' do
-    xit 'updated spec'
+    xit 'to be implemented: updated spec'
+
     let(:mods) do
       <<~XML
         <originInfo eventType="production">
@@ -568,7 +571,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'originInfo with displayLabel' do
-    xit 'updated spec'
+    xit 'to be implemented: updated spec'
+
     let(:mods) do
       <<~XML
         <originInfo displayLabel="Origin" eventType="production">
@@ -597,7 +601,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Multiscript originInfo with eventType production' do
-    xit 'updated spec'
+    xit 'to be implemented: updated spec'
+
     let(:mods) do
       <<~XML
         <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="1">
@@ -759,7 +764,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     # Example adapted from druid:hn285fy7937
 
     # First <place> not included in parallelValue because it's type="code"
-    xit 'removed warning'
+    xit 'to be implemented: removed warning'
     let(:mods) do
       <<~XML
         <originInfo altRepGroup="1">
@@ -903,7 +908,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
   describe 'Parallel value with no script given in MODS - B' do
     # Example adapted from druid:yc052ns4738
-    xit 'removed warning'
+    xit 'to be implemented: removed warning'
+
     let(:mods) do
       <<~XML
         <originInfo altRepGroup="1">
@@ -1055,7 +1061,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
   describe 'Parallel value with no script given in MODS - C' do
     # Example adapted from druid:bh212vz9239
-    xit 'removed warning'
+    xit 'to be implemented: removed warning'
+
     let(:mods) do
       <<~XML
         <originInfo altRepGroup="1">
@@ -1206,7 +1213,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Multiple originInfo elements with and without eventTypes' do
-    xit 'updated spec'
+    xit 'to be implemented: updated spec'
+
     let(:mods) do
       <<~XML
         <originInfo>
@@ -1350,7 +1358,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   describe 'parallel values with example adapted from hn285fy7937' do
     # example adapted from hn285fy7937 after normalization
 
-    xit 'updated warning message'
+    xit 'to be implemented: updated warning message'
+
     let(:mods) do
       <<~XML
         <originInfo altRepGroup="1" eventType="publication">
@@ -1469,7 +1478,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   describe 'parallel values - originInfo with additional elements in the second position' do
     # example adapted from bh212vz9239 in different order
 
-    xit 'removed warning'
+    xit 'to be implemented: removed warning'
+
     let(:mods) do
       <<~XML
         <originInfo altRepGroup="1">
@@ -1622,7 +1632,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
   describe 'parallel value - with second originInfo that would not get an event type' do
     # from druid:mm706hr7414
-    it_behaves_like 'cocina mods mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
             <originInfo altRepGroup="1">
@@ -1748,55 +1758,54 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   context 'when eventType matches date type "distribution"' do
     # bad data mapping (?)
     # NOTE: cocina -> MODS mapping
-    xit 'updated spec'
-      let(:mods) do
-        <<~XML
-          <originInfo eventType="distribution">
-            <place>
-              <placeTerm type="text">Washington, DC</placeTerm>
-            </place>
-            <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
-            <dateOther/>
-          </originInfo>
-        XML
-      end
+    xit 'to be implemented: updated spec'
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="distribution">
+          <place>
+            <placeTerm type="text">Washington, DC</placeTerm>
+          </place>
+          <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
+          <dateOther/>
+        </originInfo>
+      XML
+    end
 
-      # NOTE: contributor role is distributor, not publisher
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'distribution',
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: 'For sale by the Superintendent of Documents, U.S. Government Publishing Office'
+    # NOTE: contributor role is distributor, not publisher
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'distribution',
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'For sale by the Superintendent of Documents, U.S. Government Publishing Office'
+                  }
+                ],
+                type: 'organization',
+                role: [
+                  {
+                    value: 'distributor',
+                    code: 'dst',
+                    uri: 'http://id.loc.gov/vocabulary/relators/dst',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
                     }
-                  ],
-                  type: 'organization',
-                  role: [
-                    {
-                      value: 'distributor',
-                      code: 'dst',
-                      uri: 'http://id.loc.gov/vocabulary/relators/dst',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              location: [
-                {
-                  value: 'Washington, DC'
-                }
-              ]
-            }
-          ]
-        }
-      end
+                  }
+                ]
+              }
+            ],
+            location: [
+              {
+                value: 'Washington, DC'
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
@@ -1875,92 +1884,90 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     xit 'to be implemented: note that MODS is not correctly mapping to cocina'
 
     # NOTE: cocina -> MODS mapping
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'production',
-              date: [
-                {
-                  value: '1899'
-                }
-              ],
-              location: [
-                {
-                  value: 'York'
-                }
-              ]
-            },
-            {
-              date: [
-                {
-                  value: '1901'
-                }
-              ],
-              location: [
-                {
-                  value: 'London'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      # FIXME:  3 events - the second date splits to event without type, and location gets type publication
-      # Updated by Arcadia to match current model, replaces above specification
-      let(:roundtrip_cocina) do
-        {
-          event: [
-            {
-              type: 'production',
-              date: [
-                {
-                  value: '1899'
-                }
-              ],
-              location: [
-                {
-                  value: 'York'
-                }
-              ]
-            },
-            {
-              location: [
-                {
-                  value: 'London'
-                }
-              ],
-              date: [
-                {
-                  value: '1901'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <originInfo eventType="production">
-            <dateCreated>1899</dateCreated>
-            <place>
-              <placeTerm type="text">York</placeTerm>
-            </place>
-          </originInfo>
-          <originInfo>
-            <dateOther>1901</dateOther>
-            <place>
-              <placeTerm type="text">London</placeTerm>
-            </place>
-          </originInfo>
-        XML
-      end
-
-      let(:warnings) { [Notification.new(msg: 'Undetermined event type')] }
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'production',
+            date: [
+              {
+                value: '1899'
+              }
+            ],
+            location: [
+              {
+                value: 'York'
+              }
+            ]
+          },
+          {
+            date: [
+              {
+                value: '1901'
+              }
+            ],
+            location: [
+              {
+                value: 'London'
+              }
+            ]
+          }
+        ]
+      }
     end
+
+    # FIXME:  3 events - the second date splits to event without type, and location gets type publication
+    # Updated by Arcadia to match current model, replaces above specification
+    let(:roundtrip_cocina) do
+      {
+        event: [
+          {
+            type: 'production',
+            date: [
+              {
+                value: '1899'
+              }
+            ],
+            location: [
+              {
+                value: 'York'
+              }
+            ]
+          },
+          {
+            location: [
+              {
+                value: 'London'
+              }
+            ],
+            date: [
+              {
+                value: '1901'
+              }
+            ]
+          }
+        ]
+      }
+    end
+
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="production">
+          <dateCreated>1899</dateCreated>
+          <place>
+            <placeTerm type="text">York</placeTerm>
+          </place>
+        </originInfo>
+        <originInfo>
+          <dateOther>1901</dateOther>
+          <place>
+            <placeTerm type="text">London</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
+
+    let(:warnings) { [Notification.new(msg: 'Undetermined event type')] }
   end
 
   context 'when originInfo / event is various flavors of missing' do
@@ -2011,7 +2018,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     end
 
     context 'when MODS is empty originInfo element with no attributes' do
-      xit 'updated spec'
+      xit 'to be implemented: updated spec'
+
       let(:mods) do
         <<~XML
           <originInfo/>
