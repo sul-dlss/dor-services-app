@@ -326,9 +326,16 @@
 		<!-- name -->
 		<!-- 1.121 -->
 		<!-- 1.108  -->
-		<xsl:for-each
-			select="marc:datafield[@tag = '100'][not(marc:subfield[@code = 't'])] | marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '100')][not(marc:subfield[@code = 't'])]">
+		<!-- SUL edit 20210211 issue #2036 -->
+		<xsl:for-each select="marc:datafield[@tag = '100'][not(marc:subfield[@code = 't'])]">
+			<!-- SUL edit 20210211 issue #2036
+			select="marc:datafield[@tag = '100'][not(marc:subfield[@code = 't'])] | marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '100')][not(marc:subfield[@code = 't'])]"> -->
 			<xsl:call-template name="createNameFrom100"/>
+		</xsl:for-each>
+		<!-- SUL edit 20210211 issue #2036 -->
+		<xsl:for-each
+			select="marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '100')][not(marc:subfield[@code = 't'])]">
+			<xsl:call-template name="createNameFrom100NoPrimary"/>
 		</xsl:for-each>
 		<!-- 1.121 -->
 		<xsl:for-each
@@ -5496,6 +5503,52 @@
 				</xsl:attribute>
 				<xsl:call-template name="xxx880"/>
 
+				<!-- 1.123 Add nameTitleGroup attribute if necessary -->
+				<xsl:call-template name="nameTitleGroup"/>
+				<xsl:call-template name="nameABCDQ"/>
+				<xsl:call-template name="affiliation"/>
+				<xsl:call-template name="role"/>
+				<!-- 1.116 -->
+				<xsl:call-template name="nameIdentifier"/>
+			</name>
+		</xsl:if>
+	</xsl:template>
+
+	<!-- SUL edit 20210211 issue #2136 -->
+	<xsl:template name="createNameFrom100NoPrimary">
+		<!-- SUL edit 20200917 issue #1069 -->
+		<xsl:if test="@ind1 = '0' or @ind1 = '1' or @ind1 = '2' ">
+			<!-- SUL edit 20200917 issue #1069
+		<xsl:if test="@ind1 = '0' or @ind1 = '1'"> -->
+			<name type="personal">
+				<!-- SUL edit 20210211 issue #2136
+				<xsl:attribute name="usage">
+					<xsl:text>primary</xsl:text>
+				</xsl:attribute> -->
+				<xsl:call-template name="xxx880"/>
+				<!-- 1.123 Add nameTitleGroup attribute if necessary -->
+				<xsl:call-template name="nameTitleGroup"/>
+				<!-- 1.122 -->
+				<!-- SUL edit 20200820 issue #984 -->
+				<xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="valueURI"/>
+				<!-- SUL edit 20200820 issue #983 and #984
+ 			   <xsl:apply-templates select="marc:subfield[@code = '0'][. != '']" mode="xlink"/> -->
+				<xsl:call-template name="nameABCDQ"/>
+				<xsl:call-template name="affiliation"/>
+				<xsl:call-template name="role"/>
+				<!-- 1.116 -->
+				<xsl:call-template name="nameIdentifier"/>
+			</name>
+		</xsl:if>
+		<!-- 1.99 240 fix 20140804 -->
+		<xsl:if test="@ind1 = '3'">
+			<name type="family">
+				<!-- SUL edit 20210211 issue #2036
+				<xsl:attribute name="usage">
+					<xsl:text>primary</xsl:text>
+				</xsl:attribute> -->
+				<xsl:call-template name="xxx880"/>
+				
 				<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 				<xsl:call-template name="nameTitleGroup"/>
 				<xsl:call-template name="nameABCDQ"/>
