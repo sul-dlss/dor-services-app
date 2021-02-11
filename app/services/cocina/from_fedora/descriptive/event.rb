@@ -155,12 +155,14 @@ module Cocina
         # rubocop:disable Metrics/AbcSize
         def build_events_for_origin_info(origin_info, language_script)
           [].tap do |events|
+            orig_info_type = origin_info['eventType']
+
             date_created = origin_info.xpath('mods:dateCreated', mods: DESC_METADATA_NS)
             events << build_event('creation', date_created, language_script) if date_created.present?
 
             date_issued = origin_info.xpath('mods:dateIssued', mods: DESC_METADATA_NS)
             if date_issued.present?
-              event_type = origin_info['eventType'] == 'presentation' ? 'presentation' : 'publication'
+              event_type = event_type_or_default(orig_info_type, 'publication')
               events << build_event(event_type, date_issued, language_script)
             end
 
@@ -182,11 +184,18 @@ module Cocina
             date_other = origin_info.xpath('mods:dateOther', mods: DESC_METADATA_NS)
             events << build_event(date_other_event_type(origin_info, date_other.first), date_other, language_script) if date_other.present?
 
+            # set eventType to 'production' in MODS if no date present
             has_date = [date_created, date_issued, copyright_date, date_captured, date_other].flatten.present?
             events << build_event('creation', [], language_script) if origin_info[:eventType] == 'production' && !has_date
           end
         end
         # rubocop:enable Metrics/AbcSize
+
+        def event_type_or_default(event_type, default)
+          return event_type if Cocina::ToFedora::Descriptive::Event::EVENT_TYPE.keys.include?(event_type)
+
+          default
+        end
 
         def build_copyright_note(copyright_date)
           {

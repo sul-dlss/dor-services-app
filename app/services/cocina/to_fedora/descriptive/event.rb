@@ -6,11 +6,12 @@ module Cocina
       # Maps events from cocina to MODS XML
       class Event
         TAG_NAME = {
-          'creation' => :dateCreated,
-          'publication' => :dateIssued,
-          'copyright' => :copyrightDate,
           'capture' => :dateCaptured,
+          'copyright' => :copyrightDate,
+          'creation' => :dateCreated,
           'presentation' => :dateIssued,
+          'publication' => :dateIssued,
+          'release' => :dateIssued,
           'validity' => :dateValid
         }.freeze
 
@@ -22,16 +23,17 @@ module Cocina
         }.freeze
 
         EVENT_TYPE = {
+          'acquisition' => 'acquisition',
           'capture' => 'capture',
           'copyright' => 'copyright',
           'creation' => 'production',
+          'development' => 'development',
           'distribution' => 'distribution',
           'manufacture' => 'manufacture',
-          'publication' => 'publication',
-          'acquisition' => 'acquisition',
-          'development' => 'development',
           'presentation' => 'presentation',
           'production' => 'production',
+          'publication' => 'publication',
+          'release' => 'release',
           'validity' => 'validity'
         }.freeze
 

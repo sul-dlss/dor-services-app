@@ -149,38 +149,32 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Release date: 2022-01-01' do
-    xit 'not implemented: release type nor appliesTo'
-    # Ask Arcadia if she wants to add release to types or if she meant something else
-
-    let(:cocina) do
-      {
-        event: [
-          {
-            type: 'release',
-            date: [
-              {
-                value: '2022-01-01',
-                encoding: {
-                  code: 'w3cdtf'
-                },
-                appliesTo: [
-                  {
-                    value: 'SDR resource'
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'release',
+              date: [
+                {
+                  value: '2022-01-01',
+                  encoding: {
+                    code: 'w3cdtf'
                   }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    end
+                }
+              ]
+            }
+          ]
+        }
+      end
 
-    let(:mods) do
-      <<~XML
-        <originInfo eventType="release">
-          <dateIssued encoding="w3cdtf">2022-01-01</dateIssued>
-        </originInfo>
-      XML
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="release">
+            <dateIssued encoding="w3cdtf">2022-01-01</dateIssued>
+          </originInfo>
+        XML
+      end
     end
   end
 end
