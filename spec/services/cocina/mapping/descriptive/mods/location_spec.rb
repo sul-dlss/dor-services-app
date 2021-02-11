@@ -673,7 +673,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
     end
   end
 
-  describe 'Multiple purls with display label and usage, none matches resource purl' do
+  describe 'Multiple purls with display label and usage, none match resource purl' do
     xit 'not implemented'
 
     let(:druid) { 'bq367mn3764' }
@@ -753,6 +753,96 @@ RSpec.describe 'MODS location <--> cocina mappings' do
           },
           {
             purl: 'http://purl.stanford.edu/fn061xz3249',
+            access: {
+              note: [
+                {
+                  note: 'electronic resource',
+                  type: 'display label',
+                  appliesTo: 'purl'
+                }
+              ],
+              digitalRepository: [
+                value: 'Stanford Digital Repository'
+              ]
+            }
+          }
+        ]
+      }
+    end
+  end
+
+  describe 'Multiple purls plus URL, none match resource purl, URL is primary display' do
+    xit 'not implemented'
+
+    let(:druid) { 'gr134wb6457' }
+
+    let(:mods) do
+      <<~XML
+        <location>
+          <url displayLabel="electronic resource" usage="primary display">http://clerk.assembly.ca.gov/archive-list</url>
+        </location>
+        <location>
+          <url displayLabel="electronic resource">http://purl.stanford.edu/bf606ht0878</url>
+        </location>
+        <location>
+          <url displayLabel="electronic resource">http://purl.stanford.edu/bg702cf3724</url>
+        </location>
+      XML
+    end
+
+    let(:roundtrip_mods) do
+      <<~XML
+        <location>
+          <url displayLabel="electronic resource" usage="primary display">http://clerk.assembly.ca.gov/archive-list</url>
+        </location>
+        <relatedItem>
+          <location>
+            <url displayLabel="electronic resource">http://purl.stanford.edu/bf606ht0878</url>
+          </location>
+        </relatedItem>
+        <relatedItem>
+          <location>
+            <url displayLabel="electronic resource">http://purl.stanford.edu/bg702cf3724</url>
+          </location>
+        </relatedItem>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        purl: 'http://purl.stanford.edu/gr134wb6457',
+        access: {
+          digitalRepository: [
+            {
+              value: 'Stanford Digital Repository'
+            }
+          ],
+          url: [
+            {
+              value: 'http://clerk.assembly.ca.gov/archive-list',
+              status: 'primary',
+              displayLabel: 'electronic resource'
+            }
+          ]
+        },
+        relatedResource: [
+          {
+            purl: 'http://purl.stanford.edu/bf606ht0878',
+            access: {
+              note: [
+                {
+                  note: 'electronic resource',
+                  type: 'display label',
+                  appliesTo: 'purl'
+                }
+              ],
+              digitalRepository: [
+                value: 'Stanford Digital Repository'
+              ]
+            }
+          },
+          {
+            purl: 'http://purl.stanford.edu/bg702cf3724',
             access: {
               note: [
                 {
