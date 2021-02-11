@@ -598,4 +598,76 @@ RSpec.describe 'MODS location <--> cocina mappings' do
       }
     end
   end
+
+  describe 'Multiple purls with display label and note, one matches object purl' do
+    xit 'not implemented'
+
+    let(:mods) do
+      <<~XML
+        <location>
+          <url displayLabel="electronic resource" usage="primary display" note="Available to Stanford-affiliated users.">http://purl.stanford.edu/nd782fm8171</url>
+        </location>
+        <location>
+          <url displayLabel="electronic resource" note="Available to Stanford-affiliated users.">http://purl.stanford.edu/qm814cd3342</url>
+        </location>
+      XML
+    end
+
+    let(:roundtrip_mods) do
+      <<~XML
+        <location>
+          <url displayLabel="electronic resource" usage="primary display" note="Available to Stanford-affiliated users.">http://purl.stanford.edu/nd782fm8171</url>
+        </location>
+        <relatedItem>
+          <location>
+            <url displayLabel="electronic resource" note="Available to Stanford-affiliated users.">http://purl.stanford.edu/qm814cd3342</url>
+          </location>
+        </relatedItem>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        purl: 'http://purl.stanford.edu/nd782fm8171',
+        access: {
+          note: [
+            {
+              value: 'Available to Stanford-affiliated users.',
+              appliesTo: 'purl'
+            },
+            {
+              note: 'electronic resource',
+              type: 'display label',
+              appliesTo: 'purl'
+            }
+          ],
+          digitalRepository: [
+            value: 'Stanford Digital Repository'
+          ]
+        },
+        relatedResource: [
+          {
+            type: 'related to',
+            purl: 'http://purl.stanford.edu/qm814cd3342',
+            access: {
+              note: [
+                {
+                  value: 'Available to Stanford-affiliated users.',
+                  appliesTo: 'purl'
+                },
+                {
+                  note: 'electronic resource',
+                  type: 'display label',
+                  appliesTo: 'purl'
+                }
+              ],
+              digitalRepository: [
+                value: 'Stanford Digital Repository'
+              ]
+            }
+          }
+        ]
+      }
+    end
+  end
 end
