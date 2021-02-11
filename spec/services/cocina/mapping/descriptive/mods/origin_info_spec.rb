@@ -31,179 +31,172 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'originInfo eventType differs from date type' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo eventType="publication">
-            <copyrightDate>1980</copyrightDate>
-          </originInfo>
-        XML
-      end
+    xit 'to be implemented: updated spec'
 
-      let(:roundtrip_mods) do
-        <<~XML
-          <originInfo eventType="copyright">
-            <copyrightDate>1980</copyrightDate>
-          </originInfo>
-        XML
-      end
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="publication">
+          <copyrightDate>1980</copyrightDate>
+        </originInfo>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'copyright',
-              date: [
-                {
-                  value: '1980'
-                }
-              ]
-            }
-          ]
-        }
-      end
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            date: [
+              {
+                value: '1980',
+                type: 'copyright'
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
   describe 'originInfo eventType differs from date type, copyright and copyright notice events, converted from MARC record with multiple 264s' do
-    it_behaves_like 'MODS cocina mapping' do
-      # eventType="copyright" maps to event.date, "copyright notice" maps to event.note
-      let(:mods) do
-        <<~XML
-          <originInfo>
-             <place>
-                <placeTerm type="code" authority="marccountry">ru</placeTerm>
-             </place>
-             <dateIssued encoding="marc">2019</dateIssued>
-             <copyrightDate encoding="marc">2018</copyrightDate>
-             <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="publication">
-             <place>
-                <placeTerm type="text">Moskva</placeTerm>
-             </place>
-             <publisher>Izdatelʹstvo "Vesʹ Mir"</publisher>
-             <dateIssued>2019</dateIssued>
-          </originInfo>
-          <originInfo eventType="copyright notice">
-             <copyrightDate>©2018</copyrightDate>
-          </originInfo>
-        XML
-      end
+    xit 'to be implemented: updated spec'
 
-      let(:roundtrip_mods) do
-        <<~XML
-          <originInfo eventType="publication">
-             <place>
-                <placeTerm type="code" authority="marccountry">ru</placeTerm>
-             </place>
-             <dateIssued encoding="marc">2019</dateIssued>
-             <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="copyright">
-            <copyrightDate encoding="marc">2018</copyrightDate>
-          </originInfo>
-          <originInfo eventType="publication">
-             <place>
-                <placeTerm type="text">Moskva</placeTerm>
-             </place>
-             <publisher>Izdatelʹstvo "Vesʹ Mir"</publisher>
-             <dateIssued>2019</dateIssued>
-          </originInfo>
-          <originInfo eventType="copyright notice">
-             <copyrightDate>©2018</copyrightDate>
-          </originInfo>
-        XML
-      end
+    # eventType="copyright" maps to event.date, "copyright notice" maps to event.note
+    let(:mods) do
+      <<~XML
+        <originInfo>
+           <place>
+              <placeTerm type="code" authority="marccountry">ru</placeTerm>
+           </place>
+           <dateIssued encoding="marc">2019</dateIssued>
+           <copyrightDate encoding="marc">2018</copyrightDate>
+           <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo eventType="publication">
+           <place>
+              <placeTerm type="text">Moskva</placeTerm>
+           </place>
+           <publisher>Izdatelʹstvo "Vesʹ Mir"</publisher>
+           <dateIssued>2019</dateIssued>
+        </originInfo>
+        <originInfo eventType="copyright notice">
+           <copyrightDate>©2018</copyrightDate>
+        </originInfo>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  code: 'ru',
-                  source: {
-                    code: 'marccountry'
+    let(:roundtrip_mods) do
+      <<~XML
+        <originInfo eventType="publication">
+           <place>
+              <placeTerm type="code" authority="marccountry">ru</placeTerm>
+           </place>
+           <dateIssued encoding="marc">2019</dateIssued>
+           <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo eventType="copyright">
+          <copyrightDate encoding="marc">2018</copyrightDate>
+        </originInfo>
+        <originInfo eventType="publication">
+           <place>
+              <placeTerm type="text">Moskva</placeTerm>
+           </place>
+           <publisher>Izdatelʹstvo "Vesʹ Mir"</publisher>
+           <dateIssued>2019</dateIssued>
+        </originInfo>
+        <originInfo eventType="copyright notice">
+           <copyrightDate>©2018</copyrightDate>
+        </originInfo>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                code: 'ru',
+                source: {
+                  code: 'marccountry'
+                }
+              }
+            ],
+            date: [
+              {
+                value: '2019',
+                encoding: {
+                  code: 'marc'
+                }
+              }
+            ],
+            note: [
+              {
+                value: 'monographic',
+                type: 'issuance',
+                source: {
+                  value: 'MODS issuance terms'
+                }
+              }
+            ]
+          },
+          {
+            type: 'copyright',
+            date: [
+              {
+                value: '2018',
+                encoding: {
+                  code: 'marc'
+                }
+              }
+            ]
+          },
+          {
+            type: 'publication',
+            location: [
+              {
+                value: 'Moskva'
+              }
+            ],
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'Izdatelʹstvo "Vesʹ Mir"'
                   }
-                }
-              ],
-              date: [
-                {
-                  value: '2019',
-                  encoding: {
-                    code: 'marc'
-                  }
-                }
-              ],
-              note: [
-                {
-                  value: 'monographic',
-                  type: 'issuance',
-                  source: {
-                    value: 'MODS issuance terms'
-                  }
-                }
-              ]
-            },
-            {
-              type: 'copyright',
-              date: [
-                {
-                  value: '2018',
-                  encoding: {
-                    code: 'marc'
-                  }
-                }
-              ]
-            },
-            {
-              type: 'publication',
-              location: [
-                {
-                  value: 'Moskva'
-                }
-              ],
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: 'Izdatelʹstvo "Vesʹ Mir"'
+                ],
+                type: 'organization',
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
                     }
-                  ],
-                  type: 'organization',
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  value: '2019'
-                }
-              ]
-            },
-            {
-              type: 'copyright',
-              note: [
-                {
-                  value: '©2018',
-                  type: 'copyright statement'
-                }
-              ]
-            }
-          ]
-        }
-      end
+                  }
+                ]
+              }
+            ],
+            date: [
+              {
+                value: '2019'
+              }
+            ]
+          },
+          {
+            type: 'copyright notice',
+            note: [
+              {
+                value: '©2018',
+                type: 'copyright statement'
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
@@ -337,56 +330,56 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Multiple originInfo elements for different events' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo eventType="production">
-            <dateCreated>1899</dateCreated>
-            <place>
-              <placeTerm type="text">York</placeTerm>
-            </place>
-          </originInfo>
-          <originInfo eventType="publication">
-            <dateIssued>1901</dateIssued>
-            <place>
-              <placeTerm type="text">London</placeTerm>
-            </place>
-          </originInfo>
-        XML
-      end
+    xit 'to be implemented: updated spec'
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'creation',
-              date: [
-                {
-                  value: '1899'
-                }
-              ],
-              location: [
-                {
-                  value: 'York'
-                }
-              ]
-            },
-            {
-              type: 'publication',
-              date: [
-                {
-                  value: '1901'
-                }
-              ],
-              location: [
-                {
-                  value: 'London'
-                }
-              ]
-            }
-          ]
-        }
-      end
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="production">
+          <dateCreated>1899</dateCreated>
+          <place>
+            <placeTerm type="text">York</placeTerm>
+          </place>
+        </originInfo>
+        <originInfo eventType="publication">
+          <dateIssued>1901</dateIssued>
+          <place>
+            <placeTerm type="text">London</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'production',
+            date: [
+              {
+                value: '1899'
+              }
+            ],
+            location: [
+              {
+                value: 'York'
+              }
+            ]
+          },
+          {
+            type: 'publication',
+            date: [
+              {
+                value: '1901'
+              }
+            ],
+            location: [
+              {
+                value: 'London'
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
@@ -442,6 +435,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       # Round trip maps back to original plus eventTypes. Rule: anything in an event that does not have an explicit language/script
       # goes in the eng and/or Latn originInfo.
+      # If multiple instances of same subelement, pair the ones that have the same type or encoding attribute value if present.
       # See Parallel value with no script given in MODS for mapping when both attributes are absent.
       let(:cocina) do
         {
@@ -577,131 +571,130 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'originInfo with displayLabel' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo displayLabel="Origin" eventType="production">
-            <place>
-              <placeTerm type="text">Stanford (Calif.)</placeTerm>
-            </place>
-          </originInfo>
-        XML
-      end
+    xit 'to be implemented: updated spec'
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'creation',
-              displayLabel: 'Origin',
-              location: [
-                {
-                  value: 'Stanford (Calif.)'
-                }
-              ]
-            }
-          ]
-        }
-      end
+    let(:mods) do
+      <<~XML
+        <originInfo displayLabel="Origin" eventType="production">
+          <place>
+            <placeTerm type="text">Stanford (Calif.)</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'production',
+            displayLabel: 'Origin',
+            location: [
+              {
+                value: 'Stanford (Calif.)'
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
   describe 'Multiscript originInfo with eventType production' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="1">
-            <dateCreated keyDate="yes" encoding="w3cdtf">1999-09-09</dateCreated>
-            <place>
-              <placeTerm authorityURI="http://id.loc.gov/authorities/names/"
-                valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
-            </place>
-          </originInfo>
-          <originInfo eventType="production" lang="rus" script="Cyrl" altRepGroup="1">
-            <place>
-              <placeTerm>Москва</placeTerm>
-            </place>
-          </originInfo>
-        XML
-      end
+    xit 'to be implemented: updated spec'
 
-      let(:roundtrip_mods) do
-        <<~XML
-           <originInfo script="Latn" lang="eng" altRepGroup="1" eventType="production">
-            <dateCreated encoding="w3cdtf" keyDate="yes">1999-09-09</dateCreated>
-            <place>
-              <placeTerm type="text" authorityURI="http://id.loc.gov/authorities/names/"
-                valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
-            </place>
-          </originInfo>
-          <originInfo script="Cyrl" lang="rus" altRepGroup="1" eventType="production">
-            <place>
-              <placeTerm type="text">Москва</placeTerm>
-            </place>
-          </originInfo>
-        XML
-      end
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="1">
+          <dateCreated keyDate="yes" encoding="w3cdtf">1999-09-09</dateCreated>
+          <place>
+            <placeTerm authorityURI="http://id.loc.gov/authorities/names/"
+              valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
+          </place>
+        </originInfo>
+        <originInfo eventType="production" lang="rus" script="Cyrl" altRepGroup="1">
+          <place>
+            <placeTerm>Москва</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
 
-      # Round trip maps back to original. Rule: same as Origin info - multilingual.
+    let(:roundtrip_mods) do
+      # Same except placeTerm gets type "text"
+      <<~XML
+         <originInfo script="Latn" lang="eng" altRepGroup="1" eventType="production">
+          <dateCreated encoding="w3cdtf" keyDate="yes">1999-09-09</dateCreated>
+          <place>
+            <placeTerm type="text" authorityURI="http://id.loc.gov/authorities/names/"
+              valueURI="http://id.loc.gov/authorities/names/n79076156">Moscow</placeTerm>
+          </place>
+        </originInfo>
+        <originInfo script="Cyrl" lang="rus" altRepGroup="1" eventType="production">
+          <place>
+            <placeTerm type="text">Москва</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'creation',
-              date: [
-                {
-                  value: '1999-09-09',
-                  status: 'primary',
-                  encoding: {
-                    code: 'w3cdtf'
-                  }
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'production',
+            date: [
+              {
+                value: '1999-09-09',
+                status: 'primary',
+                encoding: {
+                  code: 'w3cdtf'
                 }
-              ],
-              location: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Moscow',
-                      uri: 'http://id.loc.gov/authorities/names/n79076156',
-                      source: {
-                        uri: 'http://id.loc.gov/authorities/names/'
-                      },
-                      valueLanguage: {
-                        code: 'eng',
-                        source: {
-                          code: 'iso639-2b'
-                        },
-                        valueScript: {
-                          code: 'Latn',
-                          source: {
-                            code: 'iso15924'
-                          }
-                        }
-                      }
+              }
+            ],
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Moscow',
+                    uri: 'http://id.loc.gov/authorities/names/n79076156',
+                    source: {
+                      uri: 'http://id.loc.gov/authorities/names/'
                     },
-                    {
-                      value: 'Москва',
-                      valueLanguage: {
-                        code: 'rus',
+                    valueLanguage: {
+                      code: 'eng',
+                      source: {
+                        code: 'iso639-2b'
+                      },
+                      valueScript: {
+                        code: 'Latn',
                         source: {
-                          code: 'iso639-2b'
-                        },
-                        valueScript: {
-                          code: 'Cyrl',
-                          source: {
-                            code: 'iso15924'
-                          }
+                          code: 'iso15924'
                         }
                       }
                     }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      end
+                  },
+                  {
+                    value: 'Москва',
+                    valueLanguage: {
+                      code: 'rus',
+                      source: {
+                        code: 'iso639-2b'
+                      },
+                      valueScript: {
+                        code: 'Cyrl',
+                        source: {
+                          code: 'iso15924'
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
@@ -771,611 +764,592 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     # Example adapted from druid:hn285fy7937
 
     # First <place> not included in parallelValue because it's type="code"
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo altRepGroup="1">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Chengdu</placeTerm>
-            </place>
-            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>Di 1 ban.</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo altRepGroup="1">
-            <place>
-              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
-            </place>
-            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
-            <dateIssued>2005.</dateIssued>
-            <edition>[Di 1 ban in Chinese]</edition>
-          </originInfo>
-        XML
-      end
+    xit 'to be implemented: removed warning'
+    let(:mods) do
+      <<~XML
+        <originInfo altRepGroup="1">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Chengdu</placeTerm>
+          </place>
+          <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>Di 1 ban.</edition>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo altRepGroup="1">
+          <place>
+            <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+          </place>
+          <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+          <dateIssued>2005.</dateIssued>
+          <edition>[Di 1 ban in Chinese]</edition>
+        </originInfo>
+      XML
+    end
 
-      # We don't know which originInfo is eng/Latn, so the rule in #39 cannot apply.
-      # Instead, put all values that are not parallel values in both originInfo elements.
-      # Parallel values are grouped by index (i.e. the first of each pair is in the first originInfo, the second in the second one).
-      let(:roundtrip_mods) do
-        <<~XML
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Chengdu</placeTerm>
-            </place>
-            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>Di 1 ban.</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
-            </place>
-            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>[Di 1 ban in Chinese]</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-        XML
-      end
-      # When converting back to COCINA, duplicate values across the originInfos should be collapsed into one to generate the same record as above.
+    # We don't know which originInfo is eng/Latn, so we don't know where to put the unpaired values.
+    # Instead, put all values that are not parallel values in both originInfo elements.
+    # Parallel values are grouped by index (i.e. the first of each pair is in the first originInfo, the second in the second one).
+    let(:roundtrip_mods) do
+      <<~XML
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Chengdu</placeTerm>
+          </place>
+          <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>Di 1 ban.</edition>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+          </place>
+          <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>[Di 1 ban in Chinese]</edition>
+          <issuance>monographic</issuance>
+        </originInfo>
+      XML
+    end
+    # When converting back to COCINA, duplicate values across the originInfos should be collapsed into one to generate the same record as above.
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Chengdu'
-                    },
-                    {
-                      value: '[Chengdu in Chinese]'
-                    }
-                  ]
-                },
-                {
-                  code: 'cc',
-                  source: {
-                    code: 'marccountry'
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Chengdu'
+                  },
+                  {
+                    value: '[Chengdu in Chinese]'
                   }
+                ]
+              },
+              {
+                code: 'cc',
+                source: {
+                  code: 'marccountry'
                 }
-              ],
-              contributor: [
-                {
-                  type: 'organization',
-                  name: [
-                    {
-                      parallelValue: [
-                        {
-                          value: 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
-                        },
-                        {
-                          value: '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
-                        }
-                      ]
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
+              }
+            ],
+            contributor: [
+              {
+                type: 'organization',
+                name: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
+                      },
+                      {
+                        value: '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
                       }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  value: '2005'
-                }
-              ],
-              note: [
-                {
-                  type: 'edition',
-                  parallelValue: [
-                    {
-                      value: 'Di 1 ban.'
-                    },
-                    {
-                      value: '[Di 1 ban in Chinese]'
-                    }
-                  ]
-                },
-                {
-                  type: 'issuance',
-                  value: 'monographic',
-                  source: {
-                    value: 'MODS issuance terms'
+                    ]
                   }
-
+                ],
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ],
+            date: [
+              {
+                value: '2005'
+              }
+            ],
+            note: [
+              {
+                type: 'edition',
+                parallelValue: [
+                  {
+                    value: 'Di 1 ban.'
+                  },
+                  {
+                    value: '[Di 1 ban in Chinese]'
+                  }
+                ]
+              },
+              {
+                type: 'issuance',
+                value: 'monographic',
+                source: {
+                  value: 'MODS issuance terms'
                 }
-              ]
-            }
-          ]
-        }
-      end
 
-      let(:warnings) do
-        [
-          Notification.new(msg: 'Bad altRepGroup')
+              }
+            ]
+          }
         ]
-      end
+      }
     end
   end
 
   describe 'Parallel value with no script given in MODS - B' do
     # Example adapted from druid:yc052ns4738
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo altRepGroup="1">
-             <place>
-                <placeTerm type="code" authority="marccountry">cc</placeTerm>
-             </place>
-             <dateIssued encoding="marc" point="start">1933</dateIssued>
-             <dateIssued encoding="marc" point="end">uuuu</dateIssued>
-             <issuance>serial</issuance>
-             <frequency>Irregular</frequency>
-             <place>
-                <placeTerm type="text">[Ruijin]</placeTerm>
-             </place>
-             <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu</publisher>
-          </originInfo>
-          <originInfo altRepGroup="1">
-             <place>
-                <placeTerm type="code" authority="marccountry">cc</placeTerm>
-             </place>
-             <dateIssued encoding="marc" point="start">1933</dateIssued>
-             <dateIssued encoding="marc" point="end">uuuu</dateIssued>
-             <issuance>serial</issuance>
-             <frequency>Irregular</frequency>
-             <place>
-                <placeTerm type="text">[Ruijin] in Chinese</placeTerm>
-             </place>
-             <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese</publisher>
-          </originInfo>
-        XML
-      end
+    xit 'to be implemented: removed warning'
 
-      let(:mods) do
-        <<~XML
-          <originInfo altRepGroup="1" eventType="publication">
-             <place>
-                <placeTerm type="code" authority="marccountry">cc</placeTerm>
-             </place>
-             <dateIssued encoding="marc" point="start">1933</dateIssued>
-             <dateIssued encoding="marc" point="end">uuuu</dateIssued>
-             <issuance>serial</issuance>
-             <place>
-                <placeTerm type="text">[Ruijin]</placeTerm>
-             </place>
-             <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu</publisher>
-             <frequency>Irregular</frequency>
-          </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-             <place>
-                <placeTerm type="code" authority="marccountry">cc</placeTerm>
-             </place>
-             <dateIssued encoding="marc" point="start">1933</dateIssued>
-             <dateIssued encoding="marc" point="end">uuuu</dateIssued>
-             <issuance>serial</issuance>
-             <place>
-                <placeTerm type="text">[Ruijin] in Chinese</placeTerm>
-             </place>
-             <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese</publisher>
-             <frequency>Irregular</frequency>
-          </originInfo>
-        XML
-      end
+    let(:mods) do
+      <<~XML
+        <originInfo altRepGroup="1">
+           <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+           </place>
+           <dateIssued encoding="marc" point="start">1933</dateIssued>
+           <dateIssued encoding="marc" point="end">uuuu</dateIssued>
+           <issuance>serial</issuance>
+           <frequency>Irregular</frequency>
+           <place>
+              <placeTerm type="text">[Ruijin]</placeTerm>
+           </place>
+           <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu</publisher>
+        </originInfo>
+        <originInfo altRepGroup="1">
+           <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+           </place>
+           <dateIssued encoding="marc" point="start">1933</dateIssued>
+           <dateIssued encoding="marc" point="end">uuuu</dateIssued>
+           <issuance>serial</issuance>
+           <frequency>Irregular</frequency>
+           <place>
+              <placeTerm type="text">[Ruijin] in Chinese</placeTerm>
+           </place>
+           <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese</publisher>
+        </originInfo>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  parallelValue: [
-                    {
-                      value: '[Ruijin]'
-                    },
-                    {
-                      value: '[Ruijin] in Chinese'
-                    }
-                  ]
-                },
-                {
-                  code: 'cc',
-                  source: {
-                    code: 'marccountry'
+    let(:roundtrip_mods) do
+      <<~XML
+        <originInfo altRepGroup="1" eventType="publication">
+           <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+           </place>
+           <dateIssued encoding="marc" point="start">1933</dateIssued>
+           <dateIssued encoding="marc" point="end">uuuu</dateIssued>
+           <issuance>serial</issuance>
+           <place>
+              <placeTerm type="text">[Ruijin]</placeTerm>
+           </place>
+           <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu</publisher>
+           <frequency>Irregular</frequency>
+        </originInfo>
+        <originInfo altRepGroup="1" eventType="publication">
+           <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+           </place>
+           <dateIssued encoding="marc" point="start">1933</dateIssued>
+           <dateIssued encoding="marc" point="end">uuuu</dateIssued>
+           <issuance>serial</issuance>
+           <place>
+              <placeTerm type="text">[Ruijin] in Chinese</placeTerm>
+           </place>
+           <publisher>Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese</publisher>
+           <frequency>Irregular</frequency>
+        </originInfo>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: '[Ruijin]'
+                  },
+                  {
+                    value: '[Ruijin] in Chinese'
                   }
+                ]
+              },
+              {
+                code: 'cc',
+                source: {
+                  code: 'marccountry'
                 }
-              ],
-              date: [
-                {
-                  structuredValue: [
-                    {
-                      value: '1933',
-                      type: 'start'
-                    },
-                    {
-                      value: 'uuuu',
-                      type: 'end'
-                    }
-                  ],
-                  encoding: {
-                    code: 'marc'
+              }
+            ],
+            date: [
+              {
+                structuredValue: [
+                  {
+                    value: '1933',
+                    type: 'start'
+                  },
+                  {
+                    value: 'uuuu',
+                    type: 'end'
                   }
+                ],
+                encoding: {
+                  code: 'marc'
                 }
-              ],
-              contributor: [
-                {
-                  type: 'organization',
-                  name: [
-                    {
-                      parallelValue: [
-                        {
-                          value: 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu'
-                        },
-                        {
-                          value: 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese'
-                        }
-                      ]
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
+              }
+            ],
+            contributor: [
+              {
+                type: 'organization',
+                name: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu'
+                      },
+                      {
+                        value: 'Zhong yang ge ming jun shi wei yuan hui zong wei sheng bu in Chinese'
                       }
-                    }
-                  ]
-                }
-              ],
-              note: [
-                {
-                  type: 'issuance',
-                  value: 'serial',
-                  source: {
-                    value: 'MODS issuance terms'
+                    ]
                   }
-                },
-                {
-                  type: 'frequency',
-                  value: 'Irregular'
+                ],
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ],
+            note: [
+              {
+                type: 'issuance',
+                value: 'serial',
+                source: {
+                  value: 'MODS issuance terms'
                 }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:warnings) do
-        [
-          Notification.new(msg: 'Bad altRepGroup')
+              },
+              {
+                type: 'frequency',
+                value: 'Irregular'
+              }
+            ]
+          }
         ]
-      end
+      }
     end
   end
 
   describe 'Parallel value with no script given in MODS - C' do
     # Example adapted from druid:bh212vz9239
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo altRepGroup="1">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Guangdong</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
-            <dateIssued encoding="marc" point="start">1922</dateIssued>
-            <dateIssued encoding="marc" point="end">1929</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo altRepGroup="1">
-            <place>
-              <placeTerm type="text">Guangdong in Chinese</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
-          </originInfo>
-        XML
-      end
+    xit 'to be implemented: removed warning'
 
-      let(:mods) do
-        <<~XML
-          <originInfo eventType="publication" altRepGroup="1">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Guangdong</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
-            <dateIssued encoding="marc" point="start">1922</dateIssued>
-            <dateIssued encoding="marc" point="end">1929</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="publication" altRepGroup="1">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Guangdong in Chinese</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
-            <dateIssued encoding="marc" point="start">1922</dateIssued>
-            <dateIssued encoding="marc" point="end">1929</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-        XML
-      end
+    let(:mods) do
+      <<~XML
+        <originInfo altRepGroup="1">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo altRepGroup="1">
+          <place>
+            <placeTerm type="text">Guangdong in Chinese</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
+        </originInfo>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Guangdong'
-                    },
-                    {
-                      value: 'Guangdong in Chinese'
-                    }
-                  ]
-                },
-                {
-                  code: 'cc',
-                  source: {
-                    code: 'marccountry'
+    let(:roundtrip_mods) do
+      <<~XML
+        <originInfo eventType="publication" altRepGroup="1">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo eventType="publication" altRepGroup="1">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong in Chinese</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Guangdong'
+                  },
+                  {
+                    value: 'Guangdong in Chinese'
                   }
+                ]
+              },
+              {
+                code: 'cc',
+                source: {
+                  code: 'marccountry'
                 }
-              ],
-              contributor: [
-                {
-                  type: 'organization',
-                  name: [
-                    {
-                      parallelValue: [
-                        {
-                          value: 'Guangdong lu jun ce liang ju'
-                        },
-                        {
-                          value: 'Guangdong lu jun ce liang ju in Chinese'
-                        }
-                      ]
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
+              }
+            ],
+            contributor: [
+              {
+                type: 'organization',
+                name: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'Guangdong lu jun ce liang ju'
+                      },
+                      {
+                        value: 'Guangdong lu jun ce liang ju in Chinese'
                       }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Minguo 11-18 [1922-1929]'
-                    },
-                    {
-                      value: 'Minguo 11-18 [1922-1929] in Chinese'
-                    }
-                  ]
-                },
-                {
-                  structuredValue: [
-                    {
-                      value: '1922',
-                      type: 'start'
-                    },
-                    {
-                      value: '1929',
-                      type: 'end'
-                    }
-                  ],
-                  encoding: {
-                    code: 'marc'
+                    ]
                   }
-                }
-              ],
-              note: [
-                {
-                  type: 'issuance',
-                  value: 'monographic',
-                  source: {
-                    value: 'MODS issuance terms'
+                ],
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
+                    }
                   }
+                ]
+              }
+            ],
+            date: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Minguo 11-18 [1922-1929]'
+                  },
+                  {
+                    value: 'Minguo 11-18 [1922-1929] in Chinese'
+                  }
+                ]
+              },
+              {
+                structuredValue: [
+                  {
+                    value: '1922',
+                    type: 'start'
+                  },
+                  {
+                    value: '1929',
+                    type: 'end'
+                  }
+                ],
+                encoding: {
+                  code: 'marc'
                 }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:warnings) do
-        [
-          Notification.new(msg: 'Bad altRepGroup')
+              }
+            ],
+            note: [
+              {
+                type: 'issuance',
+                value: 'monographic',
+                source: {
+                  value: 'MODS issuance terms'
+                }
+              }
+            ]
+          }
         ]
-      end
+      }
     end
   end
 
   describe 'Multiple originInfo elements with and without eventTypes' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo>
-            <place>
-              <placeTerm type="code" authority="marccountry">cau</placeTerm>
-            </place>
-            <dateIssued encoding="marc">2020</dateIssued>
-            <copyrightDate encoding="marc">2020</copyrightDate>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="text">[Stanford, Calif.]</placeTerm>
-            </place>
-            <publisher>[Stanford University]</publisher>
-            <dateIssued>2020</dateIssued>
-          </originInfo>
-          <originInfo eventType="copyright notice">
-            <copyrightDate>&#xA9;2020</copyrightDate>
-          </originInfo>
-        XML
-      end
+    xit 'to be implemented: updated spec'
 
-      let(:roundtrip_mods) do
-        <<~XML
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cau</placeTerm>
-            </place>
-            <dateIssued encoding="marc">2020</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="text">[Stanford, Calif.]</placeTerm>
-            </place>
-            <publisher>[Stanford University]</publisher>
-            <dateIssued>2020</dateIssued>
-          </originInfo>
-          <originInfo eventType="copyright">
-            <copyrightDate encoding="marc">2020</copyrightDate>
-          </originInfo>
-          <originInfo eventType="copyright notice">
-            <copyrightDate>&#xA9;2020</copyrightDate>
-          </originInfo>
-        XML
-      end
+    let(:mods) do
+      <<~XML
+        <originInfo>
+          <place>
+            <placeTerm type="code" authority="marccountry">cau</placeTerm>
+          </place>
+          <dateIssued encoding="marc">2020</dateIssued>
+          <copyrightDate encoding="marc">2020</copyrightDate>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo eventType="publication">
+          <place>
+            <placeTerm type="text">[Stanford, Calif.]</placeTerm>
+          </place>
+          <publisher>[Stanford University]</publisher>
+          <dateIssued>2020</dateIssued>
+        </originInfo>
+        <originInfo eventType="copyright notice">
+          <copyrightDate>©2020</copyrightDate>
+        </originInfo>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  code: 'cau',
-                  source: {
-                    code: 'marccountry'
+    let(:roundtrip_mods) do
+      <<~XML
+        <originInfo eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cau</placeTerm>
+          </place>
+          <dateIssued encoding="marc">2020</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo eventType="publication">
+          <place>
+            <placeTerm type="text">[Stanford, Calif.]</placeTerm>
+          </place>
+          <publisher>[Stanford University]</publisher>
+          <dateIssued>2020</dateIssued>
+        </originInfo>
+        <originInfo eventType="copyright">
+          <copyrightDate encoding="marc">2020</copyrightDate>
+        </originInfo>
+        <originInfo eventType="copyright notice">
+          <copyrightDate>©2020</copyrightDate>
+        </originInfo>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                code: 'cau',
+                source: {
+                  code: 'marccountry'
+                }
+              }
+            ],
+            date: [
+              {
+                value: '2020',
+                encoding: {
+                  code: 'marc'
+                }
+              }
+            ],
+            note: [
+              {
+                type: 'issuance',
+                value: 'monographic',
+                source: {
+                  value: 'MODS issuance terms'
+                }
+              }
+            ]
+          },
+          {
+            type: 'copyright',
+            date: [
+              {
+                value: '2020',
+                encoding: {
+                  code: 'marc'
+                }
+              }
+            ]
+          },
+          {
+            type: 'publication',
+            location: [
+              {
+                value: '[Stanford, Calif.]'
+              }
+            ],
+            contributor: [
+              {
+                name: [
+                  {
+                    value: '[Stanford University]'
                   }
-                }
-              ],
-              date: [
-                {
-                  value: '2020',
-                  encoding: {
-                    code: 'marc'
-                  }
-                }
-              ],
-              note: [
-                {
-                  type: 'issuance',
-                  value: 'monographic',
-                  source: {
-                    value: 'MODS issuance terms'
-                  }
-                }
-              ]
-            },
-            {
-              type: 'copyright',
-              date: [
-                {
-                  value: '2020',
-                  encoding: {
-                    code: 'marc'
-                  }
-                }
-              ]
-            },
-            {
-              type: 'publication',
-              location: [
-                {
-                  value: '[Stanford, Calif.]'
-                }
-              ],
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: '[Stanford University]'
+                ],
+                type: 'organization',
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
                     }
-                  ],
-                  type: 'organization',
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  value: '2020'
-                }
-              ]
-            },
-            {
-              type: 'copyright',
-              note: [
-                {
-                  value: '©2020',
-                  type: 'copyright statement'
-                }
-              ]
-            }
-          ]
-        }
-      end
+                  }
+                ]
+              }
+            ],
+            date: [
+              {
+                value: '2020'
+              }
+            ]
+          },
+          {
+            type: 'copyright notice',
+            note: [
+              {
+                value: '©2020',
+                type: 'copyright statement'
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
@@ -1384,283 +1358,280 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   describe 'parallel values with example adapted from hn285fy7937' do
     # example adapted from hn285fy7937 after normalization
 
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Chengdu</placeTerm>
-            </place>
-            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>Di 1 ban.</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
-            </place>
-            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>[Di 1 ban in Chinese]</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-        XML
-      end
+    xit 'to be implemented: updated warning message'
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Chengdu'
-                    },
-                    {
-                      value: '[Chengdu in Chinese]'
-                    }
-                  ]
-                },
-                {
-                  code: 'cc',
-                  source: {
-                    code: 'marccountry'
-                  }
-                }
-              ],
-              contributor: [
-                {
-                  type: 'organization',
-                  name: [
-                    {
-                      parallelValue: [
-                        {
-                          value: 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
-                        },
-                        {
-                          value: '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
-                        }
-                      ]
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  value: '2005'
-                }
-              ],
-              note: [
-                {
-                  type: 'edition',
-                  parallelValue: [
-                    {
-                      value: 'Di 1 ban.'
-                    },
-                    {
-                      value: '[Di 1 ban in Chinese]'
-                    }
-                  ]
-                },
-                {
-                  type: 'issuance',
-                  value: 'monographic',
-                  source: {
-                    value: 'MODS issuance terms'
-                  }
-
-                }
-
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:warnings) { [Notification.new(msg: 'Bad altRepGroup')] }
+    let(:mods) do
+      <<~XML
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Chengdu</placeTerm>
+          </place>
+          <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>Di 1 ban.</edition>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
+          </place>
+          <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
+          <dateIssued>2005</dateIssued>
+          <edition>[Di 1 ban in Chinese]</edition>
+          <issuance>monographic</issuance>
+        </originInfo>
+      XML
     end
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Chengdu'
+                  },
+                  {
+                    value: '[Chengdu in Chinese]'
+                  }
+                ]
+              },
+              {
+                code: 'cc',
+                source: {
+                  code: 'marccountry'
+                }
+              }
+            ],
+            contributor: [
+              {
+                type: 'organization',
+                name: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'Sichuan chu ban ji tuan, Sichuan wen yi chu ban she'
+                      },
+                      {
+                        value: '[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]'
+                      }
+                    ]
+                  }
+                ],
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
+                    }
+                  }
+                ]
+              }
+            ],
+            date: [
+              {
+                value: '2005'
+              }
+            ],
+            note: [
+              {
+                type: 'edition',
+                parallelValue: [
+                  {
+                    value: 'Di 1 ban.'
+                  },
+                  {
+                    value: '[Di 1 ban in Chinese]'
+                  }
+                ]
+              },
+              {
+                type: 'issuance',
+                value: 'monographic',
+                source: {
+                  value: 'MODS issuance terms'
+                }
+
+              }
+
+            ]
+          }
+        ]
+      }
+    end
+
+    let(:warnings) { [Notification.new(msg: 'altRepGroup missing lang/script')] }
   end
 
   describe 'parallel values - originInfo with additional elements in the second position' do
     # example adapted from bh212vz9239 in different order
 
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo altRepGroup="1">
-            <place>
-              <placeTerm type="text">Guangdong in Chinese</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
-          </originInfo>
-          <originInfo altRepGroup="1">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Guangdong</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
-            <dateIssued encoding="marc" point="start">1922</dateIssued>
-            <dateIssued encoding="marc" point="end">1929</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-        XML
-      end
+    xit 'to be implemented: removed warning'
 
-      # all parallel elements in both originInfo elements + eventType
-      let(:roundtrip_mods) do
-        <<~XML
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Guangdong in Chinese</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
-            <dateIssued encoding="marc" point="start">1922</dateIssued>
-            <dateIssued encoding="marc" point="end">1929</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Guangdong</placeTerm>
-            </place>
-            <publisher>Guangdong lu jun ce liang ju</publisher>
-            <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
-            <dateIssued encoding="marc" point="start">1922</dateIssued>
-            <dateIssued encoding="marc" point="end">1929</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-        XML
-      end
+    let(:mods) do
+      <<~XML
+        <originInfo altRepGroup="1">
+          <place>
+            <placeTerm type="text">Guangdong in Chinese</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
+        </originInfo>
+        <originInfo altRepGroup="1">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              location: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Guangdong in Chinese'
-                    },
-                    {
-                      value: 'Guangdong'
-                    }
-                  ]
-                },
-                {
-                  code: 'cc',
-                  source: {
-                    code: 'marccountry'
+    # all parallel elements in both originInfo elements + eventType
+    let(:roundtrip_mods) do
+      <<~XML
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong in Chinese</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju in Chinese</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929] in Chinese</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+        <originInfo altRepGroup="1" eventType="publication">
+          <place>
+            <placeTerm type="code" authority="marccountry">cc</placeTerm>
+          </place>
+          <place>
+            <placeTerm type="text">Guangdong</placeTerm>
+          </place>
+          <publisher>Guangdong lu jun ce liang ju</publisher>
+          <dateIssued>Minguo 11-18 [1922-1929]</dateIssued>
+          <dateIssued encoding="marc" point="start">1922</dateIssued>
+          <dateIssued encoding="marc" point="end">1929</dateIssued>
+          <issuance>monographic</issuance>
+        </originInfo>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'publication',
+            location: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Guangdong in Chinese'
+                  },
+                  {
+                    value: 'Guangdong'
                   }
+                ]
+              },
+              {
+                code: 'cc',
+                source: {
+                  code: 'marccountry'
                 }
-              ],
-              contributor: [
-                {
-                  type: 'organization',
-                  name: [
-                    {
-                      parallelValue: [
-                        {
-                          value: 'Guangdong lu jun ce liang ju in Chinese'
-                        },
-                        {
-                          value: 'Guangdong lu jun ce liang ju'
-                        }
-                      ]
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
+              }
+            ],
+            contributor: [
+              {
+                type: 'organization',
+                name: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'Guangdong lu jun ce liang ju in Chinese'
+                      },
+                      {
+                        value: 'Guangdong lu jun ce liang ju'
                       }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Minguo 11-18 [1922-1929] in Chinese'
-                    },
-                    {
-                      value: 'Minguo 11-18 [1922-1929]'
-                    }
-                  ]
-                },
-                {
-                  structuredValue: [
-                    {
-                      value: '1922',
-                      type: 'start'
-                    },
-                    {
-                      value: '1929',
-                      type: 'end'
-                    }
-                  ],
-                  encoding: {
-                    code: 'marc'
+                    ]
                   }
-                }
-              ],
-              note: [
-                {
-                  type: 'issuance',
-                  value: 'monographic',
-                  source: {
-                    value: 'MODS issuance terms'
+                ],
+                role: [
+                  {
+                    value: 'publisher',
+                    code: 'pbl',
+                    uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
+                    }
                   }
+                ]
+              }
+            ],
+            date: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Minguo 11-18 [1922-1929] in Chinese'
+                  },
+                  {
+                    value: 'Minguo 11-18 [1922-1929]'
+                  }
+                ]
+              },
+              {
+                structuredValue: [
+                  {
+                    value: '1922',
+                    type: 'start'
+                  },
+                  {
+                    value: '1929',
+                    type: 'end'
+                  }
+                ],
+                encoding: {
+                  code: 'marc'
                 }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:warnings) { [Notification.new(msg: 'Bad altRepGroup')] }
+              }
+            ],
+            note: [
+              {
+                type: 'issuance',
+                value: 'monographic',
+                source: {
+                  value: 'MODS issuance terms'
+                }
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
   describe 'parallel value - with second originInfo that would not get an event type' do
     # from druid:mm706hr7414
-
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -1785,66 +1756,62 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   context 'when eventType matches date type "distribution"' do
+    # bad data mapping (?)
     # NOTE: cocina -> MODS mapping
-    it_behaves_like 'cocina MODS mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo eventType="distribution">
-            <place>
-              <placeTerm type="text">Washington, DC</placeTerm>
-            </place>
-            <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
-            <dateOther/>
-          </originInfo>
-        XML
-      end
+    xit 'to be implemented: updated spec'
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="distribution">
+          <place>
+            <placeTerm type="text">Washington, DC</placeTerm>
+          </place>
+          <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
+          <dateOther/>
+        </originInfo>
+      XML
+    end
 
-      # NOTE: contributor role is distributor, not publisher
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'distribution',
-              date: [
-                {
-                  value: ''
-                }
-              ],
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: 'For sale by the Superintendent of Documents, U.S. Government Publishing Office'
+    # NOTE: contributor role is distributor, not publisher
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'distribution',
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'For sale by the Superintendent of Documents, U.S. Government Publishing Office'
+                  }
+                ],
+                type: 'organization',
+                role: [
+                  {
+                    value: 'distributor',
+                    code: 'dst',
+                    uri: 'http://id.loc.gov/vocabulary/relators/dst',
+                    source: {
+                      code: 'marcrelator',
+                      uri: 'http://id.loc.gov/vocabulary/relators/'
                     }
-                  ],
-                  type: 'organization',
-                  role: [
-                    {
-                      value: 'distributor',
-                      code: 'dst',
-                      uri: 'http://id.loc.gov/vocabulary/relators/dst',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              location: [
-                {
-                  value: 'Washington, DC'
-                }
-              ]
-            }
-          ]
-        }
-      end
+                  }
+                ]
+              }
+            ],
+            location: [
+              {
+                value: 'Washington, DC'
+              }
+            ]
+          }
+        ]
+      }
     end
   end
 
   context 'with an originInfo that has place and publisher, but no date (type publication)' do
     # From druid:bs861pk7886
+    # bad data mapping
 
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
@@ -1917,94 +1884,90 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     xit 'to be implemented: note that MODS is not correctly mapping to cocina'
 
     # NOTE: cocina -> MODS mapping
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'creation',
-              date: [
-                {
-                  value: '1899'
-                }
-              ],
-              location: [
-                {
-                  value: 'York'
-                }
-              ]
-            },
-            {
-              date: [
-                {
-                  value: '1901'
-                }
-              ],
-              location: [
-                {
-                  value: 'London'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      # FIXME:  3 events - the second date splits to event without type, and location gets type publication
-      let(:roundtrip_cocina) do
-        {
-          event: [
-            {
-              type: 'creation',
-              date: [
-                {
-                  value: '1899'
-                }
-              ],
-              location: [
-                {
-                  value: 'York'
-                }
-              ]
-            },
-            {
-              date: [
-                {
-                  value: '1901'
-                }
-              ]
-            },
-            {
-              type: 'publication',
-              location: [
-                {
-                  value: 'London'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <originInfo eventType="production">
-            <dateCreated>1899</dateCreated>
-            <place>
-              <placeTerm type="text">York</placeTerm>
-            </place>
-          </originInfo>
-          <originInfo>
-            <dateOther>1901</dateOther>
-            <place>
-              <placeTerm type="text">London</placeTerm>
-            </place>
-          </originInfo>
-        XML
-      end
-
-      let(:warnings) { [Notification.new(msg: 'originInfo/dateOther missing eventType')] }
+    let(:cocina) do
+      {
+        event: [
+          {
+            type: 'production',
+            date: [
+              {
+                value: '1899'
+              }
+            ],
+            location: [
+              {
+                value: 'York'
+              }
+            ]
+          },
+          {
+            date: [
+              {
+                value: '1901'
+              }
+            ],
+            location: [
+              {
+                value: 'London'
+              }
+            ]
+          }
+        ]
+      }
     end
+
+    # FIXME:  3 events - the second date splits to event without type, and location gets type publication
+    # Updated by Arcadia to match current model, replaces above specification
+    let(:roundtrip_cocina) do
+      {
+        event: [
+          {
+            type: 'production',
+            date: [
+              {
+                value: '1899'
+              }
+            ],
+            location: [
+              {
+                value: 'York'
+              }
+            ]
+          },
+          {
+            location: [
+              {
+                value: 'London'
+              }
+            ],
+            date: [
+              {
+                value: '1901'
+              }
+            ]
+          }
+        ]
+      }
+    end
+
+    let(:mods) do
+      <<~XML
+        <originInfo eventType="production">
+          <dateCreated>1899</dateCreated>
+          <place>
+            <placeTerm type="text">York</placeTerm>
+          </place>
+        </originInfo>
+        <originInfo>
+          <dateOther>1901</dateOther>
+          <place>
+            <placeTerm type="text">London</placeTerm>
+          </place>
+        </originInfo>
+      XML
+    end
+
+    let(:warnings) { [Notification.new(msg: 'Undetermined event type')] }
   end
 
   context 'when originInfo / event is various flavors of missing' do
@@ -2039,43 +2002,35 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
     context 'when cocina event is array with empty hash' do
       # NOTE: cocina -> MODS
-      it_behaves_like 'cocina MODS mapping' do
-        let(:cocina) do
-          {
-            event: [{}]
-          }
-        end
-
-        let(:roundtrip_cocina) do
-          {
-          }
-        end
-
-        let(:mods) do
-          <<~XML
-            <originInfo/>
-          XML
-        end
+      xit 'updated spec'
+      let(:cocina) do
+        {
+          event: [{}]
+        }
       end
+
+      let(:roundtrip_cocina) do
+        {
+        }
+      end
+
+      let(:mods) { '' }
     end
 
     context 'when MODS is empty originInfo element with no attributes' do
-      it_behaves_like 'MODS cocina mapping' do
-        let(:mods) do
-          <<~XML
-            <originInfo/>
-          XML
-        end
+      xit 'to be implemented: updated spec'
 
-        let(:roundtrip_mods) do
-          <<~XML
-          XML
-        end
+      let(:mods) do
+        <<~XML
+          <originInfo/>
+        XML
+      end
 
-        let(:cocina) do
-          {
-          }
-        end
+      let(:roundtrip_mods) { '' }
+
+      let(:cocina) do
+        {
+        }
       end
     end
   end
