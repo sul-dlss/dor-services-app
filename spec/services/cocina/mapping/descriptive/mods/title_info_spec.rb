@@ -491,26 +491,25 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   describe 'Supplied title' do
     # How to ID: titleInfo supplied="yes"
 
-    xit 'not mapped: cocina type of supplied needs to map to correct MODS'
-    # ask Arcadia if 'supplied=yes' is a valid MODS attribute
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo supplied="yes">
+            <title>"Because I could not stop for death"</title>
+          </titleInfo>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <titleInfo supplied="yes">
-          <title>"Because I could not stop for death"</title>
-        </titleInfo>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        title: [
-          {
-            value: '"Because I could not stop for death"',
-            type: 'supplied'
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          title: [
+            {
+              value: '"Because I could not stop for death"',
+              type: 'supplied'
+            }
+          ]
+        }
+      end
     end
   end
 
