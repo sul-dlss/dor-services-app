@@ -23,7 +23,7 @@ module Cocina
       normalize_default_namespace
       normalize_version
       normalize_empty_attributes
-      normalize_authority_uris
+      normalize_authority_uris # must be called before OriginInfoNormalizer
       @ng_xml = ModsNormalizers::OriginInfoNormalizer.normalize(mods_ng_xml: ng_xml)
       @ng_xml = ModsNormalizers::SubjectNormalizer.normalize(mods_ng_xml: ng_xml)
       @ng_xml = ModsNormalizers::NameNormalizer.normalize(mods_ng_xml: ng_xml)

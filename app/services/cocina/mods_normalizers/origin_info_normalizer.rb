@@ -3,6 +3,7 @@
 module Cocina
   module ModsNormalizers
     # Normalizes a Fedora MODS document for originInfo elements.
+    # Must be called after authorityURI attribs are normalized
     class OriginInfoNormalizer
       # @param [Nokogiri::Document] mods_ng_xml MODS to be normalized
       # @return [Nokogiri::Document] normalized MODS
@@ -89,7 +90,9 @@ module Cocina
 
       def normalize_date_other_event_type(origin_info_node)
         date_other_node = origin_info_node.xpath('mods:dateOther[@type]', mods: ModsNormalizer::MODS_NS).first
-        return false unless date_other_node.present? && Cocina::ToFedora::Descriptive::Event::DATE_OTHER_TYPE.keys.include?(date_other_node['type']) && origin_info_node['eventType'].nil?
+        return false unless date_other_node.present? &&
+                            Cocina::ToFedora::Descriptive::Event::DATE_OTHER_TYPE.keys.include?(date_other_node['type']) &&
+                            origin_info_node['eventType'].nil?
 
         origin_info_node['eventType'] = date_other_node['type']
         true
