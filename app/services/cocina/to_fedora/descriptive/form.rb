@@ -21,13 +21,15 @@ module Cocina
 
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] forms
-        def self.write(xml:, forms:)
-          new(xml: xml, forms: forms).write
+        # @params [IdGenerator] id_generator
+        def self.write(xml:, forms:, id_generator:)
+          new(xml: xml, forms: forms, id_generator: id_generator).write
         end
 
-        def initialize(xml:, forms:)
+        def initialize(xml:, forms:, id_generator:)
           @xml = xml
           @forms = forms
+          @id_generator = id_generator
         end
 
         def write
@@ -46,7 +48,7 @@ module Cocina
 
         private
 
-        attr_reader :xml, :forms
+        attr_reader :xml, :forms, :id_generator
 
         def physical_description?(form)
           form.note.present? || PHYSICAL_DESCRIPTION_TAG.keys.include?(form.type) || PHYSICAL_DESCRIPTION_TAG.keys.include?(form.structuredValue&.first&.type)
@@ -62,11 +64,24 @@ module Cocina
 
         def write_other_forms(forms, is_manuscript, is_collection)
           forms.each do |form|
-            if form.structuredValue
-              write_structured(form)
-            elsif form.value
-              write_basic(form, is_manuscript: is_manuscript, is_collection: is_collection)
+            if form.parallelValue
+              write_parallel_forms(form, is_manuscript, is_collection)
+            else
+              write_form(form, is_manuscript, is_collection)
             end
+          end
+        end
+
+        def write_parallel_forms(form, is_manuscript, is_collection)
+          alt_rep_group = id_generator.next_altrepgroup
+          form.parallelValue.each { |form_value| write_form(form_value, is_manuscript, is_collection, alt_rep_group: alt_rep_group) }
+        end
+
+        def write_form(form, is_manuscript, is_collection, alt_rep_group: nil)
+          if form.structuredValue
+            write_structured(form)
+          elsif form.value
+            write_basic(form, is_manuscript: is_manuscript, is_collection: is_collection, alt_rep_group: alt_rep_group)
           end
         end
 
@@ -120,14 +135,11 @@ module Cocina
           end
         end
 
-        def write_basic(form, is_manuscript: false, is_collection: false)
+        def write_basic(form, is_manuscript: false, is_collection: false, alt_rep_group: nil)
           return nil if form.source&.value&.match?(/DataCite/i)
           return note(form) if form.note
 
-          attributes = {}.tap do |attrs|
-            attrs[:displayLabel] = form.displayLabel
-            attrs[:usage] = form.status
-          end.compact
+          attributes = form_attributes(form, alt_rep_group)
 
           case form.type
           when 'resource type'
@@ -141,6 +153,16 @@ module Cocina
           else
             xml.genre form.value, with_uri_info(form, attributes.merge(type: form.type))
           end
+        end
+
+        def form_attributes(form, alt_rep_group)
+          {
+            altRepGroup: alt_rep_group,
+            displayLabel: form.displayLabel,
+            usage: form.status,
+            lang: form.valueLanguage&.code,
+            script: form.valueLanguage&.valueScript&.code
+          }.compact
         end
 
         def write_attributes_only(is_manuscript, is_collection)

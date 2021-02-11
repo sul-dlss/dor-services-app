@@ -84,22 +84,35 @@ module Cocina
         def add_genre(forms)
           add_structured_genre(forms) if structured_genre.any?
 
-          basic_genre.each do |genre|
+          altrepgroup_genres, other_genre = AltRepGroup.split(nodes: basic_genre)
+
+          other_genre.each { |genre| forms << { type: 'genre' }.merge(build_genre(genre)) }
+          altrepgroup_genres.each { |parallel_genres| forms << build_parallel_genre(parallel_genres) }
+        end
+
+        def build_genre(genre)
+          {
+            value: genre.text,
+            type: genre['type'],
+            displayLabel: genre[:displayLabel],
+            uri: ValueURI.sniff(genre[:valueURI], notifier)
+          }.tap do |attrs|
             source = {
               code: Authority.normalize_code(genre[:authority], notifier),
               uri: Authority.normalize_uri(genre[:authorityURI])
-            }.compact.presence
-            forms << {
-              value: genre.text,
-              type: genre['type'] || 'genre',
-              displayLabel: genre[:displayLabel],
+            }.compact
+            attrs[:source] = source if source.present?
+            attrs[:status] = 'primary' if genre['usage'] == 'primary'
+            language_script = LanguageScript.build(node: genre)
+            attrs[:valueLanguage] = language_script if language_script
+          end.compact
+        end
 
-              uri: ValueURI.sniff(genre[:valueURI], notifier),
-              source: source
-            }.tap do |attrs|
-              attrs[:status] = 'primary' if genre['usage'] == 'primary'
-            end.compact
-          end
+        def build_parallel_genre(genres)
+          {
+            parallelValue: genres.map { |genre| build_genre(genre) },
+            type: 'genre'
+          }
         end
 
         def add_structured_genre(forms)
