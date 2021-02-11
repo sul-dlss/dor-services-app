@@ -616,6 +616,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
       XML
     end
 
+    # purl is only url in relatedItem, so it gets usage="primary display"
     let(:roundtrip_mods) do
       <<~XML
         <location>
@@ -623,7 +624,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
         </location>
         <relatedItem>
           <location>
-            <url displayLabel="electronic resource" note="Available to Stanford-affiliated users.">http://purl.stanford.edu/qm814cd3342</url>
+            <url displayLabel="electronic resource" note="Available to Stanford-affiliated users." usage="primary display">http://purl.stanford.edu/qm814cd3342</url>
           </location>
         </relatedItem>
       XML
@@ -797,12 +798,12 @@ RSpec.describe 'MODS location <--> cocina mappings' do
         </location>
         <relatedItem>
           <location>
-            <url displayLabel="electronic resource">http://purl.stanford.edu/bf606ht0878</url>
+            <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/bf606ht0878</url>
           </location>
         </relatedItem>
         <relatedItem>
           <location>
-            <url displayLabel="electronic resource">http://purl.stanford.edu/bg702cf3724</url>
+            <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/bg702cf3724</url>
           </location>
         </relatedItem>
       XML
