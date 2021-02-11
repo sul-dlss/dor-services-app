@@ -495,7 +495,7 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
             displayLabel: 'Online version:',
             title: [
               {
-                value: 'Hearing 1., VA's compliance with year 2000 requirements'
+                value: 'Hearing 1., VA\'s compliance with year 2000 requirements'
               }
             ],
             identifier: [
