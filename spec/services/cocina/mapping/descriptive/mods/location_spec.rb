@@ -681,15 +681,15 @@ RSpec.describe 'MODS location <--> cocina mappings' do
 
     let(:mods) do
       <<~XML
-      <location>
-        <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/cj288sh2297</url>
-      </location>
-      <location>
-        <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/dj754bp2797</url>
-      </location>
-      <location>
-        <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/fn061xz3249</url>
-      </location>
+        <location>
+          <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/cj288sh2297</url>
+        </location>
+        <location>
+          <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/dj754bp2797</url>
+        </location>
+        <location>
+          <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/fn061xz3249</url>
+        </location>
       XML
     end
 
