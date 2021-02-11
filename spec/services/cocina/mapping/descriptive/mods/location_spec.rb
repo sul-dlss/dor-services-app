@@ -565,6 +565,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
 
   describe 'Purl with displayLabel and note' do
     xit 'updated spec, not implemented'
+
     let(:druid) { 'nd782fm8171' }
 
     let(:mods) do
@@ -601,6 +602,8 @@ RSpec.describe 'MODS location <--> cocina mappings' do
 
   describe 'Multiple purls with display label and note, one matches object purl' do
     xit 'not implemented'
+
+    let(:druid) { 'nd782fm8171' }
 
     let(:mods) do
       <<~XML
@@ -647,7 +650,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
         },
         relatedResource: [
           {
-            type: 'related to',
             purl: 'http://purl.stanford.edu/qm814cd3342',
             access: {
               note: [
@@ -655,6 +657,104 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                   value: 'Available to Stanford-affiliated users.',
                   appliesTo: 'purl'
                 },
+                {
+                  note: 'electronic resource',
+                  type: 'display label',
+                  appliesTo: 'purl'
+                }
+              ],
+              digitalRepository: [
+                value: 'Stanford Digital Repository'
+              ]
+            }
+          }
+        ]
+      }
+    end
+  end
+
+  describe 'Multiple purls with display label and usage, none matches resource purl' do
+    xit 'not implemented'
+
+    let(:druid) { 'bq367mn3764' }
+
+    let(:mods) do
+      <<~XML
+      <location>
+        <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/cj288sh2297</url>
+      </location>
+      <location>
+        <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/dj754bp2797</url>
+      </location>
+      <location>
+        <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/fn061xz3249</url>
+      </location>
+      XML
+    end
+
+    let(:roundtrip_mods) do
+      <<~XML
+        <relatedItem>
+          <location>
+            <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/cj288sh2297</url>
+          </location>
+        </relatedItem>
+        <relatedItem>
+          <location>
+            <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/dj754bp2797</url>
+          </location>
+        </relatedItem>
+        <relatedItem>
+          <location>
+            <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/fn061xz3249</url>
+          </location>
+        </relatedItem>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        purl: 'http://purl.stanford.edu/bq367mn3764',
+        access: {
+          digitalRepository: [
+            value: 'Stanford Digital Repository'
+          ]
+        },
+        relatedResource: [
+          {
+            purl: 'http://purl.stanford.edu/cj288sh2297',
+            access: {
+              note: [
+                {
+                  note: 'electronic resource',
+                  type: 'display label',
+                  appliesTo: 'purl'
+                }
+              ],
+              digitalRepository: [
+                value: 'Stanford Digital Repository'
+              ]
+            }
+          },
+          {
+            purl: 'http://purl.stanford.edu/dj754bp2797',
+            access: {
+              note: [
+                {
+                  note: 'electronic resource',
+                  type: 'display label',
+                  appliesTo: 'purl'
+                }
+              ],
+              digitalRepository: [
+                value: 'Stanford Digital Repository'
+              ]
+            }
+          },
+          {
+            purl: 'http://purl.stanford.edu/fn061xz3249',
+            access: {
+              note: [
                 {
                   note: 'electronic resource',
                   type: 'display label',
