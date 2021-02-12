@@ -39,20 +39,31 @@ module Cocina
               .values
               .select { |nodes| nodes.size > 1 }
               .each do |nodes|
-          notifier.warn('Bad altRepGroup') if altrepgroup_error?(nodes)
+          notifier.warn('Unpaired altRepGroup') if altrepgroup_error?(nodes)
         end
       end
 
+      # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/PerceivedComplexity
       def altrepgroup_error?(nodes)
         return true if nodes.map(&:name).uniq.size != 1
 
         # For subjects, script/lang may be in child so looking in both locations.
-        scripts = nodes.map { |node| node['script'] || node.elements.first&.attribute('script') }.uniq
-        langs = nodes.map { |node| node['lang'] || node.elements.first&.attribute('lang') }.uniq
-        return false if scripts.size == nodes.size || langs.size == nodes.size
+        scripts = nodes.map { |node| node['script'].presence || node.elements.first&.attribute('script')&.presence }.uniq
+        # Every node has a different script.
+        return false if scripts.size == nodes.size
+
+        langs = nodes.map { |node| node['lang'].presence || node.elements.first&.attribute('lang')&.presence }.uniq
+        # Every node has a different lang.
+        return false if langs.size == nodes.size
+
+        # No scripts or langs
+        return false if scripts.compact.empty? && langs.compact.empty?
 
         true
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/PerceivedComplexity
     end
   end
 end

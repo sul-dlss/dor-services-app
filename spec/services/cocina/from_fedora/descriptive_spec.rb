@@ -467,13 +467,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       XML
     end
 
-    before do
-      allow(notifier).to receive(:warn)
-    end
-
-    it 'warns' do
+    it 'does not warn' do
       descriptive
-      expect(notifier).to have_received(:warn).with('Bad altRepGroup')
     end
   end
 
@@ -498,7 +493,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
 
     it 'warns' do
       descriptive
-      expect(notifier).to have_received(:warn).with('Bad altRepGroup')
+      expect(notifier).to have_received(:warn).with('Unpaired altRepGroup')
     end
   end
 
@@ -523,7 +518,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
 
     it 'warns' do
       descriptive
-      expect(notifier).to have_received(:warn).with('Bad altRepGroup')
+      expect(notifier).to have_received(:warn).with('Unpaired altRepGroup')
     end
   end
 end
