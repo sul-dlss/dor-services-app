@@ -1308,7 +1308,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Date mapping for recording event type' do
-    xit 'not implemented'
+    xit 'not implemented: recording event type'
 
     let(:cocina) do
       {
@@ -1495,7 +1495,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Date mapping for performance event type' do
-    xit 'not implemented'
+    xit 'not implemented: performance event type'
 
     let(:cocina) do
       {
@@ -1522,7 +1522,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Date mapping for release event type' do
-    xit 'not implemented' # also mapped in H2
+    xit 'not implemented: release event reverse of H2 spec - bug!' # also mapped in H2
 
     let(:cocina) do
       {
