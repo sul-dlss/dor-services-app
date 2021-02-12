@@ -198,7 +198,7 @@ RSpec.describe 'MODS originInfo place <--> cocina mappings' do
       }
     end
 
-    xit 'not implemented'
+    xit 'not implemented: text and code for diff places from replayable spreadsheet'
   end
 
   describe 'Supplied place name' do
