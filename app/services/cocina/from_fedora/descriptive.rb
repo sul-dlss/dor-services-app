@@ -20,18 +20,22 @@ module Cocina
         @title_builder = title_builder
         @ng_xml = mods
         @notifier = notifier || DataErrorNotifier.new(druid: druid)
+        @druid = druid
       end
 
       # @return [Hash] a hash that can be mapped to a cocina descriptive model
       # @raises [Cocina::Mapper::InvalidDescMetadata] if some assumption about descMetadata is violated
       def props
         check_altrepgroups
-        DescriptiveBuilder.build(title_builder: title_builder, resource_element: ng_xml.root, notifier: notifier)
+        DescriptiveBuilder.build(title_builder: title_builder,
+                                 resource_element: ng_xml.root,
+                                 notifier: notifier,
+                                 purl: druid ? Purl.purl_for(druid) : nil)
       end
 
       private
 
-      attr_reader :title_builder, :ng_xml, :notifier
+      attr_reader :title_builder, :ng_xml, :notifier, :druid
 
       def check_altrepgroups
         ng_xml.xpath('//mods:*[@altRepGroup]', mods: DESC_METADATA_NS)
@@ -64,6 +68,10 @@ module Cocina
       end
       # rubocop:enable Metrics/CyclomaticComplexity
       # rubocop:enable Metrics/PerceivedComplexity
+
+      def purl
+        "http://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+      end
     end
   end
 end

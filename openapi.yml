@@ -1388,7 +1388,8 @@ components:
         - $ref: "#/components/schemas/DescriptiveParallelValue"
         - $ref: "#/components/schemas/DescriptiveGroupedValue"
         - type: object
-          additionalProperties: false
+          # additionalProperties breaks the validator for DescriptiveValue, unclear as to why.
+          # additionalProperties: false
           properties:
             value:
               description: String or integer value of the descriptive element.

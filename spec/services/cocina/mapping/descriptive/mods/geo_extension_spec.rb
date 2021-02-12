@@ -28,6 +28,9 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
       # removes gml:id attribute on gmlPoint
       let(:roundtrip_mods) do
         <<~XML
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/kk138ps4721</url>
+          </location>
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gmd="http://www.isotc211.org/2005/gmd">
               <rdf:Description rdf:about="http://purl.stanford.edu/kk138ps4721">
@@ -83,7 +86,15 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
                 }
               ]
             }
-          ]
+          ],
+          purl: 'http://purl.stanford.edu/kk138ps4721',
+          access: {
+            digitalRepository: [
+              {
+                value: 'Stanford Digital Repository'
+              }
+            ]
+          }
         }
       end
     end
@@ -95,6 +106,9 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
 
       let(:mods) do
         <<~XML
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/cw222pt0426</url>
+          </location>
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
               <rdf:Description rdf:about="http://purl.stanford.edu/cw222pt0426">
@@ -159,7 +173,15 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
                 }
               ]
             }
-          ]
+          ],
+          purl: 'http://purl.stanford.edu/cw222pt0426',
+          access: {
+            digitalRepository: [
+              {
+                value: 'Stanford Digital Repository'
+              }
+            ]
+          }
         }
       end
     end
@@ -171,6 +193,9 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
 
       let(:mods) do
         <<~XML
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/xy581jd9710</url>
+          </location>
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
               <rdf:Description rdf:about="http://purl.stanford.edu/xy581jd9710">
@@ -248,7 +273,15 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
                 }
               ]
             }
-          ]
+          ],
+          purl: 'http://purl.stanford.edu/xy581jd9710',
+          access: {
+            digitalRepository: [
+              {
+                value: 'Stanford Digital Repository'
+              }
+            ]
+          }
         }
       end
     end
@@ -260,6 +293,9 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
 
       let(:mods) do
         <<~XML
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/gq515vq0921</url>
+          </location>
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
               <rdf:Description rdf:about="http://purl.stanford.edu/gq515vq0921">
@@ -328,7 +364,15 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
                 }
               ]
             }
-          ]
+          ],
+          purl: 'http://purl.stanford.edu/gq515vq0921',
+          access: {
+            digitalRepository: [
+              {
+                value: 'Stanford Digital Repository'
+              }
+            ]
+          }
         }
       end
     end
@@ -340,6 +384,9 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
 
       let(:mods) do
         <<~XML
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/nr717dp9096</url>
+          </location>
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
               <rdf:Description rdf:about="http://purl.stanford.edu/nr717dp9096">
@@ -408,7 +455,15 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
                 }
               ]
             }
-          ]
+          ],
+          purl: 'http://purl.stanford.edu/nr717dp9096',
+          access: {
+            digitalRepository: [
+              {
+                value: 'Stanford Digital Repository'
+              }
+            ]
+          }
         }
       end
     end
@@ -420,6 +475,9 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
 
       let(:mods) do
         <<~XML
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/zz581px0362</url>
+          </location>
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
               <rdf:Description rdf:about="http://purl.stanford.edu/zz581px0362">
@@ -488,7 +546,15 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
                 }
               ]
             }
-          ]
+          ],
+          purl: 'http://purl.stanford.edu/zz581px0362',
+          access: {
+            digitalRepository: [
+              {
+                value: 'Stanford Digital Repository'
+              }
+            ]
+          }
         }
       end
     end
@@ -523,6 +589,9 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
       # removes the empty rdf:resource attribute on dc:coverage
       let(:roundtrip_mods) do
         <<~XML
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/zg154pd4168</url>
+          </location>
           <extension displayLabel="geo">
             <rdf:RDF xmlns:gml="http://www.opengis.net/gml/3.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
               <rdf:Description rdf:about="http://purl.stanford.edu/zg154pd4168">
@@ -616,7 +685,15 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
                 }
               ]
             }
-          ]
+          ],
+          purl: 'http://purl.stanford.edu/zg154pd4168',
+          access: {
+            digitalRepository: [
+              {
+                value: 'Stanford Digital Repository'
+              }
+            ]
+          }
         }
       end
     end

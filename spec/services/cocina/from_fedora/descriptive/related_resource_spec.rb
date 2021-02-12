@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
-  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder) }
+  subject(:build) { described_class.build(resource_element: ng_xml.root, descriptive_builder: descriptive_builder, purl: nil) }
 
   let(:descriptive_builder) { Cocina::FromFedora::Descriptive::DescriptiveBuilder.new(notifier: notifier) }
 
