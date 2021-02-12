@@ -1769,60 +1769,58 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   # Bad data handling
 
   describe 'Multiple names with primary and matching altRepGroup' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <name usage="primary" altRepGroup="1" type="personal">
-            <namePart>Name v1</namePart>
-          </name>
-          <name usage="primary" altRepGroup="1" type="personal">
-            <namePart>Name v2</namePart>
-          </name>
-        XML
-      end
+    xit 'remove warning'
+    let(:mods) do
+      <<~XML
+        <name usage="primary" altRepGroup="1" type="personal">
+          <namePart>Name v1</namePart>
+        </name>
+        <name usage="primary" altRepGroup="1" type="personal">
+          <namePart>Name v2</namePart>
+        </name>
+      XML
+    end
 
-      let(:roundtrip_mods) do
-        # Drop all instances of usage="primary" after first one
-        <<~XML
-          <name usage="primary" altRepGroup="1" type="personal">
-            <namePart>Name v1</namePart>
-          </name>
-          <name altRepGroup="1" type="personal">
-            <namePart>Name v2</namePart>
-          </name>
-        XML
-      end
+    let(:roundtrip_mods) do
+      # Drop all instances of usage="primary" after first one
+      <<~XML
+        <name usage="primary" altRepGroup="1" type="personal">
+          <namePart>Name v1</namePart>
+        </name>
+        <name altRepGroup="1" type="personal">
+          <namePart>Name v2</namePart>
+        </name>
+      XML
+    end
 
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Name v1',
-                      status: 'primary'
-                    },
-                    {
-                      value: 'Name v2'
-                    }
-                  ],
-                  status: 'primary',
-                  type: 'person'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:warnings) do
-        [
-          Notification.new(msg: 'Multiple marked as primary', context: { type: 'name' }),
-          Notification.new(msg: 'Bad altRepGroup')
+    let(:cocina) do
+      {
+        contributor: [
+          {
+            name: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Name v1',
+                    status: 'primary'
+                  },
+                  {
+                    value: 'Name v2'
+                  }
+                ],
+                status: 'primary',
+                type: 'person'
+              }
+            ]
+          }
         ]
-      end
+      }
+    end
+
+    let(:warnings) do
+      [
+        Notification.new(msg: 'Multiple marked as primary', context: { type: 'name' })
+      ]
     end
   end
 
