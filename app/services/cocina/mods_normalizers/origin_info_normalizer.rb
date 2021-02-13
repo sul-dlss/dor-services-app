@@ -132,6 +132,8 @@ module Cocina
 
       def normalize_origin_info_developed_date
         ng_xml.root.xpath('//mods:originInfo/mods:dateOther[@type="developed"]', mods: ModsNormalizer::MODS_NS).each do |date_other|
+          next if date_other.parent['eventType'] == 'development'
+
           # Move to own originInfo
           new_origin_info = Nokogiri::XML::Node.new('originInfo', Nokogiri::XML(nil))
           new_origin_info[:eventType] = 'development'
