@@ -143,6 +143,8 @@ module Cocina
         def find_event_by_precedence(events)
           %w[publication presentation distribution production creation manufacture validity].each do |event_type|
             events.each do |event|
+              next if event.blank?
+
               return event if event[:type] == event_type
             end
           end
@@ -361,8 +363,11 @@ module Cocina
           end
         end
 
+        # rubocop:disable Metrics/CyclomaticComplexity
         def build_event(type, node_set, language_script = nil)
           dates = node_set.reject { |node| node['point'] }.map do |node|
+            next if node.text.blank? && node.attributes.size.zero?
+
             addl_attributes = node['encoding'].nil? && language_script ? { valueLanguage: language_script } : {}
             build_date(type, node).merge(addl_attributes)
           end
@@ -373,18 +378,23 @@ module Cocina
 
           notifier.warn('originInfo/dateOther missing eventType') unless type
 
-          {
-            type: type,
-            date: dates.presence
+          result = {
+            type: type
           }.compact
+          result[:date] = dates.compact if dates.present? && !dates.compact.empty? # deals with [nil]
+          result
         end
+        # rubocop:enable Metrics/CyclomaticComplexity
 
+        # rubocop:disable Metrics/CyclomaticComplexity
         def build_structured_date(type, node_set)
           return nil if node_set.blank?
 
           common_attribs = common_date_attributes(node_set)
 
           dates = node_set.map do |node|
+            next if node.text.blank? && node.attributes.size.zero?
+
             new_node = node.deep_dup
             new_node.remove_attribute('encoding') if common_attribs[:encoding].present? || node[:encoding]&.size&.zero?
             new_node.remove_attribute('qualifier') if common_attribs[:qualifier].present? || node[:qualifier]&.size&.zero?
@@ -392,6 +402,7 @@ module Cocina
           end
           { structuredValue: dates }.merge(common_attribs).compact
         end
+        # rubocop:enable Metrics/CyclomaticComplexity
 
         def common_date_attributes(node_set)
           first_encoding = node_set.first['encoding']
@@ -407,10 +418,10 @@ module Cocina
         def build_date(event_type, node)
           {
             note: build_date_note(event_type, node),
-            value: clean_date(node.text),
             qualifier: node[:qualifier],
             type: node['point']
           }.tap do |date|
+            date[:value] = clean_date(node.text) if node.text.present?
             date[:encoding] = { code: node['encoding'] } if node['encoding']
             date[:status] = 'primary' if node['keyDate']
           end.compact
