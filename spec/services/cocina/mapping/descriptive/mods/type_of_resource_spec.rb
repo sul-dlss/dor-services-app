@@ -60,35 +60,35 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
   end
 
   describe 'Multiple types and one predominant' do
-    xit 'not implemented: status primary for typeOfResource'
+    xit 'not implemented: status primary for typeOfResource' do
+      let(:mods) do
+        <<~XML
+          <typeOfResource usage="primary">text</typeOfResource>
+          <typeOfResource>still image</typeOfResource>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <typeOfResource usage="primary">text</typeOfResource>
-        <typeOfResource>still image</typeOfResource>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        form: [
-          {
-            value: 'text',
-            status: 'primary',
-            type: 'resource type',
-            source: {
-              value: 'MODS resource types'
+      let(:cocina) do
+        {
+          form: [
+            {
+              value: 'text',
+              status: 'primary',
+              type: 'resource type',
+              source: {
+                value: 'MODS resource types'
+              }
+            },
+            {
+              value: 'still image',
+              type: 'resource type',
+              source: {
+                value: 'MODS resource types'
+              }
             }
-          },
-          {
-            value: 'still image',
-            type: 'resource type',
-            source: {
-              value: 'MODS resource types'
-            }
-          }
-        ]
-      }
+          ]
+        }
+      end
     end
   end
 

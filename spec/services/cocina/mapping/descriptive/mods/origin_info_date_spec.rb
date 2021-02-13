@@ -861,36 +861,36 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Julian calendar - MODS 3.7' do
-    let(:mods) do
-      <<~XML
-        <originInfo eventType="production">
-          <dateCreated calendar="Julian">1544-02-02</dateCreated>
-        </originInfo>
-      XML
-    end
+    xit 'not implemented: roundtripping loses calendar Julian note / attrib' do
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="production">
+            <dateCreated calendar="Julian">1544-02-02</dateCreated>
+          </originInfo>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        event: [
-          {
-            type: 'creation',
-            date: [
-              {
-                value: '1544-02-02',
-                note: [
-                  {
-                    value: 'Julian',
-                    type: 'date type'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'creation',
+              date: [
+                {
+                  value: '1544-02-02',
+                  note: [
+                    {
+                      value: 'Julian',
+                      type: 'date type'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
-
-    xit 'not implemented: roundtripping loses calendar Julian note / attrib'
   end
 
   describe 'Date range, no start point' do
@@ -1308,41 +1308,12 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Date mapping for recording event type' do
-    xit 'not implemented: recording event type'
-
-    let(:cocina) do
-      {
-        event: [
-          {
-            type: 'recording',
-            date: [
-              {
-                value: '1990'
-              }
-            ]
-          }
-        ]
-      }
-    end
-
-    let(:mods) do
-      <<~XML
-        <originInfo eventType="recording">
-          <dateCreated>1990</dateCreated>
-        </originInfo>
-      XML
-    end
-  end
-
-  describe 'Date mapping for presentation event type' do
-    context 'with event type and date only' do
-      xit 'to be implemented: presentation currently maps to MODS dateIssued, not dateCreated - what do we want?'
-
+    xit 'not implemented: recording event type' do
       let(:cocina) do
         {
           event: [
             {
-              type: 'presentation',
+              type: 'recording',
               date: [
                 {
                   value: '1990'
@@ -1355,10 +1326,39 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
       let(:mods) do
         <<~XML
-          <originInfo eventType="presentation">
+          <originInfo eventType="recording">
             <dateCreated>1990</dateCreated>
           </originInfo>
         XML
+      end
+    end
+  end
+
+  describe 'Date mapping for presentation event type' do
+    context 'with event type and date only' do
+      xit 'to be implemented: presentation currently maps to MODS dateIssued, not dateCreated - what do we want?' do
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'presentation',
+                date: [
+                  {
+                    value: '1990'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="presentation">
+              <dateCreated>1990</dateCreated>
+            </originInfo>
+          XML
+        end
       end
     end
 
@@ -1495,56 +1495,56 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Date mapping for performance event type' do
-    xit 'not implemented: performance event type'
+    xit 'not implemented: performance event type' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'performance',
+              date: [
+                {
+                  value: '1990'
+                }
+              ]
+            }
+          ]
+        }
+      end
 
-    let(:cocina) do
-      {
-        event: [
-          {
-            type: 'performance',
-            date: [
-              {
-                value: '1990'
-              }
-            ]
-          }
-        ]
-      }
-    end
-
-    let(:mods) do
-      <<~XML
-        <originInfo eventType="performance">
-          <dateCreated>1990</dateCreated>
-        </originInfo>
-      XML
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="performance">
+            <dateCreated>1990</dateCreated>
+          </originInfo>
+        XML
+      end
     end
   end
 
   describe 'Date mapping for release event type' do
-    xit 'not implemented: release event reverse of H2 spec - bug!' # also mapped in H2
+    xit 'not implemented: release event reverse of H2 spec - bug!' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'release',
+              date: [
+                {
+                  value: '1990'
+                }
+              ]
+            }
+          ]
+        }
+      end
 
-    let(:cocina) do
-      {
-        event: [
-          {
-            type: 'release',
-            date: [
-              {
-                value: '1990'
-              }
-            ]
-          }
-        ]
-      }
-    end
-
-    let(:mods) do
-      <<~XML
-        <originInfo eventType="release">
-          <dateIssued>1990</dateIssued>
-        </originInfo>
-      XML
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="release">
+            <dateIssued>1990</dateIssued>
+          </originInfo>
+        XML
+      end
     end
   end
 

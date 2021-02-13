@@ -308,54 +308,54 @@ RSpec.describe 'MODS recordInfo <--> cocina mappings' do
   end
 
   describe 'Converted from ISO 19139' do
-    xit 'not implemented: recordContentSource is a value, not a code ...'
+    xit 'not implemented: recordContentSource is a value, not a code ...' do
+      let(:mods) do
+        <<~XML
+          <recordInfo>
+            <recordContentSource>Stanford</recordContentSource>
+            <recordIdentifier>edu.stanford.purl:ft445st6184</recordIdentifier>
+            <recordOrigin>This record was translated from ISO 19139 to MODS v.3 using an xsl transformation.</recordOrigin>
+            <languageOfCataloging>
+              <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+            </languageOfCataloging>
+          </recordInfo>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <recordInfo>
-          <recordContentSource>Stanford</recordContentSource>
-          <recordIdentifier>edu.stanford.purl:ft445st6184</recordIdentifier>
-          <recordOrigin>This record was translated from ISO 19139 to MODS v.3 using an xsl transformation.</recordOrigin>
-          <languageOfCataloging>
-            <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
-          </languageOfCataloging>
-        </recordInfo>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        adminMetadata: {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford'
-                }
-              ]
-            }
-          ],
-          identifier: [
-            {
-              value: 'edu.stanford.purl:ft445st6184'
-            }
-          ],
-          note: [
-            {
-              type: 'record origin',
-              value: 'This record was translated from ISO 19139 to MODS v.3 using an xsl transformation.'
-            }
-          ],
-          language: [
-            {
-              code: 'eng',
-              source: {
-                code: 'iso639-2b'
+      let(:cocina) do
+        {
+          adminMetadata: {
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'Stanford'
+                  }
+                ]
               }
-            }
-          ]
+            ],
+            identifier: [
+              {
+                value: 'edu.stanford.purl:ft445st6184'
+              }
+            ],
+            note: [
+              {
+                type: 'record origin',
+                value: 'This record was translated from ISO 19139 to MODS v.3 using an xsl transformation.'
+              }
+            ],
+            language: [
+              {
+                code: 'eng',
+                source: {
+                  code: 'iso639-2b'
+                }
+              }
+            ]
+          }
         }
-      }
+      end
     end
   end
 
