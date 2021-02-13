@@ -165,21 +165,40 @@ RSpec.describe Cocina::ModsNormalizer do
   end
 
   context 'when normalizing empty notes' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <note type="statement of responsibility" altRepGroup="00" script="Latn"/>
-          <note>Includes various issues of some sheets.</note>
-        </mods>
-      XML
+    context 'without attributes' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <note/>
+            <note></note>
+          </mods>
+        XML
+      end
+
+      it 'removes' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}/>
+        XML
+      end
     end
 
-    it 'removes' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <note>Includes various issues of some sheets.</note>
-        </mods>
-      XML
+    context 'with attributes' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <note type="statement of responsibility" altRepGroup="00" script="Latn"/>
+            <note>Includes various issues of some sheets.</note>
+          </mods>
+        XML
+      end
+
+      it 'removes' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <note>Includes various issues of some sheets.</note>
+          </mods>
+        XML
+      end
     end
   end
 
