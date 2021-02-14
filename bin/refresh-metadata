@@ -35,15 +35,15 @@ druids.each_with_index do |druid, index|
     errors << [druid, 'No resolvable identifiers']
   end
   retry_count = 0
-rescue Faraday::ConnectionFailed, SymphonyReader::ResponseError
+rescue Faraday::ConnectionFailed, SymphonyReader::ResponseError => e
   # Retry during nightly Symphony restart.
-  if retry_count < 90
+  if retry_count < 90 && e.message !~ /Record not found in Symphony/
     retry_count += 1
     puts "Retry #{retry_count}"
     sleep(60)
     retry
   end
-
+  puts e
   errors << [druid, e.inspect]
 rescue StandardError => e
   puts e
