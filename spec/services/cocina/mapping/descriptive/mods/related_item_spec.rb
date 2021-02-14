@@ -422,47 +422,47 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
   end
 
   describe 'Related item with related item' do
-    xit 'not implemented: relatedItem within relatedItem'
-
-    let(:mods) do
-      <<~XML
-        <relatedItem type="constituent">
-          <titleInfo>
-            <title>[Unidentified sextet] [incomplete]</title>
-          </titleInfo>
-          <relatedItem type="host" displaylabel="Concert title">
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <relatedItem type="constituent">
             <titleInfo>
-              <title>Silver Saturday Blues</title>
+              <title>[Unidentified sextet] [incomplete]</title>
             </titleInfo>
+            <relatedItem type="host" displayLabel="Concert title">
+              <titleInfo>
+                <title>Silver Saturday Blues</title>
+              </titleInfo>
+            </relatedItem>
           </relatedItem>
-        </relatedItem>
-      XML
-    end
+        XML
+      end
 
-    let(:cocina) do
-      {
-        relatedResource: [
-          {
-            type: 'has part',
-            title: [
-              {
-                value: '[Unidentified sextet] [incomplete]'
-              }
-            ],
-            relatedResource: [
-              {
-                type: 'part of',
-                displayLabel: 'Concert title',
-                title: [
-                  {
-                    value: 'Silver Saturday Blues'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          relatedResource: [
+            {
+              type: 'has part',
+              title: [
+                {
+                  value: '[Unidentified sextet] [incomplete]'
+                }
+              ],
+              relatedResource: [
+                {
+                  type: 'part of',
+                  displayLabel: 'Concert title',
+                  title: [
+                    {
+                      value: 'Silver Saturday Blues'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 
