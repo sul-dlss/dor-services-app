@@ -127,29 +127,29 @@ RSpec.describe 'MODS note <--> cocina mappings' do
 
   ## Data error - do not warn
   describe 'Note with unmatched altRepGroup' do
-    xit 'not implemented'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note type="statement of responsibility" altRepGroup="00">by Dorothy L. Sayers</note>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <note type="statement of responsibility" altRepGroup="00">by Dorothy L. Sayers</note>
-      XML
-    end
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'by Dorothy L. Sayers',
+              type: 'statement of responsibility'
+            }
+          ]
+        }
+      end
 
-    let(:cocina) do
-      {
-        note: [
-          {
-            value: 'by Dorothy L. Sayers',
-            type: 'statement of responsibility'
-          }
-        ]
-      }
-    end
-
-    let(:roundtrip_mods) do
-      <<~XML
-        <note type="statement of responsibility">by Dorothy L. Sayers</note>
-      XML
+      let(:roundtrip_mods) do
+        <<~XML
+          <note type="statement of responsibility">by Dorothy L. Sayers</note>
+        XML
+      end
     end
   end
 
