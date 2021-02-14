@@ -53,9 +53,16 @@ module Cocina
 
         def build_name_nodes(name_nodes)
           name_nodes.each do |name_node|
-            notifier.warn('Missing or empty name type attribute') if name_node['type'].blank? && name_node['xlink:href'].blank? && name_node.xpath('mods:etal', mods: DESC_METADATA_NS).empty?
+            notifier.warn('Missing or empty name type attribute') if missing_name_type?(name_node)
           end
           NameBuilder.build(name_elements: name_nodes, notifier: notifier).presence
+        end
+
+        def missing_name_type?(name_node)
+          name_node['type'].blank? &&
+            name_node['xlink:href'].blank? &&
+            name_node.xpath('mods:etal', mods: DESC_METADATA_NS).empty? &&
+            name_node.ancestors('relatedItem').empty?
         end
 
         def adjust_primary(contributors)
