@@ -18,13 +18,18 @@ success = []
 errors = []
 retry_count = 0
 
+# rubocop:disable Metrics/BlockLength
 druids.each_with_index do |druid, index|
   puts "#{druid} (#{index + 1})\n"
   object = Dor.find(druid)
   orig_xml = object.descMetadata.ng_xml.canonicalize
   status = RefreshMetadataAction.run(identifiers: object.identityMetadata.otherId.collect(&:to_s), datastream: object.descMetadata)
   if status
-    object.save! unless orig_xml == object.descMetadata.ng_xml.canonicalize
+    if orig_xml != object.descMetadata.ng_xml.canonicalize
+      object.save!
+    else
+      puts 'No change'
+    end
     success << druid
   else
     errors << [druid, 'No resolvable identifiers']
@@ -41,8 +46,10 @@ rescue Faraday::ConnectionFailed
 
   errors << [druid, e.inspect]
 rescue StandardError => e
+  puts e
   errors << [druid, e.inspect]
 end
+# rubocop:enable Metrics/BlockLength
 
 File.open('refresh-success.txt', 'w') do |file|
   success.each do |druid|
