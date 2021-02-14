@@ -35,7 +35,7 @@ druids.each_with_index do |druid, index|
     errors << [druid, 'No resolvable identifiers']
   end
   retry_count = 0
-rescue Faraday::ConnectionFailed
+rescue Faraday::ConnectionFailed, SymphonyReader::ResponseError
   # Retry during nightly Symphony restart.
   if retry_count < 90
     retry_count += 1
