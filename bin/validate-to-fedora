@@ -107,7 +107,7 @@ results.each { |result| counts[result.error_type] += 1 }
 puts summary_line_for('To Fedora error', counts[:to_fedora_error])
 puts summary_line_for('To Cocina error', counts[:to_cocina_error])
 puts summary_line_for('Data error', counts[:data_error])
-puts summary_line_for('Missing', counts[:missing])
+puts summary_line_for('Missing (no descMetadata)', counts[:missing])
 puts "\n"
 
 error_results = results.select { |result| result.error_type == :to_fedora_error }
@@ -120,7 +120,7 @@ File.open(results_file_name(options[:unique_filename]), 'w') do |file|
   file.write(summary_line_for('To Fedora error', counts[:to_fedora_error]))
   file.write(summary_line_for('To Cocina error', counts[:to_cocina_error]))
   file.write(summary_line_for('Data error', counts[:data_error]))
-  file.write(summary_line_for('Missing', counts[:missing]))
+  file.write(summary_line_for('Missing (no descMetadata)', counts[:missing]))
   file.write("\n")
   write_results(file, aggregated_error_results, 'To Fedora error')
 end

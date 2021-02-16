@@ -182,4 +182,4 @@ puts "  Success:   #{counts[:success]} (#{100 * counts[:success].to_f / druids.s
 puts "  Different: #{counts[:different]} (#{100 * counts[:different].to_f / druids.size}%)"
 puts "  To Cocina error:     #{counts[:to_cocina_error]} (#{100 * counts[:to_cocina_error].to_f / druids.size}%)"
 puts "  To Fedora error:     #{counts[:to_fedora_error]} (#{100 * counts[:to_fedora_error].to_f / druids.size}%)"
-puts "  Missing:     #{counts[:missing]} (#{100 * counts[:missing].to_f / druids.size}%)"
+puts "  Missing (no descMetadata):     #{counts[:missing]} (#{100 * counts[:missing].to_f / druids.size}%)"
