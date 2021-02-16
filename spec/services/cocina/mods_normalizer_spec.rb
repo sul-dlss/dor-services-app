@@ -44,6 +44,21 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
+  context 'when xsi namespace missing' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods
+          xmlns="http://www.loc.gov/mods/v3" version="3.7"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+        </mods>
+      XML
+    end
+
+    it 'adds xsi namespace' do
+      expect(normalized_ng_xml.namespaces['xmlns:xsi']).to eq('http://www.w3.org/2001/XMLSchema-instance')
+    end
+  end
+
   context 'when normalizing PURL' do
     let(:druid) { 'druid:bw502ns3302' }
 
