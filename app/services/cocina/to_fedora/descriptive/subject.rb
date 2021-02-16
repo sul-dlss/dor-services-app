@@ -148,7 +148,7 @@ module Cocina
             xml.subject topic_attributes_for(subject_value)
           else
             xml.subject(subject_attributes) do
-              write_topic(subject, subject_value, is_parallel: alt_rep_group.present?)
+              write_topic(subject, subject_value)
             end
           end
         end
