@@ -1386,34 +1386,34 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with valueURI only (authority URI)' do
-    xit 'not implemented: mapping to contributor with valueURI only'
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name valueURI="https://id.loc.gov/authorities/names/123">
+            <affiliation>Stanford</affiliation>
+          </name>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <name valueURI="https://id.loc.gov/authorities/names/123">
-          <affiliation>Stanford</affiliation>
-        </name>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                uri: 'https://id.loc.gov/authorities/names/123'
-              },
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  uri: 'https://id.loc.gov/authorities/names/123'
+                }
+              ],
               note: [
                 {
                   value: 'Stanford',
                   type: 'affiliation'
                 }
               ]
-            ]
-          }
-        ]
-      }
+            }
+          ]
+        }
+      end
     end
   end
 
@@ -2346,7 +2346,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
         let(:warnings) do
           [
-            Notification.new(msg: 'Missing or empty name type attribute'),
             Notification.new(msg: 'Value URI has unexpected value', context: { uri: 'corporate' })
           ]
         end

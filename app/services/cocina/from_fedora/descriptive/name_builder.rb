@@ -97,6 +97,7 @@ module Cocina
           case name_part_nodes.size
           when 0
             parts << { valueAt: name_node['xlink:href'] } if name_node['xlink:href']
+            parts << authority_attrs_for(name_node) if name_node['valueURI']
           when 1
             parts << build_name_part(name_node, name_part_nodes.first, default_type: alternative_name_nodes.present?)
                      .merge(authority_attrs_for(name_node)).presence
