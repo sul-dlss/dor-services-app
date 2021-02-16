@@ -21,6 +21,7 @@ module Cocina
 
     def normalize
       normalize_default_namespace
+      normalize_xsi
       normalize_version
       normalize_empty_attributes
       normalize_authority_uris # must be called before OriginInfoNormalizer
@@ -58,6 +59,20 @@ module Cocina
         xml.sub!('mods:mods', 'mods:mods xmlns="http://www.loc.gov/mods/v3"')
         xml.gsub!('mods:', '')
       end
+
+      regenerate_ng_xml(xml)
+    end
+
+    def normalize_xsi
+      return if ng_xml.namespaces.include?('xmlns:xsi')
+
+      xml = ng_xml.to_s
+      xml.sub!('<mods ', '<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ')
+
+      regenerate_ng_xml(xml)
+    end
+
+    def regenerate_ng_xml(xml)
       @ng_xml = Nokogiri::XML(xml) { |config| config.default_xml.noblanks }
     end
 
