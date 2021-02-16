@@ -513,7 +513,7 @@ DEPENDENCIES
   capistrano-passenger
   capistrano-rails
   capistrano-shared_configs
-  cocina-models (~> 0.47.0)
+  cocina-models (~> 0.47.2)
   committee
   config
   deprecation

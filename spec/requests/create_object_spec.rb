@@ -31,7 +31,13 @@ RSpec.describe 'Create object' do
                                 useAndReproductionStatement: 'Property rights reside with the repository...'
                               },
                               description: {
-                                title: [{ value: title }]
+                                title: [{ value: title }],
+                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                access: {
+                                  digitalRepository: [
+                                    { value: 'Stanford Digital Repository' }
+                                  ]
+                                }
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567',
@@ -51,7 +57,7 @@ RSpec.describe 'Create object' do
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-          "description":{"title":[{"value":"#{title}"}]},
+          "description":{"title":[{"value":"#{title}"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
           "identification":#{identification.to_json},
           "structural":#{structural.to_json}}
       JSON
@@ -621,7 +627,13 @@ RSpec.describe 'Create object' do
                               label: expected_label,
                               version: 1,
                               description: {
-                                title: [{ value: title }]
+                                title: [{ value: title }],
+                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                access: {
+                                  digitalRepository: [
+                                    { value: 'Stanford Digital Repository' }
+                                  ]
+                                }
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -669,7 +681,13 @@ RSpec.describe 'Create object' do
                                       label: 'This is my label',
                                       version: 1,
                                       description: {
-                                        title: [{ value: 'This is my title' }]
+                                        title: [{ value: 'This is my title' }],
+                                        purl: 'http://purl.stanford.edu/gg777gg7777',
+                                        access: {
+                                          digitalRepository: [
+                                            { value: 'Stanford Digital Repository' }
+                                          ]
+                                        }
                                       },
                                       administrative: {
                                         defaultObjectRights: default_object_rights,
@@ -689,7 +707,7 @@ RSpec.describe 'Create object' do
             "defaultObjectRights":#{default_object_rights.to_json},
             "registrationWorkflow":"assemblyWF",
             "hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"value":"This is my title"}]}}
+          "description":{"title":[{"value":"This is my title"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}}}
       JSON
     end
 
@@ -717,7 +735,13 @@ RSpec.describe 'Create object' do
                               label: 'This is my label',
                               version: 1,
                               description: {
-                                title: [{ value: 'This is my title' }]
+                                title: [{ value: 'This is my title' }],
+                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                access: {
+                                  digitalRepository: [
+                                    { value: 'Stanford Digital Repository' }
+                                  ]
+                                }
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -741,7 +765,7 @@ RSpec.describe 'Create object' do
           "label":"This is my label","version":1,"access":{"access":"stanford",
           "embargo":{"access":"world","releaseDate":"2020-02-29"}},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"value":"This is my title"}]},
+          "description":{"title":[{"value":"This is my title"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
@@ -767,7 +791,13 @@ RSpec.describe 'Create object' do
                               label: 'This is my label',
                               version: 1,
                               description: {
-                                title: [{ value: 'This is my title' }]
+                                title: [{ value: 'This is my title' }],
+                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                access: {
+                                  digitalRepository: [
+                                    { value: 'Stanford Digital Repository' }
+                                  ]
+                                }
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -791,7 +821,7 @@ RSpec.describe 'Create object' do
           "label":"This is my label","version":1,
           "access":{"access":"location-based","readLocation":"m&m"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"value":"This is my title"}]},
+          "description":{"title":[{"value":"This is my title"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
@@ -817,7 +847,13 @@ RSpec.describe 'Create object' do
                               label: 'This is my label',
                               version: 1,
                               description: {
-                                title: [{ value: 'This is my title' }]
+                                title: [{ value: 'This is my title' }],
+                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                access: {
+                                  digitalRepository: [
+                                    { value: 'Stanford Digital Repository' }
+                                  ]
+                                }
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -840,7 +876,7 @@ RSpec.describe 'Create object' do
           "label":"This is my label","version":1,
           "access":{"access":"world","download":"none"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"value":"This is my title"}]},
+          "description":{"title":[{"value":"This is my title"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
@@ -872,7 +908,17 @@ RSpec.describe 'Create object' do
                                 label: 'This is my label',
                                 version: 1,
                                 administrative: { hasAdminPolicy: 'druid:dd999df4567' },
-                                description: { title: [{ value: 'This is my label' }] },
+                                description: {
+                                  title: [
+                                    { value: 'This is my label' }
+                                  ],
+                                  purl: 'http://purl.stanford.edu/gg777gg7777',
+                                  access: {
+                                    digitalRepository: [
+                                      { value: 'Stanford Digital Repository' }
+                                    ]
+                                  }
+                                },
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
                                 structural: {},
@@ -904,7 +950,17 @@ RSpec.describe 'Create object' do
                                 label: 'This is my label',
                                 version: 1,
                                 administrative: { hasAdminPolicy: 'druid:dd999df4567' },
-                                description: { title: [{ value: 'This is my label' }] },
+                                description: {
+                                  title: [
+                                    { value: 'This is my label' }
+                                  ],
+                                  purl: 'http://purl.stanford.edu/gg777gg7777',
+                                  access: {
+                                    digitalRepository: [
+                                      { value: 'Stanford Digital Repository' }
+                                    ]
+                                  }
+                                },
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
                                 structural: {},
@@ -944,7 +1000,17 @@ RSpec.describe 'Create object' do
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
                                 structural: {},
-                                description: { "title": [{ "value": 'This is my label' }] })
+                                description: {
+                                  title: [
+                                    { value: 'This is my label' }
+                                  ],
+                                  purl: 'http://purl.stanford.edu/gg777gg7777',
+                                  access: {
+                                    digitalRepository: [
+                                      { value: 'Stanford Digital Repository' }
+                                    ]
+                                  }
+                                })
       end
 
       let(:data) do
@@ -1002,7 +1068,17 @@ RSpec.describe 'Create object' do
                               label: 'This is my label',
                               version: 1,
                               administrative: { hasAdminPolicy: 'druid:dd999df4567' },
-                              description: { title: [{ value: 'This is my label' }] },
+                              description: {
+                                title: [
+                                  { value: 'This is my label' }
+                                ],
+                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                access: {
+                                  digitalRepository: [
+                                    { value: 'Stanford Digital Repository' }
+                                  ]
+                                }
+                              },
                               identification: { sourceId: 'warc:999999' },
                               externalIdentifier: 'druid:gg777gg7777',
                               structural: {},
@@ -1040,7 +1116,17 @@ RSpec.describe 'Create object' do
                               label: 'This is my label',
                               version: 1,
                               administrative: { hasAdminPolicy: 'druid:dd999df4567' },
-                              description: { title: [{ value: 'This is my label' }] },
+                              description: {
+                                title: [
+                                  { value: 'This is my label' }
+                                ],
+                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                access: {
+                                  digitalRepository: [
+                                    { value: 'Stanford Digital Repository' }
+                                  ]
+                                }
+                              },
                               identification: { sourceId: 'warc:999999' },
                               externalIdentifier: 'druid:gg777gg7777',
                               structural: {},

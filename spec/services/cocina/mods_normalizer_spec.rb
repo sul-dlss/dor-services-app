@@ -3,9 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ModsNormalizer do
-  let(:normalized_ng_xml) { described_class.normalize(mods_ng_xml: mods_ng_xml, druid: druid) }
-
-  let(:druid) { 'druid:pf694bk4862' }
+  let(:normalized_ng_xml) { described_class.normalize(mods_ng_xml: mods_ng_xml, druid: nil) }
 
   context 'when normalizing version' do
     context 'when version in recordInfo' do

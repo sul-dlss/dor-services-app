@@ -7,8 +7,9 @@ module Cocina
       class Notes
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
+        # @param [String] purl
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder: nil)
+        def self.build(resource_element:, descriptive_builder: nil, purl: nil)
           new(resource_element: resource_element).build
         end
 

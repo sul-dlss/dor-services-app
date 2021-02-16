@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive do
   subject(:descriptive) do
-    described_class.props(mods: Nokogiri::XML(desc_metadata), druid: 'druid:mj284jb0952', notifier: notifier)
+    described_class.props(mods: Nokogiri::XML(desc_metadata), druid: 'druid:bb196dd3409', notifier: notifier)
   end
 
   let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
@@ -87,7 +87,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
     end
 
     it 'has a url' do
-      expect(descriptive[:purl]).to eq('https://purl.stanford.edu/bb196dd3409')
+      expect(descriptive[:purl]).to eq('http://purl.stanford.edu/bb196dd3409')
       expect(descriptive[:note]).to match_array [
         {
           value: 'http://ennejah.info/',

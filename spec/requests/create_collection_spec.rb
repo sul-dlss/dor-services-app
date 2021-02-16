@@ -23,7 +23,13 @@ RSpec.describe 'Create object' do
                                      label: expected_label,
                                      version: 1,
                                      description: {
-                                       title: [{ value: title }]
+                                       title: [{ value: title }],
+                                       purl: 'http://purl.stanford.edu/gg777gg7777',
+                                       access: {
+                                         digitalRepository: [
+                                           { value: 'Stanford Digital Repository' }
+                                         ]
+                                       }
                                      },
                                      administrative: {
                                        hasAdminPolicy: 'druid:dd999df4567',
@@ -37,7 +43,7 @@ RSpec.describe 'Create object' do
         {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
           "label":"#{label}","version":1,"access":{},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
-          "description":{"title":[{"value":"#{title}"}]}}
+          "description":{"title":[{"value":"#{title}"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}}}
       JSON
     end
 
@@ -58,7 +64,13 @@ RSpec.describe 'Create object' do
                                        label: expected_label,
                                        version: 1,
                                        description: {
-                                         title: [{ value: title }]
+                                         title: [{ value: title }],
+                                         purl: 'http://purl.stanford.edu/gg777gg7777',
+                                         access: {
+                                           digitalRepository: [
+                                             { value: 'Stanford Digital Repository' }
+                                           ]
+                                         }
                                        },
                                        administrative: {
                                          hasAdminPolicy: 'druid:dd999df4567'
@@ -125,7 +137,13 @@ RSpec.describe 'Create object' do
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "description":{
               "title":[{"value":"#{title}"}],
-              "note":[{"value":"coll abstract","type":"summary"}]
+              "note":[{"value":"coll abstract","type":"summary"}],
+                                       "purl": "http://purl.stanford.edu/gg777gg7777",
+                                       "access": {
+                                           "digitalRepository": [
+                                               { "value": "Stanford Digital Repository" }
+                                           ]
+                                       }
               }
             }
         JSON
@@ -140,7 +158,13 @@ RSpec.describe 'Create object' do
                                        },
                                        description: {
                                          title: [{ value: title }],
-                                         note: [{ value: 'coll abstract', type: 'summary' }]
+                                         note: [{ value: 'coll abstract', type: 'summary' }],
+                                         purl: 'http://purl.stanford.edu/gg777gg7777',
+                                         access: {
+                                           digitalRepository: [
+                                             { value: 'Stanford Digital Repository' }
+                                           ]
+                                         }
                                        },
                                        externalIdentifier: druid)
       end
@@ -175,7 +199,13 @@ RSpec.describe 'Create object' do
                                          hasAdminPolicy: 'druid:dd999df4567'
                                        },
                                        description: {
-                                         title: [{ value: expected_label }]
+                                         title: [{ value: expected_label }],
+                                         purl: 'http://purl.stanford.edu/gg777gg7777',
+                                         access: {
+                                           digitalRepository: [
+                                             { value: 'Stanford Digital Repository' }
+                                           ]
+                                         }
                                        },
                                        externalIdentifier: druid)
       end

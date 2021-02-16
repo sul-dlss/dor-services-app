@@ -10,19 +10,29 @@ module Cocina
 
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
+        # @param [String] purl
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder:)
-          new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
+        def self.build(resource_element:, descriptive_builder:, purl:)
+          new(resource_element: resource_element, descriptive_builder: descriptive_builder, purl: purl).build
         end
 
-        def initialize(resource_element:, descriptive_builder:)
+        def initialize(resource_element:, descriptive_builder:, purl:)
           @resource_element = resource_element
           @descriptive_builder = descriptive_builder
           @notifier = descriptive_builder.notifier
+          @purl = purl
         end
 
         def build
-          related_items.map do |related_item|
+          related_items + related_purls
+        end
+
+        private
+
+        attr_reader :resource_element, :descriptive_builder, :notifier, :purl
+
+        def related_items
+          resource_element.xpath('mods:relatedItem', mods: DESC_METADATA_NS).map do |related_item|
             check_other_type(related_item)
             next nil if related_item.elements.empty?
 
@@ -42,14 +52,6 @@ module Cocina
               item[:note] = notes unless notes.empty?
             end.compact.presence
           end.compact
-        end
-
-        private
-
-        attr_reader :resource_element, :descriptive_builder, :notifier
-
-        def related_items
-          resource_element.xpath('mods:relatedItem', mods: DESC_METADATA_NS)
         end
 
         # Normalize type so we can tolerate certain known data errors, but report anything that is not found or not an exact match
@@ -91,6 +93,20 @@ module Cocina
 
         def caption_for(detail_node)
           detail_node.xpath('mods:caption', mods: DESC_METADATA_NS).first&.content
+        end
+
+        def related_purls
+          primary_purl_node = Purl.primary_purl_node(resource_element, purl)
+          purl_nodes = resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS).select { |url_node| Purl.purl?(url_node) && url_node != primary_purl_node }
+          purl_nodes.map do |purl_node|
+            {
+              purl: purl_node.content,
+              access: {
+                note: Purl.purl_note(purl_node).presence,
+                digitalRepository: [{ value: 'Stanford Digital Repository' }]
+              }.compact
+            }.compact
+          end
         end
       end
     end

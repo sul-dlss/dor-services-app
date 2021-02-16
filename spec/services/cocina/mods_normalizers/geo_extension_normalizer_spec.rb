@@ -17,6 +17,9 @@ RSpec.describe Cocina::ModsNormalizers::GeoExtensionNormalizer do
               </rdf:Description>
             </rdf:RDF>
           </extension>
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+          </location>
         </mods>
       XML
     end
@@ -32,6 +35,9 @@ RSpec.describe Cocina::ModsNormalizers::GeoExtensionNormalizer do
               </rdf:Description>
             </rdf:RDF>
           </extension>
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+          </location>
         </mods>
       XML
     end
@@ -49,6 +55,9 @@ RSpec.describe Cocina::ModsNormalizers::GeoExtensionNormalizer do
               </rdf:Description>
             </rdf:RDF>
           </extension>
+          <location>
+           <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+         </location>
         </mods>
       XML
     end
@@ -64,6 +73,9 @@ RSpec.describe Cocina::ModsNormalizers::GeoExtensionNormalizer do
               </rdf:Description>
             </rdf:RDF>
           </extension>
+          <location>
+           <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+         </location>
         </mods>
       XML
     end
@@ -82,6 +94,9 @@ RSpec.describe Cocina::ModsNormalizers::GeoExtensionNormalizer do
                 </rdf:Description>
               </rdf:RDF>
             </extension>
+            <location>
+              <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+            </location>
           </mods>
         XML
       end
@@ -97,6 +112,9 @@ RSpec.describe Cocina::ModsNormalizers::GeoExtensionNormalizer do
                 </rdf:Description>
               </rdf:RDF>
             </extension>
+            <location>
+              <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+            </location>
           </mods>
         XML
       end
@@ -114,6 +132,9 @@ RSpec.describe Cocina::ModsNormalizers::GeoExtensionNormalizer do
                 </rdf:Description>
               </rdf:RDF>
             </extension>
+            <location>
+              <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+            </location>
           </mods>
         XML
       end
@@ -129,6 +150,9 @@ RSpec.describe Cocina::ModsNormalizers::GeoExtensionNormalizer do
                 </rdf:Description>
               </rdf:RDF>
             </extension>
+            <location>
+              <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+            </location>
           </mods>
         XML
       end
@@ -152,6 +176,9 @@ RSpec.describe Cocina::ModsNormalizers::GeoExtensionNormalizer do
               </rdf:Description>
             </rdf:RDF>
           </extension>
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+          </location>
         </mods>
       XML
     end
@@ -172,6 +199,9 @@ RSpec.describe Cocina::ModsNormalizers::GeoExtensionNormalizer do
               </rdf:Description>
             </rdf:RDF>
           </extension>
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+          </location>
         </mods>
       XML
     end
@@ -188,6 +218,9 @@ RSpec.describe Cocina::ModsNormalizers::GeoExtensionNormalizer do
               </rdf:Description>
             </rdf:RDF>
           </extension>
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+          </location>
         </mods>
       XML
     end
@@ -202,6 +235,9 @@ RSpec.describe Cocina::ModsNormalizers::GeoExtensionNormalizer do
               </rdf:Description>
             </rdf:RDF>
           </extension>
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+          </location>
         </mods>
       XML
     end

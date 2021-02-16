@@ -58,7 +58,13 @@ RSpec.describe 'Update object' do
                               useAndReproductionStatement: 'Property rights reside with the repository...'
                             },
                             description: {
-                              title: [{ value: title }]
+                              title: [{ value: title }],
+                              purl: 'http://purl.stanford.edu/gg777gg7777',
+                              access: {
+                                digitalRepository: [
+                                  { value: 'Stanford Digital Repository' }
+                                ]
+                              }
                             },
                             administrative: {
                               hasAdminPolicy: apo_druid,
@@ -125,7 +131,13 @@ RSpec.describe 'Update object' do
           { type: 'summary', value: 'test abstract' },
           { type: 'preferred citation', value: 'test citation' },
           { displayLabel: 'Contact', type: 'email', value: 'io@io.io' }
-        ]
+        ],
+        purl: 'http://purl.stanford.edu/gg777gg7777',
+        access: {
+          digitalRepository: [
+            { value: 'Stanford Digital Repository' }
+          ]
+        }
       }
     end
 
@@ -238,7 +250,13 @@ RSpec.describe 'Update object' do
                                       }
                                     ]
                                   }
-                                ]
+                                ],
+                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                access: {
+                                  digitalRepository: [
+                                    { value: 'Stanford Digital Repository' }
+                                  ]
+                                }
                               },
                               administrative: {
                                 hasAdminPolicy: apo_druid,
@@ -422,7 +440,13 @@ RSpec.describe 'Update object' do
                                 useAndReproductionStatement: 'Property rights reside with the repository...'
                               },
                               description: {
-                                title: [{ value: title }]
+                                title: [{ value: title }],
+                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                access: {
+                                  digitalRepository: [
+                                    { value: 'Stanford Digital Repository' }
+                                  ]
+                                }
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567',
@@ -769,7 +793,13 @@ RSpec.describe 'Update object' do
                               label: expected_label,
                               version: 1,
                               description: {
-                                title: [{ value: title }]
+                                title: [{ value: title }],
+                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                access: {
+                                  digitalRepository: [
+                                    { value: 'Stanford Digital Repository' }
+                                  ]
+                                }
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -833,7 +863,13 @@ RSpec.describe 'Update object' do
                                      label: expected_label,
                                      version: 1,
                                      description: {
-                                       title: [{ value: title }]
+                                       title: [{ value: title }],
+                                       purl: 'http://purl.stanford.edu/gg777gg7777',
+                                       access: {
+                                         digitalRepository: [
+                                           { value: 'Stanford Digital Repository' }
+                                         ]
+                                       }
                                      },
                                      administrative: {
                                        hasAdminPolicy: 'druid:dd999df4567'
@@ -878,7 +914,13 @@ RSpec.describe 'Update object' do
                                       label: 'This is my label',
                                       version: 1,
                                       description: {
-                                        title: [{ value: 'This is my title' }]
+                                        title: [{ value: 'This is my title' }],
+                                        purl: 'http://purl.stanford.edu/gg777gg7777',
+                                        access: {
+                                          digitalRepository: [
+                                            { value: 'Stanford Digital Repository' }
+                                          ]
+                                        }
                                       },
                                       administrative: {
                                         defaultObjectRights: default_object_rights,
@@ -927,7 +969,13 @@ RSpec.describe 'Update object' do
                               label: 'This is my label',
                               version: 1,
                               description: {
-                                title: [{ value: 'This is my title' }]
+                                title: [{ value: 'This is my title' }],
+                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                access: {
+                                  digitalRepository: [
+                                    { value: 'Stanford Digital Repository' }
+                                  ]
+                                }
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'

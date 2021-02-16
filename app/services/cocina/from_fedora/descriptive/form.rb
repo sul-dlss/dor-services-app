@@ -11,8 +11,9 @@ module Cocina
 
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
+        # @param [String] purl
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder:)
+        def self.build(resource_element:, descriptive_builder:, purl: nil)
           new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
         end
 

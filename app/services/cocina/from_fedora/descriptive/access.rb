@@ -13,14 +13,16 @@ module Cocina
 
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
+        # @param [String] purl
         # @return [Hash] a hash that can be mapped to a cocina model
-        def self.build(resource_element:, descriptive_builder:)
-          new(resource_element: resource_element, descriptive_builder: descriptive_builder).build
+        def self.build(resource_element:, descriptive_builder:, purl: nil)
+          new(resource_element: resource_element, descriptive_builder: descriptive_builder, purl: purl).build
         end
 
-        def initialize(resource_element:, descriptive_builder:)
+        def initialize(resource_element:, descriptive_builder:, purl:)
           @resource_element = resource_element
           @notifier = descriptive_builder.notifier
+          @purl = purl
         end
 
         def build
@@ -32,13 +34,13 @@ module Cocina
             access[:url] = url.presence
             access[:note] = (note + purl_note).presence
             # Without the count check, this node winds up all over the damn place and breaks dozens of tests
-            access[:digitalRepository] = [{ value: 'Stanford Digital Repository' }] if all_purl_nodes.present?
+            access[:digitalRepository] = [{ value: 'Stanford Digital Repository' }] if purl
           end.compact
         end
 
         private
 
-        attr_reader :resource_element, :notifier, :add_sdr
+        attr_reader :resource_element, :notifier, :add_sdr, :purl
 
         # Hydrus is known to create location nodes with no children.
         def location_nodes
@@ -80,7 +82,11 @@ module Cocina
         end
 
         def primary_url_node
-          all_primary_purl_nodes.first || all_primary_url_nodes.first || all_purl_nodes.first
+          all_primary_purl_nodes.first || all_primary_url_nodes.first || this_purl_node || all_purl_nodes.first
+        end
+
+        def this_purl_node
+          purl ? all_purl_nodes.find { |purl_node| purl_node.content == purl } : nil
         end
 
         def all_primary_url_nodes
@@ -100,22 +106,17 @@ module Cocina
         end
 
         def primary_purl_node
-          @primary_purl_node ||= Purl.primary_purl_node(resource_element)
+          @primary_purl_node ||= Purl.primary_purl_node(resource_element, purl)
         end
 
         def url_nodes
-          @url_nodes ||= all_url_nodes.reject { |url_node| url_node == primary_purl_node }
+          @url_nodes ||= all_url_nodes.reject { |url_node| Purl.purl?(url_node) }
         end
 
         def purl_note
-          if all_primary_purl_nodes.include?(primary_url_node) && primary_url_node[:note]
-            [{
-              type: 'purl access',
-              value: primary_url_node[:note]
-            }]
-          else
-            []
-          end
+          return [] unless primary_purl_node
+
+          Purl.purl_note(primary_purl_node)
         end
 
         def note

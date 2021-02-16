@@ -44,7 +44,7 @@ RSpec.shared_examples 'MODS cocina mapping' do
 
   let(:roundtrip_mods_ng) { defined?(roundtrip_mods) ? ng_mods_for(roundtrip_mods, MODS_ATTRIBUTES) : nil }
 
-  let(:local_druid) { defined?(druid) ? druid : 'no-druid-given' }
+  let(:local_druid) { defined?(druid) ? druid : nil }
 
   let(:local_warnings) { defined?(warnings) ? warnings : [] }
 
@@ -172,7 +172,7 @@ RSpec.shared_examples 'cocina MODS mapping' do
 
   let(:mods_xml) { mods_ng.to_xml }
 
-  let(:local_druid) { defined?(druid) ? druid : 'no-druid-given' }
+  let(:local_druid) { defined?(druid) ? druid : nil }
 
   let(:local_warnings) { defined?(warnings) ? warnings : [] }
 
