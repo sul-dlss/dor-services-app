@@ -172,6 +172,7 @@ module Cocina
         end
 
         def hierarchical_geographic(hierarchical_geographic_node, attrs)
+          attrs = attrs.deep_merge(common_attrs(hierarchical_geographic_node))
           node_set = hierarchical_geographic_node.xpath('*')
           values = node_set.map do |node|
             {
