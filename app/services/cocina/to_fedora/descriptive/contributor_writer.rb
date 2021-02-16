@@ -137,7 +137,7 @@ module Cocina
         end
 
         def write_basic(name)
-          xml.namePart name.value
+          xml.namePart name.value, name_part_attributes(name)
         end
 
         def name_part_attributes(part)

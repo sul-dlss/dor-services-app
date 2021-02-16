@@ -116,6 +116,35 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
+  describe 'Family name for name part' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart type="family">James</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'James',
+                  type: 'surname'
+                }
+              ],
+              type: 'person',
+              status: 'primary'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Conference name' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
