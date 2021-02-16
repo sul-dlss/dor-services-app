@@ -53,10 +53,8 @@ module Cocina
                       have_authorityURI?(subject_node) &&
                       !have_valueURI?(subject_node)
 
-          have_authority?(children_nodes.first) &&
-            have_same_authority?(children_nodes, children_nodes.first)
-
-          delete_authorityURI(subject_node)
+          delete_authorityURI(subject_node) if have_authority?(children_nodes.first) &&
+                                               have_same_authority?(children_nodes, children_nodes.first)
         end
       end
 

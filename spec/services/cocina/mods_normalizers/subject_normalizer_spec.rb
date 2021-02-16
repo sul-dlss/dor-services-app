@@ -191,6 +191,30 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
     end
   end
 
+  context 'when normalizing subject with authority and authorityURI, but not on children' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects">
+          <geographic>Tel Aviv (Israel)</geographic>
+            <topic>Politics and government</topic>
+          </subject>
+        </mods>
+      XML
+    end
+
+    it 'leaves unchanged' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/">
+          <geographic>Tel Aviv (Israel)</geographic>
+            <topic>Politics and government</topic>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
   context 'when normalizing normalized_ng_xml name' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
