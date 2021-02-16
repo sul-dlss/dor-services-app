@@ -627,4 +627,53 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
       XML
     end
   end
+
+  context 'when normalizing temporal' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject>
+            <temporal encoding="iso8601" point="start">[1923?-]</temporal>
+            <temporal encoding="iso8601" point="end"/>
+          </subject>
+          <subject>
+            <temporal />
+          </subject>
+        </mods>
+      XML
+    end
+
+    it 'removes empty' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject>
+            <temporal encoding="iso8601" point="start">[1923?-]</temporal>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing empty geographic' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject authority="geonames" authorityURI="http://sws.geonames.org" valueURI="http://sws.geonames.org/2946447/">
+            <geographic/>
+          </subject>
+          <subject>
+            <geographic/>
+          </subject>
+        </mods>
+      XML
+    end
+
+    it 'removes empty' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject authority="geonames" authorityURI="http://sws.geonames.org" valueURI="http://sws.geonames.org/2946447/" />
+        </mods>
+      XML
+    end
+  end
 end

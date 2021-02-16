@@ -70,13 +70,13 @@ module Cocina
         def url
           url_nodes.map do |url_node|
             {
-              value: url_node.text,
+              value: url_node.text.presence,
               displayLabel: url_node[:displayLabel]
             }.tap do |attrs|
               attrs[:status] = 'primary' if url_node == primary_url_node
               attrs[:note] = [{ value: url_node[:note] }] if url_node[:note]
-            end.compact
-          end
+            end.compact.presence
+          end.compact
         end
 
         def primary_url_node

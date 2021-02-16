@@ -116,15 +116,12 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       XML
     end
 
-    it 'removes dateOther type attribute if it matches eventType and dateOther is empty' do
+    # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
+    xit 'removes dateOther type attribute if it matches eventType and dateOther is empty' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="distribution">
-            <dateOther/>
-          </originInfo>
-          <originInfo eventType="manufacture">
-            <dateOther/>
-          </originInfo>
+          <originInfo eventType="distribution"/>
+          <originInfo eventType="manufacture"/>
           <originInfo eventType="distribution">
             <dateOther type="distribution">1937</dateOther>
           </originInfo>
@@ -637,7 +634,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       end
     end
 
-    context 'when attributes attribute but no children' do
+    context 'when eventType attribute but no children' do
       let(:mods_ng_xml) do
         Nokogiri::XML <<~XML
           <mods #{MODS_ATTRIBUTES}>
@@ -655,7 +652,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       end
     end
 
-    context 'when no attributes but (empty) child' do
+    context 'when eventType attribute and (empty) child' do
       let(:mods_ng_xml) do
         Nokogiri::XML <<~XML
           <mods #{MODS_ATTRIBUTES}>
@@ -666,12 +663,11 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
         XML
       end
 
-      it 'does not remove it' do
+      # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
+      xit 'removes the empty child' do
         expect(normalized_ng_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
-            <originInfo eventType="publication">
-              <publisher/>
-            </originInfo>
+            <originInfo eventType="publication"/>
           </mods>
         XML
       end

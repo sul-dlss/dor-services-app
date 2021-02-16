@@ -114,4 +114,37 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Authority-only subject' do
+    # Adapted from nv251kt0037
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject authority="geonames" authorityURI="http://sws.geonames.org" valueURI="http://sws.geonames.org/2946447/">
+            <geographic/>
+          </subject>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="geonames" authorityURI="http://sws.geonames.org" valueURI="http://sws.geonames.org/2946447/" />
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              source: {
+                code: 'geonames',
+                uri: 'http://sws.geonames.org'
+              },
+              uri: 'http://sws.geonames.org/2946447/'
+            }
+          ]
+        }
+      end
+    end
+  end
 end

@@ -499,4 +499,20 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Empty topic subject' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <topic></topic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) { {} }
+
+      let(:roundtrip_mods) { '' }
+    end
+  end
 end

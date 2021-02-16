@@ -260,14 +260,8 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
           }
         end
 
-        # NOTE: not sure this is desirable, but it probably doesn't hurt anything?
         let(:roundtrip_cocina) do
           {
-            identifier: [
-              {
-                value: ''
-              }
-            ]
           }
         end
 
@@ -287,14 +281,13 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
           XML
         end
 
-        # NOTE: not sure this is desirable, but it probably doesn't hurt anything?
+        let(:roundtrip_mods) do
+          <<~XML
+          XML
+        end
+
         let(:cocina) do
           {
-            identifier: [
-              {
-                value: ''
-              }
-            ]
           }
         end
       end
