@@ -470,8 +470,6 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
     # Certain related items mapped from MARC don't indicate name type in source data
     # Do not warn for untyped names in relatedItem
     it_behaves_like 'MODS cocina mapping' do
-      let(:druid) { 'kv699vs9767' }
-
       let(:mods) do
         <<~XML
           <relatedItem type="otherFormat" displayLabel="Online version:">
