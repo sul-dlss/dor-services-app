@@ -31,6 +31,10 @@ def elements_with_bad_value_uri(ng_xml)
   bad_elements.map(&:name).uniq.join(', ')
 end
 
+def metadata_toolkit?(ng_xml)
+  ng_xml.root.xpath('//mods:recordContentSource[contains(text(), "Metadata ToolKit")]', mods: MODS_NS).present?
+end
+
 # rubocop:disable Layout/LineLength
 MODS_ELEMENTS = %w[abstract accessCondition affiliation alternativeName area caption cartographicExtension cartographics city citySection classification continent coordinates copyInformation copyrightDate country county date dateCaptured dateCreated dateIssued dateModified dateOther dateValid description descriptionStandard detail digitalOrigin displayForm edition electronicLocator end enumerationAndChronology etal extension extent extraTerrestrialArea form frequency genre geographic geographicCode hierarchicalGeographic holdingExternal holdingSimple identifier internetMediaType island issuance itemIdentifier language languageOfCataloging languageTerm list location mods modsCollection name nameIdentifier namePart nonSort note number occupation originInfo part partName partNumber physicalDescription physicalLocation place placeTerm projection province publisher recordChangeDate recordContentSource recordCreationDate recordIdentifier recordInfo recordInfoNote recordOrigin reformattingQuality region relatedItem role roleTerm scale scriptTerm shelfLocator start state subLocation subTitle subject tableOfContents targetAudience temporal territory text title titleInfo topic total typeOfResource url].freeze
 # rubocop:enable Layout/LineLength
@@ -74,7 +78,8 @@ REPORTS = {
   date_other: method(:date_other),
   frequency: method(:has_frequency?),
   bad_event_type: method(:bad_event_type?),
-  bad_value_uri: method(:elements_with_bad_value_uri)
+  bad_value_uri: method(:elements_with_bad_value_uri),
+  metadata_toolkit: method(:metadata_toolkit?)
 }.with_indifferent_access
 
 options = { local: false, reports: REPORTS.keys }
