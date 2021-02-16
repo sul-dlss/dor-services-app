@@ -100,7 +100,7 @@ results.each { |result| counts[result.error_type] += 1 }
 
 puts summary_line_for('To Cocina error', counts[:to_cocina_error])
 puts summary_line_for('Data error', counts[:data_error])
-puts summary_line_for('Missing', counts[:missing])
+puts summary_line_for('Missing (no descMetadata)', counts[:missing])
 puts "\n"
 
 results_by_error = results_by(error_results)
