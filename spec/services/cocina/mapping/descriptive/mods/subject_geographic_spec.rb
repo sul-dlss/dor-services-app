@@ -75,15 +75,13 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
     end
   end
 
-  describe 'Hierarchical geographic subject with authority' do
+  describe 'Hierarchical geographic subject with authority on subject' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject authority="lcsh">
             <hierarchicalGeographic>
               <continent>North America</continent>
-              <country>Canada</country>
-              <city>Vancouver</city>
             </hierarchicalGeographic>
           </subject>
         XML
@@ -97,14 +95,49 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
                 {
                   value: 'North America',
                   type: 'continent'
-                },
+                }
+              ],
+              type: 'place',
+              source: {
+                code: 'lcsh'
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Hierarchical geographic subject with authority on hierarchicalGeographic' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <hierarchicalGeographic authority="lcsh">
+              <continent>North America</continent>
+            </hierarchicalGeographic>
+          </subject>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <hierarchicalGeographic>
+              <continent>North America</continent>
+            </hierarchicalGeographic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
                 {
-                  value: 'Canada',
-                  type: 'country'
-                },
-                {
-                  value: 'Vancouver',
-                  type: 'city'
+                  value: 'North America',
+                  type: 'continent'
                 }
               ],
               type: 'place',
