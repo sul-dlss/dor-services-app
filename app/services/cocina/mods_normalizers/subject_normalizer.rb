@@ -51,6 +51,13 @@ module Cocina
             subject_node.delete('valueURI')
           end
 
+          if !have_authority?(subject_node) &&
+              have_authority?(children_nodes.first) &&
+              have_same_authority?(children_nodes, children_nodes.first)
+            add_authority(subject_node, children_nodes.first, naf_to_lcsh: true)
+          end
+
+
           next unless have_authority?(subject_node) &&
                       have_authorityURI?(subject_node) &&
                       !have_valueURI?(subject_node)
@@ -96,8 +103,9 @@ module Cocina
         %w[lcsh naf].include?(node[:authority])
       end
 
-      def add_authority(nodes, from_node)
-        nodes_to_a(nodes).each { |node| node[:authority] = from_node[:authority] }
+      def add_authority(nodes, from_node, naf_to_lcsh: false)
+        authority = from_node[:authority] == 'naf' ? 'lcsh' : from_node[:authority]
+        nodes_to_a(nodes).each { |node| node[:authority] = authority }
       end
 
       def delete_authority(nodes)
