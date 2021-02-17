@@ -157,18 +157,14 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         { source: { value: 'MODS resource types' }, type: 'resource type', value: 'text' },
         { source: { code: 'local' }, type: 'genre', value: 'archived website' },
         {
-          structuredValue: [
-            {
-              value: 'electronic',
-              type: 'form',
-              source: {
-                code: 'marcform'
-              }
-            },
-            { value: 'text/html', type: 'media type', source: { value: 'IANA media types' } },
-            { value: 'born digital', type: 'digital origin', source: { value: 'MODS digital origin terms' } }
-          ]
-        }
+          value: 'electronic',
+          type: 'form',
+          source: {
+            code: 'marcform'
+          }
+        },
+        { value: 'text/html', type: 'media type', source: { value: 'IANA media types' } },
+        { value: 'born digital', type: 'digital origin', source: { value: 'MODS digital origin terms' } }
       ]
       expect(descriptive[:subject].size).to eq 2
     end
@@ -371,43 +367,38 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         { source: { code: 'marcgt' }, type: 'genre', value: 'theses' },
         { source: { code: 'rdacontent' }, type: 'genre', value: 'text' },
         { source: { value: 'MODS resource types' }, type: 'resource type', value: 'text' },
-
         {
-          structuredValue: [
-            {
-              value: 'electronic resource',
-              type: 'form',
-              source: {
-                code: 'marccategory'
-              }
-            },
-            {
-              value: 'remote',
-              type: 'form',
-              source: {
-                code: 'marcsmd'
-              }
-            },
-            {
-              value: 'computer',
-              type: 'media',
-              source: {
-                code: 'rdamedia'
-              }
-            },
-            {
-              value: 'online resource',
-              type: 'carrier',
-              source: {
-                code: 'rdacarrier'
-              }
-            },
-            { value: 'estampe', type: 'technique' },
-            { value: 'eau-forte', type: 'material' },
-            { value: 'gravure au pointillé', type: 'material' },
-            { value: '1 online resource.', type: 'extent' }
-          ]
-        }
+          value: 'electronic resource',
+          type: 'form',
+          source: {
+            code: 'marccategory'
+          }
+        },
+        {
+          value: 'remote',
+          type: 'form',
+          source: {
+            code: 'marcsmd'
+          }
+        },
+        {
+          value: 'computer',
+          type: 'media',
+          source: {
+            code: 'rdamedia'
+          }
+        },
+        {
+          value: 'online resource',
+          type: 'carrier',
+          source: {
+            code: 'rdacarrier'
+          }
+        },
+        { value: 'estampe', type: 'technique' },
+        { value: 'eau-forte', type: 'material' },
+        { value: 'gravure au pointillé', type: 'material' },
+        { value: '1 online resource.', type: 'extent' }
       ]
     end
   end
