@@ -39,8 +39,8 @@ module Cocina
         ng_xml.root.xpath('//mods:subject[not(mods:cartographics)]', mods: ModsNormalizer::MODS_NS).each do |subject_node|
           children_nodes = subject_node.xpath('mods:*', mods: ModsNormalizer::MODS_NS)
 
-          if (have_authorityURI?(subject_node) || have_valueURI?(subject_node)) \
-          && children_nodes.size == 1
+          if (have_authorityURI?(subject_node) || have_valueURI?(subject_node)) &&
+             children_nodes.size == 1
             # If subject has authority and child doesn't, copy to child.
             add_authority(children_nodes, subject_node) if have_authority?(subject_node) && !have_authority?(children_nodes)
             # If subject has authorityURI and child doesn't, move to child.
@@ -52,11 +52,11 @@ module Cocina
           end
 
           if !have_authority?(subject_node) &&
-              have_authority?(children_nodes.first) &&
-              have_same_authority?(children_nodes, children_nodes.first)
+             have_authority?(children_nodes.first) &&
+             have_same_authority?(children_nodes, children_nodes.first) &&
+             children_nodes.first[:authority] != 'marcgac'
             add_authority(subject_node, children_nodes.first, naf_to_lcsh: true)
           end
-
 
           next unless have_authority?(subject_node) &&
                       have_authorityURI?(subject_node) &&
