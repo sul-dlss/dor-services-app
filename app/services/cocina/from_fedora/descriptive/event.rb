@@ -162,7 +162,7 @@ module Cocina
           [].tap do |events|
             orig_info_type = origin_info['eventType']
 
-            date_created = origin_info.xpath('mods:dateCreated', mods: DESC_METADATA_NS)
+            date_created = origin_info.xpath('mods:dateCreated[text()]', mods: DESC_METADATA_NS)
             events << build_event('creation', date_created, language_script) if date_created.present?
 
             date_issued = origin_info.xpath('mods:dateIssued', mods: DESC_METADATA_NS)
@@ -171,7 +171,7 @@ module Cocina
               events << build_event(event_type, date_issued, language_script)
             end
 
-            copyright_date = origin_info.xpath('mods:copyrightDate', mods: DESC_METADATA_NS)
+            copyright_date = origin_info.xpath('mods:copyrightDate[text()]', mods: DESC_METADATA_NS)
             if copyright_date.present?
               events << if origin_info['eventType'] == 'copyright notice'
                           build_copyright_note(copyright_date.first)
@@ -180,13 +180,13 @@ module Cocina
                         end
             end
 
-            date_captured = origin_info.xpath('mods:dateCaptured', mods: DESC_METADATA_NS)
+            date_captured = origin_info.xpath('mods:dateCaptured[text()]', mods: DESC_METADATA_NS)
             events << build_event('capture', date_captured, language_script) if date_captured.present?
 
-            date_validity = origin_info.xpath('mods:dateValid', mods: DESC_METADATA_NS)
+            date_validity = origin_info.xpath('mods:dateValid[text()]', mods: DESC_METADATA_NS)
             events << build_event('validity', date_validity, language_script) if date_validity.present?
 
-            date_other = origin_info.xpath('mods:dateOther', mods: DESC_METADATA_NS)
+            date_other = origin_info.xpath('mods:dateOther[text()]', mods: DESC_METADATA_NS)
             events << build_event(date_other_event_type(origin_info, date_other.first), date_other, language_script) if date_other.present?
 
             # set eventType to 'production' in MODS if no date present
@@ -365,7 +365,7 @@ module Cocina
 
         def build_event(type, node_set, language_script = nil)
           dates = node_set.reject { |node| node['point'] }.map do |node|
-            next if node.text.blank? # && node.attributes.size.zero?
+            # next if node.text.blank? # && node.attributes.size.zero?
 
             addl_attributes = node['encoding'].nil? && language_script ? { valueLanguage: language_script } : {}
             build_date(type, node).merge(addl_attributes)
