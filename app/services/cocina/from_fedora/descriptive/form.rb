@@ -183,17 +183,23 @@ module Cocina
             add_media_type(form_values, physical_description_node)
             add_extent(form_values, physical_description_node)
             add_digital_origin(form_values, physical_description_node)
-            form = if form_values.size == 1
-                     form_values.first
-                   else
-                     {
-                       structuredValue: form_values
-                     }
-                   end
-            form[:displayLabel] = physical_description_node['displayLabel'] if physical_description_node['displayLabel'].present?
             notes = physical_description_notes_for(physical_description_node)
-            form[:note] = notes if notes.present?
-            forms << form
+            # Depends on how many physicalDescriptions there are or if there is a displayLabel
+            if physical_descriptions.size == 1 && form_values.size > 1 && physical_description_node['displayLabel'].nil?
+              forms.concat(form_values)
+              forms << { note: notes } if notes.present?
+            elsif form_values.size == 1
+              forms << form_values.first.merge({
+                note: notes.presence,
+                displayLabel: physical_description_node['displayLabel']
+              }.compact)
+            else
+              forms << {
+                groupedValue: form_values,
+                note: notes.presence,
+                displayLabel: physical_description_node['displayLabel']
+              }.compact
+            end
           end
         end
 

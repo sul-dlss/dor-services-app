@@ -51,7 +51,7 @@ module Cocina
         attr_reader :xml, :forms, :id_generator
 
         def physical_description?(form)
-          form.note.present? || PHYSICAL_DESCRIPTION_TAG.keys.include?(form.type) || PHYSICAL_DESCRIPTION_TAG.keys.include?(form.structuredValue&.first&.type)
+          form.note.present? || PHYSICAL_DESCRIPTION_TAG.keys.include?(form.type) || PHYSICAL_DESCRIPTION_TAG.keys.include?(form.groupedValue&.first&.type)
         end
 
         def manuscript?(form)
@@ -86,33 +86,45 @@ module Cocina
         end
 
         def write_physical_descriptions
+          grouped_forms = []
+          # Each of these are its own physicalDescription
+          simple_forms = []
+          # These all get grouped together to form a single physicalDescription.
+          other_forms = []
+          other_notes = []
           Array(forms).select { |form| physical_description?(form) }.each do |form|
-            if form.structuredValue
-              write_structured_physical_description(form)
+            if form.groupedValue
+              grouped_forms << form
+            elsif form.value && (form.note || form.displayLabel)
+              simple_forms << form
             else
-              write_basic_physical_description(form)
+              other_notes << form if form.note
+              other_forms << form if form.value
             end
           end
+          write_basic_physical_description(other_forms, other_notes) unless other_forms.empty?
+          simple_forms.each { |form| write_basic_physical_description([form], [form]) }
+          grouped_forms.each { |form| write_grouped_physical_description(form) }
         end
 
-        def write_basic_physical_description(form)
+        def write_basic_physical_description(forms, note_forms)
           physical_description_attrs = {
-            displayLabel: form.displayLabel
+            displayLabel: forms.first.displayLabel
           }.compact
 
           xml.physicalDescription physical_description_attrs do
-            write_physical_description_form_values([form])
-            write_notes(form)
+            write_physical_description_form_values(forms)
+            note_forms.each { |form| write_notes(form) if form.note }
           end
         end
 
-        def write_structured_physical_description(form)
+        def write_grouped_physical_description(form)
           physical_description_attrs = {
             displayLabel: form.displayLabel
           }.compact
 
           xml.physicalDescription physical_description_attrs do
-            write_physical_description_form_values(form.structuredValue)
+            write_physical_description_form_values(form.groupedValue)
             write_notes(form)
           end
         end
