@@ -35,6 +35,7 @@ module Cocina
 
       # rubocop:disable Metrics/PerceivedComplexity
       # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/AbcSize
       def normalize_subject
         ng_xml.root.xpath('//mods:subject[not(mods:cartographics)]', mods: ModsNormalizer::MODS_NS).each do |subject_node|
           children_nodes = subject_node.xpath('mods:*', mods: ModsNormalizer::MODS_NS)
@@ -60,10 +61,11 @@ module Cocina
 
           next unless have_authority?(subject_node) &&
                       have_authorityURI?(subject_node) &&
-                      !have_valueURI?(subject_node)
+                      !have_valueURI?(subject_node) &&
+                      have_authority?(children_nodes.first) &&
+                      have_same_authority?(children_nodes, children_nodes.first)
 
-          delete_authorityURI(subject_node) if have_authority?(children_nodes.first) &&
-                                               have_same_authority?(children_nodes, children_nodes.first)
+          delete_authorityURI(subject_node)
         end
       end
 
@@ -90,6 +92,7 @@ module Cocina
       end
       # rubocop:enable Metrics/PerceivedComplexity
       # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/AbcSize
 
       def have_authority?(nodes)
         nodes_to_a(nodes).all? { |node| node[:authority] }
