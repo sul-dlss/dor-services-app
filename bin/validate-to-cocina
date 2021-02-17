@@ -12,6 +12,7 @@ parser = OptionParser.new do |option_parser|
 
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
   option_parser.on('-u', '--unique-filename', 'Result file named for branch and runtime') { options[:unique_filename] = true }
+  option_parser.on('-a', '--apo', 'Include APO in report (slower).') { options[:apo] = true }
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -43,10 +44,19 @@ def print_results(aggregated_error_results, label)
   end
 end
 
-def write_results(file, aggregated_error_results, label)
+def apo_for(druid)
+  puts "Fetching #{druid}"
+  Dor.find(druid).admin_policy_object_id
+end
+
+def write_results(file, aggregated_error_results, label, with_apo)
   aggregated_error_results.each do |error_result|
     file.write("#{label}: #{error_result[0]} (#{error_result[1].size} errors)\n")
-    error_result[1].each { |druid| file.write("#{druid}\n") }
+    error_result[1].each do |druid|
+      file.write(druid)
+      file.write(" (APO: #{apo_for(druid)})") if with_apo
+      file.write("\n")
+    end
   end
 end
 
@@ -117,6 +127,6 @@ File.open(results_file_name(options[:unique_filename]), 'w') do |file|
   file.write(summary_line_for('Data error', counts[:data_error]))
   file.write(summary_line_for('Missing', counts[:missing]))
   file.write("\n")
-  write_results(file, aggregated_error_results, 'Error')
-  write_results(file, aggregated_data_error_results, 'Data error')
+  write_results(file, aggregated_error_results, 'Error', options[:apo])
+  write_results(file, aggregated_data_error_results, 'Data error', options[:apo])
 end
