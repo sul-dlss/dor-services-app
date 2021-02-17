@@ -258,6 +258,7 @@ module Cocina
         def date_tag(date, cocina_event_type, structured_val_attribs = {})
           value = date.value
           tag = date_type_value_for(date) ? :dateOther : TAG_NAME.fetch(cocina_event_type, :dateOther)
+          return dates_for_range(date, cocina_event_type) if edtf_range?(date)
 
           attributes = {
             encoding: (date.encoding&.code || structured_val_attribs[:encoding]&.code),
@@ -268,6 +269,17 @@ module Cocina
             attrs[:point] = date.type if %w[start end].include?(date.type)
           end.compact
           xml.public_send(tag, value, attributes)
+        end
+
+        def edtf_range?(date)
+          date.encoding&.code == 'edtf' && date.value.include?('/')
+        end
+
+        # @param [String] date An EDTF range
+        def dates_for_range(date, cocina_event_type)
+          start_date, end_date = date.value.split('/')
+          date_tag(date.new(value: start_date, type: 'start'), cocina_event_type)
+          date_tag(date.new(value: end_date, type: 'end'), cocina_event_type)
         end
 
         def date_type_value_for(date)

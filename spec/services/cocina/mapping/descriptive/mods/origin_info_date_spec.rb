@@ -649,8 +649,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
       let(:mods) do
         <<~XML
           <originInfo>
-            <dateCreated encoding="edtf" point="start">-0499</dateCreated>
-            <dateCreated encoding="edtf" point="end">-0599</dateCreated>
+            <dateCreated encoding="edtf" point="start">-0599</dateCreated>
+            <dateCreated encoding="edtf" point="end">-0499</dateCreated>
           </originInfo>
         XML
       end
@@ -658,8 +658,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
       let(:roundtrip_mods) do
         <<~XML
           <originInfo eventType="production">
-            <dateCreated encoding="edtf" point="start">-0499</dateCreated>
-            <dateCreated encoding="edtf" point="end">-0599</dateCreated>
+            <dateCreated encoding="edtf" point="start">-0599</dateCreated>
+            <dateCreated encoding="edtf" point="end">-0499</dateCreated>
           </originInfo>
         XML
       end
@@ -671,16 +671,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
               type: 'creation',
               date: [
                 {
-                  structuredValue: [
-                    {
-                      value: '-0499',
-                      type: 'start'
-                    },
-                    {
-                      value: '-0599',
-                      type: 'end'
-                    }
-                  ],
+                  value: '-0599/-0499',
                   encoding: {
                     code: 'edtf'
                   }
@@ -758,16 +749,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
               type: 'creation',
               date: [
                 {
-                  structuredValue: [
-                    {
-                      value: '0800',
-                      type: 'start'
-                    },
-                    {
-                      value: '1000',
-                      type: 'end'
-                    }
-                  ],
+                  value: '0800/1000',
                   encoding: {
                     code: 'edtf'
                   }
