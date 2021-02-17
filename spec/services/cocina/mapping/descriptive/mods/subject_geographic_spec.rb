@@ -250,6 +250,62 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
     end
   end
 
+  describe 'Geographic subject with altRepGroup' do
+    # Adapted from hv324dj9498
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject altRepGroup="1" authority="lcsh">
+            <geographic>Mália Site (Greece)</geographic>
+            <topic>Antiquities</topic>
+          </subject>
+          <subject altRepGroup="1">
+            <geographic>Μαλιά (Ελλάδα)</geographic>
+            <topic>Αρχαιότητες</topic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              "parallelValue": [
+                {
+                  "source": {
+                    "code": 'lcsh'
+                  },
+                  "structuredValue": [
+                    {
+                      "value": 'Mália Site (Greece)',
+                      "type": 'place'
+                    },
+                    {
+                      "value": 'Antiquities',
+                      "type": 'topic'
+                    }
+                  ]
+                },
+                {
+                  "structuredValue": [
+                    {
+                      "value": 'Μαλιά (Ελλάδα)',
+                      "type": 'place'
+                    },
+                    {
+                      "value": 'Αρχαιότητες',
+                      "type": 'topic'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Geographic subject with language' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
