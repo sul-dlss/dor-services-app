@@ -366,7 +366,7 @@ module Cocina
         # rubocop:disable Metrics/CyclomaticComplexity
         def build_event(type, node_set, language_script = nil)
           dates = node_set.reject { |node| node['point'] }.map do |node|
-            next if node.text.blank? && node.attributes.size.zero?
+            next if node.text.blank? #&& node.attributes.size.zero?
 
             addl_attributes = node['encoding'].nil? && language_script ? { valueLanguage: language_script } : {}
             build_date(type, node).merge(addl_attributes)
