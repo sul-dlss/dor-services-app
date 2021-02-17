@@ -194,6 +194,8 @@ module Cocina
 
         # rubocop:disable Metrics/ParameterLists
         def write_event(cocina_event_type, dates, locations, names, notes, attributes, is_parallel: false)
+          return if dates.blank? && locations.blank? && names.blank? && notes.blank?
+
           xml.originInfo attributes do
             Array(dates).each do |date|
               write_basic_date(date, cocina_event_type)
