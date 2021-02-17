@@ -383,6 +383,7 @@ module Cocina
           return nil if node_set.blank?
 
           common_attribs = common_date_attributes(node_set)
+          return common_attribs.merge(value: node_set.join('/')) if etdf_range?(node_set, common_attribs[:encoding])
 
           dates = node_set.map do |node|
             new_node = node.deep_dup
@@ -391,6 +392,11 @@ module Cocina
             build_date(type, new_node)
           end
           { structuredValue: dates }.merge(common_attribs).compact
+        end
+
+        # @return [Boolean] true if this node set can be expressed as an EDTF range.
+        def etdf_range?(node_set, encoding)
+          node_set.size == 2 && node_set.map { |node| node['point'] } == %w[start end] && encoding == { code: 'edtf' }
         end
 
         def common_date_attributes(node_set)
