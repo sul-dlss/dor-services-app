@@ -363,10 +363,9 @@ module Cocina
           end
         end
 
-        # rubocop:disable Metrics/CyclomaticComplexity
         def build_event(type, node_set, language_script = nil)
           dates = node_set.reject { |node| node['point'] }.map do |node|
-            next if node.text.blank? #&& node.attributes.size.zero?
+            next if node.text.blank? # && node.attributes.size.zero?
 
             addl_attributes = node['encoding'].nil? && language_script ? { valueLanguage: language_script } : {}
             build_date(type, node).merge(addl_attributes)
@@ -384,7 +383,6 @@ module Cocina
           result[:date] = dates.compact if dates.present? && !dates.compact.empty? # deals with [nil]
           result
         end
-        # rubocop:enable Metrics/CyclomaticComplexity
 
         # rubocop:disable Metrics/CyclomaticComplexity
         def build_structured_date(type, node_set)
