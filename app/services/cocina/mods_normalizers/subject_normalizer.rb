@@ -107,7 +107,11 @@ module Cocina
       end
 
       def add_authority(nodes, from_node, naf_to_lcsh: false)
-        authority = from_node[:authority] == 'naf' ? 'lcsh' : from_node[:authority]
+        authority = if naf_to_lcsh && from_node[:authority] == 'naf'
+                      'lcsh'
+                    else
+                      from_node[:authority]
+                    end
         nodes_to_a(nodes).each { |node| node[:authority] = authority }
       end
 

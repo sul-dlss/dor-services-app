@@ -191,6 +191,32 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
     end
   end
 
+  context 'when normalizing subject with naf authority' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n79055384">
+            <name type="corporate">
+              <namePart>Princeton University</namePart>
+            </name>
+          </subject>
+        </mods>
+      XML
+    end
+
+    it 'moves to name' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject authority="lcsh">
+            <name authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79055384" type="corporate">
+              <namePart>Princeton University</namePart>
+            </name>
+          </subject>
+        </mods>
+      XML
+    end
+  end
+
   context 'when normalizing topic with additional term' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
