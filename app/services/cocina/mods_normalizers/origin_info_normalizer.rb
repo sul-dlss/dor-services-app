@@ -44,6 +44,11 @@ module Cocina
             date_node.remove if date_node.content.squish.blank?
           end
         end
+
+        # we can also remove dateOther if it has no type attribute
+        ng_xml.root.xpath('//mods:originInfo/mods:dateOther[not(@type)]', mods: ModsNormalizer::MODS_NS).each do |date_node|
+          date_node.remove if date_node.content.squish.blank?
+        end
       end
 
       # must be after remove_empty_origin_info_dates
@@ -131,7 +136,7 @@ module Cocina
 
             date_other_node.remove_attribute('type') if origin_info_event_type.match?(date_other_node['type'])
             # Temporarily ignoring pending https://github.com/sul-dlss/dor-services-app/issues/2128
-            # date_node.remove if date_node.content.squish.blank?
+            # date_other_node.remove if date_other_node.content.squish.blank?
           end
         end
       end
