@@ -161,17 +161,18 @@ module Cocina
         def build_events_for_origin_info(origin_info, language_script)
           [].tap do |events|
             orig_info_type = origin_info['eventType']
+            has_content_predicate = '[string-length(normalize-space()) > 1]'
 
-            date_created = origin_info.xpath('mods:dateCreated[text()]', mods: DESC_METADATA_NS)
+            date_created = origin_info.xpath("mods:dateCreated#{has_content_predicate}", mods: DESC_METADATA_NS)
             events << build_event('creation', date_created, language_script) if date_created.present?
 
-            date_issued = origin_info.xpath('mods:dateIssued', mods: DESC_METADATA_NS)
+            date_issued = origin_info.xpath("mods:dateIssued#{has_content_predicate}", mods: DESC_METADATA_NS)
             if date_issued.present?
               event_type = event_type_or_default(orig_info_type, 'publication')
               events << build_event(event_type, date_issued, language_script)
             end
 
-            copyright_date = origin_info.xpath('mods:copyrightDate[text()]', mods: DESC_METADATA_NS)
+            copyright_date = origin_info.xpath("mods:copyrightDate#{has_content_predicate}", mods: DESC_METADATA_NS)
             if copyright_date.present?
               events << if origin_info['eventType'] == 'copyright notice'
                           build_copyright_note(copyright_date.first)
@@ -180,13 +181,13 @@ module Cocina
                         end
             end
 
-            date_captured = origin_info.xpath('mods:dateCaptured[text()]', mods: DESC_METADATA_NS)
+            date_captured = origin_info.xpath("mods:dateCaptured#{has_content_predicate}", mods: DESC_METADATA_NS)
             events << build_event('capture', date_captured, language_script) if date_captured.present?
 
-            date_validity = origin_info.xpath('mods:dateValid[text()]', mods: DESC_METADATA_NS)
+            date_validity = origin_info.xpath("mods:dateValid#{has_content_predicate}", mods: DESC_METADATA_NS)
             events << build_event('validity', date_validity, language_script) if date_validity.present?
 
-            date_other = origin_info.xpath('mods:dateOther[text()]', mods: DESC_METADATA_NS)
+            date_other = origin_info.xpath("mods:dateOther#{has_content_predicate}", mods: DESC_METADATA_NS)
             events << build_event(date_other_event_type(origin_info, date_other.first), date_other, language_script) if date_other.present?
 
             # set eventType to 'production' in MODS if no date present
