@@ -226,17 +226,20 @@ module Cocina
       end
 
       def normalize_subject_lang_and_script
-        ng_xml.root.xpath('//mods:subject[count(mods:*) = 1]', mods: ModsNormalizer::MODS_NS).each do |subject_node|
-          child_node = subject_node.elements.first
+        ng_xml.root.xpath('//mods:subject[mods:*]', mods: ModsNormalizer::MODS_NS).each do |subject_node|
+          check_child_node = subject_node.elements.first
           # If all children have the same lang, then move to subject and delete from children.
-          if child_node['lang'] && subject_node.elements.all? { |node| node['lang'] == child_node['lang'] }
-            subject_node['lang'] = child_node['lang']
-            child_node.delete('lang')
+          check_lang = check_child_node['lang']
+          if check_lang && subject_node.elements.all? { |child_node| child_node['lang'] == check_lang }
+            subject_node['lang'] = check_lang
+            subject_node.elements.each { |child_node| child_node.delete('lang') }
           end
+
           # If all children have the same script, then move to subject and delete from children.
-          if child_node['script'] && subject_node.elements.all? { |node| node['script'] == child_node['script'] }
-            subject_node['script'] = child_node['script']
-            child_node.delete('script')
+          check_script = check_child_node['script']
+          if check_script && subject_node.elements.all? { |node| node['script'] == check_script }
+            subject_node['script'] = check_script
+            subject_node.elements.each { |child_node| child_node.delete('script') }
           end
         end
       end

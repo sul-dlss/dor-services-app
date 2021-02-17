@@ -66,6 +66,153 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
     end
   end
 
+  describe 'With language attributes on subject element' do
+    # Example from bc770gm9177
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh85136516" lang="eng" script="Latn">
+            <topic>Labor union</topic>
+          </subject>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="lcsh" lang="eng" script="Latn">
+            <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh85136516">Labor union</topic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Labor union',
+              type: 'topic',
+              uri: 'http://id.loc.gov/authorities/subjects/sh85136516',
+              source: {
+                uri: 'http://id.loc.gov/authorities/subjects/',
+                code: 'lcsh'
+              },
+              valueLanguage: {
+                code: 'eng',
+                source: {
+                  code: 'iso639-2b'
+                },
+                valueScript: {
+                  code: 'Latn',
+                  source: {
+                    code: 'iso15924'
+                  }
+                }
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'With language attributes on single subelement' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <topic lang="eng" script="Latn">Labor unions</topic>
+          </subject>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject lang="eng" script="Latn">
+            <topic>Labor unions</topic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Labor unions',
+              type: 'topic',
+              valueLanguage: {
+                code: 'eng',
+                source: {
+                  code: 'iso639-2b'
+                },
+                valueScript: {
+                  code: 'Latn',
+                  source: {
+                    code: 'iso15924'
+                  }
+                }
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'With same language attributes on multiple subelements' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <topic lang="eng" script="Latn">Labor unions</topic>
+            <geographic lang="eng" script="Latn">United Kingdom</geographic>
+          </subject>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject lang="eng" script="Latn">
+            <topic>Labor unions</topic>
+            <geographic>United Kingdom</geographic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  value: 'Labor unions',
+                  type: 'topic'
+                },
+                {
+                  value: 'United Kingdom',
+                  type: 'place'
+                }
+              ],
+              valueLanguage: {
+                code: 'eng',
+                source: {
+                  code: 'iso639-2b'
+                },
+                valueScript: {
+                  code: 'Latn',
+                  source: {
+                    code: 'iso15924'
+                  }
+                }
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  # Bad data handling
+
   describe 'With multiple primary' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do

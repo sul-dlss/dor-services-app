@@ -132,6 +132,7 @@ module Cocina
             Primary.adjust(values, 'genre', notifier, match_type: true)
             attrs = attrs.merge(structuredValue: values)
             adjust_source(attrs)
+            adjust_lang(attrs)
           end
 
           # Authority should be 'naf', not 'lcsh'
@@ -149,6 +150,15 @@ module Cocina
           end
           attrs[:type] = 'place'
           attrs.presence
+        end
+
+        def adjust_lang(attrs)
+          # If all values have same valueLanguage then move to subject.
+          check_value_language = attrs[:structuredValue].first[:valueLanguage]
+          return unless check_value_language && attrs[:structuredValue].all? { |value| value[:valueLanguage] == check_value_language }
+
+          attrs[:valueLanguage] = check_value_language
+          attrs[:structuredValue].each { |value| value.delete(:valueLanguage) }
         end
 
         def adjust_source(attrs)
