@@ -1894,7 +1894,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
     # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
     xit 'need to deal with dateOther type matching eventType and roundtripping' do
-    # it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <originInfo eventType="distribution">
