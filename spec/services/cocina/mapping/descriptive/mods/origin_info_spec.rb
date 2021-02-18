@@ -2024,19 +2024,19 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     end
 
     context 'when MODS is empty originInfo element with no attributes' do
-      xit 'to be implemented: updated spec'
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo/>
+          XML
+        end
 
-      let(:mods) do
-        <<~XML
-          <originInfo/>
-        XML
-      end
+        let(:roundtrip_mods) { '' }
 
-      let(:roundtrip_mods) { '' }
-
-      let(:cocina) do
-        {
-        }
+        let(:cocina) do
+          {
+          }
+        end
       end
     end
   end
