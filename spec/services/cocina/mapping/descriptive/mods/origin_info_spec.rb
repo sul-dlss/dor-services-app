@@ -31,10 +31,18 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'originInfo eventType differs from date type' do
-    xit 'to be implemented: updated spec' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <originInfo eventType="publication">
+            <copyrightDate>1980</copyrightDate>
+          </originInfo>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo eventType="copyright">
             <copyrightDate>1980</copyrightDate>
           </originInfo>
         XML
@@ -44,11 +52,10 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         {
           event: [
             {
-              type: 'publication',
+              type: 'copyright',
               date: [
                 {
-                  value: '1980',
-                  type: 'copyright'
+                  value: '1980'
                 }
               ]
             }
@@ -61,7 +68,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   describe 'originInfo eventType differs from date type, copyright and copyright notice events, converted from MARC record with multiple 264s' do
     # eventType="copyright" maps to event.date, "copyright notice" maps to event.note
 
-    xit 'to be implemented: updated spec' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <originInfo>
@@ -187,7 +194,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
               ]
             },
             {
-              type: 'copyright notice',
+              type: 'copyright',
               note: [
                 {
                   value: '©2018',
@@ -331,7 +338,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Multiple originInfo elements for different events' do
-    xit 'to be implemented: updated spec' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <originInfo eventType="production">
@@ -353,7 +360,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         {
           event: [
             {
-              type: 'production',
+              type: 'creation',
               date: [
                 {
                   value: '1899'
@@ -572,7 +579,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'originInfo with displayLabel' do
-    xit 'to be implemented: updated spec' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <originInfo displayLabel="Origin" eventType="production">
@@ -587,7 +594,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         {
           event: [
             {
-              type: 'production',
+              type: 'creation',
               displayLabel: 'Origin',
               location: [
                 {
@@ -602,7 +609,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Multiscript originInfo with eventType production' do
-    xit 'to be implemented: updated spec' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <originInfo eventType="production" lang="eng" script="Latn" altRepGroup="1">
@@ -642,7 +649,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         {
           event: [
             {
-              type: 'production',
+              type: 'creation',
               date: [
                 {
                   value: '1999-09-09',
@@ -1217,7 +1224,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'Multiple originInfo elements with and without eventTypes' do
-    xit 'to be implemented: updated spec' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <originInfo>
@@ -1343,7 +1350,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
               ]
             },
             {
-              type: 'copyright notice',
+              type: 'copyright',
               note: [
                 {
                   value: '©2020',
