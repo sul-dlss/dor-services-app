@@ -130,7 +130,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
     end
   end
 
-  context 'when normalizing originInfo dates' do
+  context 'when normalizing originInfo date values' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{MODS_ATTRIBUTES}>
@@ -668,6 +668,184 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
         expect(normalized_ng_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <originInfo eventType="publication"/>
+          </mods>
+        XML
+      end
+    end
+  end
+
+  describe 'empty originInfo date elements' do
+    context 'when dateCreated' do
+      # based on jw174hd9042, vy673zb2925
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateCreated></dateCreated>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes the empty child' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when dateIssued' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateIssued/>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes the empty child' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when dateIssued with encoding and type' do
+      # based on vj932ns8042
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateIssued encoding="w3cdtf" keyDate="yes"/>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes the empty child' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when dateCaptured' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateCaptured/>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes the empty child' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when dateValid' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateValid></dateValid>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes the empty child' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when dateModified' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateModified></dateModified>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes the empty child' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when dateOther with no attibutes' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateOther></dateOther>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
+      xit 'removes the element' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when dateOther with @type matching eventType' do
+      # based on xv158sd4671, qx562pf7510
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateOther type="distribution"></dateOther>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
+      xit 'removes the element' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when copyrightDate' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <copyrightDate></copyrightDate>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes the empty child' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
           </mods>
         XML
       end

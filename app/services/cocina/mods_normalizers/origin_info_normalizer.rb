@@ -5,6 +5,8 @@ module Cocina
     # Normalizes a Fedora MODS document for originInfo elements.
     # Must be called after authorityURI attribs are normalized
     class OriginInfoNormalizer
+      DATE_FIELDS = %w[dateIssued copyrightDate dateCreated dateCaptured dateValid dateOther dateModified].freeze
+
       # @param [Nokogiri::Document] mods_ng_xml MODS to be normalized
       # @return [Nokogiri::Document] normalized MODS
       def self.normalize(mods_ng_xml:)
@@ -16,10 +18,11 @@ module Cocina
       end
 
       def normalize
-        normalize_empty_origin_info
+        remove_empty_origin_info_dates
+        remove_empty_origin_info # must be after remove_empty_origin_info_dates
         normalize_origin_info_split
         normalize_origin_info_event_types
-        normalize_origin_info_date_other_types
+        normalize_origin_info_date_other_types # must be after normalize_origin_info_event_types
         normalize_origin_info_place_term_type
         normalize_origin_info_developed_date
         normalize_origin_info_date
@@ -33,7 +36,22 @@ module Cocina
 
       attr_reader :ng_xml
 
-      def normalize_empty_origin_info
+      # must be called before remove_empty_origin_info
+      def remove_empty_origin_info_dates
+        DATE_FIELDS.without('dateOther').each do |date_field|
+          ng_xml.root.xpath("//mods:originInfo/mods:#{date_field}", mods: ModsNormalizer::MODS_NS).each do |date_node|
+            date_node.remove if date_node.content.blank?
+          end
+        end
+
+        # we can also remove dateOther if it has no type attribute
+        ng_xml.root.xpath('//mods:originInfo/mods:dateOther[not(@type)]', mods: ModsNormalizer::MODS_NS).each do |date_node|
+          date_node.remove if date_node.content.blank?
+        end
+      end
+
+      # must be after remove_empty_origin_info_dates
+      def remove_empty_origin_info
         ng_xml.root.xpath('//mods:originInfo[not(mods:*) and not(@*)]', mods: ModsNormalizer::MODS_NS).each(&:remove)
       end
 
@@ -116,6 +134,8 @@ module Cocina
             next if date_other_node.content.present?
 
             date_other_node.remove_attribute('type') if origin_info_event_type.match?(date_other_node['type'])
+            # TODO: Temporarily ignoring pending https://github.com/sul-dlss/dor-services-app/issues/2128
+            # date_other_node.remove if date_other_node.content.blank?
           end
         end
       end
@@ -144,8 +164,8 @@ module Cocina
       end
 
       def normalize_origin_info_date
-        %w[dateIssued copyrightDate dateCreated dateCaptured dateValid dateOther].each do |date_type|
-          ng_xml.root.xpath("//mods:originInfo/mods:#{date_type}", mods: ModsNormalizer::MODS_NS)
+        DATE_FIELDS.each do |date_field|
+          ng_xml.root.xpath("//mods:originInfo/mods:#{date_field}", mods: ModsNormalizer::MODS_NS)
                 .each { |date_node| date_node.content = date_node.content.delete_suffix('.') }
         end
       end

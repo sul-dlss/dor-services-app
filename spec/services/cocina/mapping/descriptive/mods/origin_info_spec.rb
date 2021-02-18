@@ -2014,7 +2014,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
     context 'when cocina event is array with empty hash' do
       # NOTE: cocina -> MODS
-      xit 'this is implemented in PR #2209' do
+      it_behaves_like 'cocina MODS mapping' do
         let(:cocina) do
           {
             event: [{}]

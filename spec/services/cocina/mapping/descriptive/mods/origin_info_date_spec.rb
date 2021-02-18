@@ -1870,4 +1870,134 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
       end
     end
   end
+
+  context 'when originInfo dateOther[@type] matches eventType and dateOther is empty' do
+    # based on #xv158sd4671
+
+    # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
+    xit 'need to deal with dateOther type matching eventType and roundtripping' do
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="distribution">
+            <place>
+              <placeTerm type="text">Washington, DC</placeTerm>
+            </place>
+            <publisher>blah</publisher>
+            <dateOther type="distribution"/>
+          </originInfo>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo eventType="distribution">
+            <place>
+              <placeTerm type="text">Washington, DC</placeTerm>
+            </place>
+            <publisher>blah</publisher>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'distribution',
+              contributor: [
+                {
+                  name: [
+                    {
+                      value: 'blah'
+                    }
+                  ],
+                  type: 'organization',
+                  role: [
+                    {
+                      value: 'distributor',
+                      code: 'dst',
+                      uri: 'http://id.loc.gov/vocabulary/relators/dst',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
+                }
+              ],
+              location: [
+                {
+                  value: 'Washington, DC'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  context 'when dateIssued with encoding and keyDate but no value' do
+    # based on #vj932ns8042
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <dateIssued encoding="w3cdtf" keyDate="yes"/>
+            <publisher>blah</publisher>
+            <issuance>monographic</issuance>
+          </originInfo>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo eventType="publication">
+            <publisher>blah</publisher>
+            <issuance>monographic</issuance>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'publication',
+              note: [
+                {
+                  source: {
+                    value: 'MODS issuance terms'
+                  },
+                  type: 'issuance',
+                  value: 'monographic'
+                }
+              ],
+              contributor: [
+                {
+                  name: [
+                    {
+                      value: 'blah'
+                    }
+                  ],
+                  type: 'organization',
+                  role: [
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
 end

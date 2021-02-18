@@ -143,6 +143,8 @@ module Cocina
         def find_event_by_precedence(events)
           %w[publication presentation distribution production creation manufacture validity].each do |event_type|
             events.each do |event|
+              next if event.blank?
+
               return event if event[:type] == event_type
             end
           end
@@ -159,17 +161,18 @@ module Cocina
         def build_events_for_origin_info(origin_info, language_script)
           [].tap do |events|
             orig_info_type = origin_info['eventType']
+            has_content_predicate = '[string-length(normalize-space()) > 1]'
 
-            date_created = origin_info.xpath('mods:dateCreated', mods: DESC_METADATA_NS)
+            date_created = origin_info.xpath("mods:dateCreated#{has_content_predicate}", mods: DESC_METADATA_NS)
             events << build_event('creation', date_created, language_script) if date_created.present?
 
-            date_issued = origin_info.xpath('mods:dateIssued', mods: DESC_METADATA_NS)
+            date_issued = origin_info.xpath("mods:dateIssued#{has_content_predicate}", mods: DESC_METADATA_NS)
             if date_issued.present?
               event_type = event_type_or_default(orig_info_type, 'publication')
               events << build_event(event_type, date_issued, language_script)
             end
 
-            copyright_date = origin_info.xpath('mods:copyrightDate', mods: DESC_METADATA_NS)
+            copyright_date = origin_info.xpath("mods:copyrightDate#{has_content_predicate}", mods: DESC_METADATA_NS)
             if copyright_date.present?
               events << if origin_info['eventType'] == 'copyright notice'
                           build_copyright_note(copyright_date.first)
@@ -178,13 +181,13 @@ module Cocina
                         end
             end
 
-            date_captured = origin_info.xpath('mods:dateCaptured', mods: DESC_METADATA_NS)
+            date_captured = origin_info.xpath("mods:dateCaptured#{has_content_predicate}", mods: DESC_METADATA_NS)
             events << build_event('capture', date_captured, language_script) if date_captured.present?
 
-            date_validity = origin_info.xpath('mods:dateValid', mods: DESC_METADATA_NS)
+            date_validity = origin_info.xpath("mods:dateValid#{has_content_predicate}", mods: DESC_METADATA_NS)
             events << build_event('validity', date_validity, language_script) if date_validity.present?
 
-            date_other = origin_info.xpath('mods:dateOther', mods: DESC_METADATA_NS)
+            date_other = origin_info.xpath("mods:dateOther#{has_content_predicate}", mods: DESC_METADATA_NS)
             events << build_event(date_other_event_type(origin_info, date_other.first), date_other, language_script) if date_other.present?
 
             # set eventType to 'production' in MODS if no date present
@@ -373,12 +376,15 @@ module Cocina
 
           notifier.warn('originInfo/dateOther missing eventType') unless type
 
-          {
-            type: type,
-            date: dates.presence
+          result = {
+            type: type
           }.compact
+          result[:date] = dates.compact if dates.compact.present?
+          result
         end
 
+        # rubocop:disable Metrics/CyclomaticComplexity
+        # rubocop:disable Metrics/PerceivedComplexity
         def build_structured_date(type, node_set)
           return nil if node_set.blank?
 
@@ -386,6 +392,8 @@ module Cocina
           return common_attribs.merge(value: node_set.join('/')) if etdf_range?(node_set, common_attribs[:encoding])
 
           dates = node_set.map do |node|
+            next if node.text.blank? && node.attributes.empty?
+
             new_node = node.deep_dup
             new_node.remove_attribute('encoding') if common_attribs[:encoding].present? || node[:encoding]&.size&.zero?
             new_node.remove_attribute('qualifier') if common_attribs[:qualifier].present? || node[:qualifier]&.size&.zero?
@@ -393,6 +401,8 @@ module Cocina
           end
           { structuredValue: dates }.merge(common_attribs).compact
         end
+        # rubocop:enable Metrics/PerceivedComplexity
+        # rubocop:enable Metrics/CyclomaticComplexity
 
         # @return [Boolean] true if this node set can be expressed as an EDTF range.
         def etdf_range?(node_set, encoding)
@@ -413,10 +423,10 @@ module Cocina
         def build_date(event_type, node)
           {
             note: build_date_note(event_type, node),
-            value: clean_date(node.text),
             qualifier: node[:qualifier],
             type: node['point']
           }.tap do |date|
+            date[:value] = clean_date(node.text) if node.text.present?
             date[:encoding] = { code: node['encoding'] } if node['encoding']
             date[:status] = 'primary' if node['keyDate']
           end.compact
