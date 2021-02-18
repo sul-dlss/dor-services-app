@@ -912,4 +912,42 @@ RSpec.describe 'MODS location <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Email contact' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note type="contact" displayLabel="Contact">specialcollections@stanford.edu</note>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          access: {
+            accessContact: [
+              {
+                value: 'specialcollections@stanford.edu',
+                type: 'email',
+                displayLabel: 'Contact'
+              }
+            ]
+          }
+        }
+      end
+    end
+  end
+
+  describe 'Blank email contact' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note type="contact" displayLabel="Contact" />
+        XML
+      end
+
+      let(:roundtrip_mods) { '' }
+
+      let(:cocina) { {} }
+    end
+  end
 end
