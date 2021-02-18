@@ -1260,6 +1260,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Transliterated name with role' do
+    xit 'to be mapped: status primary is inside parallelValue and sibling to it both'
+
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -1736,7 +1738,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
       let(:mods) do
         <<~XML
           <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
-            <namePart>Rea Metaru Shigen Saisei Gijutsu Kenkyūkai in Japanese characters</namePart>
+            <namePart>レアメタル資源再生技術研究会</namePart>
           </name>
           <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
             <namePart>Rea Metaru Shigen Saisei Gijutsu Kenkyūkai</namePart>
@@ -1752,7 +1754,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                 {
                   parallelValue: [
                     {
-                      value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai in Japanese characters',
+                      value: 'レアメタル資源再生技術研究会',
                       status: 'primary',
                       valueLanguage: {
                         code: 'jpn',
@@ -2389,6 +2391,106 @@ RSpec.describe 'MODS name <--> cocina mappings' do
         end
       end
     end
+
+    context 'with empty name value and empty role value' do
+      # from pd967mn2579, see https://github.com/sul-dlss/dor-services-app/issues/1161
+      xit 'to implement: if cocina gets empty values, MODS should not create empty elements'
+
+      # NOTE: cocina -> MODS
+      it_behaves_like 'cocina MODS mapping' do
+        let(:cocina) do
+          {
+            contributor: [
+              {
+                name: [
+                  {
+                    value: ''
+                  }
+                ],
+                role: [
+                  {
+                    value: ''
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        let(:roundtrip_cocina) do
+          {
+          }
+        end
+
+        let(:mods) do
+          <<~XML
+            <name>
+              <namePart/>
+              <role/>
+            </name>
+          XML
+        end
+
+        let(:warnings) do
+          [
+            Notification.new(msg: 'Missing or empty name type attribute'),
+            Notification.new(msg: 'name/namePart missing value'),
+            Notification.new(msg: 'Missing name/namePart element')
+          ]
+        end
+      end
+    end
+
+    context 'with empty name value and missing role' do
+      xit 'to implement: if cocina gets empty values, MODS should not create empty elements'
+
+      # NOTE: cocina -> MODS
+      it_behaves_like 'cocina MODS mapping' do
+        let(:cocina) do
+          {
+            contributor: [
+              {
+                name: [
+                  {
+                    value: ''
+                  }
+                ],
+                role: [
+                  {
+                    source:
+                      {
+                        code: 'marcreleator'
+                      }
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        let(:roundtrip_cocina) do
+          {
+          }
+        end
+
+        let(:mods) do
+          <<~XML
+            <name>
+              <namePart/>
+              <role/>
+            </name>
+          XML
+        end
+
+        let(:warnings) do
+          [
+            Notification.new(msg: 'Missing or empty name type attribute'),
+            Notification.new(msg: 'name/namePart missing value'),
+            Notification.new(msg: 'Missing name/namePart element')
+          ]
+        end
+      end
+    end
   end
 
   context 'with multiple names, no primary, no roles' do
@@ -2435,6 +2537,318 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             }
           ]
         }
+      end
+    end
+  end
+
+  context 'with a translated name, no role' do
+    # note cocina --> MODS
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  parallelValue: [
+                    {
+                      status: 'primary',
+                      valueLanguage: {
+                        code: 'jpn',
+                        source: {
+                          code: 'iso639-2b'
+                        },
+                        valueScript: {
+                          code: 'Jpan',
+                          source: {
+                            code: 'iso15924'
+                          }
+                        }
+                      },
+                      value: 'レアメタル資源再生技術研究会'
+                    },
+                    {
+                      valueLanguage: {
+                        code: 'jpn',
+                        source: {
+                          code: 'iso639-2b'
+                        },
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
+                          }
+                        }
+                      },
+                      type: 'transliteration',
+                      standard: {
+                        value: 'ALA-LC Romanization Tables'
+                      },
+                      value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai'
+                    }
+                  ],
+                  type: 'organization'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      # added status primary
+      let(:roundtrip_cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  parallelValue: [
+                    {
+                      status: 'primary',
+                      valueLanguage: {
+                        code: 'jpn',
+                        source: {
+                          code: 'iso639-2b'
+                        },
+                        valueScript: {
+                          code: 'Jpan',
+                          source: {
+                            code: 'iso15924'
+                          }
+                        }
+                      },
+                      value: 'レアメタル資源再生技術研究会'
+                    },
+                    {
+                      valueLanguage: {
+                        code: 'jpn',
+                        source: {
+                          code: 'iso639-2b'
+                        },
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
+                          }
+                        }
+                      },
+                      type: 'transliteration',
+                      standard: {
+                        value: 'ALA-LC Romanization Tables'
+                      },
+                      value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai'
+                    }
+                  ],
+                  type: 'organization',
+                  status: 'primary'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
+            <namePart>レアメタル資源再生技術研究会</namePart>
+          </name>
+          <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
+            <namePart>Rea Metaru Shigen Saisei Gijutsu Kenkyūkai</namePart>
+          </name>
+        XML
+      end
+    end
+  end
+
+  context 'when name / contributor is various flavors of missing' do
+    context 'when cocina contributor is nil' do
+      # NOTE: cocina -> MODS
+      it_behaves_like 'cocina MODS mapping' do
+        let(:cocina) do
+          {
+          }
+        end
+
+        let(:mods) { '' }
+      end
+    end
+
+    context 'when cocina contributor is empty array' do
+      # NOTE: cocina -> MODS
+      it_behaves_like 'cocina MODS mapping' do
+        let(:cocina) do
+          {
+            contributor: []
+          }
+        end
+
+        let(:roundtrip_cocina) do
+          {
+          }
+        end
+
+        let(:mods) { '' }
+      end
+    end
+
+    context 'when cocina contributor is array with empty hash' do
+      # NOTE: cocina -> MODS
+      it_behaves_like 'cocina MODS mapping' do
+        let(:cocina) do
+          {
+            contributor: [{}]
+          }
+        end
+
+        let(:roundtrip_cocina) do
+          {
+          }
+        end
+
+        let(:mods) { '' }
+      end
+    end
+
+    context 'when MODS has no elements' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) { '' }
+
+        let(:cocina) do
+          {
+          }
+        end
+      end
+    end
+
+    context 'when MODS is empty name element with no attributes' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <name/>
+          XML
+        end
+
+        let(:roundtrip_mods) { '' }
+
+        let(:cocina) do
+          {
+          }
+        end
+
+        let(:warnings) do
+          [
+            Notification.new(msg: 'Missing or empty name type attribute'),
+            Notification.new(msg: 'Missing name/namePart element')
+          ]
+        end
+      end
+    end
+  end
+
+  context 'with authority code only' do
+    it_behaves_like 'cocina MODS mapping' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
+                  source: {
+                    code: 'naf'
+                  }
+                }
+              ],
+              status: 'primary',
+              type: 'person'
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary" authority="naf">
+            <namePart>Sayers, Dorothy L. (Dorothy Leigh), 1893-1957</namePart>
+          </name>
+        XML
+      end
+    end
+  end
+
+  context 'with a personal name part of name title group' do
+    # similar to titleInfo spec: Uniform title with authority - but cocina -> MODS
+    # NOTE: cocina -> MODS
+    xit 'to be implemented: roundtrip cocina is problematic' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Peele, Gregory'
+                }
+              ],
+              type: 'person'
+            },
+            {
+              name: [
+                {
+                  value: 'Shakespeare, William, 1564-1616',
+                  type: 'person',
+                  status: 'primary',
+                  uri: 'http://id.loc.gov/authorities/names/n78095332',
+                  source: {
+                    uri: 'http://id.loc.gov/authorities/names/',
+                    code: 'naf'
+                  }
+                }
+              ]
+            }
+          ],
+          title: [
+            {
+              structuredValue: [
+                {
+                  value: 'Shakespeare, William, 1564-1616',
+                  type: 'name',
+                  uri: 'http://id.loc.gov/authorities/names/n78095332',
+                  source: {
+                    uri: 'http://id.loc.gov/authorities/names/',
+                    code: 'naf'
+                  }
+                },
+                {
+                  value: 'Hamlet',
+                  type: 'title'
+                }
+              ],
+              type: 'uniform',
+              uri: 'http://id.loc.gov/authorities/names/n80008522',
+              source: {
+                uri: 'http://id.loc.gov/authorities/names/',
+                code: 'naf'
+              }
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <titleInfo valueURI="http://id.loc.gov/authorities/names/n80008522" authorityURI="http://id.loc.gov/authorities/names/"
+            authority="naf" type="uniform" nameTitleGroup="1">\n
+            <title>Hamlet</title>\n
+          </titleInfo>\n
+          <name type="personal" nameTitleGroup="1" valueURI="http://id.loc.gov/authorities/names/n78095332"
+            authority="naf" authorityURI="http://id.loc.gov/authorities/names/">\n
+            <namePart>Shakespeare, William, 1564-1616</namePart>\n
+          </name>\n
+          <name type="personal">
+            <namePart>Peele, Gregory</namePart>
+          </name>
+        XML
       end
     end
   end
