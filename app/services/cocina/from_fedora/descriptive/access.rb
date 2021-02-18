@@ -131,6 +131,8 @@ module Cocina
 
         def descriptive_value_for(nodes, type: nil)
           nodes.map do |node|
+            next nil if node.text.blank?
+
             {}.tap do |attrs|
               if node[:authority] && !node[:valueURI]
                 attrs[:code] = node.text
@@ -147,7 +149,7 @@ module Cocina
               attrs[:displayLabel] = node[:displayLabel]
               attrs[:valueLanguage] = LanguageScript.build(node: node)
             end.compact
-          end
+          end.compact
         end
       end
     end
