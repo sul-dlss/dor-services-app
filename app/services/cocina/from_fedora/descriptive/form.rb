@@ -205,12 +205,14 @@ module Cocina
 
         def physical_description_notes_for(physical_description)
           physical_description.xpath('mods:note', mods: DESC_METADATA_NS).map do |node|
+            next nil if node.content.blank?
+
             {
               value: node.content,
               displayLabel: node['displayLabel'],
               type: node['type']
             }.compact
-          end
+          end.compact
         end
 
         def add_digital_origin(forms, physical_description)

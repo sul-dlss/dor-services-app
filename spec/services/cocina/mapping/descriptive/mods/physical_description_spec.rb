@@ -340,4 +340,36 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Physical description with empty note' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <physicalDescription>
+            <form>ink on paper</form>
+            <note displayLabel="Condition" />
+          </physicalDescription>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <physicalDescription>
+            <form>ink on paper</form>
+          </physicalDescription>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          form: [
+            {
+              value: 'ink on paper',
+              type: 'form'
+            }
+          ]
+        }
+      end
+    end
+  end
 end
