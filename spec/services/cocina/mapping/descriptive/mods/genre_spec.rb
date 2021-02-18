@@ -51,7 +51,7 @@ RSpec.describe 'MODS genre <--> cocina mappings' do
   end
 
   describe 'with type' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated spec' do
       let(:mods) do
         <<~XML
           <genre type="style">Art Deco</genre>
@@ -63,7 +63,11 @@ RSpec.describe 'MODS genre <--> cocina mappings' do
           form: [
             {
               value: 'Art Deco',
-              type: 'style'
+              type: 'genre',
+              note: [
+                value: 'style',
+                type: 'genre type'
+              ]
             }
           ]
         }
