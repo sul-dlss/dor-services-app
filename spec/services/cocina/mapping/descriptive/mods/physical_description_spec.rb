@@ -311,4 +311,33 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Extent with unit' do
+    xit 'unimplemented mapping' do
+      let(:mods) do
+        <<~XML
+          <physicalDescription>
+            <extent unit="linear foot (3 folders and 8 audiocassettes)">.5</extent>
+          </physicalDescription>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          form: [
+            {
+              value: '.5',
+              type: 'extent',
+              note: [
+                {
+                  value: 'linear foot (3 folders and 8 audiocassettes)',
+                  type: 'unit'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
 end
