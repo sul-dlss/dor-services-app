@@ -115,39 +115,39 @@ RSpec.describe 'MODS subject cartographic <--> cocina mappings' do
   end
 
   describe 'Multiple cartographic subjects with altRepGroup' do
-    let(:mods) do
-      <<~XML
-        <subject altRepGroup="1">
-          <cartographics>
-            <scale>Scale 1:650,000.</scale>
-          </cartographics>
-        </subject>
-        <subject altRepGroup="1">
-          <cartographics>
-            <scale>&#x6BD4;&#x4F8B;&#x5C3A; 1:650,000.</scale>
-          </cartographics>
-        </subject>
-      XML
-    end
+    xit 'not implemented: multiple cartographic subjects with altRepGroup' do
+      let(:mods) do
+        <<~XML
+          <subject altRepGroup="1">
+            <cartographics>
+              <scale>Scale 1:650,000.</scale>
+            </cartographics>
+          </subject>
+          <subject altRepGroup="1">
+            <cartographics>
+              <scale>&#x6BD4;&#x4F8B;&#x5C3A; 1:650,000.</scale>
+            </cartographics>
+          </subject>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        form: [
-          parallelValue: [
-            {
-              value: 'Scale 1:650,000.',
-              type: 'map scale'
-            },
-            {
-              value: '比例尺 1:650,000.',
-              type: 'map scale'
-            }
+      let(:cocina) do
+        {
+          form: [
+            parallelValue: [
+              {
+                value: 'Scale 1:650,000.',
+                type: 'map scale'
+              },
+              {
+                value: '比例尺 1:650,000.',
+                type: 'map scale'
+              }
+            ]
           ]
-        ]
-      }
+        }
+      end
     end
-
-    xit 'not implemented'
   end
 
   describe 'Cartographic subject with multiple coordinate representations' do

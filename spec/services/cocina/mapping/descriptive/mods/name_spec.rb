@@ -362,41 +362,42 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with ordinal' do
-    xit('not implemented: ordinal type (determined from source data)')
     # Use "term of address" for "ordinal" if type of term cannot be determined from source data.
 
-    let(:mods) do
-      <<~XML
-        <name type="personal" usage="primary">
-          <namePart type="given">Elizabeth</namePart>
-          <namePart type="termsOfAddress">II</namePart>
-        </name>
-      XML
-    end
+    xit 'not implemented: ordinal type (determined from source data)' do
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart type="given">Elizabeth</namePart>
+            <namePart type="termsOfAddress">II</namePart>
+          </name>
+        XML
+      end
 
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                structuredValue: [
-                  {
-                    value: 'Elizabeth',
-                    type: 'forename'
-                  },
-                  {
-                    value: 'II',
-                    type: 'ordinal'
-                  }
-                ]
-              }
-            ],
-            type: 'person',
-            status: 'primary'
-          }
-        ]
-      }
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Elizabeth',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'II',
+                      type: 'ordinal'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary'
+            }
+          ]
+        }
+      end
     end
   end
 
@@ -1181,7 +1182,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Transliterated name with parts (name as structuredValue)' do
-    xit('not mapped: for reference only.')
+    xit 'not mapped: for reference only.'
 
     # This example is for reference only - doesn't need to be mapped.  Splitting the name isn't implemented
     let(:mods) do
@@ -1447,40 +1448,40 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with nameIdentifier only (RWO URI)' do
-    xit 'not implemented: mapping to contributor with nameIdentifier only'
+    xit 'not implemented: mapping to contributor with nameIdentifier only' do
+      let(:mods) do
+        <<~XML
+          <name>
+            <nameIdentifier type="orcid">0000-0000-0000</nameIdentifier>
+            <role>
+              <roleTerm type="code" authority="marcrelator">aut</roleTerm>
+            </role>
+          </name>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <name>
-          <nameIdentifier type="orcid">0000-0000-0000</nameIdentifier>
-          <role>
-            <roleTerm type="code" authority="marcrelator">aut</roleTerm>
-          </role>
-        </name>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                value: '0000-0000-0000',
-                type: 'ORCID'
-              }
-            ],
-            role: [
-              {
-                code: 'aut',
-                source: {
-                  code: 'marcrelator'
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: '0000-0000-0000',
+                  type: 'ORCID'
                 }
-              }
-            ]
-          }
-        ]
-      }
+              ],
+              role: [
+                {
+                  code: 'aut',
+                  source: {
+                    code: 'marcrelator'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 
@@ -1625,68 +1626,70 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name with active date - year' do
-    xit 'not implemented: type activity dates'
-
     # If date starts with "active," use type "activity dates" and drop "active" from date value
-    let(:mods) do
-      <<~XML
-        <name type="personal">
-          <namePart>Yao, Zongyi</namePart>
-          <namePart type="date">Active 1618</namePart>
-        </name>
-      XML
-    end
 
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                value: 'Yao, Zongyi',
-                type: 'name'
-              },
-              {
-                value: '1618',
-                type: 'activity dates'
-              }
-            ]
-          }
-        ]
-      }
+    xit 'not implemented: type activity dates' do
+      let(:mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Yao, Zongyi</namePart>
+            <namePart type="date">Active 1618</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Yao, Zongyi',
+                  type: 'name'
+                },
+                {
+                  value: '1618',
+                  type: 'activity dates'
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 
   describe 'Name with active date - century' do
-    xit 'not implemented: type activity dates'
-
     # If date starts with "active," use type "activity dates" and drop "active" from date value
-    let(:mods) do
-      <<~XML
-        <name type="personal">
-          <namePart>Inoue, Kaian</namePart>
-          <namePart type="date">Active 18th century</namePart>
-        </name>
-      XML
-    end
 
-    let(:cocina) do
-      {
-        contributor: [
-          {
-            name: [
-              {
-                value: 'Inoue, Kaian',
-                type: 'name'
-              },
-              {
-                value: '18th century',
-                type: 'activity dates'
-              }
-            ]
-          }
-        ]
-      }
+    xit 'not implemented: type activity dates' do
+      let(:mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Inoue, Kaian</namePart>
+            <namePart type="date">Active 18th century</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Inoue, Kaian',
+                  type: 'name'
+                },
+                {
+                  value: '18th century',
+                  type: 'activity dates'
+                }
+              ]
+            }
+          ]
+        }
+      end
     end
   end
 

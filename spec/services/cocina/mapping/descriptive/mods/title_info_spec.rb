@@ -550,59 +550,59 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   describe 'Parallel titles' do
     # How to ID: edge case requiring manual review of records with multiple titleInfo type="translated" instances
 
-    xit 'not implemented: multiple type="translated" edge case'
+    xit 'not implemented: multiple type="translated" edge case' do
+      let(:mods) do
+        <<~XML
+          <titleInfo type="translated" lang="ger" altRepGroup="1">
+            <title>Berliner Mauer Kunst</title>
+          </titleInfo>
+          <titleInfo type="translated" lang="eng" altRepGroup="1">
+            <title>Berlin's wall art</title>
+          </titleInfo>
+          <titleInfo type="translated" lang="spa" altRepGroup="1">
+            <title>Arte en el muro de Berlin</title>
+          </titleInfo>
+        XML
+      end
 
-    let(:mods) do
-      <<~XML
-        <titleInfo type="translated" lang="ger" altRepGroup="1">
-          <title>Berliner Mauer Kunst</title>
-        </titleInfo>
-        <titleInfo type="translated" lang="eng" altRepGroup="1">
-          <title>Berlin's wall art</title>
-        </titleInfo>
-        <titleInfo type="translated" lang="spa" altRepGroup="1">
-          <title>Arte en el muro de Berlin</title>
-        </titleInfo>
-      XML
-    end
-
-    let(:cocina) do
-      {
-        title: [
-          {
-            parallelValue: [
-              {
-                value: 'Berliner Mauer Kunst',
-                valueLanguage: {
-                  code: 'ger',
-                  source: {
-                    code: 'iso639-2b'
+      let(:cocina) do
+        {
+          title: [
+            {
+              parallelValue: [
+                {
+                  value: 'Berliner Mauer Kunst',
+                  valueLanguage: {
+                    code: 'ger',
+                    source: {
+                      code: 'iso639-2b'
+                    }
+                  }
+                },
+                {
+                  value: "Berlin's wall art",
+                  valueLanguage: {
+                    code: 'eng',
+                    source: {
+                      code: 'iso639-2b'
+                    }
+                  }
+                },
+                {
+                  value: 'Arte en el muro de Berlin',
+                  valueLanguage: {
+                    code: 'spa',
+                    source: {
+                      code: 'iso639-2b'
+                    }
                   }
                 }
-              },
-              {
-                value: "Berlin's wall art",
-                valueLanguage: {
-                  code: 'eng',
-                  source: {
-                    code: 'iso639-2b'
-                  }
-                }
-              },
-              {
-                value: 'Arte en el muro de Berlin',
-                valueLanguage: {
-                  code: 'spa',
-                  source: {
-                    code: 'iso639-2b'
-                  }
-                }
-              }
-            ],
-            type: 'parallel'
-          }
-        ]
-      }
+              ],
+              type: 'parallel'
+            }
+          ]
+        }
+      end
     end
   end
 

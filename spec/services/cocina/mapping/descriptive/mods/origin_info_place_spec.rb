@@ -160,45 +160,46 @@ RSpec.describe 'MODS originInfo place <--> cocina mappings' do
 
   describe 'Place - text and code for different places - Version B (from replayable spreadsheet, incorrect MODS)' do
     # The authority value goes with the code term and the authorityURI and valueURI values go with the text term.
-    let(:mods) do
-      <<~XML
-        <originInfo eventType="publication">
-          <place>
-            <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/"
-              valueURI="http://id.loc.gov/authorities/names/n50046557">cau</placeTerm>
-            <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/"
-              valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
-          </place>
-        </originInfo>
-      XML
-    end
 
-    let(:cocina) do
-      {
-        event: [
-          {
-            type: 'publication',
-            location: [
-              {
-                code: 'cau',
-                source: {
-                  code: 'marccountry'
-                }
-              },
-              {
-                value: 'Stanford (Calif.)',
-                uri: 'http://id.loc.gov/authorities/names/n50046557',
-                source: {
-                  uri: 'http://id.loc.gov/authorities/names/'
-                }
-              }
-            ]
-          }
-        ]
-      }
-    end
+    xit 'not implemented: text and code for diff places from replayable spreadsheet' do
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/"
+                valueURI="http://id.loc.gov/authorities/names/n50046557">cau</placeTerm>
+              <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/"
+                valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+            </place>
+          </originInfo>
+        XML
+      end
 
-    xit 'not implemented: text and code for diff places from replayable spreadsheet'
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'publication',
+              location: [
+                {
+                  code: 'cau',
+                  source: {
+                    code: 'marccountry'
+                  }
+                },
+                {
+                  value: 'Stanford (Calif.)',
+                  uri: 'http://id.loc.gov/authorities/names/n50046557',
+                  source: {
+                    uri: 'http://id.loc.gov/authorities/names/'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
   end
 
   describe 'Supplied place name' do
