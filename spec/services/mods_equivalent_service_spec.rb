@@ -142,6 +142,7 @@ RSpec.describe ModsEquivalentService do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <note lang="eng" altRepGroup="1">This is a note.</note>
           <note lang="fre" altRepGroup="1">C'est une note.</note>
+          <titleInfo altRepGroup="1"><title>This is a title</title></titleInfo>
         </mods>
       XML
     end
@@ -153,6 +154,7 @@ RSpec.describe ModsEquivalentService do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <note lang="eng" altRepGroup="2">This is a note.</note>
           <note lang="fre" altRepGroup="2">C'est une note.</note>
+          <titleInfo altRepGroup="3"><title>This is a title</title></titleInfo>
         </mods>
       XML
     end
