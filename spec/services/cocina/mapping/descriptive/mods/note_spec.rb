@@ -125,6 +125,35 @@ RSpec.describe 'MODS note <--> cocina mappings' do
     end
   end
 
+  describe 'Note with ID attribute' do
+    xit 'not implemented: note with ID attribute' do
+      let(:druid) {'dn184gm5872'}
+
+      let(:mods) do
+        <<~XML
+          <note displayLabel="Model Year" ID="model_year">1934</note>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: '1934',
+              displayLabel: 'Model Year',
+              identifier: [
+                {
+                  value: 'model_year',
+                  type: 'anchor'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   ## Data error - do not warn
   describe 'Note with unmatched altRepGroup' do
     it_behaves_like 'MODS cocina mapping' do
