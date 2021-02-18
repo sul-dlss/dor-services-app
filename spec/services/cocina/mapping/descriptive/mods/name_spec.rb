@@ -1260,8 +1260,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Transliterated name with role' do
-    xit 'to be mapped: status primary is inside parallelValue and sibling to it both'
-
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -1732,7 +1730,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
-  describe 'Name with language' do
+  describe 'Name with language (with altRepGroup)' do
     it_behaves_like 'MODS cocina mapping' do
       # adapted from cp049zn0898
       let(:mods) do
@@ -1793,6 +1791,46 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                   status: 'primary'
                 }
               ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Name with language (without altRepGroup)' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="corporate" usage="primary" lang="jpn" script="Jpan">
+            <namePart>レアメタル資源再生技術研究会</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'レアメタル資源再生技術研究会',
+                  valueLanguage: {
+                    code: 'jpn',
+                    source: {
+                      code: 'iso639-2b'
+                    },
+                    valueScript: {
+                      code: 'Jpan',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                }
+              ],
+              type: 'organization',
+              status: 'primary'
             }
           ]
         }
@@ -2537,126 +2575,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             }
           ]
         }
-      end
-    end
-  end
-
-  context 'with a translated name, no role' do
-    # note cocina --> MODS
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  parallelValue: [
-                    {
-                      status: 'primary',
-                      valueLanguage: {
-                        code: 'jpn',
-                        source: {
-                          code: 'iso639-2b'
-                        },
-                        valueScript: {
-                          code: 'Jpan',
-                          source: {
-                            code: 'iso15924'
-                          }
-                        }
-                      },
-                      value: 'レアメタル資源再生技術研究会'
-                    },
-                    {
-                      valueLanguage: {
-                        code: 'jpn',
-                        source: {
-                          code: 'iso639-2b'
-                        },
-                        valueScript: {
-                          code: 'Latn',
-                          source: {
-                            code: 'iso15924'
-                          }
-                        }
-                      },
-                      type: 'transliteration',
-                      standard: {
-                        value: 'ALA-LC Romanization Tables'
-                      },
-                      value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai'
-                    }
-                  ],
-                  type: 'organization'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      # added status primary
-      let(:roundtrip_cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  parallelValue: [
-                    {
-                      status: 'primary',
-                      valueLanguage: {
-                        code: 'jpn',
-                        source: {
-                          code: 'iso639-2b'
-                        },
-                        valueScript: {
-                          code: 'Jpan',
-                          source: {
-                            code: 'iso15924'
-                          }
-                        }
-                      },
-                      value: 'レアメタル資源再生技術研究会'
-                    },
-                    {
-                      valueLanguage: {
-                        code: 'jpn',
-                        source: {
-                          code: 'iso639-2b'
-                        },
-                        valueScript: {
-                          code: 'Latn',
-                          source: {
-                            code: 'iso15924'
-                          }
-                        }
-                      },
-                      type: 'transliteration',
-                      standard: {
-                        value: 'ALA-LC Romanization Tables'
-                      },
-                      value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai'
-                    }
-                  ],
-                  type: 'organization',
-                  status: 'primary'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <name type="corporate" usage="primary" lang="jpn" script="Jpan" altRepGroup="1">
-            <namePart>レアメタル資源再生技術研究会</namePart>
-          </name>
-          <name type="corporate" lang="jpn" script="Latn" transliteration="ALA-LC Romanization Tables" altRepGroup="1">
-            <namePart>Rea Metaru Shigen Saisei Gijutsu Kenkyūkai</namePart>
-          </name>
-        XML
       end
     end
   end

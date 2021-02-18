@@ -45,16 +45,7 @@ module Cocina
         def build_parallel_name(name_node)
           name_attrs = {
             status: name_node['usage']
-          }.tap do |attrs|
-            value_language = LanguageScript.build(node: name_node)
-            attrs[:valueLanguage] = value_language if value_language
-            if name_node[:transliteration] == 'ALA-LC Romanization Tables'
-              attrs[:type] = 'transliteration'
-              attrs[:standard] = {
-                value: 'ALA-LC Romanization Tables'
-              }
-            end
-          end
+          }.compact.merge(common_lang_script(name_node))
 
           name_attrs = name_attrs.merge(common_name(name_node, name_attrs[:name]))
           name_parts = build_name_parts(name_node)
@@ -89,6 +80,17 @@ module Cocina
           end.compact
         end
 
+        def common_lang_script(name_node)
+          {
+            valueLanguage: LanguageScript.build(node: name_node).presence
+          }.tap do |attrs|
+            if name_node[:transliteration]
+              attrs[:type] = 'transliteration'
+              attrs[:standard] = { value: name_node[:transliteration] }
+            end
+          end.compact
+        end
+
         def build_name_parts(name_node)
           name_part_nodes = name_node.xpath('mods:namePart', mods: DESC_METADATA_NS)
           alternative_name_nodes = name_node.xpath('mods:alternativeName', mods: DESC_METADATA_NS)
@@ -97,13 +99,13 @@ module Cocina
           case name_part_nodes.size
           when 0
             parts << { valueAt: name_node['xlink:href'] } if name_node['xlink:href']
-            parts << authority_attrs_for(name_node) if name_node['valueURI']
+            parts << common_authority(name_node) if name_node['valueURI']
           when 1
             parts << build_name_part(name_node, name_part_nodes.first, default_type: alternative_name_nodes.present?)
-                     .merge(authority_attrs_for(name_node)).presence
+                     .merge(common_authority(name_node)).merge(common_lang_script(name_node)).presence
           else
             vals = name_part_nodes.map { |name_part| build_name_part(name_node, name_part).presence }.compact
-            parts << { structuredValue: vals }.merge(authority_attrs_for(name_node))
+            parts << { structuredValue: vals }.merge(common_authority(name_node)).merge(common_lang_script(name_node))
           end
 
           parts = build_alternative_name(alternative_name_nodes, parts) if alternative_name_nodes.present?
@@ -151,7 +153,7 @@ module Cocina
           end
         end
 
-        def authority_attrs_for(name_node)
+        def common_authority(name_node)
           {
             uri: ValueURI.sniff(uri_for(name_node), notifier)
           }.tap do |attrs|

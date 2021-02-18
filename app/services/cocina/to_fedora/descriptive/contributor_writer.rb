@@ -108,6 +108,7 @@ module Cocina
           {
             type: NAME_TYPE.fetch(contributor.type, name_title_group ? 'personal' : nil),
             nameTitleGroup: name_title_group,
+            lang: name.valueLanguage&.code,
             script: name.valueLanguage&.valueScript&.code,
             valueURI: name.uri,
             authority: name.source&.code,
