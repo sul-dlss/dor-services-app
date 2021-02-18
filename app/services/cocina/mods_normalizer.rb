@@ -162,17 +162,9 @@ module Cocina
     end
 
     def normalize_unmatched_altrepgroup
-      remove_unmatched('altRepGroup')
-    end
-
-    def normalize_unmatched_nametitlegroup
-      remove_unmatched('nameTitleGroup')
-    end
-
-    def remove_unmatched(attr_name)
       ids = {}
-      ng_xml.root.xpath("//mods:*[@#{attr_name}]", mods: MODS_NS).each do |node|
-        id = node[attr_name]
+      ng_xml.root.xpath('//mods:*[@altRepGroup]', mods: MODS_NS).each do |node|
+        id = [node['altRepGroup'], node.name]
         ids[id] ||= []
         ids[id] << node
       end
@@ -180,7 +172,22 @@ module Cocina
       ids.each_value do |nodes|
         next unless nodes.size == 1
 
-        nodes.first.delete(attr_name)
+        nodes.first.delete('altRepGroup')
+      end
+    end
+
+    def normalize_unmatched_nametitlegroup
+      ids = {}
+      ng_xml.root.xpath('//mods:name[@nameTitleGroup] | //mods:titleInfo[@nameTitleGroup]', mods: MODS_NS).each do |node|
+        id = node['nameTitleGroup']
+        ids[id] ||= []
+        ids[id] << node
+      end
+
+      ids.each_value do |nodes|
+        next unless nodes.size == 1
+
+        nodes.first.delete('nameTitleGroup')
       end
     end
 

@@ -228,6 +228,9 @@ RSpec.describe Cocina::ModsNormalizer do
           <subject altRepGroup='2'>
             <topic>Vulcanology</topic>
           </subject>
+          <titleInfo altRepGroup='2'>
+            <title>Introduction to Geology</titleInfo>
+          </titleInfo>
         </mods>
       XML
     end
@@ -244,6 +247,9 @@ RSpec.describe Cocina::ModsNormalizer do
           <subject>
             <topic>Vulcanology</topic>
           </subject>
+          <titleInfo>
+            <title>Introduction to Geology</titleInfo>
+          </titleInfo>
         </mods>
       XML
     end
