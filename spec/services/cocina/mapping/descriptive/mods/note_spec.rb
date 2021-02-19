@@ -126,9 +126,8 @@ RSpec.describe 'MODS note <--> cocina mappings' do
   end
 
   describe 'Note with ID attribute' do
-    xit 'not implemented: note with ID attribute' do
-      let(:druid) { 'dn184gm5872' }
-
+    # Adapted from dn184gm5872
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <note displayLabel="Model Year" ID="model_year">1934</note>
