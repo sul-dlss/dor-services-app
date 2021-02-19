@@ -691,6 +691,59 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     end
   end
 
+  describe 'Simple name subject with display form and role' do
+    # Adapted from bn504xs5562
+
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <name type="personal">
+              <role>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">Depicted</roleTerm>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">dpc</roleTerm>
+              </role>
+              <namePart type="family">Holbein, Han, 1497-1543</namePart>
+              <displayForm>Holbein, Han, 1497-1543</displayForm>
+            </name>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              parallelValue: [
+                {
+                  value: 'Holbein, Han, 1497-1543',
+                  type: 'surname'
+                },
+                {
+                  value: 'Holbein, Han, 1497-1543',
+                  type: 'display'
+                }
+              ],
+              note: [
+                {
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  },
+                  uri: 'http://id.loc.gov/vocabulary/relators/dpc',
+                  code: 'dpc',
+                  value: 'Depicted',
+                  type: 'role'
+                }
+              ],
+              type: 'person'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Name subject with name type' do
     # Example from bt573bx7287
     it_behaves_like 'MODS cocina mapping' do
