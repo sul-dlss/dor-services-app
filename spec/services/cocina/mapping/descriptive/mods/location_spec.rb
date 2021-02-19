@@ -61,6 +61,30 @@ RSpec.describe 'MODS location <--> cocina mappings' do
     end
   end
 
+  describe 'Link to external value only' do
+    xit 'not implemented - xlink' do
+      let(:mods) do
+        <<~XML
+          <location>
+            <physicalLocation xlink:href="http://physicallocation.org/physicallocation" />
+          </location>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          access: {
+            physicalLocation: [
+              {
+                valueAt: 'http://physicallocation.org/physicallocation'
+              }
+            ]
+          }
+        }
+      end
+    end
+  end
+
   describe 'Physical repository' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
