@@ -516,6 +516,26 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
     end
   end
 
+  describe 'Link to external value only' do
+    xit 'not implemented - xlink' do
+      let(:mods) do
+        <<~XML
+          <relatedItem xlink:href="http://relateditem.org/relateditem" />
+        XML
+      end
+
+      let(:cocina) do
+        {
+          relatedResource: [
+            {
+              valueAt: 'http://relateditem.org/relateditem'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Empty related item' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
