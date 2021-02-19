@@ -74,8 +74,13 @@ module Cocina
             'script' => note.valueLanguage&.valueScript&.code,
             'displayLabel' => note.displayLabel,
             'authority' => note.source&.code,
-            'xlink:href' => note.valueAt
+            'xlink:href' => note.valueAt,
+            'ID' => id_for(note)
           }.compact
+        end
+
+        def id_for(note)
+          Array(note.identifier).find { |identifier| identifier.type == 'anchor' }&.value
         end
       end
     end
