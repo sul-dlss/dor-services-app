@@ -27,7 +27,7 @@ module Cocina
 
         def build
           {}.tap do |access|
-            physical_locations = physical_location + shelf_location
+            physical_locations = physical_location + shelf_location + xlink_location
             access[:physicalLocation] = physical_locations.presence
             access[:digitalLocation] = digital_location.presence
             access[:accessContact] = access_contact.presence
@@ -53,6 +53,14 @@ module Cocina
 
         def digital_location
           descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[(@type='discovery')]", mods: DESC_METADATA_NS))
+        end
+
+        def xlink_location
+          resource_element.xpath('mods:location/mods:physicalLocation[@xlink:href]', mods: DESC_METADATA_NS, xlink: XLINK_NS).map do |node|
+            {
+              valueAt: node['xlink:href']
+            }
+          end
         end
 
         def access_contact
@@ -122,9 +130,10 @@ module Cocina
         def note
           resource_element.xpath('mods:accessCondition', mods: DESC_METADATA_NS).map do |access_elem|
             {
-              value: access_elem.text,
+              value: access_elem.text.presence,
               type: ACCESS_CONDITION_TYPES.fetch(access_elem['type'], access_elem['type']),
-              displayLabel: access_elem['displayLabel']
+              displayLabel: access_elem['displayLabel'],
+              valueAt: access_elem['xlink:href']
             }.compact
           end
         end

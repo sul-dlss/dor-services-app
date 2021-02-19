@@ -108,15 +108,16 @@ module Cocina
         end
 
         def descriptive_attrs(cocina)
-          {}.tap do |attrs|
-            attrs[:valueURI] = cocina.uri
-            attrs[:authorityURI] = cocina.source&.uri
-            attrs[:authority] = cocina.source&.code
-            attrs[:script] = cocina.valueLanguage&.valueScript&.code
-            attrs[:lang] = cocina.valueLanguage&.code
-            attrs[:type] = cocina.type
-            attrs[:displayLabel] = cocina.displayLabel
-          end.compact
+          {
+            valueURI: cocina.uri,
+            authorityURI: cocina.source&.uri,
+            authority: cocina.source&.code,
+            script: cocina.valueLanguage&.valueScript&.code,
+            lang: cocina.valueLanguage&.code,
+            type: cocina.type,
+            displayLabel: cocina.displayLabel,
+            'xlink:href' => cocina.valueAt
+          }.compact
         end
 
         def shelf_locator?(physical_location)
@@ -127,7 +128,8 @@ module Cocina
           Array(access.note).reject { |note| purl_note?(note) }.each do |note|
             attributes = {
               type: note.type == 'access restriction' ? 'restriction on access' : note.type,
-              displayLabel: note.displayLabel
+              displayLabel: note.displayLabel,
+              'xlink:href' => note.valueAt
             }.compact
             xml.accessCondition note.value, attributes
           end

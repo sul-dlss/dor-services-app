@@ -56,7 +56,10 @@ module Cocina
 
         # rubocop:disable Metrics/CyclomaticComplexity
         # rubocop:disable Metrics/PerceivedComplexity
+        # rubocop:disable Metrics/AbcSize
         def build_subject(subject_node)
+          return { valueAt: subject_node['xlink:href'] } if subject_node['xlink:href']
+
           attrs = common_attrs(subject_node)
           return subject_classification(subject_node, attrs) if subject_node.name == 'classification'
 
@@ -89,6 +92,7 @@ module Cocina
         end
         # rubocop:enable Metrics/CyclomaticComplexity
         # rubocop:enable Metrics/PerceivedComplexity
+        # rubocop:enable Metrics/AbcSize
 
         def temporal_range?(children_nodes)
           children_nodes.all? { |node| node.name == 'temporal' && node['point'] }

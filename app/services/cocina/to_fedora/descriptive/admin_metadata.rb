@@ -24,6 +24,7 @@ module Cocina
             build_content_source
             build_description_standard
             build_record_origin
+            build_record_info_note
             build_event
             build_identifier
           end
@@ -34,7 +35,17 @@ module Cocina
         attr_reader :xml, :admin_metadata
 
         def build_record_origin
-          xml.recordOrigin admin_metadata.note&.find { |note| note.type == 'record origin' }&.value if admin_metadata.note.present?
+          record_origin_note = Array(admin_metadata.note).find { |note| note.type == 'record origin' }
+          return unless record_origin_note
+
+          xml.recordOrigin record_origin_note.value
+        end
+
+        def build_record_info_note
+          record_info_note = Array(admin_metadata.note).find(&:valueAt)
+          return unless record_info_note
+
+          xml.recordInfoNote nil, { 'xlink:href' => record_info_note.valueAt }
         end
 
         def build_content_source
