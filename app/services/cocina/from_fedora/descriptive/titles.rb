@@ -88,7 +88,7 @@ module Cocina
         end
 
         def structured_name(node:, display_types: true)
-          name_node = node.xpath("//mods:name[@nameTitleGroup='#{node['nameTitleGroup']}']", mods: DESC_METADATA_NS).first
+          name_node = resource_element.xpath("mods:name[@nameTitleGroup='#{node['nameTitleGroup']}']", mods: DESC_METADATA_NS).first
 
           structured_values = if name_node.nil?
                                 notifier.warn('Name not found for title group')

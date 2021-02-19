@@ -556,4 +556,115 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
       let(:roundtrip_mods) { '' }
     end
   end
+
+  describe 'Multiple related items with nameTitleGroups' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <relatedItem type="constituent">
+            <titleInfo nameTitleGroup="1">
+              <title>Contradizione</title>
+            </titleInfo>
+            <name type="personal" nameTitleGroup="1">
+              <namePart>Bacewicz, Grayna.</namePart>
+            </name>
+          </relatedItem>
+          <relatedItem type="constituent">
+            <titleInfo nameTitleGroup="1">
+              <title>Concerto in one movement, marimba, orchestra</title>
+            </titleInfo>
+            <name type="personal" nameTitleGroup="1">
+              <namePart>Diemer, Emma Lou.</namePart>
+            </name>
+          </relatedItem>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <relatedItem type="constituent">
+            <titleInfo nameTitleGroup="1">
+              <title>Contradizione</title>
+            </titleInfo>
+            <name type="personal" nameTitleGroup="1">
+              <namePart>Bacewicz, Grayna.</namePart>
+            </name>
+          </relatedItem>
+          <relatedItem type="constituent">
+            <titleInfo nameTitleGroup="2">
+              <title>Concerto in one movement, marimba, orchestra</title>
+            </titleInfo>
+            <name type="personal" nameTitleGroup="2">
+              <namePart>Diemer, Emma Lou.</namePart>
+            </name>
+          </relatedItem>
+        XML
+      end
+
+      # The goal of this test is to have different relatedItems with the same nameTitleGroup ids.
+      # However, this won't roundtrip to the normalized MODS, hence skipping.
+      let(:skip_normalization) { true }
+
+      let(:cocina) do
+        {
+          relatedResource: [
+            {
+              "title": [
+                {
+                  "structuredValue": [
+                    {
+                      "type": 'title',
+                      "value": 'Contradizione'
+                    },
+                    {
+                      "value": 'Bacewicz, Grayna.',
+                      "type": 'name'
+                    }
+                  ]
+                }
+              ],
+              "contributor": [
+                {
+                  "name": [
+                    {
+                      "value": 'Bacewicz, Grayna.'
+                    }
+                  ],
+                  "type": 'person'
+                }
+              ],
+              "type": 'has part'
+            },
+            {
+              "title": [
+                {
+                  "structuredValue": [
+                    {
+                      "type": 'title',
+                      "value": 'Concerto in one movement, marimba, orchestra'
+                    },
+                    {
+                      "value": 'Diemer, Emma Lou.',
+                      "type": 'name'
+                    }
+                  ]
+                }
+              ],
+              "contributor": [
+                {
+                  "name": [
+                    {
+                      "value": 'Diemer, Emma Lou.'
+                    }
+                  ],
+                  "type": 'person'
+                }
+              ],
+              "type": 'has part'
+            }
+          ]
+        }
+      end
+    end
+  end
 end
