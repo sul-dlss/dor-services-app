@@ -630,28 +630,6 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
     end
   end
 
-  context 'when normalizing subject authority with geographicCode child' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <subject>
-            <geographicCode authority="marcgac">n-us-md</geographicCode>
-          </subject>
-        </mods>
-      XML
-    end
-
-    it 'does not add authority' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <subject>
-            <geographicCode authority="marcgac">n-us-md</geographicCode>
-          </subject>
-        </mods>
-      XML
-    end
-  end
-
   context 'when normalizing lang and script' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML

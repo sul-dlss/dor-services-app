@@ -145,8 +145,15 @@ module Cocina
           values = node_set.map { |node| simple_item(node) }.compact
           if values.present?
             # Removes type from values
+
             values.each { |value| value.delete(:type) }
-            attrs = attrs.merge(parallelValue: values)
+            # If nodes are all the same type then groupedValue; otherwise, a parallelValue.
+            attrs = if node_set.all? { |node| node.name == node_set.first.name }
+                      attrs.merge(groupedValue: values)
+                    else
+                      attrs.merge(parallelValue: values)
+                    end
+            adjust_source(attrs)
           end
           attrs[:type] = 'place'
           attrs.presence
@@ -162,20 +169,28 @@ module Cocina
         end
 
         def adjust_source(attrs)
+          values = attrs[:structuredValue] || attrs[:groupedValue]
+          return if values.nil?
+
           attrs.delete(:source) if remove_source?(attrs)
 
           # If attr has source, add to all values that have valueURI but no source.
-          attrs[:structuredValue].each do |value|
-            value[:source] ||= attrs[:source] if attrs[:source] && value[:uri]
+          values.each do |value|
+            value[:source] ||= attrs[:source] if attrs[:source] && (value[:uri] || value[:code])
           end
+
+          # Delete source if no uri and all values have same source.
+          attrs.delete(:source) if attrs[:uri].nil? && values.all? { |value| value[:source] == attrs[:source] }
         end
 
         def remove_source?(attrs)
           # Remove source if no uri and all values have source and all are not same type
           return false if attrs[:uri]
-          return false if attrs[:structuredValue].any? { |value| value[:source].nil? }
 
-          types = attrs[:structuredValue].pluck(:type)
+          values = attrs[:structuredValue] || attrs[:groupedValue]
+          return false if values.any? { |value| value[:source].nil? }
+
+          types = values.pluck(:type)
           return false unless types.any? { |type| type != types.first }
 
           true
@@ -214,7 +229,7 @@ module Cocina
           when 'titleInfo'
             attrs.merge(TitleBuilder.build(title_info_element: node, notifier: notifier)).merge(type: 'title')
           when 'geographicCode'
-            attrs.merge(code: node.text, type: 'place', source: { code: node['authority'] })
+            attrs.merge(code: node.text, type: 'place')
           when 'cartographics'
             # Cartographics are built separately
             nil
