@@ -431,4 +431,28 @@ RSpec.describe 'MODS recordInfo <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Note links to external value only' do
+    xit 'not implemented - xlink' do
+      let(:mods) do
+        <<~XML
+          <recordInfo>
+            <recordInfoNote xlink:href="http://note.org/recordinfonote" />
+          </recordInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          adminMetadata: {
+            note: [
+              {
+                valueAt: 'http://note.org/recordinfonote'
+              }
+            ]
+          }
+        }
+      end
+    end
+  end
 end
