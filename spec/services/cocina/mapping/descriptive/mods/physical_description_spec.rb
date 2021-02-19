@@ -313,7 +313,7 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
   end
 
   describe 'Extent with unit' do
-    xit 'unimplemented mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <physicalDescription>

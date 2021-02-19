@@ -131,19 +131,23 @@ module Cocina
 
         def write_physical_description_form_values(form_values)
           form_values.each do |form|
-            attributes = {}
-            attributes[:type] = form.type if PHYSICAL_DESCRIPTION_TAG.fetch(form.type) == :form && form.type != 'form'
+            attributes = {
+              unit: unit_for(form)
+            }.tap do |attrs|
+              attrs[:type] = form.type if PHYSICAL_DESCRIPTION_TAG.fetch(form.type) == :form && form.type != 'form'
+            end.compact
+
             xml.public_send PHYSICAL_DESCRIPTION_TAG.fetch(form.type), form.value, with_uri_info(form, attributes)
           end
         end
 
         def write_notes(form)
-          Array(form.note).each do |val|
+          Array(form.note).reject { |note| note.type == 'unit' }.each do |note|
             attributes = {
-              displayLabel: val.displayLabel,
-              type: val.type
+              displayLabel: note.displayLabel,
+              type: note.type
             }.compact
-            xml.note val.value, attributes
+            xml.note note.value, attributes
           end
         end
 
@@ -165,6 +169,10 @@ module Cocina
           else
             xml.genre form.value, with_uri_info(form, attributes.merge(type: form.type))
           end
+        end
+
+        def unit_for(form)
+          Array(form.note).find { |note| note.type == 'unit' }&.value
         end
 
         def form_attributes(form, alt_rep_group)
