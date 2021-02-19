@@ -714,6 +714,9 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
           <subject>
             <geographic/>
           </subject>
+          <subject>
+            <geographic valueURI="http://sws.geonames.org/5391295"/>
+          </subject>
         </mods>
       XML
     end
@@ -722,6 +725,9 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <subject authority="geonames" authorityURI="http://sws.geonames.org" valueURI="http://sws.geonames.org/2946447/" />
+          <subject>
+            <geographic valueURI="http://sws.geonames.org/5391295"/>
+          </subject>
         </mods>
       XML
     end
