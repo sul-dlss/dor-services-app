@@ -820,4 +820,30 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing relatedItem with lang or script' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <relatedItem type="series" script="Latn" lang="eng">
+            <titleInfo>
+              <title>Non-Technical Canyon Guide</title>
+            </titleInfo>
+          </relatedItem>          
+        </mods>
+      XML
+    end
+
+    it 'removes attribute' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <relatedItem type="series">
+            <titleInfo>
+              <title>Non-Technical Canyon Guide</title>
+            </titleInfo>
+          </relatedItem>          
+        </mods>
+      XML
+    end
+  end
 end
