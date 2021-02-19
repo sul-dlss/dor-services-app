@@ -114,19 +114,23 @@ module Cocina
         def structured_attributes_for(subject, alt_rep_group: nil)
           {
             altRepGroup: alt_rep_group,
-            valueURI: subject.uri,
-            displayLabel: subject.displayLabel
+            displayLabel: subject.displayLabel,
+            lang: subject.valueLanguage&.code,
+            script: subject.valueLanguage&.valueScript&.code
           }.tap do |attrs|
-            if subject.source
-              # If all values in structuredValue have uri, then authority only.
+            if subject.type == 'person'
               attrs[:authority] = authority_for(subject)
-              attrs[:authorityURI] = subject.source.uri if !all_values_have_uri?(subject.structuredValue) || subject.uri
-            elsif all_values_have_lcsh_authority?(subject.structuredValue)
-              # No source, but all values in structuredValue are lcsh or naf then add authority
-              attrs[:authority] = 'lcsh'
+            else
+              attrs[:valueURI] = subject.uri
+              if subject.source
+                # If all values in structuredValue have uri, then authority only.
+                attrs[:authority] = authority_for(subject)
+                attrs[:authorityURI] = subject.source.uri if !all_values_have_uri?(subject.structuredValue) || subject.uri
+              elsif all_values_have_lcsh_authority?(subject.structuredValue)
+                # No source, but all values in structuredValue are lcsh or naf then add authority
+                attrs[:authority] = 'lcsh'
+              end
             end
-            attrs[:lang] = subject.valueLanguage&.code
-            attrs[:script] = subject.valueLanguage&.valueScript&.code
           end.compact
         end
 
@@ -301,9 +305,9 @@ module Cocina
 
         def write_structured_person(subject, subject_value, type: nil, display_values: nil)
           type ||= subject_value.type
-          name_attrs = {
-            type: name_type_for(type)
-          }.compact
+          name_attrs = topic_attributes_for(subject_value).tap do |attrs|
+            attrs[:type] = name_type_for(type)
+          end.compact
 
           xml.name name_attrs do
             write_name_parts(subject_value)
