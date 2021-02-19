@@ -43,6 +43,7 @@ module Cocina
       normalize_empty_type_of_resource # Must be after normalize_empty_attributes
       normalize_abstract_summary
       normalize_usage_primary
+      normalize_related_item_attributes
       # This should be last-ish.
       normalize_empty_related_items
       remove_empty_elements(ng_xml.root) # this must be last
@@ -295,6 +296,13 @@ module Cocina
         remove_empty_elements(parent) # need to call again after child has been deleted
       else
         start_node.element_children.each { |e| remove_empty_elements(e) }
+      end
+    end
+
+    def normalize_related_item_attributes
+      ng_xml.root.xpath('mods:relatedItem[@lang or @script]', mods: ModsNormalizer::MODS_NS).each do |related_item_node|
+        related_item_node.delete('lang')
+        related_item_node.delete('script')
       end
     end
   end
