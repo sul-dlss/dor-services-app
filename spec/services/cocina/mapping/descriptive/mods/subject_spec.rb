@@ -294,4 +294,46 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Parallel subjects' do
+    # Adapted from bc269jd4815
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject altRepGroup="1" authority="lcsh">
+            <titleInfo>
+              <title>Chu ci (Ancient Chinese poems)</title>
+            </titleInfo>
+          </subject>
+          <subject altRepGroup="1">
+            <titleInfo>
+              <title>&#x695A;&#x8F9E;(Ancient Chinese poems)</title>
+            </titleInfo>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              parallelValue: [
+                {
+                  source: {
+                    code: 'lcsh'
+                  },
+                  value: 'Chu ci (Ancient Chinese poems)'
+
+                },
+                {
+                  "value": '楚辞(Ancient Chinese poems)'
+                }
+              ],
+              type: 'title'
+            }
+          ]
+        }
+      end
+    end
+  end
 end

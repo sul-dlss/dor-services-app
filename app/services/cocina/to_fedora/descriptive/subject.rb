@@ -148,7 +148,7 @@ module Cocina
             xml.subject topic_attributes_for(subject_value)
           else
             xml.subject(subject_attributes) do
-              write_topic(subject, subject_value)
+              write_topic(subject, subject_value, type: type)
             end
           end
         end
@@ -181,9 +181,9 @@ module Cocina
           xml.classification value, attrs
         end
 
-        def write_topic(subject, subject_value, is_parallel: false)
+        def write_topic(subject, subject_value, is_parallel: false, type: nil)
           topic_attributes = topic_attributes_for(subject_value, is_parallel: is_parallel)
-          case subject_value.type
+          case type || subject_value.type
           when 'person'
             xml.name topic_attributes.merge(type: 'personal') do
               xml.namePart(subject_value.value) if subject_value.value
