@@ -34,17 +34,22 @@ module Cocina
 
             parallel_subject_values = Array(subject.parallelValue)
             subject_value = subject
+            type = nil
 
             # Make adjustments for a parallel person.
             if parallel_subject_values.present? && FromFedora::Descriptive::Contributor::ROLES.values.include?(subject.type)
               display_values, parallel_subject_values = parallel_subject_values.partition { |value| value.type == 'display' }
-              subject_value = parallel_subject_values.first if parallel_subject_values.size == 1
+              if parallel_subject_values.size == 1
+                subject_value = parallel_subject_values.first
+                parallel_subject_values = []
+                type = subject.type
+              end
             end
 
             if parallel_subject_values.size > 1
               write_parallel(subject, parallel_subject_values, alt_rep_group: id_generator.next_altrepgroup, display_values: display_values)
             else
-              write_subject(subject, subject_value, display_values: display_values)
+              write_subject(subject, subject_value, display_values: display_values, type: type)
             end
           end
           write_cartographic
@@ -285,10 +290,10 @@ module Cocina
 
         def write_person(subject, subject_value, display_values: nil)
           name_attrs = topic_attributes_for(subject_value).tap do |attrs|
-            attrs[:type] = name_type_for(subject_value.type || subject.type)
+            attrs[:type] = name_type_for(subject.type || subject_value.type)
           end.compact
           xml.name name_attrs do
-            xml.namePart subject_value.value if subject_value.value
+            write_name_part(subject_value)
             write_display_form(display_values)
             write_roles(subject.note)
           end
@@ -318,12 +323,18 @@ module Cocina
         end
 
         def write_name_parts(descriptive_value)
-          descriptive_value.structuredValue.each do |point|
-            attributes = {}.tap do |attrs|
-              attrs[:type] = FromFedora::Descriptive::Contributor::NAME_PART.invert[point.type]
-            end.compact
-            xml.namePart point.value, attributes
+          descriptive_value.structuredValue.each do |value|
+            write_name_part(value)
           end
+        end
+
+        def write_name_part(name_part)
+          return unless name_part.value
+
+          attributes = {}.tap do |attrs|
+            attrs[:type] = FromFedora::Descriptive::Contributor::NAME_PART.invert[name_part.type]
+          end.compact
+          xml.namePart name_part.value, attributes
         end
 
         def name_type_for(type)
