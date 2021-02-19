@@ -253,9 +253,9 @@ module Cocina
       end
 
       def normalize_empty_geographic
-        ng_xml.root.xpath('//mods:subject/mods:geographic[not(text())]', mods: ModsNormalizer::MODS_NS).each do |temporal_node|
-          subject_node = temporal_node.parent
-          temporal_node.remove
+        ng_xml.root.xpath('//mods:subject/mods:geographic[not(@valueURI) and not(text())]', mods: ModsNormalizer::MODS_NS).each do |geo_node|
+          subject_node = geo_node.parent
+          geo_node.remove
           subject_node.remove if subject_node.elements.empty? && subject_node.attributes.empty?
         end
       end
