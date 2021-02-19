@@ -105,7 +105,7 @@ module Cocina
             source = {
               code: code_for(subject),
               uri: Authority.normalize_uri(subject[:authorityURI]),
-              version: edition_for(subject)
+              version: subject['edition']
             }.compact
             attrs[:source] = source unless source.empty?
             attrs[:uri] = ValueURI.sniff(subject[:valueURI], notifier)
@@ -266,12 +266,6 @@ module Cocina
 
         def subject_nodes
           resource_element.xpath('mods:subject', mods: DESC_METADATA_NS) + resource_element.xpath('mods:classification', mods: DESC_METADATA_NS)
-        end
-
-        def edition_for(subject)
-          return nil if subject[:edition].nil?
-
-          "#{subject[:edition].to_i.ordinalize} edition"
         end
 
         def temporal_range(children_nodes, attrs)

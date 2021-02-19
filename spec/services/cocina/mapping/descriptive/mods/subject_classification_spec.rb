@@ -70,7 +70,7 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
               value: '683',
               source: {
                 code: 'ddc',
-                version: '11th edition'
+                version: '11'
               }
             }
           ]
@@ -121,7 +121,7 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
               value: '683',
               source: {
                 code: 'ddc',
-                version: '11th edition'
+                version: '11'
               }
             },
             {
@@ -129,7 +129,7 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
               value: '684',
               source: {
                 code: 'ddc',
-                version: '12th edition'
+                version: '12'
               }
             }
           ]
@@ -156,7 +156,7 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
               status: 'primary',
               source: {
                 code: 'ddc',
-                version: '11th edition'
+                version: '11'
               }
             },
             {
@@ -164,7 +164,7 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
               value: '684',
               source: {
                 code: 'ddc',
-                version: '12th edition'
+                version: '12'
               }
             }
           ]
@@ -201,7 +201,7 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
               status: 'primary',
               source: {
                 code: 'ddc',
-                version: '11th edition'
+                version: '11'
               }
             },
             {
@@ -209,7 +209,7 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
               value: '684',
               source: {
                 code: 'ddc',
-                version: '12th edition'
+                version: '12'
               }
             }
           ]
