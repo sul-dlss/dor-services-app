@@ -72,10 +72,11 @@ module Cocina
           resource_element.xpath('mods:targetAudience', mods: DESC_METADATA_NS).map do |node|
             {
               type: 'target audience',
-              value: node.content
+              value: node.content,
+              displayLabel: node['displayLabel']
             }.tap do |attrs|
               attrs[:source] = { code: node[:authority] } if node[:authority]
-            end
+            end.compact
           end.compact
         end
 
