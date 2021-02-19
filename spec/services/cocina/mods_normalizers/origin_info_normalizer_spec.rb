@@ -879,4 +879,392 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       XML
     end
   end
+
+  context 'when dateCreated and dateIssued in eventType publication' do
+    # based on kq506ht3416
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo eventType="publication">
+            <publisher>Fontana/Collins</publisher>
+            <dateIssued>1978</dateIssued>
+            <dateCreated>(1981 printing)</dateCreated>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    xit 'moves dateCreated into its own originInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo eventType="publication">
+            <publisher>Fontana/Collins</publisher>
+            <dateIssued>1978</dateIssued>
+          </originInfo>
+          <originInfo eventType="production">
+            <dateCreated>(1981 printing)</dateCreated>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when dateCreated as point with 2 elements in same originInfo as dateIssued, dateIssued splits' do
+    # based on nn349sf6895, rx731vv3403
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel="Place of creation" eventType="publication">
+            <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1872</dateCreated>
+            <dateCreated encoding="w3cdtf" point="end">1885</dateCreated>
+            <dateIssued>1887</dateIssued>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    xit 'splits dateCreated and dateIssued into separate originInfo elements' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo eventType="publication">
+            <dateIssued>1887</dateIssued>
+          </originInfo>
+          <originInfo displayLabel="Place of creation" eventType="production">
+            <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1872</dateCreated>
+            <dateCreated encoding="w3cdtf" point="end">1885</dateCreated>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when dateCreated and dateIssued in same originInfo in altRepGroup' do
+    # based on dz647hf2887, db936hw1344
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo altRepGroup="1" eventType="publication">
+            <publisher>Tairyūsha</publisher>
+            <dateIssued>Shōwa 52 [1977]</dateIssued>
+            <dateCreated>(1978 printing)</dateCreated>
+          </originInfo>
+          <originInfo altRepGroup="1" eventType="publication">
+            <publisher>泰流社</publisher>
+            <dateIssued>昭和 52 [1977]</dateIssued>
+            <dateCreated>(1978 printing)</dateCreated>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    xit 'moves dateCreated into its own originInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo eventType="production">
+             <dateCreated>(1978 printing)</dateCreated>
+           </originInfo>
+          <originInfo altRepGroup="1" eventType="publication">
+            <publisher>Tairyūsha</publisher>
+            <dateIssued>Shōwa 52 [1977]</dateIssued>
+          </originInfo>
+          <originInfo altRepGroup="1" eventType="publication">
+            <publisher>泰流社</publisher>
+            <dateIssued>昭和 52 [1977]</dateIssued>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when dateCreated and dateOther in eventType production' do
+    # based on dg875gq3366
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel="something" eventType="production">
+            <dateCreated keyDate="yes" encoding="w3cdtf">1905</dateCreated>
+            <dateOther qualifier="approximate" point="end">1925</dateOther>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    xit 'splits dateCreated into separate originInfo;  dateOther becomes dateCreated' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel="something" eventType="production">
+            <dateCreated keyDate="yes" encoding="w3cdtf">1905</dateCreated>
+          </originInfo>
+          <originInfo eventType="production">
+            <dateCreated qualifier="approximate" point="end">1925</dateCreated>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when dateOther with type manufacture and publisher element' do
+    # based on d527ky9095, zw971gd0220
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel="manufacturer">
+            <publisher>J. Jennings Lith. 326 Sansome St.,</publisher>
+            <dateOther type="manufacture">1873.</dateOther>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    xit 'moves dateCreated into its own originInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel="manufacturer">
+            <dateOther type="manufacture">1873</dateOther>
+          </originInfo>
+          <originInfo eventType="publication">
+            <publisher>J. Jennings Lith. 326 Sansome St.,</publisher>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when copyrightDate and issuance in single originInfo' do
+    # based on kc487sz0076
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo eventType="copyright">
+            <copyrightDate encoding="marc">2005</copyrightDate>
+            <issuance>monographic</issuance>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    xit 'splits copyrightDate from issuance' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo eventType="copyright">
+            <copyrightDate encoding="marc">2005</copyrightDate>
+          </originInfo>
+          <originInfo eventType="publication">
+            <issuance>monographic</issuance>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when eventType manufacture with publisher element' do
+    # based on jz402xk5530
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel="manufacturer" eventType="manufacture">
+            <publisher>Lithographed in the Reproduction Branch, SSU</publisher>
+            <dateOther/>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    # TODO: ask Arcadia if there are more constraints on this one
+    xit 'eventType becomes publication' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel="manufacturer" eventType="publication">
+            <publisher>Lithographed in the Reproduction Branch, SSU</publisher>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when eventType distribution with publisher element' do
+    # based on rm699mr9758, xy550sj6776
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo eventType="distribution">
+            <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    xit 'eventType becomes publication' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo eventType="publication">
+            <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when eventType capture with dateCaptured and publisher elements' do
+    # based on rn990mm7360
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo eventType="capture">
+            <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
+            <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
+            <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    xit 'splits originInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo eventType="capture">
+            <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
+            <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
+          </originInfo>
+          <originInfo eventType="publication">
+            <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when eventType copyright with copyrightDate and place' do
+    # based on vw478nk8207
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel="Place of creation" eventType="copyright">
+            <place>
+              <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+            </place>
+            <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
+            <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    xit 'splits originInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel="Place of creation" eventType="copyright">
+            <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
+            <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
+          </originInfo>
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+            </place>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when eventType production with copyrightDate and place' do
+    # based on vw478nk8207
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel="Place of creation" eventType="production">
+            <place>
+              <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+            </place>
+            <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
+            <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    xit 'splits originInfo and eventType production becomes copyright' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel="Place of creation" eventType="copyright">
+            <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
+            <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
+          </originInfo>
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+            </place>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when  altRepGroup subelements are missing from one of the elements' do
+    # based on xj114vt0439
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo altRepGroup="1" eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">Shanghai</placeTerm>
+            </place>
+            <publisher>Shanghai shu dian chu ban</publisher>
+            <publisher>Xin hua shu dian Shanghai fa xing suo fa xing</publisher>
+            <dateIssued>1992</dateIssued>
+            <edition>Di 1 ban.</edition>
+            <issuance>monographic</issuance>
+          </originInfo>
+          <originInfo altRepGroup="1" eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">上海:上海书店出版：</placeTerm>
+            </place>
+            <publisher>新华书店上海发行所发行,</publisher>
+            <dateIssued>1992</dateIssued>
+            <edition>第1版.</edition>
+            <issuance>monographic</issuance>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    xit 'adds second publisher to second originInfo in altRepGroup so all elements in altRepGroup are matched' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo altRepGroup="1" eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">Shanghai</placeTerm>
+            </place>
+            <publisher>Shanghai shu dian chu ban</publisher>
+            <publisher>Xin hua shu dian Shanghai fa xing suo fa xing</publisher>
+            <dateIssued>1992</dateIssued>
+            <edition>Di 1 ban.</edition>
+            <issuance>monographic</issuance>
+          </originInfo>
+          <originInfo altRepGroup="1" eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry">cc</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text">上海:上海书店出版：</placeTerm>
+            </place>
+            <publisher>新华书店上海发行所发行,</publisher>
+            <publisher>Xin hua shu dian Shanghai fa xing suo fa xing</publisher>
+            <dateIssued>1992</dateIssued>
+            <edition>第1版.</edition>
+            <issuance>monographic</issuance>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
 end
