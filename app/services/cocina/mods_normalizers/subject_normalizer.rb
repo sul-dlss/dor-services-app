@@ -40,6 +40,8 @@ module Cocina
         ng_xml.root.xpath('//mods:subject[not(mods:cartographics)]', mods: ModsNormalizer::MODS_NS).each do |subject_node|
           children_nodes = subject_node.xpath('mods:*', mods: ModsNormalizer::MODS_NS)
 
+          next if children_nodes.empty?
+
           if (have_authorityURI?(subject_node) || have_valueURI?(subject_node)) &&
              children_nodes.size == 1
             # If subject has authority and child doesn't, copy to child.
