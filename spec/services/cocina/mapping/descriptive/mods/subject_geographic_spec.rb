@@ -250,6 +250,34 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
     end
   end
 
+  describe 'Geographic subject with authority on subject element' do
+    xit 'unimplemented spec: geographic subject authority' do
+      let(:druid) { 'cv661zm2305' }
+
+      let(:mods) do
+        <<~XML
+          <subject authority="marcgac">
+            <geographic>Africa</geographic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Africa',
+              type: 'place',
+              source: {
+                code: 'marcgac'
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Geographic subject with altRepGroup' do
     # Adapted from hv324dj9498
     it_behaves_like 'MODS cocina mapping' do
