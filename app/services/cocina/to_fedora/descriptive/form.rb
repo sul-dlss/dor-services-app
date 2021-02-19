@@ -51,7 +51,9 @@ module Cocina
         attr_reader :xml, :forms, :id_generator
 
         def physical_description?(form)
-          form.note.present? || PHYSICAL_DESCRIPTION_TAG.keys.include?(form.type) || PHYSICAL_DESCRIPTION_TAG.keys.include?(form.groupedValue&.first&.type)
+          (form.note.present? && form.type != 'genre') ||
+            PHYSICAL_DESCRIPTION_TAG.keys.include?(form.type) ||
+            PHYSICAL_DESCRIPTION_TAG.keys.include?(form.groupedValue&.first&.type)
         end
 
         def manuscript?(form)
@@ -153,7 +155,6 @@ module Cocina
 
         def write_basic(form, is_manuscript: false, is_collection: false, alt_rep_group: nil)
           return nil if form.source&.value&.match?(/DataCite/i)
-          return note(form) if form.note
 
           attributes = form_attributes(form, alt_rep_group)
 
@@ -164,15 +165,17 @@ module Cocina
             xml.typeOfResource form.value, attributes
           when 'map scale', 'map projection'
             # do nothing, these end up in subject/cartographics
-          when 'genre'
-            xml.genre form.value, with_uri_info(form, attributes)
-          else
-            xml.genre form.value, with_uri_info(form, attributes.merge(type: form.type))
+          else # genre
+            xml.genre form.value, with_uri_info(form, attributes.merge({ type: genre_type_for(form) }.compact))
           end
         end
 
         def unit_for(form)
           Array(form.note).find { |note| note.type == 'unit' }&.value
+        end
+
+        def genre_type_for(form)
+          Array(form.note).find { |note| note.type == 'genre type' }&.value
         end
 
         def form_attributes(form, alt_rep_group)

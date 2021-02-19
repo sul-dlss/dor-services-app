@@ -94,7 +94,6 @@ module Cocina
         def build_genre(genre)
           {
             value: genre.text,
-            type: genre['type'],
             displayLabel: genre[:displayLabel],
             uri: ValueURI.sniff(genre[:valueURI], notifier)
           }.tap do |attrs|
@@ -106,6 +105,14 @@ module Cocina
             attrs[:status] = 'primary' if genre['usage'] == 'primary'
             language_script = LanguageScript.build(node: genre)
             attrs[:valueLanguage] = language_script if language_script
+            if genre['type']
+              attrs[:note] = [
+                {
+                  value: genre['type'],
+                  type: 'genre type'
+                }
+              ]
+            end
           end.compact
         end
 
