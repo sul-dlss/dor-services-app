@@ -33,7 +33,7 @@ end
 # When starting from MODS.
 RSpec.shared_examples 'MODS cocina mapping' do
   # Required: mods, cocina
-  # Optional: druid, roundtrip_mods, warnings, errors, mods_attributes
+  # Optional: druid, roundtrip_mods, warnings, errors, mods_attributes, skip_normalization
 
   # Note that this instantiation of Description does NOT validate against OpenAPI due to title validation issues.
   let(:orig_cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
@@ -49,6 +49,8 @@ RSpec.shared_examples 'MODS cocina mapping' do
   let(:local_warnings) { defined?(warnings) ? warnings : [] }
 
   let(:local_errors) { defined?(errors) ? errors : [] }
+
+  let(:skip_normalization) { false }
 
   context 'when mapping from MODS (to cocina)' do
     let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
@@ -120,7 +122,7 @@ RSpec.shared_examples 'MODS cocina mapping' do
       # the starting MODS is normalized to address discrepancies found against MODS roundtripped to data store (Fedora)
       #  and back, per Arcadia's specifications.  E.g., removal of empty nodes and attributes; addition of eventType to
       #  originInfo nodes.
-      expect(actual_xml).to be_equivalent_to Cocina::ModsNormalizer.normalize(mods_ng_xml: orig_mods_ng, druid: local_druid).to_xml
+      expect(actual_xml).to be_equivalent_to Cocina::ModsNormalizer.normalize(mods_ng_xml: orig_mods_ng, druid: local_druid).to_xml unless skip_normalization
     end
   end
 
