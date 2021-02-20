@@ -34,6 +34,7 @@ module Cocina
         def related_items
           resource_element.xpath('mods:relatedItem', mods: DESC_METADATA_NS).map do |related_item|
             check_other_type(related_item)
+            next { valueAt: related_item['xlink:href'] } if related_item['xlink:href']
             next nil if related_item.elements.empty?
 
             descriptive_builder.build(resource_element: related_item, require_title: false).tap do |item|

@@ -433,7 +433,7 @@ RSpec.describe 'MODS recordInfo <--> cocina mappings' do
   end
 
   describe 'Note links to external value only' do
-    xit 'not implemented - xlink' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <recordInfo>

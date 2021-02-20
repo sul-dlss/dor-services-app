@@ -62,7 +62,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
   end
 
   describe 'Link to external value only' do
-    xit 'not implemented - xlink' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <location>

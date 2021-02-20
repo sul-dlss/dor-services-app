@@ -54,6 +54,10 @@ module Cocina
               write_part(orig_related)
             end
           end
+
+          related_resources.filter(&:valueAt).each do |related_resource|
+            xml.relatedItem nil, { 'xlink:href' => related_resource.valueAt }
+          end
         end
 
         private
@@ -62,6 +66,8 @@ module Cocina
 
         def filtered_related_resources
           related_resources.map do |related|
+            next if related.valueAt
+
             other_type_note = other_type_note_for(related)
 
             # Filter notes

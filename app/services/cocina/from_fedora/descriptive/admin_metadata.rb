@@ -69,12 +69,19 @@ module Cocina
         end
 
         def build_note
-          return unless record_origin
-
-          [{
-            type: 'record origin',
-            value: record_origin.text
-          }]
+          notes = []
+          if record_origin
+            notes << {
+              type: 'record origin',
+              value: record_origin.text
+            }
+          end
+          if record_info_note
+            notes << {
+              valueAt: record_info_note['xlink:href']
+            }
+          end
+          notes.presence
         end
 
         def build_standard
@@ -177,6 +184,10 @@ module Cocina
 
         def record_origin
           @record_origin ||= record_info.xpath('mods:recordOrigin', mods: DESC_METADATA_NS).first
+        end
+
+        def record_info_note
+          @record_info_note ||= record_info.xpath('mods:recordInfoNote[@xlink:href]', mods: DESC_METADATA_NS, xlink: XLINK_NS).first
         end
 
         def creation_event
