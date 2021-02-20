@@ -60,8 +60,8 @@ module Cocina
         attr_reader :xml, :subjects, :forms, :id_generator
 
         def write_subject(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
-          if subject_value.structuredValue
-            write_structured(subject, subject_value, alt_rep_group: alt_rep_group, type: type, display_values: display_values)
+          if subject_value.structuredValue || subject_value.groupedValue
+            write_structured_or_grouped(subject, subject_value, alt_rep_group: alt_rep_group, type: type, display_values: display_values)
           else
             write_basic(subject, subject_value, alt_rep_group: alt_rep_group, type: type, display_values: display_values)
           end
@@ -81,37 +81,45 @@ module Cocina
           end
         end
 
-        def write_structured(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
+        # rubocop:disable Metrics/PerceivedComplexity
+        def write_structured_or_grouped(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
           type ||= subject_value.type || subject.type
           xml.subject(structured_attributes_for(subject_value, alt_rep_group: alt_rep_group)) do
-            if type == 'place'
+            if type == 'place' && subject_value.structuredValue
               hierarchical_geographic(subject_value)
             elsif type == 'time'
               time_range(subject_value)
             elsif type == 'title'
-              title = subject_value.to_h
-              title.delete(:type)
-              title.delete(:source)
-              Title.write(xml: xml, titles: [Cocina::Models::DescriptiveValue.new(title)], id_generator: id_generator)
+              write_title(subject_value)
             elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(type)
               write_structured_person(subject, subject_value, type: type, display_values: display_values)
             else
-              Array(subject_value.structuredValue).each do |component|
-                if FromFedora::Descriptive::Contributor::ROLES.values.include?(component.type)
-                  if component.structuredValue
-                    write_structured_person(subject, component, display_values: display_values)
+              Array(subject_value.structuredValue || subject_value.groupedValue).each do |value|
+                if FromFedora::Descriptive::Contributor::ROLES.values.include?(value.type)
+                  if value.structuredValue
+                    write_structured_person(subject, value, display_values: display_values)
                   else
-                    write_person(subject, component, display_values: display_values)
+                    write_person(subject, value, display_values: display_values)
                   end
                 else
-                  write_topic(subject, component, is_parallel: alt_rep_group.present?)
+                  write_topic(subject, value, is_parallel: alt_rep_group.present?, type: type)
                 end
               end
             end
           end
         end
+        # rubocop:enable Metrics/PerceivedComplexity
 
+        def write_title(subject_value)
+          title = subject_value.to_h
+          title.delete(:type)
+          title.delete(:source)
+          Title.write(xml: xml, titles: [Cocina::Models::DescriptiveValue.new(title)], id_generator: id_generator)
+        end
+
+        # rubocop:disable Metrics/PerceivedComplexity
         def structured_attributes_for(subject, alt_rep_group: nil)
+          values = subject.structuredValue || subject.groupedValue
           {
             altRepGroup: alt_rep_group,
             displayLabel: subject.displayLabel,
@@ -125,21 +133,33 @@ module Cocina
               if subject.source
                 # If all values in structuredValue have uri, then authority only.
                 attrs[:authority] = authority_for(subject)
-                attrs[:authorityURI] = subject.source.uri if !all_values_have_uri?(subject.structuredValue) || subject.uri
-              elsif all_values_have_lcsh_authority?(subject.structuredValue)
+                attrs[:authorityURI] = subject.source.uri if !all_values_have_uri?(values) || subject.uri
+              elsif all_values_have_lcsh_authority?(values)
                 # No source, but all values in structuredValue are lcsh or naf then add authority
                 attrs[:authority] = 'lcsh'
+              elsif subject.type == 'place' && all_values_have_same_authority?(values)
+                attrs[:authority] = authority_for(values.first)
               end
             end
           end.compact
         end
+        # rubocop:enable Metrics/PerceivedComplexity
 
-        def all_values_have_uri?(structured_value)
-          structured_value.present? && Array(structured_value).all?(&:uri)
+        def all_values_have_uri?(values)
+          values.present? && Array(values).all?(&:uri)
         end
 
-        def all_values_have_lcsh_authority?(structured_value)
-          structured_value.present? && Array(structured_value).all? { |value| authority_for(value) == 'lcsh' }
+        def all_values_have_lcsh_authority?(values)
+          values.present? && Array(values).all? { |value| authority_for(value) == 'lcsh' }
+        end
+
+        def all_values_have_same_authority?(values)
+          return false if values.blank?
+
+          check_authority = authority_for(values.first)
+          return false if check_authority.nil?
+
+          values.all? { |value| authority_for(value) == check_authority }
         end
 
         def write_basic(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
@@ -176,10 +196,6 @@ module Cocina
         end
 
         def authority_for(subject)
-          # Authority for place is on the geographicCode, not the subject.
-          # See "Geographic code subject" example.
-          return nil if subject.type == 'place' && subject.source&.code == 'marcgac'
-
           # Both lcsh and naf map to lcsh for the subject.
           return 'lcsh' if %w[lcsh naf].include?(subject.source&.code)
 
@@ -232,7 +248,7 @@ module Cocina
 
         def geographic(_subject, subject_value, is_parallel: false)
           if subject_value.code
-            xml.geographicCode subject_value.code, authority: subject_value.source.code
+            xml.geographicCode subject_value.code, topic_attributes_for(subject_value, is_parallel: is_parallel, is_geo: true)
           else
             xml.geographic subject_value.value, topic_attributes_for(subject_value, is_parallel: is_parallel, is_geo: true)
           end

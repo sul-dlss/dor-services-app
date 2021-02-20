@@ -394,10 +394,7 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
                     code: 'lcsh'
                   }
                 }
-              ],
-              source: {
-                code: 'lcsh'
-              }
+              ]
             }
           ]
         }

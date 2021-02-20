@@ -161,6 +161,14 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
         XML
       end
 
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="marcgac">
+            <geographicCode>n-us-md</geographicCode>
+          </subject>
+        XML
+      end
+
       let(:cocina) do
         {
           subject: [
@@ -251,9 +259,7 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
   end
 
   describe 'Geographic subject with authority on subject element' do
-    xit 'unimplemented spec: geographic subject authority' do
-      let(:druid) { 'cv661zm2305' }
-
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject authority="marcgac">
@@ -368,6 +374,77 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
                 code: 'geonames',
                 uri: 'http://www.geonames.org/ontology#'
               },
+              type: 'place'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Multiple geographic codes' do
+    # Adapted from druid:zz236hg5740
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <geographicCode authority="marcgac">n-us-tx</geographicCode>
+            <geographicCode authority="marcgac">n-us-ca</geographicCode>
+            <geographicCode authority="marcgac">n-us-or</geographicCode>
+            <geographicCode authority="marcgac">n-us-nm</geographicCode>
+            <geographicCode authority="marcgac">n-us-ut</geographicCode>
+          </subject>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="marcgac">
+            <geographicCode>n-us-tx</geographicCode>
+            <geographicCode>n-us-ca</geographicCode>
+            <geographicCode>n-us-or</geographicCode>
+            <geographicCode>n-us-nm</geographicCode>
+            <geographicCode>n-us-ut</geographicCode>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              groupedValue: [
+                {
+                  source: {
+                    code: 'marcgac'
+                  },
+                  code: 'n-us-tx'
+                },
+                {
+                  source: {
+                    code: 'marcgac'
+                  },
+                  code: 'n-us-ca'
+                },
+                {
+                  source: {
+                    code: 'marcgac'
+                  },
+                  code: 'n-us-or'
+                },
+                {
+                  source: {
+                    code: 'marcgac'
+                  },
+                  code: 'n-us-nm'
+                },
+                {
+                  source: {
+                    code: 'marcgac'
+                  },
+                  code: 'n-us-ut'
+                }
+              ],
               type: 'place'
             }
           ]

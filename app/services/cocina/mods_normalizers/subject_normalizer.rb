@@ -56,8 +56,7 @@ module Cocina
 
           if !have_authority?(subject_node) &&
              have_authority?(children_nodes.first) &&
-             have_same_authority?(children_nodes, children_nodes.first) &&
-             children_nodes.first[:authority] != 'marcgac'
+             have_same_authority?(children_nodes, children_nodes.first)
             add_authority(subject_node, children_nodes.first, naf_to_lcsh: true)
           end
 
