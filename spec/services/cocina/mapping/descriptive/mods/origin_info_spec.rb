@@ -1515,7 +1515,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         XML
       end
 
-      # all parallel elements in both originInfo elements + eventType
+      # all parallel elements in both originInfo elementseventType
       let(:roundtrip_mods) do
         <<~XML
           <originInfo altRepGroup="1" eventType="publication">
@@ -2042,6 +2042,1199 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
         let(:cocina) do
           {
+          }
+        end
+      end
+    end
+  end
+
+  describe 'eventType consistent for roundtrip' do
+    context 'when dateCreated and dateIssued in eventType publication it splits' do
+      # based on kq506ht3416
+      it_behaves_like 'MODS cocina mapping' do
+        xit 'to be implemented: originInfo normalization needs to split up originInfo'
+        let(:skip_normalization) { true }
+
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="publication">
+              <publisher>Fontana/Collins</publisher>
+              <dateIssued>1978</dateIssued>
+              <dateCreated>(1981 printing)</dateCreated>
+            </originInfo>
+          XML
+        end
+
+        # dateCreated split into separate originInfo
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="publication">
+              <publisher>Fontana/Collins</publisher>
+              <dateIssued>1978</dateIssued>
+            </originInfo>
+            <originInfo eventType="production">
+              <dateCreated>(1981 printing)</dateCreated>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'creation',
+                date: [
+                  {
+                    value: '(1981 printing)'
+                  }
+                ]
+              },
+              {
+                type: 'publication',
+                date: [
+                  {
+                    value: '1978'
+                  }
+                ],
+                contributor: [
+                  {
+                    name: [
+                      {
+                        value: 'Fontana/Collins'
+                      }
+                    ],
+                    type: 'organization',
+                    role: [
+                      {
+                        value: 'publisher',
+                        code: 'pbl',
+                        uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                        source: {
+                          code: 'marcrelator',
+                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    context 'when dateCreated as point with 2 elements in same originInfo as dateIssued, dateIssued splits' do
+      # based on nn349sf6895, rx731vv3403
+      it_behaves_like 'MODS cocina mapping' do
+        xit 'to be implemented: originInfo normalization needs to split up originInfo'
+        let(:skip_normalization) { true }
+
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="Place of creation" eventType="publication">
+              <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1872</dateCreated>
+              <dateCreated encoding="w3cdtf" point="end">1885</dateCreated>
+              <dateIssued>1887</dateIssued>
+            </originInfo>
+          XML
+        end
+
+        # split into separate originInfo
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="publication">
+              <dateIssued>1887</dateIssued>
+            </originInfo>
+            <originInfo displayLabel="Place of creation" eventType="production">
+              <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1872</dateCreated>
+              <dateCreated encoding="w3cdtf" point="end">1885</dateCreated>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'creation',
+                date: [
+                  {
+                    structuredValue: [
+                      {
+                        type: 'start',
+                        value: '1872',
+                        status: 'primary'
+                      },
+                      {
+                        type: 'end',
+                        value: '1885'
+                      }
+                    ],
+                    encoding: {
+                      code: 'w3cdtf'
+                    }
+                  }
+                ],
+                displayLabel: 'Place of creation'
+              },
+              {
+                type: 'publication',
+                date: [
+                  {
+                    value: '1887'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    context 'when dateCreated and dateIssued in same originInfo in altRepGroup' do
+      # based on dz647hf2887, db936hw1344
+      it_behaves_like 'MODS cocina mapping' do
+        xit 'to be implemented: originInfo normalization needs to split up originInfo'
+        let(:skip_normalization) { true }
+
+        let(:mods) do
+          <<~XML
+            <originInfo altRepGroup="1" eventType="publication">
+              <publisher>Tairyūsha</publisher>
+              <dateIssued>Shōwa 52 [1977]</dateIssued>
+              <dateCreated>(1978 printing)</dateCreated>
+            </originInfo>
+            <originInfo altRepGroup="1" eventType="publication">
+              <publisher>泰流社</publisher>
+              <dateIssued>昭和 52 [1977]</dateIssued>
+              <dateCreated>(1978 printing)</dateCreated>
+            </originInfo>
+          XML
+        end
+
+        # splits dateCreated into separate originInfo
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="production">
+               <dateCreated>(1978 printing)</dateCreated>
+             </originInfo>
+            <originInfo altRepGroup="1" eventType="publication">
+              <publisher>Tairyūsha</publisher>
+              <dateIssued>Shōwa 52 [1977]</dateIssued>
+            </originInfo>
+            <originInfo altRepGroup="1" eventType="publication">
+              <publisher>泰流社</publisher>
+              <dateIssued>昭和 52 [1977]</dateIssued>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'creation',
+                date: [
+                  {
+                    value: '(1978 printing)'
+                  }
+                ]
+              },
+              {
+                type: 'publication',
+                date: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'Shōwa 52 [1977]'
+                      },
+                      {
+                        value: '昭和 52 [1977]'
+                      }
+                    ]
+                  }
+                ],
+                contributor: [
+                  {
+                    name: [
+                      {
+                        parallelValue: [
+                          {
+                            value: 'Tairyūsha'
+                          },
+                          {
+                            value: '泰流社'
+                          }
+                        ]
+                      }
+                    ],
+                    type: 'organization',
+                    role: [
+                      {
+                        value: 'publisher',
+                        code: 'pbl',
+                        uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                        source: {
+                          code: 'marcrelator',
+                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    context 'when dateCreated and dateOther' do
+      # based on dg875gq3366
+      it_behaves_like 'MODS cocina mapping' do
+        xit 'to be implemented: originInfo normalization needs to split up originInfo'
+        let(:skip_normalization) { true }
+
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="something" eventType="production">
+              <dateCreated keyDate="yes" encoding="w3cdtf">1905</dateCreated>
+              <dateOther qualifier="approximate" point="end">1925</dateOther>
+            </originInfo>
+          XML
+        end
+
+        # splits dateCreated into separate originInfo;  dateOther becomes dateCreated
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo displayLabel="something" eventType="production">
+              <dateCreated keyDate="yes" encoding="w3cdtf">1905</dateCreated>
+            </originInfo>
+            <originInfo eventType="production">
+              <dateCreated qualifier="approximate" point="end">1925</dateCreated>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'creation',
+                date: [
+                  {
+                    value: '1905',
+                    encoding: {
+                      code: 'w3cdtf'
+                    },
+                    status: 'primary'
+                  }
+                ],
+                displayLabel: 'something'
+              },
+              {
+                type: 'creation',
+                date: [
+                  {
+                    qualifier: 'approximate',
+                    type: 'end',
+                    value: '1925'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    context 'when dateOther with type manufacture and publisher element it splits' do
+      # based on yd527ky9095, zw971gd0220
+      # it_behaves_like 'MODS cocina mapping' do
+      xit 'to be implemented: eventType manufacture; also originInfo normalization needs to split up originInfo' do
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="manufacturer">
+              <publisher>J. Jennings Lith. 326 Sansome St.,</publisher>
+              <dateOther type="manufacture">1873.</dateOther>
+            </originInfo>
+          XML
+        end
+
+        # splits into 2; removes trailing period in date
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo displayLabel="manufacturer" eventType="manufacture">
+              <dateOther type="manufacture">1873</dateOther>
+            </originInfo>
+            <originInfo eventType="publication">
+              <publisher>J. Jennings Lith. 326 Sansome St.,</publisher>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                date: [
+                  {
+                    note: [
+                      {
+                        value: 'manufacture',
+                        type: 'date type'
+                      }
+                    ],
+                    value: '1873'
+                  }
+                ],
+                displayLabel: 'manufacturer'
+              },
+              {
+                type: 'publication',
+                contributor: [
+                  {
+                    name: [
+                      {
+                        value: 'J. Jennings Lith. 326 Sansome St.,'
+                      }
+                    ],
+                    type: 'organization',
+                    role: [
+                      {
+                        value: 'publisher',
+                        code: 'pbl',
+                        uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                        source: {
+                          code: 'marcrelator',
+                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                        }
+                      }
+                    ]
+                  }
+                ]
+                # location: [
+                #   {
+                #     value: "S. F. [San Francisco] :"
+                #   }
+                # ]
+              }
+            ]
+          }
+        end
+
+        let(:warnings) { [Notification.new(msg: 'originInfo/dateOther missing eventType')] }
+      end
+    end
+
+    context 'when copyrightDate and issuance in single originInfo' do
+      # based on kc487sz0076
+      it_behaves_like 'MODS cocina mapping' do
+        xit 'to be implemented: originInfo normalization needs to split up originInfo'
+        let(:skip_normalization) { true }
+
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="copyright">
+              <copyrightDate encoding="marc">2005</copyrightDate>
+              <issuance>monographic</issuance>
+            </originInfo>
+          XML
+        end
+
+        # copyrightDate splits from issuance
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="copyright">
+              <copyrightDate encoding="marc">2005</copyrightDate>
+            </originInfo>
+            <originInfo eventType="publication">
+              <issuance>monographic</issuance>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'copyright',
+                date: [
+                  {
+                    value: '2005',
+                    encoding: {
+                      code: 'marc'
+                    }
+                  }
+                ]
+              },
+              {
+                type: 'publication',
+                note: [
+                  {
+                    source: {
+                      value: 'MODS issuance terms'
+                    },
+                    type: 'issuance',
+                    value: 'monographic'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    context 'when eventType manufacture with publisher element' do
+      # based on jz402xk5530
+      it_behaves_like 'MODS cocina mapping' do
+        xit 'to be implemented: originInfo normalization must change eventType'
+        let(:skip_normalization) { true }
+
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="manufacturer" eventType="manufacture">
+              <publisher>Lithographed in the Reproduction Branch, SSU</publisher>
+              <dateOther/>
+            </originInfo>
+          XML
+        end
+
+        # eventType becomes publication
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo displayLabel="manufacturer" eventType="publication">
+              <publisher>Lithographed in the Reproduction Branch, SSU</publisher>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'publication',
+                contributor: [
+                  {
+                    name: [
+                      {
+                        value: 'Lithographed in the Reproduction Branch, SSU'
+                      }
+                    ],
+                    type: 'organization',
+                    role: [
+                      {
+                        value: 'publisher',
+                        code: 'pbl',
+                        uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                        source: {
+                          code: 'marcrelator',
+                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                        }
+                      }
+                    ]
+                  }
+                ],
+                displayLabel: 'manufacturer'
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    context 'when eventType distribution with publisher element' do
+      # based on rm699mr9758, xy550sj6776
+      it_behaves_like 'MODS cocina mapping' do
+        xit 'to be implemented: originInfo normalization must change eventType'
+        let(:skip_normalization) { true }
+
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="distribution">
+              <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
+            </originInfo>
+          XML
+        end
+
+        # eventType becomes publication
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="publication">
+              <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'publication',
+                contributor: [
+                  {
+                    name: [
+                      {
+                        value: 'For sale by the Superintendent of Documents, U.S. Government Publishing Office'
+                      }
+                    ],
+                    type: 'organization',
+                    role: [
+                      {
+                        value: 'publisher',
+                        code: 'pbl',
+                        uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                        source: {
+                          code: 'marcrelator',
+                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    context 'when eventType capture with dateCaptured and publisher elements it splits' do
+      # based on rn990mm7360
+      it_behaves_like 'MODS cocina mapping' do
+        xit 'to be implemented: originInfo normalization must split originInfo'
+        let(:skip_normalization) { true }
+
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="capture">
+              <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
+              <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
+              <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
+            </originInfo>
+          XML
+        end
+
+        # split capture and publication
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="capture">
+              <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
+              <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
+            </originInfo>
+            <originInfo eventType="publication">
+              <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'capture',
+                date: [
+                  {
+                    structuredValue: [
+                      {
+                        type: 'start',
+                        value: '2007-12-10',
+                        status: 'primary'
+                      },
+                      {
+                        type: 'end',
+                        value: '2011-01-24'
+                      }
+                    ],
+                    encoding: {
+                      code: 'iso8601'
+                    }
+                  }
+                ]
+              },
+              {
+                type: 'publication',
+                contributor: [
+                  {
+                    name: [
+                      {
+                        value: 'California. State Department of Education. Office of Curriculum Services'
+                      }
+                    ],
+                    type: 'organization',
+                    role: [
+                      {
+                        value: 'publisher',
+                        code: 'pbl',
+                        uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                        source: {
+                          code: 'marcrelator',
+                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    context 'when eventType copyright with copyrightDate and place it splits' do
+      # based on vw478nk8207
+      it_behaves_like 'MODS cocina mapping' do
+        xit 'to be implemented: originInfo normalization must split originInfo'
+        let(:skip_normalization) { true }
+
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="Place of creation" eventType="copyright">
+              <place>
+                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+              </place>
+              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
+              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
+            </originInfo>
+          XML
+        end
+
+        # split into two elements
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo displayLabel="Place of creation" eventType="copyright">
+              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
+              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
+            </originInfo>
+            <originInfo eventType="publication">
+              <place>
+                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'copyright',
+                date: [
+                  {
+                    structuredValue: [
+                      {
+                        type: 'start',
+                        value: '1970',
+                        status: 'primary'
+                      },
+                      {
+                        type: 'end',
+                        value: '1974'
+                      }
+                    ],
+                    qualifier: 'approximate',
+                    encoding: {
+                      code: 'w3cdtf'
+                    }
+                  }
+                ],
+                displayLabel: 'Place of creation'
+              },
+              {
+                type: 'publication',
+                location: [
+                  {
+                    value: 'San Francisco (Calif.)'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    context 'when eventType production with copyrightDate and place it splits' do
+      # based on vw478nk8207
+      it_behaves_like 'MODS cocina mapping' do
+        xit 'to be implemented: originInfo normalization must split originInfo and change eventType'
+        let(:skip_normalization) { true }
+
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="Place of creation" eventType="production">
+              <place>
+                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+              </place>
+              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
+              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
+            </originInfo>
+          XML
+        end
+
+        # split into two elements and 'production' is updated to copyright
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo displayLabel="Place of creation" eventType="copyright">
+              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
+              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
+            </originInfo>
+            <originInfo eventType="publication">
+              <place>
+                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'copyright',
+                date: [
+                  {
+                    structuredValue: [
+                      {
+                        type: 'start',
+                        value: '1970',
+                        status: 'primary'
+                      },
+                      {
+                        type: 'end',
+                        value: '1974'
+                      }
+                    ],
+                    qualifier: 'approximate',
+                    encoding: {
+                      code: 'w3cdtf'
+                    }
+                  }
+                ],
+                displayLabel: 'Place of creation'
+              },
+              {
+                type: 'publication',
+                location: [
+                  {
+                    value: 'San Francisco (Calif.)'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    context 'when altRepGroup script values match (incorrectly)' do
+      # based on rz633ck7860
+      # it_behaves_like 'MODS cocina mapping' do
+      xit 'warning about altRepGroup should not be given; in some circumstances same script is ok' do
+        let(:mods) do
+          <<~XML
+            <originInfo script="Latn" altRepGroup="1" eventType="publication">
+              <publisher>Rikuchi Sokuryōbu</publisher>
+              <dateIssued>Shōwa 16 [1941]</dateIssued>
+              <dateIssued encoding="marc" point="start">1941</dateIssued>
+              <issuance>monographic</issuance>
+            </originInfo>
+            <originInfo script="Latn" altRepGroup="1" eventType="publication">
+              <publisher>陸地測量部 :</publisher>
+              <dateIssued>昭和 16 [1941]</dateIssued>
+              <dateIssued encoding="marc" point="start">1941</dateIssued>
+              <issuance>monographic</issuance>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'publication',
+                date: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'Shōwa 16 [1941]',
+                        valueLanguage: {
+                          valueScript: {
+                            code: 'Latn',
+                            source: {
+                              code: 'iso15924'
+                            }
+                          }
+                        }
+                      },
+                      {
+                        value: '昭和 16 [1941]',
+                        valueLanguage: {
+                          valueScript: {
+                            code: 'Latn',
+                            source: {
+                              code: 'iso15924'
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    type: 'start',
+                    value: '1941',
+                    encoding: {
+                      code: 'marc'
+                    }
+                  }
+                ],
+                note: [
+                  {
+                    source: {
+                      value: 'MODS issuance terms'
+                    },
+                    type: 'issuance',
+                    value: 'monographic'
+                  }
+                ],
+                contributor: [
+                  {
+                    name: [
+                      {
+                        parallelValue: [
+                          {
+                            value: 'Rikuchi Sokuryōbu',
+                            valueLanguage: {
+                              valueScript: {
+                                code: 'Latn',
+                                source: {
+                                  code: 'iso15924'
+                                }
+                              }
+                            }
+                          },
+                          {
+                            value: '陸地測量部 :',
+                            valueLanguage: {
+                              valueScript: {
+                                code: 'Latn',
+                                source: {
+                                  code: 'iso15924'
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    type: 'organization',
+                    role: [
+                      {
+                        value: 'publisher',
+                        code: 'pbl',
+                        uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                        source: {
+                          code: 'marcrelator',
+                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        let(:warnings) { [Notification.new(msg: '"Unpaired altRepGroup')] }
+      end
+    end
+
+    context 'when mult altRepGroups and a singular originInfo' do
+      # based on sf449my9678, hb891vx5415, ng725mp5358
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="publication">
+              <dateIssued encoding="marc" point="start">1980</dateIssued>
+              <dateIssued encoding="marc" point="end">1984</dateIssued>
+              <issuance>monographic</issuance>
+            </originInfo>
+            <originInfo altRepGroup="1" eventType="publication">
+              <edition>Di 1 ban.</edition>
+            </originInfo>
+            <originInfo altRepGroup="2" eventType="publication">
+              <publisher>Sichuan ren min chu ban she</publisher>
+              <dateIssued>1980-1984</dateIssued>
+            </originInfo>
+            <originInfo altRepGroup="1" eventType="publication">
+              <edition>第1版．</edition>
+            </originInfo>
+            <originInfo altRepGroup="2" eventType="publication">
+              <publisher>四川人民出版社：</publisher>
+              <dateIssued>1980-1984</dateIssued>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'publication',
+                note: [
+                  {
+                    type: 'edition',
+                    parallelValue: [
+                      {
+                        value: 'Di 1 ban.'
+                      },
+                      {
+                        value: '第1版．'
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                type: 'publication',
+                date: [
+                  {
+                    value: '1980-1984'
+                  }
+                ],
+                contributor: [
+                  {
+                    name: [
+                      {
+                        parallelValue: [
+                          {
+                            value: 'Sichuan ren min chu ban she'
+                          },
+                          {
+                            value: '四川人民出版社：'
+                          }
+                        ]
+                      }
+                    ],
+                    type: 'organization',
+                    role: [
+                      {
+                        value: 'publisher',
+                        code: 'pbl',
+                        uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                        source: {
+                          code: 'marcrelator',
+                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                type: 'publication',
+                date: [
+                  {
+                    structuredValue: [
+                      {
+                        type: 'start',
+                        value: '1980'
+                      },
+                      {
+                        type: 'end',
+                        value: '1984'
+                      }
+                    ],
+                    encoding: {
+                      code: 'marc'
+                    }
+                  }
+                ],
+                note: [
+                  {
+                    source: {
+                      value: 'MODS issuance terms'
+                    },
+                    type: 'issuance',
+                    value: 'monographic'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    context 'when altRepGroup subelements are missing from one of the elements' do
+      # based on xj114vt0439
+      it_behaves_like 'MODS cocina mapping' do
+        xit 'to be implemented: normalization must ensure all elements in altRepGroup are matched'
+        let(:skip_normalization) { true }
+
+        let(:mods) do
+          <<~XML
+            <originInfo altRepGroup="1" eventType="publication">
+              <place>
+                <placeTerm type="code" authority="marccountry">cc</placeTerm>
+              </place>
+              <place>
+                <placeTerm type="text">Shanghai</placeTerm>
+              </place>
+              <publisher>Shanghai shu dian chu ban</publisher>
+              <publisher>Xin hua shu dian Shanghai fa xing suo fa xing</publisher>
+              <dateIssued>1992</dateIssued>
+              <edition>Di 1 ban.</edition>
+              <issuance>monographic</issuance>
+            </originInfo>
+            <originInfo altRepGroup="1" eventType="publication">
+              <place>
+                <placeTerm type="code" authority="marccountry">cc</placeTerm>
+              </place>
+              <place>
+                <placeTerm type="text">上海:上海书店出版：</placeTerm>
+              </place>
+              <publisher>新华书店上海发行所发行,</publisher>
+              <dateIssued>1992</dateIssued>
+              <edition>第1版.</edition>
+              <issuance>monographic</issuance>
+            </originInfo>
+          XML
+        end
+
+        # add second publisher to second originInfo so they match.
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo altRepGroup="1" eventType="publication">
+              <place>
+                <placeTerm type="code" authority="marccountry">cc</placeTerm>
+              </place>
+              <place>
+                <placeTerm type="text">Shanghai</placeTerm>
+              </place>
+              <publisher>Shanghai shu dian chu ban</publisher>
+              <publisher>Xin hua shu dian Shanghai fa xing suo fa xing</publisher>
+              <dateIssued>1992</dateIssued>
+              <edition>Di 1 ban.</edition>
+              <issuance>monographic</issuance>
+            </originInfo>
+            <originInfo altRepGroup="1" eventType="publication">
+              <place>
+                <placeTerm type="code" authority="marccountry">cc</placeTerm>
+              </place>
+              <place>
+                <placeTerm type="text">上海:上海书店出版：</placeTerm>
+              </place>
+              <publisher>新华书店上海发行所发行,</publisher>
+              <publisher>Xin hua shu dian Shanghai fa xing suo fa xing</publisher>
+              <dateIssued>1992</dateIssued>
+              <edition>第1版.</edition>
+              <issuance>monographic</issuance>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'publication',
+                date: [
+                  {
+                    value: '1992'
+                  }
+                ],
+                note: [
+                  {
+                    type: 'edition',
+                    parallelValue: [
+                      {
+                        value: 'Di 1 ban.'
+                      },
+                      {
+                        value: '第1版.'
+                      }
+                    ]
+                  },
+                  {
+                    source: {
+                      value: 'MODS issuance terms'
+                    },
+                    type: 'issuance',
+                    value: 'monographic'
+                  }
+                ],
+                contributor: [
+                  {
+                    name: [
+                      {
+                        parallelValue: [
+                          {
+                            value: 'Shanghai shu dian chu ban'
+                          },
+                          {
+                            value: '新华书店上海发行所发行,'
+                          }
+                        ]
+                      }
+                    ],
+                    type: 'organization',
+                    role: [
+                      {
+                        value: 'publisher',
+                        code: 'pbl',
+                        uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                        source: {
+                          code: 'marcrelator',
+                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    name: [
+                      {
+                        value: 'Xin hua shu dian Shanghai fa xing suo fa xing'
+                      }
+                    ],
+                    type: 'organization',
+                    role: [
+                      {
+                        value: 'publisher',
+                        code: 'pbl',
+                        uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                        source: {
+                          code: 'marcrelator',
+                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                        }
+                      }
+                    ]
+                  }
+                ],
+                location: [
+                  {
+                    parallelValue: [
+                      {
+                        value: 'Shanghai'
+                      },
+                      {
+                        value: '上海:上海书店出版：'
+                      }
+                    ]
+                  },
+                  {
+                    source: {
+                      code: 'marccountry'
+                    },
+                    code: 'cc'
+                  }
+                ]
+              }
+            ]
           }
         end
       end
