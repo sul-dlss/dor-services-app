@@ -211,7 +211,7 @@ module Cocina
         end
 
         def physical_description_notes_for(physical_description)
-          notes = physical_description.xpath('mods:note', mods: DESC_METADATA_NS).map do |node|
+          physical_description.xpath('mods:note', mods: DESC_METADATA_NS).map do |node|
             next nil if node.content.blank?
 
             {
@@ -220,13 +220,6 @@ module Cocina
               type: node['type']
             }.compact
           end.compact
-          extent_notes = physical_description.xpath('mods:extent[@unit]', mods: DESC_METADATA_NS).map do |extent_node|
-            {
-              type: 'unit',
-              value: extent_node['unit']
-            }
-          end
-          notes + extent_notes
         end
 
         def add_digital_origin(forms, physical_description)
@@ -241,7 +234,12 @@ module Cocina
 
         def add_extent(forms, physical_description)
           physical_description.xpath('mods:extent', mods: DESC_METADATA_NS).each do |extent|
-            forms << { value: extent.content, type: 'extent' }
+            forms << {
+              value: extent.content,
+              type: 'extent'
+            }.tap do |form_attrs|
+              form_attrs[:note] = [{ type: 'unit', value: extent['unit'] }] if extent['unit']
+            end
           end
         end
 

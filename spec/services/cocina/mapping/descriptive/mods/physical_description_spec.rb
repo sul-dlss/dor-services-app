@@ -341,6 +341,43 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
     end
   end
 
+  describe 'Extent with unit with sibling' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <physicalDescription>
+            <form authority="marcform">print</form>
+            <extent unit="linear foot (3 folders and 8 audiocassettes)">.5</extent>
+          </physicalDescription>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          form: [
+            {
+              value: 'print',
+              type: 'form',
+              source: {
+                code: 'marcform'
+              }
+            },
+            {
+              value: '.5',
+              type: 'extent',
+              note: [
+                {
+                  value: 'linear foot (3 folders and 8 audiocassettes)',
+                  type: 'unit'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Physical description with empty note' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do

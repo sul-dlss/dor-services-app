@@ -97,7 +97,7 @@ module Cocina
           Array(forms).select { |form| physical_description?(form) }.each do |form|
             if form.groupedValue
               grouped_forms << form
-            elsif form.value && (form.note || form.displayLabel)
+            elsif merge_form?(form)
               simple_forms << form
             else
               other_notes << form if form.note
@@ -107,6 +107,10 @@ module Cocina
           write_basic_physical_description(other_forms, other_notes) unless other_forms.empty?
           simple_forms.each { |form| write_basic_physical_description([form], [form]) }
           grouped_forms.each { |form| write_grouped_physical_description(form) }
+        end
+
+        def merge_form?(form)
+          form.value && (Array(form.note).any? { |note| note.type != 'unit' } || form.displayLabel)
         end
 
         def write_basic_physical_description(forms, note_forms)
