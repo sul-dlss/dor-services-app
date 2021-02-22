@@ -2124,9 +2124,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     context 'when dateCreated as point with 2 elements in same originInfo as dateIssued, dateIssued splits' do
       # based on nn349sf6895, rx731vv3403
       it_behaves_like 'MODS cocina mapping' do
-        xit 'to be implemented: plain MODS maps to cocina publication event without displayLabel; normalized mods maps to cocina publication event with displayLabel'
-        let(:skip_normalization) { true }
-
         let(:mods) do
           <<~XML
             <originInfo displayLabel="Place of creation" eventType="publication">
@@ -2140,7 +2137,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         # split into separate originInfo
         let(:roundtrip_mods) do
           <<~XML
-            <originInfo eventType="publication">
+            <originInfo displayLabel="Place of creation" eventType="publication">
               <dateIssued>1887</dateIssued>
             </originInfo>
             <originInfo displayLabel="Place of creation" eventType="production">
@@ -2181,7 +2178,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                   {
                     value: '1887'
                   }
-                ]
+                ],
+                displayLabel: 'Place of creation'
               }
             ]
           }
@@ -2308,7 +2306,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
             <originInfo displayLabel="something" eventType="production">
               <dateCreated keyDate="yes" encoding="w3cdtf">1905</dateCreated>
             </originInfo>
-            <originInfo eventType="production">
+            <originInfo displayLabel="something" eventType="production">
               <dateCreated qualifier="approximate" point="end">1925</dateCreated>
             </originInfo>
           XML
@@ -2338,7 +2336,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                     type: 'end',
                     value: '1925'
                   }
-                ]
+                ],
+                displayLabel: 'something'
               }
             ]
           }
@@ -2706,7 +2705,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
               <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
               <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
             </originInfo>
-            <originInfo eventType="publication">
+            <originInfo displayLabel="Place of creation" eventType="publication">
               <place>
                 <placeTerm type="text">San Francisco (Calif.)</placeTerm>
               </place>
@@ -2746,7 +2745,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                   {
                     value: 'San Francisco (Calif.)'
                   }
-                ]
+                ],
+                displayLabel: 'Place of creation'
               }
             ]
           }
@@ -2779,7 +2779,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
               <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
               <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
             </originInfo>
-            <originInfo eventType="publication">
+            <originInfo displayLabel="Place of creation" eventType="publication">
               <place>
                 <placeTerm type="text">San Francisco (Calif.)</placeTerm>
               </place>
@@ -2819,7 +2819,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                   {
                     value: 'San Francisco (Calif.)'
                   }
-                ]
+                ],
+                displayLabel: 'Place of creation'
               }
             ]
           }

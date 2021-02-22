@@ -253,7 +253,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
               </place>
               <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
             </originInfo>
-            <originInfo eventType="development">
+            <originInfo displayLabel="Place of Creation" eventType="development">
               <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
             </originInfo>
           </mods>
@@ -307,7 +307,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
             <originInfo displayLabel="Place of Creation" eventType="production">
               <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
             </originInfo>
-            <originInfo eventType="development">
+            <originInfo displayLabel="Place of Creation" eventType="development">
               <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
             </originInfo>
           </mods>

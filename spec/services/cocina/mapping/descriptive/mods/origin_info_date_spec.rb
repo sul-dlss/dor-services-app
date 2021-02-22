@@ -1044,7 +1044,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
             </place>
             <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
           </originInfo>
-          <originInfo eventType="development">
+          <originInfo displayLabel="Place of Creation" eventType="development">
             <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
           </originInfo>
         XML
@@ -1078,6 +1078,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
             },
             {
               type: 'development',
+              displayLabel: 'Place of Creation',
               date: [
                 {
                   value: '2003-12-01',

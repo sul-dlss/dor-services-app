@@ -160,6 +160,7 @@ module Cocina
           # Move to own originInfo
           new_origin_info = Nokogiri::XML::Node.new('originInfo', Nokogiri::XML(nil))
           new_origin_info[:eventType] = 'development'
+          new_origin_info[:displayLabel] = date_other.parent['displayLabel'] if date_other.parent['displayLabel']
           new_origin_info << date_other.dup
           date_other.parent.parent << new_origin_info
           date_other.remove
