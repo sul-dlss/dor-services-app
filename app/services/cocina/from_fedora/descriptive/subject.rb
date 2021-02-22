@@ -176,28 +176,52 @@ module Cocina
           values = attrs[:structuredValue] || attrs[:groupedValue]
           return if values.nil?
 
-          attrs.delete(:source) if remove_source?(attrs)
+          remove_source_prior(attrs)
 
-          # If attr has source, add to all values that have valueURI but no source.
           values.each do |value|
-            value[:source] ||= attrs[:source] if attrs[:source] && (value[:uri] || value[:code])
+            uri_or_code = value[:uri] || value[:code]
+            # If attr has source, add to all values that have valueURI but no source.
+            value[:source] ||= attrs[:source] if attrs[:source] && uri_or_code
+            # If value has source and source matches subject source and no valueURI, then remove source.
+            value.delete(:source) if value[:source] && attrs[:source] == value[:source] && !uri_or_code
           end
 
-          # Delete source if no uri and all values have same source.
-          attrs.delete(:source) if attrs[:uri].nil? && values.all? { |value| value[:source] == attrs[:source] }
+          remove_source_post(attrs)
         end
 
-        def remove_source?(attrs)
+        def remove_source_prior(attrs)
           # Remove source if no uri and all values have source and all are not same type
-          return false if attrs[:uri]
-
           values = attrs[:structuredValue] || attrs[:groupedValue]
-          return false if values.any? { |value| value[:source].nil? }
+          return if attrs[:uri] ||
+                    values.any? { |value| value[:source].nil? } ||
+                    values.any? { |value| value[:type] != values.first[:types] }
 
-          types = values.pluck(:type)
-          return false unless types.any? { |type| type != types.first }
+          attrs.delete(:source)
+        end
 
-          true
+        def remove_source_post(attrs)
+          # Delete source if no uri and all values have same source and any have uri or code.
+          values = attrs[:structuredValue] || attrs[:groupedValue]
+          return unless attrs[:uri].nil? &&
+                        values.all? { |value| equal_sources?(attrs[:source], value[:source]) } &&
+                        values.any? { |value| value[:uri] || value[:code] }
+
+          # values.all? { |value| value[:source] == attrs[:source] || value.dig(:source, :code) == attrs.dig(:source, :code) } &&
+
+          attrs.delete(:source)
+        end
+
+        def equal_sources?(source1, source2)
+          return true if source1 == source2
+          return false if source1.nil? || source2.nil?
+          return true if source1[:code] == source2[:code]
+          return true if lcsh?(source1[:code]) && lcsh?(source2[:code])
+
+          false
+        end
+
+        def lcsh?(code)
+          %w[lcsh naf].include?(code)
         end
 
         def hierarchical_geographic(hierarchical_geographic_node, attrs)

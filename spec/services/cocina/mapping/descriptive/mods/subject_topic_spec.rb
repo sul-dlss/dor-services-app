@@ -292,10 +292,7 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
                     uri: 'http://id.loc.gov/authorities/subjects/'
                   }
                 }
-              ],
-              source: {
-                code: 'lcsh'
-              }
+              ]
             }
           ]
         }
@@ -395,6 +392,92 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
                   }
                 }
               ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Multi-term topic subject with mixed authorities' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <topic authority="local">Horses</topic>
+            <topic authority="lcsh" valueURI="http://id.loc.gov/authorities/subjects/sh34567">History</topic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  value: 'Horses',
+                  type: 'topic',
+                  source: {
+                    code: 'local'
+                  }
+                },
+                {
+                  value: 'History',
+                  type: 'topic',
+                  uri: 'http://id.loc.gov/authorities/subjects/sh34567',
+                  source: {
+                    code: 'lcsh'
+                  }
+                }
+              ],
+              source: {
+                code: 'lcsh'
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Multi-term topic subject with authority for both set and terms' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <topic authority="lcsh">Horses</topic>
+            <topic authority="lcsh">History</topic>
+          </subject>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <topic>Horses</topic>
+            <topic>History</topic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  value: 'Horses',
+                  type: 'topic'
+                },
+                {
+                  value: 'History',
+                  type: 'topic'
+                }
+              ],
+              source: {
+                code: 'lcsh'
+              }
             }
           ]
         }
