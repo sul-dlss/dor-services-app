@@ -13,6 +13,7 @@ module Cocina
 
       def initialize(mods_ng_xml:, druid:)
         @ng_xml = mods_ng_xml.dup
+        @ng_xml.encoding = 'UTF-8'
         @druid = druid
       end
 
