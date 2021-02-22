@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
-  let(:normalized_ng_xml) { Cocina::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: nil).to_xml }
+  let(:normalized_ng_xml) { Cocina::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: nil, label: nil).to_xml }
 
   context 'when normalizing topic' do
     let(:mods_ng_xml) do

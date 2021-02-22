@@ -3,7 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ModsNormalizers::TitleNormalizer do
-  let(:normalized_ng_xml) { Cocina::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: nil).to_xml }
+  let(:normalized_ng_xml) { Cocina::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: nil, label: label).to_xml }
+
+  let(:label) { nil }
 
   context 'when normalizing empty title' do
     let(:mods_ng_xml) do
@@ -20,6 +22,30 @@ RSpec.describe Cocina::ModsNormalizers::TitleNormalizer do
     it 'removes titleInfo' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing Hydrus title' do
+    let(:label) { 'Hydrus' }
+
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <titleInfo>
+            <title />
+          </titleInfo>
+        </mods>
+      XML
+    end
+
+    it 'adds Hydrus titleInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <titleInfo>
+            <title>Hydrus</title>
+          </titleInfo>
         </mods>
       XML
     end
