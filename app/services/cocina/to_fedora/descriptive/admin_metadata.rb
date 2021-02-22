@@ -99,7 +99,7 @@ module Cocina
             xml.languageOfCataloging language_of_cataloging_attrs do
               language_attrs = with_uri_info(language, {})
               xml.languageTerm language.value, language_attrs.merge(type: 'text') if language.value
-              xml.languageTerm language.code, language_attrs.merge(type: 'code')
+              xml.languageTerm language.code, language_attrs.merge(type: 'code') if language.code
               if language.script
                 script_attrs = with_uri_info(language.script, {})
                 xml.scriptTerm language.script.value, script_attrs.merge(type: 'text')
