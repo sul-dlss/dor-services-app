@@ -9,15 +9,17 @@ module Cocina
 
     # @param [Nokogiri::Document] mods_ng_xml MODS to be normalized
     # @param [String] druid
+    # @param [String] label
     # @return [Nokogiri::Document] normalized MODS
-    def self.normalize(mods_ng_xml:, druid:)
-      ModsNormalizer.new(mods_ng_xml: mods_ng_xml, druid: druid).normalize
+    def self.normalize(mods_ng_xml:, druid:, label:)
+      ModsNormalizer.new(mods_ng_xml: mods_ng_xml, druid: druid, label: label).normalize
     end
 
-    def initialize(mods_ng_xml:, druid:)
+    def initialize(mods_ng_xml:, druid:, label:)
       @ng_xml = mods_ng_xml.dup
       @ng_xml.encoding = 'UTF-8' if @ng_xml.respond_to?(:encoding=) # sometimes it's a String (?)
       @druid = druid
+      @label = label
     end
 
     def normalize
@@ -39,7 +41,7 @@ module Cocina
       normalize_location_physical_location
       normalize_purl
       normalize_empty_notes
-      @ng_xml = ModsNormalizers::TitleNormalizer.normalize(mods_ng_xml: ng_xml)
+      @ng_xml = ModsNormalizers::TitleNormalizer.normalize(mods_ng_xml: ng_xml, label: label)
       @ng_xml = ModsNormalizers::GeoExtensionNormalizer.normalize(mods_ng_xml: ng_xml, druid: druid)
       normalize_empty_type_of_resource # Must be after normalize_empty_attributes
       normalize_abstract_summary
@@ -53,7 +55,7 @@ module Cocina
 
     private
 
-    attr_reader :ng_xml, :druid
+    attr_reader :ng_xml, :druid, :label
 
     def normalize_default_namespace
       xml = ng_xml.to_s
