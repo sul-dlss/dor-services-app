@@ -846,4 +846,23 @@ RSpec.describe Cocina::ModsNormalizer do
       XML
     end
   end
+
+  context 'when normalizing empty physicalLocation' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <location>
+            <physicalLocation type="location"/>
+          </location>          
+        </mods>
+      XML
+    end
+
+    it 'removes' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+        </mods>
+      XML
+    end
+  end
 end

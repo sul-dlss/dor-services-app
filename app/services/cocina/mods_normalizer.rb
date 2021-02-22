@@ -242,6 +242,8 @@ module Cocina
     def normalize_location_physical_location
       ng_xml.root.xpath('//mods:location', mods: MODS_NS).each do |location_node|
         location_node.xpath('mods:physicalLocation|mods:url|mods:shelfLocator', mods: MODS_NS).each do |node|
+          next unless node.content.present? || node['xlink:href']
+
           new_location = Nokogiri::XML::Node.new('location', ng_xml)
           new_location << node
           location_node.parent << new_location
