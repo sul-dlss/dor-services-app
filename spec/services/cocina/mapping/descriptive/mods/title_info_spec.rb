@@ -114,6 +114,51 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     end
   end
 
+  describe 'Translated title' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <titleInfo usage="primary" lang="fre" altRepGroup="1">
+            <title>Les misérables</title>
+          </titleInfo>
+          <titleInfo type="translated" lang="eng" altRepGroup="1">
+            <title>The wretched</title>
+          </titleInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              parallelValue: [
+                {
+                  value: 'Les misérables',
+                  status: 'primary',
+                  valueLanguage: {
+                    code: 'fre',
+                    source: {
+                      code: 'iso639-2b'
+                    }
+                  }
+                },
+                {
+                  value: 'The wretched',
+                  valueLanguage: {
+                    code: 'eng',
+                    source: {
+                      code: 'iso639-2b'
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Translated title (title is structuredValue)' do
     # How to ID: titleInfo type="translated"
     it_behaves_like 'MODS cocina mapping' do
