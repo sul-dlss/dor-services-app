@@ -66,6 +66,7 @@ module Cocina
       def split_origin_info(split_node_name1, split_node_name2, event_type)
         ng_xml.root.xpath("//mods:originInfo[mods:#{split_node_name1} and mods:#{split_node_name2}]", mods: ModsNormalizer::MODS_NS).each do |origin_info_node|
           new_origin_info_node = Nokogiri::XML::Node.new('originInfo', Nokogiri::XML(nil))
+          new_origin_info_node['displayLabel'] = origin_info_node['displayLabel'] if origin_info_node['displayLabel']
           new_origin_info_node['eventType'] = event_type
           origin_info_node.parent << new_origin_info_node
           split_nodes = origin_info_node.xpath("mods:#{split_node_name2}", mods: ModsNormalizer::MODS_NS)

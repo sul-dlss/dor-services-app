@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
-  let(:normalized_ng_xml) { Cocina::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: nil) }
+  let(:normalized_ng_xml) { Cocina::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: nil).to_xml }
 
   context 'when normalizing originInfo eventTypes' do
     context 'when event type assigning date element present' do
@@ -874,6 +874,34 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
           </originInfo>
           <originInfo eventType="development">
             <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when splitting originInfo dates into separate elements' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel='foo' eventType="publication">
+            <dateIssued encoding="marc">2020</dateIssued>
+            <copyrightDate encoding="marc">2020</copyrightDate>
+            <copyrightDate>©2020</copyrightDate>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    it 'includes displayLabel on both originInfo elements' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel='foo' eventType="publication">
+            <dateIssued encoding="marc">2020</dateIssued>
+          </originInfo>
+          <originInfo displayLabel='foo' eventType="copyright">
+            <copyrightDate encoding="marc">2020</copyrightDate>
+            <copyrightDate>©2020</copyrightDate>
           </originInfo>
         </mods>
       XML

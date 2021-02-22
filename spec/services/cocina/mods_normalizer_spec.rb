@@ -76,7 +76,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'adds usage' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <location>
             <url usage="primary display">http://purl.stanford.edu/bw502ns3302</url>
@@ -106,7 +106,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'leaves primary display' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <location>
             <url>http://purl.stanford.edu/bw502ns3302</url>
@@ -136,7 +136,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'leaves primary display' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <location>
             <url>http://purl.stanford.edu/bw502ns3302</url>
@@ -164,7 +164,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'does not add otherType' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <relatedItem type="otherFormat" displayLabel="Online version:">
             <titleInfo>
@@ -189,7 +189,7 @@ RSpec.describe Cocina::ModsNormalizer do
       end
 
       it 'removes' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}/>
         XML
       end
@@ -206,7 +206,7 @@ RSpec.describe Cocina::ModsNormalizer do
       end
 
       it 'removes' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <note>Includes various issues of some sheets.</note>
           </mods>
@@ -236,7 +236,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'removes unmatched' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <subject altRepGroup='1'>
             <topic>Marine biology</topic>
@@ -276,7 +276,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'removes unmatched' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <titleInfo usage="primary">
             <title>Slaughterhouse-Five</title>
@@ -306,7 +306,7 @@ RSpec.describe Cocina::ModsNormalizer do
       end
 
       it 'removes empty attributes' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <classification>Y 1.1/2:</mods:classification>
           </mods>
@@ -331,7 +331,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
       it 'removes empty elements and attributes' do
         # note that placeTerm type="text" is assigned when type is missing
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <originInfo eventType="production">
               <place>
@@ -367,7 +367,7 @@ RSpec.describe Cocina::ModsNormalizer do
       # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
       xit 'removes empty attributes and attributes' do
         # note that placeTerm type="text" is assigned when type is missing
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <originInfo eventType="publication"/>
           </mods>
@@ -391,7 +391,7 @@ RSpec.describe Cocina::ModsNormalizer do
       end
 
       it 'removes empty elements and attributes' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
           </mods>
         XML
@@ -416,7 +416,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
       it 'removes empty elements and attributes' do
         # note that languageTerm type="code" is assigned when type is missing
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <language>
               <languageTerm type="code"/>
@@ -446,7 +446,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
       it 'removes empty elements and attributes and their empty parents' do
         # note that languageTerm type="code" is assigned when type is missing
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <note type="contact" displayLabel="Contact">pwrcourses@stanford.edu</note>
           </mods>
@@ -469,7 +469,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'removes xml:space' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <titleInfo>
             <nonSort>The</nonSort>
@@ -495,7 +495,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'removes unmatched' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <recordInfo>
             <languageOfCataloging>
@@ -517,7 +517,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'adds spaces' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <accessCondition type="restriction on access">Available to Stanford researchers only.</accessCondition>
         </mods>
@@ -535,7 +535,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'adds spaces' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <accessCondition type="use and reproduction">User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.</accessCondition>
         </mods>
@@ -570,7 +570,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'fixes capitalization' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <identifier type="isbn">1234 5678 9203</identifier>
           <identifier type="ark">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
@@ -616,7 +616,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'combines the location blocks' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <location>
             <url usage="primary display">http://purl.stanford.edu/cy979mw6316</url>
@@ -704,7 +704,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'removes relatedItem' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
         </mods>
       XML
@@ -721,7 +721,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'removes attribute' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <abstract>This is a summary.</abstract>
         </mods>
@@ -776,7 +776,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     it 'removes duplicates' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <genre usage="primary">poetry</genre>
           <genre>prose</genre>
@@ -829,19 +829,19 @@ RSpec.describe Cocina::ModsNormalizer do
             <titleInfo>
               <title>Non-Technical Canyon Guide</title>
             </titleInfo>
-          </relatedItem>          
+          </relatedItem>
         </mods>
       XML
     end
 
     it 'removes attribute' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <relatedItem type="series">
             <titleInfo>
               <title>Non-Technical Canyon Guide</title>
             </titleInfo>
-          </relatedItem>          
+          </relatedItem>
         </mods>
       XML
     end
@@ -853,13 +853,13 @@ RSpec.describe Cocina::ModsNormalizer do
         <mods #{MODS_ATTRIBUTES}>
           <location>
             <physicalLocation type="location"/>
-          </location>          
+          </location>
         </mods>
       XML
     end
 
     it 'removes' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
         </mods>
       XML

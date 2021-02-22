@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ModsNormalizers::GeoExtensionNormalizer do
-  let(:normalized_ng_xml) { Cocina::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: 'druid:pf694bk4862') }
+  let(:normalized_ng_xml) { Cocina::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: 'druid:pf694bk4862').to_xml }
 
   context 'when normalizing geo PURL' do
     let(:mods_ng_xml) do
