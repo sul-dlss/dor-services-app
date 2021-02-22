@@ -98,43 +98,6 @@ RSpec.describe 'Cocina --> MODS mappings for adminMetadata (H2 specific)' do
         }
       end
 
-      let(:roundtrip_cocina) do
-        {
-          adminMetadata: {
-            event: [
-              {
-                type: 'creation',
-                date: [
-                  {
-                    value: create_date,
-                    encoding: {
-                      code: 'w3cdtf'
-                    }
-                  }
-                ]
-              },
-              {
-                type: 'modification',
-                date: [
-                  {
-                    value: modification_date,
-                    encoding: {
-                      code: 'w3cdtf'
-                    }
-                  }
-                ]
-              }
-            ],
-            note: [
-              {
-                value: "Metadata created by user via Stanford self-deposit application v.#{h2_version}",
-                type: 'record origin'
-              }
-            ]
-          }
-        }
-      end
-
       let(:mods) do
         <<~XML
           <recordInfo>
