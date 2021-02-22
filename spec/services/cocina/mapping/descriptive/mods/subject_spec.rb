@@ -356,4 +356,37 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
       end
     end
   end
+
+  # Bad data handling
+
+  describe 'Element with xlink should not have value' do
+    xit 'not implemented' do
+      let(:druid) { 'druid:vj685ps3229' }
+
+      let(:mods) do
+        <<~XML
+          <subject xmlns:xlink="http://www.w3.org/1999/xlink" authority="fast" xlink:href="http://id.worldcat.org/fast/1355886">
+            <temporal>1939-1945</temporal>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: '1939-1945',
+              type: 'time',
+              source: {
+                code: 'fast'
+              },
+              valueAt: 'http://id.worldcat.org/fast/1355886'
+            }
+          ]
+        }
+      end
+
+      let(:warnings) { [Notification.new(msg: 'Element with both xlink and value')] }
+    end
+  end
 end
