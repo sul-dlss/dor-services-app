@@ -160,6 +160,57 @@ RSpec.describe 'MODS part <--> cocina mappings' do
     end
   end
 
+  describe 'host relatedItem/part with text subelement' do
+    xit 'not implemented' do
+      let(:druid) { 'dx917cq2361' }
+
+      let(:mods) do
+        <<~XML
+          <relatedItem type="host">
+            <titleInfo>
+              <title>[Recueil. Collection Smith-Lesoue&#x308;f. Estampes re&#x301;volutionnaires]</title>
+            </titleInfo>
+            <identifier type="local">(FrPBN)42417922</identifier>
+            <part>
+              <text>10</text>
+            </part>
+          </relatedItem>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          relatedResource: [
+            {
+              type: 'part of',
+              title: [
+                {
+                  value: '[Recueil. Collection de Vinck. Un siècle d\'histoire de France par l\'estampe, 1770-1870. Vol. 3 (pièces 346-487), Ancien Régime et Révolution]'
+                }
+              ],
+              identifier: [
+                {
+                  value: '(FrPBN)42417922',
+                  type: 'local'
+                }
+              ],
+              relatedResource: [
+                {
+                  type: 'has part',
+                  note: [
+                    {
+                      value: '10'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Monolingual part with all subelements' do
     # valid MODS, but Arcadia will not map unless it shows up in our data.
     xit 'not mapped (to cocina) unless it shows up in our data'
