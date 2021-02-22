@@ -929,7 +929,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
         XML
       end
     end
-
   end
 
   describe 'Cited contributor with uncited organization' do
@@ -1414,7 +1413,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           </name>
         XML
       end
-
     end
   end
 
@@ -2149,7 +2147,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
         XML
       end
     end
-
   end
 
   describe 'Cited contributor with Publisher role and publication date' do
@@ -2317,7 +2314,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
         XML
       end
     end
-
   end
 
   describe 'Cited contributor and uncited contributor with Publisher role and publication date' do
@@ -2497,18 +2493,18 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
 
       let(:mods) do
         <<~XML
-        <name type="personal" usage="primary">
-          <namePart type="given">Jane</namePart>
-          <namePart type="family">Stanford</namePart>
-          <role>
-            <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-            <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-          </role>
-        </name>
-        <originInfo eventType="publication">
-          <publisher>Stanford University Press</publisher>
-          <dateIssued keyDate="yes" encoding="w3cdtf">2020-02-02</dateIssued>
-        </originInfo>
+          <name type="personal" usage="primary">
+            <namePart type="given">Jane</namePart>
+            <namePart type="family">Stanford</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+            </role>
+          </name>
+          <originInfo eventType="publication">
+            <publisher>Stanford University Press</publisher>
+            <dateIssued keyDate="yes" encoding="w3cdtf">2020-02-02</dateIssued>
+          </originInfo>
         XML
       end
     end
