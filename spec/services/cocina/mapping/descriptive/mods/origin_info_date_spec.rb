@@ -607,11 +607,11 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'BCE date (edtf encoding)' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated spec - keyDate not implemented' do
       let(:mods) do
         <<~XML
           <originInfo>
-            <dateCreated encoding="edtf">-0499</dateCreated>
+            <dateCreated keyDate="yes" encoding="edtf">-0499</dateCreated>
           </originInfo>
         XML
       end
@@ -619,7 +619,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
       let(:roundtrip_mods) do
         <<~XML
           <originInfo eventType="production">
-            <dateCreated encoding="edtf">-0499</dateCreated>
+            <dateCreated keyDate="yes" encoding="edtf">-0499</dateCreated>
           </originInfo>
         XML
       end
@@ -634,7 +634,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                   value: '-0499',
                   encoding: {
                     code: 'edtf'
-                  }
+                  },
+                  status: 'primary'
                 }
               ]
             }
