@@ -102,6 +102,7 @@ RSpec.describe 'Cocina --> MODS mappings for adminMetadata (H2 specific)' do
         <<~XML
           <recordInfo>
             <recordOrigin>Metadata created by user via Stanford self-deposit application v.#{h2_version}</recordOrigin>
+            <recordOrigin>Metadata modified by user via Stanford self-deposit application v.#{h2_version}</recordOrigin>
             <recordCreationDate encoding="w3cdtf">#{create_date}</recordCreationDate>
             <recordChangeDate encoding="w3cdtf">#{modification_date}</recordChangeDate>
           </recordInfo>
