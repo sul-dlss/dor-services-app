@@ -584,7 +584,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               type: 'resource type'
             },
             {
-              value: 'Dataset',
+              value: 'Other',
               type: 'resource type',
               source: {
                 value: 'DataCite resource types'
