@@ -455,4 +455,36 @@ RSpec.describe 'MODS recordInfo <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Language term text only' do
+    # Adapted from rb670yb8840
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <recordInfo>
+            <languageOfCataloging>
+              <languageTerm type="text" authority="iso639-2b" authorityURI="http://id.loc.gov/vocabulary/iso639-2" valueURI="http://id.loc.gov/vocabulary/iso639-2/eng">English</languageTerm>
+            </languageOfCataloging>
+          </recordInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          adminMetadata: {
+            language: [
+              {
+                value: 'English',
+                uri: 'http://id.loc.gov/vocabulary/iso639-2/eng',
+                source: {
+                  code: 'iso639-2b',
+                  uri: 'http://id.loc.gov/vocabulary/iso639-2'
+                }
+              }
+            ]
+          }
+        }
+      end
+    end
+  end
 end
