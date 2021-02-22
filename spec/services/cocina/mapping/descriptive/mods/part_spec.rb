@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'MODS part <--> cocina mappings' do
   describe 'isReferencedBy relatedItem/part (510c)' do
     # Adapted from kf840zn4567
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'unimplemented mapping' do
       let(:mods) do
         <<~XML
           <relatedItem type="isReferencedBy">
@@ -36,11 +36,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
         XML
       end
 
-      # Strip trailing comma or period from title. Technically author should be in contributor property
-      # (or the string in a citation/reference note), but that can't be determined from the source data.
-      # Any <detail type="part" should map to note.type "location within source" regardless of
-      # relatedItem type or whether the part element is nested under relatedItem. Other values of
-      # detail[@type] should map to note.type following the COCINA type vocabulary documentation.
+      # Strip trailing comma or period from title.
 
       let(:cocina) do
         {
@@ -54,8 +50,17 @@ RSpec.describe 'MODS part <--> cocina mappings' do
               ],
               note: [
                 {
-                  value: '635/94',
-                  type: 'location within source'
+                  type: 'part',
+                  groupedValue: [
+                    {
+                      value: 'part',
+                      type: 'detail type'
+                    },
+                    {
+                      value: '635/94',
+                      type: 'number'
+                    }
+                  ]
                 }
               ]
             }
@@ -67,7 +72,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
 
   describe 'constituent relatedItem/part' do
     # Adapted from vt758zn6912
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'unimplemented mapping' do
       let(:mods) do
         <<~XML
           <relatedItem type="constituent">
@@ -78,6 +83,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
               <detail type="marker">
                 <number>02:T00:04:01</number>
                 <caption>Marker</caption>
+                <title>Side A</title>
               </detail>
             </part>
           </relatedItem>
@@ -89,6 +95,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
               <detail type="marker">
                 <number>03:T00:08:35</number>
                 <caption>Marker</caption>
+                <title>Side B</title>
               </detail>
             </part>
           </relatedItem>
@@ -100,6 +107,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
               <detail type="marker">
                 <number>04:T00:15:35</number>
                 <caption>Marker</caption>
+                <title>Side A</title>
               </detail>
             </part>
           </relatedItem>
@@ -118,9 +126,25 @@ RSpec.describe 'MODS part <--> cocina mappings' do
               ],
               note: [
                 {
-                  type: 'marker',
-                  value: '02:T00:04:01',
-                  displayLabel: 'Marker'
+                  type: 'part',
+                  groupedValue: [
+                    {
+                      value: 'marker',
+                      type: 'detail type'
+                    },
+                    {
+                      value: '02:T00:04:01',
+                      type: 'number'
+                    },
+                    {
+                      value: 'Marker',
+                      type: 'caption'
+                    },
+                    {
+                      value: 'Side A',
+                      type: 'title'
+                    }
+                  ]
                 }
               ]
             },
@@ -133,9 +157,25 @@ RSpec.describe 'MODS part <--> cocina mappings' do
               ],
               note: [
                 {
-                  type: 'marker',
-                  value: '03:T00:08:35',
-                  displayLabel: 'Marker'
+                  type: 'part',
+                  groupedValue: [
+                    {
+                      value: 'marker',
+                      type: 'detail type'
+                    },
+                    {
+                      value: '03:T00:08:35',
+                      type: 'number'
+                    },
+                    {
+                      value: 'Marker',
+                      type: 'caption'
+                    },
+                    {
+                      value: 'Side B',
+                      type: 'title'
+                    }
+                  ]
                 }
               ]
             },
@@ -148,9 +188,25 @@ RSpec.describe 'MODS part <--> cocina mappings' do
               ],
               note: [
                 {
-                  type: 'marker',
-                  value: '04:T00:15:35',
-                  displayLabel: 'Marker'
+                  type: 'part',
+                  groupedValue: [
+                    {
+                      value: 'marker',
+                      type: 'detail type'
+                    },
+                    {
+                      value: '04:T00:15:35',
+                      type: 'number'
+                    },
+                    {
+                      value: 'Marker',
+                      type: 'caption'
+                    },
+                    {
+                      value: 'Side A',
+                      type: 'title'
+                    }
+                  ]
                 }
               ]
             }
@@ -168,7 +224,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
         <<~XML
           <relatedItem type="host">
             <titleInfo>
-              <title>[Recueil. Collection Smith-Lesoue&#x308;f. Estampes re&#x301;volutionnaires]</title>
+              <title>[Recueil. Collection Smith-Lesouëf. Estampes révolutionnaires]</title>
             </titleInfo>
             <identifier type="local">(FrPBN)42417922</identifier>
             <part>
@@ -194,12 +250,59 @@ RSpec.describe 'MODS part <--> cocina mappings' do
                   type: 'local'
                 }
               ],
-              relatedResource: [
+              note: [
                 {
-                  type: 'has part',
-                  note: [
+                  type: 'part',
+                  groupedValue: [
                     {
-                      value: '10'
+                      value: '10',
+                      type: 'text'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'host/relatedItem with part/date subelement' do
+    xit 'not implemented' do
+      let(:druid) { 'druid:ht052ks5388' }
+
+      let(:mods) do
+        <<~XML
+          <relatedItem type="host" displayLabel="Published in">
+            <titleInfo>
+              <title>The Business Week Top 1000</title>
+            </titleInfo>
+            <part>
+              <date>1999</date>
+            </part>
+          </relatedItem>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          relatedResource: [
+            {
+              type: 'part of',
+              displayLabel: 'Published in',
+              title: [
+                {
+                  value: 'The Business Week Top 1000'
+                }
+              ],
+              note: [
+                {
+                  type: 'part',
+                  groupedValue: [
+                    {
+                      value: '1999',
+                      type: 'date'
                     }
                   ]
                 }
