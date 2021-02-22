@@ -922,7 +922,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       XML
     end
 
-    xit 'moves dateCreated into its own originInfo' do
+    it 'moves dateCreated into its own originInfo' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo eventType="publication">
@@ -951,10 +951,10 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       XML
     end
 
-    xit 'splits dateCreated and dateIssued into separate originInfo elements' do
+    it 'splits dateCreated and dateIssued into separate originInfo elements and has displayLabel on both' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="publication">
+          <originInfo displayLabel="Place of creation" eventType="publication">
             <dateIssued>1887</dateIssued>
           </originInfo>
           <originInfo displayLabel="Place of creation" eventType="production">
@@ -985,7 +985,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       XML
     end
 
-    xit 'moves dateCreated into its own originInfo' do
+    xit 'moves dateCreated into its own originInfo and removes exact duplicates' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo eventType="production">

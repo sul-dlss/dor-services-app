@@ -58,6 +58,7 @@ module Cocina
 
       def normalize_origin_info_split
         # Split a single originInfo into multiple.
+        split_origin_info('dateIssued', 'dateCreated', 'production')
         split_origin_info('dateIssued', 'copyrightDate', 'copyright')
         split_origin_info('dateIssued', 'dateCaptured', 'capture')
         split_origin_info('dateIssued', 'dateValid', 'validity')

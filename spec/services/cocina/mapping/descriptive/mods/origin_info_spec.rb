@@ -2052,9 +2052,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     context 'when dateCreated and dateIssued in eventType publication it splits' do
       # based on kq506ht3416
       it_behaves_like 'MODS cocina mapping' do
-        xit 'to be implemented: originInfo normalization needs to split up originInfo'
-        let(:skip_normalization) { true }
-
         let(:mods) do
           <<~XML
             <originInfo eventType="publication">
@@ -2127,7 +2124,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     context 'when dateCreated as point with 2 elements in same originInfo as dateIssued, dateIssued splits' do
       # based on nn349sf6895, rx731vv3403
       it_behaves_like 'MODS cocina mapping' do
-        xit 'to be implemented: originInfo normalization needs to split up originInfo'
+        xit 'to be implemented: plain MODS maps to cocina publication event without displayLabel; normalized mods maps to cocina publication event with displayLabel'
         let(:skip_normalization) { true }
 
         let(:mods) do
