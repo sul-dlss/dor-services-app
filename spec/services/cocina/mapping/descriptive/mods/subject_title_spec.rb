@@ -71,4 +71,45 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
       end
     end
   end
+
+  describe 'With language attributes on subject element' do
+    # adapted from xr748qv0599
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject lang="chi" script="Latn" authority="lcsh">
+            <titleInfo>
+              <title>Xin guo min yun dong</title>
+            </titleInfo>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              source: {
+                code: 'lcsh'
+              },
+              "valueLanguage": {
+                code: 'chi',
+                source: {
+                  code: 'iso639-2b'
+                },
+                "valueScript": {
+                  "code": 'Latn',
+                  "source": {
+                    "code": 'iso15924'
+                  }
+                }
+              },
+              "value": 'Xin guo min yun dong',
+              type: 'title'
+            }
+          ]
+        }
+      end
+    end
+  end
 end
