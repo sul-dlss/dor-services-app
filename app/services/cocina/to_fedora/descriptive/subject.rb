@@ -174,7 +174,7 @@ module Cocina
             end
           elsif !type && !subject_value.value
             # For subject only (no children).
-            xml.subject topic_attributes_for(subject_value)
+            xml.subject topic_attributes_for(subject, subject_value)
           else
             xml.subject(subject_attributes) do
               write_topic(subject, subject_value, type: type)
@@ -207,7 +207,7 @@ module Cocina
         end
 
         def write_topic(subject, subject_value, is_parallel: false, type: nil)
-          topic_attributes = topic_attributes_for(subject_value, is_parallel: is_parallel)
+          topic_attributes = topic_attributes_for(subject, subject_value, is_parallel: is_parallel)
           case type || subject_value.type
           when 'person'
             xml.name topic_attributes.merge(type: 'personal') do
@@ -225,9 +225,9 @@ module Cocina
           end
         end
 
-        def topic_attributes_for(subject_value, is_parallel: false, is_geo: false)
+        def topic_attributes_for(subject, subject_value, is_parallel: false, is_geo: false)
           {
-            authority: authority_for_topic(subject_value, is_geo, is_parallel),
+            authority: authority_for_topic(subject, subject_value, is_geo, is_parallel),
             authorityURI: subject_value.source&.uri,
             encoding: subject_value.encoding&.code,
             valueURI: subject_value.uri
@@ -240,17 +240,20 @@ module Cocina
           end.compact
         end
 
-        def authority_for_topic(subject_value, is_geo, is_parallel)
-          return nil unless subject_value.source&.uri || subject_value.uri || (is_geo && is_parallel)
+        def authority_for_topic(subject, subject_value, is_geo, is_parallel)
+          return nil unless subject_value.source&.uri ||
+                            subject_value.uri ||
+                            (is_geo && is_parallel) ||
+                            (subject_value.source&.code && subject.source&.code && subject.source.code != subject_value.source.code)
 
           subject_value.source&.code
         end
 
-        def geographic(_subject, subject_value, is_parallel: false)
+        def geographic(subject, subject_value, is_parallel: false)
           if subject_value.code
-            xml.geographicCode subject_value.code, topic_attributes_for(subject_value, is_parallel: is_parallel, is_geo: true)
+            xml.geographicCode subject_value.code, topic_attributes_for(subject, subject_value, is_parallel: is_parallel, is_geo: true)
           else
-            xml.geographic subject_value.value, topic_attributes_for(subject_value, is_parallel: is_parallel, is_geo: true)
+            xml.geographic subject_value.value, topic_attributes_for(subject, subject_value, is_parallel: is_parallel, is_geo: true)
           end
         end
 
@@ -309,7 +312,7 @@ module Cocina
         end
 
         def write_person(subject, subject_value, display_values: nil)
-          name_attrs = topic_attributes_for(subject_value).tap do |attrs|
+          name_attrs = topic_attributes_for(subject, subject_value).tap do |attrs|
             attrs[:type] = name_type_for(subject.type || subject_value.type)
           end.compact
           xml.name name_attrs do
@@ -321,7 +324,7 @@ module Cocina
 
         def write_structured_person(subject, subject_value, type: nil, display_values: nil)
           type ||= subject_value.type
-          name_attrs = topic_attributes_for(subject_value).tap do |attrs|
+          name_attrs = topic_attributes_for(subject, subject_value).tap do |attrs|
             attrs[:type] = name_type_for(type)
           end.compact
 
