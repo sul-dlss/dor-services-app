@@ -699,6 +699,11 @@ RSpec.describe Cocina::ModsNormalizer do
       Nokogiri::XML <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <relatedItem />
+          <relatedItem type="constituent">
+            <titleInfo>
+              <title/>
+            </titleInfo>
+          </relatedItem>
         </mods>
       XML
     end

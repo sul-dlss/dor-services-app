@@ -37,21 +37,29 @@ module Cocina
             next { valueAt: related_item['xlink:href'] } if related_item['xlink:href']
             next nil if related_item.elements.empty?
 
-            descriptive_builder.build(resource_element: related_item, require_title: false).tap do |item|
-              item[:displayLabel] = related_item['displayLabel']
-              notes = build_notes(related_item)
-              if related_item['type']
-                item[:type] = normalized_type_for(related_item['type'])
-              elsif related_item['otherType']
-                item[:type] = 'related to'
-                notes <<
-                  { type: 'other relation type', value: related_item['otherType'] }.tap do |note|
-                    note[:uri] = related_item['otherTypeURI'] if related_item['otherTypeURI']
-                    note[:source] = { value: related_item['otherTypeAuth'] } if related_item['otherTypeAuth']
-                  end
-              end
-              item[:note] = notes unless notes.empty?
-            end.compact.presence
+            related_item = build_related_item(related_item)
+            # Skip if type only.
+            next nil if related_item.keys == [:type]
+
+            related_item.presence
+          end.compact
+        end
+
+        def build_related_item(related_item)
+          descriptive_builder.build(resource_element: related_item, require_title: false).tap do |item|
+            item[:displayLabel] = related_item['displayLabel']
+            notes = build_notes(related_item)
+            if related_item['type']
+              item[:type] = normalized_type_for(related_item['type'])
+            elsif related_item['otherType']
+              item[:type] = 'related to'
+              notes <<
+                { type: 'other relation type', value: related_item['otherType'] }.tap do |note|
+                  note[:uri] = related_item['otherTypeURI'] if related_item['otherTypeURI']
+                  note[:source] = { value: related_item['otherTypeAuth'] } if related_item['otherTypeAuth']
+                end
+            end
+            item[:note] = notes unless notes.empty?
           end.compact
         end
 
