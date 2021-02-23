@@ -1017,13 +1017,13 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       XML
     end
 
-    xit 'splits dateCreated into separate originInfo;  dateOther becomes dateCreated' do
+    it 'splits dateCreated into separate originInfo;  dateOther becomes dateCreated' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo displayLabel="something" eventType="production">
             <dateCreated keyDate="yes" encoding="w3cdtf">1905</dateCreated>
           </originInfo>
-          <originInfo eventType="production">
+          <originInfo displayLabel="something" eventType="production">
             <dateCreated qualifier="approximate" point="end">1925</dateCreated>
           </originInfo>
         </mods>
@@ -1228,7 +1228,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
     end
   end
 
-  context 'when  altRepGroup subelements are missing from one of the elements' do
+  context 'when altRepGroup subelements are missing from one of the elements' do
     # based on xj114vt0439
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
