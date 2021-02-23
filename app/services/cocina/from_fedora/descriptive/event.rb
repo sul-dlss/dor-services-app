@@ -376,10 +376,13 @@ module Cocina
 
           notifier.warn('originInfo/dateOther missing eventType') unless type
 
+          display_label = node_set.first.parent['displayLabel'] if node_set&.first&.parent.present?
+
           result = {
             type: type
           }.compact
           result[:date] = dates.compact if dates.compact.present?
+          result[:displayLabel] = display_label if display_label.present?
           result
         end
 
