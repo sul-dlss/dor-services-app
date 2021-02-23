@@ -26,7 +26,8 @@ module Cocina
         normalize_origin_info_date_other_types # must be after normalize_origin_info_event_types
         normalize_origin_info_place_term_type
         normalize_origin_info_developed_date
-        normalize_origin_info_date
+        split_event_type_production_dates # must be after normalize_origin_info_developed_date
+        remove_trailing_period_from_date_values
         normalize_origin_info_publisher
         normalize_parallel_origin_info
         normalize_origin_info_lang_script
@@ -153,6 +154,7 @@ module Cocina
         end
       end
 
+      # when dateOther is type developed and originInfo eventType is NOT developed, split dateOther into separate element
       def normalize_origin_info_developed_date
         ng_xml.root.xpath('//mods:originInfo/mods:dateOther[@type="developed"]', mods: ModsNormalizer::MODS_NS).each do |date_other|
           next if date_other.parent['eventType'] == 'development'
@@ -167,7 +169,24 @@ module Cocina
         end
       end
 
-      def normalize_origin_info_date
+      # when dateCreated and dateOther in same originInfo with eventType production,
+      #  split them and change dateOther to dateCreated
+      # must be after normalize_origin_info_developed_date
+      def split_event_type_production_dates
+        ng_xml.root.xpath('//mods:originInfo[@eventType="production" and mods:dateCreated]/mods:dateOther',
+                          mods: ModsNormalizer::MODS_NS).each do |date_other_node|
+          # problem if there is more than one such dateOther ...
+          new_origin_info = Nokogiri::XML::Node.new('originInfo', Nokogiri::XML(nil))
+          new_origin_info[:eventType] = 'production'
+          new_origin_info[:displayLabel] = date_other_node.parent['displayLabel'] if date_other_node.parent['displayLabel']
+          date_other_node.name = 'dateCreated'
+          new_origin_info << date_other_node.dup
+          date_other_node.parent.parent << new_origin_info
+          date_other_node.remove
+        end
+      end
+
+      def remove_trailing_period_from_date_values
         DATE_FIELDS.each do |date_field|
           ng_xml.root.xpath("//mods:originInfo/mods:#{date_field}", mods: ModsNormalizer::MODS_NS)
                 .each { |date_node| date_node.content = date_node.content.delete_suffix('.') }

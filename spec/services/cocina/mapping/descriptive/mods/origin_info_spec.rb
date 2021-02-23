@@ -2285,12 +2285,9 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
       end
     end
 
-    context 'when dateCreated and dateOther' do
+    context 'when dateCreated and dateOther and eventType production' do
       # based on dg875gq3366
       it_behaves_like 'MODS cocina mapping' do
-        xit 'to be implemented: originInfo normalization needs to split up originInfo'
-        let(:skip_normalization) { true }
-
         let(:mods) do
           <<~XML
             <originInfo displayLabel="something" eventType="production">
