@@ -21,16 +21,16 @@ module Cocina
       def normalize
         remove_empty_origin_info_dates
         remove_empty_origin_info # must be after remove_empty_origin_info_dates
-        normalize_origin_info_split
-        normalize_origin_info_event_types
-        normalize_origin_info_date_other_types # must be after normalize_origin_info_event_types
-        normalize_origin_info_place_term_type
-        normalize_origin_info_developed_date
-        split_event_type_production_dates # must be after normalize_origin_info_developed_date
+        split_origin_info
+        event_type_normalization
+        date_other_type_normalization # must be after event_type_normalization
+        place_term_type_normalization
+        date_other_type_developed_normalization # must be run after date_other_type_normalization
+        split_event_type_production_dates # must be after date_other_type_developed_normalization
         remove_trailing_period_from_date_values
-        normalize_origin_info_publisher
-        normalize_parallel_origin_info
-        normalize_origin_info_lang_script
+        publisher_attribs_normalization
+        match_altrepgroup_nodes
+        lang_script_attribs_normalization
         ng_xml
       end
 
@@ -57,16 +57,16 @@ module Cocina
         ng_xml.root.xpath('//mods:originInfo[not(mods:*) and not(@*)]', mods: ModsNormalizer::MODS_NS).each(&:remove)
       end
 
-      def normalize_origin_info_split
+      def split_origin_info
         # Split a single originInfo into multiple.
-        split_origin_info('dateIssued', 'dateCreated', 'production')
-        split_origin_info('dateIssued', 'copyrightDate', 'copyright')
-        split_origin_info('dateIssued', 'dateCaptured', 'capture')
-        split_origin_info('dateIssued', 'dateValid', 'validity')
-        split_origin_info('copyrightDate', 'publisher', 'publication')
+        split_origin_info_by_elements('dateIssued', 'dateCreated', 'production')
+        split_origin_info_by_elements('dateIssued', 'copyrightDate', 'copyright')
+        split_origin_info_by_elements('dateIssued', 'dateCaptured', 'capture')
+        split_origin_info_by_elements('dateIssued', 'dateValid', 'validity')
+        split_origin_info_by_elements('copyrightDate', 'publisher', 'publication')
       end
 
-      def split_origin_info(split_node_name1, split_node_name2, event_type)
+      def split_origin_info_by_elements(split_node_name1, split_node_name2, event_type)
         ng_xml.root.xpath("//mods:originInfo[mods:#{split_node_name1} and mods:#{split_node_name2}]", mods: ModsNormalizer::MODS_NS).each do |origin_info_node|
           new_origin_info_node = Nokogiri::XML::Node.new('originInfo', Nokogiri::XML(nil))
           new_origin_info_node['displayLabel'] = origin_info_node['displayLabel'] if origin_info_node['displayLabel']
@@ -83,7 +83,7 @@ module Cocina
       # change original xml to have the event type that will be output
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/PerceivedComplexity
-      def normalize_origin_info_event_types
+      def event_type_normalization
         ng_xml.root.xpath('//mods:originInfo', mods: ModsNormalizer::MODS_NS).each do |origin_info_node|
           next if normalize_event_type(origin_info_node, 'dateIssued', 'publication', ->(oi_node) { oi_node['eventType'] != 'presentation' })
 
@@ -129,9 +129,9 @@ module Cocina
         true
       end
 
-      # NOTE: must be run after normalize_origin_info_event_types
+      # NOTE: must be run after event_type_normalization
       # remove dateOther type attribute if it matches originInfo@eventType and if dateOther is empty
-      def normalize_origin_info_date_other_types
+      def date_other_type_normalization
         ng_xml.root.xpath('//mods:originInfo[@eventType]', mods: ModsNormalizer::MODS_NS).each do |origin_info_node|
           origin_info_event_type = origin_info_node['eventType']
           origin_info_node.xpath('mods:dateOther[@type]', mods: ModsNormalizer::MODS_NS).each do |date_other_node|
@@ -146,7 +146,7 @@ module Cocina
 
       # if the cocina model doesn't have a code, then it will have a value;
       #   this is output as attribute type=text on the roundtripped placeTerm element
-      def normalize_origin_info_place_term_type
+      def place_term_type_normalization
         ng_xml.root.xpath('//mods:originInfo/mods:place/mods:placeTerm', mods: ModsNormalizer::MODS_NS).each do |place_term_node|
           next if place_term_node.content.blank?
 
@@ -155,7 +155,8 @@ module Cocina
       end
 
       # when dateOther is type developed and originInfo eventType is NOT developed, split dateOther into separate element
-      def normalize_origin_info_developed_date
+      # must be run after date_other_type_normalization
+      def date_other_type_developed_normalization
         ng_xml.root.xpath('//mods:originInfo/mods:dateOther[@type="developed"]', mods: ModsNormalizer::MODS_NS).each do |date_other|
           next if date_other.parent['eventType'] == 'development'
 
@@ -171,7 +172,7 @@ module Cocina
 
       # when dateCreated and dateOther in same originInfo with eventType production,
       #  split them and change dateOther to dateCreated
-      # must be after normalize_origin_info_developed_date
+      # must be after date_other_type_developed_normalization
       def split_event_type_production_dates
         ng_xml.root.xpath('//mods:originInfo[@eventType="production" and mods:dateCreated]/mods:dateOther',
                           mods: ModsNormalizer::MODS_NS).each do |date_other_node|
@@ -193,7 +194,7 @@ module Cocina
         end
       end
 
-      def normalize_origin_info_publisher
+      def publisher_attribs_normalization
         ng_xml.root.xpath('//mods:publisher[@lang]', mods: ModsNormalizer::MODS_NS).each do |publisher_node|
           publisher_node.parent['lang'] = publisher_node['lang']
           publisher_node.delete('lang')
@@ -208,7 +209,7 @@ module Cocina
         end
       end
 
-      def normalize_parallel_origin_info
+      def match_altrepgroup_nodes
         # For grouped originInfos, if no lang or script or lang and script are the same then make sure other values present on all in group.
         altrepgroup_origin_info_nodes, _other_origin_info_nodes = Cocina::FromFedora::Descriptive::AltRepGroup.split(
           nodes: ng_xml.root.xpath('//mods:originInfo',
@@ -221,13 +222,13 @@ module Cocina
           grouped_origin_info_nodes.each do |origin_info_node_group|
             origin_info_node_group.each do |origin_info_node|
               other_origin_info_nodes = origin_info_node_group.reject { |check_origin_info_node| origin_info_node == check_origin_info_node }
-              normalize_parallel_origin_info_nodes(origin_info_node, other_origin_info_nodes)
+              match_grouped_nodes(origin_info_node, other_origin_info_nodes)
             end
           end
         end
       end
 
-      def normalize_parallel_origin_info_nodes(from_node, to_nodes)
+      def match_grouped_nodes(from_node, to_nodes)
         from_node.elements.each do |child_node|
           to_nodes.each do |to_node|
             next if matching_origin_info_child_node?(child_node, to_node)
@@ -249,7 +250,7 @@ module Cocina
         end
       end
 
-      def normalize_origin_info_lang_script
+      def lang_script_attribs_normalization
         # Remove lang and script attributes if none of the children can be parallel.
         ng_xml.root.xpath('//mods:originInfo[@lang or @script]', mods: ModsNormalizer::MODS_NS).each do |origin_info_node|
           parallel_nodes = origin_info_node.xpath('mods:place/mods:placeTerm[not(@type="code")]', mods: ModsNormalizer::MODS_NS) \
