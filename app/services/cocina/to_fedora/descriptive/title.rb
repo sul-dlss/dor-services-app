@@ -31,7 +31,7 @@ module Cocina
             if title.valueAt
               write_xlink(title: title)
             elsif title.parallelValue
-              write_parallel(title: title, title_info_attrs: additional_attrs.dup)
+              write_parallel(title: title, title_info_attrs: additional_attrs)
             else
               title_info_attrs = {
                 nameTitleGroup: name_title_group_for(title)
@@ -66,34 +66,36 @@ module Cocina
           end
         end
 
+        # rubocop:disable Metrics/PerceivedComplexity
         def write_parallel(title:, title_info_attrs: {})
           title_alt_rep_group = id_generator.next_altrepgroup
 
           title.parallelValue.each do |parallel_title|
-            title_info_attrs[:altRepGroup] = title_alt_rep_group
-            title_info_attrs[:lang] = parallel_title.valueLanguage.code if parallel_title.valueLanguage&.code
-            if title.type == 'translated'
-              if title.status == 'primary'
-                title_info_attrs[:usage] = 'primary'
-              else
-                title_info_attrs[:type] = 'translated'
-              end
-            elsif title.type == 'uniform'
-              title_info_attrs[:type] = 'uniform'
+            parallel_attrs = title_info_attrs.dup
+            parallel_attrs[:altRepGroup] = title_alt_rep_group
+            parallel_attrs[:lang] = parallel_title.valueLanguage.code if parallel_title.valueLanguage&.code
+            if title.type == 'uniform'
+              parallel_attrs[:type] = 'uniform'
             elsif parallel_title.type == 'transliterated'
-              title_info_attrs[:type] = 'translated'
-              title_info_attrs[:transliteration] = parallel_title.standard.value
+              parallel_attrs[:type] = 'translated'
+              parallel_attrs[:transliteration] = parallel_title.standard.value
+            elsif title.parallelValue.any? { |parallel_value| parallel_value.status == 'primary' }
+              if parallel_title.status == 'primary'
+                parallel_attrs[:usage] = 'primary'
+              else
+                parallel_attrs[:type] = 'translated'
+              end
             end
-
-            title_info_attrs[:nameTitleGroup] = name_title_group_for(parallel_title)
+            parallel_attrs[:nameTitleGroup] = name_title_group_for(parallel_title)
 
             if parallel_title.structuredValue
-              write_structured(title: parallel_title, title_info_attrs: title_info_attrs.compact)
+              write_structured(title: parallel_title, title_info_attrs: parallel_attrs.compact)
             elsif parallel_title.value
-              write_basic(title: parallel_title, title_info_attrs: title_info_attrs.compact)
+              write_basic(title: parallel_title, title_info_attrs: parallel_attrs.compact)
             end
           end
         end
+        # rubocop:enable Metrics/PerceivedComplexity
 
         def name_title_group_for(title)
           return nil unless contributors
