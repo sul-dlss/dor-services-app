@@ -114,6 +114,7 @@ module Cocina
           title = subject_value.to_h
           title.delete(:type)
           title.delete(:source)
+          title.delete(:valueLanguage)
           Title.write(xml: xml, titles: [Cocina::Models::DescriptiveValue.new(title)], id_generator: id_generator)
         end
 
@@ -216,6 +217,7 @@ module Cocina
           when 'title'
             title = subject_value.to_h
             title.delete(:type)
+            title.delete(:valueLanguage)
             title[:source].delete(:code) if subject_value.source&.code && !topic_attributes[:authority]
             Title.write(xml: xml, titles: [Cocina::Models::DescriptiveValue.new(title)], id_generator: id_generator, additional_attrs: topic_attributes)
           when 'place'
