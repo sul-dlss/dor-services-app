@@ -84,24 +84,32 @@ module Cocina
         end
 
         def build_notes(related_item)
-          related_item.xpath('mods:part/mods:detail', mods: DESC_METADATA_NS).map do |detail_node|
-            value = note_value_for(detail_node)
-            next nil if value.blank?
+          related_item.xpath('mods:part', mods: DESC_METADATA_NS).map do |part_node|
+            values = []
+            detail_node = part_node.xpath('mods:detail', mods: DESC_METADATA_NS).first
+            values << { type: 'detail type', value: detail_node['type'] } if detail_node && detail_node['type']
+
+            values.concat(build_note_value(part_node, 'mods:detail/mods:number', 'number'))
+            values.concat(build_note_value(part_node, 'mods:detail/mods:caption', 'caption'))
+            values.concat(build_note_value(part_node, 'mods:detail/mods:title', 'title'))
+            values.concat(build_note_value(part_node, 'mods:text', 'text'))
+            values.concat(build_note_value(part_node, 'mods:date', 'date'))
+
+            next nil if values.empty?
 
             {
-              value: value,
-              type: DETAIL_TYPES[detail_node['type']],
-              displayLabel: caption_for(detail_node)
-            }.compact.presence
+              type: 'part',
+              groupedValue: values
+            }
           end.compact
         end
 
-        def note_value_for(detail_node)
-          detail_node.xpath('mods:number', mods: DESC_METADATA_NS).first&.content
-        end
+        def build_note_value(part_node, xpath, type)
+          part_node.xpath(xpath, mods: DESC_METADATA_NS).map do |node|
+            next nil unless node.content
 
-        def caption_for(detail_node)
-          detail_node.xpath('mods:caption', mods: DESC_METADATA_NS).first&.content
+            { type: type, value: node.content }
+          end.compact
         end
 
         def related_purls

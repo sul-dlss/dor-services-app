@@ -37,6 +37,7 @@ Metrics/ClassLength:
     - 'app/services/cocina/mods_normalizers/subject_normalizer.rb'
     - 'app/services/cocina/mods_normalizers/origin_info_normalizer.rb'
     - 'app/services/cocina/from_fedora/descriptive/access.rb'
+    - 'app/services/cocina/to_fedora/descriptive/related_resource.rb'
 
 RSpec/DescribeClass:
   Exclude:
