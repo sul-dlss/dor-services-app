@@ -2,6 +2,9 @@
 
 set -e
 
+# Quiet ruby warnings.
+export RUBYOPT='-W:no-deprecated -W:no-experimental'
+
 # Adds/updates cache for recently indexed objects.
 
 YESTERDAY=`date -d "yesterday" --iso-8601`
