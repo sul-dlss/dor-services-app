@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'MODS part <--> cocina mappings' do
   describe 'isReferencedBy relatedItem/part (510c)' do
     # Adapted from kf840zn4567
-    xit 'unimplemented mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <relatedItem type="isReferencedBy">
@@ -72,7 +72,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
 
   describe 'constituent relatedItem/part' do
     # Adapted from vt758zn6912
-    xit 'unimplemented mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <relatedItem type="constituent">
@@ -217,8 +217,8 @@ RSpec.describe 'MODS part <--> cocina mappings' do
   end
 
   describe 'host relatedItem/part with text subelement' do
-    xit 'not implemented' do
-      let(:druid) { 'dx917cq2361' }
+    it_behaves_like 'MODS cocina mapping' do
+      # Adapted from dx917cq2361
 
       let(:mods) do
         <<~XML
@@ -241,13 +241,24 @@ RSpec.describe 'MODS part <--> cocina mappings' do
               type: 'part of',
               title: [
                 {
-                  value: '[Recueil. Collection de Vinck. Un siècle d\'histoire de France par l\'estampe, 1770-1870. Vol. 3 (pièces 346-487), Ancien Régime et Révolution]'
+                  value: '[Recueil. Collection Smith-Lesouëf. Estampes révolutionnaires]'
                 }
               ],
               identifier: [
                 {
                   value: '(FrPBN)42417922',
-                  type: 'local'
+                  type: 'local',
+                  note: [
+                    {
+                      type: 'type',
+                      value: 'local',
+                      uri: 'http://id.loc.gov/vocabulary/identifiers/local',
+                      source: {
+                        value: 'Standard Identifier Schemes',
+                        uri: 'http://id.loc.gov/vocabulary/identifiers/'
+                      }
+                    }
+                  ]
                 }
               ],
               note: [
@@ -269,8 +280,8 @@ RSpec.describe 'MODS part <--> cocina mappings' do
   end
 
   describe 'host/relatedItem with part/date subelement' do
-    xit 'not implemented' do
-      let(:druid) { 'druid:ht052ks5388' }
+    it_behaves_like 'MODS cocina mapping' do
+      # Adapted from ht052ks5388
 
       let(:mods) do
         <<~XML
