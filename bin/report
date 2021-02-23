@@ -84,6 +84,11 @@ def date_other(ng_xml)
   date_other_types.to_a.join(', ')
 end
 
+def mods_34_from_marc?(ng_xml)
+  ng_xml.root['version'] == '3.4' &&
+    ng_xml.root.xpath('mods:recordInfo/mods:recordIdentifier[starts-with(text(), "a")]', mods: MODS_NS).present?
+end
+
 REPORTS = {
   parts: method(:has_part?),
   xlink_href: method(:has_xlink_href?),
@@ -95,7 +100,8 @@ REPORTS = {
   bad_value_uri: method(:elements_with_bad_value_uri),
   metadata_toolkit: method(:metadata_toolkit?),
   element_spaces: method(:elements_start_with_spaces?),
-  attribute_spaces: method(:attributes_start_with_spaces?)
+  attribute_spaces: method(:attributes_start_with_spaces?),
+  mods_34_from_marc: method(:mods_34_from_marc?)
 }.with_indifferent_access
 
 options = { local: false, reports: REPORTS.keys }
