@@ -134,7 +134,7 @@ module Cocina
 
             events = [{}] if events.empty?
             display_label = origin_info[:displayLabel].presence
-            events.first[:displayLabel] = display_label if display_label
+            events.each { |evnt| evnt[:displayLabel] = display_label } if display_label
 
             events.reject(&:blank?)
           end

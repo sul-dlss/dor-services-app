@@ -58,6 +58,7 @@ module Cocina
 
       def normalize_origin_info_split
         # Split a single originInfo into multiple.
+        split_origin_info('dateIssued', 'dateCreated', 'production')
         split_origin_info('dateIssued', 'copyrightDate', 'copyright')
         split_origin_info('dateIssued', 'dateCaptured', 'capture')
         split_origin_info('dateIssued', 'dateValid', 'validity')
@@ -159,6 +160,7 @@ module Cocina
           # Move to own originInfo
           new_origin_info = Nokogiri::XML::Node.new('originInfo', Nokogiri::XML(nil))
           new_origin_info[:eventType] = 'development'
+          new_origin_info[:displayLabel] = date_other.parent['displayLabel'] if date_other.parent['displayLabel']
           new_origin_info << date_other.dup
           date_other.parent.parent << new_origin_info
           date_other.remove
