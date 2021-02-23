@@ -31,6 +31,7 @@ module Cocina
         publisher_attribs_normalization
         match_altrepgroup_nodes
         lang_script_attribs_normalization
+        normalize_authority_marcountry
         ng_xml
       end
 
@@ -261,6 +262,12 @@ module Cocina
             origin_info_node.delete('lang')
             origin_info_node.delete('script')
           end
+        end
+      end
+
+      def normalize_authority_marcountry
+        ng_xml.root.xpath("//mods:*[@authority='marcountry']", mods: ModsNormalizer::MODS_NS).each do |node|
+          node[:authority] = 'marccountry'
         end
       end
     end

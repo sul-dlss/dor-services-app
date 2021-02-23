@@ -120,6 +120,54 @@ RSpec.describe 'MODS originInfo place <--> cocina mappings' do
     end
   end
 
+  describe 'Place - code with bad authority' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marcountry" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+            </place>
+          </originInfo>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+            </place>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'publication',
+              location: [
+                {
+                  code: 'cau',
+                  uri: 'http://id.loc.gov/vocabulary/countries/cau',
+                  source: {
+                    code: 'marccountry',
+                    uri: 'http://id.loc.gov/vocabulary/countries/'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+
+    let(:warnings) { [Notification.new(msg: 'marcountry authority code (should be marccountry)')] }
+  end
+
   describe 'Place - text and code for different places - Version A (converted from MARC, standard MODS)' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
