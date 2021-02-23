@@ -163,6 +163,10 @@ def validate_druid(druid, cache, fast: false)
   :different
 end
 
+def percentage(raw_num, denom)
+  (100 * raw_num.to_f / denom).round(3)
+end
+
 unless options[:fast]
   FileUtils.rm_rf('results')
   FileUtils.mkdir_p('results')
@@ -185,9 +189,9 @@ results.each { |result| counts[result] += 1 }
 denom = druids.size - counts[:missing]
 
 puts "Status (n=#{druids.size}; not using Missing for success/different/error stats):"
-puts "  Success:   #{counts[:success]} (#{100 * counts[:success].to_f / denom}%)"
-puts "  Different: #{counts[:different]} (#{100 * counts[:different].to_f / denom}%)"
-puts "  To Cocina error:     #{counts[:to_cocina_error]} (#{100 * counts[:to_cocina_error].to_f / denom}%)"
-puts "  To Fedora error:     #{counts[:to_fedora_error]} (#{100 * counts[:to_fedora_error].to_f / denom}%)"
-puts "  MODS normalizer error:     #{counts[:mods_normalizer_error]} (#{100 * counts[:mods_normalizer_error].to_f / denom}%)"
-puts "  Missing (no descMetadata):     #{counts[:missing]} (#{100 * counts[:missing].to_f / druids.size}%)"
+puts "  Success:   #{counts[:success]} (#{percentage(counts[:success], denom)}%)"
+puts "  Different: #{counts[:different]} (#{percentage(counts[:different], denom)}%)"
+puts "  To Cocina error:     #{counts[:to_cocina_error]} (#{percentage(counts[:to_cocina_error], denom)}%)"
+puts "  To Fedora error:     #{counts[:to_fedora_error]} (#{percentage(counts[:to_fedora_error], denom)}%)"
+puts "  MODS normalizer error:     #{counts[:mods_normalizer_error]} (#{percentage(counts[:mods_normalizer_error], denom)}%)"
+puts "  Missing (no descMetadata):     #{counts[:missing]} (#{(100 * counts[:missing].to_f / druids.size).round(3)}%)"
