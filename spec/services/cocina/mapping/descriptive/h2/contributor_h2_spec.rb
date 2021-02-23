@@ -2,32 +2,353 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
+RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
   # Full role mapping: https://docs.google.com/spreadsheets/d/1CvEd_NODprNhM2D9VfvJBFs1jfAMEUr0kDxXHe2HkL4/edit?usp=sharing
+  # DataCite role mapping notes:
+  # 1) Mappings to DataCite contributor roles in spreadsheet are for names in
+  # "Additional contributors" only
+  # 2) "Authors included in citation" map to the Creator property, which does not have
+  # an associated role
+  # 3) Conferences, performances, and other events map to the Event resource type
   #
-  # First contributor entered in H2 receives "status": "primary", which maps to "usage=primary" in MODS. This attribute indicates that
-  # a) Systems should use this name as sort key when sorting by author
-  # b) MARC mappings should put this name in the 100 field as main author
-  # c) Other applications where a single name must be chosen for a purpose (such as constructing a citation using "et al.") should use this name.
-  #
-  # DataCite role mappings vary due to its different structure. Most roles map to DataCite contributor types, with the following exceptions:
-  # 1) Creator maps to the Creator property
-  # 2) Conferences, performances, and other events map to the Event resource type
+  # First entry in "Authors to include in citation" receives "status": "primary",
+  # which maps to "usage=primary" in MODS.
 
-  describe 'Person contributor with single mapped role' do
-    it_behaves_like 'cocina MODS mapping' do
+  describe 'Cited contributor' do
+    # Authors to include in citation
+    ## Jane Stanford. Author.
+
+    xit 'unimplemented mapping' do
       let(:cocina) do
         {
           contributor: [
             {
               name: [
                 {
-                  value: 'Stanford, Jane',
-                  type: 'inverted full name'
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
                 }
               ],
               type: 'person',
               status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Author',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:roundtrip_cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart type="given">Jane</namePart>
+            <namePart type="family">Stanford</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+    end
+  end
+
+  describe 'Multiple cited contributors' do
+    # Authors to include in citation
+    ## Jane Stanford. Author.
+    ## Leland Stanford. Author.
+
+    xit 'unimplemented mapping' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Author',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
+                  }
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Leland',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Author',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:roundtrip_cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Leland',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              role: [
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart type="given">Jane</namePart>
+            <namePart type="family">Stanford</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+            </role>
+          </name>
+          <name type="personal">
+            <namePart type="given">Leland</namePart>
+            <namePart type="family">Stanford</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+    end
+  end
+
+  describe 'Cited contributor with cited organization' do
+    # Authors to include in citation
+    ## Jane Stanford. Data collector.
+    ## Stanford University. Sponsor.
+
+    xit 'unimplemented mapping' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
               role: [
                 {
                   value: 'Data collector',
@@ -45,9 +366,46 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
                   }
                 },
                 {
-                  value: 'DataCollector',
+                  value: 'Creator',
                   source: {
-                    value: 'DataCite contributor types'
+                    value: 'DataCite properties'
+                  }
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  value: 'Stanford University'
+                }
+              ],
+              type: 'organization',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Sponsor',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'sponsor',
+                  code: 'spn',
+                  uri: 'http://id.loc.gov/vocabulary/relators/spn',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
                   }
                 }
               ]
@@ -62,7 +420,16 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford, Jane'
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
                 }
               ],
               type: 'person',
@@ -78,119 +445,19 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
                   }
                 }
               ]
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <name type="personal" usage="primary">
-            <namePart>Stanford, Jane</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/com">com</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/com">compiler</roleTerm>
-            </role>
-          </name>
-        XML
-      end
-    end
-  end
-
-  describe 'Person contributor with multiple roles, one maps to DataCite creator property' do
-    # Stanford, Jane. Author and principal investigator.
-
-    # NOTE: deduping of names to get multiple roles under a single contributor has been officially postponed by Amy and Arcadia
-
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          contributor: [
+            },
             {
               name: [
                 {
-                  value: 'Stanford, Jane',
-                  type: 'inverted full name'
+                  value: 'Stanford University'
                 }
               ],
-              type: 'person',
-              status: 'primary',
+              type: 'organization',
               role: [
                 {
-                  value: 'Author',
-                  source: {
-                    value: 'Stanford self-deposit contributor types'
-                  }
-                },
-                {
-                  value: 'Principal investigator',
-                  source: {
-                    value: 'Stanford self-deposit contributor types'
-                  }
-                },
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'research team head',
-                  code: 'rth',
-                  uri: 'http://id.loc.gov/vocabulary/relators/rth',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'Creator',
-                  source: {
-                    value: 'DataCite properties'
-                  }
-                },
-                {
-                  value: 'ProjectLeader',
-                  source: {
-                    value: 'DataCite contributor types'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:roundtrip_cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford, Jane'
-                }
-              ],
-              type: 'person',
-              status: 'primary',
-              role: [
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'research team head',
-                  code: 'rth',
-                  uri: 'http://id.loc.gov/vocabulary/relators/rth',
+                  value: 'sponsor',
+                  code: 'spn',
+                  uri: 'http://id.loc.gov/vocabulary/relators/spn',
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
@@ -205,18 +472,18 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
       let(:mods) do
         <<~XML
           <name type="personal" usage="primary">
-            <namePart>Stanford, Jane</namePart>
+            <namePart type="given">Jane</namePart>
+            <namePart type="family">Stanford</namePart>
             <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/com">compiler</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/com">com</roleTerm>
             </role>
+          </name>
+          <name type="corporate">
+            <namePart>Stanford University</namePart>
             <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/rth">rth</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/rth">research team head</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spn">sponsor</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
             </role>
           </name>
         XML
@@ -224,10 +491,11 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
     end
   end
 
-  describe 'Organization contributor with single role' do
-    # Stanford University. Host institution.
+  describe 'Cited organization' do
+    # Authors to include in citation
+    ## Stanford University. Host institution.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'unimplemented mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -239,6 +507,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
               ],
               type: 'organization',
               status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
               role: [
                 {
                   value: 'Host institution',
@@ -256,9 +530,9 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
                   }
                 },
                 {
-                  value: 'HostingInstitution',
+                  value: 'Creator',
                   source: {
-                    value: 'DataCite contributor types'
+                    value: 'DataCite properties'
                   }
                 }
               ]
@@ -299,10 +573,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
           <name type="corporate" usage="primary">
             <namePart>Stanford University</namePart>
             <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/his">his</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/his">host institution</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/his">host institution</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/his">his</roleTerm>
             </role>
           </name>
         XML
@@ -310,12 +582,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
     end
   end
 
-  describe 'Organization contributor with multiple roles' do
-    # Stanford University. Sponsor and issuing body.
+  describe 'Multiple cited organizations' do
+    # Authors to include in citation
+    ## Stanford University. Host institution.
+    ## Department of English. Department.
 
-    # NOTE: deduping of names to get multiple roles under a single contributor has been officially postponed by Amy and Arcadia
-
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'unimplemented mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -327,47 +599,69 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
               ],
               type: 'organization',
               status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
               role: [
                 {
-                  value: 'Sponsor',
+                  value: 'Host institution',
                   source: {
                     value: 'Stanford self-deposit contributor types'
                   }
                 },
                 {
-                  value: 'sponsor',
-                  code: 'spn',
-                  uri: 'http://id.loc.gov/vocabulary/relators/spn',
+                  value: 'host institution',
+                  code: 'his',
+                  uri: 'http://id.loc.gov/vocabulary/relators/his',
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
                 },
                 {
-                  value: 'Sponsor',
+                  value: 'Creator',
                   source: {
-                    value: 'DataCite contributor types'
+                    value: 'DataCite properties'
                   }
-                },
+                }
+              ]
+            },
+            {
+              name: [
                 {
-                  value: 'Issuing body',
+                  value: 'Department of English'
+                }
+              ],
+              type: 'organization',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Department',
                   source: {
                     value: 'Stanford self-deposit contributor types'
                   }
                 },
                 {
-                  value: 'issuing body',
-                  code: 'isb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/isb',
+                  value: 'host institution',
+                  code: 'his',
+                  uri: 'http://id.loc.gov/vocabulary/relators/his',
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
                 },
                 {
-                  value: 'Distributor',
+                  value: 'Creator',
                   source: {
-                    value: 'DataCite contributor types'
+                    value: 'DataCite properties'
                   }
                 }
               ]
@@ -389,18 +683,28 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
               status: 'primary',
               role: [
                 {
-                  value: 'sponsor',
-                  code: 'spn',
-                  uri: 'http://id.loc.gov/vocabulary/relators/spn',
+                  value: 'host institution',
+                  code: 'his',
+                  uri: 'http://id.loc.gov/vocabulary/relators/his',
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
-                },
+                }
+              ]
+            },
+            {
+              name: [
                 {
-                  value: 'issuing body',
-                  code: 'isb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/isb',
+                  value: 'Department of English'
+                }
+              ],
+              type: 'organization',
+              role: [
+                {
+                  value: 'host institution',
+                  code: 'his',
+                  uri: 'http://id.loc.gov/vocabulary/relators/his',
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
@@ -417,16 +721,460 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
           <name type="corporate" usage="primary">
             <namePart>Stanford University</namePart>
             <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/spn">sponsor</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/his">host institution</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/his">his</roleTerm>
             </role>
+          </name>
+          <name type="corporate">
+            <namePart>Department of English</namePart>
             <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/isb">isb</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/isb">issuing body</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/his">host institution</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/his">his</roleTerm>
+            </role>
+          <name>
+        XML
+      end
+    end
+  end
+
+  describe 'Cited and uncited contributors' do
+    # Authors to include in citation
+    ## Jane Stanford. Author.
+    # Additional contributors
+    ## Leland Stanford. Contributing author.
+
+    xit 'unimplemented mapping' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Author',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
+                  }
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Leland',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              note: [
+                {
+                  value: 'exclude from citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Contributing author',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'contributor',
+                  code: 'ctb',
+                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Other',
+                  source: {
+                    value: 'DataCite contributor types'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:roundtrip_cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Leland',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              role: [
+                {
+                  value: 'contributor',
+                  code: 'ctb',
+                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart type="given">Jane</namePart>
+            <namePart type="family">Stanford</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+            </role>
+          </name>
+          <name type="personal">
+            <namePart type="given">Leland</namePart>
+            <namePart type="family">Stanford</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">contributor</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
+            </role>
+          <name>
+        XML
+      end
+    end
+  end
+
+  describe 'Cited contributor with uncited organization' do
+    # Authors to include in citation
+    ## Jane Stanford. Data collector.
+    # Additional contributors
+    ## Stanford University. Sponsor.
+
+    xit 'unimplemented mapping' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Data collector',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'compiler',
+                  code: 'com',
+                  uri: 'http://id.loc.gov/vocabulary/relators/com',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
+                  }
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  value: 'Stanford University'
+                }
+              ],
+              type: 'organization',
+              note: [
+                {
+                  value: 'exclude from citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Sponsor',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'sponsor',
+                  code: 'spn',
+                  uri: 'http://id.loc.gov/vocabulary/relators/spn',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Sponsor',
+                  source: {
+                    value: 'DataCite contributor types'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:roundtrip_cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'compiler',
+                  code: 'com',
+                  uri: 'http://id.loc.gov/vocabulary/relators/com',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  value: 'Stanford University'
+                }
+              ],
+              type: 'organization',
+              role: [
+                {
+                  value: 'sponsor',
+                  code: 'spn',
+                  uri: 'http://id.loc.gov/vocabulary/relators/spn',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart type="given">Jane</namePart>
+            <namePart type="family">Stanford</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/com">compiler</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/com">com</roleTerm>
+            </role>
+          </name>
+          <name type="corporate">
+            <namePart>Stanford University</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spn">sponsor</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
+            </role>
+          <name>
+        XML
+      end
+    end
+  end
+
+  # Special role handling
+
+  describe 'Cited contributor with Event role' do
+    # Authors to include in citation
+    ## San Francisco Symphony Concert. Event.
+
+    xit 'unimplemented mapping' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'San Francisco Symphony Concert'
+                }
+              ],
+              type: 'event',
+              status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Event',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                }
+              ]
+            }
+          ],
+          form: [
+            {
+              value: 'Event',
+              type: 'resource types',
+              source: {
+                value: 'DataCite resource types'
+              }
+            }
+          ]
+        }
+      end
+
+      let(:roundtrip_cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'San Francisco Symphony Concert'
+                }
+              ],
+              type: 'event',
+              status: 'primary'
+            }
+          ]
+        }
+      end
+
+      # NOTE: event does get a role because 'event' is NOT a MODS name type
+      let(:mods) do
+        <<~XML
+          <name type="corporate" usage="primary">
+            <namePart>San Francisco Symphony Concert</namePart>
+            <role>
+              <roleTerm type="text">event</roleTerm>
             </role>
           </name>
         XML
@@ -434,9 +1182,168 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
     end
   end
 
-  describe 'Conference as contributor' do
-    # LDCX. Conference.
-    it_behaves_like 'cocina MODS mapping' do
+  describe 'Cited contributor and uncited contributor with Event role' do
+    # Authors to include in citation
+    ## Jane Stanford. Event organizer.
+    # Additional contributors
+    ## San Francisco Symphony Concert. Event.
+    xit 'unimplemented mapping' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Event organizer',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'organizer',
+                  code: 'orm',
+                  uri: 'http://id.loc.gov/vocabulary/relators/orm',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
+                  }
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  value: 'San Francisco Symphony Concert'
+                }
+              ],
+              type: 'event',
+              note: [
+                {
+                  value: 'exclude from citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Event',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                }
+              ]
+            }
+          ],
+          form: [
+            {
+              value: 'Event',
+              type: 'resource types',
+              source: {
+                value: 'DataCite resource types'
+              }
+            }
+          ]
+        }
+      end
+
+      let(:roundtrip_cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'organizer',
+                  code: 'orm',
+                  uri: 'http://id.loc.gov/vocabulary/relators/orm',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  value: 'San Francisco Symphony Concert'
+                }
+              ],
+              type: 'event'
+            }
+          ]
+        }
+      end
+
+      # NOTE: event does get a role because 'event' is NOT a MODS name type
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart type="given">Jane</namePart>
+            <namePart type="family">Stanford</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/orm">organizer</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/orm">orm</roleTerm>
+            </role>
+          </name>
+          <name type="corporate">
+            <namePart>San Francisco Symphony Concert</namePart>
+            <role>
+              <roleTerm type="text">event</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+    end
+  end
+
+  describe 'Cited contributor with Conference role' do
+    # Authors to include in citation
+    ## LDCX. Conference.
+
+    xit 'unimplemented mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -448,11 +1355,23 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
               ],
               type: 'conference',
               status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
               role: [
                 {
                   value: 'Conference',
                   source: {
                     value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
                   }
                 }
               ]
@@ -497,24 +1416,80 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
     end
   end
 
-  describe 'Event as contributor' do
-    # San Francisco Symphony Concert. Event.
+  describe 'Cited contributor and uncited contributor with Conference role' do
+    # Authors to include in citation
+    ## Jane Stanford. Speaker.
+    # Additional contributors
+    ## LDCX. Conference.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'unimplemented mapping' do
       let(:cocina) do
         {
           contributor: [
             {
               name: [
                 {
-                  value: 'San Francisco Symphony Concert'
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
                 }
               ],
-              type: 'event',
+              type: 'person',
               status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
               role: [
                 {
-                  value: 'Event',
+                  value: 'Speaker',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'speaker',
+                  code: 'spk',
+                  uri: 'http://id.loc.gov/vocabulary/relators/spk',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
+                  }
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  value: 'LDCX'
+                }
+              ],
+              type: 'conference',
+              status: 'primary',
+              note: [
+                {
+                  value: 'exclude from citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Conference',
                   source: {
                     value: 'Stanford self-deposit contributor types'
                   }
@@ -540,128 +1515,25 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'San Francisco Symphony Concert'
-                }
-              ],
-              type: 'organization', # this should be event
-              status: 'primary',
-              role: [
-                {
-                  value: 'Event'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      # NOTE: event does get a role because 'event' is NOT a MODS name type
-      let(:mods) do
-        <<~XML
-          <name type="corporate" usage="primary">
-            <namePart>San Francisco Symphony Concert</namePart>
-            <role>
-              <roleTerm type="text">Event</roleTerm>
-            </role>
-          </name>
-        XML
-      end
-    end
-  end
-
-  describe 'Multiple contributors - person' do
-    # Stanford, Jane. Author.
-    # Stanford, Leland. Author.
-
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford, Jane',
-                  type: 'inverted full name'
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
                 }
               ],
               type: 'person',
               status: 'primary',
               role: [
                 {
-                  value: 'Author',
-                  source: {
-                    value: 'Stanford self-deposit contributor types'
-                  }
-                },
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'Creator',
-                  source: {
-                    value: 'DataCite properties'
-                  }
-                }
-              ]
-            },
-            {
-              name: [
-                {
-                  value: 'Stanford, Leland',
-                  type: 'inverted full name'
-                }
-              ],
-              type: 'person',
-              role: [
-                {
-                  value: 'Author',
-                  source: {
-                    value: 'Stanford self-deposit contributor types'
-                  }
-                },
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'Creator',
-                  source: {
-                    value: 'DataCite properties'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:roundtrip_cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford, Jane'
-                }
-              ],
-              type: 'person',
-              status: 'primary',
-              role: [
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  value: 'speaker',
+                  code: 'spk',
+                  uri: 'http://id.loc.gov/vocabulary/relators/spk',
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
@@ -672,618 +1544,39 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
             {
               name: [
                 {
-                  value: 'Stanford, Leland'
+                  value: 'LDCX'
                 }
               ],
-              type: 'person',
-              role: [
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
+              type: 'conference'
             }
           ]
         }
       end
 
+      # NOTE: conference does NOT get a role because 'conference' is a MODS name type
       let(:mods) do
         <<~XML
           <name type="personal" usage="primary">
-            <namePart>Stanford, Jane</namePart>
+            <namePart type="given">Jane</namePart>
+            <namePart type="family">Stanford</namePart>
             <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spk">speaker</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spk">spk</roleTerm>
             </role>
           </name>
-          <name type="personal">
-            <namePart>Stanford, Leland</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-            </role>
+          <name type="conference">
+            <namePart>LDCX</namePart>
           </name>
         XML
       end
     end
   end
 
-  describe 'Multiple contributors - person and organization' do
-    # Stanford, Jane. Author.
-    # Stanford University. Sponsor.
+  describe 'Cited contributor with Funder role' do
+    # Authors to include in citation
+    ## Stanford University. Funder.
 
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford, Jane',
-                  type: 'inverted full name'
-                }
-              ],
-              type: 'person',
-              status: 'primary',
-              role: [
-                {
-                  value: 'Author',
-                  source: {
-                    value: 'Stanford self-deposit contributor types'
-                  }
-                },
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'Creator',
-                  source: {
-                    value: 'DataCite properties'
-                  }
-                }
-              ]
-            },
-            {
-              name: [
-                {
-                  value: 'Stanford University'
-                }
-              ],
-              type: 'organization',
-              role: [
-                {
-                  value: 'Sponsor',
-                  source: {
-                    value: 'Stanford self-deposit contributor types'
-                  }
-                },
-                {
-                  value: 'sponsor',
-                  code: 'spn',
-                  uri: 'http://id.loc.gov/vocabulary/relators/spn',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'Sponsor',
-                  source: {
-                    value: 'DataCite contributor types'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:roundtrip_cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford, Jane'
-                }
-              ],
-              type: 'person',
-              status: 'primary',
-              role: [
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            },
-            {
-              name: [
-                {
-                  value: 'Stanford University'
-                }
-              ],
-              type: 'organization',
-              role: [
-                {
-                  value: 'sponsor',
-                  code: 'spn',
-                  uri: 'http://id.loc.gov/vocabulary/relators/spn',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <name type="personal" usage="primary">
-            <namePart>Stanford, Jane</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-            </role>
-          </name>
-          <name type="corporate">
-            <namePart>Stanford University</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/spn">sponsor</roleTerm>
-            </role>
-          </name>
-        XML
-      end
-    end
-  end
-
-  describe 'Multiple person contributors + organization as author' do
-    # Stanford, Jane. Author.
-    # Stanford University. Author.
-    # Stanford, Leland. Author.
-
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford, Jane',
-                  type: 'inverted full name'
-                }
-              ],
-              type: 'person',
-              status: 'primary',
-              role: [
-                {
-                  value: 'Author',
-                  source: {
-                    value: 'Stanford self-deposit contributor types'
-                  }
-                },
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'Creator',
-                  source: {
-                    value: 'DataCite properties'
-                  }
-                }
-              ]
-            },
-            {
-              name: [
-                {
-                  value: 'Stanford University'
-                }
-              ],
-              type: 'organization',
-              role: [
-                {
-                  value: 'Author',
-                  source: {
-                    value: 'Stanford self-deposit contributor types'
-                  }
-                },
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'Creator',
-                  source: {
-                    value: 'DataCite properties'
-                  }
-                }
-              ]
-            },
-            {
-              name: [
-                {
-                  value: 'Stanford, Leland',
-                  type: 'inverted full name'
-                }
-              ],
-              type: 'person',
-              role: [
-                {
-                  value: 'Author',
-                  source: {
-                    value: 'Stanford self-deposit contributor types'
-                  }
-                },
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'Creator',
-                  source: {
-                    value: 'DataCite properties'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:roundtrip_cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford, Jane'
-                }
-              ],
-              type: 'person',
-              status: 'primary',
-              role: [
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            },
-            {
-              name: [
-                {
-                  value: 'Stanford University'
-                }
-              ],
-              type: 'organization',
-              role: [
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            },
-            {
-              name: [
-                {
-                  value: 'Stanford, Leland'
-                }
-              ],
-              type: 'person',
-              role: [
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <name type="personal" usage="primary">
-            <namePart>Stanford, Jane</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-            </role>
-          </name>
-          <name type="corporate">
-            <namePart>Stanford University</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-            </role>
-          </name>
-          <name type="personal">
-            <namePart>Stanford, Leland</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-            </role>
-          </name>
-        XML
-      end
-    end
-  end
-
-  describe 'Multiple person contributors + organization as non-author' do
-    # Stanford, Jane. Author.
-    # Stanford University. Author.
-    # Stanford, Leland. Author.
-
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford, Jane',
-                  type: 'inverted full name'
-                }
-              ],
-              type: 'person',
-              status: 'primary',
-              role: [
-                {
-                  value: 'Author',
-                  source: {
-                    value: 'Stanford self-deposit contributor types'
-                  }
-                },
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'Creator',
-                  source: {
-                    value: 'DataCite properties'
-                  }
-                }
-              ]
-            },
-            {
-              name: [
-                {
-                  value: 'Stanford University'
-                }
-              ],
-              type: 'organization',
-              role: [
-                {
-                  value: 'Sponsor',
-                  source: {
-                    value: 'Stanford self-deposit contributor types'
-                  }
-                },
-                {
-                  value: 'sponsor',
-                  code: 'spn',
-                  uri: 'http://id.loc.gov/vocabulary/relators/spn',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'Sponsor',
-                  source: {
-                    value: 'DataCite contributor types'
-                  }
-                }
-              ]
-            },
-            {
-              name: [
-                {
-                  value: 'Stanford, Leland',
-                  type: 'inverted full name'
-                }
-              ],
-              type: 'person',
-              role: [
-                {
-                  value: 'Author',
-                  source: {
-                    value: 'Stanford self-deposit contributor types'
-                  }
-                },
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'Creator',
-                  source: {
-                    value: 'DataCite properties'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:roundtrip_cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford, Jane'
-                }
-              ],
-              type: 'person',
-              status: 'primary',
-              role: [
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            },
-            {
-              name: [
-                {
-                  value: 'Stanford University'
-                }
-              ],
-              type: 'organization',
-              role: [
-                {
-                  value: 'sponsor',
-                  code: 'spn',
-                  uri: 'http://id.loc.gov/vocabulary/relators/spn',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            },
-            {
-              name: [
-                {
-                  value: 'Stanford, Leland'
-                }
-              ],
-              type: 'person',
-              role: [
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <name type="personal" usage="primary">
-            <namePart>Stanford, Jane</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-            </role>
-          </name>
-          <name type="corporate">
-            <namePart>Stanford University</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/spn">sponsor</roleTerm>
-            </role>
-          </name>
-          <name type="personal">
-            <namePart>Stanford, Leland</namePart>
-            <role>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
-                valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-            </role>
-          </name>
-        XML
-      end
-    end
-  end
-
-  describe 'Funder' do
-    # Stanford University. Funder.
-
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'unimplemented mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1295,6 +1588,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
               ],
               type: 'organization',
               status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
               role: [
                 {
                   value: 'Funder',
@@ -1309,6 +1608,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
                   }
                 }
               ]
@@ -1360,50 +1665,91 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
     end
   end
 
-  describe 'Publisher and publication date entered by user' do
-    # Stanford University Press. Publisher.
-    # Publication date: Aug. 20, 2020
+  describe 'Cited contributor and uncited contributor with Funder role' do
+    # Authors to include in citation
+    ## Jane Stanford. Data collector.
+    # Additional contributors
+    ## Stanford University. Funder.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'unimplemented mapping' do
       let(:cocina) do
         {
-          event: [
+          contributor: [
             {
-              type: 'publication',
-              contributor: [
+              name: [
                 {
-                  name: [
+                  structuredValue: [
                     {
-                      value: 'Stanford University Press'
-                    }
-                  ],
-                  type: 'organization',
-                  role: [
-                    {
-                      value: 'Publisher',
-                      source: {
-                        value: 'Stanford self-deposit contributor types'
-                      }
+                      value: 'Jane',
+                      type: 'forename'
                     },
                     {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
+                      value: 'Stanford',
+                      type: 'surname'
                     }
                   ]
                 }
               ],
-              date: [
+              type: 'person',
+              status: 'primary',
+              note: [
                 {
-                  encoding: {
-                    code: 'w3cdtf'
-                  },
-                  value: '2020-08-20',
-                  status: 'primary'
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Data collector',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'compiler',
+                  code: 'com',
+                  uri: 'http://id.loc.gov/vocabulary/relators/com',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
+                  }
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  value: 'Stanford University'
+                }
+              ],
+              type: 'organization',
+              note: [
+                {
+                  value: 'exclude from citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Funder',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'funder',
+                  code: 'fnd',
+                  uri: 'http://id.loc.gov/vocabulary/relators/fnd',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
                 }
               ]
             }
@@ -1413,6 +1759,130 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
 
       let(:roundtrip_cocina) do
         {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'compiler',
+                  code: 'com',
+                  uri: 'http://id.loc.gov/vocabulary/relators/com',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  value: 'Stanford University'
+                }
+              ],
+              type: 'organization',
+              role: [
+                {
+                  value: 'funder',
+                  code: 'fnd',
+                  uri: 'http://id.loc.gov/vocabulary/relators/fnd',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart type="given">Jane</namePart>
+            <namePart type="family">Stanford</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/com">compiler</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/com">com</roleTerm>
+            </role>
+          </name>
+          <name type="corporate">
+            <namePart>Stanford University</namePart>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
+                valueURI="http://id.loc.gov/vocabulary/relators/fnd">fnd</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
+                valueURI="http://id.loc.gov/vocabulary/relators/fnd">funder</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+    end
+  end
+
+  describe 'Cited contributor with Publisher role' do
+    # Authors to include in citation
+    ## Stanford University Press. Publisher.
+
+    xit 'unimplemented mapping' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Stanford University Press'
+                }
+              ],
+              type: 'organization',
+              status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Publisher',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'publisher',
+                  code: 'pbl',
+                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
+                  }
+                }
+              ]
+            }
+          ],
           event: [
             {
               type: 'publication',
@@ -1436,14 +1906,58 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
                     }
                   ]
                 }
-              ],
-              date: [
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:roundtrip_cocina) do
+        {
+          contributor: [
+            {
+              name: [
                 {
-                  encoding: {
-                    code: 'w3cdtf'
-                  },
-                  value: '2020-08-20',
-                  status: 'primary'
+                  value: 'Stanford University Press'
+                }
+              ],
+              type: 'organization',
+              status: 'primary',
+              role: [
+                {
+                  value: 'publisher',
+                  code: 'pbl',
+                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          event: [
+            {
+              type: 'publication',
+              contributor: [
+                {
+                  name: [
+                    {
+                      value: 'Stanford University Press'
+                    }
+                  ],
+                  type: 'organization',
+                  role: [
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
                 }
               ]
             }
@@ -1453,21 +1967,79 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
 
       let(:mods) do
         <<~XML
+          <name type="corporate" usage="primary">
+            <namePart>Stanford University Press</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">publisher</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">pbl</roleTerm>
+            </role>
+          </name>
           <originInfo eventType="publication">
             <publisher>Stanford University Press</publisher>
-            <dateIssued keyDate="yes" encoding="w3cdtf">2020-08-20</dateIssued>
           </originInfo>
         XML
       end
     end
   end
 
-  describe 'Publisher entered by user, no publication date' do
-    # Stanford University Press. Publisher.
+  describe 'Cited contributor and uncited contributor with Publisher role' do
+    # Authors to include in citation
+    ## Jane Stanford. Author.
+    # Additional contributors
+    ## Stanford University Press. Publisher.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'unimplemented mapping' do
       let(:cocina) do
         {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Author',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
+                  }
+                }
+              ]
+            }
+          ],
           event: [
             {
               type: 'publication',
@@ -1480,12 +2052,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
                   ],
                   type: 'organization',
                   role: [
-                    {
-                      value: 'Publisher',
-                      source: {
-                        value: 'Stanford self-deposit contributor types'
-                      }
-                    },
                     {
                       value: 'publisher',
                       code: 'pbl',
@@ -1505,6 +2071,37 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
 
       let(:roundtrip_cocina) do
         {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
           event: [
             {
               type: 'publication',
@@ -1536,8 +2133,377 @@ RSpec.describe 'Cocina --> MODS contributor mappings (h2 specific)' do
 
       let(:mods) do
         <<~XML
+          <name type="personal" usage="primary">
+            <namePart type="given">Jane</namePart>
+            <namePart type="family">Stanford</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+            </role>
+          </name>
           <originInfo eventType="publication">
             <publisher>Stanford University Press</publisher>
+          </originInfo>
+        XML
+      end
+    end
+  end
+
+  describe 'Cited contributor with Publisher role and publication date' do
+    # Authors to include in citation
+    ## Stanford University Press. Publisher.
+    # Publication date
+    ## 2020-02-02
+
+    xit 'unimplemented mapping' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Stanford University Press'
+                }
+              ],
+              type: 'organization',
+              status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Publisher',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'publisher',
+                  code: 'pbl',
+                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
+                  }
+                }
+              ]
+            }
+          ],
+          event: [
+            {
+              type: 'publication',
+              contributor: [
+                {
+                  name: [
+                    {
+                      value: 'Stanford University Press'
+                    }
+                  ],
+                  type: 'organization',
+                  role: [
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
+                }
+              ],
+              date: [
+                {
+                  encoding: {
+                    code: 'w3cdtf'
+                  },
+                  value: '2020-02-02',
+                  status: 'primary'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:roundtrip_cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Stanford University Press'
+                }
+              ],
+              type: 'organization',
+              status: 'primary',
+              role: [
+                {
+                  value: 'publisher',
+                  code: 'pbl',
+                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          event: [
+            {
+              type: 'publication',
+              contributor: [
+                {
+                  name: [
+                    {
+                      value: 'Stanford University Press'
+                    }
+                  ],
+                  type: 'organization',
+                  role: [
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
+                }
+              ],
+              date: [
+                {
+                  encoding: {
+                    code: 'w3cdtf'
+                  },
+                  value: '2020-02-02',
+                  status: 'primary'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <name type="corporate" usage="primary">
+            <namePart>Stanford University Press</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">publisher</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">pbl</roleTerm>
+            </role>
+          </name>
+          <originInfo eventType="publication">
+            <publisher>Stanford University Press</publisher>
+            <dateIssued keyDate="yes" encoding="w3cdtf">2020-02-02</dateIssued>
+          </originInfo>
+        XML
+      end
+    end
+  end
+
+  describe 'Cited contributor and uncited contributor with Publisher role and publication date' do
+    # Authors to include in citation
+    ## Jane Stanford. Author.
+    # Additional contributors
+    ## Stanford University Press. Publisher.
+    # Publication date
+    ## 2020-02-02
+
+    xit 'unimplemented mapping' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              note: [
+                {
+                  value: 'include in citation',
+                  type: 'citation status'
+                }
+              ],
+              role: [
+                {
+                  value: 'Author',
+                  source: {
+                    value: 'Stanford self-deposit contributor types'
+                  }
+                },
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  source: {
+                    value: 'DataCite properties'
+                  }
+                }
+              ]
+            }
+          ],
+          event: [
+            {
+              type: 'publication',
+              contributor: [
+                {
+                  name: [
+                    {
+                      value: 'Stanford University Press'
+                    }
+                  ],
+                  type: 'organization',
+                  role: [
+                    {
+                      value: 'Publisher',
+                      source: {
+                        value: 'Stanford self-deposit contributor types'
+                      }
+                    },
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
+                }
+              ],
+              date: [
+                {
+                  encoding: {
+                    code: 'w3cdtf'
+                  },
+                  value: '2020-02-02',
+                  status: 'primary'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:roundtrip_cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ],
+          event: [
+            {
+              type: 'publication',
+              contributor: [
+                {
+                  name: [
+                    {
+                      value: 'Stanford University Press'
+                    }
+                  ],
+                  type: 'organization',
+                  role: [
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
+                }
+              ],
+              date: [
+                {
+                  encoding: {
+                    code: 'w3cdtf'
+                  },
+                  value: '2020-02-02',
+                  status: 'primary'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart type="given">Jane</namePart>
+            <namePart type="family">Stanford</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+            </role>
+          </name>
+          <originInfo eventType="publication">
+            <publisher>Stanford University Press</publisher>
+            <dateIssued keyDate="yes" encoding="w3cdtf">2020-02-02</dateIssued>
           </originInfo>
         XML
       end

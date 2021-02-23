@@ -47,7 +47,7 @@ RSpec.describe 'Cocina --> MODS mappings for relatedItem' do
     end
   end
 
-  describe 'Related link' do
+  describe 'Related link with title' do
     it_behaves_like 'cocina MODS mapping' do
       let(:mods) do
         <<~XML
@@ -71,6 +71,36 @@ RSpec.describe 'Cocina --> MODS mappings for relatedItem' do
                   "value": 'A paper'
                 }
               ],
+              "access": {
+                "url": [
+                  {
+                    "value": 'https://www.example.com/paper.html'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Related link without title' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <relatedItem>
+            <location>
+              <url>https://www.example.com/paper.html</url>
+            </location>
+          </relatedItem>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          "relatedResource": [
+            {
               "access": {
                 "url": [
                   {
