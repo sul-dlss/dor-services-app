@@ -75,12 +75,14 @@ module Cocina
         ng_xml.root.xpath('//mods:subject[not(mods:cartographics)]', mods: ModsNormalizer::MODS_NS).each do |subject_node|
           children_nodes = subject_node.xpath('mods:*', mods: ModsNormalizer::MODS_NS)
 
-          if !have_authorityURI?(subject_node) &&
-             !have_valueURI?(subject_node) &&
-             have_authority?(children_nodes) &&
-             have_same_authority?(children_nodes, subject_node) &&
-             !(have_authorityURI?(children_nodes) || have_valueURI?(children_nodes))
-            delete_authority(children_nodes)
+          children_nodes.each do |child_node|
+            next unless !have_authorityURI?(subject_node) &&
+                        !have_valueURI?(subject_node) &&
+                        have_authority?(child_node) &&
+                        have_same_authority?(child_node, subject_node) &&
+                        !(have_authorityURI?(child_node) || have_valueURI?(child_node))
+
+            delete_authority(child_node)
           end
 
           next unless !have_authorityURI?(subject_node) &&

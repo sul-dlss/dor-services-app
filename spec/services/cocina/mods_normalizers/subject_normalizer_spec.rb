@@ -98,6 +98,7 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
       Nokogiri::XML <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects">
+            <topic authority="lcsh">Islands</topic>
             <geographic authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n78089021">Japan</geographic>
             <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh99001269">Maps</topic>
           </subject>
@@ -109,6 +110,7 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <subject authority="lcsh">
+            <topic>Islands</topic>
             <geographic authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78089021">Japan</geographic>
             <topic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/" valueURI="http://id.loc.gov/authorities/subjects/sh99001269">Maps</topic>
           </subject>
