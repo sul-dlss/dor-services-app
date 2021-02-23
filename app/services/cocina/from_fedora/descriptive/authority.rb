@@ -36,6 +36,11 @@ module Cocina
             return nil
           end
 
+          if code == 'marcountry'
+            notifier.warn('marcountry authority code (should be marccountry)')
+            return 'marccountry'
+          end
+
           code.presence
         end
       end
