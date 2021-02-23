@@ -115,7 +115,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Translated title' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo usage="primary" lang="fre" altRepGroup="1">
@@ -222,7 +222,6 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                       type: 'nonsorting character count'
                     }
                   ],
-                  type: 'translated',
                   valueLanguage: {
                     code: 'eng',
                     source: {
