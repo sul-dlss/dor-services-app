@@ -68,7 +68,8 @@ module Cocina
         end
 
         def write_parallel(subject, subject_values, alt_rep_group:, display_values: nil)
-          if subject.type == 'place'
+          # A geographic and geographicCode get written as a single subject.
+          if geographic_and_geographic_code?(subject, subject_values)
             xml.subject do
               subject_values.each do |geo|
                 geographic(subject, geo, is_parallel: true)
@@ -79,6 +80,12 @@ module Cocina
               write_subject(subject, subject_value, alt_rep_group: alt_rep_group, type: subject.type, display_values: display_values)
             end
           end
+        end
+
+        def geographic_and_geographic_code?(subject, subject_values)
+          subject.type == 'place' &&
+            subject_values.select(&:value).size == 1 &&
+            subject_values.select(&:code).size == 1
         end
 
         # rubocop:disable Metrics/PerceivedComplexity

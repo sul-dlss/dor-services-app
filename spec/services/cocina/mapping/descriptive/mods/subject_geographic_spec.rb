@@ -284,7 +284,7 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
     end
   end
 
-  describe 'Geographic subject with altRepGroup' do
+  describe 'Geographic subject with altRepGroup - A' do
     # Adapted from hv324dj9498
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
@@ -333,6 +333,46 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
                   ]
                 }
               ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Geographic subject with altRepGroup - B' do
+    # Adapted from hv324dj9498
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject altRepGroup="1" authority="lcsh">
+            <geographic>Ḳiryat Ḥayim (Haifa, Israel)</geographic>
+          </subject>
+          <subject altRepGroup="1" authority="lcsh">
+            <geographic>Ḳiryat Ḥayim (Haifa, Israel) in Hebrew</geographic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              "parallelValue": [
+                {
+                  "source": {
+                    "code": 'lcsh'
+                  },
+                  value: 'Ḳiryat Ḥayim (Haifa, Israel)'
+                },
+                {
+                  "source": {
+                    "code": 'lcsh'
+                  },
+                  value: 'Ḳiryat Ḥayim (Haifa, Israel) in Hebrew'
+                }
+              ],
+              type: 'place'
             }
           ]
         }
