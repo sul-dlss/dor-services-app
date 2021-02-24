@@ -116,6 +116,47 @@ RSpec.describe 'MODS location <--> cocina mappings' do
     end
   end
 
+  describe 'Physical repository with additional attributes' do
+    xit 'not implemented'
+    let(:druid) { 'druid:bg461pj8565' }
+
+    let(:mods) do
+      <<~XML
+        <location>
+          <physicalLocation type="repository" authority="naf" lang="eng" script="Latn">Stanford University. Libraries. Department of Special Collections and University Archives</physicalLocation>
+        </location>
+      XML
+    end
+
+    let(:cocina) do
+      {
+        access: {
+          accessContact: [
+            {
+              value: 'Stanford University. Libraries. Department of Special Collections and University Archives',
+              type: 'repository',
+              source: {
+                code: 'naf'
+              },
+              valueLanguage: {
+                code: 'eng',
+                source: {
+                  code: 'iso639-2b'
+                },
+                valueScript: {
+                  code: 'Latn',
+                  source: {
+                    code: 'iso15924'
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    end
+  end
+
   describe 'URL (with usage)' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
