@@ -58,7 +58,11 @@ module Cocina
         # rubocop:disable Metrics/PerceivedComplexity
         # rubocop:disable Metrics/AbcSize
         def build_subject(subject_node)
-          return { valueAt: subject_node['xlink:href'] } if subject_node['xlink:href']
+          if subject_node['xlink:href']
+            return { valueAt: subject_node['xlink:href'] } if subject_node.elements.empty?
+
+            notifier.warn('Element with both xlink and value')
+          end
 
           attrs = common_attrs(subject_node)
           return subject_classification(subject_node, attrs) if subject_node.name == 'classification'
@@ -104,7 +108,8 @@ module Cocina
 
         def common_attrs(subject)
           {
-            displayLabel: subject[:displayLabel]
+            displayLabel: subject[:displayLabel],
+            valueAt: subject['xlink:href']
           }.tap do |attrs|
             source = {
               code: code_for(subject),
@@ -296,6 +301,8 @@ module Cocina
 
         def name_type_for_subject(node)
           name_type = node[:type]
+
+          return nil if node['xlink:href'] && node.children.empty?
 
           unless name_type
             notifier.warn('Subject contains a <name> element without a type attribute') unless node['xlink:href']

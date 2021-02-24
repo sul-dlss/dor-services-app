@@ -360,9 +360,8 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
   # Bad data handling
 
   describe 'Element with xlink should not have value' do
-    xit 'not implemented' do
-      let(:druid) { 'druid:vj685ps3229' }
-
+    # Adapted from vj685ps3229
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject xmlns:xlink="http://www.w3.org/1999/xlink" authority="fast" xlink:href="http://id.worldcat.org/fast/1355886">

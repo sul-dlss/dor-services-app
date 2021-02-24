@@ -613,11 +613,16 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
         XML
       end
 
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject xlink:href="http://name.org/name" />
+        XML
+      end
+
       let(:cocina) do
         {
           subject: [
             {
-              type: 'name',
               valueAt: 'http://name.org/name'
             }
           ]
