@@ -325,6 +325,76 @@ RSpec.describe 'MODS part <--> cocina mappings' do
     end
   end
 
+  describe 'Part with list' do
+    xit 'not implemented' do
+      let(:druid) { 'druid:bj635gv2695' }
+
+      let(:mods) do
+        <<~XML
+          <relatedItem type="host" displayLabel="Appears in">
+            <titleInfo>
+              <title>A general atlas, describing the whole universe: being a complete collection of
+                the most approved maps extant; corrected with the greatest care, and augmented from the
+                latest discoveries. The whole being an improvement of the maps of D'Anville and
+                Robert. Engraved in the best manner on sixty-two copper-plates, by Thomas Kitchin,
+                Senior, and Others. London: printed For Robert Sayer, no. 53, Fleet-Street,
+                (1790).</title>
+            </titleInfo>
+            <identifier type="local" displayLabel="Pub list no.">0411.000</identifier>
+            <part>
+              <extent unit="page">
+                <list>10</list>
+              </extent>
+            </part>
+          </relatedItem>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          relatedResource: [
+            {
+              type: 'part of',
+              displayLabel: 'Appears in',
+              title: [
+                {
+                  value: 'A general atlas, describing the whole universe: being a complete collection of
+                    the most approved maps extant; corrected with the greatest care, and augmented from the
+                    latest discoveries. The whole being an improvement of the maps of D\'Anville and
+                    Robert. Engraved in the best manner on sixty-two copper-plates, by Thomas Kitchin,
+                    Senior, and Others. London: printed For Robert Sayer, no. 53, Fleet-Street,
+                    (1790).'
+                }
+              ],
+              identifier: [
+                {
+                  type: 'local',
+                  displayLabel: 'Pub list no.',
+                  value: '0411.000'
+                }
+              ],
+              note: [
+                {
+                  type: 'part',
+                  groupedValue: [
+                    {
+                      value: 'page',
+                      type: 'extent unit'
+                    },
+                    {
+                      value: '10',
+                      type: 'list'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Monolingual part with all subelements' do
     # valid MODS, but Arcadia will not map unless it shows up in our data.
     xit 'not mapped (to cocina) unless it shows up in our data'
