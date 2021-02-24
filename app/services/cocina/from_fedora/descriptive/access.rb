@@ -143,7 +143,7 @@ module Cocina
             next nil if node.text.blank?
 
             {}.tap do |attrs|
-              if node[:authority] && !node[:valueURI]
+              if %w[marcorg oclcorg].include?(node[:authority])
                 attrs[:code] = node.text
               else
                 attrs[:value] = node.text

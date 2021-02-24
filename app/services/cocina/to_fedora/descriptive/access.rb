@@ -62,7 +62,7 @@ module Cocina
               xml.note access_contact.value, descriptive_attrs(access_contact).merge({ type: 'contact' })
             else
               xml.location do
-                xml.physicalLocation access_contact.value, { type: 'repository' }.merge(descriptive_attrs(access_contact))
+                xml.physicalLocation access_contact.value || access_contact.code, { type: 'repository' }.merge(descriptive_attrs(access_contact))
               end
             end
           end
