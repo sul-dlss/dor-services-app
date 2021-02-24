@@ -682,6 +682,8 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
           <mods #{MODS_ATTRIBUTES}>
             <originInfo>
               <dateCreated></dateCreated>
+              <dateCreated/>
+              <dateCreated />
             </originInfo>
           </mods>
         XML
