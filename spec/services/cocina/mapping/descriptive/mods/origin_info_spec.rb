@@ -2285,6 +2285,65 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
       end
     end
 
+    context 'when dateCreated and dateCaptured in same originInfo' do
+      # based on sc262hs3556
+      it_behaves_like 'MODS cocina mapping' do
+        xit 'to be implemented: originInfo normalization must split originInfo'
+        let(:skip_normalization) { true }
+
+        let(:mods) do
+          <<~XML
+            <originInfo>
+              <dateCreated keyDate="yes" encoding="w3cdtf">2018-08-21</dateCreated>
+              <dateCaptured encoding="w3cdtf">2018-08-30</dateCaptured>
+            </originInfo>
+          XML
+        end
+
+        # dateCreated split into separate originInfo
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType='production'>
+              <dateCreated keyDate="yes" encoding="w3cdtf">2018-08-21</dateCreated>
+            </originInfo>
+            <originInfo eventType='capture'>
+              <dateCaptured encoding="w3cdtf">2018-08-30</dateCaptured>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'creation',
+                date: [
+                  {
+                    value: '2018-08-21',
+                    encoding: {
+                      code: 'w3cdtf'
+                    },
+                    status: 'primary'
+                  }
+                ]
+              },
+              {
+                type: 'capture',
+                date: [
+                  {
+                    value: '2018-08-30',
+                    encoding: {
+                      code: 'w3cdtf'
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
     context 'when dateCreated and dateOther and eventType production' do
       # based on dg875gq3366
       it_behaves_like 'MODS cocina mapping' do
@@ -2594,159 +2653,401 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
       end
     end
 
-    context 'when eventType capture with dateCaptured and publisher elements it splits' do
-      # based on rn990mm7360
-      it_behaves_like 'MODS cocina mapping' do
-        xit 'to be implemented: originInfo normalization must split originInfo'
-        let(:skip_normalization) { true }
+    context 'when dateCaptured and publisher elements it splits' do
+      context 'with eventType' do
+        # based on rn990mm7360
+        it_behaves_like 'MODS cocina mapping' do
+          xit 'to be implemented: originInfo normalization must split originInfo'
+          let(:skip_normalization) { true }
 
-        let(:mods) do
-          <<~XML
-            <originInfo eventType="capture">
-              <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
-              <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
-              <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
-            </originInfo>
-          XML
-        end
+          let(:mods) do
+            <<~XML
+              <originInfo eventType="capture">
+                <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
+                <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
+                <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
+              </originInfo>
+            XML
+          end
 
-        # split capture and publication
-        let(:roundtrip_mods) do
-          <<~XML
-            <originInfo eventType="capture">
-              <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
-              <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
-            </originInfo>
-            <originInfo eventType="publication">
-              <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
-            </originInfo>
-          XML
-        end
+          # split capture and publication
+          let(:roundtrip_mods) do
+            <<~XML
+              <originInfo eventType="capture">
+                <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
+                <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
+              </originInfo>
+              <originInfo eventType="publication">
+                <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
+              </originInfo>
+            XML
+          end
 
-        let(:cocina) do
-          {
-            event: [
-              {
-                type: 'capture',
-                date: [
-                  {
-                    structuredValue: [
-                      {
-                        type: 'start',
-                        value: '2007-12-10',
-                        status: 'primary'
-                      },
-                      {
-                        type: 'end',
-                        value: '2011-01-24'
-                      }
-                    ],
-                    encoding: {
-                      code: 'iso8601'
-                    }
-                  }
-                ]
-              },
-              {
-                type: 'publication',
-                contributor: [
-                  {
-                    name: [
-                      {
-                        value: 'California. State Department of Education. Office of Curriculum Services'
-                      }
-                    ],
-                    type: 'organization',
-                    role: [
-                      {
-                        value: 'publisher',
-                        code: 'pbl',
-                        uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                        source: {
-                          code: 'marcrelator',
-                          uri: 'http://id.loc.gov/vocabulary/relators/'
+          let(:cocina) do
+            {
+              event: [
+                {
+                  type: 'capture',
+                  date: [
+                    {
+                      structuredValue: [
+                        {
+                          type: 'start',
+                          value: '2007-12-10',
+                          status: 'primary'
+                        },
+                        {
+                          type: 'end',
+                          value: '2011-01-24'
                         }
+                      ],
+                      encoding: {
+                        code: 'iso8601'
                       }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
+                    }
+                  ]
+                },
+                {
+                  type: 'publication',
+                  contributor: [
+                    {
+                      name: [
+                        {
+                          value: 'California. State Department of Education. Office of Curriculum Services'
+                        }
+                      ],
+                      type: 'organization',
+                      role: [
+                        {
+                          value: 'publisher',
+                          code: 'pbl',
+                          uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                          source: {
+                            code: 'marcrelator',
+                            uri: 'http://id.loc.gov/vocabulary/relators/'
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          end
+        end
+      end
+
+      context 'without eventType' do
+        # based on bm023zm8062
+        it_behaves_like 'MODS cocina mapping' do
+          xit 'to be implemented: originInfo normalization must split originInfo'
+          let(:skip_normalization) { true }
+
+          let(:mods) do
+            <<~XML
+              <originInfo>
+                <publisher>Dept. of Defense</publisher>
+                <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
+                <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
+              </originInfo>
+            XML
+          end
+
+          # split capture and publication
+          let(:roundtrip_mods) do
+            <<~XML
+              <originInfo eventType="capture">
+                <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
+                <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
+              </originInfo>
+              <originInfo eventType="publication">
+                <publisher>Dept. of Defense</publisher>
+              </originInfo>
+            XML
+          end
+
+          let(:cocina) do
+            {
+              event: [
+                {
+                  type: 'capture',
+                  date: [
+                    {
+                      structuredValue: [
+                        {
+                          type: 'start',
+                          value: '2007-12-10',
+                          status: 'primary'
+                        },
+                        {
+                          type: 'end',
+                          value: '2011-01-24'
+                        }
+                      ],
+                      encoding: {
+                        code: 'iso8601'
+                      }
+                    }
+                  ]
+                },
+                {
+                  type: 'publication',
+                  contributor: [
+                    {
+                      name: [
+                        {
+                          value: 'Dept. of Defense'
+                        }
+                      ],
+                      type: 'organization',
+                      role: [
+                        {
+                          value: 'publisher',
+                          code: 'pbl',
+                          uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                          source: {
+                            code: 'marcrelator',
+                            uri: 'http://id.loc.gov/vocabulary/relators/'
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          end
         end
       end
     end
 
-    context 'when eventType copyright with copyrightDate and place it splits' do
-      # based on vw478nk8207
-      it_behaves_like 'MODS cocina mapping' do
-        xit 'to be implemented: originInfo normalization must split originInfo'
-        let(:skip_normalization) { true }
+    context 'when eventType with copyrightDate and place it splits' do
+      context 'with eventType copyright' do
+        # based on vw478nk8207
+        it_behaves_like 'MODS cocina mapping' do
+          xit 'to be implemented: originInfo normalization must split originInfo'
+          let(:skip_normalization) { true }
 
-        let(:mods) do
-          <<~XML
-            <originInfo displayLabel="Place of creation" eventType="copyright">
-              <place>
-                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
-              </place>
-              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
-              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
-            </originInfo>
-          XML
-        end
+          let(:mods) do
+            <<~XML
+              <originInfo displayLabel="Place of creation" eventType="copyright">
+                <place>
+                  <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+                </place>
+                <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
+                <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
+              </originInfo>
+            XML
+          end
 
-        # split into two elements
-        let(:roundtrip_mods) do
-          <<~XML
-            <originInfo displayLabel="Place of creation" eventType="copyright">
-              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
-              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
-            </originInfo>
-            <originInfo displayLabel="Place of creation" eventType="publication">
-              <place>
-                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
-              </place>
-            </originInfo>
-          XML
-        end
+          # split into two elements
+          let(:roundtrip_mods) do
+            <<~XML
+              <originInfo displayLabel="Place of creation" eventType="copyright">
+                <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
+                <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
+              </originInfo>
+              <originInfo displayLabel="Place of creation" eventType="publication">
+                <place>
+                  <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+                </place>
+              </originInfo>
+            XML
+          end
 
-        let(:cocina) do
-          {
-            event: [
-              {
-                type: 'copyright',
-                date: [
-                  {
-                    structuredValue: [
-                      {
-                        type: 'start',
-                        value: '1970',
-                        status: 'primary'
-                      },
-                      {
-                        type: 'end',
-                        value: '1974'
+          let(:cocina) do
+            {
+              event: [
+                {
+                  type: 'copyright',
+                  date: [
+                    {
+                      structuredValue: [
+                        {
+                          type: 'start',
+                          value: '1970',
+                          status: 'primary'
+                        },
+                        {
+                          type: 'end',
+                          value: '1974'
+                        }
+                      ],
+                      qualifier: 'approximate',
+                      encoding: {
+                        code: 'w3cdtf'
                       }
-                    ],
-                    qualifier: 'approximate',
-                    encoding: {
-                      code: 'w3cdtf'
                     }
-                  }
-                ],
-                displayLabel: 'Place of creation'
-              },
-              {
-                type: 'publication',
-                location: [
-                  {
-                    value: 'San Francisco (Calif.)'
-                  }
-                ],
-                displayLabel: 'Place of creation'
-              }
-            ]
-          }
+                  ],
+                  displayLabel: 'Place of creation'
+                },
+                {
+                  type: 'publication',
+                  location: [
+                    {
+                      value: 'San Francisco (Calif.)'
+                    }
+                  ],
+                  displayLabel: 'Place of creation'
+                }
+              ]
+            }
+          end
+        end
+      end
+
+      context 'with eventType production' do
+        # based on nd217pz1557
+        it_behaves_like 'MODS cocina mapping' do
+          xit 'to be implemented: originInfo normalization must split originInfo'
+          let(:skip_normalization) { true }
+
+          let(:mods) do
+            <<~XML
+              <originInfo displayLabel="Place of creation" eventType="production">
+                <place>
+                  <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+                </place>
+                <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1960</copyrightDate>
+                <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1965</copyrightDate>
+              </originInfo>
+            XML
+          end
+
+          # split into two elements
+          let(:roundtrip_mods) do
+            <<~XML
+              <originInfo displayLabel="Place of creation" eventType="copyright">
+                <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1960</copyrightDate>
+                <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1965</copyrightDate>
+              </originInfo>
+              <originInfo displayLabel="Place of creation" eventType="publication">
+                <place>
+                  <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+                </place>
+              </originInfo>
+            XML
+          end
+
+          let(:cocina) do
+            {
+              event: [
+                {
+                  type: 'copyright',
+                  date: [
+                    {
+                      structuredValue: [
+                        {
+                          type: 'start',
+                          value: '1960',
+                          status: 'primary'
+                        },
+                        {
+                          type: 'end',
+                          value: '1965'
+                        }
+                      ],
+                      qualifier: 'approximate',
+                      encoding: {
+                        code: 'w3cdtf'
+                      }
+                    }
+                  ],
+                  displayLabel: 'Place of creation'
+                },
+                {
+                  type: 'publication',
+                  location: [
+                    {
+                      value: 'San Francisco (Calif.)'
+                    }
+                  ],
+                  displayLabel: 'Place of creation'
+                }
+              ]
+            }
+          end
+        end
+      end
+
+      context 'with eventType copyright and publisher' do
+        # based on mr888cv5629
+        it_behaves_like 'MODS cocina mapping' do
+          xit 'to be implemented: originInfo normalization must split originInfo'
+          let(:skip_normalization) { true }
+
+          let(:mods) do
+            <<~XML
+              <originInfo eventType="copyright">
+                <place>
+                  <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+                </place>
+                <publisher>San Francisco Examiner</publisher>
+                <copyrightDate keyDate="yes" encoding="w3cdtf">1901</copyrightDate>
+              </originInfo>
+            XML
+          end
+
+          # split into two elements
+          let(:roundtrip_mods) do
+            <<~XML
+              <originInfo eventType="copyright">
+                <copyrightDate keyDate="yes" encoding="w3cdtf">1901</copyrightDate>
+              </originInfo>
+              <originInfo eventType="publication">
+                <place>
+                  <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+                </place>
+                <publisher>San Francisco Examiner</publisher>
+              </originInfo>
+            XML
+          end
+
+          let(:cocina) do
+            {
+              event: [
+                {
+                  type: 'copyright',
+                  date: [
+                    {
+                      value: '1901',
+                      status: 'primary',
+                      encoding: {
+                        code: 'w3cdtf'
+                      }
+                    }
+                  ]
+                },
+                {
+                  type: 'publication',
+                  location: [
+                    {
+                      value: 'San Francisco (Calif.)'
+                    }
+                  ],
+                  contributor: [
+                    {
+                      name: [
+                        value: 'San Francisco Examiner'
+                      ],
+                      type: 'organization',
+                      role: [
+                        {
+                          value: 'publisher',
+                          code: 'pbl',
+                          uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                          source: {
+                            code: 'marcrelator',
+                            uri: 'http://id.loc.gov/vocabulary/relators/'
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          end
         end
       end
     end
