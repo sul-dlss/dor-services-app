@@ -16,6 +16,7 @@ module Cocina
       end
 
       def normalize
+        normalize_xlink_href
         normalize_empty_geographic
         normalize_empty_temporal
         normalize_subject
@@ -261,6 +262,14 @@ module Cocina
           subject_node = geo_node.parent
           geo_node.remove
           subject_node.remove if subject_node.elements.empty? && subject_node.attributes.empty?
+        end
+      end
+
+      def normalize_xlink_href
+        ng_xml.root.xpath('//mods:subject/mods:*[@xlink:href]', mods: ModsNormalizer::MODS_NS, xlink: ModsNormalizer::XLINK_NS).each do |child_node|
+          subject_node = child_node.parent
+          subject_node['xlink:href'] = child_node['xlink:href']
+          child_node.delete('href')
         end
       end
     end

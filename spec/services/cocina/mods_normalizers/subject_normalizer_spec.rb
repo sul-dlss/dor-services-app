@@ -712,4 +712,24 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
       XML
     end
   end
+
+  context 'when subject child with xlink:href' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject>
+            <name xlink:href="http://name.org/name" />
+          </subject>
+        </mods>
+      XML
+    end
+
+    it 'moves to subject' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject xlink:href="http://name.org/name" />
+        </mods>
+      XML
+    end
+  end
 end

@@ -182,7 +182,7 @@ module Cocina
             end
           elsif !type && !subject_value.value
             # For subject only (no children).
-            xml.subject topic_attributes_for(subject, subject_value)
+            xml.subject subject_attributes.merge(topic_attributes_for(subject, subject_value))
           else
             xml.subject(subject_attributes) do
               write_topic(subject, subject_value, type: type)
@@ -200,6 +200,7 @@ module Cocina
           }.tap do |attrs|
             attrs[:displayLabel] = subject.displayLabel unless subject.type == 'genre'
             attrs[:edition] = edition(subject.source.version) if subject.source&.version
+            attrs['xlink:href'] = subject.valueAt
           end.compact
         end
 
@@ -245,7 +246,6 @@ module Cocina
               topic_attributes[:displayLabel] = subject_value.displayLabel
               topic_attributes[:usage] = subject_value.status
             end
-            topic_attributes['xlink:href'] = subject_value.valueAt
           end.compact
         end
 
