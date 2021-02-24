@@ -300,6 +300,32 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     end
   end
 
+  describe 'Transliterated title (not parallel)' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo transliteration="ALA-LC Romanization Tables">
+            <title>Mā baʻda 1930</title>
+          </titleInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              "value": 'Mā baʻda 1930',
+              "type": 'transliterated',
+              "standard": {
+                "value": 'ALA-LC Romanization Tables'
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Uniform title with authority' do
     # How to ID: titleInfo type="uniform"
     it_behaves_like 'MODS cocina mapping' do
