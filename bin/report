@@ -89,6 +89,21 @@ def mods_34_from_marc?(ng_xml)
     ng_xml.root.xpath('mods:recordInfo/mods:recordIdentifier[starts-with(text(), "a")]', mods: MODS_NS).present?
 end
 
+def different_places?(ng_xml)
+  # any place which has a placeTerm type=code and placeTerm type=text where authority is present and authorityURI or valueURI contains id.loc.gov/authorities
+  ng_xml.root.xpath('//mods:place[count(mods:placeTerm) = 2]', mods: MODS_NS).each do |place_node|
+    code_place_term = place_node.xpath('//mods:placeTerm[@type="code"]', mods: MODS_NS).first
+    text_place_term = place_node.xpath('//mods:placeTerm[@type="text"]', mods: MODS_NS).first
+    next unless code_place_term && text_place_term
+    next unless code_place_term['authority'] && text_place_term['authority']
+    next unless code_place_term['authorityURI'] =~ %r{id.loc.gov/authorities} || code_place_term['valueURI'] =~ %r{id.loc.gov/authorities}
+    next unless text_place_term['authorityURI'] =~ %r{id.loc.gov/authorities} || text_place_term['valueURI'] =~ %r{id.loc.gov/authorities}
+
+    return true
+  end
+  false
+end
+
 REPORTS = {
   parts: method(:has_part?),
   xlink_href: method(:has_xlink_href?),
@@ -101,7 +116,8 @@ REPORTS = {
   metadata_toolkit: method(:metadata_toolkit?),
   element_spaces: method(:elements_start_with_spaces?),
   attribute_spaces: method(:attributes_start_with_spaces?),
-  mods_34_from_marc: method(:mods_34_from_marc?)
+  mods_34_from_marc: method(:mods_34_from_marc?),
+  different_places: method(:different_places?)
 }.with_indifferent_access
 
 options = { local: false, reports: REPORTS.keys }
