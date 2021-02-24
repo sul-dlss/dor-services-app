@@ -35,10 +35,9 @@ module Cocina
         attr_reader :xml, :admin_metadata
 
         def build_record_origin
-          record_origin_note = Array(admin_metadata.note).find { |note| note.type == 'record origin' }
-          return unless record_origin_note
-
-          xml.recordOrigin record_origin_note.value
+          Array(admin_metadata.note).select { |note| note.type == 'record origin' }.each do |note|
+            xml.recordOrigin note.value
+          end
         end
 
         def build_record_info_note
