@@ -5,12 +5,13 @@ require_relative '../config/environment'
 require 'set'
 require 'optparse'
 
-options = { output: 'druids.txt' }
+options = { output: 'druids.txt', quiet: false }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/generate-druid-list \'<QUERY, e.g., project_tag_ssim:"Naxos : born digital audio">\' [options]'
 
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
   option_parser.on('-oOUTPUT', '--output OUTPUT', 'Output filename, otherwise druids.txt.')
+  option_parser.on('-q', '--quiet', 'Do not write logging to STDOUT.')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -30,7 +31,7 @@ loop do
   break if results.empty? || (options[:sample] && druids.size >= options[:sample])
 
   results.each { |r| druids << r['id'] }
-  puts "Retrieved #{druids.length} druids"
+  puts "Retrieved #{druids.length} druids" unless options[:quiet]
   sleep(0.5)
 end
 
