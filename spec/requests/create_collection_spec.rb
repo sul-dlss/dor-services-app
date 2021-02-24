@@ -31,6 +31,9 @@ RSpec.describe 'Create object' do
                                          ]
                                        }
                                      },
+                                     identification: {
+                                       sourceId: 'hydrus:collection-456'
+                                     },
                                      administrative: {
                                        hasAdminPolicy: 'druid:dd999df4567',
                                        partOfProject: 'Hydrus'
@@ -43,6 +46,7 @@ RSpec.describe 'Create object' do
         {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
           "label":"#{label}","version":1,"access":{},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
+          "identification":{"sourceId":"hydrus:collection-456"},
           "description":{"title":[{"value":"#{title}"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}}}
       JSON
     end

@@ -94,6 +94,7 @@ module Cocina
       pid = Dor::SuriService.mint_id
       Dor::Collection.new(pid: pid,
                           admin_policy_object_id: obj.administrative.hasAdminPolicy,
+                          source_id: obj.identification&.sourceId,
                           catkey: catkey_for(obj),
                           label: truncate_label(obj.label)).tap do |item|
         add_description(item, obj)
