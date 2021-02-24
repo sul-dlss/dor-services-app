@@ -162,11 +162,12 @@ module Cocina
             displayLabel: title.displayLabel,
             valueURI: title.uri,
             authorityURI: title.source&.uri,
-            authority: title.source&.code
+            authority: title.source&.code,
+            transliteration: title.standard&.value
           }.tap do |attrs|
             if title.type == 'supplied'
               attrs[:supplied] = 'yes'
-            else
+            elsif title.type != 'transliterated'
               attrs[:type] = title.type
             end
           end.compact
