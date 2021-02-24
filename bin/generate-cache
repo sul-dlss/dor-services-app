@@ -5,7 +5,7 @@ require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
 require 'optparse'
 
-options = { overwrite: false, random: false, auto: false, druids: [], input: 'druids.txt' }
+options = { overwrite: false, random: false, auto: false, druids: [], input: 'druids.txt', quiet: false }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/generate-cache [options]'
 
@@ -15,6 +15,7 @@ parser = OptionParser.new do |option_parser|
   option_parser.on('-a', '--auto', 'Automatically choose sample based on 14 day cycle.')
   option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
   option_parser.on('-iINPUT', '--input INPUT', 'Input filename, otherwise druids.txt.')
+  option_parser.on('-q', '--quiet', 'Do not write logging to STDOUT.')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -41,7 +42,7 @@ else
 end
 
 druids.each_with_index do |druid, index|
-  puts "#{druid} (#{index + 1})\n"
+  puts "#{druid} (#{index + 1})\n" unless options[:quiet]
   cache.cache_object(druid)
   cache.cache_descmd(druid)
 end
