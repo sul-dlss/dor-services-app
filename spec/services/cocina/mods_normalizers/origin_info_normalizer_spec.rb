@@ -117,7 +117,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
     end
 
     # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
-    xit 'removes dateOther type attribute if it matches eventType and dateOther is empty' do
+    xit 'to be implemented: removes dateOther type attribute if it matches eventType and dateOther is empty' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo eventType="distribution"/>
@@ -664,7 +664,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       end
 
       # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
-      xit 'removes the empty child' do
+      xit 'to be implemented: removes the empty child' do
         expect(normalized_ng_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <originInfo eventType="publication"/>
@@ -805,7 +805,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       end
 
       # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
-      xit 'removes the element' do
+      xit 'to be implemented: removes the element' do
         expect(normalized_ng_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
           </mods>
@@ -826,7 +826,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       end
 
       # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
-      xit 'removes the element' do
+      xit 'to be implemented: removes the element' do
         expect(normalized_ng_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
           </mods>
@@ -939,6 +939,33 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
     end
   end
 
+  context 'when dateCreated and dateCaptured in same originInfo' do
+    # based on sc262hs3556
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo>
+            <dateCreated keyDate="yes" encoding="w3cdtf">2018-08-21</dateCreated>
+            <dateCaptured encoding="w3cdtf">2018-08-30</dateCaptured>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    xit 'to be implemented: moves dateCaptured into its own originInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo eventType="creation">
+            <dateCreated keyDate="yes" encoding="w3cdtf">2018-08-21</dateCreated>
+          </originInfo>
+          <originInfo eventType="capture">
+            <dateCaptured encoding="w3cdtf">2018-08-30</dateCaptured>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
   context 'when dateCreated as point with 2 elements in same originInfo as dateIssued, dateIssued splits' do
     # based on nn349sf6895, rx731vv3403
     let(:mods_ng_xml) do
@@ -987,7 +1014,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       XML
     end
 
-    xit 'moves dateCreated into its own originInfo and removes exact duplicates' do
+    xit 'to be implemented: moves dateCreated into its own originInfo and removes exact duplicates' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo eventType="production">
@@ -1046,7 +1073,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       XML
     end
 
-    xit 'moves dateCreated into its own originInfo' do
+    xit 'to be implemented: moves dateCreated into its own originInfo' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo displayLabel="manufacturer">
@@ -1073,7 +1100,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       XML
     end
 
-    xit 'splits copyrightDate from issuance' do
+    xit 'to be implemented: splits copyrightDate from issuance' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo eventType="copyright">
@@ -1101,7 +1128,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
     end
 
     # TODO: ask Arcadia if there are more constraints on this one
-    xit 'eventType becomes publication' do
+    xit 'to be implemented: eventType becomes publication' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo displayLabel="manufacturer" eventType="publication">
@@ -1124,7 +1151,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       XML
     end
 
-    xit 'eventType becomes publication' do
+    xit 'to be implemented: eventType becomes publication' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo eventType="publication">
@@ -1135,65 +1162,164 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
     end
   end
 
-  context 'when eventType capture with dateCaptured and publisher elements' do
-    # based on rn990mm7360
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="capture">
-            <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
-            <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
-            <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
-          </originInfo>
-        </mods>
-      XML
+  context 'when dateCaptured and publisher elements' do
+    context 'with eventType' do
+      # based on rn990mm7360
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="capture">
+              <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
+              <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
+              <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      xit 'to be implemented: splits originInfo' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="capture">
+              <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
+              <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
+            </originInfo>
+            <originInfo eventType="publication">
+              <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
     end
 
-    xit 'splits originInfo' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="capture">
-            <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
-            <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
-          </originInfo>
-          <originInfo eventType="publication">
-            <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
-          </originInfo>
-        </mods>
-      XML
+    context 'without eventType' do
+      # based on bm023zm8062
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <publisher>Dept. of Defense</publisher>
+              <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
+              <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      xit 'to be implemented: splits originInfo' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="capture">
+              <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
+              <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
+            </originInfo>
+            <originInfo eventType="publication">
+              <publisher>Dept. of Defense</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
     end
   end
 
-  context 'when eventType copyright with copyrightDate and place' do
-    # based on vw478nk8207
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="Place of creation" eventType="copyright">
-            <place>
-              <placeTerm type="text">San Francisco (Calif.)</placeTerm>
-            </place>
-            <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
-            <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
-          </originInfo>
-        </mods>
-      XML
+  context 'when eventType with copyrightDate and place' do
+    context 'when eventType copyright' do
+      # based on vw478nk8207
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo displayLabel="Place of creation" eventType="copyright">
+              <place>
+                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+              </place>
+              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
+              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      xit 'to be implemented: splits originInfo' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo displayLabel="Place of creation" eventType="copyright">
+              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
+              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
+            </originInfo>
+            <originInfo eventType="publication">
+              <place>
+                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
     end
 
-    xit 'splits originInfo' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="Place of creation" eventType="copyright">
-            <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
-            <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
-          </originInfo>
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="text">San Francisco (Calif.)</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
+    context 'when eventType production' do
+      # based on nd217pz1557
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo displayLabel="Place of creation" eventType="production">
+              <place>
+                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+              </place>
+              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1960</copyrightDate>
+              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1965</copyrightDate>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      xit 'to be implemented: splits originInfo' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo displayLabel="Place of creation" eventType="production">
+              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1960</copyrightDate>
+              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1965</copyrightDate>
+            </originInfo>
+            <originInfo eventType="publication">
+              <place>
+                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'with eventType copyright and publisher' do
+      # based on mr888cv5629
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="copyright">
+              <place>
+                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+              </place>
+              <publisher>San Francisco Examiner</publisher>
+              <copyrightDate keyDate="yes" encoding="w3cdtf">1901</copyrightDate>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      xit 'to be implemented: splits originInfo' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="copyright">
+              <copyrightDate keyDate="yes" encoding="w3cdtf">1901</copyrightDate>
+            </originInfo>
+            <originInfo eventType="publication">
+              <place>
+                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+              </place>
+              <publisher>San Francisco Examiner</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
     end
   end
 
@@ -1213,7 +1339,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       XML
     end
 
-    xit 'splits originInfo and eventType production becomes copyright' do
+    xit 'to be implemented: splits originInfo and eventType production becomes copyright' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo displayLabel="Place of creation" eventType="copyright">
@@ -1264,7 +1390,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
       XML
     end
 
-    xit 'adds second publisher to second originInfo in altRepGroup so all elements in altRepGroup are matched' do
+    xit 'to be implemented: adds second publisher to second originInfo in altRepGroup so all elements in altRepGroup are matched' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo altRepGroup="1" eventType="publication">
