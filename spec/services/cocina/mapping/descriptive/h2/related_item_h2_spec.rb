@@ -86,7 +86,7 @@ RSpec.describe 'Cocina --> MODS mappings for relatedItem' do
   end
 
   describe 'Related link without title' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:mods) do
         <<~XML
           <relatedItem>

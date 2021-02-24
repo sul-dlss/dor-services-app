@@ -18,7 +18,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Jane Stanford. Author.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -129,7 +129,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Author.
     ## Leland Stanford. Author.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -322,7 +322,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Data collector.
     ## Stanford University. Sponsor.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -495,7 +495,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Stanford University. Host institution.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -587,7 +587,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University. Host institution.
     ## Department of English. Department.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -731,7 +731,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/his">host institution</roleTerm>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/his">his</roleTerm>
             </role>
-          <name>
+          </name>
         XML
       end
     end
@@ -743,7 +743,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Leland Stanford. Contributing author.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -925,7 +925,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">contributor</roleTerm>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
             </role>
-          <name>
+          </name>
         XML
       end
     end
@@ -937,7 +937,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Stanford University. Sponsor.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1100,7 +1100,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spn">sponsor</roleTerm>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
             </role>
-          <name>
+          </name>
         XML
       end
     end
@@ -1112,7 +1112,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## San Francisco Symphony Concert. Event.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1161,8 +1161,11 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                   value: 'San Francisco Symphony Concert'
                 }
               ],
-              type: 'event',
-              status: 'primary'
+              type: 'organization',
+              status: 'primary',
+              role: [
+                value: 'event'
+              ]
             }
           ]
         }
@@ -1187,7 +1190,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Event organizer.
     # Additional contributors
     ## San Francisco Symphony Concert. Event.
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1311,7 +1314,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                   value: 'San Francisco Symphony Concert'
                 }
               ],
-              type: 'event'
+              type: 'organization',
+              role: [
+                value: 'event'
+              ]
             }
           ]
         }
@@ -1343,7 +1349,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## LDCX. Conference.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1422,7 +1428,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## LDCX. Conference.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1480,7 +1486,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                 }
               ],
               type: 'conference',
-              status: 'primary',
               note: [
                 {
                   value: 'exclude from citation',
@@ -1576,7 +1581,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Stanford University. Funder.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1671,7 +1676,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Stanford University. Funder.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1840,7 +1845,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Stanford University Press. Publisher.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1988,7 +1993,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Stanford University Press. Publisher.
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -2155,7 +2160,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Publication date
     ## 2020-02-02
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -2324,7 +2329,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Publication date
     ## 2020-02-02
 
-    xit 'unimplemented mapping' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [

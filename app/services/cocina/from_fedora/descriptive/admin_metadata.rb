@@ -70,7 +70,7 @@ module Cocina
 
         def build_note
           notes = []
-          if record_origin
+          record_origins.each do |record_origin|
             notes << {
               type: 'record origin',
               value: record_origin.text
@@ -182,8 +182,8 @@ module Cocina
           @description_standards ||= record_info.xpath('mods:descriptionStandard', mods: DESC_METADATA_NS)
         end
 
-        def record_origin
-          @record_origin ||= record_info.xpath('mods:recordOrigin', mods: DESC_METADATA_NS).first
+        def record_origins
+          @record_origins ||= record_info.xpath('mods:recordOrigin', mods: DESC_METADATA_NS)
         end
 
         def record_info_note

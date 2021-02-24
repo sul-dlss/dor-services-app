@@ -25,7 +25,12 @@ module Cocina
             }.compact
             if role.value.present?
               attributes[:type] = 'text'
-              xml.roleTerm role.value, attributes
+              value = if role.source&.value == 'Stanford self-deposit contributor types'
+                        role.value.downcase
+                      else
+                        role.value
+                      end
+              xml.roleTerm value, attributes
             end
             if role.code.present?
               attributes[:type] = 'code'

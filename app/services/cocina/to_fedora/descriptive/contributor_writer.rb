@@ -174,9 +174,6 @@ module Cocina
               xml.affiliation note.value
             when 'description'
               xml.description note.value
-            else
-              # This should not happen, as mapping code only produces affiliation and description.
-              raise 'Unknown contributor note type'
             end
           end
         end
