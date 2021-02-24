@@ -154,6 +154,44 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
     end
   end
 
+  describe 'Multilingual physical descriptions' do
+    xit 'not implemented' do
+      let(:druid) { 'druid:bx458nk9866' }
+
+      let(:mods) do
+        <<~XML
+          <physicalDescription altRepGroup="01">
+            <form authority="gmd">cartographic material</form>
+          </physicalDescription>
+          <physicalDescription altRepGroup="01">
+            <form authority="gmd">地図資料</form>
+          </physicalDescription>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          form: [
+            {
+              parallelValue: [
+                {
+                  value: 'cartographic material'
+                },
+                {
+                  value: '地図資料'
+                },
+                type: 'form',
+                source: {
+                  code: 'gmd'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Form with authority' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
