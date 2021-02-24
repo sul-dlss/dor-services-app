@@ -438,4 +438,98 @@ RSpec.describe 'MODS originInfo place <--> cocina mappings' do
       end
     end
   end
+
+  context 'when place with empty elements' do
+    # based on nc238hg8745, yt337yg7382
+    xit 'to be mapped: what should the eventType be?  Should it be missing, with a warning?' do
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <publisher/>
+            <place>
+              <placeTerm type="text">Unknown</placeTerm>
+            </place>
+            <dateCreated/>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              location: [
+                {
+                  value: 'Unknown'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  context 'when place, publisher and eventType manufacture' do
+    # based on vy980tx4948
+    xit 'to be mapped: what should the eventType be?  Is publication correct?' do
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="manufacture">
+            <place>
+              <placeTerm type="text">Germany</placeTerm>
+            </place>
+            <publisher>Germany</publisher>
+          </originInfo>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="text">Germany</placeTerm>
+            </place>
+            <publisher>Germany</publisher>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'publication',
+              location: [
+                {
+                  value: 'Germany'
+                }
+              ],
+              contributor: [
+                {
+                  name: [
+                    {
+                      value: 'Germany'
+                    }
+                  ],
+                  type: 'organization',
+                  role: [
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
 end
