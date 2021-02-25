@@ -83,10 +83,15 @@ module Cocina
 
     def normalize_version
       # Only normalize version when version isn't mapped.
-      return if /MODS version (\d\.\d)/.match(ng_xml.root.at('//mods:recordInfo/mods:recordOrigin', mods: MODS_NS)&.content)
+      match = /MODS version (\d\.\d)/.match(ng_xml.root.at('//mods:recordInfo/mods:recordOrigin', mods: MODS_NS)&.content)
 
-      ng_xml.root['version'] = '3.7'
-      ng_xml.root['xsi:schemaLocation'] = 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd'
+      if !match
+        ng_xml.root['version'] = '3.7'
+        ng_xml.root['xsi:schemaLocation'] = 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd'
+      elsif match && match[1] != ng_xml.root['version']
+        ng_xml.root['version'] = match[1]
+        ng_xml.root['xsi:schemaLocation'] = "http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-#{match[1].sub('.', '-')}.xsd"
+      end
     end
 
     def normalize_authority_uris

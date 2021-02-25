@@ -40,6 +40,25 @@ RSpec.describe Cocina::ModsNormalizer do
         expect(normalized_ng_xml.root['xsi:schemaLocation']).to eq('http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd')
       end
     end
+
+    context 'when version mismatch' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.5"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+            <recordInfo>
+              <recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-6_SDR.xsl (SUL version 1 2018/06/13; LC Revision 1.118 2018/01/31)</recordOrigin>
+            </recordInfo>
+          </mods>
+        XML
+      end
+
+      it 'change version' do
+        expect(normalized_ng_xml.root['version']).to eq('3.7')
+        expect(normalized_ng_xml.root['xsi:schemaLocation']).to eq('http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd')
+      end
+    end
   end
 
   context 'when xsi namespace missing' do
