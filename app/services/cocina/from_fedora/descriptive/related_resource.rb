@@ -59,7 +59,10 @@ module Cocina
                   note[:source] = { value: related_item['otherTypeAuth'] } if related_item['otherTypeAuth']
                 end
             end
-            item[:note] = notes unless notes.empty?
+            if notes.present?
+              item[:note] ||= []
+              item[:note].concat(notes)
+            end
           end.compact
         end
 
