@@ -252,11 +252,11 @@ module Cocina
           cocina
         end
 
-        def add_issuance_info(event, set)
-          return if set.empty?
+        def add_issuance_info(event, issuance_nodes)
+          return if issuance_nodes.empty?
 
           event[:note] ||= []
-          set.each do |issuance|
+          issuance_nodes.each do |issuance|
             event[:note] << {
               source: { value: 'MODS issuance terms' },
               type: 'issuance',
@@ -265,11 +265,11 @@ module Cocina
           end
         end
 
-        def add_frequency_info(event, set)
-          return if set.empty?
+        def add_frequency_info(event, freq_nodes)
+          return if freq_nodes.empty?
 
           event[:note] ||= []
-          set.each do |frequency|
+          freq_nodes.each do |frequency|
             note = {
               type: 'frequency',
               value: frequency.text
@@ -278,11 +278,11 @@ module Cocina
           end
         end
 
-        def add_edition_info(event, set, language_script)
-          return if set.empty?
+        def add_edition_info(event, edition_nodes, language_script)
+          return if edition_nodes.empty?
 
           event[:note] ||= []
-          set.each do |edition|
+          edition_nodes.each do |edition|
             event[:note] << {
               type: 'edition',
               value: edition.text,
@@ -291,11 +291,11 @@ module Cocina
           end
         end
 
-        def add_publisher_info(event, set, language_script, origin_info_node)
-          return if set.empty?
+        def add_publisher_info(event, publisher_nodes, language_script, origin_info_node)
+          return if publisher_nodes.empty?
 
           event[:contributor] ||= []
-          set.each do |publisher|
+          publisher_nodes.each do |publisher|
             event[:contributor] << {
               name: [
                 {
