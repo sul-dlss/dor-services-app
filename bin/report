@@ -104,6 +104,19 @@ def different_places?(ng_xml)
   false
 end
 
+# rubocop:disable Layout/LineLength
+def stanford_places?(ng_xml)
+  ng_xml.root.xpath('//mods:place[count(mods:placeTerm)=2 and not(@*)]', mods: MODS_NS).each do |place_node|
+    code_place_term = place_node.xpath('//mods:placeTerm[@type="code" and @authority="marccountry" and @authorityURI="http://id.loc.gov/authorities/names" and @valueURI="http://id.loc.gov/authorities/names/n50046557" and text()="cau"]',
+                                       mods: MODS_NS).first
+    text_place_term = place_node.xpath('//mods:placeTerm[@type="text" and @authority="marccountry" and @authorityURI="http://id.loc.gov/authorities/names" and @valueURI="http://id.loc.gov/authorities/names/n50046557" and text()="Stanford (Calif.)"]',
+                                       mods: MODS_NS).first
+    return true if code_place_term && text_place_term
+  end
+  false
+end
+# rubocop:enable Layout/LineLength
+
 REPORTS = {
   parts: method(:has_part?),
   xlink_href: method(:has_xlink_href?),
@@ -117,7 +130,8 @@ REPORTS = {
   element_spaces: method(:elements_start_with_spaces?),
   attribute_spaces: method(:attributes_start_with_spaces?),
   mods_34_from_marc: method(:mods_34_from_marc?),
-  different_places: method(:different_places?)
+  different_places: method(:different_places?),
+  stanford_places: method(:stanford_places?)
 }.with_indifferent_access
 
 options = { local: false, reports: REPORTS.keys }
