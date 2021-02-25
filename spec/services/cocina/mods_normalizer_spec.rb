@@ -229,8 +229,16 @@ RSpec.describe Cocina::ModsNormalizer do
             <topic>Vulcanology</topic>
           </subject>
           <titleInfo altRepGroup='2'>
-            <title>Introduction to Geology</titleInfo>
+            <title>Introduction to Geology</title>
           </titleInfo>
+          <subject altRepGroup='3'>
+            <topic>Plankton</topic>
+          </subject>
+          <relatedItem>
+            <subject altRepGroup='3'>
+              <topic>Plancton</topic>
+            </subject>
+          </relatedItem>
         </mods>
       XML
     end
@@ -248,8 +256,16 @@ RSpec.describe Cocina::ModsNormalizer do
             <topic>Vulcanology</topic>
           </subject>
           <titleInfo>
-            <title>Introduction to Geology</titleInfo>
+            <title>Introduction to Geology</title>
           </titleInfo>
+          <subject>
+            <topic>Plankton</topic>
+          </subject>
+          <relatedItem>
+            <subject>
+              <topic>Plancton</topic>
+            </subject>
+          </relatedItem>
         </mods>
       XML
     end
@@ -271,6 +287,14 @@ RSpec.describe Cocina::ModsNormalizer do
           <name usage="primary" type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332" nameTitleGroup="3">
             <namePart>Vonnegut, Kurt</namePart>
           </name>
+          <titleInfo nameTitleGroup="4">
+            <title>1984</title>
+          </titleInfo>
+          <relatedItem>
+            <name usage="primary" type="personal" nameTitleGroup="4">
+              <namePart>Orwell, George</namePart>
+            </name>
+          </relatedItem>
         </mods>
       XML
     end
@@ -290,6 +314,14 @@ RSpec.describe Cocina::ModsNormalizer do
           <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095332">
             <namePart>Vonnegut, Kurt</namePart>
           </name>
+          <titleInfo>
+            <title>1984</title>
+          </titleInfo>
+          <relatedItem>
+            <name usage="primary" type="personal">
+              <namePart>Orwell, George</namePart>
+            </name>
+          </relatedItem>
         </mods>
       XML
     end
