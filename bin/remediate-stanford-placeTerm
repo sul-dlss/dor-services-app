@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+
+# Remediates Stanford placeTerm by splitting.
+
+MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
+
+druids = File.read('remediate_stanford_placeTerm.txt').split
+
+druids.each_with_index do |druid, index|
+  puts "#{druid} (#{index + 1})\n"
+  object = Dor.find(druid)
+  ng_xml = object.descMetadata.ng_xml
+  orig_xml = ng_xml.canonicalize
+
+  # Remediate
+  # <place>
+  #       <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n50046557">cau</placeTerm>
+  #       <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+  #     </place>
+  #  to:
+  # <place>
+  #       <placeTerm type="code" authority="marccountry">cau</placeTerm>
+  #     </place>
+  #     <place>
+  #       <placeTerm type="text" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+  #     </place>
+
+  ng_xml.root.xpath('//mods:place[count(mods:placeTerm)=2 and not(@*)]', mods: MODS_NS).each do |place_node|
+    code_place_term = place_node.xpath('//mods:placeTerm[@type="code" and @authority="marccountry" and @authorityURI="http://id.loc.gov/authorities/names" and @valueURI="http://id.loc.gov/authorities/names/n50046557" and text()="cau"]',
+                                       mods: MODS_NS).first
+    text_place_term = place_node.xpath('//mods:placeTerm[@type="text" and @authority="marccountry" and @authorityURI="http://id.loc.gov/authorities/names" and @valueURI="http://id.loc.gov/authorities/names/n50046557" and text()="Stanford (Calif.)"]',
+                                       mods: MODS_NS).first
+    next unless code_place_term && text_place_term
+
+    new_place_node1 = Nokogiri::XML::Node.new('place', Nokogiri::XML(ng_xml))
+    new_code_node = Nokogiri::XML::Node.new('placeTerm', Nokogiri::XML(ng_xml))
+    new_code_node['authority'] = 'marccountry'
+    new_code_node['type'] = 'code'
+    new_code_node.content = 'cau'
+    new_place_node1 << new_code_node
+
+    new_place_node2 = Nokogiri::XML::Node.new('place', Nokogiri::XML(ng_xml))
+    new_text_node = Nokogiri::XML::Node.new('placeTerm', Nokogiri::XML(ng_xml))
+    new_text_node['authorityURI'] = 'http://id.loc.gov/authorities/names'
+    new_text_node['valueURI'] = 'http://id.loc.gov/authorities/names/n50046557'
+    new_text_node['type'] = 'text'
+    new_text_node.content = 'Stanford (Calif.)'
+    new_place_node2 << new_text_node
+
+    place_node.replace(Nokogiri::XML::NodeSet.new(ng_xml, [new_place_node1, new_place_node2]))
+  end
+
+  if orig_xml != ng_xml.canonicalize
+    object.descMetadata.content = ng_xml.to_xml
+    object.save!
+  else
+    puts 'No change'
+  end
+end
