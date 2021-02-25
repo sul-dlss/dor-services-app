@@ -16,6 +16,7 @@ group :development do
 end
 
 # Ruby general dependencies
+gem 'bunny', '~> 2.17' # Send messages to RabbitMQ
 gem 'committee' # validates Open API spec (OAS)
 gem 'config'
 gem 'deprecation'
