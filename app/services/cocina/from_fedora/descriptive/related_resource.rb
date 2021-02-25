@@ -94,6 +94,8 @@ module Cocina
             values.concat(build_note_value(part_node, 'mods:detail/mods:title', 'title'))
             values.concat(build_note_value(part_node, 'mods:text', 'text'))
             values.concat(build_note_value(part_node, 'mods:date', 'date'))
+            values.concat(build_note_value(part_node, 'mods:extent/@unit', 'extent unit'))
+            values.concat(build_note_value(part_node, 'mods:extent/mods:list', 'list'))
 
             next nil if values.empty?
 
