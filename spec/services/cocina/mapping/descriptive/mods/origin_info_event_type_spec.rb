@@ -633,4 +633,32 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
       end
     end
   end
+
+  describe 'copyright notice eventType' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="copyright notice">
+             <copyrightDate>©2018</copyrightDate>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'copyright notice',
+              note: [
+                {
+                  value: '©2018',
+                  type: 'copyright statement'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
 end
