@@ -12,6 +12,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
             <titleInfo>
               <title>Alden, J.E. European Americana,</title>
             </titleInfo>
+            <note>Not recorded at Monterey Jazz Festival</note>
             <part>
               <detail type="part">
                 <number>635/94</number>
@@ -27,6 +28,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
             <titleInfo>
               <title>Alden, J.E. European Americana</title>
             </titleInfo>
+            <note>Not recorded at Monterey Jazz Festival</note>
             <part>
               <detail type="part">
                 <number>635/94</number>
@@ -49,6 +51,9 @@ RSpec.describe 'MODS part <--> cocina mappings' do
                 }
               ],
               note: [
+                {
+                  value: 'Not recorded at Monterey Jazz Festival'
+                },
                 {
                   type: 'part',
                   groupedValue: [
