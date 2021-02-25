@@ -326,19 +326,13 @@ RSpec.describe 'MODS part <--> cocina mappings' do
   end
 
   describe 'Part with list' do
-    xit 'not implemented' do
-      let(:druid) { 'druid:bj635gv2695' }
-
+    # Adapted from bj635gv2695
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <relatedItem type="host" displayLabel="Appears in">
             <titleInfo>
-              <title>A general atlas, describing the whole universe: being a complete collection of
-                the most approved maps extant; corrected with the greatest care, and augmented from the
-                latest discoveries. The whole being an improvement of the maps of D'Anville and
-                Robert. Engraved in the best manner on sixty-two copper-plates, by Thomas Kitchin,
-                Senior, and Others. London: printed For Robert Sayer, no. 53, Fleet-Street,
-                (1790).</title>
+              <title>A general atlas, describing the whole universe</title>
             </titleInfo>
             <identifier type="local" displayLabel="Pub list no.">0411.000</identifier>
             <part>
@@ -358,19 +352,25 @@ RSpec.describe 'MODS part <--> cocina mappings' do
               displayLabel: 'Appears in',
               title: [
                 {
-                  value: 'A general atlas, describing the whole universe: being a complete collection of
-                    the most approved maps extant; corrected with the greatest care, and augmented from the
-                    latest discoveries. The whole being an improvement of the maps of D\'Anville and
-                    Robert. Engraved in the best manner on sixty-two copper-plates, by Thomas Kitchin,
-                    Senior, and Others. London: printed For Robert Sayer, no. 53, Fleet-Street,
-                    (1790).'
+                  value: 'A general atlas, describing the whole universe'
                 }
               ],
               identifier: [
                 {
                   type: 'local',
                   displayLabel: 'Pub list no.',
-                  value: '0411.000'
+                  value: '0411.000',
+                  note: [
+                    {
+                      type: 'type',
+                      value: 'local',
+                      uri: 'http://id.loc.gov/vocabulary/identifiers/local',
+                      source: {
+                        value: 'Standard Identifier Schemes',
+                        uri: 'http://id.loc.gov/vocabulary/identifiers/'
+                      }
+                    }
+                  ]
                 }
               ],
               note: [

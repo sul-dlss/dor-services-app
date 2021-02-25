@@ -126,6 +126,19 @@ module Cocina
             end
           end
           other_note_values_for(note).each { |other_value| write_part_note_value(other_value) }
+          write_extent(note)
+        end
+
+        def write_extent(note)
+          list = note.groupedValue.find { |value| value.type == 'list' }&.value
+          return unless list
+
+          extent_attrs = {
+            unit: note.groupedValue.find { |value| value.type == 'extent unit' }&.value
+          }.compact
+          xml.extent extent_attrs do
+            xml.list list
+          end
         end
 
         def note_type_for(note)
