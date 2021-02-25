@@ -711,4 +711,49 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Related item with empty number' do
+    # Adapted from ck234jp5954
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <relatedItem type="isReferencedBy">
+            <titleInfo>
+              <title>Koeman B and H 2</title>
+            </titleInfo>
+            <part>
+              <detail type="part">
+                <number/>
+              </detail>
+            </part>
+          </relatedItem>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <relatedItem type="isReferencedBy">
+            <titleInfo>
+              <title>Koeman B and H 2</title>
+            </titleInfo>
+          </relatedItem>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          relatedResource: [
+            {
+              type: 'referenced by',
+              title: [
+                {
+                  value: 'Koeman B and H 2'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
 end

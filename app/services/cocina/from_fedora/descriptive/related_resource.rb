@@ -86,16 +86,10 @@ module Cocina
         def build_notes(related_item)
           related_item.xpath('mods:part', mods: DESC_METADATA_NS).map do |part_node|
             values = []
-            detail_node = part_node.xpath('mods:detail', mods: DESC_METADATA_NS).first
-            values << { type: 'detail type', value: detail_node['type'] } if detail_node && detail_node['type']
-
-            values.concat(build_note_value(part_node, 'mods:detail/mods:number', 'number'))
-            values.concat(build_note_value(part_node, 'mods:detail/mods:caption', 'caption'))
-            values.concat(build_note_value(part_node, 'mods:detail/mods:title', 'title'))
-            values.concat(build_note_value(part_node, 'mods:text', 'text'))
-            values.concat(build_note_value(part_node, 'mods:date', 'date'))
-            values.concat(build_note_value(part_node, 'mods:extent/@unit', 'extent unit'))
-            values.concat(build_note_value(part_node, 'mods:extent/mods:list', 'list'))
+            values.concat(build_detail_values(part_node))
+            values.concat(build_extent_values(part_node))
+            values.concat(build_note_value(part_node, 'text'))
+            values.concat(build_note_value(part_node, 'date'))
 
             next nil if values.empty?
 
@@ -106,11 +100,34 @@ module Cocina
           end.compact
         end
 
-        def build_note_value(part_node, xpath, type)
-          part_node.xpath(xpath, mods: DESC_METADATA_NS).map do |node|
-            next nil unless node.content
+        def build_detail_values(part_node)
+          detail_node = part_node.xpath('mods:detail', mods: DESC_METADATA_NS).first
+          return [] unless detail_node
 
-            { type: type, value: node.content }
+          detail_values = []
+          detail_values.concat(build_note_value(detail_node, 'number'))
+          detail_values.concat(build_note_value(detail_node, 'caption'))
+          detail_values.concat(build_note_value(detail_node, 'title'))
+          detail_values.concat(build_note_value(detail_node, 'detail type', xpath: '@type')) if detail_values.present?
+          detail_values
+        end
+
+        def build_extent_values(part_node)
+          extent_node = part_node.xpath('mods:extent', mods: DESC_METADATA_NS).first
+          return [] unless extent_node
+
+          extent_values = []
+          extent_values.concat(build_note_value(extent_node, 'list'))
+          extent_values.concat(build_note_value(extent_node, 'extent unit', xpath: '@unit')) if extent_values.present?
+          extent_values
+        end
+
+        def build_note_value(node, type, xpath: nil)
+          xpath ||= "mods:#{type}"
+          node.xpath(xpath, mods: DESC_METADATA_NS).map do |value_node|
+            next nil if value_node.content.blank?
+
+            { type: type, value: value_node.content }
           end.compact
         end
 
