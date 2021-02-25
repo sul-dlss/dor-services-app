@@ -149,8 +149,7 @@ module Cocina
             end
           end
 
-          # Any event which isn't empty.
-          events.find(&:present?)
+          events.reject!(&:blank?)
 
           { type: 'publication' }.tap do |event|
             events << event
