@@ -637,4 +637,34 @@ RSpec.describe ModsEquivalentService do
       expect(bool_result).to be(true)
     end
   end
+
+  context 'when version mismatch node' do
+    let(:mods_ng_xml2) do
+      Nokogiri::XML <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.5"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <titleInfo>
+            <title>journal of stuff</title>
+          </titleInfo>
+          <identifier type="uri">https://www.wikidata.org/wiki/Q146</identifier>
+          <identifier displayLabel="Accession number">1980-12345</identifier>
+        </mods>
+      XML
+    end
+
+    it 'returns failure' do
+      expect(result.failure?).to be(true)
+    end
+
+    it 'returns diff' do
+      expect(result.failure.size).to eq(1)
+      expect(result.failure.first.mods_node1.to_s).to eq('3.6')
+      expect(result.failure.first.mods_node2).to eq('3.5')
+    end
+
+    it 'returns false' do
+      expect(bool_result).to be(false)
+    end
+  end
 end
