@@ -16,6 +16,7 @@ module Cocina
       end
 
       def normalize
+        normalize_parallel_name_role
         normalize_text_role_term
         normalize_role_term
         normalize_role # must be after normalize_role_term
@@ -29,6 +30,29 @@ module Cocina
       private
 
       attr_reader :ng_xml
+
+      def normalize_parallel_name_role
+        # For parallel names, all should have the same roles.
+        name_nodes = ng_xml.root.xpath('//mods:name[@altRepGroup]', mods: ModsNormalizer::MODS_NS)
+        grouped_name_nodes = name_nodes.group_by { |name_node| name_node['altRepGroup'] }.values.reject { |name_node_group| name_node_group.size == 1 }
+        grouped_name_nodes.each do |name_node_group|
+          name_node_with_role = name_node_group.find { |name_node| role_node_for(name_node) }
+          next unless name_node_with_role
+
+          name_node_group.each do |name_node|
+            next if name_node == name_node_with_role
+
+            existing_role_node = role_node_for(name_node)
+            existing_role_node&.remove
+
+            name_node << role_node_for(name_node_with_role).dup
+          end
+        end
+      end
+
+      def role_node_for(name_node)
+        name_node.xpath('mods:role', mods: ModsNormalizer::MODS_NS).first
+      end
 
       def normalize_text_role_term
         # Add the type="text" attribute to roleTerms that don't have a type (seen in MODS 3.3 druid:yy910cj7795)

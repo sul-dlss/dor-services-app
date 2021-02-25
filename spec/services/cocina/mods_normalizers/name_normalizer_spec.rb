@@ -251,4 +251,41 @@ RSpec.describe Cocina::ModsNormalizers::NameNormalizer do
       XML
     end
   end
+
+  context 'when multilingual names with roles' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name type="personal" altRepGroup="05">
+            <namePart>Haran, Menahem</namePart>
+            <role>
+              <roleTerm type="text">ed</roleTerm>
+            </role>
+          </name>
+          <name type="personal" altRepGroup="05">
+            <namePart>&#x5D4;&#x5E8;&#x5DF;, &#x5DE;&#x5E0;&#x5D7;&#x5DD;</namePart>
+          </name>
+        </mods>
+      XML
+    end
+
+    it 'adds roles to all names' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <name type="personal" altRepGroup="05">
+            <namePart>Haran, Menahem</namePart>
+            <role>
+              <roleTerm type="text">ed</roleTerm>
+            </role>
+          </name>
+          <name type="personal" altRepGroup="05">
+            <namePart>&#x5D4;&#x5E8;&#x5DF;, &#x5DE;&#x5E0;&#x5D7;&#x5DD;</namePart>
+            <role>
+              <roleTerm type="text">ed</roleTerm>
+            </role>
+          </name>
+        </mods>
+      XML
+    end
+  end
 end
