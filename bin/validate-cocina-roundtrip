@@ -41,7 +41,8 @@ end
 # rubocop:disable Metrics/ParameterLists
 # rubocop:disable Metrics/AbcSize
 # rubocop:disable Metrics/BlockLength
-def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, differences, data_errors, mods_msg)
+# rubocop:disable Metrics/PerceivedComplexity
+def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, differences, reverse_differences, data_errors, mods_msg)
   File.open("results/#{druid}.txt", 'w') do |file|
     file.write("Druid: #{druid}\n\n")
 
@@ -76,6 +77,17 @@ def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, differences, 
       end
     end
 
+    reverse_differences.each_with_index do |difference, index|
+      file.write("Differences #{index + 1}\n")
+      file.write("Roundtripped node:\n#{difference.mods_node1}\n")
+      if difference.mods_node2
+        file.write("Best guess original node:\n#{difference.mods_node2}\n")
+        file.write("Difference:\n#{Diffy::Diff.new("#{difference.mods_node1}\n", "#{difference.mods_node2}\n")}\n")
+      else
+        file.write("Could not find similar original node.\n")
+      end
+    end
+
     file.write("\nOriginal XML:\n#{original_ng_xml.to_xml}\n")
     file.write("Roundtripped XML:\n#{roundtrip_ng_xml.to_xml}\n")
     file.write("Cocina:\n#{JSON.pretty_generate(cocina)}\n\n")
@@ -84,6 +96,7 @@ end
 # rubocop:enable Metrics/ParameterLists
 # rubocop:enable Metrics/AbcSize
 # rubocop:enable Metrics/BlockLength
+# rubocop:enable Metrics/PerceivedComplexity
 
 def write_error(druid, original_ng_xml, cocina, error)
   File.open("results/#{druid}.txt", 'w') do |file|
@@ -111,6 +124,7 @@ def validate_mods(ng_xml)
   end
 end
 
+# rubocop:disable Metrics/CyclomaticComplexity
 def validate_druid(druid, cache, fast: false)
   begin
     original_ng_xml = cache.descmd_xml(druid)
@@ -151,17 +165,20 @@ def validate_druid(druid, cache, fast: false)
 
   return :success if equiv.success?
 
-  # Validate MODS
+  # If not equivalent, but no diffs reported, then try in reverse.
+  reverse_equiv = ModsEquivalentService.equivalent_with_result?(roundtrip_ng_xml, norm_original_ng_xml) if equiv.failure.empty?
 
   write_result(druid,
                norm_original_ng_xml,
                roundtrip_ng_xml,
                cocina_props,
                equiv.failure,
+               Array(reverse_equiv&.failure),
                notifier.data_errors,
                validate_mods(original_ng_xml))
   :different
 end
+# rubocop:enable Metrics/CyclomaticComplexity
 
 def percentage(raw_num, denom)
   (100 * raw_num.to_f / denom).round(3)

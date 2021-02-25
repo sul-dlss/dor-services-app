@@ -106,11 +106,19 @@ class ModsEquivalentService
   end
 
   def diff
-    mods_nodes1.map do |mods_node1|
+    element_diff = mods_nodes1.map do |mods_node1|
       next nil if has_equivalent_node?(mods_node1)
 
       Difference.new(mods_node1, find_closest_node(mods_node1))
     end.compact
+
+    attr_diff = mods_ng_xml1.root.keys.map do |attr_key|
+      next if mods_ng_xml1.root[attr_key] == mods_ng_xml2.root[attr_key]
+
+      Difference.new(mods_ng_xml1.root[attr_key], mods_ng_xml2.root[attr_key])
+    end.compact
+
+    element_diff + attr_diff
   end
 
   def mods_nodes1
