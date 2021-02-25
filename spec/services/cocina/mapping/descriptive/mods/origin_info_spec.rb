@@ -3536,4 +3536,89 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
       end
     end
   end
+
+  context 'with displayLabel, it should map to all events generated' do
+    # based on jj635pq5167
+    # TODO:  see also origin_info_normalizer for same record if eventTypes date flavor changes on roundtrip
+    xit 'to be mapped: should dateIssued become dateOther on roundtrip? what should eventTypes be?' do
+      let(:mods) do
+        <<~XML
+          <originInfo displayLabel="Place of creation" eventType="production">
+            <place>
+              <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n78095520">xxu</placeTerm>
+              <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n78095520">Philadelphia</placeTerm>
+            </place>
+            <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1872</dateCreated>
+            <dateCreated encoding="w3cdtf" point="end">1885</dateCreated>
+            <dateIssued>1887</dateIssued>
+          </originInfo>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo displayLabel="Place of creation" eventType="production">
+            <place>
+              <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095520">xxu</placeTerm>
+              <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095520">Philadelphia</placeTerm>
+            </place>
+            <dateIssued>1887</dateIssued>
+          </originInfo>
+          <originInfo displayLabel="Place of creation" eventType="creation">
+            <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1872</dateCreated>
+            <dateCreated encoding="w3cdtf" point="end">1885</dateCreated>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'production',
+              date: [
+                {
+                  value: '1887'
+                }
+              ],
+              location: [
+                {
+                  uri: 'http://id.loc.gov/authorities/names/n78095520',
+                  source: {
+                    code: 'marccountry',
+                    uri: 'http://id.loc.gov/authorities/names/'
+                  },
+                  value: 'Philadelphia',
+                  code: 'xxu'
+                }
+              ],
+              displayLabel: 'Place of creation'
+            },
+            {
+              type: 'creation',
+              date: [
+                {
+                  structuredValue: [
+                    {
+                      type: 'start',
+                      value: '1872',
+                      status: 'primary'
+                    },
+                    {
+                      type: 'end',
+                      value: '1885'
+                    }
+                  ],
+                  encoding: {
+                    code: 'w3cdtf'
+                  }
+                }
+              ],
+              displayLabel: 'Place of creation'
+            }
+          ]
+        }
+      end
+    end
+  end
 end

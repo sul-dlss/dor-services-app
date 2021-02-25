@@ -995,6 +995,43 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
     end
   end
 
+  context 'when dateCreated in same originInfo as dateIssued and place' do
+    # based on jj635pq5167
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel="Place of creation" eventType="production">
+            <place>
+              <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n78095520">xxu</placeTerm>
+              <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n78095520">Philadelphia</placeTerm>
+            </place>
+            <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1872</dateCreated>
+            <dateCreated encoding="w3cdtf" point="end">1885</dateCreated>
+            <dateIssued>1887</dateIssued>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    it 'splits dateCreated and dateIssued into separate originInfo elements and has displayLabel on both' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo displayLabel="Place of creation" eventType="publication">
+            <place>
+              <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095520">xxu</placeTerm>
+              <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095520">Philadelphia</placeTerm>
+            </place>
+            <dateIssued>1887</dateIssued>
+          </originInfo>
+          <originInfo displayLabel="Place of creation" eventType="production">
+            <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1872</dateCreated>
+            <dateCreated encoding="w3cdtf" point="end">1885</dateCreated>
+          </originInfo>
+        </mods>
+      XML
+    end
+  end
+
   context 'when dateCreated and dateIssued in same originInfo in altRepGroup' do
     # based on dz647hf2887, db936hw1344
     let(:mods_ng_xml) do
