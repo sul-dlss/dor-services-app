@@ -149,8 +149,7 @@ module Cocina
             end
           end
 
-          # Any event which isn't empty.
-          events.find(&:present?)
+          events.reject!(&:blank?)
 
           { type: 'publication' }.tap do |event|
             events << event
@@ -253,11 +252,11 @@ module Cocina
           cocina
         end
 
-        def add_issuance_info(event, set)
-          return if set.empty?
+        def add_issuance_info(event, issuance_nodes)
+          return if issuance_nodes.empty?
 
           event[:note] ||= []
-          set.each do |issuance|
+          issuance_nodes.each do |issuance|
             event[:note] << {
               source: { value: 'MODS issuance terms' },
               type: 'issuance',
@@ -266,11 +265,11 @@ module Cocina
           end
         end
 
-        def add_frequency_info(event, set)
-          return if set.empty?
+        def add_frequency_info(event, freq_nodes)
+          return if freq_nodes.empty?
 
           event[:note] ||= []
-          set.each do |frequency|
+          freq_nodes.each do |frequency|
             note = {
               type: 'frequency',
               value: frequency.text
@@ -279,11 +278,11 @@ module Cocina
           end
         end
 
-        def add_edition_info(event, set, language_script)
-          return if set.empty?
+        def add_edition_info(event, edition_nodes, language_script)
+          return if edition_nodes.empty?
 
           event[:note] ||= []
-          set.each do |edition|
+          edition_nodes.each do |edition|
             event[:note] << {
               type: 'edition',
               value: edition.text,
@@ -292,11 +291,11 @@ module Cocina
           end
         end
 
-        def add_publisher_info(event, set, language_script, origin_info_node)
-          return if set.empty?
+        def add_publisher_info(event, publisher_nodes, language_script, origin_info_node)
+          return if publisher_nodes.empty?
 
           event[:contributor] ||= []
-          set.each do |publisher|
+          publisher_nodes.each do |publisher|
             event[:contributor] << {
               name: [
                 {
@@ -365,46 +364,43 @@ module Cocina
         end
 
         # rubocop:disable  Metrics/CyclomaticComplexity
-        # rubocop:disable  Metrics/PerceivedComplexity
-        def build_event(type, node_set, language_script = nil)
-          dates = node_set.reject { |node| node['point'] }.map do |node|
+        def build_event(event_type, date_nodes, language_script = nil)
+          dates = date_nodes.reject { |node| node['point'] }.map do |node|
             addl_attributes = node['encoding'].nil? && language_script ? { valueLanguage: language_script } : {}
-            build_date(type, node).merge(addl_attributes)
+            build_date(event_type, node).merge(addl_attributes)
           end
 
-          points = node_set.select { |node| node['point'] }
-          points_date = points.size == 1 ? build_date(type, points.first) : build_structured_date(type, points)
+          points = date_nodes.select { |node| node['point'] }
+          points_date = points.size == 1 ? build_date(event_type, points.first) : build_structured_date(event_type, points)
           dates << points_date if points_date
 
-          notifier.warn('originInfo/dateOther missing eventType') unless type
+          notifier.warn('originInfo/dateOther missing eventType') unless event_type
 
-          display_label = node_set.first.parent['displayLabel'] if node_set&.first&.parent.present?
-
+          display_label = date_nodes.first.parent['displayLabel'] if date_nodes&.first&.parent.present?
           result = {
-            type: type
+            type: event_type,
+            displayLabel: display_label
           }.compact
           result[:date] = dates.compact if dates.compact.present?
-          result[:displayLabel] = display_label if display_label.present?
           result
         end
         # rubocop:enable  Metrics/CyclomaticComplexity
-        # rubocop:enable  Metrics/PerceivedComplexity
 
         # rubocop:disable Metrics/CyclomaticComplexity
         # rubocop:disable Metrics/PerceivedComplexity
-        def build_structured_date(type, node_set)
-          return nil if node_set.blank?
+        def build_structured_date(event_type, date_nodes)
+          return if date_nodes.blank?
 
-          common_attribs = common_date_attributes(node_set)
-          return common_attribs.merge(value: node_set.join('/')) if etdf_range?(node_set, common_attribs[:encoding])
+          common_attribs = common_date_attributes(date_nodes)
+          return common_attribs.merge(value: date_nodes.join('/')) if etdf_range?(date_nodes, common_attribs[:encoding])
 
-          dates = node_set.map do |node|
+          dates = date_nodes.map do |node|
             next if node.text.blank? && node.attributes.empty?
 
             new_node = node.deep_dup
             new_node.remove_attribute('encoding') if common_attribs[:encoding].present? || node[:encoding]&.size&.zero?
             new_node.remove_attribute('qualifier') if common_attribs[:qualifier].present? || node[:qualifier]&.size&.zero?
-            build_date(type, new_node)
+            build_date(event_type, new_node)
           end
           { structuredValue: dates }.merge(common_attribs).compact
         end
@@ -412,15 +408,15 @@ module Cocina
         # rubocop:enable Metrics/CyclomaticComplexity
 
         # @return [Boolean] true if this node set can be expressed as an EDTF range.
-        def etdf_range?(node_set, encoding)
-          node_set.size == 2 && node_set.map { |node| node['point'] } == %w[start end] && encoding == { code: 'edtf' }
+        def etdf_range?(date_nodes, encoding)
+          date_nodes.size == 2 && date_nodes.map { |node| node['point'] } == %w[start end] && encoding == { code: 'edtf' }
         end
 
-        def common_date_attributes(node_set)
-          first_encoding = node_set.first['encoding']
-          first_qualifier = node_set.first['qualifier']
-          encoding_is_common = node_set.all? { |node| node['encoding'] == first_encoding }
-          qualifier_is_common = node_set.all? { |node| node['qualifier'] == first_qualifier }
+        def common_date_attributes(date_nodes)
+          first_encoding = date_nodes.first['encoding']
+          first_qualifier = date_nodes.first['qualifier']
+          encoding_is_common = date_nodes.all? { |node| node['encoding'] == first_encoding }
+          qualifier_is_common = date_nodes.all? { |node| node['qualifier'] == first_qualifier }
           attribs = {}
           attribs[:qualifier] = first_qualifier if qualifier_is_common && first_qualifier.present?
           attribs[:encoding] = { code: first_encoding } if encoding_is_common && first_encoding.present?
