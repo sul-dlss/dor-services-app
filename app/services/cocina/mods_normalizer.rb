@@ -166,8 +166,13 @@ module Cocina
     end
 
     def normalize_unmatched_altrepgroup
+      normalize_unmatched_altrepgroup_for(ng_xml.root)
+      ng_xml.root.xpath('//mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_unmatched_altrepgroup_for(related_item_node) }
+    end
+
+    def normalize_unmatched_altrepgroup_for(base_node)
       ids = {}
-      ng_xml.root.xpath('//mods:*[@altRepGroup]', mods: MODS_NS).each do |node|
+      base_node.xpath('mods:*[@altRepGroup]', mods: MODS_NS).each do |node|
         id = [node['altRepGroup'], node.name]
         ids[id] ||= []
         ids[id] << node
@@ -181,8 +186,13 @@ module Cocina
     end
 
     def normalize_unmatched_nametitlegroup
+      normalize_unmatched_nametitlegroup_for(ng_xml.root)
+      ng_xml.root.xpath('//mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_unmatched_nametitlegroup_for(related_item_node) }
+    end
+
+    def normalize_unmatched_nametitlegroup_for(base_node)
       ids = {}
-      ng_xml.root.xpath('//mods:name[@nameTitleGroup] | //mods:titleInfo[@nameTitleGroup]', mods: MODS_NS).each do |node|
+      base_node.xpath('mods:name[@nameTitleGroup] | mods:titleInfo[@nameTitleGroup]', mods: MODS_NS).each do |node|
         id = node['nameTitleGroup']
         ids[id] ||= []
         ids[id] << node
