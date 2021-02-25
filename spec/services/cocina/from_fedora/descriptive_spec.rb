@@ -512,4 +512,29 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       expect(notifier).to have_received(:warn).with('Unpaired altRepGroup')
     end
   end
+
+  context 'when version mismatch' do
+    let(:desc_metadata) do
+      <<~XML
+        <?xml version="1.0"?>
+        <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.loc.gov/mods/v3" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+          <titleInfo>
+            <title>Война и миръ</title>
+          </titleInfo>
+          <recordInfo>
+            <recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-6_SDR.xsl (SUL version 1 2018/06/13; LC Revision 1.118 2018/01/31)</recordOrigin>
+          </recordInfo>
+        </mods>
+      XML
+    end
+
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'warns' do
+      descriptive
+      expect(notifier).to have_received(:warn).with('MODS version mismatch')
+    end
+  end
 end

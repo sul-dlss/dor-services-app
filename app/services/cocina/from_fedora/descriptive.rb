@@ -28,6 +28,7 @@ module Cocina
       # @raises [Cocina::Mapper::InvalidDescMetadata] if some assumption about descMetadata is violated
       def props
         check_altrepgroups
+        check_version
         DescriptiveBuilder.build(title_builder: title_builder,
                                  resource_element: ng_xml.root,
                                  notifier: notifier,
@@ -72,6 +73,14 @@ module Cocina
 
       def purl
         "http://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+      end
+
+      def check_version
+        match = /MODS version (\d\.\d)/.match(ng_xml.root.at('//mods:recordInfo/mods:recordOrigin', mods: DESC_METADATA_NS)&.content)
+
+        return unless match
+
+        notifier.warn('MODS version mismatch') if match[1] != ng_xml.root['version']
       end
     end
   end
