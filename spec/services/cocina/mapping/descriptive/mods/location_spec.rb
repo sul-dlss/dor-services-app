@@ -297,6 +297,40 @@ RSpec.describe 'MODS location <--> cocina mappings' do
     end
   end
 
+  describe 'Blank shelf locator' do
+    # Adapted from qy779rm2737
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <location>
+            <physicalLocation>MiU-C WLCL</physicalLocation>
+            <shelfLocator/>
+          </location>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <location>
+            <physicalLocation>MiU-C WLCL</physicalLocation>
+          </location>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          access: {
+            physicalLocation: [
+              {
+                value: 'MiU-C WLCL'
+              }
+            ]
+          }
+        }
+      end
+    end
+  end
+
   describe 'URL with note' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
