@@ -221,6 +221,47 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
     end
   end
 
+  describe 'Multi-term topic subject with authority for set and a topic' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects/"
+            valueURI="http://id.loc.gov/authorities/subjects/sh85021263">
+            <topic authority="lcsh">Cats</topic>
+            <topic>Anatomy</topic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  value: 'Cats',
+                  type: 'topic',
+                  source: {
+                    code: 'lcsh'
+                  }
+                },
+                {
+                  value: 'Anatomy',
+                  type: 'topic'
+                }
+              ],
+              uri: 'http://id.loc.gov/authorities/subjects/sh85021263',
+              source: {
+                code: 'lcsh',
+                uri: 'http://id.loc.gov/authorities/subjects/'
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Multi-term subject with authority but no valueURI' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
