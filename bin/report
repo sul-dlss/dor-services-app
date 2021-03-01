@@ -117,6 +117,14 @@ def stanford_places?(ng_xml)
 end
 # rubocop:enable Layout/LineLength
 
+def parallel_physical_description?(ng_xml)
+  children_names = []
+  ng_xml.root.xpath('//mods:physicalDescription[@altRepGroup]', mods: MODS_NS).each do |description_node|
+    children_names << description_node.elements.map(&:name)
+  end
+  children_names.present? ? children_names.to_s : false
+end
+
 REPORTS = {
   parts: method(:has_part?),
   xlink_href: method(:has_xlink_href?),
@@ -131,7 +139,8 @@ REPORTS = {
   attribute_spaces: method(:attributes_start_with_spaces?),
   mods_34_from_marc: method(:mods_34_from_marc?),
   different_places: method(:different_places?),
-  stanford_places: method(:stanford_places?)
+  stanford_places: method(:stanford_places?),
+  parallel_physical_description: method(:parallel_physical_description?)
 }.with_indifferent_access
 
 options = { local: false, reports: REPORTS.keys }

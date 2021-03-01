@@ -101,7 +101,8 @@ module Cocina
             elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(type)
               write_structured_person(subject, subject_value, type: type, display_values: display_values)
             else
-              Array(subject_value.structuredValue || subject_value.groupedValue).each do |value|
+              values = Array(subject_value.structuredValue || subject_value.groupedValue)
+              values.each do |value|
                 if FromFedora::Descriptive::Contributor::ROLES.values.include?(value.type)
                   if value.structuredValue
                     write_structured_person(subject, value, display_values: display_values)
@@ -109,7 +110,8 @@ module Cocina
                     write_person(subject, value, display_values: display_values)
                   end
                 else
-                  write_topic(subject, value, is_parallel: alt_rep_group.present?, type: type)
+                  write_topic(subject, value, is_parallel: alt_rep_group.present?, type: type,
+                                              subject_values_have_same_authority: all_values_have_same_authority?(values))
                 end
               end
             end
@@ -215,8 +217,8 @@ module Cocina
           xml.classification value, attrs
         end
 
-        def write_topic(subject, subject_value, is_parallel: false, type: nil)
-          topic_attributes = topic_attributes_for(subject, subject_value, is_parallel: is_parallel)
+        def write_topic(subject, subject_value, is_parallel: false, type: nil, subject_values_have_same_authority: true)
+          topic_attributes = topic_attributes_for(subject, subject_value, is_parallel: is_parallel, subject_values_have_same_authority: subject_values_have_same_authority)
           case type || subject_value.type
           when 'person'
             xml.name topic_attributes.merge(type: 'personal') do
@@ -235,9 +237,9 @@ module Cocina
           end
         end
 
-        def topic_attributes_for(subject, subject_value, is_parallel: false, is_geo: false)
+        def topic_attributes_for(subject, subject_value, is_parallel: false, is_geo: false, subject_values_have_same_authority: true)
           {
-            authority: authority_for_topic(subject, subject_value, is_geo, is_parallel),
+            authority: authority_for_topic(subject, subject_value, is_geo, is_parallel, subject_values_have_same_authority),
             authorityURI: subject_value.source&.uri,
             encoding: subject_value.encoding&.code,
             valueURI: subject_value.uri
@@ -249,14 +251,19 @@ module Cocina
           end.compact
         end
 
-        def authority_for_topic(subject, subject_value, is_geo, is_parallel)
+        # rubocop:disable Metrics/CyclomaticComplexity
+        # rubocop:disable Metrics/PerceivedComplexity
+        def authority_for_topic(subject, subject_value, is_geo, is_parallel, subject_values_have_same_authority)
           return nil unless subject_value.source&.uri ||
                             subject_value.uri ||
                             (is_geo && is_parallel) ||
-                            (subject_value.source&.code && subject.source&.code && subject.source.code != subject_value.source.code)
+                            (subject_value.source&.code && subject.source&.code && subject.source.code != subject_value.source.code) ||
+                            (subject_value.source&.code && !subject_values_have_same_authority)
 
           subject_value.source&.code
         end
+        # rubocop:enable Metrics/CyclomaticComplexity
+        # rubocop:enable Metrics/PerceivedComplexity
 
         def geographic(subject, subject_value, is_parallel: false)
           if subject_value.code

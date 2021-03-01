@@ -70,11 +70,13 @@ module Cocina
 
         def shelf_location
           resource_element.xpath('mods:location/mods:shelfLocator', mods: DESC_METADATA_NS).map do |shelf_locator_elem|
+            next nil if shelf_locator_elem.content.blank?
+
             {
-              value: shelf_locator_elem.text,
+              value: shelf_locator_elem.content,
               type: 'shelf locator'
             }
-          end
+          end.compact
         end
 
         def url
