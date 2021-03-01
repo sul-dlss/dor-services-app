@@ -266,7 +266,7 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'collection abstract (note of type summary) is set' do
-        summary_note = result.description.note.select { |note| note.type == 'summary' }.first
+        summary_note = result.description.note.find { |note| note.type == 'summary' }
         expect(summary_note.value).to eq 'I am an abstract'
       end
     end

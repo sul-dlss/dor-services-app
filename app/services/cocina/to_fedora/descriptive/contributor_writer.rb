@@ -132,7 +132,7 @@ module Cocina
             'Stanford self-deposit contributor types',
             'DataCite contributor types',
             'DataCite properties'
-          ].include?(role.source&.value) && Cocina::FromFedora::Descriptive::Contributor::ROLES.values.include?(contributor_type)
+          ].include?(role.source&.value) && Cocina::FromFedora::Descriptive::Contributor::ROLES.value?(contributor_type)
 
           false
         end

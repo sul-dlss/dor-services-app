@@ -197,7 +197,7 @@ module Cocina
         end
 
         def normalize_type_text(text)
-          if text.downcase == 'image' && text != 'Image'
+          if text.casecmp('image').zero? && text != 'Image'
             notifier.warn('dc:type normalized to <dc:type>Image</dc:type>', type: text)
             'Image'
           else

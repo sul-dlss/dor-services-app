@@ -197,7 +197,7 @@ module Cocina
         # rubocop:enable Metrics/AbcSize
 
         def event_type_or_default(event_type, default)
-          return event_type if Cocina::ToFedora::Descriptive::Event::EVENT_TYPE.keys.include?(event_type)
+          return event_type if Cocina::ToFedora::Descriptive::Event::EVENT_TYPE.key?(event_type)
 
           default
         end

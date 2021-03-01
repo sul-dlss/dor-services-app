@@ -164,7 +164,7 @@ druids = druids.take(options[:sample]) if options[:sample]
 
 Result = Struct.new(:druid, :apo, :collections, :catkey, :reports)
 
-run_reports = options[:reports].select { |name| REPORTS.keys.include?(name) }
+run_reports = options[:reports].select { |name| REPORTS.key?(name) }
 results = Parallel.map(druids, progress: 'Testing') do |druid|
   ng_xml = cache.descmd_xml(druid)
   report_results = {}
@@ -194,7 +194,7 @@ run_reports.each do |name|
   CSV.open("#{name}.csv", 'w') do |writer|
     writer << %w[druid apo collections catkey message]
     results.each do |result|
-      next unless result.reports.keys.include?(name)
+      next unless result.reports.key?(name)
 
       writer << [result.druid,
                  result.apo,

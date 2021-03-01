@@ -38,7 +38,7 @@ class ApplicationController < ActionController::API
   def http_auth_header
     return if request.headers[TOKEN_HEADER].blank?
 
-    request.headers[TOKEN_HEADER].split(' ').last
+    request.headers[TOKEN_HEADER].split.last
   end
 
   def load_item

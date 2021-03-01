@@ -236,7 +236,7 @@ module Cocina
         def type_for(type)
           return nil if type.blank?
 
-          unless Contributor::ROLES.keys.include?(type.downcase)
+          unless Contributor::ROLES.key?(type.downcase)
             notifier.warn('Name type unrecognized', type: type)
             return
           end

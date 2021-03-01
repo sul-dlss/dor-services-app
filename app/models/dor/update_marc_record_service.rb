@@ -151,7 +151,7 @@ module Dor
         cons_obj_id = cons_obj.id.sub('druid:', '')
         cons_obj_title = cons_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo/mods:title', mods: 'http://www.loc.gov/mods/v3').first.content
         "|xset:#{cons_obj_id}:#{cons_obj.catkey}:#{cons_obj_title}"
-      end.join('')
+      end.join
     end
 
     def get_x2_part_info
@@ -194,7 +194,7 @@ module Dor
         values << "rights:#{primary}"
       end
 
-      values.map { |value| "|x#{value}" }.join('')
+      values.map { |value| "|x#{value}" }.join
     end
 
     def born_digital?

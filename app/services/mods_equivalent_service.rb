@@ -164,8 +164,8 @@ class ModsEquivalentService
   end
 
   def distance(mods_node1, mods_node2)
-    set1 = Set.new(mods_node1.content.split(' '))
-    set2 = Set.new((mods_node2.content.split(' ')))
+    set1 = Set.new(mods_node1.content.split)
+    set2 = Set.new((mods_node2.content.split))
     set1.difference(set2).size + set2.difference(set1).size
   end
 
