@@ -662,9 +662,9 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
   end
 
-  context 'legacy MARC2MODS 264 mappings' do
-    xit 'not implemented' do
-      describe 'producer eventType' do
+  describe 'legacy MARC2MODS 264 mappings' do
+    describe 'producer eventType' do
+      xit 'not implemented' do
         let(:mods) do
           <<~XML
             <originInfo eventType="producer">
@@ -700,8 +700,10 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
           }
         end
       end
+    end
 
-      describe 'publisher eventType' do
+    describe 'publisher eventType' do
+      xit 'not implemented' do
         let(:mods) do
           <<~XML
             <originInfo eventType="publisher">
@@ -737,8 +739,10 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
           }
         end
       end
+    end
 
-      describe 'distributor eventType' do
+    describe 'distributor eventType' do
+      xit 'not implemented' do
         let(:mods) do
           <<~XML
             <originInfo eventType="distributor">
@@ -774,8 +778,10 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
           }
         end
       end
+    end
 
-      describe 'producer eventType' do
+    describe 'producer eventType' do
+      xit 'not implemented' do
         let(:mods) do
           <<~XML
             <originInfo eventType="manufacturer">
@@ -811,8 +817,10 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
           }
         end
       end
+    end
 
-      describe 'producer displayLabel' do
+    describe 'producer displayLabel' do
+      xit 'not implemented' do
         let(:mods) do
           <<~XML
             <originInfo displayLabel="producer">
@@ -848,8 +856,10 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
           }
         end
       end
+    end
 
-      describe 'publisher displayLabel' do
+    describe 'publisher displayLabel' do
+      xit 'not implemented' do
         let(:mods) do
           <<~XML
             <originInfo displayLabel="publisher">
@@ -885,8 +895,10 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
           }
         end
       end
+    end
 
-      describe 'distributor displayLabel' do
+    describe 'distributor displayLabel' do
+      xit 'not implemented' do
         let(:mods) do
           <<~XML
             <originInfo displayLabel="distributor">
@@ -922,8 +934,10 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
           }
         end
       end
+    end
 
-      describe 'producer displayLabel' do
+    describe 'producer displayLabel' do
+      xit 'not implemented' do
         let(:mods) do
           <<~XML
             <originInfo displayLabel="manufacturer">
