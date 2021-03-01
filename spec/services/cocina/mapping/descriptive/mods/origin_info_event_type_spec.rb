@@ -661,4 +661,304 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
       end
     end
   end
+
+  context 'legacy MARC2MODS 264 mappings' do
+    xit 'not implemented' do
+      describe 'producer eventType' do
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="producer">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="production">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'production',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+
+      describe 'publisher eventType' do
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="publisher">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="publication">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'publication',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+
+      describe 'distributor eventType' do
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="distributor">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="distribution">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'distribution',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+
+      describe 'producer eventType' do
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="manufacturer">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="manufacture">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'manufacture',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+
+      describe 'producer displayLabel' do
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="producer">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="production">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'production',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+
+      describe 'publisher displayLabel' do
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="publisher">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="publication">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'publication',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+
+      describe 'distributor displayLabel' do
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="distributor">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="distribution">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'distribution',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+
+      describe 'producer displayLabel' do
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="manufacturer">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="manufacture">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'manufacture',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+  end
 end
