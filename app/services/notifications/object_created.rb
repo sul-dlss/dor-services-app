@@ -5,6 +5,9 @@ module Notifications
   # The primary use case here is that the requestor may want to know what druid was assigned to the request.
   class ObjectCreated
     def self.publish(model:)
+      # Skipping APOs because they don't (yet) have a partOfProject assertion.
+      return if model.is_a? Cocina::Models::AdminPolicy
+
       Rails.logger.info "Publishing Rabbitmq Message for #{model.externalIdentifier}"
       new(model: model, channel: channel).publish
       Rails.logger.info "Published Rabbitmq Message for #{model.externalIdentifier}"
