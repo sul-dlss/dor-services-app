@@ -15,15 +15,13 @@ module Cocina
 
       def find_resource_type
         case object_type
-        when Cocina::Models::Vocab.image, Cocina::Models::Vocab.map
+        when Cocina::Models::Vocab.image, Cocina::Models::Vocab.map, Cocina::Models::Vocab.webarchive_seed
           'image'
         when Cocina::Models::Vocab.book
           Cocina::FileSet.has_any_images?(file_set) ? 'page' : 'object'
         when Cocina::Models::Vocab.three_dimensional
           # if this resource contains no known 3D file extensions, the resource type is file
           Cocina::FileSet.has_any_3d?(file_set) ? '3d' : 'file'
-        when Cocina::Models::Vocab.webarchive_seed
-          'image'
         when Cocina::Models::Vocab.geo
           for_geo
         when Cocina::Models::Vocab.document

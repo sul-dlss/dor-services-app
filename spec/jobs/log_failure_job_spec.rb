@@ -19,7 +19,7 @@ RSpec.describe LogFailureJob, type: :job do
 
   before do
     allow(result).to receive(:complete!)
-    allow(LogFailureJob).to receive(:perform_later)
+    allow(described_class).to receive(:perform_later)
     allow(WorkflowClientFactory).to receive(:build).and_return(client)
   end
 

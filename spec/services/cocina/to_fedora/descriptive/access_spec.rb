@@ -70,25 +70,25 @@ RSpec.describe Cocina::ToFedora::Descriptive::Access do
   context 'when it has multiple URLs with display labels' do
     let(:access) do
       Cocina::Models::DescriptiveAccessMetadata.new(
-        "accessContact": [
+        accessContact: [
           {
-            "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
-            "type": 'repository',
-            "uri": 'http://id.loc.gov/authorities/names/no2014019980',
-            "source": {
-              "code": 'naf',
-              "uri": 'http://id.loc.gov/authorities/names/'
+            value: 'Stanford University. Libraries. Department of Special Collections and University Archives',
+            type: 'repository',
+            uri: 'http://id.loc.gov/authorities/names/no2014019980',
+            source: {
+              code: 'naf',
+              uri: 'http://id.loc.gov/authorities/names/'
             }
           }
         ],
-        "url": [
+        url: [
           {
-            "value": 'https://swap.stanford.edu/20171107174354/https://www.le.ac.uk/english/em1060to1220/index.html',
-            "displayLabel": 'Archived website'
+            value: 'https://swap.stanford.edu/20171107174354/https://www.le.ac.uk/english/em1060to1220/index.html',
+            displayLabel: 'Archived website'
           },
           {
-            "value": 'https://second.swap.stanford.edu/20171107174354/https://www.le.ac.uk/english/em1060to1220/index.html',
-            "displayLabel": 'Second Archived website'
+            value: 'https://second.swap.stanford.edu/20171107174354/https://www.le.ac.uk/english/em1060to1220/index.html',
+            displayLabel: 'Second Archived website'
           }
         ]
       )

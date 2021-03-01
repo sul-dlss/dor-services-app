@@ -92,19 +92,19 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
               source: {
                 code: 'lcsh'
               },
-              "valueLanguage": {
+              valueLanguage: {
                 code: 'chi',
                 source: {
                   code: 'iso639-2b'
                 },
-                "valueScript": {
-                  "code": 'Latn',
-                  "source": {
-                    "code": 'iso15924'
+                valueScript: {
+                  code: 'Latn',
+                  source: {
+                    code: 'iso15924'
                   }
                 }
               },
-              "value": 'Xin guo min yun dong',
+              value: 'Xin guo min yun dong',
               type: 'title'
             }
           ]

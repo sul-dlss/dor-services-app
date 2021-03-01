@@ -70,9 +70,9 @@ module Cocina
         def normalized_type_for(type)
           return TYPES.fetch(type) if TYPES.key?(type)
 
-          normalized_type = if type.downcase == 'other version'
+          normalized_type = if type.casecmp('other version').zero?
                               TYPES['otherVersion']
-                            elsif type.downcase == 'isreferencedby'
+                            elsif type.casecmp('isreferencedby').zero?
                               TYPES['isReferencedBy']
                             end
 

@@ -53,10 +53,10 @@ druids.each_with_index do |druid, index|
     place_node.replace(Nokogiri::XML::NodeSet.new(ng_xml, [new_place_node1, new_place_node2]))
   end
 
-  if orig_xml != ng_xml.canonicalize
+  if orig_xml == ng_xml.canonicalize
+    puts 'No change'
+  else
     object.descMetadata.content = ng_xml.to_xml
     object.save!
-  else
-    puts 'No change'
   end
 end

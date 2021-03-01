@@ -15,13 +15,13 @@ RSpec.describe 'Cocina --> MODS mappings for relatedItem' do
 
       let(:cocina) do
         {
-          "relatedResource": [
+          relatedResource: [
             {
-              "type": 'related to',
-              "note": [
+              type: 'related to',
+              note: [
                 {
-                  "value": 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. Professor Maya Aguirre. Department of Earth Sciences, Stanford University.',
-                  "type": 'preferred citation'
+                  value: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. Professor Maya Aguirre. Department of Earth Sciences, Stanford University.',
+                  type: 'preferred citation'
                 }
               ]
             }
@@ -33,12 +33,12 @@ RSpec.describe 'Cocina --> MODS mappings for relatedItem' do
     # type="related to" is optional.
     let(:roundtrip_cocina) do
       {
-        "relatedResource": [
+        relatedResource: [
           {
-            "note": [
+            note: [
               {
-                "value": 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. Professor Maya Aguirre. Department of Earth Sciences, Stanford University.',
-                "type": 'preferred citation'
+                value: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. Professor Maya Aguirre. Department of Earth Sciences, Stanford University.',
+                type: 'preferred citation'
               }
             ]
           }
@@ -64,17 +64,17 @@ RSpec.describe 'Cocina --> MODS mappings for relatedItem' do
 
       let(:cocina) do
         {
-          "relatedResource": [
+          relatedResource: [
             {
-              "title": [
+              title: [
                 {
-                  "value": 'A paper'
+                  value: 'A paper'
                 }
               ],
-              "access": {
-                "url": [
+              access: {
+                url: [
                   {
-                    "value": 'https://www.example.com/paper.html'
+                    value: 'https://www.example.com/paper.html'
                   }
                 ]
               }
@@ -99,12 +99,12 @@ RSpec.describe 'Cocina --> MODS mappings for relatedItem' do
 
       let(:cocina) do
         {
-          "relatedResource": [
+          relatedResource: [
             {
-              "access": {
-                "url": [
+              access: {
+                url: [
                   {
-                    "value": 'https://www.example.com/paper.html'
+                    value: 'https://www.example.com/paper.html'
                   }
                 ]
               }

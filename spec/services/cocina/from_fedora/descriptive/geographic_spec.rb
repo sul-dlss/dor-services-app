@@ -41,37 +41,37 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
 
     let(:expected_hash) do
       {
-        "form": [
+        form: [
           {
-            "value": 'image/jpeg',
-            "type": 'media type',
-            "source": {
-              "value": 'IANA media type terms'
+            value: 'image/jpeg',
+            type: 'media type',
+            source: {
+              value: 'IANA media type terms'
             }
           },
           {
-            "value": 'Image',
-            "type": 'media type',
-            "source": {
-              "value": 'DCMI Type Vocabulary'
+            value: 'Image',
+            type: 'media type',
+            source: {
+              value: 'DCMI Type Vocabulary'
             }
           }
         ],
-        "subject": [
+        subject: [
           {
-            "structuredValue": [
+            structuredValue: [
               {
-                "value": '41.893367',
-                "type": 'latitude'
+                value: '41.893367',
+                type: 'latitude'
               },
               {
-                "value": '12.483736',
-                "type": 'longitude'
+                value: '12.483736',
+                type: 'longitude'
               }
             ],
-            "type": 'point coordinates',
-            "encoding": {
-              "value": 'decimal'
+            type: 'point coordinates',
+            encoding: {
+              value: 'decimal'
             }
           }
         ]
@@ -241,30 +241,30 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
 
     let(:expected_hash) do
       {
-        "form": [
+        form: [
           {
-            "value": 'Image',
-            "type": 'media type',
-            "source": {
-              "value": 'DCMI Type Vocabulary'
+            value: 'Image',
+            type: 'media type',
+            source: {
+              value: 'DCMI Type Vocabulary'
             }
           }
         ],
-        "subject": [
+        subject: [
           {
-            "structuredValue": [
+            structuredValue: [
               {
-                "value": '41.893367',
-                "type": 'latitude'
+                value: '41.893367',
+                type: 'latitude'
               },
               {
-                "value": '12.483736',
-                "type": 'longitude'
+                value: '12.483736',
+                type: 'longitude'
               }
             ],
-            "type": 'point coordinates',
-            "encoding": {
-              "value": 'decimal'
+            type: 'point coordinates',
+            encoding: {
+              value: 'decimal'
             }
           }
         ]

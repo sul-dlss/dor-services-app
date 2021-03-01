@@ -84,18 +84,23 @@ RSpec.describe Publish::PublicXmlService do
       it 'an encoding of UTF-8' do
         expect(ng_xml.encoding).to match(/UTF-8/)
       end
+
       it 'an id attribute' do
         expect(ng_xml.at_xpath('/publicObject/@id').value).to match(/^druid:ab123cd4567/)
       end
+
       it 'a published attribute' do
         expect(ng_xml.at_xpath('/publicObject/@published').value).to eq(now.xmlschema)
       end
+
       it 'a published version' do
         expect(ng_xml.at_xpath('/publicObject/@publishVersion').value).to eq('dor-services/' + Dor::VERSION)
       end
+
       it 'identityMetadata' do
         expect(ng_xml.at_xpath('/publicObject/identityMetadata')).to be
       end
+
       it 'no contentMetadata element' do
         expect(ng_xml.at_xpath('/publicObject/contentMetadata')).not_to be
       end
@@ -120,6 +125,7 @@ RSpec.describe Publish::PublicXmlService do
       it 'rightsMetadata' do
         expect(ng_xml.at_xpath('/publicObject/rightsMetadata')).to be
       end
+
       it 'generated mods' do
         expect(ng_xml.at_xpath('/publicObject/mods:mods', 'mods' => 'http://www.loc.gov/mods/v3')).to be
       end

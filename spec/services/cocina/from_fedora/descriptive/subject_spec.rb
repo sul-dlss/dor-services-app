@@ -35,11 +35,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure (as if it was <topic> lowercase) and warns' do
       expect(build).to eq [
         {
-          "value": 'College students',
-          "type": 'topic',
-          "uri": 'http://id.loc.gov/authorities/subjects/sh85028356',
-          "source": {
-            "uri": 'http://id.loc.gov/authorities/subjects/'
+          value: 'College students',
+          type: 'topic',
+          uri: 'http://id.loc.gov/authorities/subjects/sh85028356',
+          source: {
+            uri: 'http://id.loc.gov/authorities/subjects/'
           }
         }
       ]
@@ -63,12 +63,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'includes the invalid code and warns' do
       expect(build).to eq [
         {
-          "value": 'College students',
-          "type": 'topic',
-          "uri": 'http://id.loc.gov/authorities/subjects/sh85028356',
-          "source": {
-            "uri": 'http://id.loc.gov/authorities/subjects/',
-            "code": 'topic'
+          value: 'College students',
+          type: 'topic',
+          uri: 'http://id.loc.gov/authorities/subjects/sh85028356',
+          source: {
+            uri: 'http://id.loc.gov/authorities/subjects/',
+            code: 'topic'
           }
         }
       ]
@@ -121,11 +121,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'includes source and warns' do
       expect(build).to eq [
         {
-          "value": 'College students',
-          "type": 'topic',
-          "uri": 'http://id.loc.gov/authorities/subjects/sh85028356',
-          "source": {
-            "code": 'topic'
+          value: 'College students',
+          type: 'topic',
+          uri: 'http://id.loc.gov/authorities/subjects/sh85028356',
+          source: {
+            code: 'topic'
           }
         }
       ]
@@ -149,11 +149,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'changes to naf and warns' do
       expect(build).to eq [
         {
-          "value": 'College students',
-          "type": 'topic',
-          "uri": 'http://id.loc.gov/authorities/subjects/sh85028356',
-          "source": {
-            "code": 'naf'
+          value: 'College students',
+          type: 'topic',
+          uri: 'http://id.loc.gov/authorities/subjects/sh85028356',
+          source: {
+            code: 'naf'
           }
         }
       ]
@@ -197,10 +197,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'drops the invalid subelement and warns' do
       expect(build).to eq [
         {
-          "structuredValue": [
+          structuredValue: [
             {
-              "value": 'Cats',
-              "type": 'topic'
+              value: 'Cats',
+              type: 'topic'
             }
           ]
         }
@@ -227,14 +227,14 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'drops the invalid subelement and warns' do
       expect(build).to eq [
         {
-          "structuredValue": [
+          structuredValue: [
             {
-              "value": 'Cats',
-              "type": 'topic'
+              value: 'Cats',
+              type: 'topic'
             },
             {
-              "value": 'Dogs',
-              "type": 'topic'
+              value: 'Dogs',
+              type: 'topic'
             }
           ]
         }
@@ -255,12 +255,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "value": 'Cats',
-          "type": 'topic',
-          "uri": 'http://id.loc.gov/authorities/subjects/sh85021262',
-          "source": {
-            "code": 'lcsh',
-            "uri": 'http://id.loc.gov/authorities/subjects/'
+          value: 'Cats',
+          type: 'topic',
+          uri: 'http://id.loc.gov/authorities/subjects/sh85021262',
+          source: {
+            code: 'lcsh',
+            uri: 'http://id.loc.gov/authorities/subjects/'
           }
         }
       ]
@@ -279,10 +279,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "value": 'Cats',
-          "type": 'topic',
-          "source": {
-            "code": 'mesh'
+          value: 'Cats',
+          type: 'topic',
+          source: {
+            code: 'mesh'
           }
         }
       ]
@@ -305,12 +305,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
-          "value": 'Cats',
-          "type": 'topic',
-          "uri": 'http://id.loc.gov/authorities/subjects/sh85021262',
-          "source": {
-            "code": 'lcsh',
-            "uri": 'http://id.loc.gov/authorities/subjects/'
+          value: 'Cats',
+          type: 'topic',
+          uri: 'http://id.loc.gov/authorities/subjects/sh85021262',
+          source: {
+            code: 'lcsh',
+            uri: 'http://id.loc.gov/authorities/subjects/'
           }
         }
       ]
@@ -330,12 +330,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "value": 'Cats',
-          "type": 'topic',
-          "uri": 'http://id.loc.gov/authorities/subjects/sh85021262',
-          "source": {
-            "code": 'lcsh',
-            "uri": 'http://id.loc.gov/authorities/subjects/'
+          value: 'Cats',
+          type: 'topic',
+          uri: 'http://id.loc.gov/authorities/subjects/sh85021262',
+          source: {
+            code: 'lcsh',
+            uri: 'http://id.loc.gov/authorities/subjects/'
           }
         }
       ]
@@ -450,13 +450,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
-          "source": {
-            "code": 'ISO19115TopicCategory',
-            "uri": 'http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_TopicCategoryCode'
+          source: {
+            code: 'ISO19115TopicCategory',
+            uri: 'http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_TopicCategoryCode'
           },
-          "uri": 'farming',
-          "value": 'Farming',
-          "type": 'topic'
+          uri: 'farming',
+          value: 'Farming',
+          type: 'topic'
         }
       ]
       expect(notifier).to have_received(:warn).with('Value URI has unexpected value', { uri: 'farming' })
@@ -478,22 +478,22 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "parallelValue": [
+          parallelValue: [
             {
-              "source": {
-                "code": 'lcsh',
-                "uri": 'http://id.loc.gov/authorities/subjects/'
+              source: {
+                code: 'lcsh',
+                uri: 'http://id.loc.gov/authorities/subjects/'
               },
-              "uri": 'http://id.loc.gov/authorities/subjects/sh85135212',
-              "value": 'Tiber River (Italy)',
-              "type": 'place'
+              uri: 'http://id.loc.gov/authorities/subjects/sh85135212',
+              value: 'Tiber River (Italy)',
+              type: 'place'
             },
             {
-              "source": {
-                "code": 'local'
+              source: {
+                code: 'local'
               },
-              "value": 'Tevere',
-              "type": 'topic'
+              value: 'Tevere',
+              type: 'topic'
             }
           ]
         }
@@ -514,20 +514,20 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "structuredValue": [
+          structuredValue: [
             {
-              "value": 'Archives et documents',
-              "type": 'topic'
+              value: 'Archives et documents',
+              type: 'topic'
             },
             {
-              "value": 'Portraits',
-              "type": 'topic'
+              value: 'Portraits',
+              type: 'topic'
             }
           ],
-          "valueLanguage": {
-            "code": 'fre',
-            "source": {
-              "code": 'iso639-2b'
+          valueLanguage: {
+            code: 'fre',
+            source: {
+              code: 'iso639-2b'
             },
             valueScript: {
               code: 'Latn',
@@ -536,7 +536,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
               }
             }
           },
-          "displayLabel": 'French archives'
+          displayLabel: 'French archives'
         }
       ]
     end

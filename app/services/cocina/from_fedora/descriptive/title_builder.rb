@@ -94,8 +94,8 @@ module Cocina
             node.text.size + add
           end
           [{
-            "value": count.to_s,  # cast to String until cocina-models 0.40.0 is used. See https://github.com/sul-dlss/cocina-models/pull/146
-            "type": 'nonsorting character count'
+            value: count.to_s,  # cast to String until cocina-models 0.40.0 is used. See https://github.com/sul-dlss/cocina-models/pull/146
+            type: 'nonsorting character count'
           }]
         end
       end

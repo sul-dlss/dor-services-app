@@ -49,9 +49,9 @@ class WorkspacesController < ApplicationController
       json: {
         errors: [
           {
-            "status": '422',
-            "title": msg,
-            "detail": err.message
+            status: '422',
+            title: msg,
+            detail: err.message
           }
         ]
       },

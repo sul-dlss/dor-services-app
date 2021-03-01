@@ -79,59 +79,59 @@ RSpec.describe Cocina::ObjectCreator do
           'identification' => {
             'sourceId' => 'donot:care'
           },
-          "description": {
-            "note": [
+          description: {
+            note: [
               {
-                "type": 'summary',
-                "value": 'I am an abstract'
+                type: 'summary',
+                value: 'I am an abstract'
               },
               {
-                "type": 'email',
-                "value": 'marypoppins@umbrellas.org',
-                "displayLabel": 'Contact'
+                type: 'email',
+                value: 'marypoppins@umbrellas.org',
+                displayLabel: 'Contact'
               },
               {
-                "type": 'preferred citation',
-                "value": 'Zappa, F. (2013) :link:'
+                type: 'preferred citation',
+                value: 'Zappa, F. (2013) :link:'
               }
             ],
-            "title": [
+            title: [
               {
-                "value": 'more desc mappings'
+                value: 'more desc mappings'
               }
             ],
-            "subject": [
+            subject: [
               {
-                "type": 'topic',
-                "value": 'I am a keyword'
+                type: 'topic',
+                value: 'I am a keyword'
               }
             ],
-            "contributor": [
+            contributor: [
               {
-                "name": [
+                name: [
                   {
-                    "value": 'Miss Piggy'
+                    value: 'Miss Piggy'
                   }
                 ],
-                "role": [
+                role: [
                   {
-                    "value": 'Creator'
+                    value: 'Creator'
                   }
                 ],
-                "type": 'person'
+                type: 'person'
               },
               {
-                "name": [
+                name: [
                   {
-                    "value": 'funder.example.org'
+                    value: 'funder.example.org'
                   }
                 ],
-                "role": [
+                role: [
                   {
-                    "value": 'Funder'
+                    value: 'Funder'
                   }
                 ],
-                "type": 'organization'
+                type: 'organization'
               }
             ]
           }
@@ -266,7 +266,7 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'collection abstract (note of type summary) is set' do
-        summary_note = result.description.note.select { |note| note.type == 'summary' }.first
+        summary_note = result.description.note.find { |note| note.type == 'summary' }
         expect(summary_note.value).to eq 'I am an abstract'
       end
     end

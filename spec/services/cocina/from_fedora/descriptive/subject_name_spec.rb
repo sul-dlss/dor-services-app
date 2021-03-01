@@ -37,11 +37,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
-          "value": 'Biblioteka Polskiej Akademii Nauk w Krakowie',
-          "type": 'organization',
-          "uri": '(OCoLC)fst00596994',
-          "source": {
-            "code": 'fast'
+          value: 'Biblioteka Polskiej Akademii Nauk w Krakowie',
+          type: 'organization',
+          uri: '(OCoLC)fst00596994',
+          source: {
+            code: 'fast'
           }
         }
       ]
@@ -63,11 +63,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "value": 'Biblioteka Polskiej Akademii Nauk w Krakowie',
-          "type": 'organization',
-          "source": {
-            "code": 'naf',
-            "uri": 'http://id.loc.gov/authorities/names/'
+          value: 'Biblioteka Polskiej Akademii Nauk w Krakowie',
+          type: 'organization',
+          source: {
+            code: 'naf',
+            uri: 'http://id.loc.gov/authorities/names/'
           }
         }
       ]
@@ -94,35 +94,35 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "source": {
-            "code": 'lcsh'
+          source: {
+            code: 'lcsh'
           },
-          "structuredValue": [
+          structuredValue: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'California.',
-                  "type": 'name'
+                  value: 'California.',
+                  type: 'name'
                 },
                 {
-                  "value": 'Sect. 7570.',
-                  "type": 'name'
+                  value: 'Sect. 7570.',
+                  type: 'name'
                 }
               ],
-              "type": 'organization'
+              type: 'organization'
             },
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Government Code',
-                  "type": 'main title'
+                  value: 'Government Code',
+                  type: 'main title'
                 },
                 {
-                  "value": 'Sect. 7570',
-                  "type": 'part number'
+                  value: 'Sect. 7570',
+                  type: 'part number'
                 }
               ],
-              "type": 'title'
+              type: 'title'
             }
           ]
         }
@@ -148,19 +148,19 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "structuredValue": [
+          structuredValue: [
             {
-              "value": 'Gitai, Amos, 1950-',
-              "uri": 'http://id.loc.gov/authorities/names/nr95000662',
-              "type": 'person',
-              "source": {
-                "code": 'naf',
-                "uri": 'http://id.loc.gov/authorities/names/'
+              value: 'Gitai, Amos, 1950-',
+              uri: 'http://id.loc.gov/authorities/names/nr95000662',
+              type: 'person',
+              source: {
+                code: 'naf',
+                uri: 'http://id.loc.gov/authorities/names/'
               }
             },
             {
-              "value": 'Tsili',
-              "type": 'title'
+              value: 'Tsili',
+              type: 'title'
             }
           ]
         }
@@ -270,12 +270,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     it 'builds the cocina data structure as if subject topic and warns' do
       expect(build).to eq [
         {
-          "value": 'Student movements',
-          "type": 'topic',
-          "uri": 'http://id.loc.gov/authorities/subjects/sh85129276',
-          "source": {
-            "code": 'lcsh',
-            "uri": 'http://id.loc.gov/authorities/subjects/'
+          value: 'Student movements',
+          type: 'topic',
+          uri: 'http://id.loc.gov/authorities/subjects/sh85129276',
+          source: {
+            code: 'lcsh',
+            uri: 'http://id.loc.gov/authorities/subjects/'
           }
         }
       ]

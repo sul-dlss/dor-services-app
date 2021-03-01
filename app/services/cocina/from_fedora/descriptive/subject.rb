@@ -234,8 +234,8 @@ module Cocina
           node_set = hierarchical_geographic_node.xpath('*')
           values = node_set.map do |node|
             {
-              "value": node.text,
-              "type": node.name
+              value: node.text,
+              type: node.name
             }
           end
           attrs.merge(structuredValue: values, type: 'place')
@@ -293,7 +293,7 @@ module Cocina
         end
 
         def node_type_for(node)
-          return NODE_TYPE.fetch(node.name) if NODE_TYPE.keys.include?(node.name)
+          return NODE_TYPE.fetch(node.name) if NODE_TYPE.key?(node.name)
 
           notifier.warn('Unexpected node type for subject', name: node.name)
           nil
@@ -309,9 +309,9 @@ module Cocina
             return 'name'
           end
 
-          return 'topic' if name_type.downcase == 'topic'
+          return 'topic' if name_type.casecmp('topic').zero?
 
-          Contributor::ROLES.fetch(name_type) if Contributor::ROLES.keys.include?(name_type)
+          Contributor::ROLES.fetch(name_type) if Contributor::ROLES.key?(name_type)
         end
 
         def subject_nodes

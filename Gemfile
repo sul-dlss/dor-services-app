@@ -62,9 +62,10 @@ group :test, :development do
   gem 'rack-console'
   gem 'rspec_junit_formatter'
   gem 'rspec-rails'
-  gem 'rubocop', '~> 0.86'
+  gem 'rubocop'
+  gem 'rubocop-performance'
   gem 'rubocop-rails'
-  gem 'rubocop-rspec', '~> 1.32.0'
+  gem 'rubocop-rspec'
   gem 'simplecov', '~> 0.17.1' # https://github.com/codeclimate/test-reporter/issues/413
   gem 'super_diff'
   gem 'webmock'

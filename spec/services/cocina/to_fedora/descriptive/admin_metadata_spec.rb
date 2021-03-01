@@ -32,58 +32,58 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
   context 'when it is from replayable spreadsheet (with desc standard value)' do
     let(:admin_metadata) do
       Cocina::Models::DescriptiveAdminMetadata.new(
-        "language": [
+        language: [
           {
-            "value": 'English',
-            "code": 'eng',
-            "uri": 'http://id.loc.gov/vocabulary/iso639-2/eng',
-            "source": {
-              "code": 'iso639-2b',
-              "uri": 'http://id.loc.gov/vocabulary/iso639-2/'
+            value: 'English',
+            code: 'eng',
+            uri: 'http://id.loc.gov/vocabulary/iso639-2/eng',
+            source: {
+              code: 'iso639-2b',
+              uri: 'http://id.loc.gov/vocabulary/iso639-2/'
             },
-            "script": {
-              "value": 'Latin',
-              "code": 'Latn',
-              "source": {
-                "code": 'iso15924'
+            script: {
+              value: 'Latin',
+              code: 'Latn',
+              source: {
+                code: 'iso15924'
               }
             },
-            "status": 'primary'
+            status: 'primary'
           }
         ],
-        "contributor": [
+        contributor: [
           {
-            "name": [
+            name: [
               {
-                "code": 'CSt',
-                "uri": 'http://id.loc.gov/vocabulary/organizations/cst',
-                "source": {
-                  "code": 'marcorg',
-                  "uri": 'http://id.loc.gov/vocabulary/organizations/'
+                code: 'CSt',
+                uri: 'http://id.loc.gov/vocabulary/organizations/cst',
+                source: {
+                  code: 'marcorg',
+                  uri: 'http://id.loc.gov/vocabulary/organizations/'
                 }
               }
             ],
-            "type": 'organization',
-            "role": [
+            type: 'organization',
+            role: [
               {
-                "value": 'original cataloging agency'
+                value: 'original cataloging agency'
               }
             ]
           }
         ],
-        "metadataStandard": [
+        metadataStandard: [
           {
-            "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
-            "value": "Describing archives: a content standard\u00A0(Chicago: Society of American Archivists)",
-            "source": {
-              "uri": 'http://id.loc.gov/vocabulary/descriptionConventions/'
+            uri: 'http://id.loc.gov/vocabulary/descriptionConventions/dacs',
+            value: "Describing archives: a content standard\u00A0(Chicago: Society of American Archivists)",
+            source: {
+              uri: 'http://id.loc.gov/vocabulary/descriptionConventions/'
             }
           }
         ],
-        "note": [
+        note: [
           {
-            "type": 'record origin',
-            "value": 'human prepared'
+            type: 'record origin',
+            value: 'human prepared'
           }
         ]
       )
@@ -203,7 +203,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::AdminMetadata do
               type: 'creation',
               date: [
                 {
-                  "value": '2011-09-27T12:58:15.677+02:00'
+                  value: '2011-09-27T12:58:15.677+02:00'
                 }
               ]
             }

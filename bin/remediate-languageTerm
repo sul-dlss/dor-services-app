@@ -19,10 +19,10 @@ druids.each_with_index do |druid, index|
   ng_xml.root.xpath('//mods:languageTerm[@authority = "iso639-2b" and text() = "eng"]', mods: MODS_NS).each { |node| node['type'] = 'code' }
   ng_xml.root.xpath('//mods:languageTerm[@authority = "iso639-2b" and text() = "English"]', mods: MODS_NS).each { |node| node['type'] = 'text' }
 
-  if orig_xml != ng_xml.canonicalize
+  if orig_xml == ng_xml.canonicalize
+    puts 'No change'
+  else
     object.descMetadata.content = ng_xml.to_xml
     object.save!
-  else
-    puts 'No change'
   end
 end

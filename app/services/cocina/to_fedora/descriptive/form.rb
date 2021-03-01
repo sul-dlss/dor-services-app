@@ -52,8 +52,8 @@ module Cocina
 
         def physical_description?(form)
           (form.note.present? && form.type != 'genre') ||
-            PHYSICAL_DESCRIPTION_TAG.keys.include?(form.type) ||
-            PHYSICAL_DESCRIPTION_TAG.keys.include?(form.groupedValue&.first&.type)
+            PHYSICAL_DESCRIPTION_TAG.key?(form.type) ||
+            PHYSICAL_DESCRIPTION_TAG.key?(form.groupedValue&.first&.type)
         end
 
         def manuscript?(form)

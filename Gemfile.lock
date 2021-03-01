@@ -406,23 +406,27 @@ GEM
     rspec-support (3.10.2)
     rspec_junit_formatter (0.4.1)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.93.1)
+    rubocop (1.11.0)
       parallel (~> 1.10)
-      parser (>= 2.7.1.5)
+      parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
-      regexp_parser (>= 1.8)
+      regexp_parser (>= 1.8, < 3.0)
       rexml
-      rubocop-ast (>= 0.6.0)
+      rubocop-ast (>= 1.2.0, < 2.0)
       ruby-progressbar (~> 1.7)
-      unicode-display_width (>= 1.4.0, < 2.0)
+      unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.4.1)
       parser (>= 2.7.1.5)
+    rubocop-performance (1.10.0)
+      rubocop (>= 0.90.0, < 2.0)
+      rubocop-ast (>= 0.4.0)
     rubocop-rails (2.9.1)
       activesupport (>= 4.2.0)
       rack (>= 1.1)
       rubocop (>= 0.90.0, < 2.0)
-    rubocop-rspec (1.32.0)
-      rubocop (>= 0.60.0)
+    rubocop-rspec (2.2.0)
+      rubocop (~> 1.0)
+      rubocop-ast (>= 1.1.0)
     ruby-cache (0.3.0)
     ruby-enum (0.9.0)
       i18n
@@ -490,7 +494,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.7)
-    unicode-display_width (1.7.0)
+    unicode-display_width (2.0.0)
     uuidtools (2.1.5)
     webmock (3.12.0)
       addressable (>= 2.3.6)
@@ -552,9 +556,10 @@ DEPENDENCIES
   retries
   rspec-rails
   rspec_junit_formatter
-  rubocop (~> 0.86)
+  rubocop
+  rubocop-performance
   rubocop-rails
-  rubocop-rspec (~> 1.32.0)
+  rubocop-rspec
   ruby-cache (~> 0.3.0)
   sidekiq (~> 6.0)
   sidekiq-statistic

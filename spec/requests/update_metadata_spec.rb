@@ -183,12 +183,12 @@ RSpec.describe 'Update object' do
         title: [
           {
             structuredValue: [
-              { value: 'The', "type": 'nonsorting characters' },
-              { value: 'romantic Bach', "type": 'main title' },
-              { value: "a celebration of Bach's most romantic music", "type": 'subtitle' }
+              { value: 'The', type: 'nonsorting characters' },
+              { value: 'romantic Bach', type: 'main title' },
+              { value: "a celebration of Bach's most romantic music", type: 'subtitle' }
             ],
             note: [
-              { "value": '4', "type": 'nonsorting character count' }
+              { value: '4', type: 'nonsorting character count' }
             ]
           }
         ]

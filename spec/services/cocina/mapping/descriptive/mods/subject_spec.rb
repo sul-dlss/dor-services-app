@@ -50,13 +50,13 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
                   type: 'genre'
                 },
                 {
-                  "source": {
-                    "code": 'lcsh',
-                    "uri": 'http://id.loc.gov/authorities/subjects/'
+                  source: {
+                    code: 'lcsh',
+                    uri: 'http://id.loc.gov/authorities/subjects/'
                   },
-                  "uri": 'http://id.loc.gov/authorities/subjects/sh2002012475',
-                  "value": '19th century',
-                  "type": 'time'
+                  uri: 'http://id.loc.gov/authorities/subjects/sh2002012475',
+                  value: '19th century',
+                  type: 'time'
                 }
               ]
             }
@@ -326,7 +326,7 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
 
                 },
                 {
-                  "value": '楚辞(Ancient Chinese poems)'
+                  value: '楚辞(Ancient Chinese poems)'
                 }
               ],
               type: 'title'

@@ -90,9 +90,9 @@ module Cocina
       def normalize_type
         ng_xml.root.xpath('//mods:name[@type]', mods: ModsNormalizer::MODS_NS).each do |name_node_w_type|
           raw_type = name_node_w_type['type']
-          next if FromFedora::Descriptive::Contributor::ROLES.keys.include?(raw_type)
+          next if FromFedora::Descriptive::Contributor::ROLES.key?(raw_type)
 
-          if FromFedora::Descriptive::Contributor::ROLES.keys.include?(raw_type.downcase)
+          if FromFedora::Descriptive::Contributor::ROLES.key?(raw_type.downcase)
             name_node_w_type['type'] = raw_type.downcase
           else
             name_node_w_type.remove_attribute('type')
@@ -103,7 +103,7 @@ module Cocina
       def normalize_name_part_type
         ng_xml.root.xpath('//mods:namePart[(@type)]', mods: ModsNormalizer::MODS_NS).each do |name_part_node|
           raw_type = name_part_node['type']
-          next if FromFedora::Descriptive::Contributor::NAME_PART.keys.include?(raw_type)
+          next if FromFedora::Descriptive::Contributor::NAME_PART.key?(raw_type)
 
           name_part_node.remove_attribute('type')
         end

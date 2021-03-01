@@ -197,7 +197,7 @@ module Cocina
         end
 
         def normalize_type_text(text)
-          if text.downcase == 'image' && text != 'Image'
+          if text.casecmp('image').zero? && text != 'Image'
             notifier.warn('dc:type normalized to <dc:type>Image</dc:type>', type: text)
             'Image'
           else
@@ -206,7 +206,7 @@ module Cocina
         end
 
         def check_purl
-          return if description['rdf:about'] =~ %r{^https?://purl.stanford.edu/}
+          return if %r{^https?://purl.stanford.edu/}.match?(description['rdf:about'])
 
           notifier.warn('rdf:about does not contain a correctly formatted PURL')
         end

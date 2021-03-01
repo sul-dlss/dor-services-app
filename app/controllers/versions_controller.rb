@@ -37,9 +37,9 @@ class VersionsController < ApplicationController
       json: {
         errors: [
           {
-            "status": Rack::Utils::SYMBOL_TO_STATUS_CODE[status].to_s,
-            "title": msg,
-            "detail": err.message
+            status: Rack::Utils::SYMBOL_TO_STATUS_CODE[status].to_s,
+            title: msg,
+            detail: err.message
           }
         ]
       },

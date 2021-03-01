@@ -230,7 +230,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
       end
     end
 
-    # Note: cocina -> MODS
+    # NOTE: cocina -> MODS
     it_behaves_like 'cocina MODS mapping' do
       let(:mods) do
         <<~XML

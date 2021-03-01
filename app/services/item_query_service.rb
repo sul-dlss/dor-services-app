@@ -47,7 +47,7 @@ class ItemQueryService
 
   def item(&block)
     @item ||= item_relation.find(id)
-    return @item unless block_given?
+    return @item unless block
 
     @item.tap(&block)
   end

@@ -37,7 +37,7 @@ module Cocina
             type = nil
 
             # Make adjustments for a parallel person.
-            if parallel_subject_values.present? && FromFedora::Descriptive::Contributor::ROLES.values.include?(subject.type)
+            if parallel_subject_values.present? && FromFedora::Descriptive::Contributor::ROLES.value?(subject.type)
               display_values, parallel_subject_values = parallel_subject_values.partition { |value| value.type == 'display' }
               if parallel_subject_values.size == 1
                 subject_value = parallel_subject_values.first
@@ -84,8 +84,8 @@ module Cocina
 
         def geographic_and_geographic_code?(subject, subject_values)
           subject.type == 'place' &&
-            subject_values.select(&:value).size == 1 &&
-            subject_values.select(&:code).size == 1
+            subject_values.count(&:value) == 1 &&
+            subject_values.count(&:code) == 1
         end
 
         # rubocop:disable Metrics/PerceivedComplexity
@@ -98,12 +98,12 @@ module Cocina
               time_range(subject_value)
             elsif type == 'title'
               write_title(subject_value)
-            elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(type)
+            elsif FromFedora::Descriptive::Contributor::ROLES.value?(type)
               write_structured_person(subject, subject_value, type: type, display_values: display_values)
             else
               values = Array(subject_value.structuredValue || subject_value.groupedValue)
               values.each do |value|
-                if FromFedora::Descriptive::Contributor::ROLES.values.include?(value.type)
+                if FromFedora::Descriptive::Contributor::ROLES.value?(value.type)
                   if value.structuredValue
                     write_structured_person(subject, value, display_values: display_values)
                   else
@@ -178,7 +178,7 @@ module Cocina
 
           if type == 'classification'
             write_classification(subject_value.value, subject_attributes)
-          elsif FromFedora::Descriptive::Contributor::ROLES.values.include?(type) || type == 'name'
+          elsif FromFedora::Descriptive::Contributor::ROLES.value?(type) || type == 'name'
             xml.subject(subject_attributes) do
               write_person(subject, subject_value, display_values: display_values)
             end

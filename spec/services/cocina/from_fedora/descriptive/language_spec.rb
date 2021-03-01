@@ -35,9 +35,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Language do
     it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
-          "code": 'eng',
-          "source": {
-            "code": 'iso639-2b'
+          code: 'eng',
+          source: {
+            code: 'iso639-2b'
           }
         }
       ]
@@ -57,11 +57,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Language do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "code": 'ara',
-          "uri": 'http://id.loc.gov/vocabulary/iso639-2/ara',
-          "source": {
-            "code": 'iso639-2b',
-            "uri": 'http://id.loc.gov/vocabulary/iso639-2'
+          code: 'ara',
+          uri: 'http://id.loc.gov/vocabulary/iso639-2/ara',
+          source: {
+            code: 'iso639-2b',
+            uri: 'http://id.loc.gov/vocabulary/iso639-2'
           }
         }
       ]
@@ -80,11 +80,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Language do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "value": 'Arabic',
-          "uri": 'http://id.loc.gov/vocabulary/iso639-2/ara',
-          "source": {
-            "code": 'iso639-2b',
-            "uri": 'http://id.loc.gov/vocabulary/iso639-2'
+          value: 'Arabic',
+          uri: 'http://id.loc.gov/vocabulary/iso639-2/ara',
+          source: {
+            code: 'iso639-2b',
+            uri: 'http://id.loc.gov/vocabulary/iso639-2'
           }
         }
       ]

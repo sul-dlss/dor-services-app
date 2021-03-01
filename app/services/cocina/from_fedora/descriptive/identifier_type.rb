@@ -266,7 +266,7 @@ module Cocina
           end
 
           # Try to find a Cocina type (case insensitive)
-          ALL_COCINA_TYPES.each { |cocina_type| return [cocina_type, nil, COCINA] if cocina_type.downcase == mods_type.downcase }
+          ALL_COCINA_TYPES.each { |cocina_type| return [cocina_type, nil, COCINA] if cocina_type.casecmp(mods_type).zero? }
 
           [mods_type, nil, nil]
         end

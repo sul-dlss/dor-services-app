@@ -291,6 +291,7 @@ end
 
 Notification = Struct.new(:msg, :context, :times, keyword_init: true)
 
+# Builds titles for tests
 class TestTitleBuilder
   # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
   # @param [Cocina::FromFedora::DataErrorNotifier] notifier

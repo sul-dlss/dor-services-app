@@ -381,7 +381,7 @@ RSpec.describe Cocina::ModsNormalizer do
       end
 
       it 'removes empty elements and attributes' do
-        # note that placeTerm type="text" is assigned when type is missing
+        # NOTE: that placeTerm type="text" is assigned when type is missing
         expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <originInfo eventType="production">
@@ -417,7 +417,7 @@ RSpec.describe Cocina::ModsNormalizer do
 
       # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
       xit 'removes empty attributes and attributes' do
-        # note that placeTerm type="text" is assigned when type is missing
+        # NOTE: that placeTerm type="text" is assigned when type is missing
         expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <originInfo eventType="publication"/>
@@ -466,7 +466,7 @@ RSpec.describe Cocina::ModsNormalizer do
       end
 
       it 'removes empty elements and attributes' do
-        # note that languageTerm type="code" is assigned when type is missing
+        # NOTE: that languageTerm type="code" is assigned when type is missing
         expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <language>
@@ -496,7 +496,7 @@ RSpec.describe Cocina::ModsNormalizer do
       end
 
       it 'removes empty elements and attributes and their empty parents' do
-        # note that languageTerm type="code" is assigned when type is missing
+        # NOTE: that languageTerm type="code" is assigned when type is missing
         expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <note type="contact" displayLabel="Contact">pwrcourses@stanford.edu</note>

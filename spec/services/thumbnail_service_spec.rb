@@ -35,6 +35,7 @@ RSpec.describe ThumbnailService do
         XML
         expect(subject).to eq('ab123cd4567/ab123cd4567_05_0001.jp2')
       end
+
       it 'finds a thumb resource marked as thumb with the thumb attribute first, even if it is listed second' do
         object.contentMetadata.content = <<-XML
           <?xml version="1.0"?>
@@ -49,6 +50,7 @@ RSpec.describe ThumbnailService do
         XML
         expect(subject).to eq('ab123cd4567/ab123cd4567_thumb.jp2')
       end
+
       it 'finds a thumb resource marked as thumb without the thumb attribute first, even if it is listed second when there are no other thumbs specified' do
         object.contentMetadata.content = <<-XML
           <?xml version="1.0"?>
@@ -63,6 +65,7 @@ RSpec.describe ThumbnailService do
         XML
         expect(subject).to eq('ab123cd4567/ab123cd4567_thumb.jp2')
       end
+
       it 'finds a thumb resource marked as thumb with the thumb attribute first, even if it is listed second and there is another image marked as thumb first' do
         object.contentMetadata.content = <<-XML
           <?xml version="1.0"?>
@@ -77,6 +80,7 @@ RSpec.describe ThumbnailService do
         XML
         expect(subject).to eq('ab123cd4567/ab123cd4567_thumb.jp2')
       end
+
       it 'finds an image resource marked as thumb with the thumb attribute when there is no resource thumb specified' do
         object.contentMetadata.content = <<-XML
           <?xml version="1.0"?>
@@ -91,6 +95,7 @@ RSpec.describe ThumbnailService do
         XML
         expect(subject).to eq('ab123cd4567/ab123cd4567_05_0002.jp2')
       end
+
       it 'finds an image resource marked as thumb with the thumb attribute when there is a resource thumb specified but not the thumb attribute' do
         object.contentMetadata.content = <<-XML
           <?xml version="1.0"?>
@@ -105,6 +110,7 @@ RSpec.describe ThumbnailService do
         XML
         expect(subject).to eq('ab123cd4567/ab123cd4567_05_0002.jp2')
       end
+
       it 'finds a page resource marked as thumb with the thumb attribute when there is a resource thumb specified but not the thumb attribute' do
         object.contentMetadata.content = <<-XML
           <?xml version="1.0"?>
@@ -123,6 +129,7 @@ RSpec.describe ThumbnailService do
         XML
         expect(subject).to eq('ab123cd4567/ab123cd4567_05_0002.jp2')
       end
+
       it 'finds an externalFile image resource when there are no other images' do
         object.contentMetadata.content = <<-XML
           <?xml version="1.0"?>
@@ -137,6 +144,7 @@ RSpec.describe ThumbnailService do
         XML
         expect(subject).to eq('cg767mn6478/2542A.jp2')
       end
+
       it 'finds an externalFile page resource when there are no other images, even if objectId attribute is missing druid prefix' do
         object.contentMetadata.content = <<-XML
           <?xml version="1.0"?>
@@ -151,6 +159,7 @@ RSpec.describe ThumbnailService do
         XML
         expect(subject).to eq('cg767mn6478/2542A.jp2')
       end
+
       it 'finds an explicit externalFile thumb resource before another image resource, and encode the space' do
         object.contentMetadata.content = <<-XML
           <?xml version="1.0"?>
@@ -165,6 +174,7 @@ RSpec.describe ThumbnailService do
         XML
         expect(subject).to eq('cg767mn6478/2542A withspace.jp2')
       end
+
       it 'returns nil if no thumb is identified' do
         object.contentMetadata.content = <<-XML
           <?xml version="1.0"?>
@@ -176,6 +186,7 @@ RSpec.describe ThumbnailService do
         XML
         expect(subject).to be_nil
       end
+
       it 'returns nil if there is no contentMetadata datastream at all' do
         object.datastreams['contentMetadata'] = nil
         expect(subject).to be_nil

@@ -102,11 +102,11 @@ class DigitalStacksService
     if stacks_pathname.exist?
       file_signature = Moab::FileSignature.new.signature_from_file(stacks_pathname)
 
-      if file_signature != moab_signature
+      if file_signature == moab_signature
+        Rails.logger.debug("[Shelve] Found existing file with the same signature at #{stacks_pathname}")
+      else
         Rails.logger.debug("[Shelve] Found existing file with different signature at #{stacks_pathname}")
         stacks_pathname.delete
-      else
-        Rails.logger.debug("[Shelve] Found existing file with the same signature at #{stacks_pathname}")
       end
     end
     unless stacks_pathname.exist?

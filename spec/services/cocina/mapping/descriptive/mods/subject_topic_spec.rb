@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'MODS subject topic <--> cocina mappings' do
-  # Note: Subjects with LCSH/NAF authorities are tricky in MODS (and MARC) because there may be a URI for the combined subject
+  # NOTE: Subjects with LCSH/NAF authorities are tricky in MODS (and MARC) because there may be a URI for the combined subject
   # string, each individual term, or both. Also, the official MODS documentation says to use authority="lcsh" at the subject
   # level, even when the individual terms have authority="naf": 'If the subject string is formulated according to the
   # Library of Congress Subject Headings (or LC Name Authority File), the value of the authority attribute is "lcsh."

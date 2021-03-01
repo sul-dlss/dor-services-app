@@ -45,7 +45,7 @@ module Cocina
       def dro_type
         case item.contentMetadata.contentType.first
         when 'image'
-          if AdministrativeTags.content_type(pid: item.pid).first =~ /^Manuscript/
+          if /^Manuscript/.match?(AdministrativeTags.content_type(pid: item.pid).first)
             Cocina::Models::Vocab.manuscript
           else
             Cocina::Models::Vocab.image

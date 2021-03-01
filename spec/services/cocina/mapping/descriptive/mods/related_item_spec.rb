@@ -653,58 +653,58 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
         {
           relatedResource: [
             {
-              "title": [
+              title: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "type": 'title',
-                      "value": 'Contradizione'
+                      type: 'title',
+                      value: 'Contradizione'
                     },
                     {
-                      "value": 'Bacewicz, Grayna.',
-                      "type": 'name'
+                      value: 'Bacewicz, Grayna.',
+                      type: 'name'
                     }
                   ]
                 }
               ],
-              "contributor": [
+              contributor: [
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": 'Bacewicz, Grayna.'
+                      value: 'Bacewicz, Grayna.'
                     }
                   ],
-                  "type": 'person'
+                  type: 'person'
                 }
               ],
-              "type": 'has part'
+              type: 'has part'
             },
             {
-              "title": [
+              title: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "type": 'title',
-                      "value": 'Concerto in one movement, marimba, orchestra'
+                      type: 'title',
+                      value: 'Concerto in one movement, marimba, orchestra'
                     },
                     {
-                      "value": 'Diemer, Emma Lou.',
-                      "type": 'name'
+                      value: 'Diemer, Emma Lou.',
+                      type: 'name'
                     }
                   ]
                 }
               ],
-              "contributor": [
+              contributor: [
                 {
-                  "name": [
+                  name: [
                     {
-                      "value": 'Diemer, Emma Lou.'
+                      value: 'Diemer, Emma Lou.'
                     }
                   ],
-                  "type": 'person'
+                  type: 'person'
                 }
               ],
-              "type": 'has part'
+              type: 'has part'
             }
           ]
         }

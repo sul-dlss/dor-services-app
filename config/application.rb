@@ -50,9 +50,7 @@ module DorServices
     config.api_only = true
 
     # If an object isn't found in DOR, return a 404
-    config.action_dispatch.rescue_responses.merge!(
-      "ActiveFedora::ObjectNotFoundError" => :not_found
-    )
+    config.action_dispatch.rescue_responses["ActiveFedora::ObjectNotFoundError"] = :not_found
 
     # This makes sure our Postgres enums function are persisted to the schema
     config.active_record.schema_format = :sql

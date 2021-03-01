@@ -39,7 +39,7 @@ class SdrIngestService
     verify_bag_structure(bag_dir)
   end
 
-  # Note: the following methods should probably all be private
+  # NOTE: the following methods should probably all be private
 
   # @param [String] druid The object identifier
   # @return [Moab::SignatureCatalog] the manifest of all files previously ingested,

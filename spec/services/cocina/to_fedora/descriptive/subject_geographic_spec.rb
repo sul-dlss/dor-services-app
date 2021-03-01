@@ -20,13 +20,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
-          "structuredValue": [
+          structuredValue: [
             {
-              "value": 'Africa',
-              "type": 'continent'
+              value: 'Africa',
+              type: 'continent'
             }
           ],
-          "type": 'place'
+          type: 'place'
         )
       ]
     end

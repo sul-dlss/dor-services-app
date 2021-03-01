@@ -104,11 +104,11 @@ RSpec.describe Cocina::ToFedora::Descriptive do
         title: [
           { value: 'Gaudy night' }
         ],
-        "adminMetadata": {
-          "note": [
+        adminMetadata: {
+          note: [
             {
-              "value": 'Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7_SDR_v1.xsl (SUL 3.7 version 1.1 20200917; LC Revision 1.140 20200717)',
-              "type": 'record origin'
+              value: 'Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7_SDR_v1.xsl (SUL 3.7 version 1.1 20200917; LC Revision 1.140 20200717)',
+              type: 'record origin'
             }
           ]
         }
