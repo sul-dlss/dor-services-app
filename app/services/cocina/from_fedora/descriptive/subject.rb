@@ -234,8 +234,8 @@ module Cocina
           node_set = hierarchical_geographic_node.xpath('*')
           values = node_set.map do |node|
             {
-              "value": node.text,
-              "type": node.name
+              value: node.text,
+              type: node.name
             }
           end
           attrs.merge(structuredValue: values, type: 'place')

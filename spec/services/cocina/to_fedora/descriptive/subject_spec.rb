@@ -36,11 +36,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       [
         Cocina::Models::DescriptiveValue.new(
           {
-            "value": 'Cats',
-            "type": 'topic',
-            "uri": 'http://id.loc.gov/authorities/subjects/sh85021262',
-            "source": {
-              "code": 'lcsh'
+            value: 'Cats',
+            type: 'topic',
+            uri: 'http://id.loc.gov/authorities/subjects/sh85021262',
+            source: {
+              code: 'lcsh'
             }
           }
         )
@@ -65,10 +65,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       [
         Cocina::Models::DescriptiveValue.new(
           {
-            "value": 'Cats',
-            "type": 'topic',
-            "source": {
-              "code": 'mesh'
+            value: 'Cats',
+            type: 'topic',
+            source: {
+              code: 'mesh'
             }
           }
         )
@@ -93,10 +93,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       [
         Cocina::Models::DescriptiveValue.new(
           {
-            "value": 'Cats',
-            "type": 'topic',
-            "source": {
-              "code": 'lcsh'
+            value: 'Cats',
+            type: 'topic',
+            source: {
+              code: 'lcsh'
             }
           }
         )
@@ -120,10 +120,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
-          "value": 'E 72°--E 148°/N 13°--N 18°',
-          "type": 'map coordinates',
-          "encoding": {
-            "value": 'DMS'
+          value: 'E 72°--E 148°/N 13°--N 18°',
+          type: 'map coordinates',
+          encoding: {
+            value: 'DMS'
           }
         )
       ]
@@ -133,17 +133,17 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       [
         Cocina::Models::DescriptiveValue.new(
           {
-            "value": '1:22,000,000',
-            "type": 'map scale'
+            value: '1:22,000,000',
+            type: 'map scale'
           }
         ),
         Cocina::Models::DescriptiveValue.new(
           {
-            "value": 'Conic proj',
-            "type": 'map projection',
-            "uri": 'http://opengis.net/def/crs/EPSG/0/4326',
-            "source": {
-              "code": 'EPSG'
+            value: 'Conic proj',
+            type: 'map projection',
+            uri: 'http://opengis.net/def/crs/EPSG/0/4326',
+            source: {
+              code: 'EPSG'
             }
           }
         )
@@ -175,10 +175,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
-          "value": 'E 72°--E 148°/N 13°--N 18°',
-          "type": 'map coordinates',
-          "encoding": {
-            "value": 'DMS'
+          value: 'E 72°--E 148°/N 13°--N 18°',
+          type: 'map coordinates',
+          encoding: {
+            value: 'DMS'
           }
         )
       ]
@@ -204,31 +204,31 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       [
         Cocina::Models::DescriptiveValue.new(
           {
-            "parallelValue": [
+            parallelValue: [
               {
-                "source": {
-                  "code": 'lcsh',
-                  "uri": 'http://id.loc.gov/authorities/subjects/'
+                source: {
+                  code: 'lcsh',
+                  uri: 'http://id.loc.gov/authorities/subjects/'
                 },
-                "uri": 'http://id.loc.gov/authorities/subjects/sh85135212',
-                "value": 'Tiber River (Italy)',
-                "type": 'place'
+                uri: 'http://id.loc.gov/authorities/subjects/sh85135212',
+                value: 'Tiber River (Italy)',
+                type: 'place'
               },
               {
-                "source": {
-                  "code": 'local'
+                source: {
+                  code: 'local'
                 },
-                "value": 'Tevere',
-                "type": 'topic'
+                value: 'Tevere',
+                type: 'topic'
               },
               {
-                "value": 'Tiber River',
-                "type": 'name',
-                "source": {
-                  "code": 'lcsh',
-                  "uri": 'http://id.loc.gov/authorities/names/'
+                value: 'Tiber River',
+                type: 'name',
+                source: {
+                  code: 'lcsh',
+                  uri: 'http://id.loc.gov/authorities/names/'
                 },
-                "uri": 'http://id.loc.gov/authorities/names/n97042879'
+                uri: 'http://id.loc.gov/authorities/names/n97042879'
               }
             ]
           }
@@ -262,20 +262,20 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       [
         Cocina::Models::DescriptiveValue.new(
           {
-            "structuredValue": [
+            structuredValue: [
               {
-                "value": 'Archives et documents',
-                "type": 'topic'
+                value: 'Archives et documents',
+                type: 'topic'
               },
               {
-                "value": 'Portraits',
-                "type": 'topic'
+                value: 'Portraits',
+                type: 'topic'
               }
             ],
-            "valueLanguage": {
-              "code": 'fre',
-              "source": {
-                "code": 'iso639-2b'
+            valueLanguage: {
+              code: 'fre',
+              source: {
+                code: 'iso639-2b'
               },
               valueScript: {
                 code: 'Latn',
@@ -284,7 +284,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
                 }
               }
             },
-            "displayLabel": 'French archives'
+            displayLabel: 'French archives'
           }
         )
       ]

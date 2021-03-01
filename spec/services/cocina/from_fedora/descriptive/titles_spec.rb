@@ -152,12 +152,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       it 'creates model' do
         expect(build).to eq [
           {
-            "value": 'Война и миръ',
-            "valueLanguage": {
-              "valueScript": {
-                "code": 'Cyrl',
-                "source": {
-                  "code": 'iso15924'
+            value: 'Война и миръ',
+            valueLanguage: {
+              valueScript: {
+                code: 'Cyrl',
+                source: {
+                  code: 'iso15924'
                 }
               }
             }
@@ -186,7 +186,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       it 'creates model' do
         expect(build).to eq [
           {
-            "value": 'Война и миръ'
+            value: 'Война и миръ'
           }
         ]
       end
@@ -225,54 +225,54 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       it 'creates value from the authority record' do
         expect(build).to eq [
           {
-            "parallelValue": [
+            parallelValue: [
               {
-                "structuredValue": [
+                structuredValue: [
                   {
-                    "value": 'Sefer Shaʻare ha-ḳedushah in Hebrew',
-                    "type": 'main title'
+                    value: 'Sefer Shaʻare ha-ḳedushah in Hebrew',
+                    type: 'main title'
                   },
                   {
-                    "value": 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo in Hebrew',
-                    "type": 'subtitle'
+                    value: 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo in Hebrew',
+                    type: 'subtitle'
                   }
                 ]
               },
               {
-                "structuredValue": [
+                structuredValue: [
                   {
-                    "value": 'Sefer Shaʻare ha-ḳedushah',
-                    "type": 'main title'
+                    value: 'Sefer Shaʻare ha-ḳedushah',
+                    type: 'main title'
                   },
                   {
-                    "value": 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo',
-                    "type": 'subtitle'
+                    value: 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo',
+                    type: 'subtitle'
                   }
                 ]
               }
             ]
           },
           {
-            "structuredValue": [
+            structuredValue: [
               {
                 type: 'title',
                 value: 'Shaʻare ha-ḳedushah'
               },
               {
-                "structuredValue": [
+                structuredValue: [
                   {
-                    "value": 'Vital, Ḥayyim ben Joseph',
-                    "type": 'name'
+                    value: 'Vital, Ḥayyim ben Joseph',
+                    type: 'name'
                   },
                   {
-                    "value": '1542 or 1543-1620',
-                    "type": 'life dates'
+                    value: '1542 or 1543-1620',
+                    type: 'life dates'
                   }
                 ],
-                "type": 'name'
+                type: 'name'
               }
             ],
-            "type": 'uniform'
+            type: 'uniform'
           }
         ]
       end
@@ -302,26 +302,26 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       it 'creates value from the authority record' do
         expect(build).to eq [
           {
-            "structuredValue": [
+            structuredValue: [
               {
-                "value": 'Tractatus de intellectus emendatione. German',
-                "type": 'title'
+                value: 'Tractatus de intellectus emendatione. German',
+                type: 'title'
               },
               {
-                "structuredValue": [
+                structuredValue: [
                   {
-                    "value": 'Spinoza, Benedictus de',
-                    "type": 'name'
+                    value: 'Spinoza, Benedictus de',
+                    type: 'name'
                   },
                   {
-                    "value": '1632-1677',
-                    "type": 'life dates'
+                    value: '1632-1677',
+                    type: 'life dates'
                   }
                 ],
-                "type": 'name'
+                type: 'name'
               }
             ],
-            "type": 'uniform'
+            type: 'uniform'
           }
         ]
       end
@@ -351,15 +351,15 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       it 'creates value from the authority record and warns' do
         expect(build).to eq [
           {
-            "structuredValue": [
+            structuredValue: [
               {
-                "value": 'Hamlet',
-                "type": 'title'
+                value: 'Hamlet',
+                type: 'title'
               }
             ],
-            "type": 'uniform',
-            "uri": 'http://id.loc.gov/authorities/names/n80008522',
-            "source": {
+            type: 'uniform',
+            uri: 'http://id.loc.gov/authorities/names/n80008522',
+            source: {
               code: 'naf',
               uri: 'http://id.loc.gov/authorities/names/'
             }
@@ -392,12 +392,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       it 'creates simple values' do
         expect(build).to eq [
           {
-            "value": 'Annual report of notifiable diseases',
-            "status": 'primary'
+            value: 'Annual report of notifiable diseases',
+            status: 'primary'
           },
           {
-            "value": 'Annu. rep. notif. dis.',
-            "type": 'abbreviated'
+            value: 'Annu. rep. notif. dis.',
+            type: 'abbreviated'
           }
         ]
       end

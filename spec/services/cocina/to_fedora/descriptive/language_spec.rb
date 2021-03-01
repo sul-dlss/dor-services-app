@@ -33,11 +33,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Language do
     let(:languages) do
       [
         Cocina::Models::Language.new(
-          "code": 'ara',
-          "uri": 'http://id.loc.gov/vocabulary/iso639-2/ara',
-          "source": {
-            "code": 'iso639-2b',
-            "uri": 'http://id.loc.gov/vocabulary/iso639-2'
+          code: 'ara',
+          uri: 'http://id.loc.gov/vocabulary/iso639-2/ara',
+          source: {
+            code: 'iso639-2b',
+            uri: 'http://id.loc.gov/vocabulary/iso639-2'
           }
         )
       ]
@@ -60,11 +60,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Language do
     let(:languages) do
       [
         Cocina::Models::Language.new(
-          "value": 'Arabic',
-          "uri": 'http://id.loc.gov/vocabulary/iso639-2/ara',
-          "source": {
-            "code": 'iso639-2b',
-            "uri": 'http://id.loc.gov/vocabulary/iso639-2'
+          value: 'Arabic',
+          uri: 'http://id.loc.gov/vocabulary/iso639-2/ara',
+          source: {
+            code: 'iso639-2b',
+            uri: 'http://id.loc.gov/vocabulary/iso639-2'
           }
         )
       ]

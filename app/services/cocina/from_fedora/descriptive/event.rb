@@ -322,42 +322,42 @@ module Cocina
           case event[:type]
           when 'distribution'
             {
-              "value": 'distributor',
-              "code": 'dst',
-              "uri": 'http://id.loc.gov/vocabulary/relators/dst',
-              "source": {
-                "code": 'marcrelator',
-                "uri": 'http://id.loc.gov/vocabulary/relators/'
+              value: 'distributor',
+              code: 'dst',
+              uri: 'http://id.loc.gov/vocabulary/relators/dst',
+              source: {
+                code: 'marcrelator',
+                uri: 'http://id.loc.gov/vocabulary/relators/'
               }
             }
           when 'manufacture'
             {
-              "value": 'manufacturer',
-              "code": 'mfr',
-              "uri": 'http://id.loc.gov/vocabulary/relators/mfr',
-              "source": {
-                "code": 'marcrelator',
-                "uri": 'http://id.loc.gov/vocabulary/relators/'
+              value: 'manufacturer',
+              code: 'mfr',
+              uri: 'http://id.loc.gov/vocabulary/relators/mfr',
+              source: {
+                code: 'marcrelator',
+                uri: 'http://id.loc.gov/vocabulary/relators/'
               }
             }
           when 'production'
             {
-              "value": 'issuing body',
-              "code": 'isb',
-              "uri": 'http://id.loc.gov/vocabulary/relators/isb',
-              "source": {
-                "code": 'marcrelator',
-                "uri": 'http://id.loc.gov/vocabulary/relators/'
+              value: 'issuing body',
+              code: 'isb',
+              uri: 'http://id.loc.gov/vocabulary/relators/isb',
+              source: {
+                code: 'marcrelator',
+                uri: 'http://id.loc.gov/vocabulary/relators/'
               }
             }
           else
             {
-              "value": 'publisher',
-              "code": 'pbl',
-              "uri": 'http://id.loc.gov/vocabulary/relators/pbl',
-              "source": {
-                "code": 'marcrelator',
-                "uri": 'http://id.loc.gov/vocabulary/relators/'
+              value: 'publisher',
+              code: 'pbl',
+              uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+              source: {
+                code: 'marcrelator',
+                uri: 'http://id.loc.gov/vocabulary/relators/'
               }
             }
           end

@@ -21,15 +21,15 @@ RSpec.describe MetadataService do
 
   describe '#can_resolve?' do
     it 'returns false for an unknown prefix' do
-      expect(described_class.send(:'can_resolve?', 'bogus:1234')).to be_falsey
+      expect(described_class.send(:can_resolve?, 'bogus:1234')).to be_falsey
     end
 
     it 'returns true for barcodes' do
-      expect(described_class.send(:'can_resolve?', 'barcode:1234')).to be_truthy
+      expect(described_class.send(:can_resolve?, 'barcode:1234')).to be_truthy
     end
 
     it 'returns true for catkeys' do
-      expect(described_class.send(:'can_resolve?', 'catkey:1234')).to be_truthy
+      expect(described_class.send(:can_resolve?, 'catkey:1234')).to be_truthy
     end
   end
 

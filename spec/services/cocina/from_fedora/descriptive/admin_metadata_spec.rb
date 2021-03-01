@@ -101,15 +101,15 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
 
     it 'builds the cocina data structure and warns' do
       expect(build).to eq(
-        "language": [
+        language: [
           {
-            "value": 'English',
-            "status": 'primary',
-            "code": 'eng',
-            "uri": 'http://id.loc.gov/vocabulary/iso639-2/eng',
-            "source": {
-              "code": 'iso639-2b',
-              "uri": 'http://id.loc.gov/vocabulary/iso639-2'
+            value: 'English',
+            status: 'primary',
+            code: 'eng',
+            uri: 'http://id.loc.gov/vocabulary/iso639-2/eng',
+            source: {
+              code: 'iso639-2b',
+              uri: 'http://id.loc.gov/vocabulary/iso639-2'
             }
           }
         ]
@@ -136,18 +136,18 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
 
     it 'builds the cocina data structure and does not add a scriptTerm source instead of setting to nil' do
       expect(build).to eq(
-        "language": [
+        language: [
           {
-            "value": 'English',
-            "code": 'eng',
-            "uri": 'http://id.loc.gov/vocabulary/iso639-2/eng',
-            "source": {
-              "code": 'iso639-2b',
-              "uri": 'http://id.loc.gov/vocabulary/iso639-2/'
+            value: 'English',
+            code: 'eng',
+            uri: 'http://id.loc.gov/vocabulary/iso639-2/eng',
+            source: {
+              code: 'iso639-2b',
+              uri: 'http://id.loc.gov/vocabulary/iso639-2/'
             },
-            "script": {
-              "value": 'Latin',
-              "code": 'Latn'
+            script: {
+              value: 'Latin',
+              code: 'Latn'
             }
           }
         ]
@@ -166,9 +166,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
 
     it 'builds the cocina data structure' do
       expect(build).to eq(
-        "identifier": [
+        identifier: [
           {
-            "value": 'a12374669'
+            value: 'a12374669'
           }
         ]
       )
@@ -294,11 +294,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::AdminMetadata do
 
     it 'builds the cocina data structure and warns' do
       expect(build).to eq(
-        "language": [
+        language: [
           {
-            "code": 'eng',
-            "source": {
-              "code": 'iso639-2b'
+            code: 'eng',
+            source: {
+              code: 'iso639-2b'
             }
           }
         ]

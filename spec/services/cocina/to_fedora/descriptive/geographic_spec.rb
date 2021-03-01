@@ -39,53 +39,53 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
       Cocina::Models::DescriptiveGeographicMetadata.new(
         form: [
           {
-            "value": 'application/x-esri-shapefile',
-            "type": 'media type',
-            "source": {
-              "value": 'IANA media type terms'
+            value: 'application/x-esri-shapefile',
+            type: 'media type',
+            source: {
+              value: 'IANA media type terms'
             }
           },
           {
-            "value": 'Shapefile',
-            "type": 'data format'
+            value: 'Shapefile',
+            type: 'data format'
           },
           {
-            "value": 'Dataset#Polygon',
-            "type": 'type'
+            value: 'Dataset#Polygon',
+            type: 'type'
           }
         ],
-        "subject": [
+        subject: [
           {
-            "structuredValue": [
+            structuredValue: [
               {
-                "value": '-119.667',
-                "type": 'west'
+                value: '-119.667',
+                type: 'west'
               },
               {
-                "value": '-89.8842',
-                "type": 'south'
+                value: '-89.8842',
+                type: 'south'
               },
               {
-                "value": '168.463',
-                "type": 'east'
+                value: '168.463',
+                type: 'east'
               },
               {
-                "value": '-66.6497',
-                "type": 'north'
+                value: '-66.6497',
+                type: 'north'
               }
             ],
-            "type": 'bounding box coordinates',
-            "encoding": {
-              "value": 'decimal'
+            type: 'bounding box coordinates',
+            encoding: {
+              value: 'decimal'
             }
           },
           {
-            "value": 'Antarctica',
-            "type": 'coverage',
-            "valueLanguage": {
-              "code": 'eng'
+            value: 'Antarctica',
+            type: 'coverage',
+            valueLanguage: {
+              code: 'eng'
             },
-            "uri": 'http://sws.geonames.org/6255152/'
+            uri: 'http://sws.geonames.org/6255152/'
           }
         ]
       )
@@ -122,19 +122,19 @@ RSpec.describe Cocina::ToFedora::Descriptive::Geographic do
       Cocina::Models::DescriptiveGeographicMetadata.new(
         form: [
           {
-            "value": 'application/x-esri-shapefile',
-            "type": 'media type',
-            "source": {
-              "value": 'IANA media type terms'
+            value: 'application/x-esri-shapefile',
+            type: 'media type',
+            source: {
+              value: 'IANA media type terms'
             }
           },
           {
-            "value": 'Shapefile',
-            "type": 'data format'
+            value: 'Shapefile',
+            type: 'data format'
           },
           {
-            "value": 'Dataset#Polygon',
-            "type": 'type'
+            value: 'Dataset#Polygon',
+            type: 'type'
           }
         ]
       )

@@ -82,7 +82,7 @@ def short_commit_hash
 end
 
 def now_str
-  DateTime.now.utc.iso8601.to_s.gsub(':', '-')
+  DateTime.now.utc.iso8601.to_s.tr(':', '-')
 end
 
 def results_file_name(use_unique_filename)

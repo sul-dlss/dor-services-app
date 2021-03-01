@@ -299,14 +299,14 @@ RSpec.describe 'MODS language <--> cocina mappings' do
               code: 'eng',
               status: 'primary',
               source: {
-                'code': 'iso639-2b'
+                code: 'iso639-2b'
               }
             },
             {
               value: 'French',
               code: 'fre',
               source: {
-                'code': 'iso639-2b'
+                code: 'iso639-2b'
               }
             }
           ]

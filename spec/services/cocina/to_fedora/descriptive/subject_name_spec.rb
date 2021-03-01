@@ -21,12 +21,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       [
         Cocina::Models::DescriptiveValue.new(
           {
-            "value": 'Stanford University',
-            "type": 'organization',
-            "uri": 'http://id.loc.gov/authorities/names/n79054636',
-            "source": {
-              "code": 'naf',
-              "uri": 'http://id.loc.gov/authorities/names/'
+            value: 'Stanford University',
+            type: 'organization',
+            uri: 'http://id.loc.gov/authorities/names/n79054636',
+            source: {
+              code: 'naf',
+              uri: 'http://id.loc.gov/authorities/names/'
             }
           }
         )
@@ -53,10 +53,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       [
         Cocina::Models::DescriptiveValue.new(
           {
-            "value": 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
-            "type": 'person',
-            "source": {
-              "code": 'naf'
+            value: 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
+            type: 'person',
+            source: {
+              code: 'naf'
             }
           }
         )
@@ -85,17 +85,17 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
           {
             structuredValue: [
               {
-                "value": 'Shakespeare, William, 1564-1616',
-                "type": 'person',
-                "uri": 'http://id.loc.gov/authorities/names/n78095332',
-                "source": {
-                  "code": 'naf',
-                  "uri": 'http://id.loc.gov/authorities/names/'
+                value: 'Shakespeare, William, 1564-1616',
+                type: 'person',
+                uri: 'http://id.loc.gov/authorities/names/n78095332',
+                source: {
+                  code: 'naf',
+                  uri: 'http://id.loc.gov/authorities/names/'
                 }
               },
               {
-                "value": 'Homes and haunts',
-                "type": 'topic'
+                value: 'Homes and haunts',
+                type: 'topic'
               }
             ]
           }
@@ -126,21 +126,21 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
           {
             structuredValue: [
               {
-                "value": 'Shakespeare, William, 1564-1616',
-                "type": 'person',
-                "uri": 'http://id.loc.gov/authorities/names/n78095332',
-                "source": {
-                  "code": 'naf',
-                  "uri": 'http://id.loc.gov/authorities/names/'
+                value: 'Shakespeare, William, 1564-1616',
+                type: 'person',
+                uri: 'http://id.loc.gov/authorities/names/n78095332',
+                source: {
+                  code: 'naf',
+                  uri: 'http://id.loc.gov/authorities/names/'
                 }
               },
               {
-                "value": 'Homes and haunts',
-                "type": 'topic',
-                "uri": 'http://id.loc.gov/authorities/subjects/sh99005711',
-                "source": {
-                  "code": 'lcsh',
-                  "uri": 'http://id.loc.gov/authorities/subjects/'
+                value: 'Homes and haunts',
+                type: 'topic',
+                uri: 'http://id.loc.gov/authorities/subjects/sh99005711',
+                source: {
+                  code: 'lcsh',
+                  uri: 'http://id.loc.gov/authorities/subjects/'
                 }
               }
             ]
@@ -172,28 +172,28 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
           {
             structuredValue: [
               {
-                "value": 'Shakespeare, William, 1564-1616',
-                "type": 'person',
-                "uri": 'http://id.loc.gov/authorities/names/n78095332',
-                "source": {
-                  "code": 'naf',
-                  "uri": 'http://id.loc.gov/authorities/names/'
+                value: 'Shakespeare, William, 1564-1616',
+                type: 'person',
+                uri: 'http://id.loc.gov/authorities/names/n78095332',
+                source: {
+                  code: 'naf',
+                  uri: 'http://id.loc.gov/authorities/names/'
                 }
               },
               {
-                "value": 'Homes and haunts',
-                "type": 'topic',
-                "uri": 'http://id.loc.gov/authorities/subjects/sh99005711',
-                "source": {
-                  "code": 'lcsh',
-                  "uri": 'http://id.loc.gov/authorities/subjects/'
+                value: 'Homes and haunts',
+                type: 'topic',
+                uri: 'http://id.loc.gov/authorities/subjects/sh99005711',
+                source: {
+                  code: 'lcsh',
+                  uri: 'http://id.loc.gov/authorities/subjects/'
                 }
               }
             ],
-            "uri": 'http://id.loc.gov/authorities/subjects/sh85120951',
-            "source": {
-              "code": 'lcsh',
-              "uri": 'http://id.loc.gov/authorities/subjects/'
+            uri: 'http://id.loc.gov/authorities/subjects/sh85120951',
+            source: {
+              code: 'lcsh',
+              uri: 'http://id.loc.gov/authorities/subjects/'
             }
           }
         )
@@ -221,35 +221,35 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
-          "source": {
-            "code": 'lcsh'
+          source: {
+            code: 'lcsh'
           },
-          "structuredValue": [
+          structuredValue: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'California.',
-                  "type": 'name'
+                  value: 'California.',
+                  type: 'name'
                 },
                 {
-                  "value": 'Sect. 7570.',
-                  "type": 'name'
+                  value: 'Sect. 7570.',
+                  type: 'name'
                 }
               ],
-              "type": 'organization'
+              type: 'organization'
             },
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Government Code',
-                  "type": 'main title'
+                  value: 'Government Code',
+                  type: 'main title'
                 },
                 {
-                  "value": 'Sect. 7570',
-                  "type": 'part number'
+                  value: 'Sect. 7570',
+                  type: 'part number'
                 }
               ],
-              "type": 'title'
+              type: 'title'
             }
           ]
         )

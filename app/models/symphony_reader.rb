@@ -27,7 +27,7 @@ class SymphonyReader
 
     record = MARC::Record.new
 
-    # note that new record already has default leader, but we don't want it unless it's from Symphony
+    # NOTE: that new record already has default leader, but we don't want it unless it's from Symphony
     record.leader = leader
 
     fields.uniq.each do |field|

@@ -33,17 +33,17 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
     let(:resources) do
       [
         Cocina::Models::RelatedResource.new(
-          "title": [
+          title: [
             {
-              "value": 'Supplement'
+              value: 'Supplement'
             }
           ],
-          "access": {
-            "url": [
-              "value": 'https://example.com/paper.html'
+          access: {
+            url: [
+              value: 'https://example.com/paper.html'
             ]
           },
-          "type": 'related to'
+          type: 'related to'
         )
       ]
     end
@@ -70,13 +70,13 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
     let(:resources) do
       [
         Cocina::Models::RelatedResource.new(
-          "note": [
+          note: [
             {
-              "value": 'Stanford University (Stanford, CA.). (2020)',
-              "type": 'preferred citation'
+              value: 'Stanford University (Stanford, CA.). (2020)',
+              type: 'preferred citation'
             }
           ],
-          "type": 'related to'
+          type: 'related to'
         )
       ]
     end
@@ -98,16 +98,16 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
     let(:resources) do
       [
         Cocina::Models::RelatedResource.new(
-          "title": [
+          title: [
             {
-              "value": 'Related item 1'
+              value: 'Related item 1'
             }
           ]
         ),
         Cocina::Models::RelatedResource.new(
-          "title": [
+          title: [
             {
-              "value": 'Related item 2'
+              value: 'Related item 2'
             }
           ]
         )
@@ -138,12 +138,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
     let(:resources) do
       [
         Cocina::Models::RelatedResource.new(
-          "title": [
+          title: [
             {
-              "value": 'Fremontia : Journal of the California Native Plant Society'
+              value: 'Fremontia : Journal of the California Native Plant Society'
             }
           ],
-          "displayLabel": 'Contained in (manifestation):'
+          displayLabel: 'Contained in (manifestation):'
         )
       ]
     end
@@ -168,16 +168,16 @@ RSpec.describe Cocina::ToFedora::Descriptive::RelatedResource do
       [
         Cocina::Models::RelatedResource.new(
           {
-            "title": [
+            title: [
               {
-                "value": 'Lymond chronicles'
+                value: 'Lymond chronicles'
               }
             ],
-            "contributor": [
+            contributor: [
               {
-                "name": [
+                name: [
                   {
-                    "value": 'Dunnett, Dorothy'
+                    value: 'Dunnett, Dorothy'
                   }
                 ]
               }

@@ -304,31 +304,31 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
         {
           subject: [
             {
-              "parallelValue": [
+              parallelValue: [
                 {
-                  "source": {
-                    "code": 'lcsh'
+                  source: {
+                    code: 'lcsh'
                   },
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": 'Mália Site (Greece)',
-                      "type": 'place'
+                      value: 'Mália Site (Greece)',
+                      type: 'place'
                     },
                     {
-                      "value": 'Antiquities',
-                      "type": 'topic'
+                      value: 'Antiquities',
+                      type: 'topic'
                     }
                   ]
                 },
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": 'Μαλιά (Ελλάδα)',
-                      "type": 'place'
+                      value: 'Μαλιά (Ελλάδα)',
+                      type: 'place'
                     },
                     {
-                      "value": 'Αρχαιότητες',
-                      "type": 'topic'
+                      value: 'Αρχαιότητες',
+                      type: 'topic'
                     }
                   ]
                 }
@@ -358,16 +358,16 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
         {
           subject: [
             {
-              "parallelValue": [
+              parallelValue: [
                 {
-                  "source": {
-                    "code": 'lcsh'
+                  source: {
+                    code: 'lcsh'
                   },
                   value: 'Ḳiryat Ḥayim (Haifa, Israel)'
                 },
                 {
-                  "source": {
-                    "code": 'lcsh'
+                  source: {
+                    code: 'lcsh'
                   },
                   value: 'Ḳiryat Ḥayim (Haifa, Israel) in Hebrew'
                 }

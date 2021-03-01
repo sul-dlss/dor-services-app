@@ -23,16 +23,16 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
       let(:titles) do
         [
           Cocina::Models::Title.new(
-            "value": 'Union des Forces de Changement du Togo',
-            "valueLanguage": {
-              "code": 'fre',
-              "source": {
-                "code": 'iso639-2b'
+            value: 'Union des Forces de Changement du Togo',
+            valueLanguage: {
+              code: 'fre',
+              source: {
+                code: 'iso639-2b'
               },
-              "valueScript": {
-                "code": 'Latn',
-                "source": {
-                  "code": 'iso15924'
+              valueScript: {
+                code: 'Latn',
+                source: {
+                  code: 'iso15924'
                 }
               }
             }
@@ -96,22 +96,22 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
         [
           Cocina::Models::Contributor.new(
             {
-              "name": [
+              name: [
                 {
-                  "structuredValue": [
+                  structuredValue: [
                     {
-                      "value": 'Vivaldi, Antonio',
-                      "type": 'name'
+                      value: 'Vivaldi, Antonio',
+                      type: 'name'
                     },
                     {
-                      "value": '1678-1741',
-                      "type": 'life dates'
+                      value: '1678-1741',
+                      type: 'life dates'
                     }
                   ]
                 }
               ],
-              "type": 'person',
-              "status": 'primary'
+              type: 'person',
+              status: 'primary'
             }
           )
         ]
@@ -139,12 +139,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
       let(:titles) do
         [
           Cocina::Models::Title.new(
-            "value": 'Война и миръ',
-            "valueLanguage": {
-              "valueScript": {
-                "code": 'Cyrl',
-                "source": {
-                  "code": 'iso15924'
+            value: 'Война и миръ',
+            valueLanguage: {
+              valueScript: {
+                code: 'Cyrl',
+                source: {
+                  code: 'iso15924'
                 }
               }
             }
@@ -169,15 +169,15 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
       let(:titles) do
         [
           Cocina::Models::Title.new(
-            "parallelValue": [
+            parallelValue: [
               {
-                "value": 'Zi yuan wei yuan hui yue kan'
+                value: 'Zi yuan wei yuan hui yue kan'
               },
               {
-                "value": '資源委員會月刊'
+                value: '資源委員會月刊'
               }
             ],
-            "type": 'parallel'
+            type: 'parallel'
           )
         ]
       end
@@ -202,31 +202,31 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
       let(:titles) do
         [
           Cocina::Models::Title.new(
-            "parallelValue": [
+            parallelValue: [
               {
-                "value": '[Chosen] Gomanbunnnoichi Chikeizu',
-                "valueLanguage": {
-                  "valueScript": {
-                    "code": 'Latn',
-                    "source": {
-                      "code": 'iso15924'
+                value: '[Chosen] Gomanbunnnoichi Chikeizu',
+                valueLanguage: {
+                  valueScript: {
+                    code: 'Latn',
+                    source: {
+                      code: 'iso15924'
                     }
                   }
                 }
               },
               {
-                "value": '[朝鮮] 五万分一地形圖',
-                "valueLanguage": {
-                  "valueScript": {
-                    "code": 'Latn',
-                    "source": {
-                      "code": 'iso15924'
+                value: '[朝鮮] 五万分一地形圖',
+                valueLanguage: {
+                  valueScript: {
+                    code: 'Latn',
+                    source: {
+                      code: 'iso15924'
                     }
                   }
                 }
               }
             ],
-            "type": 'parallel'
+            type: 'parallel'
           )
         ]
       end
@@ -252,7 +252,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
         [
           Cocina::Models::Title.new(
             {
-              "value": 'Stanford Alpine Club'
+              value: 'Stanford Alpine Club'
             }
           )
         ]
@@ -262,18 +262,18 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
         [
           Cocina::Models::Contributor.new(
             {
-              "name": [
+              name: [
                 {
-                  "value": 'Stanford Alpine Club',
-                  "uri": 'http://id.loc.gov/authorities/names/n99277320',
-                  "source": {
-                    "code": 'naf',
-                    "uri": 'http://id.loc.gov/authorities/names/'
+                  value: 'Stanford Alpine Club',
+                  uri: 'http://id.loc.gov/authorities/names/n99277320',
+                  source: {
+                    code: 'naf',
+                    uri: 'http://id.loc.gov/authorities/names/'
                   }
                 }
               ],
-              "type": 'organization',
-              "status": 'primary'
+              type: 'organization',
+              status: 'primary'
             }
           )
         ]
@@ -299,50 +299,50 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
     let(:titles) do
       [
         Cocina::Models::Title.new(
-          "structuredValue": [
+          structuredValue: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Vital, Ḥayyim ben Joseph',
-                  "type": 'name'
+                  value: 'Vital, Ḥayyim ben Joseph',
+                  type: 'name'
                 },
                 {
-                  "value": '1542 or 1543-1620',
-                  "type": 'life dates'
+                  value: '1542 or 1543-1620',
+                  type: 'life dates'
                 }
               ],
-              "type": 'name'
+              type: 'name'
             },
             {
-              "value": 'Shaʻare ha-ḳedushah',
-              "type": 'title'
+              value: 'Shaʻare ha-ḳedushah',
+              type: 'title'
             }
           ],
-          "type": 'uniform'
+          type: 'uniform'
         ),
         Cocina::Models::Title.new(
-          "parallelValue": [
+          parallelValue: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Sefer Shaʻare ha-ḳedushah in Hebrew',
-                  "type": 'main title'
+                  value: 'Sefer Shaʻare ha-ḳedushah in Hebrew',
+                  type: 'main title'
                 },
                 {
-                  "value": 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo in Hebrew',
-                  "type": 'subtitle'
+                  value: 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo in Hebrew',
+                  type: 'subtitle'
                 }
               ]
             },
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Sefer Shaʻare ha-ḳedushah',
-                  "type": 'main title'
+                  value: 'Sefer Shaʻare ha-ḳedushah',
+                  type: 'main title'
                 },
                 {
-                  "value": 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo',
-                  "type": 'subtitle'
+                  value: 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo',
+                  type: 'subtitle'
                 }
               ]
             }
@@ -354,22 +354,22 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
     let(:contributors) do
       [
         Cocina::Models::Contributor.new(
-          "name": [
+          name: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Vital, Ḥayyim ben Joseph',
-                  "type": 'name'
+                  value: 'Vital, Ḥayyim ben Joseph',
+                  type: 'name'
                 },
                 {
-                  "value": '1542 or 1543-1620',
-                  "type": 'life dates'
+                  value: '1542 or 1543-1620',
+                  type: 'life dates'
                 }
               ]
             }
           ],
-          "type": 'person',
-          "status": 'primary'
+          type: 'person',
+          status: 'primary'
         )
       ]
     end

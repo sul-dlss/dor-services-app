@@ -25,10 +25,10 @@ druids.each_with_index do |druid, index|
   orig_xml = object.descMetadata.ng_xml.canonicalize
   status = RefreshMetadataAction.run(identifiers: object.identityMetadata.otherId.collect(&:to_s), datastream: object.descMetadata)
   if status
-    if orig_xml != object.descMetadata.ng_xml.canonicalize
-      object.save!
-    else
+    if orig_xml == object.descMetadata.ng_xml.canonicalize
       puts 'No change'
+    else
+      object.save!
     end
     success << druid
   else

@@ -165,21 +165,21 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
         {
           subject: [
             {
-              "structuredValue": [
+              structuredValue: [
                 {
-                  "value": 'Morgan, Lee',
-                  "type": 'name'
+                  value: 'Morgan, Lee',
+                  type: 'name'
                 },
                 {
-                  "value": 'II.',
-                  "type": 'term of address'
+                  value: 'II.',
+                  type: 'term of address'
                 }
               ],
-              "source": {
-                "code": 'lcsh'
+              source: {
+                code: 'lcsh'
               },
-              "uri": 'http://id.loc.gov/authorities/names/n2006022928',
-              "type": 'person'
+              uri: 'http://id.loc.gov/authorities/names/n2006022928',
+              type: 'person'
             }
           ]
         }

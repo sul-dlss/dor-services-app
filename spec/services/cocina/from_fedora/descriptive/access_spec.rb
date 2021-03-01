@@ -31,10 +31,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Access do
     it 'builds the cocina data structure' do
       expect(build).to eq(
         {
-          "accessContact": [
+          accessContact: [
             {
-              "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
-              "type": 'repository'
+              value: 'Stanford University. Libraries. Department of Special Collections and University Archives',
+              type: 'repository'
             }
           ]
         }
@@ -53,9 +53,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Access do
 
     it 'builds the cocina data structure' do
       expect(build).to eq(
-        "url": [
+        url: [
           {
-            "value": 'https://www.davidrumsey.com/luna/servlet/view/search?q=pub_list_no=%2211728.000'
+            value: 'https://www.davidrumsey.com/luna/servlet/view/search?q=pub_list_no=%2211728.000'
           }
         ]
       )
@@ -76,20 +76,20 @@ RSpec.describe Cocina::FromFedora::Descriptive::Access do
 
     it 'builds the cocina data structure' do
       expect(build).to eq(
-        "accessContact": [
+        accessContact: [
           {
-            "value": 'Stanford University. Libraries. Department of Special Collections and University Archives',
-            "uri": 'http://id.loc.gov/authorities/names/no2014019980',
-            "type": 'repository',
-            "displayLabel": 'Repository',
-            "source": {
-              "uri": 'http://id.loc.gov/authorities/names/'
+            value: 'Stanford University. Libraries. Department of Special Collections and University Archives',
+            uri: 'http://id.loc.gov/authorities/names/no2014019980',
+            type: 'repository',
+            displayLabel: 'Repository',
+            source: {
+              uri: 'http://id.loc.gov/authorities/names/'
             }
           }
         ],
-        "physicalLocation": [
+        physicalLocation: [
           {
-            "value": 'Call Number: SC0340, Accession 2005-101, Box: 51, Folder: 3'
+            value: 'Call Number: SC0340, Accession 2005-101, Box: 51, Folder: 3'
           }
         ]
       )

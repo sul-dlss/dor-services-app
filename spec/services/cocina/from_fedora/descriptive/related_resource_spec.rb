@@ -61,13 +61,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
-          'displayLabel': 'Original James Record',
-          'title': [
+          displayLabel: 'Original James Record',
+          title: [
             {
-              'value': 'https://stacks.stanford.edu/file/druid:mf281cz1275/MS_296.pdf'
+              value: 'https://stacks.stanford.edu/file/druid:mf281cz1275/MS_296.pdf'
             }
           ],
-          'type': 'referenced by'
+          type: 'referenced by'
         }
       ]
       expect(notifier).to have_received(:warn).with('Invalid related resource type', resource_type: 'isReferencedby')
@@ -92,12 +92,12 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
-          "title": [
+          title: [
             {
-              "value": 'Lymond chronicles'
+              value: 'Lymond chronicles'
             }
           ],
-          "type": 'has version'
+          type: 'has version'
         }
       ]
       expect(notifier).to have_received(:warn).with('Invalid related resource type', resource_type: 'Other version')
@@ -122,9 +122,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     it 'leaves off the type and warns' do
       expect(build).to eq [
         {
-          "title": [
+          title: [
             {
-              "value": 'Lymond chronicles'
+              value: 'Lymond chronicles'
             }
           ]
         }
@@ -145,10 +145,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "note": [
+          note: [
             {
-              "value": 'Additional data.',
-              "type": 'summary'
+              value: 'Additional data.',
+              type: 'summary'
             }
           ]
         }
@@ -175,16 +175,16 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     it 'builds the cocina data structure' do
       expect(build).to eq [
         {
-          "title": [
+          title: [
             {
-              "value": 'Related item 1'
+              value: 'Related item 1'
             }
           ]
         },
         {
-          "title": [
+          title: [
             {
-              "value": 'Related item 2'
+              value: 'Related item 2'
             }
           ]
         }
@@ -210,13 +210,13 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
     it 'builds the cocina data structure and warns' do
       expect(build).to eq [
         {
-          "title": [
+          title: [
             {
-              "value": 'Sitzungsberichte der Kaiserlichen Akademie der Wissenschaften'
+              value: 'Sitzungsberichte der Kaiserlichen Akademie der Wissenschaften'
             }
           ],
-          "type": 'has other format',
-          "displayLabel": 'Online version:'
+          type: 'has other format',
+          displayLabel: 'Online version:'
         }
       ]
       expect(notifier).to have_received(:warn).with('Related resource has type and otherType')

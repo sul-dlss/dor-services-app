@@ -59,18 +59,18 @@ module Cocina
         def build_note
           [
             {
-              "type": 'type',
-              "value": mods_type
+              type: 'type',
+              value: mods_type
 
             }.tap do |note_attrs|
               if identifier_source == IdentifierType::STANDARD_IDENTIFIER_SCHEMES
                 note_attrs[:uri] = "http://id.loc.gov/vocabulary/identifiers/#{mods_type}"
                 note_attrs[:source] = {
-                  "value": 'Standard Identifier Schemes',
-                  "uri": 'http://id.loc.gov/vocabulary/identifiers/'
+                  value: 'Standard Identifier Schemes',
+                  uri: 'http://id.loc.gov/vocabulary/identifiers/'
                 }
               elsif identifier_source == IdentifierType::STANDARD_IDENTIFIER_SOURCE_CODES
-                note_attrs[:source] = { "value": 'Standard Identifier Source Codes' }
+                note_attrs[:source] = { value: 'Standard Identifier Source Codes' }
               end
             end
           ]

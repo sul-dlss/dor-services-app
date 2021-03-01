@@ -16,7 +16,7 @@ class LogFailureJob < ApplicationJob
     background_job_result.complete!
     return unless workflow
 
-    # Note: Setting error_text same as in LyberCore::Robot.
+    # NOTE: Setting error_text same as in LyberCore::Robot.
     WorkflowClientFactory.build.update_error_status(druid: druid,
                                                     workflow: workflow,
                                                     process: workflow_process,

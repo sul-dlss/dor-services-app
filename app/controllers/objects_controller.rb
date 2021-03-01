@@ -128,9 +128,9 @@ class ObjectsController < ApplicationController
            json: {
              errors: [
                {
-                 'status': status_code.to_s,
-                 'title': title || Rack::Utils::HTTP_STATUS_CODES[status_code],
-                 'detail': message
+                 status: status_code.to_s,
+                 title: title || Rack::Utils::HTTP_STATUS_CODES[status_code],
+                 detail: message
                }.tap do |h|
                  h[:meta] = meta if meta.present?
                end

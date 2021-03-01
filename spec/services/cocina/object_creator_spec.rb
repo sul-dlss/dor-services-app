@@ -79,59 +79,59 @@ RSpec.describe Cocina::ObjectCreator do
           'identification' => {
             'sourceId' => 'donot:care'
           },
-          "description": {
-            "note": [
+          description: {
+            note: [
               {
-                "type": 'summary',
-                "value": 'I am an abstract'
+                type: 'summary',
+                value: 'I am an abstract'
               },
               {
-                "type": 'email',
-                "value": 'marypoppins@umbrellas.org',
-                "displayLabel": 'Contact'
+                type: 'email',
+                value: 'marypoppins@umbrellas.org',
+                displayLabel: 'Contact'
               },
               {
-                "type": 'preferred citation',
-                "value": 'Zappa, F. (2013) :link:'
+                type: 'preferred citation',
+                value: 'Zappa, F. (2013) :link:'
               }
             ],
-            "title": [
+            title: [
               {
-                "value": 'more desc mappings'
+                value: 'more desc mappings'
               }
             ],
-            "subject": [
+            subject: [
               {
-                "type": 'topic',
-                "value": 'I am a keyword'
+                type: 'topic',
+                value: 'I am a keyword'
               }
             ],
-            "contributor": [
+            contributor: [
               {
-                "name": [
+                name: [
                   {
-                    "value": 'Miss Piggy'
+                    value: 'Miss Piggy'
                   }
                 ],
-                "role": [
+                role: [
                   {
-                    "value": 'Creator'
+                    value: 'Creator'
                   }
                 ],
-                "type": 'person'
+                type: 'person'
               },
               {
-                "name": [
+                name: [
                   {
-                    "value": 'funder.example.org'
+                    value: 'funder.example.org'
                   }
                 ],
-                "role": [
+                role: [
                   {
-                    "value": 'Funder'
+                    value: 'Funder'
                   }
                 ],
-                "type": 'organization'
+                type: 'organization'
               }
             ]
           }

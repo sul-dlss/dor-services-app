@@ -7,10 +7,10 @@ RSpec.describe 'Cocina --> MODS mappings for note' do
     it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
-          "note": [
+          note: [
             {
-              "type": 'summary',
-              "value": 'My paper is about dolphins.'
+              type: 'summary',
+              value: 'My paper is about dolphins.'
             }
           ]
         }
@@ -28,9 +28,9 @@ RSpec.describe 'Cocina --> MODS mappings for note' do
     it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
-          "note": [
-            "type": 'preferred citation',
-            "value": 'Me (2002). Our friend the dolphin.'
+          note: [
+            type: 'preferred citation',
+            value: 'Me (2002). Our friend the dolphin.'
           ]
         }
       end

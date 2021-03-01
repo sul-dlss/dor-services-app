@@ -3,6 +3,7 @@
 # Rename the druid trees  at the end of the accessionWF in order to be cleaned/deleted later.
 class ResetWorkspaceService
   class DirectoryAlreadyExists < StandardError; end
+
   class BagAlreadyExists < StandardError; end
 
   # @raise [DirectoryAlreadyExists] if the archived directory already exists

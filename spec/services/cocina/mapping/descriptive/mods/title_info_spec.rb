@@ -29,7 +29,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   describe 'Title with parts' do
     # How to ID: multiple subelements in titleInfo
 
-    # Note: the nonsorting character count should be the number of characters in the nonsorting characters value plus 1
+    # NOTE: the nonsorting character count should be the number of characters in the nonsorting characters value plus 1
     # unless the nonsorting characters value ends with an apostrophe or a hyphen.
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
@@ -314,10 +314,10 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         {
           title: [
             {
-              "value": 'Mā baʻda 1930',
-              "type": 'transliterated',
-              "standard": {
-                "value": 'ALA-LC Romanization Tables'
+              value: 'Mā baʻda 1930',
+              type: 'transliterated',
+              standard: {
+                value: 'ALA-LC Romanization Tables'
               }
             }
           ]

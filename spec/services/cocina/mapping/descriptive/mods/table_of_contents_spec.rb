@@ -120,10 +120,10 @@ RSpec.describe 'MODS tableOfContents <--> cocina mappings' do
 
       let(:cocina) do
         {
-          "note": [
+          note: [
             {
-              "valueAt": 'http://contents.org/contents',
-              "type": 'table of contents'
+              valueAt: 'http://contents.org/contents',
+              type: 'table of contents'
             }
           ]
         }

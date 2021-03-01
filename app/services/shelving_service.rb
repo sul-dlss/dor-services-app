@@ -3,6 +3,7 @@
 # Push file changes for shelve-able files into stacks
 class ShelvingService
   class ContentDirNotFoundError < RuntimeError; end
+
   class ConfigurationError < RuntimeError; end
 
   def self.shelve(work)
@@ -59,7 +60,7 @@ class ShelvingService
     begin
       Pathname(workspace_druid.find_filelist_parent('content', filelist))
     rescue RuntimeError => e
-      raise e unless e.message.match(/content dir not found for /)
+      raise e unless /content dir not found for /.match?(e.message)
 
       raise ContentDirNotFoundError, e
     end

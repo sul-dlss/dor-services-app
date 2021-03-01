@@ -45,11 +45,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       it 'builds the cocina data structure' do
         expect(build).to eq [
           {
-            "value": 'Photographs',
-            "type": 'genre',
-            "source": {
-              "code": 'lcgft',
-              "uri": 'http://id.loc.gov/authorities/genreForms/'
+            value: 'Photographs',
+            type: 'genre',
+            source: {
+              code: 'lcgft',
+              uri: 'http://id.loc.gov/authorities/genreForms/'
             }
           }
         ]
@@ -66,11 +66,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       it 'builds the cocina data structure' do
         expect(build).to eq [
           {
-            "value": 'Photographs',
-            "type": 'genre',
-            "uri": 'http://id.loc.gov/authorities/genreForms/gf2017027249',
-            "source": {
-              "code": 'lcgft'
+            value: 'Photographs',
+            type: 'genre',
+            uri: 'http://id.loc.gov/authorities/genreForms/gf2017027249',
+            source: {
+              code: 'lcgft'
             }
           }
         ]
@@ -87,8 +87,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       it 'builds the cocina data structure' do
         expect(build).to eq [
           {
-            "value": 'Photographs',
-            "type": 'genre'
+            value: 'Photographs',
+            type: 'genre'
           }
         ]
       end
@@ -129,11 +129,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       it 'builds the cocina data structure' do
         expect(build).to eq [
           {
-            "value": 'ink on paper',
-            "type": 'form',
-            "note": [
+            value: 'ink on paper',
+            type: 'form',
+            note: [
               {
-                "value": 'Small tear at top right corner.'
+                value: 'Small tear at top right corner.'
               }
             ]
           }
@@ -159,8 +159,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Form do
       it 'builds the cocina data structure' do
         expect(build).to eq [
           {
-            "value": 'mezzotints (prints)',
-            "type": 'form'
+            value: 'mezzotints (prints)',
+            type: 'form'
           }
         ]
       end

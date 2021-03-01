@@ -717,6 +717,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       allow(dor_item).to receive(:relationships).and_return(nil)
       expect(umrs.send(:dor_items_for_constituents)).to eq([])
     end
+
     it 'successfully determines constituent druid' do
       allow(dor_item).to receive(:relationships).and_return(['info:fedora/druid:mb062dy1188'])
       expect(Dor::Item).to receive(:find).with('druid:mb062dy1188')

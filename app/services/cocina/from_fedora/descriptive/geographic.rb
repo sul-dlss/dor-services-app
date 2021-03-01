@@ -206,7 +206,7 @@ module Cocina
         end
 
         def check_purl
-          return if description['rdf:about'] =~ %r{^https?://purl.stanford.edu/}
+          return if %r{^https?://purl.stanford.edu/}.match?(description['rdf:about'])
 
           notifier.warn('rdf:about does not contain a correctly formatted PURL')
         end
