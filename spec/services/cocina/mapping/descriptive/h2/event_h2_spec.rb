@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   describe 'Publication date: 2021-01-01' do
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'updated spec - not implemented' do
       let(:cocina) do
         {
           event: [
@@ -12,7 +12,8 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
               type: 'publication',
               date: [
                 {
-                  value: '2021-01-01',
+                  value: '2021-01-01',,
+                  type: 'publication',
                   encoding: {
                     code: 'w3cdtf'
                   }
@@ -43,6 +44,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
               date: [
                 {
                   value: '2021-01-01',
+                  type: 'creation',
                   encoding: {
                     code: 'w3cdtf'
                   }
@@ -84,6 +86,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                       type: 'end'
                     }
                   ],
+                  type: 'creation',
                   encoding: {
                     code: 'w3cdtf'
                   }
@@ -126,6 +129,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                       type: 'end'
                     }
                   ],
+                  type: 'creation',
                   qualifier: 'approximate',
                   encoding: {
                     code: 'w3cdtf'
@@ -149,7 +153,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Release date: 2022-01-01' do
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'updated spec - not implemented'
       let(:cocina) do
         {
           event: [
@@ -158,6 +162,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
               date: [
                 {
                   value: '2022-01-01',
+                  type: 'release',
                   encoding: {
                     code: 'w3cdtf'
                   }
