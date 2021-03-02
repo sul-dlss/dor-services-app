@@ -1426,8 +1426,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   #   end
   # end
 
-
-
   # describe 'Parallel value with no script given in MODS - C' do
   #   # Example adapted from druid:bh212vz9239
   #   it_behaves_like 'MODS cocina mapping' do
@@ -1720,8 +1718,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   #     end
   #   end
   # end
-
-
 
   # describe 'Multiple originInfo elements with and without eventTypes' do
   #   it_behaves_like 'MODS cocina mapping' do
@@ -2329,7 +2325,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   #       <<~XML
   #         <originInfo>
   #           <place>
-  #             <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+  #             <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names"
+  #               valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
   #           </place>
   #           <publisher>Stanford University. Department of Geophysics</publisher>
   #         </originInfo>
@@ -2341,7 +2338,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   #       <<~XML
   #         <originInfo eventType="publication">
   #           <place>
-  #             <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+  #             <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/"
+  #               valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
   #           </place>
   #           <publisher>Stanford University. Department of Geophysics</publisher>
   #         </originInfo>
@@ -2481,8 +2479,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   #     let(:warnings) { [Notification.new(msg: 'Undetermined event type')] }
   #   end
   # end
-
-
 
   # describe 'eventType consistent for roundtrip' do
   #   context 'when dateCreated and dateIssued in eventType publication it splits' do
@@ -3562,9 +3558,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   #     end
   #   end
 
-
-
-
   #   context 'when altRepGroup subelements are missing from one of the elements' do
   #     # based on xj114vt0439
   #     it_behaves_like 'MODS cocina mapping' do
@@ -3744,8 +3737,10 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   #       <<~XML
   #         <originInfo displayLabel="Place of creation" eventType="production">
   #           <place>
-  #             <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n78095520">xxu</placeTerm>
-  #             <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n78095520">Philadelphia</placeTerm>
+  #             <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names"
+  #               valueURI="http://id.loc.gov/authorities/names/n78095520">xxu</placeTerm>
+  #             <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names"
+  #               valueURI="http://id.loc.gov/authorities/names/n78095520">Philadelphia</placeTerm>
   #           </place>
   #           <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1872</dateCreated>
   #           <dateCreated encoding="w3cdtf" point="end">1885</dateCreated>
@@ -3758,8 +3753,10 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   #       <<~XML
   #         <originInfo displayLabel="Place of creation" eventType="production">
   #           <place>
-  #             <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095520">xxu</placeTerm>
-  #             <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095520">Philadelphia</placeTerm>
+  #             <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/"
+  #               valueURI="http://id.loc.gov/authorities/names/n78095520">xxu</placeTerm>
+  #             <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/"
+  #               valueURI="http://id.loc.gov/authorities/names/n78095520">Philadelphia</placeTerm>
   #           </place>
   #           <dateIssued>1887</dateIssued>
   #         </originInfo>
