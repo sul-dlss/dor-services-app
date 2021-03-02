@@ -30,7 +30,7 @@ module Cocina
           title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
           description = FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml, druid: item.pid)
           props[:description] = description unless description.nil?
-
+          props[:geographic] = { iso19139: item.geoMetadata.content } if dro_type == Cocina::Models::Vocab.geo
           identification = FromFedora::Identification.props(item)
           identification[:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
           props[:identification] = identification unless identification.empty?

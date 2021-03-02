@@ -22,10 +22,7 @@ RSpec.describe Cocina::Mapper do
       allow(item).to receive(:collection_ids).and_return([])
       item.identityMetadata.agreementId = [agreement]
       item.descMetadata.title_info.main_title = 'Hello'
-
-      # We can swap these two lines after https://github.com/sul-dlss/dor-services/pull/706
-      # item.contentMetadata.contentType = [content_type]
-      allow(item.contentMetadata).to receive(:contentType).and_return([content_type])
+      item.contentMetadata.contentType = [content_type]
 
       create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Project : Google Books'))
       create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: type))
@@ -109,6 +106,33 @@ RSpec.describe Cocina::Mapper do
       it 'files without imageData have empty presentation attribute' do
         file2 = fileSet1.structural.contains.second
         expect(file2.presentation).to eq nil
+      end
+    end
+
+    context 'when item has geographic data' do
+      let(:type) { 'Process : Content Type : File' }
+      let(:content_type) { 'geo' }
+
+      let(:iso19139) do
+        <<~XML
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+            <rdf:Description rdf:about="https://purl.stanford.edu/bq841qm7759">
+              <MD_Metadata xmlns="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco"
+               xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv"
+               xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
+            </rdf:Description>
+          </rdf:RDF>
+        XML
+      end
+
+      before do
+        item.geoMetadata.content = iso19139
+      end
+
+      it 'builds the object with a geographic schema' do
+        expect(cocina_model).to be_kind_of Cocina::Models::DRO
+        expect(cocina_model.geographic.iso19139).to be_equivalent_to iso19139
       end
     end
 
