@@ -12,7 +12,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
               type: 'publication',
               date: [
                 {
-                  value: '2021-01-01',,
+                  value: '2021-01-01',
                   type: 'publication',
                   encoding: {
                     code: 'w3cdtf'
@@ -153,7 +153,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Release date: 2022-01-01' do
-    xit 'updated spec - not implemented'
+    xit 'updated spec - not implemented' do
       let(:cocina) do
         {
           event: [
