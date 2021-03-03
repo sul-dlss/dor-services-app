@@ -192,6 +192,181 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
     end
   end
 
+  describe 'Multilingual physical descriptions with multiple subelements' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <physicalDescription altRepGroup="01">
+            <form authority="gmd">cartographic material</form>
+            <extent>1 page</extent>
+          </physicalDescription>
+          <physicalDescription altRepGroup="01">
+            <form authority="gmd">地図資料</form>
+            <extent>1 地</extent>
+          </physicalDescription>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          form: [
+            {
+              parallelValue: [
+                {
+                  groupedValue: [
+                    {
+                      value: 'cartographic material',
+                      type: 'form',
+                      source: {
+                        code: 'gmd'
+                      }
+                    },
+                    {
+                      value: '1 page',
+                      type: 'extent'
+                    }
+                  ]
+                },
+                {
+                  {
+                    value: '地図資料',
+                    type: 'form',
+                    source: {
+                      code: 'gmd'
+                    }
+                  },
+                  {
+                    value: '1 地',
+                    type: 'extent'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Multilingual physical descriptions with same displayLabel' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <physicalDescription altRepGroup="01" displayLabel="Description">
+            <form authority="gmd">cartographic material</form>
+            <extent>1 page</extent>
+          </physicalDescription>
+          <physicalDescription altRepGroup="01" displayLabel="Description">
+            <form authority="gmd">地図資料</form>
+            <extent>1 地</extent>
+          </physicalDescription>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          form: [
+            {
+              parallelValue: [
+                {
+                  groupedValue: [
+                    {
+                      value: 'cartographic material',
+                      type: 'form',
+                      source: {
+                        code: 'gmd'
+                      }
+                    },
+                    {
+                      value: '1 page',
+                      type: 'extent'
+                    }
+                  ]
+                },
+                {
+                  groupedValue: [
+                    {
+                      value: '地図資料',
+                      type: 'form',
+                      source: {
+                        code: 'gmd'
+                      }
+                    },
+                    {
+                      value: '1 地',
+                      type: 'extent'
+                    }
+                  ]
+                }
+              ],
+              displayLabel: 'Description'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Multilingual physical descriptions with different displayLabel' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <physicalDescription altRepGroup="01" displayLabel="Description">
+            <form authority="gmd">cartographic material</form>
+            <extent>1 page</extent>
+          </physicalDescription>
+          <physicalDescription altRepGroup="01" displayLabel="図">
+            <form authority="gmd">地図資料</form>
+            <extent>1 地</extent>
+          </physicalDescription>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          form: [
+            {
+              parallelValue: [
+                {
+                  groupedValue: [
+                    {
+                      value: 'cartographic material',
+                      type: 'form',
+                      source: {
+                        code: 'gmd'
+                      }
+                    },
+                    {
+                      value: '1 page',
+                      type: 'extent'
+                    }
+                  ],
+                  displayLabel: 'Description'
+                },
+                {
+                  groupedValue: [
+                    {
+                      value: '地図資料',
+                      type: 'form',
+                      source: {
+                        code: 'gmd'
+                      }
+                    },
+                    {
+                      value: '1 地',
+                      type: 'extent'
+                    }
+                  ],
+                  displayLabel: '図'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Form with authority' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
