@@ -60,6 +60,7 @@ RSpec.describe 'Get the object' do
         get '/v1/objects/druid:bc123df4567',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:ok)
+        expect(response.headers['Last-Modified']).to end_with 'GMT'
         expect(response_model).to eq expected
       end
     end
