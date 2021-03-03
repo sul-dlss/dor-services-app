@@ -301,7 +301,7 @@ RSpec.describe 'MODS originInfo place <--> cocina mappings' do
   #   end
   # end
 
-# Bad data handling
+  # Bad data handling
 
   describe 'Place - code with bad authority' do
     it_behaves_like 'MODS cocina mapping' do
@@ -376,9 +376,9 @@ RSpec.describe 'MODS originInfo place <--> cocina mappings' do
           ]
         }
       end
-    end
 
-    let(:warnings) { [Notification.new(msg: 'Place code missing authority')] }
+      let(:warnings) { [Notification.new(msg: 'Place code missing authority')] }
+    end
   end
 
   # specs added by devs below
