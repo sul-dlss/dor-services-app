@@ -1167,6 +1167,10 @@ components:
           type: array
           items:
             type: string
+        disseminationWorkflow:
+          description: An additional workflow to start for objects managed by this admin policy once the end-accession workflow step is complete
+          example: wasCrawlPreassemblyWF
+          type: string
         collectionsForRegistration:
           description: When you register an item with this admin policy, these are the collections that are available.
           type: array
