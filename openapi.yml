@@ -1794,6 +1794,7 @@ components:
       additionalProperties: false
       allOf:
         - $ref: "#/components/schemas/DescriptiveStructuredValue"
+        - $ref: "#/components/schemas/DescriptiveValueLanguage"
         - type: object
           additionalProperties: false
           properties:
