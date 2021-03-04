@@ -14,7 +14,7 @@ class MetadataRefreshController < ApplicationController
     return render status: :unprocessable_entity, plain: "#{@item.pid} had no resolvable identifiers: #{identifiers.inspect}" unless status
     return render status: :internal_server_error, plain: "#{@item.pid} descMetadata missing required fields (<title>)" if missing_required_fields?
 
-    @item.save!
+    Cocina::ActiveFedoraPersister.store(@item)
   end
 
   private

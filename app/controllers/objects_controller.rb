@@ -57,8 +57,17 @@ class ObjectsController < ApplicationController
     # This hack overrides that behavior and ensures Etds can be mapped to Cocina.
     models = ActiveFedora::ContentModel.models_asserted_by(@item)
     @item = @item.adapt_to(Etd) if models.include?('info:fedora/afmodel:Etd')
+
+    cocina_object = Cocina::Mapper.build(@item)
+
+    cocina_object_from_store = Cocina::ObjectStore.find(@item.pid) if Settings.enabled_features.cocina_compare_on_show || Settings.enabled_features.cocina_persist_on_load
+    if Settings.enabled_features.cocina_compare_on_show && cocina_object_from_store && cocina_object_from_store != cocina_object
+      Honeybadger.notify('Cocina object retrieved from store not the same as mapped Cocina object')
+    end
+    Cocina::ObjectStore.save(cocina_object) if Settings.enabled_features.cocina_persist_on_load && !cocina_object_from_store
+
     headers['Last-Modified'] = @item.modified_date.to_datetime.httpdate
-    render json: Cocina::Mapper.build(@item)
+    render json: cocina_object
   rescue SolrConnectionError => e
     json_api_error(status: :internal_server_error,
                    title: 'Unable to reach Solr',

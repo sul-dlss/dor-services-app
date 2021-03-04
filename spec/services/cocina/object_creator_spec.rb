@@ -3,10 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ObjectCreator do
-  subject(:result) { described_class.create(request, persister: persister) }
+  subject(:result) { described_class.create(request) }
 
   let(:apo) { 'druid:bz845pv2292' }
-  let(:persister) { class_double(Cocina::ActiveFedoraPersister, store: nil) }
   let(:request) { Cocina::Models.build_request(params) }
 
   before do
@@ -17,6 +16,7 @@ RSpec.describe Cocina::ObjectCreator do
       args[:fedora_object].descMetadata.mods_title = 'foo'
     end
     allow(SynchronousIndexer).to receive(:reindex_remotely)
+    allow(Cocina::ActiveFedoraPersister).to receive(:store)
   end
 
   context 'when Cocina::Models::RequestDRO is received' do

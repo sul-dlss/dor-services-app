@@ -8,6 +8,9 @@ enabled_features:
     legacy: true
     refresh: true
   create_ur_admin_policy: false
+  cocina_persist_on_save: false
+  cocina_persist_on_load: false
+  cocina_compare_on_show: false
 
 # Ur Admin Policy
 ur_admin_policy:

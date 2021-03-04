@@ -49,7 +49,7 @@ class EmbargoReleaseService
 
     VersionService.open(ei, event_factory: EventFactory)
     release_block.call(ei)
-    ei.save!
+    Cocina::ActiveFedoraPersister.store(ei)
     VersionService.close(ei, { description: 'embargo released', significance: 'admin' }, event_factory: EventFactory)
   rescue StandardError => e
     Rails.logger.error("!!! Unable to release embargo for: #{druid}\n#{e.inspect}\n#{e.backtrace.join("\n")}")

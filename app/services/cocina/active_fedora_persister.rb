@@ -5,6 +5,10 @@ module Cocina
   class ActiveFedoraPersister
     def self.store(obj)
       obj.save!
+
+      return unless Settings.enabled_features.cocina_persist_on_save
+
+      ObjectStore.save_fedora(obj)
     end
   end
 end

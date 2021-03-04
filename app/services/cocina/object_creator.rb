@@ -4,18 +4,18 @@ module Cocina
   # Given a Cocina model, create an ActiveFedora model.
   class ObjectCreator
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def self.create(cocina_object, event_factory: EventFactory, persister: ActiveFedoraPersister)
-      new.create(cocina_object, event_factory: event_factory, persister: persister)
+    def self.create(cocina_object, event_factory: EventFactory)
+      new.create(cocina_object, event_factory: event_factory)
     end
 
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def create(cocina_object, event_factory:, persister:)
+    def create(cocina_object, event_factory:)
       ensure_ur_admin_policy_exists if Settings.enabled_features.create_ur_admin_policy && cocina_object.administrative.hasAdminPolicy == Settings.ur_admin_policy.druid
 
       validate(cocina_object)
 
-      af_model = create_from_model(cocina_object, persister: persister)
+      af_model = create_from_model(cocina_object)
       # Fedora 3 has no unique constrains, so
       # index right away to reduce the likelyhood of duplicate sourceIds
       SynchronousIndexer.reindex_remotely(af_model.pid)
@@ -29,10 +29,9 @@ module Cocina
     private
 
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
-    # @param [#store] persister the service responsible for persisting the model
     # @return [Dor::Abstract] a persisted ActiveFedora model
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def create_from_model(cocina_object, persister:)
+    def create_from_model(cocina_object)
       af_object = case cocina_object
                   when Cocina::Models::RequestAdminPolicy
                     create_apo(cocina_object)
@@ -44,7 +43,7 @@ module Cocina
                     raise "unsupported type #{cocina_object.type}"
                   end
 
-      persister.store(af_object)
+      Cocina::ActiveFedoraPersister.store(af_object)
       af_object
     end
 

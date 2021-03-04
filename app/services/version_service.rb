@@ -56,7 +56,7 @@ class VersionService
 
     vmd_ds.update_current_version(description: opts[:description], significance: opts[:significance].to_sym) if opts[:description] && opts[:significance]
 
-    work.save!
+    Cocina::ActiveFedoraPersister.store(work)
     event_factory.create(druid: work.pid, event_type: 'version_open', data: { who: opts[:opening_user_name], version: work.current_version })
   end
   # rubocop:enable Metrics/AbcSize
@@ -103,7 +103,7 @@ class VersionService
                                   version: work.current_version,
                                   create_accession_wf: create_accession_wf)
     work.events.add_event('close', opts[:user_name], "Version #{work.current_version} closed") if opts[:user_name]
-    work.save!
+    Cocina::ActiveFedoraPersister.store(work)
     event_factory.create(druid: work.pid, event_type: 'version_close', data: { who: opts[:user_name], version: work.current_version })
   end
   # rubocop:enable Metrics/AbcSize

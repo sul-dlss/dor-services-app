@@ -43,7 +43,7 @@ module Cocina
 
       update_descriptive if has_changed?(:description) && update_descriptive?
 
-      fedora_object.save! unless trial
+      Cocina::ActiveFedoraPersister.store(item) unless trial
 
       event_factory.create(druid: fedora_object.pid, event_type: 'update_complete', data: { success: true }) unless trial
 

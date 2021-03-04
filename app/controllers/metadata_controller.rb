@@ -50,7 +50,7 @@ class MetadataController < ApplicationController
                                                        event_factory: EventFactory)
     end
 
-    @item.save!
+    Cocina::ActiveFedoraPersister.store(@item)
   rescue LegacyMetadataService::DatastreamValidationError => e
     json_api_error(status: :unprocessable_entity, message: e.detail, title: e.message)
   rescue Rubydora::FedoraInvalidRequest
