@@ -488,7 +488,7 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
   end
 
   describe 'Multiple form, some with displayLabel and some without' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated spec' do
       let(:mods) do
         <<~XML
           <physicalDescription displayLabel="Medium">
@@ -511,11 +511,17 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
               displayLabel: 'Medium'
             },
             {
-              value: 'mezzotints (prints)',
-              type: 'form',
-              note: [
+              groupedValue: [
                 {
-                  value: 'color'
+                  value: 'mezzotints (prints)',
+                  type: 'form'
+                },
+                {
+                  note: [
+                    {
+                      value: 'color'
+                    }
+                  ]
                 }
               ]
             }
