@@ -228,17 +228,19 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
                   ]
                 },
                 {
-                  {
-                    value: '地図資料',
-                    type: 'form',
-                    source: {
-                      code: 'gmd'
+                  groupedValue: [
+                    {
+                      value: '地図資料',
+                      type: 'form',
+                      source: {
+                        code: 'gmd'
+                      }
+                    },
+                    {
+                      value: '1 地',
+                      type: 'extent'
                     }
-                  },
-                  {
-                    value: '1 地',
-                    type: 'extent'
-                  }
+                  ]
                 }
               ]
             }
