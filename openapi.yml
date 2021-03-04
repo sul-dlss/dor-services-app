@@ -1020,6 +1020,10 @@ paths:
                   - $ref: '#/components/schemas/DRO'
                   - $ref: '#/components/schemas/Collection'
                   - $ref: '#/components/schemas/AdminPolicy'
+          headers:
+            Last-Modified:
+              schema:
+                type: string
         '422':
           description: Unprocessable Entity
           content:
