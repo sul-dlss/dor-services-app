@@ -47,7 +47,7 @@ class ObjectsController < ApplicationController
     # This hack overrides that behavior and ensures Etds can be mapped to Cocina.
     models = ActiveFedora::ContentModel.models_asserted_by(@item)
     @item = @item.adapt_to(Etd) if models.include?('info:fedora/afmodel:Etd')
-    headers['Last-Modified'] = @item.modified_date.httpdate
+    headers['Last-Modified'] = @item.modified_date.to_datetime.httpdate
     render json: Cocina::Mapper.build(@item)
   rescue SolrConnectionError => e
     json_api_error(status: :internal_server_error,
