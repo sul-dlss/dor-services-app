@@ -58,10 +58,7 @@ module Cocina
                                  label: obj.label).tap do |item|
         add_description(item, obj)
 
-        admin_node = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata').first
-        admin_node.add_child "<dissemination><workflow id=\"#{obj.administrative.registrationWorkflow}\"></dissemination>"
-        item.administrativeMetadata.ng_xml_will_change!
-
+        Cocina::ToFedora::ApoRights.write(item.administrativeMetadata, obj.administrative)
         Cocina::ToFedora::Identity.apply(obj, item, object_type: 'adminPolicy')
       end
     end

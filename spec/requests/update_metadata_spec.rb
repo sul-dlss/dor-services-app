@@ -925,7 +925,8 @@ RSpec.describe 'Update object' do
                                       administrative: {
                                         defaultObjectRights: default_object_rights,
                                         hasAdminPolicy: 'druid:dd999df4567',
-                                        registrationWorkflow: 'assemblyWF'
+                                        disseminationWorkflow: 'assemblyWF',
+                                        registrationWorkflow: %w[goobiWF registrationWF]
                                       },
                                       externalIdentifier: druid)
     end
@@ -940,7 +941,8 @@ RSpec.describe 'Update object' do
           "label":"This is my label","version":1,
           "administrative":{
             "defaultObjectRights":#{default_object_rights.to_json},
-            "registrationWorkflow":"assemblyWF",
+            "disseminationWorkflow":"assemblyWF",
+            "registrationWorkflow":["goobiWF","registrationWF"],
             "hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"This is my title"}]}}
       JSON

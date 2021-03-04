@@ -423,6 +423,10 @@ RSpec.describe 'Get the object' do
       before do
         object.administrativeMetadata.content = <<~XML
           <administrativeMetadata>
+            <registration>
+              <workflow id="registrationWF"/>
+              <workflow id="goobiWF"/>
+            </registration>
             <dissemination>
               <workflow id="wasCrawlPreassemblyWF"/>
             </dissemination>
@@ -443,7 +447,8 @@ RSpec.describe 'Get the object' do
         expect(json['label']).to eq 'foo'
         expect(json['version']).to eq 1
         expect(json['administrative']['defaultObjectRights']).to match '<rightsMetadata>'
-        expect(json['administrative']['registrationWorkflow']).to eq 'wasCrawlPreassemblyWF'
+        expect(json['administrative']['registrationWorkflow']).to eq %w[registrationWF goobiWF]
+        expect(json['administrative']['disseminationWorkflow']).to eq 'wasCrawlPreassemblyWF'
       end
     end
   end
