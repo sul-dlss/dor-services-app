@@ -120,6 +120,34 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
     end
   end
 
+  describe 'Multilingual identifier' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <identifier altRepGroup="1">zeng bu</identifier>
+          <identifier altRepGroup="1">增補</identifier>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          identifier: [
+            {
+              parallelValue: [
+                {
+                  value: 'zeng bu'
+                },
+                {
+                  value: '增補'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   # dev added specs below
 
   context 'with an identifier that is from Standard Identifier Source Codes' do
