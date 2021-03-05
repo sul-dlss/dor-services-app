@@ -112,4 +112,44 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Uniform title' do
+    xit 'unimplemented spec' do
+      let(:druid) { 'druid:mx928ks3963' }
+
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n88244749">
+              <title>Microsoft PowerPoint (Computer file)</title>
+            </titleInfo>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              groupedValue: [
+                {
+                  value: 'Microsoft PowerPoint (Computer file)',
+                  type: 'uniform',
+                  uri: 'http://id.loc.gov/authorities/names/n88244749',
+                  source: {
+                    code: 'naf',
+                    uri: 'http://id.loc.gov/authorities/names/'
+                  }
+                }
+              ],
+              type: 'title',
+              source: {
+                code: 'lcsh'
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
 end
