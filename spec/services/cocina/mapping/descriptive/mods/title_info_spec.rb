@@ -607,7 +607,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                   structuredValue: [
                     {
                       value: 'Guillaume',
-                      type: 'person'
+                      type: 'name'
                     },
                     {
                       value: 'de Lorris',
@@ -620,7 +620,32 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                     }
                   ]
                 }
-              ]
+              ],
+              type: 'uniform'
+            }
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Guillaume',
+                      type: 'name'
+                    },
+                    {
+                      value: 'de Lorris',
+                      type: 'term of address'
+                    },
+                    {
+                      value: 'active 1230',
+                      type: 'activity dates'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary'
             }
           ]
         }
