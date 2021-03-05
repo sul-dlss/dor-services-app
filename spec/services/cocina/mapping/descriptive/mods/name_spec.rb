@@ -853,7 +853,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
   describe 'Name and role in different scripts' do
     xit 'not implemented' do
-      let(:druid) do { 'druid:jk495jh4582' }
+      let(:druid) { 'druid:jk495jh4582' }
 
       let(:mods) do
         <<~XML
