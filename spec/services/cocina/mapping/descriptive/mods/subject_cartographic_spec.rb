@@ -150,6 +150,40 @@ RSpec.describe 'MODS subject cartographic <--> cocina mappings' do
     end
   end
 
+  describe 'Cartographic subject with multiple scales' do
+    xit 'not implemented' do
+      let(:druid) { 'druid:ky585kf9485' }
+
+      let(:mods) do
+        <<~XML
+          <subject>
+            <cartographics>
+              <scale>Scale: 40 wan fen yi zhi ti chi.</scale>
+              <scale>Scale: 1:400,000.</scale>
+            </cartographics>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          form: [
+            {
+              groupedValue: [
+                {
+                  value: 'Scale: 40 wan fen yi zhi ti chi.'
+                },
+                {
+                  value: 'Scale: 1:400,000.'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Cartographic subject with multiple coordinate representations' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
