@@ -34,8 +34,8 @@ class ObjectsController < ApplicationController
 
   def update
     obj = Dor.find(params[:id])
-    update_request = Cocina::Models.build(params.except(:action, :controller, :id).to_unsafe_h)
-    cocina_object = Cocina::ObjectUpdater.run(obj, update_request)
+    update_request = Cocina::Models.build(params.except(:action, :controller, :id, :only).to_unsafe_h)
+    cocina_object = Cocina::ObjectUpdater.run(obj, update_request, only: params[:only])
 
     render json: cocina_object
   rescue Cocina::ValidationError => e

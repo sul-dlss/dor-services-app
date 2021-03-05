@@ -59,7 +59,7 @@ module Cocina
         add_description(item, obj)
 
         Cocina::ToFedora::ApoRights.write(item.administrativeMetadata, obj.administrative)
-        Cocina::ToFedora::Identity.apply(obj, item, object_type: 'adminPolicy')
+        Cocina::ToFedora::Identity.apply(item, label: obj.label, object_type: 'adminPolicy')
       end
     end
 
@@ -81,7 +81,7 @@ module Cocina
         Cocina::ToFedora::DROAccess.apply(item, obj.access) if obj.access
 
         item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: pid, object: obj)
-        Cocina::ToFedora::Identity.apply(obj, item, object_type: 'item', agreement_id: obj.structural&.hasAgreement)
+        Cocina::ToFedora::Identity.apply(item, label: obj.label, object_type: 'item', agreement_id: obj.structural&.hasAgreement)
       end
     end
 
@@ -98,7 +98,7 @@ module Cocina
         add_collection_tags(pid, obj)
         apply_default_access(item)
         Cocina::ToFedora::Access.apply(item, obj.access) if obj.access
-        Cocina::ToFedora::Identity.apply(obj, item, object_type: 'collection')
+        Cocina::ToFedora::Identity.apply(item, label: obj.label, object_type: 'collection')
       end
     end
 

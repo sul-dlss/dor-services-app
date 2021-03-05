@@ -983,6 +983,16 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+        - name: only
+          in: query
+          description: Limit update to the provided keys.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [type, label, version, access, administrative, description, identification, structural, geographic]
+            minItems: 1
       requestBody:
         required: true
         content:
