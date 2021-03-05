@@ -21,6 +21,8 @@ module Cocina
       def apply
         # See https://github.com/sul-dlss/dor-services/blob/main/lib/dor/datastreams/rights_metadata_ds.rb
         Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, rights_type)
+        # This invalidates the dra_object, which is necessary if re-mapping.
+        item.rightsMetadata.content = item.rightsMetadata.ng_xml.to_s
         item.rightsMetadata.ng_xml_will_change!
       end
 

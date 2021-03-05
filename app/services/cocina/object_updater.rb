@@ -17,6 +17,7 @@ module Cocina
       @params = params
       @obj = obj
       @item = item
+      @orig_obj = Mapper.build(item)
     end
 
     def run(event_factory:)
@@ -34,7 +35,7 @@ module Cocina
         raise "unsupported type #{obj.type}"
       end
 
-      update_descriptive if update_descriptive?
+      update_descriptive if has_changed?(:description) && update_descriptive?
 
       item.save!
 
@@ -51,42 +52,65 @@ module Cocina
 
     private
 
-    attr_reader :obj, :item, :params
+    attr_reader :obj, :item, :params, :orig_obj
 
-    def update_apo
-      item.admin_policy_object_id = obj.administrative.hasAdminPolicy
-      # item.source_id = obj.identification.sourceId
-      item.label = truncate_label(obj.label)
-
-      Cocina::ToFedora::ApoRights.write(item.administrativeMetadata, obj.administrative)
-      Cocina::ToFedora::Roles.write(item, Array(obj.administrative.roles))
-      Cocina::ToFedora::Identity.apply(obj, item, object_type: 'adminPolicy')
+    def has_changed?(key)
+      # Update only if changed.
+      obj.public_send(key) != orig_obj.public_send(key)
     end
 
-    def update_collection
-      item.admin_policy_object_id = obj.administrative.hasAdminPolicy
-      item.catkey = catkey_for(obj)
-      item.label = truncate_label(obj.label)
+    # rubocop:disable Style/GuardClause
+    def update_apo
+      # item.source_id = obj.identification.sourceId
+      if has_changed?(:label)
+        Cocina::ToFedora::Identity.apply(item, label: obj.label, object_type: 'adminPolicy')
+        item.label = truncate_label(obj.label)
+      end
 
-      Cocina::ToFedora::Access.apply(item, obj.access)
-      Cocina::ToFedora::Identity.apply(obj, item, object_type: 'collection')
+      if has_changed?(:administrative)
+        item.admin_policy_object_id = obj.administrative.hasAdminPolicy
+        Cocina::ToFedora::ApoRights.write(item.administrativeMetadata, obj.administrative)
+        Cocina::ToFedora::Roles.write(item, Array(obj.administrative.roles))
+      end
+    end
+    # rubocop:enable Style/GuardClause
+
+    def update_collection
+      if has_changed?(:label)
+        item.label = truncate_label(obj.label)
+        Cocina::ToFedora::Identity.apply(item, label: obj.label, object_type: 'collection')
+      end
+      item.admin_policy_object_id = obj.administrative.hasAdminPolicy if has_changed?(:administrative)
+
+      Cocina::ToFedora::Access.apply(item, obj.access) if has_changed?(:access)
     end
 
     # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
     def update_dro
-      item.admin_policy_object_id = obj.administrative.hasAdminPolicy
-      item.source_id = obj.identification.sourceId
-      item.collection_ids = Array.wrap(obj.structural&.isMemberOf).compact
-      item.catkey = catkey_for(obj)
-      item.label = truncate_label(obj.label)
+      item.admin_policy_object_id = obj.administrative.hasAdminPolicy if has_changed?(:administrative)
+      item.collection_ids = Array.wrap(obj.structural&.isMemberOf).compact if has_changed?(:structural)
+      item.label = truncate_label(obj.label) if has_changed?(:label)
 
-      add_tags(item.id, obj)
+      if has_changed?(:identification)
+        item.source_id = obj.identification.sourceId
+        item.catkey = catkey_for(obj)
+      end
 
-      Cocina::ToFedora::DROAccess.apply(item, obj.access)
-      update_content_metadata(item, obj)
-      Cocina::ToFedora::Identity.apply(obj, item, object_type: 'item', agreement_id: obj.structural&.hasAgreement)
+      if has_changed?(:label) || has_changed?(:structural)
+        label = has_changed?(:label) ? obj.label : item.label
+        agreement_id = has_changed?(:structural) ? obj.structural&.hasAgreement : nil
+        Cocina::ToFedora::Identity.apply(item, label: label, object_type: 'item', agreement_id: agreement_id)
+      end
+      Cocina::ToFedora::DROAccess.apply(item, obj.access) if has_changed?(:access)
+      update_content_metadata(item, obj) if has_changed?(:structural) || has_changed?(:type)
+
+      add_tags(item.pid, obj)
     end
     # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
 
     def update_content_metadata(item, obj)
       # We don't want to overwrite contentMetadata unless they provided structural.contains
@@ -108,7 +132,7 @@ module Cocina
 
       raise ValidationError, "Identifier on the query and in the body don't match" if item.pid != obj.externalIdentifier
 
-      validator = Cocina::ApoExistenceValidator.new(obj)
+      validator = ApoExistenceValidator.new(obj)
       raise ValidationError, validator.error unless validator.valid?
 
       raise NotImplemented, 'Updating descriptive metadata not supported' if !update_descriptive? && client_attempted_metadata_update?
@@ -132,8 +156,8 @@ module Cocina
     end
 
     def add_tags(pid, obj)
-      add_tag(pid, ToFedora::ProcessTag.map(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection), 'Process : Content Type')
-      add_tag(pid, "Project : #{obj.administrative.partOfProject}", 'Project') if obj.administrative.partOfProject
+      add_tag(pid, ToFedora::ProcessTag.map(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection), 'Process : Content Type') if has_changed?(:structural)
+      add_tag(pid, "Project : #{obj.administrative.partOfProject}", 'Project') if obj.administrative.partOfProject && has_changed?(:administrative)
     end
 
     def add_tag(pid, new_tag, prefix)

@@ -13,6 +13,7 @@ RSpec.describe 'Update object' do
     allow(item.association(:collections)).to receive(:ids_writer).and_return(true)
     # Stub out AF for ObjectMapper
     allow(item).to receive(:collections).and_return [collection]
+    allow(item).to receive(:admin_policy_object_id=)
     allow(AdministrativeTags).to receive(:create)
     allow(AdministrativeTags).to receive(:project).and_return(['Google Books'])
     allow(AdministrativeTags).to receive(:content_type).and_return(['Book (rtl)'])
@@ -24,7 +25,10 @@ RSpec.describe 'Update object' do
   let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
   let(:apo) { Dor::AdminPolicyObject.new(pid: apo_druid) }
   let(:item) do
-    Dor::Item.new(pid: druid).tap do |item|
+    Dor::Item.new(pid: druid,
+                  source_id: 'google_books:99999',
+                  label: label,
+                  admin_policy_object_id: apo_druid).tap do |item|
       item.descMetadata.title_info.main_title = title
       item.contentMetadata.contentType = ['book']
     end
@@ -35,7 +39,6 @@ RSpec.describe 'Update object' do
 
   let(:label) { 'This is my label' }
   let(:title) { 'This is my title' }
-  let(:expected_label) { label }
   let(:structural) do
     {
       hasMemberOrders: [
@@ -49,7 +52,7 @@ RSpec.describe 'Update object' do
   let(:expected) do
     Cocina::Models::DRO.new(externalIdentifier: druid,
                             type: Cocina::Models::Vocab.book,
-                            label: expected_label,
+                            label: label,
                             version: 1,
                             access: {
                               access: access,
@@ -112,6 +115,7 @@ RSpec.describe 'Update object' do
           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
     expect(response.status).to eq(200)
     expect(item).to have_received(:save!)
+    expect(item).to have_received(:admin_policy_object_id=).with(apo_druid)
     expect(response.body).to eq expected.to_json
 
     # Tags are created.
@@ -144,7 +148,7 @@ RSpec.describe 'Update object' do
     let(:expected) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::Vocab.book,
-                              label: expected_label,
+                              label: label,
                               version: 1,
                               access: {
                                 access: access,
@@ -210,7 +214,10 @@ RSpec.describe 'Update object' do
     end
 
     let(:item) do
-      Dor::Item.new(pid: druid).tap do |item|
+      Dor::Item.new(pid: druid,
+                    source_id: 'google_books:99999',
+                    label: label,
+                    admin_policy_object_id: apo_druid).tap do |item|
         item.descMetadata.content = ng_xml.to_xml
       end
     end
@@ -228,7 +235,7 @@ RSpec.describe 'Update object' do
     let(:expected) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::Vocab.book,
-                              label: expected_label,
+                              label: label,
                               version: 1,
                               access: {
                                 access: access,
@@ -289,7 +296,10 @@ RSpec.describe 'Update object' do
       JSON
     end
     let(:item) do
-      Dor::Item.new(pid: druid).tap do |item|
+      Dor::Item.new(pid: druid,
+                    source_id: 'google_books:99999',
+                    label: label,
+                    admin_policy_object_id: apo_druid).tap do |item|
         # Dor::DescMetadataDS does not have a setter for subtitles
         item.descMetadata.content = <<~XML
           <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.loc.gov/mods/v3" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
@@ -316,7 +326,10 @@ RSpec.describe 'Update object' do
   context 'when the object is a hydrus item' do
     # This is how the item looks in the repository before being updated
     let(:item) do
-      Dor::Item.new(pid: druid, label: 'Hydrus').tap do |item|
+      Dor::Item.new(pid: druid,
+                    source_id: 'google_books:99999',
+                    admin_policy_object_id: apo_druid,
+                    label: 'Hydrus').tap do |item|
         # Hydrus doesn't fill in a title right away.
         item.descMetadata.content = <<~XML
           <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
@@ -388,7 +401,12 @@ RSpec.describe 'Update object' do
     end
 
     let(:item) do
-      Dor::Item.new(pid: other_druid)
+      Dor::Item.new(pid: other_druid,
+                    source_id: 'google_books:99999',
+                    label: label,
+                    admin_policy_object_id: apo_druid).tap do |item|
+        item.descMetadata.title_info.main_title = title
+      end
     end
 
     let(:other_druid) { 'druid:xs123xx8388' }
@@ -420,8 +438,8 @@ RSpec.describe 'Update object' do
 
   context 'when an image is provided' do
     let(:label) { 'This is my label' }
-    let(:title) { 'This is my title' }
     let(:expected_label) { label }
+    let(:title) { 'This is my title' }
     let(:structural) do
       {
         isMemberOf: ['druid:xx888xx7777']
@@ -460,7 +478,7 @@ RSpec.describe 'Update object' do
         {
           "externalIdentifier": "#{druid}",
           "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
-          "label":"#{label}","version":1,
+          "label":"#{expected_label}","version":1,
           "access":{
             "access":"#{access}",
             "download":"world",
@@ -490,6 +508,8 @@ RSpec.describe 'Update object' do
     end
 
     context 'when the save is successful' do
+      let(:expected_label) { 'This is a new label' }
+
       it 'updates the object' do
         patch "/v1/objects/#{druid}",
               params: data,
@@ -516,10 +536,6 @@ RSpec.describe 'Update object' do
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to eq expected.to_json
         expect(response.status).to eq(200)
-
-        # Identity metadata set correctly.
-        expect(item.objectLabel.first).to eq(expected_label)
-        expect(item.objectType.first).to eq('item')
       end
     end
     # rubocop:enable Layout/LineLength
@@ -791,10 +807,9 @@ RSpec.describe 'Update object' do
   context 'when a book is provided' do
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
-    let(:expected_label) { label }
     let(:expected) do
       Cocina::Models::DRO.new(type: Cocina::Models::Vocab.book,
-                              label: expected_label,
+                              label: label,
                               version: 1,
                               description: {
                                 title: [{ value: title }],
@@ -854,17 +869,18 @@ RSpec.describe 'Update object' do
 
   context 'when a collection is provided' do
     let(:item) do
-      Dor::Collection.new(pid: druid).tap do |item|
+      Dor::Collection.new(pid: druid,
+                          label: label,
+                          admin_policy_object_id: apo_druid).tap do |item|
         item.descMetadata.title_info.main_title = title
       end
     end
 
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
-    let(:expected_label) { label }
     let(:expected) do
       Cocina::Models::Collection.new(type: Cocina::Models::Vocab.collection,
-                                     label: expected_label,
+                                     label: label,
                                      version: 1,
                                      description: {
                                        title: [{ value: title }],
@@ -908,7 +924,8 @@ RSpec.describe 'Update object' do
 
   context 'when an APO is provided' do
     let(:item) do
-      Dor::AdminPolicyObject.new(pid: druid).tap do |item|
+      Dor::AdminPolicyObject.new(pid: druid,
+                                 label: label).tap do |item|
         item.descMetadata.title_info.main_title = 'This is my title'
       end
     end
