@@ -36,7 +36,7 @@ module Cocina
 
       update_descriptive if update_descriptive?
 
-      item.save!
+      Cocina::ActiveFedoraPersister.store(item)
 
       event_factory.create(druid: item.pid, event_type: 'update_complete', data: { success: true })
 

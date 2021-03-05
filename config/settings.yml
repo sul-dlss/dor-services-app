@@ -2,6 +2,9 @@
 enabled_features:
   registration: true
   update_descriptive: false
+  cocina_persist_on_save: false
+  cocina_persist_on_load: false
+  cocina_compare_on_show: false
 
 content:
   base_dir: '/dor/workspace'
