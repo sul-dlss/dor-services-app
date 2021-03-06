@@ -18,15 +18,25 @@ module Cocina
         end
 
         def build
-          identifiers.map { |id_element| IdentifierBuilder.build_from_identifier(identifier_element: id_element) }.compact
+          altrepgroup_identifier_nodes, other_identifier_nodes = AltRepGroup.split(nodes: identifiers)
+
+          altrepgroup_identifier_nodes.map { |id_nodes| build_parallel(id_nodes) } +
+            other_identifier_nodes.map { |id_node| IdentifierBuilder.build_from_identifier(identifier_element: id_node) }
         end
 
         private
 
         attr_reader :resource_element
 
+        def build_parallel(identifier_nodes)
+          {
+            parallelValue: identifier_nodes.map { |id_node| IdentifierBuilder.build_from_identifier(identifier_element: id_node) }
+          }
+        end
+
         def identifiers
-          resource_element.xpath('mods:identifier', mods: DESC_METADATA_NS) + resource_element.xpath('mods:recordIdentifier', mods: DESC_METADATA_NS)
+          (resource_element.xpath('mods:identifier', mods: DESC_METADATA_NS) +
+            resource_element.xpath('mods:recordIdentifier', mods: DESC_METADATA_NS)).reject { |identifier_node| identifier_node.text.blank? && identifier_node.attributes.size.zero? }
         end
       end
     end
