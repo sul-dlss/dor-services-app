@@ -17,7 +17,7 @@ module Cocina
           Note.write(xml: xml, notes: descriptive.note, id_generator: id_generator)
           Subject.write(xml: xml, subjects: descriptive.subject, forms: descriptive.form, id_generator: id_generator)
           Descriptive::Event.write(xml: xml, events: descriptive.event, id_generator: id_generator)
-          Identifier.write(xml: xml, identifiers: descriptive.identifier)
+          Identifier.write(xml: xml, identifiers: descriptive.identifier, id_generator: id_generator)
           Descriptive::Access.write(xml: xml, access: descriptive.access, purl: descriptive.purl)
           AdminMetadata.write(xml: xml, admin_metadata: descriptive.adminMetadata)
           RelatedResource.write(xml: xml, related_resources: descriptive.relatedResource, druid: druid, id_generator: id_generator)

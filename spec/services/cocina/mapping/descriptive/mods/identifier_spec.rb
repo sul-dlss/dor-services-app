@@ -121,7 +121,7 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
   end
 
   describe 'Multilingual identifier' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <identifier altRepGroup="1">zeng bu</identifier>
