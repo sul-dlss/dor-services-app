@@ -45,10 +45,21 @@ module Cocina
         attr_reader :resource_element, :notifier
 
         def deduped_name_nodes
+          # In addition, to plain-old dupes, need to get rid of names that are dupes with nameTitleGroups.
+          # Need to retain nameTitleGroups, so sorting so that first. (Uniq takes first.)
+          # When comparing, need to remove usage and nameTitleGroup.
           name_nodes = resource_element.xpath('mods:name', mods: DESC_METADATA_NS)
-          uniq_name_nodes = name_nodes.uniq(&:to_s)
+          nametitle_nodes, other_nodes = name_nodes.partition { |name_node| name_node['nameTitleGroup'] }
+          ordered_name_nodes = nametitle_nodes + other_nodes
+          uniq_name_nodes = ordered_name_nodes.uniq do |name_node|
+            dup_name_node = name_node.dup
+            dup_name_node.delete('usage')
+            dup_name_node.delete('nameTitleGroup')
+            dup_name_node.to_s
+          end
 
           notifier.warn('Duplicate name entry') if name_nodes.size != uniq_name_nodes.size
+
           uniq_name_nodes
         end
 

@@ -81,10 +81,20 @@ module Cocina
       def normalize_dupes_for(base_node)
         name_nodes = base_node.xpath('mods:name', mods: ModsNormalizer::MODS_NS)
 
-        dupe_name_nodes_groups = name_nodes.group_by(&:to_s).values.select { |grouped_name_nodes| grouped_name_nodes.size > 1 }
+        dupe_name_nodes_groups = name_nodes.group_by { |name_node| name_for_grouping(name_node) }.values.select { |grouped_name_nodes| grouped_name_nodes.size > 1 }
         dupe_name_nodes_groups.each do |dupe_name_nodes|
-          dupe_name_nodes[1..].each(&:remove)
+          # If there is a name with nameTitleGroup, prefer retaining it.
+          nametitle_names, other_names = dupe_name_nodes.partition { |name_node| name_node['nameTitleGroup'] }
+          ordered_name_nodes = nametitle_names + other_names
+          ordered_name_nodes[1..].each(&:remove)
         end
+      end
+
+      def name_for_grouping(name_node)
+        dup_name_node = name_node.dup
+        dup_name_node.delete('usage')
+        dup_name_node.delete('nameTitleGroup')
+        dup_name_node.to_s
       end
 
       def normalize_type

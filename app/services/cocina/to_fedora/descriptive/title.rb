@@ -5,7 +5,7 @@ module Cocina
     class Descriptive
       # Maps titles from cocina to MODS XML
       class Title
-        TAG_NAME = FromFedora::Descriptive::Titles::TYPES.invert.freeze
+        TAG_NAME = FromFedora::Descriptive::Titles::TYPES.invert.merge('activity dates' => 'date').freeze
         NAME_TYPES = ['name', 'forename', 'surname', 'life dates', 'term of address'].freeze
 
         # @params [Nokogiri::XML::Builder] xml
@@ -132,7 +132,7 @@ module Cocina
         # Flatten the structuredValues into a simple list.
         def flatten_structured_value(title)
           leafs = title.structuredValue.select(&:value)
-          nodes = title.structuredValue.select(&:structuredValue)
+          nodes = title.structuredValue.select(&:structuredValue).reject { |value| value.type == 'name' }
           leafs + nodes.flat_map { |node| flatten_structured_value(node) }
         end
 

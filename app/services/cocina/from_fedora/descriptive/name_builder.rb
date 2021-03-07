@@ -146,11 +146,18 @@ module Cocina
           notifier.warn('Name/namePart type attribute set to ""') if type == ''
           notifier.warn('namePart has unknown type assigned', type: type) if type.present? && !Contributor::NAME_PART.key?(type)
 
-          if Contributor::NAME_PART.key?(type)
+          if activity_date?(name_part_node)
+            'activity dates'
+          elsif Contributor::NAME_PART.key?(type)
             Contributor::NAME_PART[type]
           elsif default_type && type.blank?
             'name'
           end
+        end
+
+        def activity_date?(name_part_node)
+          name_part_node['type'] == 'date' &&
+            name_part_node.content.start_with?('active', 'fl', 'floruit')
         end
 
         def common_authority(name_node)

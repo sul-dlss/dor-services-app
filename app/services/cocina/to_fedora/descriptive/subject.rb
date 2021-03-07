@@ -371,7 +371,7 @@ module Cocina
           return unless name_part.value
 
           attributes = {}.tap do |attrs|
-            attrs[:type] = FromFedora::Descriptive::Contributor::NAME_PART.invert[name_part.type]
+            attrs[:type] = ToFedora::Descriptive::ContributorWriter::NAME_PART[name_part.type]
           end.compact
           xml.namePart name_part.value, attributes
         end

@@ -158,6 +158,16 @@ RSpec.describe Cocina::ModsNormalizers::NameNormalizer do
           <name>
             <namePart>Dunnett, Dorothy</namePart>
           </name>
+          <name type="personal" usage="primary" nameTitleGroup="1">
+            <namePart>Guillaume</namePart>
+            <namePart type="termsOfAddress">de Lorris</namePart>
+            <namePart type="date">active 1230</namePart>
+          </name>
+          <name type="personal">
+            <namePart>Guillaume</namePart>
+            <namePart type="termsOfAddress">de Lorris</namePart>
+            <namePart type="date">active 1230</namePart>
+          </name>
           <relatedItem>
             <name>
               <namePart>Dunnett, Dorothy</namePart>
@@ -170,11 +180,17 @@ RSpec.describe Cocina::ModsNormalizers::NameNormalizer do
       XML
     end
 
+    # nameTitleGroup attribute dropped below because no match, but normally wouldn't be.
     it 'duplicates are removed' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <name>
             <namePart>Dunnett, Dorothy</namePart>
+          </name>
+          <name type="personal" usage="primary">
+            <namePart>Guillaume</namePart>
+            <namePart type="termsOfAddress">de Lorris</namePart>
+            <namePart type="date">active 1230</namePart>
           </name>
           <relatedItem>
             <name>
