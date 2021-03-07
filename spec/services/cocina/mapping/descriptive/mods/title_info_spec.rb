@@ -559,9 +559,8 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Uniform title with repetition of author' do
-    xit 'not implemented' do
-      let(:druid) { 'druid:kd992vz2371' }
-
+    # Adapted from kd992vz2371
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo type="uniform" nameTitleGroup="1">
@@ -618,7 +617,8 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                       value: 'active 1230',
                       type: 'activity dates'
                     }
-                  ]
+                  ],
+                  type: 'name'
                 }
               ],
               type: 'uniform'
@@ -650,6 +650,12 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
           ]
         }
       end
+    end
+
+    let(:warnings) do
+      [
+        Notification.new(msg: 'Duplicate name entry')
+      ]
     end
   end
 

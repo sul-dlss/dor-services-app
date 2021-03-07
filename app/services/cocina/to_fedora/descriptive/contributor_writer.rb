@@ -7,7 +7,7 @@ module Cocina
       class ContributorWriter
         # one way mapping:  MODS 'corporate' already maps to Cocina 'organization'
         NAME_TYPE = Cocina::FromFedora::Descriptive::Contributor::ROLES.invert.merge('event' => 'corporate').freeze
-        NAME_PART = FromFedora::Descriptive::Contributor::NAME_PART.invert.freeze
+        NAME_PART = FromFedora::Descriptive::Contributor::NAME_PART.invert.merge('activity dates' => 'date').freeze
 
         # @params [Nokogiri::XML::Builder] xml
         # @params [Cocina::Models::Contributor] contributor
