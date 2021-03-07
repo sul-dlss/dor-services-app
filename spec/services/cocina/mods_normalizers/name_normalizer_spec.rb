@@ -129,7 +129,7 @@ RSpec.describe Cocina::ModsNormalizers::NameNormalizer do
   context 'when name has xlink:href' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES} xmlns:xlink="http://www.w3.org/1999/xlink">
+        <mods #{MODS_ATTRIBUTES}>
           <name type="personal" authority="naf" xlink:href="http://id.loc.gov/authorities/names/n82087745">
             <namePart>Tirion, Isaak</namePart>
           </name>
