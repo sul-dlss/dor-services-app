@@ -13,6 +13,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
               date: [
                 {
                   value: '2021-01-01',
+                  type: 'publication',
                   encoding: {
                     code: 'w3cdtf'
                   }
@@ -34,7 +35,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Creation date: 2021-01-01' do
-    xit 'updated spec - not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -43,6 +44,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
               date: [
                 {
                   value: '2021-01-01',
+                  type: 'creation',
                   encoding: {
                     code: 'w3cdtf'
                   }
@@ -66,7 +68,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   describe 'Creation date range: 2020-01-01 to 2021-01-01' do
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
 
-    xit 'updated spec - not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -84,6 +86,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                       type: 'end'
                     }
                   ],
+                  type: 'creation',
                   encoding: {
                     code: 'w3cdtf'
                   }
@@ -108,7 +111,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   describe 'Approximate creation date: approx. 1900' do
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
 
-    xit 'updated spec - not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -126,6 +129,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                       type: 'end'
                     }
                   ],
+                  type: 'creation',
                   qualifier: 'approximate',
                   encoding: {
                     code: 'w3cdtf'
@@ -158,6 +162,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
               date: [
                 {
                   value: '2022-01-01',
+                  type: 'publication',
                   encoding: {
                     code: 'w3cdtf'
                   }
