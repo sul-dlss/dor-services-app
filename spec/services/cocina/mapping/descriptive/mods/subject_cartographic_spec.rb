@@ -151,9 +151,8 @@ RSpec.describe 'MODS subject cartographic <--> cocina mappings' do
   end
 
   describe 'Cartographic subject with multiple scales' do
-    xit 'not implemented' do
-      let(:druid) { 'druid:ky585kf9485' }
-
+    # Adapted from ky585kf9485
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject>
@@ -176,7 +175,8 @@ RSpec.describe 'MODS subject cartographic <--> cocina mappings' do
                 {
                   value: 'Scale: 1:400,000.'
                 }
-              ]
+              ],
+              type: 'map scale'
             }
           ]
         }

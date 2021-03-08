@@ -54,13 +54,19 @@ module Cocina
 
         def build_cartographics(subject_node)
           carto_forms = []
-          subject_node.xpath('mods:cartographics/mods:scale', mods: DESC_METADATA_NS).each do |scale_node|
-            next if scale_node.text.blank?
-
-            carto_forms << {
-              value: scale_node.text,
-              type: 'map scale'
-            }
+          subject_node.xpath('mods:cartographics[mods:scale]', mods: DESC_METADATA_NS).each do |carto_node|
+            scale_nodes = carto_node.xpath('mods:scale', mods: DESC_METADATA_NS).reject { |scale_node| scale_node.text.blank? }
+            if scale_nodes.size == 1
+              carto_forms << {
+                value: scale_nodes.first.text,
+                type: 'map scale'
+              }
+            elsif scale_nodes.size > 1
+              carto_forms << {
+                groupedValue: scale_nodes.map { |scale_node| { value: scale_node.text } },
+                type: 'map scale'
+              }
+            end
           end
 
           subject_node.xpath('mods:cartographics/mods:projection', mods: DESC_METADATA_NS).each do |projection_node|
