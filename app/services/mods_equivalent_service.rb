@@ -23,6 +23,8 @@ class ModsEquivalentService
     ModsEquivalentService.new(mods_ng_xml1, mods_ng_xml2).equivalent?
   end
 
+  # @param [Nokogiri::Document] mods_ng_xml1 MODS to be compared against (expected)
+  # @param [Nokogiri::Document] mods_ng_xml2 MODS to be compared (actual)
   def initialize(mods_ng_xml1, mods_ng_xml2)
     @mods_ng_xml1 = mods_ng_xml1
     @mods_ng_xml2 = mods_ng_xml2
