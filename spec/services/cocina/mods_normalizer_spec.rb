@@ -234,7 +234,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
-  context 'when normalizing unmatches altRepGroups' do
+  context 'when normalizing unmatched altRepGroups' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{MODS_ATTRIBUTES}>
@@ -290,7 +290,7 @@ RSpec.describe Cocina::ModsNormalizer do
     end
   end
 
-  context 'when normalizing unmatches nameTitleGroups' do
+  context 'when normalizing unmatched nameTitleGroups' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{MODS_ATTRIBUTES}>
