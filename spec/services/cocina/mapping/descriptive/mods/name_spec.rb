@@ -1644,12 +1644,16 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Yao, Zongyi',
-                  type: 'name'
-                },
-                {
-                  value: '1618',
-                  type: 'activity dates'
+                  structuredValue: [
+                    {
+                      value: 'Yao, Zongyi',
+                      type: 'name'
+                    },
+                    {
+                      value: '1618',
+                      type: 'activity dates'
+                    }
+                  ]
                 }
               ]
             }
@@ -1678,12 +1682,16 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Inoue, Kaian',
-                  type: 'name'
-                },
-                {
-                  value: '18th century',
-                  type: 'activity dates'
+                  structuredValue: [
+                    {
+                      value: 'Inoue, Kaian',
+                      type: 'name'
+                    },
+                    {
+                      value: '18th century',
+                      type: 'activity dates'
+                    }
+                  ]
                 }
               ]
             }
