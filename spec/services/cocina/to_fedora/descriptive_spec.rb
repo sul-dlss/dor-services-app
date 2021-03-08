@@ -84,12 +84,12 @@ RSpec.describe Cocina::ToFedora::Descriptive do
           <abstract>This is an abstract.</abstract>
           <subject>
             <cartographics>
-              <coordinates>E 72&#xB0;--E 148&#xB0;/N 13&#xB0;--N 18&#xB0;</coordinates>
+              <coordinates>E 72°--E 148°/N 13°--N 18°</coordinates>
               <scale>1:22,000,000</scale>
               <projection>Conic proj</projection>
             </cartographics>
           </subject>
-          <originInfo eventType="production">
+          <originInfo eventType="creation">
             <dateCreated>1980</dateCreated>
           </originInfo>
         </mods>
