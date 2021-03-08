@@ -5,40 +5,6 @@ module Cocina
     class Descriptive
       # Maps events from cocina to MODS XML
       class Event
-        TAG_NAME = {
-          'capture' => :dateCaptured,
-          'copyright' => :copyrightDate,
-          'creation' => :dateCreated,
-          'presentation' => :dateIssued,
-          'publication' => :dateIssued,
-          'release' => :dateIssued,
-          'validity' => :dateValid
-        }.freeze
-
-        DATE_OTHER_TYPE = {
-          'development' => 'developed',
-          'distribution' => 'distribution',
-          'manufacture' => 'distribution',
-          'production' => 'production'
-        }.freeze
-
-        EVENT_TYPE = {
-          'acquisition' => 'acquisition',
-          'capture' => 'capture',
-          'copyright' => 'copyright',
-          'creation' => 'production',
-          'development' => 'development',
-          'distribution' => 'distribution',
-          'manufacture' => 'manufacture',
-          'presentation' => 'presentation',
-          'production' => 'production',
-          'publication' => 'publication',
-          'release' => 'release',
-          'validity' => 'validity'
-        }.freeze
-
-        GroupedParallelValues = Struct.new(:locations, :names, :dates, :notes, :value_language)
-
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::Event>] events
         # @params [IdGenerator] id_generator
@@ -54,11 +20,10 @@ module Cocina
 
         def write
           Array(events).each do |event|
-            event_type = event_type_for(event)
-            if translated?(event)
-              write_translated(event, event_type, id_generator.next_altrepgroup)
+            if event.parallelEvent.present?
+              write_parallel(event, id_generator.next_altrepgroup)
             else
-              write_basic(event, event_type)
+              write_basic(event, event.type)
             end
           end
         end
@@ -67,129 +32,36 @@ module Cocina
 
         attr_reader :xml, :events, :id_generator
 
-        def event_type_for(event)
-          return nil unless event.type
-
-          event_type = EVENT_TYPE.fetch(event.type)
-          return 'copyright notice' if (event_type == 'copyright') && Array(event.note).any? { |note| note.type == 'copyright statement' }
-
-          event_type
-        end
-
-        def translated?(event)
-          Array(event.location).any?(&:parallelValue) ||
-            Array(event.contributor).flat_map(&:name).any?(&:parallelValue) ||
-            Array(event.note).any?(&:parallelValue) ||
-            Array(event.date).any?(&:parallelValue)
-        end
-
         def write_basic(event, event_type)
           names = Array(event.contributor).map { |contributor| contributor.name.first }
-          name = names.first
           attributes = {
             displayLabel: event.displayLabel,
             eventType: event_type,
-            lang: name&.valueLanguage&.code,
-            script: name&.valueLanguage&.valueScript&.code,
-            transliteration: name&.standard&.value
+            script: event.valueLanguage&.valueScript&.code,
+            lang: event.valueLanguage&.code
           }.compact
 
           write_event(event.type, event.date, event.location, names, event.note, attributes)
         end
 
-        def write_translated(event, event_type, alt_rep_group)
-          grouped_parallel_values = grouped_parallel_values_for(event)
-          add_other_descriptive_values_to(grouped_parallel_values, event)
+        def write_parallel(event, alt_rep_group)
+          event.parallelEvent.each do |parallel_event|
+            attributes = {}.tap do |attrs|
+              attrs[:script] = parallel_event.valueLanguage&.valueScript&.code
+              attrs[:lang] = parallel_event.valueLanguage&.code
+              attrs[:altRepGroup] = alt_rep_group
+              attrs[:eventType] = event.type || parallel_event.type
+              attrs[:displayLabel] = event.displayLabel || parallel_event.displayLabel
+            end.compact
 
-          grouped_parallel_values.each do |grouped_parallel_value|
-            attributes = {
-              script: grouped_parallel_value.value_language&.valueScript&.code,
-              lang: grouped_parallel_value.value_language&.code,
-              altRepGroup: alt_rep_group,
-              eventType: event_type
-            }.compact
-
-            write_event(event.type,
-                        grouped_parallel_value.dates,
-                        grouped_parallel_value.locations,
-                        grouped_parallel_value.names,
-                        grouped_parallel_value.notes,
-                        attributes,
-                        is_parallel: true)
+            names = Array(parallel_event.contributor).map(&:name).flatten
+            write_event(parallel_event.type,
+                        parallel_event.date,
+                        parallel_event.location,
+                        names,
+                        parallel_event.note,
+                        attributes)
           end
-        end
-
-        # rubocop:disable Metrics/PerceivedComplexity
-        # rubocop:disable Metrics/CyclomaticComplexity
-        # rubocop:disable Metrics/AbcSize
-        def grouped_parallel_values_for(event)
-          # This assumes that parallelValues all share the same order. Thus, this depends on order rather than matching lang/script.
-          # Note that since not all parallelValues even have lang/script this is a use simplification.
-
-          parallel_locations = Array(event.location).select(&:parallelValue)
-          parallel_names = Array(event.contributor).map do |contributor|
-            contributor.name.select(&:parallelValue)
-          end.flatten.compact
-          parallel_dates = Array(event.date).select(&:parallelValue)
-          parallel_edition_notes = Array(event.note).select { |note| note.type == 'edition' && note.parallelValue }
-
-          parallels_size = [parallel_locations.size, parallel_names.size, parallel_dates.size, parallel_edition_notes.size].max
-
-          grouped_parallel_values = []
-          (0..parallels_size - 1).each do |parallels_index|
-            parallel_location = parallel_locations[parallels_index]
-            parallel_name = parallel_names[parallels_index]
-            parallel_date = parallel_dates[parallels_index]
-            parallel_edition_note = parallel_edition_notes[parallels_index]
-            parallel_size = parallel_size_for([parallel_location, parallel_name, parallel_date, parallel_edition_note])
-            (0..parallel_size - 1).each do |parallel_value_index|
-              parallel_location_value = parallel_location&.parallelValue&.slice(parallel_value_index)
-              parallel_name_value = parallel_name&.parallelValue&.slice(parallel_value_index)
-              parallel_date_value = parallel_date&.parallelValue&.slice(parallel_value_index)
-              parallel_edition_note_value = parallel_edition_note&.parallelValue&.slice(parallel_value_index)
-              value_language = value_language_for([parallel_location_value, parallel_name_value, parallel_date_value, parallel_edition_note_value])
-              grouped_parallel_values << GroupedParallelValues.new(
-                Array(parallel_location_value),
-                Array(parallel_name_value),
-                Array(parallel_date_value),
-                Array(parallel_edition_note_value),
-                value_language
-              )
-            end
-          end
-          grouped_parallel_values
-        end
-
-        def add_other_descriptive_values_to(grouped_parallel_values, event)
-          # Dates, names, location, editions that are not parallel are merged into the parallel.
-          # Any where lang=eng or script=Ltn, otherwise all
-          default_grouped_parallel_values = grouped_parallel_values.select do |grouped_parallel_value|
-            grouped_parallel_value.value_language&.code == 'eng' || grouped_parallel_value.value_language&.valueScript&.code == 'Latn'
-          end.presence || grouped_parallel_values
-
-          default_grouped_parallel_values.each do |grouped_parallel_value|
-            other_locations = Array(event.location).reject(&:parallelValue)
-            grouped_parallel_value.locations.concat(other_locations)
-            other_dates = Array(event.date).reject(&:parallelValue)
-            grouped_parallel_value.dates.concat(other_dates)
-            other_notes = Array(event.note).reject { |note| note.type == 'edition' && note.parallelValue }
-            grouped_parallel_value.notes.concat(other_notes)
-            other_parallel_names = Array(event.contributor).map do |contributor|
-              Array(contributor.name).reject(&:parallelValue)
-            end.flatten.compact
-            grouped_parallel_value.names.concat(other_parallel_names)
-          end
-        end
-        # rubocop:enable Metrics/PerceivedComplexity
-        # rubocop:enable Metrics/CyclomaticComplexity
-        # rubocop:enable Metrics/AbcSize
-
-        def parallel_size_for(parallels)
-          parallels.map { |parallel| parallel&.parallelValue&.size }.compact.max
-        end
-
-        def value_language_for(parallel_values)
-          parallel_values.find { |descriptive_value| descriptive_value&.valueLanguage }&.valueLanguage
         end
 
         # rubocop:disable Metrics/ParameterLists
@@ -204,7 +76,7 @@ module Cocina
               write_location(loc)
             end
             Array(names).each do |name|
-              xml.publisher name.value
+              xml.publisher name.value, name_attributes(name)
             end
             Array(notes).each do |note|
               write_note(note)
@@ -231,7 +103,7 @@ module Cocina
             attrs[:supplied] = 'yes' if location.type == 'supplied'
           end
           xml.place place_attrs do
-            placeterm_attrs = { type: 'text' }
+            placeterm_attrs = {}
             placeterm_attrs[:authority] = location.source.code if location.source&.code
             placeterm_attrs[:authorityURI] = location.source.uri if location.source&.uri
             placeterm_attrs[:valueURI] = location.uri if location.uri
@@ -248,29 +120,73 @@ module Cocina
           if date.structuredValue
             structured_val_attribs = {
               encoding: date.encoding,
-              qualifier: date.qualifier
+              qualifier: date.qualifier,
+              type: date.type
             }
-            date_range(date.structuredValue, cocina_event_type, structured_val_attribs)
+            date_type = cocina_event_type
+            date_type = date.type if date.type.present?
+            date_range(date.structuredValue, date_type, structured_val_attribs)
           else
-            date_tag(date, cocina_event_type)
+            write_date_element(date, cocina_event_type)
           end
         end
 
         # @param [Hash] structured_val_attribs - populated when structuredValue parent has attributes for individual date elements
-        def date_tag(date, cocina_event_type, structured_val_attribs = {})
-          value = date.value
-          tag = date_type_value_for(date) ? :dateOther : TAG_NAME.fetch(cocina_event_type, :dateOther)
-          return dates_for_range(date, cocina_event_type) if edtf_range?(date)
+        def write_date_element(date, cocina_event_type, structured_val_attribs = {})
+          return write_dates_for_edtf_range(date, cocina_event_type) if edtf_range?(date)
 
-          attributes = {
-            encoding: (date.encoding&.code || structured_val_attribs[:encoding]&.code),
-            qualifier: date.qualifier || structured_val_attribs[:qualifier]
-          }.tap do |attrs|
-            attrs[:keyDate] = 'yes' if date.status == 'primary'
-            attrs[:type] = date_type_for(date, cocina_event_type) if value.present?
+          value = date.value
+          element_name = date_element_name(date, cocina_event_type, structured_val_attribs[:type])
+          attributes = {}.tap do |attrs|
+            attrs[:encoding] = date.encoding&.code || structured_val_attribs[:encoding]&.code
+            attrs[:qualifier] = date.qualifier || structured_val_attribs[:qualifier]
+            attrs[:keyDate] = key_date_attr(date)
+            attrs[:type] = date_type_attr(date, element_name)
+            attrs[:calendar] = calendar_attr(date)
             attrs[:point] = date.type if %w[start end].include?(date.type)
           end.compact
-          xml.public_send(tag, value, attributes)
+          xml.public_send(element_name, value, attributes)
+        end
+
+        def date_element_name(date, cocina_event_type, structured_val_type)
+          el_name = Cocina::FromFedora::Descriptive::Event::DATE_ELEMENTS_2_TYPE.key(structured_val_type)
+          return el_name if el_name.present?
+
+          el_name = Cocina::FromFedora::Descriptive::Event::DATE_ELEMENTS_2_TYPE.key(date.type)
+          return el_name if el_name.present?
+
+          # the date type overrides the eventType for choosing date flavor, even if it ends up with dateOther
+          return 'dateOther' if date.type.present?
+
+          if cocina_event_type.present?
+            el_name = Cocina::FromFedora::Descriptive::Event::DATE_ELEMENTS_2_TYPE.key(cocina_event_type)
+            return el_name if el_name.present?
+          end
+
+          'dateOther'
+        end
+
+        # FIXME: to be implemented: if we only have end then it can be keyDate, otherwise it should be start only
+        # if there is a date range, then type can be 'start' and 'end'
+        def key_date_attr(cocina_date)
+          'yes' if cocina_date.status == 'primary' # && cocina_date.type != 'end'
+        end
+
+        # MODS only allows a type attr on dateOther; no other date flavors
+        #   FIXME: the following comment may become untrue ...
+        #   edtf dates will have type 'start' and/or 'end';  this type should not be used
+        def date_type_attr(cocina_date, date_element_name)
+          return unless date_element_name == 'dateOther'
+
+          cocina_date.type if cocina_date.type.present? && ['start', 'end'].exclude?(cocina_date.type)
+        end
+
+        def calendar_attr(cocina_date)
+          return if cocina_date.note.blank?
+
+          cocina_date.note.each do |note|
+            return note.value if note.type == 'calendar'
+          end
         end
 
         def edtf_range?(date)
@@ -278,42 +194,26 @@ module Cocina
         end
 
         # @param [String] date An EDTF range
-        def dates_for_range(date, cocina_event_type)
+        # FIXME: to be implemented: model edtf date range in cocina like other date ranges;
+        #   put the slash back in when mapping back to MODS
+        def write_dates_for_edtf_range(date, cocina_event_type)
           start_date, end_date = date.value.split('/')
-          date_tag(date.new(value: start_date, type: 'start'), cocina_event_type)
-          date_tag(date.new(value: end_date, type: 'end'), cocina_event_type)
-        end
-
-        def date_type_value_for(date)
-          Array(date.note).find { |note| note.type == 'date type' }&.value
-        end
-
-        def date_type_for(date, cocina_event_type)
-          date_type_value = date_type_value_for(date)
-          return date_type_value if date_type_value
-
-          DATE_OTHER_TYPE[cocina_event_type]
+          write_date_element(date.new(value: start_date, type: 'start'), cocina_event_type)
+          write_date_element(date.new(value: end_date, type: 'end'), cocina_event_type)
         end
 
         def date_range(dates, cocina_event_type, structured_val_attribs)
           dates.each do |date|
-            date_tag(date, cocina_event_type, structured_val_attribs)
+            write_date_element(date, cocina_event_type, structured_val_attribs)
           end
         end
 
-        MARC_RELATOR_PIECE = 'id.loc.gov/vocabulary/relators'
-
-        # prefer marcrelator publisher role
-        def contributor_role_publisher?(contributor)
-          return true if contributor.role.any? { |role| role.value.match?(/publisher/i) && role_is_marcrelator?(role) }
-
-          contributor.role.any? { |role| role.value&.match?(/publisher/i) }
-        end
-
-        def role_is_marcrelator?(role)
-          role.source&.code == 'marcrelator' ||
-            role.source&.uri&.include?(MARC_RELATOR_PIECE) ||
-            role.uri&.include?(MARC_RELATOR_PIECE)
+        def name_attributes(cocina_name)
+          {
+            lang: cocina_name&.valueLanguage&.code,
+            script: cocina_name&.valueLanguage&.valueScript&.code,
+            transliteration: cocina_name&.standard&.value
+          }.compact
         end
       end
     end
