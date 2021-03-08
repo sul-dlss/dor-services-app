@@ -1464,7 +1464,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
         {
           contributor: [
             {
-              name: [
+              identifier: [
                 {
                   value: '0000-0000-0000',
                   type: 'ORCID'
