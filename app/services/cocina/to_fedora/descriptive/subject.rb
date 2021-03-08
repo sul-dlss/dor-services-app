@@ -284,9 +284,10 @@ module Cocina
           write_cartographic_with_authority
         end
 
+        # rubocop:disable Metrics/CyclomaticComplexity
         def write_cartographic_without_authority
           # With all subject/forms without authorities.
-          scale_forms = forms.select { |form| form.type == 'map scale' }
+          scale_forms = forms.select { |form| form.type == 'map scale' }.flat_map { |form| form.groupedValue || form }
           projection_forms = forms.select { |form| form.type == 'map projection' && form.source.nil? }
           carto_subjects = subjects.select { |subject| subject.type == 'map coordinates' }
           return unless scale_forms.present? || projection_forms.present? || carto_subjects.present?
@@ -299,6 +300,7 @@ module Cocina
             end
           end
         end
+        # rubocop:enable Metrics/CyclomaticComplexity
 
         def write_cartographic_with_authority
           # Each for form with authority.
