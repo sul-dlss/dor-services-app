@@ -731,6 +731,58 @@ RSpec.describe 'Create object' do
     end
   end
 
+  context 'when a Hydrus APO is provided' do
+    let(:expected) do
+      Cocina::Models::AdminPolicy.new(type: Cocina::Models::Vocab.admin_policy,
+                                      label: 'Hydrus',
+                                      version: 1,
+                                      description: {
+                                        title: [{ value: 'Hydrus' }],
+                                        purl: 'http://purl.stanford.edu/gg777gg7777',
+                                        access: {
+                                          digitalRepository: [
+                                            { value: 'Stanford Digital Repository' }
+                                          ]
+                                        }
+                                      },
+                                      administrative: {
+                                        defaultObjectRights: default_object_rights,
+                                        hasAdminPolicy: 'druid:dd999df4567'
+                                      },
+                                      externalIdentifier: druid)
+    end
+
+    let(:default_object_rights) { Dor::DefaultObjectRightsDS.new.content }
+
+    let(:data) do
+      <<~JSON
+        {"type":"http://cocina.sul.stanford.edu/models/admin_policy.jsonld",
+          "label":"Hydrus","version":1,
+          "administrative":{
+            "defaultObjectRights":#{default_object_rights.to_json},
+            "hasAdminPolicy":"druid:dd999df4567"}
+          }
+      JSON
+    end
+
+    context 'when the request is successful' do
+      before do
+        # This stubs out Solr:
+        allow_any_instance_of(Dor::AdminPolicyObject).to receive(:admin_policy_object_id).and_return('druid:dd999df4567')
+      end
+
+      it 'registers the object with the registration service' do
+        post '/v1/objects',
+             params: data,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response.body).to eq expected.to_json
+
+        expect(response.status).to eq(201)
+        expect(response.location).to eq "/v1/objects/#{druid}"
+      end
+    end
+  end
+
   context 'when an embargo is provided' do
     let(:expected) do
       Cocina::Models::DRO.new(type: Cocina::Models::Vocab.book,

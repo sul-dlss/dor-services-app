@@ -9,8 +9,10 @@ module Cocina
         admin_node = administrative_metadata.ng_xml.xpath('//administrativeMetadata').first
         # TODO: need to see if this node already exists
         admin_node.add_child "<dissemination><workflow id=\"#{administrative.disseminationWorkflow}\" /></dissemination>"
-        registration_workflows = administrative.registrationWorkflow.map { |wf_id| "<workflow id=\"#{wf_id}\" />" }.join
-        admin_node.add_child "<registration>#{registration_workflows}</registration>"
+        if administrative.registrationWorkflow
+          registration_workflows = administrative.registrationWorkflow.map { |wf_id| "<workflow id=\"#{wf_id}\" />" }.join
+          admin_node.add_child "<registration>#{registration_workflows}</registration>"
+        end
 
         administrative_metadata.ng_xml_will_change!
       end
