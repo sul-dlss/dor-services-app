@@ -59,6 +59,7 @@ module Cocina
       item.label = truncate_label(obj.label)
 
       Cocina::ToFedora::ApoRights.write(item.administrativeMetadata, obj.administrative)
+      Cocina::ToFedora::Roles.write(item, Array(obj.administrative.roles))
       Cocina::ToFedora::Identity.apply(obj, item, object_type: 'adminPolicy')
     end
 

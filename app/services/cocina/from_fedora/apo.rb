@@ -40,7 +40,18 @@ module Cocina
           admin[:disseminationWorkflow] = dissemination_workflow if dissemination_workflow.present?
           admin[:registrationWorkflow] = registration_workflows if registration_workflows.present?
           admin[:hasAdminPolicy] = item.admin_policy_object_id
+          admin[:roles] = build_roles
         end
+      end
+
+      # @return [Array<Hash>] the list of name and members
+      def build_roles
+        # rubocop:disable Rails/DynamicFindBy  false positive
+        item.roleMetadata.find_by_xpath('/roleMetadata/role').map do |role|
+          members = role.xpath('group/identifier').map { |ident| { type: ident['type'], identifier: ident.text } }
+          { name: role['type'], members: members }
+        end
+        # rubocop:enable Rails/DynamicFindBy
       end
     end
   end

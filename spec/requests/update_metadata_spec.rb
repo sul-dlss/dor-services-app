@@ -926,7 +926,18 @@ RSpec.describe 'Update object' do
                                         defaultObjectRights: default_object_rights,
                                         hasAdminPolicy: 'druid:dd999df4567',
                                         disseminationWorkflow: 'assemblyWF',
-                                        registrationWorkflow: %w[goobiWF registrationWF]
+                                        registrationWorkflow: %w[goobiWF registrationWF],
+                                        roles: [
+                                          {
+                                            name: 'dor-apo-manager',
+                                            members: [
+                                              {
+                                                type: 'workgroup',
+                                                identifier: 'sdr:psm-staff'
+                                              }
+                                            ]
+                                          }
+                                        ]
                                       },
                                       externalIdentifier: druid)
     end
@@ -943,7 +954,9 @@ RSpec.describe 'Update object' do
             "defaultObjectRights":#{default_object_rights.to_json},
             "disseminationWorkflow":"assemblyWF",
             "registrationWorkflow":["goobiWF","registrationWF"],
-            "hasAdminPolicy":"druid:dd999df4567"},
+            "hasAdminPolicy":"druid:dd999df4567",
+            "roles":[{"name":"dor-apo-manager","members":[{"type":"workgroup","identifier":"sdr:psm-staff"}]}]
+          },
           "description":{"title":[{"value":"This is my title"}]}}
       JSON
     end
