@@ -23,8 +23,8 @@ module Cocina
         remove_empty_origin_info # must be after remove_empty_child_elements
         normalize_legacy_mods_event_type
         place_term_type_normalization
-        remove_trailing_period_from_date_values
         normalize_authority_marcountry
+        remove_trailing_period_from_date_values
         ng_xml
       end
 
@@ -78,31 +78,16 @@ module Cocina
         end
       end
 
+      def normalize_authority_marcountry
+        ng_xml.root.xpath("//mods:*[@authority='marcountry']", mods: ModsNormalizer::MODS_NS).each do |node|
+          node[:authority] = 'marccountry'
+        end
+      end
+
       def remove_trailing_period_from_date_values
         DATE_FIELDS.each do |date_field|
           ng_xml.root.xpath("//mods:originInfo/mods:#{date_field}", mods: ModsNormalizer::MODS_NS)
                 .each { |date_node| date_node.content = date_node.content.delete_suffix('.') }
-        end
-      end
-
-      def publisher_attribs_normalization
-        ng_xml.root.xpath('//mods:publisher[@lang]', mods: ModsNormalizer::MODS_NS).each do |publisher_node|
-          publisher_node.parent['lang'] = publisher_node['lang']
-          publisher_node.delete('lang')
-        end
-        ng_xml.root.xpath('//mods:publisher[@script]', mods: ModsNormalizer::MODS_NS).each do |publisher_node|
-          publisher_node.parent['script'] = publisher_node['script']
-          publisher_node.delete('script')
-        end
-        ng_xml.root.xpath('//mods:publisher[@transliteration]', mods: ModsNormalizer::MODS_NS).each do |publisher_node|
-          publisher_node.parent['transliteration'] = publisher_node['transliteration']
-          publisher_node.delete('transliteration')
-        end
-      end
-
-      def normalize_authority_marcountry
-        ng_xml.root.xpath("//mods:*[@authority='marcountry']", mods: ModsNormalizer::MODS_NS).each do |node|
-          node[:authority] = 'marccountry'
         end
       end
     end
