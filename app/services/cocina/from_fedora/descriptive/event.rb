@@ -6,6 +6,53 @@ module Cocina
       # Maps originInfo to cocina events
       # rubocop:disable Metrics/ClassLength
       class Event
+        # key: MODS date element name
+        # value: cocina date type
+        DATE_ELEMENTS_2_TYPE = {
+          'copyrightDate' => 'copyright',
+          'dateCaptured' => 'capture',
+          'dateCreated' => 'creation',
+          'dateIssued' => 'publication',
+          'dateModified' => 'modification',
+          'dateOther' => '', # cocina type is set differently for dateOther
+          'dateValid' => 'validity'
+        }.freeze
+
+        # a preferred vocabulary, if you will
+        EVENT_TYPES = [
+          'acquisition',
+          'capture',
+          'collection',
+          'copyright',
+          'creation',
+          'degree conferral',
+          'development',
+          'distribution',
+          'generation',
+          'manufacture',
+          'modification',
+          'performance',
+          'presentation',
+          'production',
+          'publication',
+          'recording',
+          'release',
+          'submission',
+          'validity',
+          'withdrawal'
+        ].freeze
+
+        # because eventType is a relatively new addition to the MODS schema, records converted from MARC to MODS prior
+        #   to its introduction used displayLabel as a stopgap measure.
+        # These are the displayLabel values that should be converted to eventType instead of displayLabel.
+        # These values were also sometimes used as eventType values themselves, and will be converted to our preferred vocab.
+        LEGACY_EVENT_TYPES_2_TYPE = {
+          'distributor' => 'distribution',
+          'manufacturer' => 'manufacture',
+          'producer' => 'production',
+          'publisher' => 'publication'
+        }.freeze
+
         # @param [Nokogiri::XML::Element] resource_element mods or relatedItem element
         # @param [Cocina::FromFedora::Descriptive::DescriptiveBuilder] descriptive_builder
         # @param [String] purl
@@ -22,224 +69,314 @@ module Cocina
         def build
           altrepgroup_origin_info_nodes, other_origin_info_nodes = AltRepGroup.split(nodes: resource_element.xpath('mods:originInfo', mods: DESC_METADATA_NS))
 
-          build_grouped_origin_infos(altrepgroup_origin_info_nodes) + build_ungrouped_origin_infos(other_origin_info_nodes)
+          results = build_grouped_origin_infos(altrepgroup_origin_info_nodes) + build_ungrouped_origin_infos(other_origin_info_nodes)
+          results if results.present? && results.first.present? # avoid [{}] case
         end
 
         private
 
         attr_reader :resource_element, :notifier
 
+        def build_ungrouped_origin_infos(origin_infos)
+          origin_infos.map do |origin_info|
+            next if origin_info.content.blank? &&
+                    origin_info.xpath('//*[@valueURI]').empty? &&
+                    origin_info.xpath('//*[@xlink:href]', xlink: XLINK_NS).empty?
+
+            event = build_event_for_origin_info(origin_info)
+            event.compact
+          end.compact
+        end
+
+        def build_event_for_origin_info(origin_info_node)
+          return build_copyright_notice_event(origin_info_node) if origin_info_node['eventType'] == 'copyright notice'
+
+          event = {
+            type: event_type(origin_info_node),
+            displayLabel: display_label(origin_info_node),
+            valueLanguage: LanguageScript.build(node: origin_info_node)
+          }
+          add_info_to_event(event, origin_info_node)
+          event.compact
+        end
+
         def build_grouped_origin_infos(grouped_origin_infos)
           grouped_origin_infos.map do |origin_info_nodes|
-            all_grouped_events = origin_info_nodes.map { |origin_info_node| build_ungrouped_origin_infos([origin_info_node]) }
-            # Make the eventType=publication for any without types.
-            all_grouped_events.each { |event_group| event_group.each { |event| event[:type] = 'publication' unless event[:type] } }
+            common_event_type = event_type_in_common(origin_info_nodes)
+            common_display_label = display_label_in_common(origin_info_nodes)
 
-            base_event_group = all_grouped_events.first
-            base_event_group_map = {}
-            base_event_group.each { |event| base_event_group_map[event[:type]] = event }
-            rest_grouped_events = all_grouped_events.drop(1)
+            parallel_event = {
+              type: common_event_type,
+              displayLabel: common_display_label,
+              parallelEvent: build_parallel_origin_infos(origin_info_nodes, common_event_type, common_display_label)
+            }
 
-            rest_grouped_events.each do |grouped_events|
-              grouped_events.each do |grouped_event|
-                merge_parallel_grouped_event(grouped_event, base_event_group, base_event_group_map)
-              end
-            end
-            base_event_group
+            parallel_event.compact
           end.flatten
         end
 
-        def merge_parallel_grouped_event(grouped_event, base_event_group, base_event_group_map)
-          if base_event_group_map.include?(grouped_event[:type])
-            base_event = base_event_group_map[grouped_event[:type]]
-            # Merge them.
-            merge_descriptive_value(:date, base_event, grouped_event, ->(value) { value[:structuredValue].nil? })
-            merge_descriptive_value(:date, base_event, grouped_event, ->(value) { value[:structuredValue].present? })
-            merge_descriptive_value(:location, base_event, grouped_event)
-            merge_descriptive_value(:note, base_event, grouped_event, ->(value) { value[:type] == 'edition' })
-            merge_descriptive_value(:note, base_event, grouped_event, ->(value) { value[:type] != 'edition' })
-            base_name = base_event[:contributor]&.first
-            if base_name.nil?
-              base_event[:contributor] = grouped_event[:contributor] if grouped_event[:contributor]
-            else
-              merge_descriptive_value(:name, base_name, grouped_event[:contributor]&.first)
-            end
-          else
-            base_event_group << grouped_event
-            base_event_group_map[grouped_event[:type]] = grouped_event
-          end
-        end
-
-        # rubocop:disable Metrics/AbcSize
-        # the lambda is to describe what things will be grouped into parallelValues
-        # if nothing matches, nothing will be grouped
-        def merge_descriptive_value(key, base_event, grouped_event, filter = ->(_value) { true })
-          return if grouped_event.nil?
-
-          filtered_base_values = base_event.fetch(key, []).select { |value| filter.call(value) }
-          filtered_grouped_values = grouped_event.fetch(key, []).select { |value| filter.call(value) }
-
-          grouped_event_size = filtered_grouped_values.size
-          merge_size = [filtered_base_values.size, grouped_event_size].min
-          (0..merge_size - 1).each do |index|
-            base_value = filtered_base_values[index]
-            grouped_value = filtered_grouped_values[index]
-
-            next if base_value == grouped_value
-
-            unless base_value[:parallelValue]
-              # Note that this valueLanguage shuffling is only for contributor/names
-              base_parallel_value = base_value.merge({ valueLanguage: base_event[:valueLanguage] }.compact)
-              base_value.clear
-              if base_parallel_value[:type] && base_parallel_value[:type] != 'name'
-                base_value[:type] = base_parallel_value[:type]
-                base_parallel_value.delete(:type)
-              end
-              base_value[:parallelValue] = [base_parallel_value]
-              base_event.delete(:valueLanguage)
-            end
-            new_grouped_value = grouped_value.merge({ valueLanguage: grouped_event[:valueLanguage] }.compact)
-            new_grouped_value.delete(:type) unless new_grouped_value[:type] == 'name'
-            base_value[:parallelValue] << new_grouped_value
-          end
-          # Add any extra values that are in grouped_event
-          other_values = filtered_grouped_values.slice(merge_size, grouped_event_size - merge_size)
-
-          return if other_values.blank?
-
-          base_event[key] ||= []
-          base_event[key].concat(other_values)
-        end
-        # rubocop:enable Metrics/AbcSize
-
-        def build_ungrouped_origin_infos(origin_infos)
+        # For parallelEvent items, the valueLanguage construct is at the same level as the rest
+        #   of the event attributes, rather than inside each event attribute
+        def build_parallel_origin_infos(origin_infos, common_event_type, common_display_label)
           origin_infos.flat_map do |origin_info|
-            language_script = LanguageScript.build(node: origin_info)
-            events = build_events_for_origin_info(origin_info, language_script)
+            event = build_event_for_parallel_origin_info(origin_info)
+            event[:valueLanguage] = LanguageScript.build(node: origin_info)
+            event[:type] = display_label(origin_info) if common_event_type.blank?
+            event[:displayLabel] = display_label(origin_info) if common_display_label.blank?
 
-            issuance = origin_info.xpath('mods:issuance', mods: DESC_METADATA_NS)
-            frequency = origin_info.xpath('mods:frequency', mods: DESC_METADATA_NS)
-            edition = origin_info.xpath('mods:edition', mods: DESC_METADATA_NS)
-            publisher = origin_info.xpath('mods:publisher', mods: DESC_METADATA_NS)
-            if issuance.present? || frequency.present? || edition.present? || publisher.present?
-              event = find_event_by_precedence(events)
-              add_edition_info(event, edition, language_script)
-              add_issuance_info(event, issuance)
-              add_frequency_info(event, frequency)
-              add_publisher_info(event, publisher, language_script, origin_info)
-            end
-
-            place = origin_info.xpath('mods:place', mods: DESC_METADATA_NS)
-            add_place_info(find_event_by_precedence(events) || events.last, place, language_script) if place.present?
-
-            events = [{}] if events.empty?
-            display_label = origin_info[:displayLabel].presence
-            events.each { |evnt| evnt[:displayLabel] = display_label } if display_label
-
-            events.reject(&:blank?)
-          end
+            event.compact
+          end.compact
         end
 
-        def find_event_by_precedence(events)
-          %w[publication presentation distribution production creation manufacture validity].each do |event_type|
-            events.each do |event|
-              next if event.blank?
+        def build_event_for_parallel_origin_info(origin_info_node)
+          return build_copyright_notice_event(origin_info_node) if origin_info_node['eventType'] == 'copyright notice'
 
-              return event if event[:type] == event_type
-            end
-          end
-
-          events.reject!(&:blank?)
-
-          { type: 'publication' }.tap do |event|
-            events << event
-          end
+          event = {}
+          add_info_to_event(event, origin_info_node)
+          event.compact
         end
 
-        # rubocop:disable Metrics/AbcSize
-        def build_events_for_origin_info(origin_info, language_script)
-          [].tap do |events|
-            orig_info_type = origin_info['eventType']
-            has_content_predicate = '[string-length(normalize-space()) > 1]'
+        # @return String type for the cocina event if it is the same for all the origin_info_nodes, o.w. nil
+        def event_type_in_common(origin_info_nodes)
+          raw_type = origin_info_nodes.first['eventType']
+          return if raw_type.blank?
 
-            date_created = origin_info.xpath("mods:dateCreated#{has_content_predicate}", mods: DESC_METADATA_NS)
-            events << build_event('creation', date_created, language_script) if date_created.present?
-
-            date_issued = origin_info.xpath("mods:dateIssued#{has_content_predicate}", mods: DESC_METADATA_NS)
-            if date_issued.present?
-              event_type = event_type_or_default(orig_info_type, 'publication')
-              events << build_event(event_type, date_issued, language_script)
-            end
-
-            copyright_date = origin_info.xpath("mods:copyrightDate#{has_content_predicate}", mods: DESC_METADATA_NS)
-            if copyright_date.present?
-              events << if origin_info['eventType'] == 'copyright notice'
-                          build_copyright_note(copyright_date.first)
-                        else
-                          build_event('copyright', copyright_date, language_script)
-                        end
-            end
-
-            date_captured = origin_info.xpath("mods:dateCaptured#{has_content_predicate}", mods: DESC_METADATA_NS)
-            events << build_event('capture', date_captured, language_script) if date_captured.present?
-
-            date_validity = origin_info.xpath("mods:dateValid#{has_content_predicate}", mods: DESC_METADATA_NS)
-            events << build_event('validity', date_validity, language_script) if date_validity.present?
-
-            date_other = origin_info.xpath("mods:dateOther#{has_content_predicate}", mods: DESC_METADATA_NS)
-            events << build_event(date_other_event_type(origin_info, date_other.first), date_other, language_script) if date_other.present?
-
-            # set eventType to 'production' in MODS if no date present
-            has_date = [date_created, date_issued, copyright_date, date_captured, date_other].flatten.present?
-            events << build_event('creation', [], language_script) if origin_info[:eventType] == 'production' && !has_date
-          end
-        end
-        # rubocop:enable Metrics/AbcSize
-
-        def event_type_or_default(event_type, default)
-          return event_type if Cocina::ToFedora::Descriptive::Event::EVENT_TYPE.key?(event_type)
-
-          default
+          first_event_type = event_type(origin_info_nodes.first)
+          return first_event_type if origin_info_nodes.all? { |node| event_type(node) == first_event_type }
         end
 
-        def build_copyright_note(copyright_date)
+        # @return String displayLabel for the cocina event if it is the same for all the origin_info_nodes, o.w. nil
+        def display_label_in_common(origin_info_nodes)
+          raw_label = origin_info_nodes.first['displayLabel']
+          return if raw_label.blank?
+
+          first_label = display_label(origin_info_nodes.first)
+          return first_label if origin_info_nodes.all? { |node| display_label(node) == first_label }
+        end
+
+        def add_info_to_event(event, origin_info_node)
+          place_nodes = origin_info_node.xpath('mods:place', mods: DESC_METADATA_NS)
+          add_place_info(event, place_nodes) if place_nodes.present?
+
+          publisher = origin_info_node.xpath('mods:publisher', mods: DESC_METADATA_NS)
+          add_publisher_info(event, publisher, origin_info_node) if publisher.present?
+
+          issuance = origin_info_node.xpath('mods:issuance', mods: DESC_METADATA_NS)
+          add_issuance_note(event, issuance) if issuance.present?
+
+          edition = origin_info_node.xpath('mods:edition', mods: DESC_METADATA_NS)
+          add_edition_info(event, edition) if edition.present?
+
+          frequency = origin_info_node.xpath('mods:frequency', mods: DESC_METADATA_NS)
+          add_frequency_info(event, frequency) if frequency.present?
+
+          date_values = build_date_values(origin_info_node)
+          event[:date] = date_values if date_values.present?
+        end
+
+        XPATH_HAS_CONTENT_PREDICATE = '[string-length(normalize-space()) > 1]'
+
+        def build_copyright_notice_event(origin_info_node)
+          date_nodes = origin_info_node.xpath("mods:copyrightDate#{XPATH_HAS_CONTENT_PREDICATE}", mods: DESC_METADATA_NS)
+          return if date_nodes.blank?
+
           {
-            type: 'copyright',
+            type: 'copyright notice',
             note: [
               {
-                value: copyright_date.content,
+                value: date_nodes.first.content,
                 type: 'copyright statement'
               }
             ]
           }
         end
 
+        def build_date_values(origin_info_node)
+          date_values = []
+          DATE_ELEMENTS_2_TYPE.each do |mods_el_name, cocina_type|
+            date_values << build_date_desc_values(mods_el_name, origin_info_node, cocina_type)
+          end
+          date_values.flatten.compact
+        end
+
+        def build_date_desc_values(mods_date_el_name, origin_info_node, default_type)
+          date_nodes = origin_info_node.xpath("mods:#{mods_date_el_name}#{XPATH_HAS_CONTENT_PREDICATE}", mods: DESC_METADATA_NS)
+          if mods_date_el_name == 'dateOther' && date_nodes.present?
+            date_other_type = date_other_type_attr(origin_info_node['eventType'], date_nodes.first)
+            date_values_for_event(date_nodes, date_other_type)
+          else
+            date_values_for_event(date_nodes, default_type)
+          end
+        end
+
+        # encapsulate where warnings are given for dateOther@type
+        # per Arcadia: no date type/no event type warns 'undetermined date type'
+        def date_other_type_attr(event_type, date_other_node)
+          date_type = date_other_node['type']
+          notifier.warn('Undetermined date type') if date_type.blank? && event_type.blank?
+          date_type
+        end
+
+        def date_values_for_event(date_nodes, default_type)
+          dates = date_nodes.reject { |node| node['point'] }.map do |node|
+            addl_attributes = {}
+            # NOTE: only dateOther should have type attribute;  not sure if we have dirty data in this respect
+            #   if so, it's invalid MODS, so validating against the MODS schema will catch it
+            addl_attributes[:type] = node['type'] if node['type'].present?
+            build_date(node).merge(addl_attributes)
+          end
+
+          points = date_nodes.select { |node| node['point'] }
+          points_date = build_structured_date(points)
+          dates << points_date if points_date
+
+          dates.compact!
+          dates.each { |date| date[:type] = default_type if date[:type].blank? && default_type.present? }
+        end
+
+        # map legacy event types, encapsulate where warnings are given for originInfo@eventType
+        #  per Arcadia:  unknown event type/any date type warns 'unrecognized event type'
+        # NOTE: Do any eventType/displayLabel transformations before determining contributor role
+        def event_type(origin_info_node)
+          event_type = origin_info_node['eventType']
+          event_type = origin_info_node['displayLabel'] if event_type.blank? &&
+                                                           LEGACY_EVENT_TYPES_2_TYPE.key?(origin_info_node['displayLabel'])
+          event_type = LEGACY_EVENT_TYPES_2_TYPE[event_type] if LEGACY_EVENT_TYPES_2_TYPE.key?(event_type)
+
+          return if event_type.blank?
+
+          notifier.warn('Unrecognized event type') unless EVENT_TYPES.include?(event_type)
+          event_type
+        end
+
+        def display_label(origin_info_node)
+          origin_info_node[:displayLabel] if origin_info_node[:displayLabel].present? &&
+                                             !LEGACY_EVENT_TYPES_2_TYPE.key?(origin_info_node[:displayLabel])
+        end
+
         # placeTerm can have type=code or type=text or neither; placeTerms of type code and text may combine into a single
         #  cocina location, or they might need to be split into two separate cocina locations (e.g. when the uri attributes aren't for codes)
-        def add_place_info(event, places, language_script)
-          # Text then code.
-          text_places = places.select { |place| place.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).present? }
+        # rubocop:disable Metrics/AbcSize
+        # rubocop:disable Metrics/CyclomaticComplexity
+        def add_place_info(event, place_nodes)
+          return unless place_nodes_have_info?(place_nodes)
+
+          # Text types then code types
+          text_places = place_nodes.select { |place| place.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).present? }
           text_locations = text_places.map do |place|
-            text_place_term = place.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).first
-            code_place_term = place.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
-            location = with_uri_info({}, text_place_term)
-            location[:value] = text_place_term.text
-            location[:code] = code_place_term.text if code_place_term
-            location[:valueLanguage] = language_script if language_script
+            text_place_term_node = place.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).first
+            next if text_place_term_node.text.blank?
+
+            location = with_uri_info({}, text_place_term_node)
+            location[:value] = text_place_term_node.text
+            code_place_term_node = place.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
+            location[:code] = code_place_term_node.text if code_place_term_node
+            lang_script = LanguageScript.build(node: text_place_term_node)
+            location[:valueLanguage] = lang_script if lang_script
             location[:type] = 'supplied' if place[:supplied] == 'yes'
             location
           end
 
-          code_places = places.reject { |place| text_places.include?(place) }
+          code_places = place_nodes.reject { |place| text_places.include?(place) }
           code_locations = code_places.map do |place|
-            place_term = place.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
-            location = with_uri_info({}, place_term)
-            location[:code] = place_term.text
+            place_term_node = place.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
+            next if place_term_node.content.blank?
+
+            location = with_uri_info({}, place_term_node)
+            notifier.warn('Place code missing authority', { code: place_term_node.text }) if location.empty?
+
+            location[:code] = place_term_node.text
             location[:type] = 'supplied' if place[:supplied] == 'yes'
             location
           end
 
           event[:location] = text_locations + code_locations
+          event[:location].compact!
+        end
+        # rubocop:enable Metrics/AbcSize
+        # rubocop:enable Metrics/CyclomaticComplexity
+
+        def place_nodes_have_info?(place_nodes)
+          return true if place_nodes.any? { |node| node.content.present? }
+          return true if place_nodes.any? { |node| node.xpath('mods:placeTerm[@valueURI]', mods: DESC_METADATA_NS).present? }
+
+          place_nodes.any? { |node| node.xpath('mods:placeTerm[@xlink:href]', { mods: DESC_METADATA_NS, xlink: XLINK_NS }).present? }
+        end
+
+        def add_issuance_note(event, issuance_nodes)
+          return if issuance_nodes.empty?
+
+          event[:note] ||= []
+          issuance_nodes.each do |issuance|
+            next if issuance.text.blank?
+
+            event[:note] << {
+              source: { value: 'MODS issuance terms' },
+              type: 'issuance',
+              value: issuance.text
+            }.compact
+          end
+        end
+
+        def add_frequency_info(event, freq_nodes)
+          return if freq_nodes.empty?
+
+          event[:note] ||= []
+          freq_nodes.each do |frequency|
+            next if frequency.text.blank?
+
+            note = {
+              type: 'frequency',
+              value: frequency.text,
+              valueLanguage: LanguageScript.build(node: frequency)
+            }
+            event[:note] << with_uri_info(note, frequency).compact
+          end
+        end
+
+        def add_edition_info(event, edition_nodes)
+          return if edition_nodes.empty?
+
+          event[:note] ||= []
+          edition_nodes.each do |edition|
+            next if edition.text.blank?
+
+            event[:note] << {
+              type: 'edition',
+              value: edition.text,
+              valueLanguage: LanguageScript.build(node: edition)
+            }.compact
+          end
+        end
+
+        def add_publisher_info(event, publisher_nodes, origin_info_node)
+          return if publisher_nodes.empty?
+
+          event[:contributor] ||= []
+          publisher_nodes.each do |publisher|
+            next if publisher.text.blank?
+
+            event[:contributor] << {
+              name: [
+                {
+                  value: publisher.text,
+                  valueLanguage: LanguageScript.build(node: publisher)
+                }.tap do |attrs|
+                  if origin_info_node['transliteration']
+                    attrs[:type] = 'transliteration'
+                    attrs[:standard] = { value: origin_info_node['transliteration'] }
+                  end
+                  if publisher['transliteration']
+                    attrs[:type] = 'transliteration'
+                    attrs[:standard] = { value: publisher['transliteration'] }
+                  end
+                end.compact
+              ],
+              role: [role_for(event)]
+            }.compact
+          end
+
+          event.delete(:contributor) if event[:contributor].empty?
         end
 
         def with_uri_info(cocina, xml_node)
@@ -252,72 +389,76 @@ module Cocina
           cocina
         end
 
-        def add_issuance_info(event, issuance_nodes)
-          return if issuance_nodes.empty?
+        # rubocop:disable Metrics/CyclomaticComplexity
+        # rubocop:disable Metrics/PerceivedComplexity
+        def build_structured_date(date_nodes)
+          return if date_nodes.blank?
 
-          event[:note] ||= []
-          issuance_nodes.each do |issuance|
-            event[:note] << {
-              source: { value: 'MODS issuance terms' },
-              type: 'issuance',
-              value: issuance.text
+          common_attribs = common_date_attributes(date_nodes)
+          # FIXME: to be implemented: model edtf date range in cocina like other date ranges;
+          #   put the slash back in when mapping back to MODS
+          if edtf_range?(date_nodes, common_attribs[:encoding])
+            common_attribs[:status] = 'primary' if date_nodes.any? { |node| node['keyDate'] == 'yes' }
+            return common_attribs.merge(value: date_nodes.join('/'))
+          end
+
+          dates = date_nodes.map do |node|
+            next if node.text.blank? && node.attributes.empty?
+
+            new_node = node.deep_dup
+            new_node.remove_attribute('encoding') if common_attribs[:encoding].present? || node[:encoding]&.size&.zero?
+            new_node.remove_attribute('qualifier') if common_attribs[:qualifier].present? || node[:qualifier]&.size&.zero?
+            build_date(new_node)
+          end
+          { structuredValue: dates }.merge(common_attribs).compact
+        end
+        # rubocop:enable Metrics/PerceivedComplexity
+        # rubocop:enable Metrics/CyclomaticComplexity
+
+        # @return [Boolean] true if this node set can be expressed as an EDTF range.
+        def edtf_range?(date_nodes, encoding)
+          date_nodes.size == 2 && date_nodes.map { |node| node['point'] } == %w[start end] && encoding == { code: 'edtf' }
+        end
+
+        def common_date_attributes(date_nodes)
+          first_encoding = date_nodes.first['encoding']
+          first_qualifier = date_nodes.first['qualifier']
+          encoding_is_common = date_nodes.all? { |node| node['encoding'] == first_encoding }
+          qualifier_is_common = date_nodes.all? { |node| node['qualifier'] == first_qualifier }
+          attribs = {}
+          attribs[:qualifier] = first_qualifier if qualifier_is_common && first_qualifier.present?
+          attribs[:encoding] = { code: first_encoding } if encoding_is_common && first_encoding.present?
+          attribs.compact
+        end
+
+        def build_date(date_node)
+          {}.tap do |date|
+            date[:value] = clean_date(date_node.text) if date_node.text.present?
+            date[:encoding] = { code: date_node['encoding'] } if date_node['encoding']
+            date[:status] = 'primary' if date_node['keyDate']
+            date[:note] = build_date_note(date_node)
+            date[:qualifier] = date_node['qualifier'] if date_node['qualifier'].present?
+            date[:type] = date_node['point'] if date_node['point'].present?
+            date[:valueLanguage] = LanguageScript.build(node: date_node)
+          end.compact
+        end
+
+        def build_date_note(date_node)
+          return if date_node['calendar'].blank?
+
+          [
+            {
+              value: date_node['calendar'],
+              type: 'calendar'
             }
-          end
+          ]
         end
 
-        def add_frequency_info(event, freq_nodes)
-          return if freq_nodes.empty?
-
-          event[:note] ||= []
-          freq_nodes.each do |frequency|
-            note = {
-              type: 'frequency',
-              value: frequency.text
-            }
-            event[:note] << with_uri_info(note, frequency)
-          end
+        def clean_date(date)
+          date.delete_suffix('.')
         end
 
-        def add_edition_info(event, edition_nodes, language_script)
-          return if edition_nodes.empty?
-
-          event[:note] ||= []
-          edition_nodes.each do |edition|
-            event[:note] << {
-              type: 'edition',
-              value: edition.text,
-              valueLanguage: language_script
-            }.compact
-          end
-        end
-
-        def add_publisher_info(event, publisher_nodes, language_script, origin_info_node)
-          return if publisher_nodes.empty?
-
-          event[:contributor] ||= []
-          publisher_nodes.each do |publisher|
-            event[:contributor] << {
-              name: [
-                {
-                  value: publisher.text,
-                  valueLanguage: language_script || LanguageScript.build(node: publisher)
-                }.tap do |attrs|
-                  if publisher['transliteration']
-                    attrs[:type] = 'transliteration'
-                    attrs[:standard] = { value: publisher['transliteration'] }
-                  end
-                  if origin_info_node['transliteration']
-                    attrs[:type] = 'transliteration'
-                    attrs[:standard] = { value: origin_info_node['transliteration'] }
-                  end
-                end.compact
-              ],
-              type: 'organization',
-              role: [role_for(event)]
-            }.compact
-          end
-        end
-
+        # NOTE: Do any eventType/displayLabel transformations before determining role (i.e. with LEGACY_EVENT_TYPES_2_TYPE)
         def role_for(event)
           case event[:type]
           when 'distribution'
@@ -342,9 +483,9 @@ module Cocina
             }
           when 'production'
             {
-              value: 'issuing body',
-              code: 'isb',
-              uri: 'http://id.loc.gov/vocabulary/relators/isb',
+              value: 'creator',
+              code: 'cre',
+              uri: 'http://id.loc.gov/vocabulary/relators/cre',
               source: {
                 code: 'marcrelator',
                 uri: 'http://id.loc.gov/vocabulary/relators/'
@@ -361,101 +502,6 @@ module Cocina
               }
             }
           end
-        end
-
-        # rubocop:disable  Metrics/CyclomaticComplexity
-        def build_event(event_type, date_nodes, language_script = nil)
-          dates = date_nodes.reject { |node| node['point'] }.map do |node|
-            addl_attributes = node['encoding'].nil? && language_script ? { valueLanguage: language_script } : {}
-            build_date(event_type, node).merge(addl_attributes)
-          end
-
-          points = date_nodes.select { |node| node['point'] }
-          points_date = points.size == 1 ? build_date(event_type, points.first) : build_structured_date(event_type, points)
-          dates << points_date if points_date
-
-          notifier.warn('originInfo/dateOther missing eventType') unless event_type
-
-          display_label = date_nodes.first.parent['displayLabel'] if date_nodes&.first&.parent.present?
-          result = {
-            type: event_type,
-            displayLabel: display_label
-          }.compact
-          result[:date] = dates.compact if dates.compact.present?
-          result
-        end
-        # rubocop:enable  Metrics/CyclomaticComplexity
-
-        # rubocop:disable Metrics/CyclomaticComplexity
-        # rubocop:disable Metrics/PerceivedComplexity
-        def build_structured_date(event_type, date_nodes)
-          return if date_nodes.blank?
-
-          common_attribs = common_date_attributes(date_nodes)
-          return common_attribs.merge(value: date_nodes.join('/')) if etdf_range?(date_nodes, common_attribs[:encoding])
-
-          dates = date_nodes.map do |node|
-            next if node.text.blank? && node.attributes.empty?
-
-            new_node = node.deep_dup
-            new_node.remove_attribute('encoding') if common_attribs[:encoding].present? || node[:encoding]&.size&.zero?
-            new_node.remove_attribute('qualifier') if common_attribs[:qualifier].present? || node[:qualifier]&.size&.zero?
-            build_date(event_type, new_node)
-          end
-          { structuredValue: dates }.merge(common_attribs).compact
-        end
-        # rubocop:enable Metrics/PerceivedComplexity
-        # rubocop:enable Metrics/CyclomaticComplexity
-
-        # @return [Boolean] true if this node set can be expressed as an EDTF range.
-        def etdf_range?(date_nodes, encoding)
-          date_nodes.size == 2 && date_nodes.map { |node| node['point'] } == %w[start end] && encoding == { code: 'edtf' }
-        end
-
-        def common_date_attributes(date_nodes)
-          first_encoding = date_nodes.first['encoding']
-          first_qualifier = date_nodes.first['qualifier']
-          encoding_is_common = date_nodes.all? { |node| node['encoding'] == first_encoding }
-          qualifier_is_common = date_nodes.all? { |node| node['qualifier'] == first_qualifier }
-          attribs = {}
-          attribs[:qualifier] = first_qualifier if qualifier_is_common && first_qualifier.present?
-          attribs[:encoding] = { code: first_encoding } if encoding_is_common && first_encoding.present?
-          attribs
-        end
-
-        def build_date(event_type, node)
-          {
-            note: build_date_note(event_type, node),
-            qualifier: node[:qualifier],
-            type: node['point']
-          }.tap do |date|
-            date[:value] = clean_date(node.text) if node.text.present?
-            date[:encoding] = { code: node['encoding'] } if node['encoding']
-            date[:status] = 'primary' if node['keyDate']
-          end.compact
-        end
-
-        def build_date_note(event_type, node)
-          return nil unless [nil, 'creation', 'publication'].include?(event_type) && (node['type'] || node['calendar'])
-
-          [
-            {
-              value: (node['type'] || node['calendar']),
-              type: node['type'] ? 'date type' : 'calendar'
-            }
-          ]
-        end
-
-        def clean_date(date)
-          date.delete_suffix('.')
-        end
-
-        def date_other_event_type(origin, date)
-          return 'development' if date['type'] == 'developed'
-          return 'production' if date['type'] == 'production'
-          return 'creation' if origin['eventType'] == 'production'
-
-          origin['eventType']
         end
       end
       # rubocop:enable Metrics/ClassLength

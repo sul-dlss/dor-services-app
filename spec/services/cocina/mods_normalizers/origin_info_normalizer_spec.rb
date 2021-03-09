@@ -5,132 +5,586 @@ require 'rails_helper'
 RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
   let(:normalized_ng_xml) { Cocina::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: nil, label: nil).to_xml }
 
-  context 'when normalizing originInfo eventTypes' do
-    context 'when event type assigning date element present' do
+  context 'when empty child elements' do
+    describe 'empty originInfo date elements' do
+      context 'when dateCreated' do
+        # based on jw174hd9042, vy673zb2925
+        let(:mods_ng_xml) do
+          Nokogiri::XML <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+              <originInfo>
+                <dateCreated></dateCreated>
+                <dateCreated/>
+                <dateCreated />
+              </originInfo>
+            </mods>
+          XML
+        end
+
+        it 'removes the empty child' do
+          expect(normalized_ng_xml).to be_equivalent_to <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+            </mods>
+          XML
+        end
+      end
+
+      context 'when dateIssued' do
+        let(:mods_ng_xml) do
+          Nokogiri::XML <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+              <originInfo>
+                <dateIssued/>
+              </originInfo>
+            </mods>
+          XML
+        end
+
+        it 'removes the empty child' do
+          expect(normalized_ng_xml).to be_equivalent_to <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+            </mods>
+          XML
+        end
+      end
+
+      context 'when dateIssued with encoding and type' do
+        # based on vj932ns8042
+        let(:mods_ng_xml) do
+          Nokogiri::XML <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+              <originInfo>
+                <dateIssued encoding="w3cdtf" keyDate="yes"/>
+              </originInfo>
+            </mods>
+          XML
+        end
+
+        it 'removes the empty child' do
+          expect(normalized_ng_xml).to be_equivalent_to <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+            </mods>
+          XML
+        end
+      end
+
+      context 'when dateCaptured' do
+        let(:mods_ng_xml) do
+          Nokogiri::XML <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+              <originInfo>
+                <dateCaptured/>
+              </originInfo>
+            </mods>
+          XML
+        end
+
+        it 'removes the empty child' do
+          expect(normalized_ng_xml).to be_equivalent_to <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+            </mods>
+          XML
+        end
+      end
+
+      context 'when dateValid' do
+        let(:mods_ng_xml) do
+          Nokogiri::XML <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+              <originInfo>
+                <dateValid></dateValid>
+              </originInfo>
+            </mods>
+          XML
+        end
+
+        it 'removes the empty child' do
+          expect(normalized_ng_xml).to be_equivalent_to <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+            </mods>
+          XML
+        end
+      end
+
+      context 'when dateModified' do
+        let(:mods_ng_xml) do
+          Nokogiri::XML <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+              <originInfo>
+                <dateModified></dateModified>
+              </originInfo>
+            </mods>
+          XML
+        end
+
+        it 'removes the empty child' do
+          expect(normalized_ng_xml).to be_equivalent_to <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+            </mods>
+          XML
+        end
+      end
+
+      context 'when dateOther with no attibutes' do
+        let(:mods_ng_xml) do
+          Nokogiri::XML <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+              <originInfo>
+                <dateOther></dateOther>
+              </originInfo>
+            </mods>
+          XML
+        end
+
+        it 'removes the element' do
+          expect(normalized_ng_xml).to be_equivalent_to <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+            </mods>
+          XML
+        end
+      end
+
+      context 'when dateOther with @type matching eventType' do
+        # based on xv158sd4671, qx562pf7510
+        let(:mods_ng_xml) do
+          Nokogiri::XML <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+              <originInfo>
+                <dateOther type="distribution"></dateOther>
+              </originInfo>
+            </mods>
+          XML
+        end
+
+        it 'removes the element' do
+          expect(normalized_ng_xml).to be_equivalent_to <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+            </mods>
+          XML
+        end
+      end
+
+      context 'when copyrightDate' do
+        let(:mods_ng_xml) do
+          Nokogiri::XML <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+              <originInfo>
+                <copyrightDate></copyrightDate>
+              </originInfo>
+            </mods>
+          XML
+        end
+
+        it 'removes the empty child' do
+          expect(normalized_ng_xml).to be_equivalent_to <<~XML
+            <mods #{MODS_ATTRIBUTES}>
+            </mods>
+          XML
+        end
+      end
+    end
+
+    describe 'empty publisher element' do
       let(:mods_ng_xml) do
         Nokogiri::XML <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <originInfo>
-              <dateIssued>1930</dateIssued>
+              <publisher></publisher>
+              <publisher/>
+              <publisher />
             </originInfo>
-            <originInfo>
-              <copyrightDate>1931</copyrightDate>
-            </originInfo>
-            <originInfo>
-              <dateCreated>1932</dateCreated>
-            </originInfo>
-            <originInfo>
-              <dateValid>1933</dateValid>
-            </originInfo>
-            <relatedItem>
-              <originInfo>
-                <dateCaptured>1932</dateCaptured>
-              </originInfo>
-            </relatedItem>
           </mods>
         XML
       end
 
-      it 'adds eventType if missing' do
+      it 'removes the empty child' do
         expect(normalized_ng_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
-            <originInfo eventType="publication">
-              <dateIssued>1930</dateIssued>
-            </originInfo>
-            <originInfo eventType="copyright">
-              <copyrightDate>1931</copyrightDate>
-            </originInfo>
-            <originInfo eventType="production">
-              <dateCreated>1932</dateCreated>
-            </originInfo>
-            <originInfo eventType="validity">
-              <dateValid>1933</dateValid>
-            </originInfo>
-            <relatedItem>
-              <originInfo eventType="capture">
-                <dateCaptured>1932</dateCaptured>
-              </originInfo>
-            </relatedItem>
           </mods>
         XML
       end
     end
 
-    context 'when no event type assigning date element is present' do
+    describe 'empty place element' do
       let(:mods_ng_xml) do
         Nokogiri::XML <<~XML
           <mods #{MODS_ATTRIBUTES}>
             <originInfo>
-              <publisher>Macro Hamster Press</publisher>
+              <place></place>
+              <place/>
+              <place />
             </originInfo>
-            <relatedItem type="otherFormat">
-              <originInfo>
-                <publisher>Northwestern University Library</publisher>
-              </originInfo>
-            </relatedItem>
-            <relatedItem type="otherFormat">
-              <originInfo>
-                <edition>Euro-global ed.</edition>
-              </originInfo>
-            </relatedItem>
           </mods>
         XML
       end
 
-      it 'adds eventType if missing' do
+      it 'removes the empty child' do
         expect(normalized_ng_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
-            <originInfo eventType="publication">
-              <publisher>Macro Hamster Press</publisher>
+          </mods>
+        XML
+      end
+    end
+
+    describe 'place/placeTerm has valueURI attribute' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm valueURI="http://id.loc.gov/authorities/names/n79118971"></placeTerm>
+              </place>
             </originInfo>
-            <relatedItem type="otherFormat">
-              <originInfo eventType="publication">
-                <publisher>Northwestern University Library</publisher>
-              </originInfo>
-            </relatedItem>
-            <relatedItem type="otherFormat">
-              <originInfo eventType="publication">
-                <edition>Euro-global ed.</edition>
-              </originInfo>
-            </relatedItem>
+          </mods>
+        XML
+      end
+
+      it 'keeps the placeTerm element' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm valueURI="http://id.loc.gov/authorities/names/n79118971"></placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    describe 'has xlink:href attribute' do
+      # not likely but being thorough
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm xlink:href="http://name.org/name"></placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'keeps the placeTerm element' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm xlink:href="http://name.org/name"></placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    # also does issuance, edition, frequency (it's using * to get all child elements)
+
+    context 'when dateIssued with attributes but no content' do
+      # based on vj932ns8042
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateIssued encoding="w3cdtf" keyDate="yes"/>
+              <publisher>United Nations Conference on Trade</publisher>
+              <issuance>monographic</issuance>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes the dateIssued element' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <publisher>United Nations Conference on Trade</publisher>
+              <issuance>monographic</issuance>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when placeTerm has attribute and dateIssued has content and an empty attribute' do
+      # based on gh074sd3455
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm type="text"/>
+              </place>
+              <publisher/>
+              <dateIssued encoding="w3cdtf" keyDate="yes" qualifier="">1931</dateIssued>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes all but the dateIssued element, and removes empty attribute' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateIssued encoding="w3cdtf" keyDate="yes">1931</dateIssued>
+            </originInfo>
           </mods>
         XML
       end
     end
   end
 
-  context 'when normalizing originInfo dateOther[@type]' do
+  context 'when empty originInfo element' do
+    context 'when no attributes no children' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo/>
+          </mods>
+        XML
+      end
+
+      it 'removes it' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when eventType attribute but no children' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="publication"/>
+          </mods>
+        XML
+      end
+
+      it 'removes the originInfo element' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when eventType attribute and (empty) child' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <publisher/>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes the originInfo element' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when originInfo, placeTerm and dateOther have attributes but no content' do
+      # based on qy796rh6653
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="production">
+              <place>
+                <placeTerm type="text"/>
+              </place>
+              <publisher/>
+              <dateOther type="production"/>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes the originInfo element' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+          </mods>
+        XML
+      end
+    end
+  end
+
+  context 'when normalizing legacy mods event types' do
+    context 'when legacy displayLabel and no eventType' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo displayLabel="publisher">
+              <publisher>foo</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'converts the displayLabel to the correct eventType' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="publication">
+              <publisher>foo</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when legacy displayLabel and matching eventType' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="publication" displayLabel="publisher">
+              <publisher>foo</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes the displayLabel' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="publication">
+              <publisher>foo</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when legacy displayLabel and non-matching eventType' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="capture" displayLabel="publisher">
+              <publisher>foo</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'leaves the displayLabel as is' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="capture" displayLabel="publisher">
+              <publisher>foo</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when non-legacy displayLabel and eventType' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="publication" displayLabel="foo">
+              <publisher>bar</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'does not change displayLabel or eventType' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="publication" displayLabel="foo">
+              <publisher>bar</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when legacy eventType' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="producer">
+              <publisher>bar</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'normalizes eventType' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="production">
+              <publisher>bar</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when non-legacy eventType' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="foo">
+              <publisher>bar</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'does not change eventType' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo eventType="foo">
+              <publisher>bar</publisher>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+  end
+
+  context 'when normalizing placeTerm text values' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="distribution">
-            <dateOther type="distribution"/>
+          <originInfo eventType="production" displayLabel="Place of Creation">
+            <place supplied="yes">
+              <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79118971">Oakland (Calif.)</placeTerm>
+            </place>
           </originInfo>
-          <originInfo eventType="manufacture">
-            <dateOther type="manufacture"/>
-          </originInfo>
-          <originInfo eventType="distribution">
-            <dateOther type="distribution">1937</dateOther>
+          <originInfo eventType="publication" displayLabel="publisher">
+            <place>
+              <placeTerm>[Stanford, California] :</placeTerm>
+            </place>
           </originInfo>
         </mods>
       XML
     end
 
-    # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
-    xit 'to be implemented: removes dateOther type attribute if it matches eventType and dateOther is empty' do
+    it 'adds type text attribute if appropriate' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="distribution"/>
-          <originInfo eventType="manufacture"/>
-          <originInfo eventType="distribution">
-            <dateOther type="distribution">1937</dateOther>
+          <originInfo eventType="production" displayLabel="Place of Creation">
+            <place supplied="yes">
+              <placeTerm type="text" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79118971">Oakland (Calif.)</placeTerm>
+            </place>
+          </originInfo>
+          <originInfo eventType="publication">
+            <place>
+              <placeTerm type="text">[Stanford, California] :</placeTerm>
+            </place>
           </originInfo>
         </mods>
       XML
     end
   end
 
-  context 'when normalizing originInfo date values' do
+  context 'when removing trailing period from date values' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{MODS_ATTRIBUTES}>
@@ -192,1269 +646,141 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
     end
   end
 
-  context 'when normalizing originInfo/place/placeTerm text values' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="production" displayLabel="Place of Creation">
-            <place supplied="yes">
-              <placeTerm authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79118971">Oakland (Calif.)</placeTerm>
-            </place>
-          </originInfo>
-          <originInfo eventType="publication" displayLabel="publisher">
-            <place>
-              <placeTerm>[Stanford, California] :</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'adds type text attribute if appropriate' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="production" displayLabel="Place of Creation">
-            <place supplied="yes">
-              <placeTerm type="text" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n79118971">Oakland (Calif.)</placeTerm>
-            </place>
-          </originInfo>
-          <originInfo eventType="publication" displayLabel="publisher">
-            <place>
-              <placeTerm type="text">[Stanford, California] :</placeTerm>
-            </place>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when normalizing originInfo with developed date' do
-    context 'with unmatching eventType' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo displayLabel="Place of Creation" eventType="production">
-              <place>
-                <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
-              </place>
-              <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
-              <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      it 'moves to own originInfo' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo displayLabel="Place of Creation" eventType="production">
-              <place>
-                <placeTerm type="text" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
-              </place>
-              <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
-            </originInfo>
-            <originInfo displayLabel="Place of Creation" eventType="development">
-              <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
-            </originInfo>
-          </mods>
-        XML
-      end
-    end
-
-    context 'with matching eventType' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo displayLabel="Place of Creation" eventType="production">
-              <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
-            </originInfo>
-            <originInfo eventType="development">
-              <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      it 'stays the same' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo displayLabel="Place of Creation" eventType="production">
-              <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
-            </originInfo>
-            <originInfo eventType="development">
-              <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
-            </originInfo>
-          </mods>
-        XML
-      end
-    end
-
-    context 'with no eventType' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo displayLabel="Place of Creation">
-              <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
-              <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      it 'moves to own originInfo' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo displayLabel="Place of Creation" eventType="production">
-              <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
-            </originInfo>
-            <originInfo displayLabel="Place of Creation" eventType="development">
-              <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
-            </originInfo>
-          </mods>
-        XML
-      end
-    end
-  end
-
-  context 'when normalizing parallel originInfos with no script or lang' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo altRepGroup="0203">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Chengdu</placeTerm>
-            </place>
-            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>Di 1 ban.</edition>
-            <issuance>monographic</issuance>
-            <frequency>Monthly</frequency>
-          </originInfo>
-          <originInfo altRepGroup="0203">
-            <place>
-              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
-            </place>
-            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>[Di 1 ban in Chinese]</edition>
-            <frequency authority=\"marcfrequency\">Monthly</frequency>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'adds other values to all originInfos in group' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo altRepGroup="0203" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Chengdu</placeTerm>
-            </place>
-            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>Di 1 ban.</edition>
-            <issuance>monographic</issuance>
-            <frequency>Monthly</frequency>
-            <frequency authority=\"marcfrequency\">Monthly</frequency>
-          </originInfo>
-          <originInfo altRepGroup="0203" eventType="publication">
-            <place>
-              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
-            </place>
-            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>[Di 1 ban in Chinese]</edition>
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <issuance>monographic</issuance>
-            <frequency>Monthly</frequency>
-            <frequency authority=\"marcfrequency\">Monthly</frequency>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when normalizing parallel originInfos with same script or lang' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo altRepGroup="0203" script="Latn">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Chengdu</placeTerm>
-            </place>
-            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>Di 1 ban.</edition>
-            <issuance>monographic</issuance>
-            <frequency>Monthly</frequency>
-          </originInfo>
-          <originInfo altRepGroup="0203" script="Latn">
-            <place>
-              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
-            </place>
-            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>[Di 1 ban in Chinese]</edition>
-            <frequency authority=\"marcfrequency\">Monthly</frequency>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'adds other values to all originInfos in group' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo altRepGroup="0203" eventType="publication" script="Latn">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Chengdu</placeTerm>
-            </place>
-            <publisher>Sichuan chu ban ji tuan, Sichuan wen yi chu ban she</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>Di 1 ban.</edition>
-            <issuance>monographic</issuance>
-            <frequency>Monthly</frequency>
-            <frequency authority=\"marcfrequency\">Monthly</frequency>
-          </originInfo>
-          <originInfo altRepGroup="0203" eventType="publication" script="Latn">
-            <place>
-              <placeTerm type="text">[Chengdu in Chinese]</placeTerm>
-            </place>
-            <publisher>[Sichuan chu ban ji tuan, Sichuan wen yi chu ban she in Chinese]</publisher>
-            <dateIssued>2005</dateIssued>
-            <edition>[Di 1 ban in Chinese]</edition>
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <issuance>monographic</issuance>
-            <frequency>Monthly</frequency>
-            <frequency authority=\"marcfrequency\">Monthly</frequency>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when normalizing originInfos with lang and scripts' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo script="Latn" lang="eng" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">ja</placeTerm>
-            </place>
-            <dateIssued encoding="marc" point="start">1915</dateIssued>
-            <dateIssued encoding="marc" point="end">1942</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'removes if none of the children are parallelizable' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">ja</placeTerm>
-            </place>
-            <dateIssued encoding="marc" point="start">1915</dateIssued>
-            <dateIssued encoding="marc" point="end">1942</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when normalizing originInfos with captured dates' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">tnu</placeTerm>
-            </place>
-            <dateIssued encoding="marc">2016</dateIssued>
-            <dateCaptured encoding="iso8601" point="start">20141010</dateCaptured>
-            <dateCaptured encoding="iso8601" point="end">20141012</dateCaptured>
-            <issuance>monographic</issuance>
-          </originInfo>
-      XML
-    end
-
-    it 'moves copyright into its own originInfo' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">tnu</placeTerm>
-            </place>
-            <dateIssued encoding="marc">2016</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="capture">
-            <dateCaptured encoding="iso8601" point="start">20141010</dateCaptured>
-            <dateCaptured encoding="iso8601" point="end">20141012</dateCaptured>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when normalizing originInfos with copyright dates' do
+  context 'when normalizing authority marcountry to marccountry' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo>
             <place>
-              <placeTerm type="code" authority="marccountry">cau</placeTerm>
+              <placeTerm type="code" authority="marcountry" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
             </place>
-            <dateIssued encoding="marc">2020</dateIssued>
-            <copyrightDate encoding="marc">2020</copyrightDate>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="text">[Stanford, California]</placeTerm>
-            </place>
-            <publisher>[Stanford University]</publisher>
-            <dateIssued>2020</dateIssued>
-          </originInfo>
-          <originInfo eventType="copyright notice">
-            <copyrightDate>&#xA9;2020</copyrightDate>
           </originInfo>
         </mods>
       XML
     end
 
-    it 'moves copyright into its own originInfo' do
+    it 'removes the empty child' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cau</placeTerm>
-            </place>
-            <dateIssued encoding="marc">2020</dateIssued>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="text">[Stanford, California]</placeTerm>
-            </place>
-            <publisher>[Stanford University]</publisher>
-            <dateIssued>2020</dateIssued>
-          </originInfo>
-          <originInfo eventType="copyright">
-            <copyrightDate encoding="marc">2020</copyrightDate>
-          </originInfo>
-          <originInfo eventType="copyright notice">
-            <copyrightDate>&#xA9;2020</copyrightDate>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when normalizing originInfos with copyright date and publisher' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="copyright notice">
-            <publisher>Saturn Pictures</publisher>
-            <copyrightDate>1971</copyrightDate>
-          </originInfo>
-      XML
-    end
-
-    it 'moves publisher into its own originInfo' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="copyright notice">
-            <copyrightDate>1971</copyrightDate>
-          </originInfo>
-          <originInfo eventType="publication">
-            <publisher>Saturn Pictures</publisher>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when normalizing publisher' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo>
-            <publisher lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'moves lang, script, and transliteration to originInfo' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="publication" lang="rus" script="Latn" transliteration="ALA-LC Romanization Tables">
-            <publisher>Institut russkoĭ literatury (Pushkinskiĭ Dom)</publisher>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when empty originInfo element' do
-    context 'when no attributes no children' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo/>
-          </mods>
-        XML
-      end
-
-      it 'removes it' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-          </mods>
-        XML
-      end
-    end
-
-    context 'when eventType attribute but no children' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo eventType="publication"/>
-          </mods>
-        XML
-      end
-
-      it 'does not remove it' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo eventType="publication"/>
-          </mods>
-        XML
-      end
-    end
-
-    context 'when eventType attribute and (empty) child' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo>
-              <publisher/>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
-      xit 'to be implemented: removes the empty child' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo eventType="publication"/>
-          </mods>
-        XML
-      end
-    end
-  end
-
-  describe 'empty originInfo date elements' do
-    context 'when dateCreated' do
-      # based on jw174hd9042, vy673zb2925
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo>
-              <dateCreated></dateCreated>
-              <dateCreated/>
-              <dateCreated />
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      it 'removes the empty child' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-          </mods>
-        XML
-      end
-    end
-
-    context 'when dateIssued' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo>
-              <dateIssued/>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      it 'removes the empty child' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-          </mods>
-        XML
-      end
-    end
-
-    context 'when dateIssued with encoding and type' do
-      # based on vj932ns8042
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo>
-              <dateIssued encoding="w3cdtf" keyDate="yes"/>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      it 'removes the empty child' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-          </mods>
-        XML
-      end
-    end
-
-    context 'when dateCaptured' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo>
-              <dateCaptured/>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      it 'removes the empty child' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-          </mods>
-        XML
-      end
-    end
-
-    context 'when dateValid' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo>
-              <dateValid></dateValid>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      it 'removes the empty child' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-          </mods>
-        XML
-      end
-    end
-
-    context 'when dateModified' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo>
-              <dateModified></dateModified>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      it 'removes the empty child' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-          </mods>
-        XML
-      end
-    end
-
-    context 'when dateOther with no attibutes' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo>
-              <dateOther></dateOther>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
-      xit 'to be implemented: removes the element' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-          </mods>
-        XML
-      end
-    end
-
-    context 'when dateOther with @type matching eventType' do
-      # based on xv158sd4671, qx562pf7510
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo>
-              <dateOther type="distribution"></dateOther>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
-      xit 'to be implemented: removes the element' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-          </mods>
-        XML
-      end
-    end
-
-    context 'when copyrightDate' do
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo>
-              <copyrightDate></copyrightDate>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      it 'removes the empty child' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-          </mods>
-        XML
-      end
-    end
-  end
-
-  context 'when originInfo production followed by originInfo development' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="Place of Creation" eventType="production">
-            <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
-          </originInfo>
-          <originInfo eventType="development">
-            <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'stays the same' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="Place of Creation" eventType="production">
-            <dateCreated keyDate="yes" encoding="w3cdtf">2003-11-29</dateCreated>
-          </originInfo>
-          <originInfo eventType="development">
-            <dateOther type="developed" encoding="w3cdtf">2003-12-01</dateOther>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when splitting originInfo dates into separate elements' do
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel='foo' eventType="publication">
-            <dateIssued encoding="marc">2020</dateIssued>
-            <copyrightDate encoding="marc">2020</copyrightDate>
-            <copyrightDate>©2020</copyrightDate>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'includes displayLabel on both originInfo elements' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel='foo' eventType="publication">
-            <dateIssued encoding="marc">2020</dateIssued>
-          </originInfo>
-          <originInfo displayLabel='foo' eventType="copyright">
-            <copyrightDate encoding="marc">2020</copyrightDate>
-            <copyrightDate>©2020</copyrightDate>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when dateCreated and dateIssued in eventType publication' do
-    # based on kq506ht3416
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="publication">
-            <publisher>Fontana/Collins</publisher>
-            <dateIssued>1978</dateIssued>
-            <dateCreated>(1981 printing)</dateCreated>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'moves dateCreated into its own originInfo' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="publication">
-            <publisher>Fontana/Collins</publisher>
-            <dateIssued>1978</dateIssued>
-          </originInfo>
-          <originInfo eventType="production">
-            <dateCreated>(1981 printing)</dateCreated>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when dateCreated and dateCaptured in same originInfo' do
-    # based on sc262hs3556
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo>
-            <dateCreated keyDate="yes" encoding="w3cdtf">2018-08-21</dateCreated>
-            <dateCaptured encoding="w3cdtf">2018-08-30</dateCaptured>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    xit 'to be implemented: moves dateCaptured into its own originInfo' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="creation">
-            <dateCreated keyDate="yes" encoding="w3cdtf">2018-08-21</dateCreated>
-          </originInfo>
-          <originInfo eventType="capture">
-            <dateCaptured encoding="w3cdtf">2018-08-30</dateCaptured>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when dateCreated as point with 2 elements in same originInfo as dateIssued, dateIssued splits' do
-    # based on nn349sf6895, rx731vv3403
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="Place of creation" eventType="publication">
-            <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1872</dateCreated>
-            <dateCreated encoding="w3cdtf" point="end">1885</dateCreated>
-            <dateIssued>1887</dateIssued>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'splits dateCreated and dateIssued into separate originInfo elements and has displayLabel on both' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="Place of creation" eventType="publication">
-            <dateIssued>1887</dateIssued>
-          </originInfo>
-          <originInfo displayLabel="Place of creation" eventType="production">
-            <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1872</dateCreated>
-            <dateCreated encoding="w3cdtf" point="end">1885</dateCreated>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when dateCreated in same originInfo as dateIssued and place' do
-    # based on jj635pq5167
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="Place of creation" eventType="production">
             <place>
-              <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n78095520">xxu</placeTerm>
-              <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n78095520">Philadelphia</placeTerm>
+              <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
             </place>
-            <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1872</dateCreated>
-            <dateCreated encoding="w3cdtf" point="end">1885</dateCreated>
-            <dateIssued>1887</dateIssued>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'splits dateCreated and dateIssued into separate originInfo elements and has displayLabel on both' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="Place of creation" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095520">xxu</placeTerm>
-              <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n78095520">Philadelphia</placeTerm>
-            </place>
-            <dateIssued>1887</dateIssued>
-          </originInfo>
-          <originInfo displayLabel="Place of creation" eventType="production">
-            <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1872</dateCreated>
-            <dateCreated encoding="w3cdtf" point="end">1885</dateCreated>
           </originInfo>
         </mods>
       XML
     end
   end
 
-  context 'when dateCreated and dateIssued in same originInfo in altRepGroup' do
-    # based on dz647hf2887, db936hw1344
+  context 'when placeTerm is empty and dateOther has only content and legacy mods displaLabel' do
+    # based on wm519yn6490
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{MODS_ATTRIBUTES}>
-          <originInfo altRepGroup="1" eventType="publication">
-            <publisher>Tairyūsha</publisher>
-            <dateIssued>Shōwa 52 [1977]</dateIssued>
-            <dateCreated>(1978 printing)</dateCreated>
-          </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-            <publisher>泰流社</publisher>
-            <dateIssued>昭和 52 [1977]</dateIssued>
-            <dateCreated>(1978 printing)</dateCreated>
+          <originInfo displayLabel="producer">
+            <place>
+              <placeTerm/>
+            </place>
+            <publisher/>
+            <dateOther type="production">June 7, 1977.</dateOther>
           </originInfo>
         </mods>
       XML
     end
 
-    xit 'to be implemented: moves dateCreated into its own originInfo and removes exact duplicates' do
+    it 'removes all but the dateOther element, removes trailing period and corrects legacy displayLabel to eventType' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo eventType="production">
-             <dateCreated>(1978 printing)</dateCreated>
-           </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-            <publisher>Tairyūsha</publisher>
-            <dateIssued>Shōwa 52 [1977]</dateIssued>
-          </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-            <publisher>泰流社</publisher>
-            <dateIssued>昭和 52 [1977]</dateIssued>
+            <dateOther type="production">June 7, 1977</dateOther>
           </originInfo>
         </mods>
       XML
     end
   end
 
-  context 'when dateCreated and dateOther in eventType production' do
-    # based on dg875gq3366
+  context 'when placeTerm has an ampersand' do
+    # based on zn500ww2119
+    # <?xml version="1.0" encoding="UTF-8"?>
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="something" eventType="production">
-            <dateCreated keyDate="yes" encoding="w3cdtf">1905</dateCreated>
-            <dateOther qualifier="approximate" point="end">1925</dateOther>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'splits dateCreated into separate originInfo;  dateOther becomes dateCreated' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="something" eventType="production">
-            <dateCreated keyDate="yes" encoding="w3cdtf">1905</dateCreated>
-          </originInfo>
-          <originInfo displayLabel="something" eventType="production">
-            <dateCreated qualifier="approximate" point="end">1925</dateCreated>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when dateOther with type manufacture and publisher element' do
-    # based on d527ky9095, zw971gd0220
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="manufacturer">
-            <publisher>J. Jennings Lith. 326 Sansome St.,</publisher>
-            <dateOther type="manufacture">1873.</dateOther>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    xit 'to be implemented: moves dateCreated into its own originInfo' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="manufacturer">
-            <dateOther type="manufacture">1873</dateOther>
-          </originInfo>
-          <originInfo eventType="publication">
-            <publisher>J. Jennings Lith. 326 Sansome St.,</publisher>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when copyrightDate and issuance in single originInfo' do
-    # based on kc487sz0076
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="copyright">
-            <copyrightDate encoding="marc">2005</copyrightDate>
-            <issuance>monographic</issuance>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    xit 'to be implemented: splits copyrightDate from issuance' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="copyright">
-            <copyrightDate encoding="marc">2005</copyrightDate>
-          </originInfo>
-          <originInfo eventType="publication">
-            <issuance>monographic</issuance>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when eventType manufacture with publisher element' do
-    # based on jz402xk5530
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="manufacturer" eventType="manufacture">
-            <publisher>Lithographed in the Reproduction Branch, SSU</publisher>
-            <dateOther/>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    # TODO: ask Arcadia if there are more constraints on this one
-    xit 'to be implemented: eventType becomes publication' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="manufacturer" eventType="publication">
-            <publisher>Lithographed in the Reproduction Branch, SSU</publisher>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when eventType distribution with publisher element' do
-    # based on rm699mr9758, xy550sj6776
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="distribution">
-            <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    xit 'to be implemented: eventType becomes publication' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <originInfo eventType="publication">
-            <publisher>For sale by the Superintendent of Documents, U.S. Government Publishing Office</publisher>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when dateCaptured and publisher elements' do
-    context 'with eventType' do
-      # based on rn990mm7360
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo eventType="capture">
-              <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
-              <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
-              <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      xit 'to be implemented: splits originInfo' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo eventType="capture">
-              <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
-              <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
-            </originInfo>
-            <originInfo eventType="publication">
-              <publisher>California. State Department of Education. Office of Curriculum Services</publisher>
-            </originInfo>
-          </mods>
-        XML
-      end
-    end
-
-    context 'without eventType' do
-      # based on bm023zm8062
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo>
-              <publisher>Dept. of Defense</publisher>
-              <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
-              <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      xit 'to be implemented: splits originInfo' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo eventType="capture">
-              <dateCaptured keyDate="yes" encoding="iso8601" point="start">2007-12-10</dateCaptured>
-              <dateCaptured encoding="iso8601" point="end">2011-01-24</dateCaptured>
-            </originInfo>
-            <originInfo eventType="publication">
-              <publisher>Dept. of Defense</publisher>
-            </originInfo>
-          </mods>
-        XML
-      end
-    end
-  end
-
-  context 'when eventType with copyrightDate and place' do
-    context 'when eventType copyright' do
-      # based on vw478nk8207
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo displayLabel="Place of creation" eventType="copyright">
-              <place>
-                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
-              </place>
-              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
-              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      xit 'to be implemented: splits originInfo' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo displayLabel="Place of creation" eventType="copyright">
-              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
-              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
-            </originInfo>
-            <originInfo eventType="publication">
-              <place>
-                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
-              </place>
-            </originInfo>
-          </mods>
-        XML
-      end
-    end
-
-    context 'when eventType production' do
-      # based on nd217pz1557
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo displayLabel="Place of creation" eventType="production">
-              <place>
-                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
-              </place>
-              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1960</copyrightDate>
-              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1965</copyrightDate>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      xit 'to be implemented: splits originInfo' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo displayLabel="Place of creation" eventType="production">
-              <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1960</copyrightDate>
-              <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1965</copyrightDate>
-            </originInfo>
-            <originInfo eventType="publication">
-              <place>
-                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
-              </place>
-            </originInfo>
-          </mods>
-        XML
-      end
-    end
-
-    context 'with eventType copyright and publisher' do
-      # based on mr888cv5629
-      let(:mods_ng_xml) do
-        Nokogiri::XML <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo eventType="copyright">
-              <place>
-                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
-              </place>
-              <publisher>San Francisco Examiner</publisher>
-              <copyrightDate keyDate="yes" encoding="w3cdtf">1901</copyrightDate>
-            </originInfo>
-          </mods>
-        XML
-      end
-
-      xit 'to be implemented: splits originInfo' do
-        expect(normalized_ng_xml).to be_equivalent_to <<~XML
-          <mods #{MODS_ATTRIBUTES}>
-            <originInfo eventType="copyright">
-              <copyrightDate keyDate="yes" encoding="w3cdtf">1901</copyrightDate>
-            </originInfo>
-            <originInfo eventType="publication">
-              <place>
-                <placeTerm type="text">San Francisco (Calif.)</placeTerm>
-              </place>
-              <publisher>San Francisco Examiner</publisher>
-            </originInfo>
-          </mods>
-        XML
-      end
-    end
-  end
-
-  context 'when eventType production with copyrightDate and place' do
-    # based on vw478nk8207
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="Place of creation" eventType="production">
             <place>
-              <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+              <placeTerm type="text">Leipzig :bVelhagen &amp; Klasing</placeTerm>
             </place>
-            <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
-            <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
+            <publisher/>
+            <dateIssued>[between 1940 and 1950?]</dateIssued>
           </originInfo>
         </mods>
       XML
     end
 
-    xit 'to be implemented: splits originInfo and eventType production becomes copyright' do
+    it 'copes with xml decoding and encoding' do
+      # NOTE: below requires processing instruction inclusion to pass
+      #  And it is showing as error in production roundtrip validations without it
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <?xml version="1.0" encoding="UTF-8"?>
         <mods #{MODS_ATTRIBUTES}>
-          <originInfo displayLabel="Place of creation" eventType="copyright">
-            <copyrightDate keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="start">1970</copyrightDate>
-            <copyrightDate encoding="w3cdtf" qualifier="approximate" point="end">1974</copyrightDate>
-          </originInfo>
           <originInfo eventType="publication">
             <place>
-              <placeTerm type="text">San Francisco (Calif.)</placeTerm>
+              <placeTerm type="text">Leipzig :bVelhagen &amp; Klasing</placeTerm>
             </place>
+            <dateIssued>[between 1940 and 1950?]</dateIssued>
           </originInfo>
         </mods>
       XML
     end
   end
 
-  context 'when altRepGroup subelements are missing from one of the elements' do
-    # based on xj114vt0439
+  context 'when date value has square brackets and question mark' do
+    # based on ks031qj5177, zn500ww2119
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{MODS_ATTRIBUTES}>
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Shanghai</placeTerm>
-            </place>
-            <publisher>Shanghai shu dian chu ban</publisher>
-            <publisher>Xin hua shu dian Shanghai fa xing suo fa xing</publisher>
-            <dateIssued>1992</dateIssued>
-            <edition>Di 1 ban.</edition>
-            <issuance>monographic</issuance>
-          </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">上海:上海书店出版：</placeTerm>
-            </place>
-            <publisher>新华书店上海发行所发行,</publisher>
-            <dateIssued>1992</dateIssued>
-            <edition>第1版.</edition>
-            <issuance>monographic</issuance>
+          <originInfo>
+            <dateOther type="production">[1797?]</dateOther>
           </originInfo>
         </mods>
       XML
     end
 
-    xit 'to be implemented: adds second publisher to second originInfo in altRepGroup so all elements in altRepGroup are matched' do
+    it 'copes with chars' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
-          <originInfo altRepGroup="1" eventType="publication">
-            <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
-            <place>
-              <placeTerm type="text">Shanghai</placeTerm>
-            </place>
-            <publisher>Shanghai shu dian chu ban</publisher>
-            <publisher>Xin hua shu dian Shanghai fa xing suo fa xing</publisher>
-            <dateIssued>1992</dateIssued>
-            <edition>Di 1 ban.</edition>
-            <issuance>monographic</issuance>
+          <originInfo>
+            <dateOther type="production">[1797?]</dateOther>
           </originInfo>
-          <originInfo altRepGroup="1" eventType="publication">
+        </mods>
+      XML
+    end
+  end
+
+  context 'when placeTerm has square brackets and question mark' do
+    # based on gy852bt1470
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo>
             <place>
-              <placeTerm type="code" authority="marccountry">cc</placeTerm>
-            </place>
+               <placeTerm type="text">[Berlin?]</placeTerm>
+             </place>
+             <dateIssued>1940-[44]</dateIssued>
+          </originInfo>
+        </mods>
+      XML
+    end
+
+    it 'copes with chars' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <originInfo>
             <place>
-              <placeTerm type="text">上海:上海书店出版：</placeTerm>
-            </place>
-            <publisher>新华书店上海发行所发行,</publisher>
-            <publisher>Xin hua shu dian Shanghai fa xing suo fa xing</publisher>
-            <dateIssued>1992</dateIssued>
-            <edition>第1版.</edition>
-            <issuance>monographic</issuance>
+               <placeTerm type="text">[Berlin?]</placeTerm>
+             </place>
+             <dateIssued>1940-[44]</dateIssued>
           </originInfo>
         </mods>
       XML

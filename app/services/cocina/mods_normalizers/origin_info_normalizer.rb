@@ -19,18 +19,11 @@ module Cocina
       end
 
       def normalize
-        remove_empty_origin_info_dates
-        remove_empty_origin_info # must be after remove_empty_origin_info_dates
-        split_origin_info
-        event_type_normalization
-        date_other_type_normalization # must be after event_type_normalization
+        remove_empty_child_elements
+        remove_empty_origin_info # must be after remove_empty_child_elements
+        normalize_legacy_mods_event_type
         place_term_type_normalization
-        date_other_type_developed_normalization # must be run after date_other_type_normalization
-        split_event_type_production_dates # must be after date_other_type_developed_normalization
         remove_trailing_period_from_date_values
-        publisher_attribs_normalization
-        match_altrepgroup_nodes
-        lang_script_attribs_normalization
         normalize_authority_marcountry
         ng_xml
       end
@@ -40,108 +33,38 @@ module Cocina
       attr_reader :ng_xml
 
       # must be called before remove_empty_origin_info
-      def remove_empty_origin_info_dates
-        DATE_FIELDS.without('dateOther').each do |date_field|
-          ng_xml.root.xpath("//mods:originInfo/mods:#{date_field}", mods: ModsNormalizer::MODS_NS).each do |date_node|
-            date_node.remove if date_node.content.blank?
-          end
-        end
+      def remove_empty_child_elements
+        ng_xml.root.xpath('//mods:originInfo/mods:*', mods: ModsNormalizer::MODS_NS).each do |child_node|
+          # if a node has either of these 2 attributes, it could have meaning even without any content
+          next if child_node.xpath('//*[@valueURI]').present?
+          next if child_node.xpath('//*[@xlink:href]', xlink: ModsNormalizer::XLINK_NS).present?
 
-        # we can also remove dateOther if it has no type attribute
-        ng_xml.root.xpath('//mods:originInfo/mods:dateOther[not(@type)]', mods: ModsNormalizer::MODS_NS).each do |date_node|
-          date_node.remove if date_node.content.blank?
+          child_node.remove if child_node.content.blank?
         end
       end
 
-      # must be after remove_empty_origin_info_dates
+      # must be after remove_empty_child_elements
       def remove_empty_origin_info
         ng_xml.root.xpath('//mods:originInfo[not(mods:*) and not(@*)]', mods: ModsNormalizer::MODS_NS).each(&:remove)
+        # make sure we remove ones such as <originInfo eventType="publication"/>
+        ng_xml.root.xpath('//mods:originInfo[not(mods:*) and not(text()[normalize-space()])]', mods: ModsNormalizer::MODS_NS).each(&:remove)
       end
 
-      def split_origin_info
-        # Split a single originInfo into multiple.
-        split_origin_info_by_elements('dateIssued', 'dateCreated', 'production')
-        split_origin_info_by_elements('dateIssued', 'copyrightDate', 'copyright')
-        split_origin_info_by_elements('dateIssued', 'dateCaptured', 'capture')
-        split_origin_info_by_elements('dateIssued', 'dateValid', 'validity')
-        split_origin_info_by_elements('copyrightDate', 'publisher', 'publication')
-      end
+      LEGACY_EVENT_TYPES_2_TYPE = Cocina::FromFedora::Descriptive::Event::LEGACY_EVENT_TYPES_2_TYPE
 
-      def split_origin_info_by_elements(split_node_name1, split_node_name2, event_type)
-        ng_xml.root.xpath("//mods:originInfo[mods:#{split_node_name1} and mods:#{split_node_name2}]", mods: ModsNormalizer::MODS_NS).each do |origin_info_node|
-          new_origin_info_node = Nokogiri::XML::Node.new('originInfo', Nokogiri::XML(nil))
-          new_origin_info_node['displayLabel'] = origin_info_node['displayLabel'] if origin_info_node['displayLabel']
-          new_origin_info_node['eventType'] = event_type
-          origin_info_node.parent << new_origin_info_node
-          split_nodes = origin_info_node.xpath("mods:#{split_node_name2}", mods: ModsNormalizer::MODS_NS)
-          split_nodes.each do |split_node|
-            split_node.remove
-            new_origin_info_node << split_node
-          end
-        end
-      end
+      # because eventType is a relatively new addition to the MODS schema, records converted from MARC to MODS prior
+      #   to its introduction used displayLabel as a stopgap measure, with certain values
+      # The same values were also sometimes used as eventType values themselves, and will be converted to our preferred vocab.
+      def normalize_legacy_mods_event_type
+        ng_xml.root.xpath('//mods:originInfo[@*]', mods: ModsNormalizer::MODS_NS).each do |origin_info_node|
+          event_type = origin_info_node['eventType']
+          event_type = origin_info_node['displayLabel'] if event_type.blank? &&
+                                                           LEGACY_EVENT_TYPES_2_TYPE.key?(origin_info_node['displayLabel'])
+          event_type = LEGACY_EVENT_TYPES_2_TYPE[event_type] if LEGACY_EVENT_TYPES_2_TYPE.key?(event_type)
 
-      # change original xml to have the event type that will be output
-      # rubocop:disable Metrics/CyclomaticComplexity
-      # rubocop:disable Metrics/PerceivedComplexity
-      def event_type_normalization
-        ng_xml.root.xpath('//mods:originInfo', mods: ModsNormalizer::MODS_NS).each do |origin_info_node|
-          next if normalize_event_type(origin_info_node, 'dateIssued', 'publication', ->(oi_node) { oi_node['eventType'] != 'presentation' })
-
-          copyright_date_nodes = origin_info_node.xpath('mods:copyrightDate', mods: ModsNormalizer::MODS_NS)
-          if copyright_date_nodes.present?
-            origin_info_node['eventType'] = 'copyright' if origin_info_node['eventType'] != 'copyright notice'
-            next
-          end
-
-          next if normalize_event_type(origin_info_node, 'dateCreated', 'production')
-          next if normalize_event_type(origin_info_node, 'dateCaptured', 'capture')
-          next if normalize_event_type(origin_info_node, 'dateValid', 'validity')
-          next if normalize_date_other_event_type(origin_info_node)
-
-          event_type_nil_lambda = ->(oi_node) { oi_node['eventType'].nil? }
-
-          next if normalize_event_type(origin_info_node, 'publisher', 'publication', event_type_nil_lambda)
-          next if normalize_event_type(origin_info_node, 'edition', 'publication', event_type_nil_lambda)
-          next if normalize_event_type(origin_info_node, 'issuance', 'publication', event_type_nil_lambda)
-          next if normalize_event_type(origin_info_node, 'frequency', 'publication', event_type_nil_lambda)
-          next if normalize_event_type(origin_info_node, 'place', 'publication', event_type_nil_lambda)
-        end
-      end
-      # rubocop:enable Metrics/CyclomaticComplexity
-      # rubocop:enable Metrics/PerceivedComplexity
-
-      def normalize_date_other_event_type(origin_info_node)
-        date_other_node = origin_info_node.xpath('mods:dateOther[@type]', mods: ModsNormalizer::MODS_NS).first
-        return false unless date_other_node.present? &&
-                            Cocina::ToFedora::Descriptive::Event::DATE_OTHER_TYPE.key?(date_other_node['type']) &&
-                            origin_info_node['eventType'].nil?
-
-        origin_info_node['eventType'] = date_other_node['type']
-        true
-      end
-
-      def normalize_event_type(origin_info_node, child_node_name, event_type, filter = nil)
-        child_nodes = origin_info_node.xpath("mods:#{child_node_name}", mods: ModsNormalizer::MODS_NS)
-        return false if child_nodes.blank?
-        return false if filter && !filter.call(origin_info_node)
-
-        origin_info_node['eventType'] = event_type
-        true
-      end
-
-      # NOTE: must be run after event_type_normalization
-      # remove dateOther type attribute if it matches originInfo@eventType and if dateOther is empty
-      def date_other_type_normalization
-        ng_xml.root.xpath('//mods:originInfo[@eventType]', mods: ModsNormalizer::MODS_NS).each do |origin_info_node|
-          origin_info_event_type = origin_info_node['eventType']
-          origin_info_node.xpath('mods:dateOther[@type]', mods: ModsNormalizer::MODS_NS).each do |date_other_node|
-            next if date_other_node.content.present?
-
-            date_other_node.remove_attribute('type') if origin_info_event_type.match?(date_other_node['type'])
-            # TODO: Temporarily ignoring pending https://github.com/sul-dlss/dor-services-app/issues/2128
-            # date_other_node.remove if date_other_node.content.blank?
-          end
+          origin_info_node['eventType'] = event_type if event_type.present?
+          origin_info_node.delete('displayLabel') if event_type.present? &&
+                                                     event_type == LEGACY_EVENT_TYPES_2_TYPE[origin_info_node['displayLabel']]
         end
       end
 
@@ -152,39 +75,6 @@ module Cocina
           next if place_term_node.content.blank?
 
           place_term_node['type'] = 'text' if place_term_node.attributes['type'].blank?
-        end
-      end
-
-      # when dateOther is type developed and originInfo eventType is NOT developed, split dateOther into separate element
-      # must be run after date_other_type_normalization
-      def date_other_type_developed_normalization
-        ng_xml.root.xpath('//mods:originInfo/mods:dateOther[@type="developed"]', mods: ModsNormalizer::MODS_NS).each do |date_other|
-          next if date_other.parent['eventType'] == 'development'
-
-          # Move to own originInfo
-          new_origin_info = Nokogiri::XML::Node.new('originInfo', Nokogiri::XML(nil))
-          new_origin_info[:eventType] = 'development'
-          new_origin_info[:displayLabel] = date_other.parent['displayLabel'] if date_other.parent['displayLabel']
-          new_origin_info << date_other.dup
-          date_other.parent.parent << new_origin_info
-          date_other.remove
-        end
-      end
-
-      # when dateCreated and dateOther in same originInfo with eventType production,
-      #  split them and change dateOther to dateCreated
-      # must be after date_other_type_developed_normalization
-      def split_event_type_production_dates
-        ng_xml.root.xpath('//mods:originInfo[@eventType="production" and mods:dateCreated]/mods:dateOther',
-                          mods: ModsNormalizer::MODS_NS).each do |date_other_node|
-          # problem if there is more than one such dateOther ...
-          new_origin_info = Nokogiri::XML::Node.new('originInfo', Nokogiri::XML(nil))
-          new_origin_info[:eventType] = 'production'
-          new_origin_info[:displayLabel] = date_other_node.parent['displayLabel'] if date_other_node.parent['displayLabel']
-          date_other_node.name = 'dateCreated'
-          new_origin_info << date_other_node.dup
-          date_other_node.parent.parent << new_origin_info
-          date_other_node.remove
         end
       end
 
@@ -207,61 +97,6 @@ module Cocina
         ng_xml.root.xpath('//mods:publisher[@transliteration]', mods: ModsNormalizer::MODS_NS).each do |publisher_node|
           publisher_node.parent['transliteration'] = publisher_node['transliteration']
           publisher_node.delete('transliteration')
-        end
-      end
-
-      def match_altrepgroup_nodes
-        # For grouped originInfos, if no lang or script or lang and script are the same then make sure other values present on all in group.
-        altrepgroup_origin_info_nodes, _other_origin_info_nodes = Cocina::FromFedora::Descriptive::AltRepGroup.split(
-          nodes: ng_xml.root.xpath('//mods:originInfo',
-                                   mods: ModsNormalizer::MODS_NS)
-        )
-
-        altrepgroup_origin_info_nodes.each do |origin_info_nodes|
-          lang_script_map = origin_info_nodes.group_by { |origin_info_node| [origin_info_node['lang'], origin_info_node['script']] }
-          grouped_origin_info_nodes = lang_script_map.values.select { |nodes| nodes.size > 1 }
-          grouped_origin_info_nodes.each do |origin_info_node_group|
-            origin_info_node_group.each do |origin_info_node|
-              other_origin_info_nodes = origin_info_node_group.reject { |check_origin_info_node| origin_info_node == check_origin_info_node }
-              match_grouped_nodes(origin_info_node, other_origin_info_nodes)
-            end
-          end
-        end
-      end
-
-      def match_grouped_nodes(from_node, to_nodes)
-        from_node.elements.each do |child_node|
-          to_nodes.each do |to_node|
-            next if matching_origin_info_child_node?(child_node, to_node)
-
-            to_node << child_node.dup
-          end
-        end
-      end
-
-      def matching_origin_info_child_node?(child_node, origin_info_node)
-        origin_info_node.elements.any? do |other_child_node|
-          if child_node.name == 'place' && other_child_node.name == 'place'
-            child_placeterm_node = child_node.xpath('mods:placeTerm', mods: ModsNormalizer::MODS_NS).first
-            other_child_placeterm_node = other_child_node.xpath('mods:placeTerm', mods: ModsNormalizer::MODS_NS).first
-            child_placeterm_node && other_child_placeterm_node && child_placeterm_node['type'] == other_child_placeterm_node['type']
-          else
-            child_node.name == other_child_node.name && child_node.to_h == other_child_node.to_h
-          end
-        end
-      end
-
-      def lang_script_attribs_normalization
-        # Remove lang and script attributes if none of the children can be parallel.
-        ng_xml.root.xpath('//mods:originInfo[@lang or @script]', mods: ModsNormalizer::MODS_NS).each do |origin_info_node|
-          parallel_nodes = origin_info_node.xpath('mods:place/mods:placeTerm[not(@type="code")]', mods: ModsNormalizer::MODS_NS) \
-          + origin_info_node.xpath('mods:dateIssued[not(@encoding)]', mods: ModsNormalizer::MODS_NS) \
-          + origin_info_node.xpath('mods:publisher', mods: ModsNormalizer::MODS_NS) \
-          + origin_info_node.xpath('mods:edition', mods: ModsNormalizer::MODS_NS)
-          if parallel_nodes.empty?
-            origin_info_node.delete('lang')
-            origin_info_node.delete('script')
-          end
         end
       end
 

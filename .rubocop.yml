@@ -64,6 +64,10 @@ RSpec/ExpectActual:
 Style/AsciiComments:
   Exclude:
     - 'spec/services/cocina/from_fedora/descriptive/contributor_spec.rb'
+    - 'spec/services/cocina/mapping/descriptive/mods/origin_info_spec.rb'
+
+Style/WordArray:
+  MinSize: 3
 
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true

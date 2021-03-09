@@ -1902,7 +1902,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
-                  type: 'organization',
                   role: [
                     {
                       value: 'publisher',
@@ -1955,7 +1954,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
-                  type: 'organization',
                   role: [
                     {
                       value: 'publisher',
@@ -2059,7 +2057,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
-                  type: 'organization',
                   role: [
                     {
                       value: 'publisher',
@@ -2121,7 +2118,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
-                  type: 'organization',
                   role: [
                     {
                       value: 'publisher',
@@ -2217,7 +2213,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
-                  type: 'organization',
                   role: [
                     {
                       value: 'publisher',
@@ -2279,7 +2274,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
-                  type: 'organization',
                   role: [
                     {
                       value: 'publisher',
@@ -2299,7 +2293,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'w3cdtf'
                   },
                   value: '2020-02-02',
-                  status: 'primary'
+                  status: 'primary',
+                  type: 'publication'
                 }
               ]
             }
@@ -2395,7 +2390,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
-                  type: 'organization',
                   role: [
                     {
                       value: 'Publisher',
@@ -2472,7 +2466,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
-                  type: 'organization',
                   role: [
                     {
                       value: 'publisher',
@@ -2492,7 +2485,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'w3cdtf'
                   },
                   value: '2020-02-02',
-                  status: 'primary'
+                  status: 'primary',
+                  type: 'publication'
                 }
               ]
             }

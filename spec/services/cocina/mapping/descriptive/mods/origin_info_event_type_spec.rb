@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
   context 'with eventType' do
     describe 'matches date type' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo eventType="publication">
@@ -33,7 +33,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'does not match date type' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo eventType="publication">
@@ -61,7 +61,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'multiple date types' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo eventType="publication">
@@ -94,7 +94,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'one date type, other subelements' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo eventType="publication">
@@ -125,7 +125,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
                         value: 'Persephone Books'
                       }
                     ],
-                    type: 'organization',
                     role: [
                       {
                         value: 'publisher',
@@ -152,7 +151,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'multiple date types, other subelements' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo eventType="publication">
@@ -188,7 +187,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
                         value: 'Persephone Books'
                       }
                     ],
-                    type: 'organization',
                     role: [
                       {
                         value: 'publisher',
@@ -215,7 +213,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'no date element, other subelements' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo eventType="publication">
@@ -239,7 +237,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
                         value: 'Persephone Books'
                       }
                     ],
-                    type: 'organization',
                     role: [
                       {
                         value: 'publisher',
@@ -266,7 +263,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'dateOther with same type' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo eventType="acquisition">
@@ -294,7 +291,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'dateOther with different type' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo eventType="acquisition">
@@ -322,7 +319,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'dateOther without type' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo eventType="acquisition">
@@ -349,9 +346,9 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
   end
 
-  context 'without eventType' do
+  context 'with no eventType' do
     describe 'single date type' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo>
@@ -378,7 +375,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'multiple date types' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo>
@@ -410,7 +407,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'one date type, other subelements' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo>
@@ -440,7 +437,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
                         value: 'Persephone Books'
                       }
                     ],
-                    type: 'organization',
                     role: [
                       {
                         value: 'publisher',
@@ -467,7 +463,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'multiple date types, other subelements' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo>
@@ -502,7 +498,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
                         value: 'Persephone Books'
                       }
                     ],
-                    type: 'organization',
                     role: [
                       {
                         value: 'publisher',
@@ -529,7 +524,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'no date element, other subelements' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo>
@@ -552,7 +547,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
                         value: 'Persephone Books'
                       }
                     ],
-                    type: 'organization',
                     role: [
                       {
                         value: 'publisher',
@@ -579,7 +573,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'dateOther with type' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo>
@@ -606,7 +600,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
     end
 
     describe 'dateOther without type' do
-      xit 'not implemented' do
+      it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
           <<~XML
             <originInfo>
@@ -630,6 +624,354 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
         end
 
         let(:warnings) { [Notification.new(msg: 'Undetermined date type')] }
+      end
+    end
+  end
+
+  describe 'copyright notice eventType' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="copyright notice">
+             <copyrightDate>©2018</copyrightDate>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'copyright notice',
+              note: [
+                {
+                  value: '©2018',
+                  type: 'copyright statement'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'legacy MARC2MODS 264 mappings' do
+    # Arcadia says: because eventType is a relatively new addition to the MODS schema,
+    #   records converted from MARC to MODS prior to its introduction sometimes used eventType with diff values.
+    #   The next 4 tests are for the 4 specific eventType values that should be corrected.
+    describe 'producer eventType' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="producer">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="production">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'production',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    describe 'publisher eventType' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="publisher">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="publication">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'publication',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    describe 'distributor eventType' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="distributor">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="distribution">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'distribution',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    describe 'manufacturer eventType' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo eventType="manufacturer">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="manufacture">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'manufacture',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    # Arcadia says: because eventType is a relatively new addition to the MODS schema,
+    #   records converted from MARC to MODS prior to its introduction used displayLabel as a stopgap measure.
+    #   The next 4 tests are for the 4 specific displayLabel values that should be converted to eventType.
+    describe 'producer displayLabel' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="producer">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="production">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'production',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    describe 'publisher displayLabel' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="publisher">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="publication">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'publication',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    describe 'distributor displayLabel' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="distributor">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="distribution">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'distribution',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    describe 'manufacturer displayLabel' do
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo displayLabel="manufacturer">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo eventType="manufacture">
+              <place>
+                <placeTerm type="text">London</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                type: 'manufacture',
+                location: [
+                  {
+                    value: 'London'
+                  }
+                ]
+              }
+            ]
+          }
+        end
       end
     end
   end
