@@ -59,6 +59,7 @@ module Cocina
         add_description(item, obj)
 
         Cocina::ToFedora::ApoRights.write(item.administrativeMetadata, obj.administrative)
+        Cocina::ToFedora::Roles.write(item, Array(obj.administrative.roles))
         Cocina::ToFedora::Identity.apply(obj, item, object_type: 'adminPolicy')
       end
     end

@@ -416,6 +416,7 @@ RSpec.describe 'Get the object' do
         expect(json['administrative']['defaultObjectRights']).to match '<rightsMetadata>'
         expect(json['administrative']['registrationWorkflow']).to be_nil
         expect(json['administrative']['hasAdminPolicy']).to eq 'druid:df123cd4567'
+        expect(json['administrative']['roles']).to eq []
       end
     end
 
@@ -431,6 +432,24 @@ RSpec.describe 'Get the object' do
               <workflow id="wasCrawlPreassemblyWF"/>
             </dissemination>
           </administrativeMetadata>
+        XML
+        object.roleMetadata.content = <<~XML
+          <roleMetadata objectId="druid:bx911tp9024">
+            <role type="dor-apo-manager">
+              <group>
+                <identifier type="workgroup">sdr:psm-staff</identifier>
+              </group>
+              <group>
+                <identifier type="workgroup">sdr:developer</identifier>
+              </group>
+              <group>
+                <identifier type="workgroup">sdr:metadata-staff</identifier>
+              </group>
+              <group>
+                <identifier type="workgroup">sdr:admin-docs</identifier>
+              </group>
+            </role>
+          </roleMetadata>
         XML
         object.descMetadata.title_info.main_title = 'Hello'
         object.label = 'foo'
@@ -449,6 +468,29 @@ RSpec.describe 'Get the object' do
         expect(json['administrative']['defaultObjectRights']).to match '<rightsMetadata>'
         expect(json['administrative']['registrationWorkflow']).to eq %w[registrationWF goobiWF]
         expect(json['administrative']['disseminationWorkflow']).to eq 'wasCrawlPreassemblyWF'
+        expect(json['administrative']['roles']).to eq [
+          {
+            'name' => 'dor-apo-manager',
+            'members' => [
+              {
+                'type' => 'workgroup',
+                'identifier' => 'sdr:psm-staff'
+              },
+              {
+                'type' => 'workgroup',
+                'identifier' => 'sdr:developer'
+              },
+              {
+                'type' => 'workgroup',
+                'identifier' => 'sdr:metadata-staff'
+              },
+              {
+                'type' => 'workgroup',
+                'identifier' => 'sdr:admin-docs'
+              }
+            ]
+          }
+        ]
       end
     end
   end
