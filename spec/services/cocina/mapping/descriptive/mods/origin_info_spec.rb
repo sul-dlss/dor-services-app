@@ -1330,8 +1330,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
         }
       end
 
-      xit 'FIXME: to be implemented: warning should NOT be given for matching script value'
-      let(:warnings) { [Notification.new(msg: 'Unpaired altRepGroup')] }
+      # NOTE: it does NOT warn as this is a valid pairing of altRepGroup
     end
   end
 
