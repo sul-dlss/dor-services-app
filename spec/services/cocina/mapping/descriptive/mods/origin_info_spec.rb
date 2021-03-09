@@ -1820,45 +1820,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     end
   end
 
-  context 'when end point date only with keyDate=yes' do
-    # based on gd436kk2484, kq971bk2940, mv125bf6089, nz219st6133
-    # xit 'TODO: allow single end point date to have keyDate on to_fedora' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo>
-            <dateCreated keyDate="yes" encoding="w3cdtf" qualifier="approximate" point="end">1948</dateCreated>
-          </originInfo>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          event: [
-            {
-              date: [
-                {
-                  structuredValue: [
-                    {
-                      value: '1948',
-                      status: 'primary',
-                      type: 'end'
-                    }
-                  ],
-                  encoding: {
-                    code: 'w3cdtf'
-                  },
-                  qualifier: 'approximate',
-                  type: 'creation'
-                }
-              ]
-            }
-          ]
-        }
-      end
-    end
-  end
-
   context 'when empty placeTerm and empty date qualifier attribute' do
     # based on gh074sd3455, zp908qm7502
     it_behaves_like 'MODS cocina mapping' do
