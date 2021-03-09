@@ -220,8 +220,8 @@ module Cocina
         def date_values_for_event(date_nodes, default_type)
           dates = date_nodes.reject { |node| node['point'] }.map do |node|
             addl_attributes = {}
-            # NOTE: only dateOther should have type attribute;  not sure if we have dirty data in this respect
-            #   if so, it's invalid MODS, so validating against the MODS schema will catch it
+            # NOTE: only dateOther should have type attribute;  not sure if we have dirty data in this respect.
+            #   If so, it's invalid MODS, so validating against the MODS schema will catch it
             addl_attributes[:type] = node['type'] if node['type'].present?
             build_date(node).merge(addl_attributes)
           end
@@ -402,6 +402,7 @@ module Cocina
             return common_attribs.merge(value: date_nodes.join('/'))
           end
 
+          remove_dup_key_date_from_end_point(date_nodes)
           dates = date_nodes.map do |node|
             next if node.text.blank? && node.attributes.empty?
 
@@ -414,6 +415,17 @@ module Cocina
         end
         # rubocop:enable Metrics/PerceivedComplexity
         # rubocop:enable Metrics/CyclomaticComplexity
+
+        # Per Arcadia, keyDate should only appear once in an originInfo.
+        # If keyDate is on a date of type point and is on both the start and end points, then
+        # it should be removed from the end point
+        def remove_dup_key_date_from_end_point(date_nodes)
+          key_date_point_nodes = date_nodes.select { |node| node['keyDate'] == 'yes' && node['point'].present? }
+          return unless key_date_point_nodes.size == 2
+
+          end_node = key_date_point_nodes.find { |node| node['point'] == 'end' }
+          end_node.delete('keyDate')
+        end
 
         # @return [Boolean] true if this node set can be expressed as an EDTF range.
         def edtf_range?(date_nodes, encoding)
