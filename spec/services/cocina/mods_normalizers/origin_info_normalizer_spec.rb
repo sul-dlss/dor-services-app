@@ -414,7 +414,7 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
     end
   end
 
-  context 'when normalizing legacy mods event types' do
+  context 'when legacy mods event types' do
     context 'when legacy displayLabel and no eventType' do
       let(:mods_ng_xml) do
         Nokogiri::XML <<~XML
@@ -671,6 +671,80 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
           </originInfo>
         </mods>
       XML
+    end
+  end
+
+  context 'when keyDate on "point" date element(s)' do
+    context 'when keyDate on both start and end' do
+      # based on fs078fy1458, wz774ws7198
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateCreated encoding="w3cdtf" keyDate="yes" point="start">1175</dateCreated>
+              <dateCreated encoding="w3cdtf" keyDate="yes" point="end">1325</dateCreated>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'removes the keyDate from the end element' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateCreated encoding="w3cdtf" keyDate="yes" point="start">1175</dateCreated>
+              <dateCreated encoding="w3cdtf" point="end">1325</dateCreated>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when both start and end but keyDate only on end' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateCreated encoding="w3cdtf" point="start">1175</dateCreated>
+              <dateCreated encoding="w3cdtf" keyDate="yes" point="end">1325</dateCreated>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'retains the keyDate on the end element' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateCreated encoding="w3cdtf" point="start">1175</dateCreated>
+              <dateCreated encoding="w3cdtf" keyDate="yes" point="end">1325</dateCreated>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when only end point with keyDate' do
+      # based on gd436kk2484, kq971bk2940, mv125bf6089, nz219st6133
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateCreated keyDate="yes" encoding="w3cdtf" point="end">1948</dateCreated>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'retains the keyDate on the end element' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateCreated keyDate="yes" encoding="w3cdtf" point="end">1948</dateCreated>
+            </originInfo>
+          </mods>
+        XML
+      end
     end
   end
 

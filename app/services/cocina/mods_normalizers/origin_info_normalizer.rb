@@ -24,6 +24,7 @@ module Cocina
         normalize_legacy_mods_event_type
         place_term_type_normalization
         normalize_authority_marcountry
+        single_key_date
         remove_trailing_period_from_date_values
         ng_xml
       end
@@ -81,6 +82,16 @@ module Cocina
       def normalize_authority_marcountry
         ng_xml.root.xpath("//mods:*[@authority='marcountry']", mods: ModsNormalizer::MODS_NS).each do |node|
           node[:authority] = 'marccountry'
+        end
+      end
+
+      def single_key_date
+        DATE_FIELDS.each do |date_field|
+          key_date_nodes = ng_xml.root.xpath("//mods:originInfo/mods:#{date_field}[@point and @keyDate='yes']", mods: ModsNormalizer::MODS_NS)
+          next unless key_date_nodes.size == 2
+
+          end_node = key_date_nodes.find { |node| node['point'] == 'end' }
+          end_node.delete('keyDate')
         end
       end
 
