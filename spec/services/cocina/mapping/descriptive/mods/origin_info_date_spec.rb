@@ -2968,15 +2968,22 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
   context 'when keyDate is on start and end of point' do
     # based on wz774ws7198, fs078fy1458
-
-    # it_behaves_like 'MODS cocina mapping' do
-    # FIXME: also address with normalization - only have keyDate on the start point when both start and end have it
-    xit 'FIXME: to be implemented: if we only have end then it can be keyDate, otherwise it should be start only' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <originInfo>
             <dateCreated encoding="w3cdtf" keyDate="yes" point="start" qualifier="approximate">1175</dateCreated>
             <dateCreated encoding="w3cdtf" keyDate="yes" point="end" qualifier="approximate">1325</dateCreated>
+          </originInfo>
+        XML
+      end
+
+      # keyDate removed from endpoint
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo>
+            <dateCreated encoding="w3cdtf" keyDate="yes" point="start" qualifier="approximate">1175</dateCreated>
+            <dateCreated encoding="w3cdtf" point="end" qualifier="approximate">1325</dateCreated>
           </originInfo>
         XML
       end
