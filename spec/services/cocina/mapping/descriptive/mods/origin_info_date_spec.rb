@@ -3014,7 +3014,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
 
   context 'when end point date only with keyDate=yes' do
     # based on gd436kk2484, kq971bk2940, mv125bf6089, nz219st6133
-    # xit 'TODO: allow single end point date to have keyDate on to_fedora' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
