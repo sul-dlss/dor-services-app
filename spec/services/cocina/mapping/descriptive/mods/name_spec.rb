@@ -1915,7 +1915,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
           <name usage="primary" type="personal">
             <namePart>Name 2</namePart>
           </name>
-        XML 
+        XML
       end
 
       let(:roundtrip_mods) do
