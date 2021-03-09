@@ -220,8 +220,8 @@ module Cocina
         def date_values_for_event(date_nodes, default_type)
           dates = date_nodes.reject { |node| node['point'] }.map do |node|
             addl_attributes = {}
-            # NOTE: only dateOther should have type attribute;  not sure if we have dirty data in this respect
-            #   if so, it's invalid MODS, so validating against the MODS schema will catch it
+            # NOTE: only dateOther should have type attribute;  not sure if we have dirty data in this respect.
+            #   If so, it's invalid MODS, so validating against the MODS schema will catch it
             addl_attributes[:type] = node['type'] if node['type'].present?
             build_date(node).merge(addl_attributes)
           end
