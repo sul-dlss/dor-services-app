@@ -1143,7 +1143,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           form: [
             {
               value: 'Event',
-              type: 'resource types',
+              type: 'resource type',
               source: {
                 value: 'DataCite resource types'
               }
@@ -1164,7 +1164,9 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'organization',
               status: 'primary',
               role: [
-                value: 'event'
+                {
+                  value: 'event'
+                }
               ]
             }
           ]
@@ -1267,7 +1269,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           form: [
             {
               value: 'Event',
-              type: 'resource types',
+              type: 'resource type',
               source: {
                 value: 'DataCite resource types'
               }
@@ -1316,7 +1318,9 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               ],
               type: 'organization',
               role: [
-                value: 'event'
+                {
+                  value: 'event'
+                }
               ]
             }
           ]
@@ -1386,7 +1390,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           form: [
             {
               value: 'Event',
-              type: 'resource types',
+              type: 'resource type',
               source: {
                 value: 'DataCite resource types'
               }
@@ -1505,7 +1509,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           form: [
             {
               value: 'Event',
-              type: 'resource types',
+              type: 'resource type',
               source: {
                 value: 'DataCite resource types'
               }
