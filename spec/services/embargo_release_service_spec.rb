@@ -139,84 +139,15 @@ RSpec.describe EmbargoReleaseService do
     end
   end
 
-  describe '#release_20_pct_vis' do
-    subject(:release_20_pct_vis) do
-      service.release_20_pct_vis('application:embargo-release')
-    end
-
-    let(:embargo_ds) do
-      eds = Dor::EmbargoMetadataDS.new
-      eds.status = 'embargoed'
-      eds.twenty_pct_status = 'anything'
-      eds.release_date = embargo_release_date
-      eds.release_access_node = Nokogiri::XML(release_access) { |config| config.default_xml.noblanks }
-      eds
-    end
-
-    let(:item) do
-      embargo_item = Dor::Item.new
-      embargo_item.datastreams['embargoMetadata'] = embargo_ds
-      embargo_item.datastreams['rightsMetadata'].ng_xml = Nokogiri::XML(rights_xml) { |config| config.default_xml.noblanks }
-      embargo_item
-    end
-
-    it 'rights metadata has no embargo after Dor::Item.release_20_pct_vis_embargo' do
-      expect(item.rightsMetadata.ng_xml.at_xpath('//embargoReleaseDate')).not_to be_nil
-      expect(item.rightsMetadata.content).to match('embargoReleaseDate')
-      release_20_pct_vis
-      expect(item.rightsMetadata.ng_xml.at_xpath('//embargoReleaseDate')).to be_nil
-      expect(item.rightsMetadata.content).not_to match('embargoReleaseDate')
-    end
-
-    it 'embargo metadata changes to twenty_pct_status released after Dor::Item.release_20_pct_vis_embargo' do
-      expect(item.embargoMetadata.twenty_pct_status).to eql 'anything'
-      release_20_pct_vis
-      expect(item.embargoMetadata.twenty_pct_status).to eql 'released'
-    end
-
-    it 'sets the embargo status to released' do
-      release_20_pct_vis
-      expect(embargo_ds.twenty_pct_status).to eq 'released'
-    end
-
-    context 'with rightsMetadata modifications' do
-      it 'replaces stanford group read access to world read access' do
-        release_20_pct_vis
-        rights = item.datastreams['rightsMetadata'].ng_xml
-        expect(rights.xpath("//rightsMetadata/access[@type='read']").size).to eq 1
-        expect(rights.xpath("//rightsMetadata/access[@type='discover']").size).to eq 1
-        expect(rights.xpath("//rightsMetadata/access[@type='read']/machine/world").size).to eq 1
-      end
-
-      it 'marks the datastream as content changed' do
-        release_20_pct_vis
-        expect(item.datastreams['rightsMetadata']).to be_content_changed
-      end
-    end
-
-    it "writes 'embargo released' to event history" do
-      release_20_pct_vis
-      events = item.datastreams['events']
-      events.find_events_by_type('embargo') do |who, _timestamp, message|
-        expect(who).to eq('application:embargo-release')
-        expect(message).to eq('20% Visibility Embargo released')
-      end
-    end
-  end
-
   describe '.release_all' do
     let(:fake_item) { instance_double(Dor::Item) }
     let(:fake_instance) do
-      instance_double(described_class, release: nil, release_20_pct_vis: nil)
+      instance_double(described_class, release: nil)
     end
 
     before do
       allow(described_class).to receive(:release_items)
         .with(described_class::RELEASEABLE_NOW_QUERY)
-        .and_yield(fake_item)
-
-      allow(described_class).to receive(:release_items)
-        .with(described_class::TWENTY_PERCENT_RELEASEABLE_NOW_QUERY, '20% visibility embargo')
         .and_yield(fake_item)
 
       allow(described_class).to receive(:new).and_return(fake_instance)
@@ -228,9 +159,6 @@ RSpec.describe EmbargoReleaseService do
       expect(described_class).to have_received(:release_items)
         .once.with(described_class::RELEASEABLE_NOW_QUERY)
       expect(fake_instance).to have_received(:release).once
-      expect(described_class).to have_received(:release_items)
-        .once.with(described_class::TWENTY_PERCENT_RELEASEABLE_NOW_QUERY, '20% visibility embargo')
-      expect(fake_instance).to have_received(:release_20_pct_vis).once
     end
   end
 
