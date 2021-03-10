@@ -530,8 +530,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'BCE date range (edtf encoding)' do
-    # it_behaves_like 'MODS cocina mapping' do
-    xit 'FIXME: to be implemented: model edtf date range in cocina like other date range' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <originInfo>
@@ -547,12 +546,21 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
             {
               date: [
                 {
-                  value: '-0599/-0499',
+                  structuredValue: [
+                    {
+                      value: '-0599',
+                      type: 'start',
+                      status: 'primary'
+                    },
+                    {
+                      value: '-0499',
+                      type: 'end'
+                    }
+                  ],
                   type: 'creation',
                   encoding: {
                     code: 'edtf'
-                  },
-                  status: 'primary'
+                  }
                 }
               ]
             }
@@ -594,8 +602,7 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
   end
 
   describe 'CE date range (edtf encoding)' do
-    # it_behaves_like 'MODS cocina mapping' do
-    xit 'FIXME: to be implemented: model edtf date range in cocina like other date range' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <originInfo>
@@ -611,12 +618,21 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
             {
               date: [
                 {
-                  value: '0800/1000',
+                  structuredValue: [
+                    {
+                      value: '0800',
+                      type: 'start',
+                      status: 'primary'
+                    },
+                    {
+                      value: '1000',
+                      type: 'end'
+                    }
+                  ],
                   type: 'creation',
                   encoding: {
                     code: 'edtf'
-                  },
-                  status: 'primary'
+                  }
                 }
               ]
             }
@@ -3110,6 +3126,102 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                   type: 'issuance',
                   source: {
                     value: 'MODS issuance terms'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  context 'when edtf with single digit date value' do
+    # based on wf185fz5396
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo>
+            <dateCreated keyDate="yes" encoding="edtf" qualifier="approximate" point="start">0</dateCreated>
+            <dateCreated encoding="edtf" qualifier="approximate" point="end">200</dateCreated>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              date: [
+                {
+                  structuredValue: [
+                    {
+                      value: '0',
+                      status: 'primary',
+                      type: 'start'
+                    },
+                    {
+                      value: '200',
+                      type: 'end'
+                    }
+                  ],
+                  type: 'creation',
+                  qualifier: 'approximate',
+                  encoding: {
+                    code: 'edtf'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'edtf dates should not become dateOther' do
+    # based on wf395pf7684
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <originInfo displayLabel="Place of creation">
+            <dateIssued keyDate="yes" encoding="edtf" point="start">103</dateIssued>
+            <dateIssued encoding="edtf" point="end">111</dateIssued>
+          </originInfo>
+        XML
+      end
+
+      # trailing slash on placeTerm authorityURI
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo displayLabel="Place of creation">
+            <dateIssued keyDate="yes" encoding="edtf" point="start">103</dateIssued>
+            <dateIssued encoding="edtf" point="end">111</dateIssued>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              displayLabel: 'Place of creation',
+              date: [
+                {
+                  structuredValue: [
+                    {
+                      value: '103',
+                      status: 'primary',
+                      type: 'start'
+                    },
+                    {
+                      value: '111',
+                      type: 'end'
+                    }
+                  ],
+                  type: 'publication',
+                  encoding: {
+                    code: 'edtf'
                   }
                 }
               ]
