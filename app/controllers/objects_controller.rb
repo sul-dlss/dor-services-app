@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ObjectsController < ApplicationController
+class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassLength
   before_action :load_item, except: [:create]
 
   rescue_from(Cocina::ObjectUpdater::NotImplemented) do |e|
@@ -107,6 +107,11 @@ class ObjectsController < ApplicationController
 
   def update_marc_record
     Dor::UpdateMarcRecordService.new(@item).update
+    head :created
+  end
+
+  def destroy
+    DeleteService.destroy(@item.pid)
     head :created
   end
 

@@ -25,7 +25,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :objects, only: [:create, :update, :show] do
+    resources :objects, only: %i[create update destroy show] do
       resource :release_tags, only: [:create, :show]
       resources :administrative_tags, only: %i[create update destroy index]
 
