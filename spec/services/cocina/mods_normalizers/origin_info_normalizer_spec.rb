@@ -748,7 +748,103 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
     end
   end
 
-  context 'when placeTerm is empty and dateOther has only content and legacy mods displaLabel' do
+  context 'when single place element with placeTerm for code and text' do
+    context 'when authority attribute on code only' do
+      # based on cf040mt0946, dm283vh3332, fn474tc0101, gq289jf7762, hm986jh6778, jg916mx8338
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm type="code" authority="marccountry">xx</placeTerm>
+                <placeTerm type="text">Place of publication not identified]</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'adds the authority attributes to both code and text placeTerm elements' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm type="code" authority="marccountry">xx</placeTerm>
+                <placeTerm type="text" authority="marccountry">Place of publication not identified]</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when all three authority attributes on code placeTerm only' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                  valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+                <placeTerm type="text">Cornell Adult University (hah!)</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'adds the authority attributes to both code and text placeTerm elements' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                  valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+                <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                  valueURI="http://id.loc.gov/vocabulary/countries/cau">Cornell Adult University (hah!)</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when authority attributes on text placeTerm only' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm type="code">cau</placeTerm>
+                <placeTerm type="text" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                  valueURI="http://id.loc.gov/vocabulary/countries/cau">Cornell Adult University (hah!)</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'adds the authority attributes to both code and text placeTerm elements' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm type="code" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                  valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+                <placeTerm type="text" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                  valueURI="http://id.loc.gov/vocabulary/countries/cau">Cornell Adult University (hah!)</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    # NOTE: deliberately skipping situation where text placeTerm has some authority info and code placeTerm has other authority info
+    #  as we may never encounter this
+  end
+
+  context 'when placeTerm is empty and dateOther has only content and legacy mods displayLabel' do
     # based on wm519yn6490
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
