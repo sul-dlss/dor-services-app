@@ -390,17 +390,10 @@ module Cocina
         end
 
         # rubocop:disable Metrics/CyclomaticComplexity
-        # rubocop:disable Metrics/PerceivedComplexity
         def build_structured_date(date_nodes)
           return if date_nodes.blank?
 
           common_attribs = common_date_attributes(date_nodes)
-          # FIXME: to be implemented: model edtf date range in cocina like other date ranges;
-          #   put the slash back in when mapping back to MODS
-          if edtf_range?(date_nodes, common_attribs[:encoding])
-            common_attribs[:status] = 'primary' if date_nodes.any? { |node| node['keyDate'] == 'yes' }
-            return common_attribs.merge(value: date_nodes.join('/'))
-          end
 
           remove_dup_key_date_from_end_point(date_nodes)
           dates = date_nodes.map do |node|
@@ -413,7 +406,6 @@ module Cocina
           end
           { structuredValue: dates }.merge(common_attribs).compact
         end
-        # rubocop:enable Metrics/PerceivedComplexity
         # rubocop:enable Metrics/CyclomaticComplexity
 
         # Per Arcadia, keyDate should only appear once in an originInfo.
@@ -425,11 +417,6 @@ module Cocina
 
           end_node = key_date_point_nodes.find { |node| node['point'] == 'end' }
           end_node.delete('keyDate')
-        end
-
-        # @return [Boolean] true if this node set can be expressed as an EDTF range.
-        def edtf_range?(date_nodes, encoding)
-          date_nodes.size == 2 && date_nodes.map { |node| node['point'] } == %w[start end] && encoding == { code: 'edtf' }
         end
 
         def common_date_attributes(date_nodes)
