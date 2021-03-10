@@ -255,52 +255,64 @@ module Cocina
         end
 
         # placeTerm can have type=code or type=text or neither; placeTerms of type code and text may combine into a single
-        #  cocina location, or they might need to be split into two separate cocina locations (e.g. when the uri attributes aren't for codes)
-        # rubocop:disable Metrics/AbcSize
-        # rubocop:disable Metrics/CyclomaticComplexity
+        #  cocina location (when under the same place element), or they might refer to separate cocina locations (under separate place elements)
         def add_place_info(event, place_nodes)
           return unless place_nodes_have_info?(place_nodes)
 
-          # Text types then code types
+          # text only and text-and-code placeTerm types in single place node
           text_places = place_nodes.select { |place| place.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).present? }
-          text_locations = text_places.map do |place|
-            text_place_term_node = place.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).first
-            next if text_place_term_node.text.blank?
+          code_only_places = place_nodes.reject { |place| text_places.include?(place) }
 
-            location = with_uri_info({}, text_place_term_node)
-            location[:value] = text_place_term_node.text
-            code_place_term_node = place.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
-            location[:code] = code_place_term_node.text if code_place_term_node
-            lang_script = LanguageScript.build(node: text_place_term_node)
-            location[:valueLanguage] = lang_script if lang_script
-            location[:type] = 'supplied' if place[:supplied] == 'yes'
-            location
-          end
-
-          code_places = place_nodes.reject { |place| text_places.include?(place) }
-          code_locations = code_places.map do |place|
-            place_term_node = place.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
-            next if place_term_node.content.blank?
-
-            location = with_uri_info({}, place_term_node)
-            notifier.warn('Place code missing authority', { code: place_term_node.text }) if location.empty?
-
-            location[:code] = place_term_node.text
-            location[:type] = 'supplied' if place[:supplied] == 'yes'
-            location
-          end
-
-          event[:location] = text_locations + code_locations
+          event[:location] = locations_for_place_terms_with_text(text_places) + locations_for_code_only_place_terms(code_only_places)
           event[:location].compact!
         end
-        # rubocop:enable Metrics/AbcSize
-        # rubocop:enable Metrics/CyclomaticComplexity
 
         def place_nodes_have_info?(place_nodes)
           return true if place_nodes.any? { |node| node.content.present? }
           return true if place_nodes.any? { |node| node.xpath('mods:placeTerm[@valueURI]', mods: DESC_METADATA_NS).present? }
 
           place_nodes.any? { |node| node.xpath('mods:placeTerm[@xlink:href]', { mods: DESC_METADATA_NS, xlink: XLINK_NS }).present? }
+        end
+
+        # @param [Nokogiri::XML::NodeSet] place elements that have at least one placeTerm child of type text
+        # @return cocina locations
+        def locations_for_place_terms_with_text(place_nodes)
+          place_nodes.map do |place_node|
+            text_place_term_node = place_node.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).first
+            next if text_place_term_node.text.blank?
+
+            cocina_location = {}
+            add_authority_info(cocina_location, text_place_term_node)
+            cocina_location[:value] = text_place_term_node.text
+            code_place_term_node = place_node.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
+            if code_place_term_node
+              cocina_location[:code] = code_place_term_node.text
+              # NOTE: deliberately skipping situation where text node has some authority info and code node
+              #  has other authority info as we may never encounter this
+              add_authority_info(cocina_location, code_place_term_node) if cocina_location[:source].blank? && cocina_location[:uri].blank?
+            end
+            lang_script = LanguageScript.build(node: text_place_term_node)
+            cocina_location[:valueLanguage] = lang_script if lang_script
+            cocina_location[:type] = 'supplied' if place_node[:supplied] == 'yes'
+            cocina_location.compact
+          end
+        end
+
+        # @param [Nokogiri::XML::NodeSet] place elements that have placeTerm children ONLY of type code
+        # @return cocina locations
+        def locations_for_code_only_place_terms(place_nodes)
+          place_nodes.map do |place_node|
+            code_place_term_node = place_node.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
+            next if code_place_term_node.content.blank?
+
+            cocina_location = {}
+            add_authority_info(cocina_location, code_place_term_node)
+            notifier.warn('Place code missing authority', { code: code_place_term_node.text }) if cocina_location.empty?
+
+            cocina_location[:code] = code_place_term_node.text
+            cocina_location[:type] = 'supplied' if place_node[:supplied] == 'yes'
+            cocina_location.compact
+          end
         end
 
         def add_issuance_note(event, issuance_nodes)
@@ -330,7 +342,8 @@ module Cocina
               value: frequency.text,
               valueLanguage: LanguageScript.build(node: frequency)
             }
-            event[:note] << with_uri_info(note, frequency).compact
+            add_authority_info(note, frequency).compact
+            event[:note] << note.compact
           end
         end
 
@@ -379,14 +392,14 @@ module Cocina
           event.delete(:contributor) if event[:contributor].empty?
         end
 
-        def with_uri_info(cocina, xml_node)
-          cocina[:uri] = ValueURI.sniff(xml_node['valueURI'], notifier) if xml_node['valueURI']
+        def add_authority_info(cocina_desc_val, xml_node)
+          cocina_desc_val[:uri] = ValueURI.sniff(xml_node['valueURI'], notifier) if xml_node['valueURI']
           source = {
             code: Authority.normalize_code(xml_node['authority'], notifier),
             uri: Authority.normalize_uri(xml_node['authorityURI'])
           }.compact
-          cocina[:source] = source if source.present?
-          cocina
+          cocina_desc_val[:source] = source if source.present?
+          cocina_desc_val
         end
 
         # rubocop:disable Metrics/CyclomaticComplexity

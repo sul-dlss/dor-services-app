@@ -473,4 +473,84 @@ RSpec.describe 'MODS originInfo place <--> cocina mappings' do
       end
     end
   end
+
+  describe 'placeTerm code xx with authority marccountry' do
+    context 'when code alone' do
+      # based on cf040mt0946, dm283vh3332, fn474tc0101, gq289jf7762, hm986jh6778, jg916mx8338
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo>
+              <place>
+                <placeTerm type="code" authority="marccountry">xx</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                location: [
+                  {
+                    code: 'xx',
+                    source: {
+                      code: 'marccountry'
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+
+    context 'when single place element with code and text' do
+      # based on cf040mt0946, dm283vh3332, fn474tc0101, gq289jf7762, hm986jh6778, jg916mx8338
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <originInfo>
+              <place>
+                <placeTerm type="code" authority="marccountry">xx</placeTerm>
+                <placeTerm type="text">Place of publication not identified]</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        # authority="marccountry" added to text placeTerm
+        let(:roundtrip_mods) do
+          <<~XML
+            <originInfo>
+              <place>
+                <placeTerm type="code" authority="marccountry">xx</placeTerm>
+                <placeTerm type="text" authority="marccountry">Place of publication not identified]</placeTerm>
+              </place>
+            </originInfo>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            event: [
+              {
+                location: [
+                  {
+                    value: 'Place of publication not identified]',
+                    code: 'xx',
+                    source: {
+                      code: 'marccountry'
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        end
+      end
+    end
+  end
 end
