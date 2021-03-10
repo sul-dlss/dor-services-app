@@ -613,7 +613,7 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
 
   # specs added by devs below
 
-  context 'when publisher is not marcrelator' do
+  context 'when publisher is not marcrelator and has no authority, authorityURI or valueURI' do
     # NOTE: cocina -> MODS
     it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
@@ -641,7 +641,7 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
         }
       end
 
-      xit 'FIXME: to be implemented: contrib role should NOT morph to include marcrelator on cocina roundtrip per Arcadia'
+      # marcrelator is added
       let(:roundtrip_cocina) do
         {
           event: [
