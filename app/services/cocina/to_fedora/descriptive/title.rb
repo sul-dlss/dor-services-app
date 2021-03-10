@@ -32,6 +32,8 @@ module Cocina
               write_xlink(title: title)
             elsif title.parallelValue
               write_parallel(title: title, title_info_attrs: additional_attrs)
+            elsif title.groupedValue
+              write_grouped(title: title, title_info_attrs: additional_attrs)
             else
               title_info_attrs = {
                 nameTitleGroup: name_title_group_for(title)
@@ -96,6 +98,10 @@ module Cocina
           end
         end
         # rubocop:enable Metrics/PerceivedComplexity
+
+        def write_grouped(title:, title_info_attrs: {})
+          title.groupedValue.each { |grouped_title| write_basic(title: grouped_title, title_info_attrs: title_info_attrs) }
+        end
 
         def name_title_group_for(title)
           return nil unless contributors
