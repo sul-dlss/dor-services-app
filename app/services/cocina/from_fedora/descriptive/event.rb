@@ -174,7 +174,7 @@ module Cocina
           event[:date] = date_values if date_values.present?
         end
 
-        XPATH_HAS_CONTENT_PREDICATE = '[string-length(normalize-space()) > 1]'
+        XPATH_HAS_CONTENT_PREDICATE = '[string-length(normalize-space()) > 0]'
 
         def build_copyright_notice_event(origin_info_node)
           date_nodes = origin_info_node.xpath("mods:copyrightDate#{XPATH_HAS_CONTENT_PREDICATE}", mods: DESC_METADATA_NS)
