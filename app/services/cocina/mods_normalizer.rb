@@ -302,10 +302,6 @@ module Cocina
     def remove_empty_elements(start_node)
       return unless start_node
 
-      # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
-      # See also xited specs in mods_normalizer_spec.rb and origin_info_normalizer_spec.rb.
-      return if start_node.ancestors('originInfo').present?
-
       # remove node if there are no element children, there is no text value and there are no attributes
       if start_node.elements.size.zero? &&
          start_node.text.blank? &&

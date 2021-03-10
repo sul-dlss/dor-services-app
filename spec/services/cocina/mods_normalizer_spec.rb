@@ -398,8 +398,6 @@ RSpec.describe Cocina::ModsNormalizer do
 
   context 'when normalizing elements with no content and no attributes' do
     context 'when nested elements - originInfo' do
-      xit 'not implemented: remove when <originInfo eventType="blah"/> is only attribute / value'
-
       let(:mods_ng_xml) do
         Nokogiri::XML <<~XML
           <mods #{MODS_ATTRIBUTES}>
@@ -415,12 +413,10 @@ RSpec.describe Cocina::ModsNormalizer do
         XML
       end
 
-      # Temporarily ignoring <originInfo> pending https://github.com/sul-dlss/dor-services-app/issues/2128
-      xit 'removes empty attributes and attributes' do
+      it 'removes empty attributes and attributes' do
         # NOTE: that placeTerm type="text" is assigned when type is missing
         expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
           <mods #{MODS_ATTRIBUTES}>
-            <originInfo eventType="publication"/>
           </mods>
         XML
       end
@@ -450,8 +446,6 @@ RSpec.describe Cocina::ModsNormalizer do
     end
 
     context 'when nested elements - language' do
-      xit 'not implemented: remove when <languageTerm type="code"/> is only attribute / value'
-
       let(:mods_ng_xml) do
         Nokogiri::XML <<~XML
           <mods #{MODS_ATTRIBUTES}>
