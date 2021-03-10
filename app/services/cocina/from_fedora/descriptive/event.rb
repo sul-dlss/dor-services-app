@@ -353,22 +353,22 @@ module Cocina
           return if publisher_nodes.empty?
 
           event[:contributor] ||= []
-          publisher_nodes.each do |publisher|
-            next if publisher.text.blank?
+          publisher_nodes.each do |publisher_node|
+            next if publisher_node.text.blank?
 
             event[:contributor] << {
               name: [
                 {
-                  value: publisher.text,
-                  valueLanguage: LanguageScript.build(node: publisher)
+                  value: publisher_node.text,
+                  valueLanguage: LanguageScript.build(node: publisher_node)
                 }.tap do |attrs|
                   if origin_info_node['transliteration']
                     attrs[:type] = 'transliteration'
                     attrs[:standard] = { value: origin_info_node['transliteration'] }
                   end
-                  if publisher['transliteration']
+                  if publisher_node['transliteration']
                     attrs[:type] = 'transliteration'
-                    attrs[:standard] = { value: publisher['transliteration'] }
+                    attrs[:standard] = { value: publisher_node['transliteration'] }
                   end
                 end.compact
               ],
