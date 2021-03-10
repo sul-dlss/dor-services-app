@@ -66,6 +66,9 @@ module Cocina
         # No scripts or langs
         return false if scripts.compact.empty? && langs.compact.empty?
 
+        # altRepGroups can have the same script, e.g. Latn for English and French
+        return false if scripts.size == 1
+
         true
       end
       # rubocop:enable Metrics/CyclomaticComplexity

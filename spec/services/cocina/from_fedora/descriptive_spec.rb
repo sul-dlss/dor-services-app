@@ -482,9 +482,9 @@ RSpec.describe Cocina::FromFedora::Descriptive do
       allow(notifier).to receive(:warn)
     end
 
-    it 'warns' do
+    it 'does NOT warn as this is a valid pairing of altRepGroup' do
       descriptive
-      expect(notifier).to have_received(:warn).with('Unpaired altRepGroup')
+      expect(notifier).not_to have_received(:warn)
     end
   end
 
