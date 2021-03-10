@@ -39,7 +39,7 @@ module Cocina
           # Is this a basic title or a title with parts
           return simple_value(title_info_element) if simple_title?(children)
 
-          { structuredValue: structured_value(children, title_info_element['type']), note: note(children) }.compact
+          structured_value(children, title_info_element['type'])
         end
 
         private
@@ -65,9 +65,13 @@ module Cocina
 
         # @param [Nokogiri::XML::NodeSet] child_nodes the children of the titleInfo
         def structured_value(child_nodes, type)
-          child_nodes.map do |node|
+          values = child_nodes.map do |node|
             { value: clean_title(node.text, type, node.name), type: Titles::TYPES[node.name] }
           end
+          {
+            structuredValue: values,
+            note: note(child_nodes)
+          }.compact
         end
 
         def clean_title(title, type, tag)
