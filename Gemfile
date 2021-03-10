@@ -44,7 +44,7 @@ gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
 
 # DLSS/domain-specific dependencies
-gem 'cocina-models', '~> 0.53.0'
+gem 'cocina-models', '~> 0.54.0.beta'
 gem 'dor-rights-auth', '>= 1.5.0' # required for new CDL rights
 gem 'dor-services', '~> 9.6'
 gem 'dor-workflow-client', '~> 3.17'

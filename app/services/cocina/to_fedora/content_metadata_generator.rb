@@ -69,7 +69,7 @@ module Cocina
       end
 
       def publish_attr(cocina_file)
-        cocina_file.access.access == 'dark' ? 'no' : 'yes'
+        cocina_file.administrative.publish ? 'yes' : 'no'
       end
 
       def shelve_attr(cocina_file)
