@@ -489,8 +489,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
                           value: '1',
                           type: 'number'
                         }
-                      ],
-                      type: 'detail'
+                      ]
                     },
                     {
                       groupedValue: [
@@ -506,8 +505,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
                           value: '4',
                           type: 'number'
                         }
-                      ],
-                      type: 'detail'
+                      ]
                     },
                     {
                       groupedValue: [
@@ -525,8 +523,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
                               value: '226',
                               type: 'end'
                             }
-                          ],
-                          type: 'extent'
+                          ]
                         }
                       ]
                     },
