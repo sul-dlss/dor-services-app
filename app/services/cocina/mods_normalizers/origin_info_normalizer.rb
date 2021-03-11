@@ -23,6 +23,7 @@ module Cocina
         remove_empty_origin_info # must be after remove_empty_child_elements
         normalize_legacy_mods_event_type
         place_term_type_normalization
+        place_term_authority_normalization # must be after place_term_type_normalization
         normalize_authority_marcountry
         single_key_date
         remove_trailing_period_from_date_values
@@ -44,7 +45,7 @@ module Cocina
         end
       end
 
-      # must be after remove_empty_child_elements
+      # must be called after remove_empty_child_elements
       def remove_empty_origin_info
         ng_xml.root.xpath('//mods:originInfo[not(mods:*) and not(@*)]', mods: ModsNormalizer::MODS_NS).each(&:remove)
         # make sure we remove ones such as <originInfo eventType="publication"/>
@@ -69,6 +70,7 @@ module Cocina
         end
       end
 
+      # must be called before place_term_authority_normalization
       # if the cocina model doesn't have a code, then it will have a value;
       #   this is output as attribute type=text on the roundtripped placeTerm element
       def place_term_type_normalization
@@ -77,6 +79,49 @@ module Cocina
 
           place_term_node['type'] = 'text' if place_term_node.attributes['type'].blank?
         end
+      end
+
+      # must be called after place_term_type_normalization
+      # if the MODS has a single place element with both text and code placeTerm elements, if the text
+      # element has no authority attributes but the code element DOES have authority attributes, then both
+      # the text and the code elements get the authority attributes from the code element.
+      def place_term_authority_normalization
+        ng_xml.root.xpath('//mods:originInfo/mods:place[mods:placeTerm/@type]', mods: ModsNormalizer::MODS_NS).each do |place_node|
+          text_place_term_node = place_node.xpath("mods:placeTerm[not(@type='code')]", mods: ModsNormalizer::MODS_NS).first
+          next unless text_place_term_node
+          next if text_place_term_node.text.blank?
+
+          code_place_term_node = place_node.xpath("mods:placeTerm[@type='code']", mods: ModsNormalizer::MODS_NS).first
+          next unless code_place_term_node
+          next if code_place_term_node.text.blank?
+
+          text_authority_attributes = authority_attributes(text_place_term_node)
+          code_authority_attributes = authority_attributes(code_place_term_node)
+
+          # NOTE: deliberately skipping situation where text node has some authority info and code node
+          #  has other authority info as we may never encounter this
+
+          if text_authority_attributes.present? && code_authority_attributes.blank?
+            text_authority_attributes.each do |key, val|
+              code_place_term_node[key] = val
+            end
+            next
+          end
+
+          next if code_authority_attributes.blank? || text_authority_attributes.present?
+
+          code_authority_attributes.each do |key, val|
+            text_place_term_node[key] = val
+          end
+        end
+      end
+
+      def authority_attributes(ng_node)
+        {
+          valueURI: ng_node['valueURI'],
+          authority: ng_node['authority'],
+          authorityURI: ng_node['authorityURI']
+        }.compact
       end
 
       def normalize_authority_marcountry
@@ -91,7 +136,7 @@ module Cocina
           next unless key_date_nodes.size == 2
 
           end_node = key_date_nodes.find { |node| node['point'] == 'end' }
-          end_node.delete('keyDate')
+          end_node.delete('keyDate') if end_node && end_node['keyDate'].present?
         end
       end
 

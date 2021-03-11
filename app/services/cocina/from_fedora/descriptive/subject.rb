@@ -254,13 +254,13 @@ module Cocina
         end
 
         # @return [Hash, NilClass]
-        def simple_item(node, attrs = {})
-          attrs = attrs.deep_merge(common_attrs(node))
+        def simple_item(node, orig_attrs = {})
+          attrs = orig_attrs.deep_merge(common_attrs(node))
           case node.name
           when 'name'
             name(node, attrs)
           when 'titleInfo'
-            attrs.merge(TitleBuilder.build(title_info_element: node, notifier: notifier)).merge(type: 'title')
+            title(node, attrs, orig_attrs)
           when 'geographicCode'
             attrs.merge(code: node.text, type: 'place')
           when 'cartographics'
@@ -273,6 +273,26 @@ module Cocina
             node_type = node_type_for(node)
             attrs.merge(value: node.text, type: node_type) if node_type
           end
+        end
+
+        def title(node, attrs, orig_attrs)
+          title_attrs = TitleBuilder.build(title_info_element: node, notifier: notifier)
+          if node['type'] == 'uniform'
+            title_attrs[:type] = 'uniform'
+            attrs[:groupedValue] = [title_attrs]
+            if (uri = attrs.delete(:uri))
+              attrs[:groupedValue].each { |value| value[:uri] = uri }
+            end
+            if (source = attrs.delete(:source))
+              attrs[:groupedValue].each { |value| value[:source] = source }
+            end
+            attrs[:uri] = orig_attrs[:uri]
+            attrs[:source] = orig_attrs[:source]
+          else
+            attrs = attrs.merge(title_attrs)
+          end
+          attrs[:type] = 'title'
+          attrs.compact
         end
 
         def name(node, attrs)

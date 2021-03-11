@@ -174,7 +174,7 @@ module Cocina
           event[:date] = date_values if date_values.present?
         end
 
-        XPATH_HAS_CONTENT_PREDICATE = '[string-length(normalize-space()) > 1]'
+        XPATH_HAS_CONTENT_PREDICATE = '[string-length(normalize-space()) > 0]'
 
         def build_copyright_notice_event(origin_info_node)
           date_nodes = origin_info_node.xpath("mods:copyrightDate#{XPATH_HAS_CONTENT_PREDICATE}", mods: DESC_METADATA_NS)
@@ -255,52 +255,64 @@ module Cocina
         end
 
         # placeTerm can have type=code or type=text or neither; placeTerms of type code and text may combine into a single
-        #  cocina location, or they might need to be split into two separate cocina locations (e.g. when the uri attributes aren't for codes)
-        # rubocop:disable Metrics/AbcSize
-        # rubocop:disable Metrics/CyclomaticComplexity
+        #  cocina location (when under the same place element), or they might refer to separate cocina locations (under separate place elements)
         def add_place_info(event, place_nodes)
           return unless place_nodes_have_info?(place_nodes)
 
-          # Text types then code types
+          # text only and text-and-code placeTerm types in single place node
           text_places = place_nodes.select { |place| place.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).present? }
-          text_locations = text_places.map do |place|
-            text_place_term_node = place.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).first
-            next if text_place_term_node.text.blank?
+          code_only_places = place_nodes.reject { |place| text_places.include?(place) }
 
-            location = with_uri_info({}, text_place_term_node)
-            location[:value] = text_place_term_node.text
-            code_place_term_node = place.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
-            location[:code] = code_place_term_node.text if code_place_term_node
-            lang_script = LanguageScript.build(node: text_place_term_node)
-            location[:valueLanguage] = lang_script if lang_script
-            location[:type] = 'supplied' if place[:supplied] == 'yes'
-            location
-          end
-
-          code_places = place_nodes.reject { |place| text_places.include?(place) }
-          code_locations = code_places.map do |place|
-            place_term_node = place.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
-            next if place_term_node.content.blank?
-
-            location = with_uri_info({}, place_term_node)
-            notifier.warn('Place code missing authority', { code: place_term_node.text }) if location.empty?
-
-            location[:code] = place_term_node.text
-            location[:type] = 'supplied' if place[:supplied] == 'yes'
-            location
-          end
-
-          event[:location] = text_locations + code_locations
+          event[:location] = locations_for_place_terms_with_text(text_places) + locations_for_code_only_place_terms(code_only_places)
           event[:location].compact!
         end
-        # rubocop:enable Metrics/AbcSize
-        # rubocop:enable Metrics/CyclomaticComplexity
 
         def place_nodes_have_info?(place_nodes)
           return true if place_nodes.any? { |node| node.content.present? }
           return true if place_nodes.any? { |node| node.xpath('mods:placeTerm[@valueURI]', mods: DESC_METADATA_NS).present? }
 
           place_nodes.any? { |node| node.xpath('mods:placeTerm[@xlink:href]', { mods: DESC_METADATA_NS, xlink: XLINK_NS }).present? }
+        end
+
+        # @param [Nokogiri::XML::NodeSet] place elements that have at least one placeTerm child of type text
+        # @return cocina locations
+        def locations_for_place_terms_with_text(place_nodes)
+          place_nodes.map do |place_node|
+            text_place_term_node = place_node.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).first
+            next if text_place_term_node.text.blank?
+
+            cocina_location = {}
+            add_authority_info(cocina_location, text_place_term_node)
+            cocina_location[:value] = text_place_term_node.text
+            code_place_term_node = place_node.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
+            if code_place_term_node
+              cocina_location[:code] = code_place_term_node.text
+              # NOTE: deliberately skipping situation where text node has some authority info and code node
+              #  has other authority info as we may never encounter this
+              add_authority_info(cocina_location, code_place_term_node) if cocina_location[:source].blank? && cocina_location[:uri].blank?
+            end
+            lang_script = LanguageScript.build(node: text_place_term_node)
+            cocina_location[:valueLanguage] = lang_script if lang_script
+            cocina_location[:type] = 'supplied' if place_node[:supplied] == 'yes'
+            cocina_location.compact
+          end
+        end
+
+        # @param [Nokogiri::XML::NodeSet] place elements that have placeTerm children ONLY of type code
+        # @return cocina locations
+        def locations_for_code_only_place_terms(place_nodes)
+          place_nodes.map do |place_node|
+            code_place_term_node = place_node.xpath("mods:placeTerm[@type='code']", mods: DESC_METADATA_NS).first
+            next if code_place_term_node.content.blank?
+
+            cocina_location = {}
+            add_authority_info(cocina_location, code_place_term_node)
+            notifier.warn('Place code missing authority', { code: code_place_term_node.text }) if cocina_location.empty?
+
+            cocina_location[:code] = code_place_term_node.text
+            cocina_location[:type] = 'supplied' if place_node[:supplied] == 'yes'
+            cocina_location.compact
+          end
         end
 
         def add_issuance_note(event, issuance_nodes)
@@ -330,7 +342,8 @@ module Cocina
               value: frequency.text,
               valueLanguage: LanguageScript.build(node: frequency)
             }
-            event[:note] << with_uri_info(note, frequency).compact
+            add_authority_info(note, frequency).compact
+            event[:note] << note.compact
           end
         end
 
@@ -353,22 +366,22 @@ module Cocina
           return if publisher_nodes.empty?
 
           event[:contributor] ||= []
-          publisher_nodes.each do |publisher|
-            next if publisher.text.blank?
+          publisher_nodes.each do |publisher_node|
+            next if publisher_node.text.blank?
 
             event[:contributor] << {
               name: [
                 {
-                  value: publisher.text,
-                  valueLanguage: LanguageScript.build(node: publisher)
+                  value: publisher_node.text,
+                  valueLanguage: LanguageScript.build(node: publisher_node)
                 }.tap do |attrs|
                   if origin_info_node['transliteration']
                     attrs[:type] = 'transliteration'
                     attrs[:standard] = { value: origin_info_node['transliteration'] }
                   end
-                  if publisher['transliteration']
+                  if publisher_node['transliteration']
                     attrs[:type] = 'transliteration'
-                    attrs[:standard] = { value: publisher['transliteration'] }
+                    attrs[:standard] = { value: publisher_node['transliteration'] }
                   end
                 end.compact
               ],
@@ -379,28 +392,21 @@ module Cocina
           event.delete(:contributor) if event[:contributor].empty?
         end
 
-        def with_uri_info(cocina, xml_node)
-          cocina[:uri] = ValueURI.sniff(xml_node['valueURI'], notifier) if xml_node['valueURI']
+        def add_authority_info(cocina_desc_val, xml_node)
+          cocina_desc_val[:uri] = ValueURI.sniff(xml_node['valueURI'], notifier) if xml_node['valueURI']
           source = {
             code: Authority.normalize_code(xml_node['authority'], notifier),
             uri: Authority.normalize_uri(xml_node['authorityURI'])
           }.compact
-          cocina[:source] = source if source.present?
-          cocina
+          cocina_desc_val[:source] = source if source.present?
+          cocina_desc_val
         end
 
         # rubocop:disable Metrics/CyclomaticComplexity
-        # rubocop:disable Metrics/PerceivedComplexity
         def build_structured_date(date_nodes)
           return if date_nodes.blank?
 
           common_attribs = common_date_attributes(date_nodes)
-          # FIXME: to be implemented: model edtf date range in cocina like other date ranges;
-          #   put the slash back in when mapping back to MODS
-          if edtf_range?(date_nodes, common_attribs[:encoding])
-            common_attribs[:status] = 'primary' if date_nodes.any? { |node| node['keyDate'] == 'yes' }
-            return common_attribs.merge(value: date_nodes.join('/'))
-          end
 
           remove_dup_key_date_from_end_point(date_nodes)
           dates = date_nodes.map do |node|
@@ -413,7 +419,6 @@ module Cocina
           end
           { structuredValue: dates }.merge(common_attribs).compact
         end
-        # rubocop:enable Metrics/PerceivedComplexity
         # rubocop:enable Metrics/CyclomaticComplexity
 
         # Per Arcadia, keyDate should only appear once in an originInfo.
@@ -425,11 +430,6 @@ module Cocina
 
           end_node = key_date_point_nodes.find { |node| node['point'] == 'end' }
           end_node.delete('keyDate')
-        end
-
-        # @return [Boolean] true if this node set can be expressed as an EDTF range.
-        def edtf_range?(date_nodes, encoding)
-          date_nodes.size == 2 && date_nodes.map { |node| node['point'] } == %w[start end] && encoding == { code: 'edtf' }
         end
 
         def common_date_attributes(date_nodes)

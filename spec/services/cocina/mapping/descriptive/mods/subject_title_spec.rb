@@ -114,9 +114,8 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
   end
 
   describe 'Uniform title' do
-    xit 'unimplemented spec' do
-      let(:druid) { 'druid:mx928ks3963' }
-
+    # Adapted from mx928ks3963.
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject authority="lcsh">

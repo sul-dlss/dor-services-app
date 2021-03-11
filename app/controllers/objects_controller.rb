@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ObjectsController < ApplicationController
+class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassLength
   before_action :load_item, except: [:create]
 
   rescue_from(Cocina::ObjectUpdater::NotImplemented) do |e|
@@ -108,6 +108,15 @@ class ObjectsController < ApplicationController
   def update_marc_record
     Dor::UpdateMarcRecordService.new(@item).update
     head :created
+  end
+
+  def destroy
+    DeleteService.destroy(@item.pid)
+    head :no_content
+  rescue StandardError => e
+    json_api_error(status: :internal_server_error,
+                   title: "Internal server error destroying #{@item.pid}",
+                   message: e.message)
   end
 
   # This endpoint is called by the goobi-notify process in the goobiWF

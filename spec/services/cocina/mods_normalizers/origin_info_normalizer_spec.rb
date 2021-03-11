@@ -746,9 +746,138 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
         XML
       end
     end
+
+    context 'when multiple originInfo with keyDates' do
+      # based on kc552wv4693
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1947</dateCreated>
+              <dateCreated encoding="w3cdtf" point="end">1952</dateCreated>
+            </originInfo>
+            <originInfo displayLabel="Contract date">
+              <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1947</dateCreated>
+              <dateCreated encoding="w3cdtf" point="end">1952</dateCreated>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'keeps them when correct' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1947</dateCreated>
+              <dateCreated encoding="w3cdtf" point="end">1952</dateCreated>
+            </originInfo>
+            <originInfo displayLabel="Contract date">
+              <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1947</dateCreated>
+              <dateCreated encoding="w3cdtf" point="end">1952</dateCreated>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
   end
 
-  context 'when placeTerm is empty and dateOther has only content and legacy mods displaLabel' do
+  context 'when single place element with placeTerm for code and text' do
+    context 'when authority attribute on code only' do
+      # based on cf040mt0946, dm283vh3332, fn474tc0101, gq289jf7762, hm986jh6778, jg916mx8338
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm type="code" authority="marccountry">xx</placeTerm>
+                <placeTerm type="text">Place of publication not identified]</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'adds the authority attributes to both code and text placeTerm elements' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm type="code" authority="marccountry">xx</placeTerm>
+                <placeTerm type="text" authority="marccountry">Place of publication not identified]</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when all three authority attributes on code placeTerm only' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                  valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+                <placeTerm type="text">Cornell Adult University (hah!)</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'adds the authority attributes to both code and text placeTerm elements' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                  valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+                <placeTerm type="text" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                  valueURI="http://id.loc.gov/vocabulary/countries/cau">Cornell Adult University (hah!)</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    context 'when authority attributes on text placeTerm only' do
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm type="code">cau</placeTerm>
+                <placeTerm type="text" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                  valueURI="http://id.loc.gov/vocabulary/countries/cau">Cornell Adult University (hah!)</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'adds the authority attributes to both code and text placeTerm elements' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <place>
+                <placeTerm type="code" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                  valueURI="http://id.loc.gov/vocabulary/countries/cau">cau</placeTerm>
+                <placeTerm type="text" authorityURI="http://id.loc.gov/vocabulary/countries/"
+                  valueURI="http://id.loc.gov/vocabulary/countries/cau">Cornell Adult University (hah!)</placeTerm>
+              </place>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
+
+    # NOTE: deliberately skipping situation where text placeTerm has some authority info and code placeTerm has other authority info
+    #  as we may never encounter this
+  end
+
+  context 'when placeTerm is empty and dateOther has only content and legacy mods displayLabel' do
     # based on wm519yn6490
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
@@ -769,92 +898,6 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
         <mods #{MODS_ATTRIBUTES}>
           <originInfo eventType="production">
             <dateOther type="production">June 7, 1977</dateOther>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when placeTerm has an ampersand' do
-    # based on zn500ww2119
-    # <?xml version="1.0" encoding="UTF-8"?>
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="text">Leipzig :bVelhagen &amp; Klasing</placeTerm>
-            </place>
-            <publisher/>
-            <dateIssued>[between 1940 and 1950?]</dateIssued>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'copes with xml decoding and encoding' do
-      # NOTE: below requires processing instruction inclusion to pass
-      #  And it is showing as error in production roundtrip validations without it
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <?xml version="1.0" encoding="UTF-8"?>
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo eventType="publication">
-            <place>
-              <placeTerm type="text">Leipzig :bVelhagen &amp; Klasing</placeTerm>
-            </place>
-            <dateIssued>[between 1940 and 1950?]</dateIssued>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when date value has square brackets and question mark' do
-    # based on ks031qj5177, zn500ww2119
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo>
-            <dateOther type="production">[1797?]</dateOther>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'copes with chars' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo>
-            <dateOther type="production">[1797?]</dateOther>
-          </originInfo>
-        </mods>
-      XML
-    end
-  end
-
-  context 'when placeTerm has square brackets and question mark' do
-    # based on gy852bt1470
-    let(:mods_ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo>
-            <place>
-               <placeTerm type="text">[Berlin?]</placeTerm>
-             </place>
-             <dateIssued>1940-[44]</dateIssued>
-          </originInfo>
-        </mods>
-      XML
-    end
-
-    it 'copes with chars' do
-      expect(normalized_ng_xml).to be_equivalent_to <<~XML
-        <mods #{MODS_ATTRIBUTES}>
-          <originInfo>
-            <place>
-               <placeTerm type="text">[Berlin?]</placeTerm>
-             </place>
-             <dateIssued>1940-[44]</dateIssued>
           </originInfo>
         </mods>
       XML

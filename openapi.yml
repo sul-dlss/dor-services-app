@@ -1043,6 +1043,28 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+    delete:
+      tags:
+        - objects
+      summary: Destroys the object
+      description: ''
+      operationId: 'objects#destroy'
+      responses:
+        '201':
+          description: Deleted
+        '400':
+          description: Bad request
+        '404':
+          description: Object or tag not found
+        '500':
+          description: Internal Server Error
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
 components:
   schemas:
     Access:
@@ -1079,9 +1101,14 @@ components:
           description: Name of role
           type: string
           enum:
+            - 'dor-apo-creator'
+            - 'dor-apo-depositor'
+            - 'dor-apo-manager'
+            - 'dor-apo-metadata'
+            - 'dor-apo-reviewer'
+            - 'dor-apo-viewer'
             - 'sdr-administrator'
             - 'sdr-viewer'
-            - 'dor-apo-manager'
             - 'hydrus-collection-creator'
             - 'hydrus-collection-manager'
             - 'hydrus-collection-depositor'

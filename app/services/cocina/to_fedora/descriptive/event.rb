@@ -133,14 +133,12 @@ module Cocina
 
         # @param [Hash] structured_val_attribs - populated when structuredValue parent has attributes for individual date elements
         def write_date_element(date, cocina_event_type, structured_val_attribs = {})
-          return write_dates_for_edtf_range(date, cocina_event_type) if edtf_range?(date)
-
           value = date.value
           element_name = date_element_name(date, cocina_event_type, structured_val_attribs[:type])
           attributes = {}.tap do |attrs|
             attrs[:encoding] = date.encoding&.code || structured_val_attribs[:encoding]&.code
             attrs[:qualifier] = date.qualifier || structured_val_attribs[:qualifier]
-            attrs[:keyDate] = key_date_attr(date)
+            attrs[:keyDate] = 'yes' if date.status == 'primary'
             attrs[:type] = date_type_attr(date, element_name)
             attrs[:calendar] = calendar_attr(date)
             attrs[:point] = date.type if %w[start end].include?(date.type)
@@ -166,15 +164,7 @@ module Cocina
           'dateOther'
         end
 
-        # FIXME: to be implemented: if we only have end then it can be keyDate, otherwise it should be start only
-        # if there is a date range, then type can be 'start' and 'end'
-        def key_date_attr(cocina_date)
-          'yes' if cocina_date.status == 'primary' # && cocina_date.type != 'end'
-        end
-
         # MODS only allows a type attr on dateOther; no other date flavors
-        #   FIXME: the following comment may become untrue ...
-        #   edtf dates will have type 'start' and/or 'end';  this type should not be used
         def date_type_attr(cocina_date, date_element_name)
           return unless date_element_name == 'dateOther'
 
@@ -187,19 +177,6 @@ module Cocina
           cocina_date.note.each do |note|
             return note.value if note.type == 'calendar'
           end
-        end
-
-        def edtf_range?(date)
-          date.encoding&.code == 'edtf' && date.value.include?('/')
-        end
-
-        # @param [String] date An EDTF range
-        # FIXME: to be implemented: model edtf date range in cocina like other date ranges;
-        #   put the slash back in when mapping back to MODS
-        def write_dates_for_edtf_range(date, cocina_event_type)
-          start_date, end_date = date.value.split('/')
-          write_date_element(date.new(value: start_date, type: 'start'), cocina_event_type)
-          write_date_element(date.new(value: end_date, type: 'end'), cocina_event_type)
         end
 
         def date_range(dates, cocina_event_type, structured_val_attribs)
