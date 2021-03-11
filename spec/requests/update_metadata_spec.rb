@@ -169,13 +169,35 @@ RSpec.describe 'Update object' do
       allow(Settings.enabled_features).to receive(:update_descriptive).and_return(true)
     end
 
-    it 'updates the descriptive metadata' do
-      patch "/v1/objects/#{druid}",
-            params: data,
-            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.status).to eq(200)
-      expect(item).to have_received(:save!)
-      expect(response.body).to eq expected.to_json
+    context 'when roundtrip validation is successful' do
+      it 'updates the descriptive metadata' do
+        patch "/v1/objects/#{druid}",
+              params: data,
+              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response.status).to eq(200)
+        expect(item).to have_received(:save!)
+        expect(response.body).to eq expected.to_json
+      end
+    end
+
+    context 'when roundtrip validation is unsuccessful' do
+      let(:changed_description) do
+        description.dup.tap { |descr| descr[:title] = [{ value: 'different title' }] }
+      end
+
+      before do
+        allow(Honeybadger).to receive(:notify)
+        allow(Cocina::FromFedora::Descriptive).to receive(:props).and_return(changed_description)
+      end
+
+      it 'returns error' do
+        patch "/v1/objects/#{druid}",
+              params: data,
+              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response.status).to eq(409)
+        expect(item).not_to have_received(:save!)
+        expect(Honeybadger).to have_received(:notify)
+      end
     end
   end
 

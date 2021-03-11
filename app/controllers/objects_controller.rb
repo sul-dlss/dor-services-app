@@ -28,6 +28,9 @@ class ObjectsController < ApplicationController
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
   rescue SymphonyReader::ResponseError
     json_api_error(status: :bad_gateway, title: 'Catalog connection error', message: 'Unable to read descriptive metadata from the catalog')
+  rescue Cocina::RoundtripValidationError => e
+    Honeybadger.notify(e)
+    json_api_error(status: e.status, message: e.message)
   rescue Cocina::ValidationError => e
     json_api_error(status: e.status, message: e.message)
   end
@@ -38,6 +41,9 @@ class ObjectsController < ApplicationController
     cocina_object = Cocina::ObjectUpdater.run(obj, update_request)
 
     render json: cocina_object
+  rescue Cocina::RoundtripValidationError => e
+    Honeybadger.notify(e)
+    json_api_error(status: e.status, message: e.message)
   rescue Cocina::ValidationError => e
     json_api_error(status: e.status, message: e.message)
   end

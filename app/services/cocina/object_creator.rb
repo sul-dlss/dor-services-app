@@ -11,8 +11,7 @@ module Cocina
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj
     # @raises SymphonyReader::ResponseError if symphony connection failed
     def create(obj, event_factory:, persister:)
-      # Validate will raise an error if not valid.
-      ObjectValidator.validate(obj)
+      validate(obj)
 
       af_model = create_from_model(obj, persister: persister)
 
@@ -154,6 +153,16 @@ module Cocina
 
     def truncate_label(label)
       label.length > 254 ? label[0, 254] : label
+    end
+
+    def validate(obj)
+      if Settings.enabled_features.validate_descriptive_roundtrip.create
+        validator = DescriptionRoundtripValidator.new(obj)
+        raise RoundtripValidationError, validator.error unless validator.valid?
+      end
+
+      # Validate will raise an error if not valid.
+      ObjectValidator.validate(obj)
     end
   end
 end

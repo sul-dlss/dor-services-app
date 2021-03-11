@@ -82,10 +82,13 @@ RSpec.describe Cocina::ObjectUpdater do
     end
 
     context 'when updating description' do
+      let(:description_roundtrip_validator) { instance_double(Cocina::DescriptionRoundtripValidator, 'valid?' => true) }
+
       before do
         allow(desc_metadata).to receive(:content=)
         allow(desc_metadata).to receive(:content_will_change!)
-        allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Document.new)
+        allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
+        allow(Cocina::DescriptionRoundtripValidator).to receive(:new).and_return(description_roundtrip_validator)
       end
 
       context 'when description has changed' do
@@ -195,10 +198,13 @@ RSpec.describe Cocina::ObjectUpdater do
     end
 
     context 'when updating description' do
+      let(:description_roundtrip_validator) { instance_double(Cocina::DescriptionRoundtripValidator, 'valid?' => true) }
+
       before do
         allow(desc_metadata).to receive(:content=)
         allow(desc_metadata).to receive(:content_will_change!)
-        allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Document.new)
+        allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
+        allow(Cocina::DescriptionRoundtripValidator).to receive(:new).and_return(description_roundtrip_validator)
       end
 
       context 'when description has changed' do
@@ -325,10 +331,13 @@ RSpec.describe Cocina::ObjectUpdater do
     end
 
     context 'when updating description' do
+      let(:description_roundtrip_validator) { instance_double(Cocina::DescriptionRoundtripValidator, 'valid?' => true) }
+
       before do
         allow(desc_metadata).to receive(:content=)
         allow(desc_metadata).to receive(:content_will_change!)
-        allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Document.new)
+        allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
+        allow(Cocina::DescriptionRoundtripValidator).to receive(:new).and_return(description_roundtrip_validator)
       end
 
       context 'when description has changed' do
@@ -552,7 +561,7 @@ RSpec.describe Cocina::ObjectUpdater do
       allow(Cocina::ToFedora::Identity).to receive(:apply)
       allow(desc_metadata).to receive(:content=)
       allow(desc_metadata).to receive(:content_will_change!)
-      allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Document.new)
+      allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
       allow(AdministrativeTags).to receive(:create)
       allow(content_metadata).to receive(:contentType=)
       allow(Cocina::ToFedora::Identity).to receive(:apply)

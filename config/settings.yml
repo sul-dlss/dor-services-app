@@ -2,6 +2,9 @@
 enabled_features:
   registration: true
   update_descriptive: false
+  validate_descriptive_roundtrip:
+    update: true
+    create: true
 
 content:
   base_dir: '/dor/workspace'

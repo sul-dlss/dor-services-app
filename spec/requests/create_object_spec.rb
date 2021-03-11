@@ -6,15 +6,17 @@ RSpec.describe 'Create object' do
   let(:apo) { Dor::AdminPolicyObject.new(pid: 'druid:dd999df4567') }
   let(:data) { item.to_json }
   let(:druid) { 'druid:gg777gg7777' }
+  let(:search_result) { [] }
 
   before do
     allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
     allow(Dor).to receive(:find).and_return(apo)
     allow(Cocina::ActiveFedoraPersister).to receive(:store)
     stub_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')
+    allow(Dor::SearchService).to receive(:query_by_id).and_return(search_result)
   end
 
-  context 'when an image is provided' do
+  context 'when a DRO is provided' do
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected_label) { label }
@@ -71,10 +73,6 @@ RSpec.describe 'Create object' do
       { hasAgreement: 'druid:bc777df7777' }
     end
 
-    before do
-      allow(Dor::SearchService).to receive(:query_by_id).and_return(search_result)
-    end
-
     context 'when the service is disabled' do
       before do
         allow(Settings.enabled_features).to receive(:registration).and_return(false)
@@ -116,7 +114,6 @@ RSpec.describe 'Create object' do
       end
 
       context 'when no object with the source id exists and the save is successful' do
-        let(:search_result) { [] }
         let(:mods_from_symphony) do
           <<~XML
             <mods xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -149,8 +146,6 @@ RSpec.describe 'Create object' do
       end
 
       context 'when connecting to symphony fails' do
-        let(:search_result) { [] }
-
         before do
           allow(MetadataService).to receive(:fetch).and_raise(SymphonyReader::ResponseError)
         end
@@ -174,8 +169,6 @@ RSpec.describe 'Create object' do
                         source_id: 'googlebooks:999999',
                         label: 'This is my label')
         end
-
-        let(:search_result) { [] }
 
         before do
           allow(Dor::Item).to receive(:new).and_return(item)
@@ -209,8 +202,6 @@ RSpec.describe 'Create object' do
                         label: truncated_label)
         end
 
-        let(:search_result) { [] }
-
         let(:label) { 'Hearings before the Subcommittee on Elementary, Secondary, and Vocational Education of the Committee on Education and Labor, House of Representatives, Ninety-fifth Congress, first session, on H.R. 15, to extend for five years certain elementary, secondary, and other education programs ....' }
         let(:truncated_label) { 'Hearings before the Subcommittee on Elementary, Secondary, and Vocational Education of the Committee on Education and Labor, House of Representatives, Ninety-fifth Congress, first session, on H.R. 15, to extend for five years certain elementary, secondar' }
 
@@ -242,113 +233,32 @@ RSpec.describe 'Create object' do
         end
       end
       # rubocop:enable Layout/LineLength
-    end
 
-    context 'with a hydrus object lacking a title' do
-      # Hydrus has special handling of descriptive metadata
-      let(:label) { 'Hydrus' }
-      let(:title) { label }
+      context 'when descriptive roundtrip validation fails' do
+        let(:changed_description) do
+          {
+            title: [{ value: 'changed title' }],
+            purl: 'http://purl.stanford.edu/gg777gg7777',
+            access: { digitalRepository: [{ value: 'Stanford Digital Repository' }] }
+          }
+        end
 
-      let(:item) do
-        Dor::Item.new(pid: druid,
-                      admin_policy_object_id: 'druid:dd999df4567',
-                      source_id: 'googlebooks:999999',
-                      label: label)
-      end
+        before do
+          allow(Honeybadger).to receive(:notify)
+          allow(Cocina::FromFedora::Descriptive).to receive(:props).and_return(changed_description)
+        end
 
-      let(:expected_desc_md) do
-        <<~XML
-          <?xml version="1.0"?>
-          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <titleInfo>
-              <title/>
-            </titleInfo>
-          </mods>
-        XML
-      end
-
-      let(:search_result) { [] }
-
-      before do
-        allow(Dor::Item).to receive(:new).and_return(item)
-        allow(item).to receive(:collections).and_return([])
-        allow(item).to receive(:save!)
-      end
-
-      it 'registers the object with the registration service and immediately indexes' do
-        post '/v1/objects',
-             params: data,
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
-        expect(response.body).to eq expected.to_json
-        expect(response.status).to eq(201)
-        expect(response.location).to eq "/v1/objects/#{druid}"
-
-        # Identity metadata set correctly.
-        expect(item.objectId).to eq(druid)
-        expect(item.objectCreator.first).to eq('DOR')
-        expect(item.objectLabel.first).to eq(expected_label)
-        expect(item.objectType.first).to eq('item')
-
-        # Descriptive metadata set correctly.
-        expect(item.descMetadata.ng_xml.to_xml).to be_equivalent_to(expected_desc_md)
-      end
-    end
-
-    context 'with a hydrus object that has a title' do
-      # Hydrus has special handling of descriptive metadata
-      let(:label) { 'Hydrus' }
-      let(:title) { 'My Very Special Hydrus Title' }
-
-      let(:item) do
-        Dor::Item.new(pid: druid,
-                      admin_policy_object_id: 'druid:dd999df4567',
-                      source_id: 'googlebooks:999999',
-                      label: label)
-      end
-
-      let(:expected_desc_md) do
-        <<~XML
-          <?xml version="1.0"?>
-          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <titleInfo>
-              <title>#{title}</title>
-            </titleInfo>
-          </mods>
-        XML
-      end
-
-      let(:search_result) { [] }
-
-      before do
-        item.descMetadata.title_info.main_title = title
-        allow(Dor::Item).to receive(:new).and_return(item)
-        allow(item).to receive(:collections).and_return([])
-        allow(item).to receive(:save!)
-      end
-
-      it 'registers the object with the registration service and immediately indexes' do
-        post '/v1/objects',
-             params: data,
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
-        expect(response.body).to eq expected.to_json
-        expect(response.status).to eq(201)
-        expect(response.location).to eq "/v1/objects/#{druid}"
-
-        # Identity metadata set correctly.
-        expect(item.objectId).to eq(druid)
-        expect(item.objectCreator.first).to eq('DOR')
-        expect(item.objectLabel.first).to eq(expected_label)
-        expect(item.objectType.first).to eq('item')
-
-        # Descriptive metadata set correctly.
-        expect(item.descMetadata.ng_xml.to_xml).to be_equivalent_to(expected_desc_md)
+        it 'returns error' do
+          post '/v1/objects',
+               params: data,
+               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+          expect(response.status).to eq(409)
+          expect(Honeybadger).to have_received(:notify)
+        end
       end
     end
 
     context 'when files are provided' do
-      let(:search_result) { [] }
       let(:file1) do
         {
           'version' => 1,
@@ -580,7 +490,6 @@ RSpec.describe 'Create object' do
     end
 
     context 'when collection is provided' do
-      let(:search_result) { [] }
       let(:structural) { { isMemberOf: ['druid:xx888xx7777'] } }
       let(:expected_structural) { structural }
 
@@ -618,6 +527,151 @@ RSpec.describe 'Create object' do
         expect(response.body).to eq expected.to_json
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
+      end
+    end
+  end
+
+  context 'when Hydrus item is provided' do
+    let(:expected_label) { label }
+
+    let(:expected) do
+      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.image,
+                              label: expected_label,
+                              version: 1,
+                              access: {
+                                access: 'world',
+                                download: 'none',
+                                copyright: 'All rights reserved unless otherwise indicated.',
+                                useAndReproductionStatement: 'Property rights reside with the repository...'
+                              },
+                              description: {
+                                title: [{ value: title }],
+                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                access: {
+                                  digitalRepository: [
+                                    { value: 'Stanford Digital Repository' }
+                                  ]
+                                }
+                              },
+                              administrative: {
+                                hasAdminPolicy: 'druid:dd999df4567'
+                              },
+                              identification: { sourceId: 'googlebooks:999999' },
+                              externalIdentifier: druid,
+                              structural: {})
+    end
+
+    let(:data) do
+      <<~JSON
+        { "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
+          "label":"#{label}","version":1,
+          "access":{
+            "access":"world",
+            "copyright":"All rights reserved unless otherwise indicated.",
+            "useAndReproductionStatement":"Property rights reside with the repository..."
+          },
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "description":{"title":[{"value":"#{title}"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
+          "identification":{"sourceId":"googlebooks:999999"}}
+      JSON
+    end
+
+    context 'with a hydrus object lacking a title' do
+      # Hydrus has special handling of descriptive metadata
+      let(:label) { 'Hydrus' }
+      let(:title) { label }
+
+      let(:item) do
+        Dor::Item.new(pid: druid,
+                      admin_policy_object_id: 'druid:dd999df4567',
+                      source_id: 'googlebooks:999999',
+                      label: label)
+      end
+
+      let(:expected_desc_md) do
+        <<~XML
+          <?xml version="1.0"?>
+          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title/>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      before do
+        allow(Dor::Item).to receive(:new).and_return(item)
+        allow(item).to receive(:collections).and_return([])
+        allow(item).to receive(:save!)
+      end
+
+      it 'registers the object with the registration service and immediately indexes' do
+        post '/v1/objects',
+             params: data,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response.body).to eq expected.to_json
+        expect(response.status).to eq(201)
+        expect(response.location).to eq "/v1/objects/#{druid}"
+        expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
+
+        # Identity metadata set correctly.
+        expect(item.objectId).to eq(druid)
+        expect(item.objectCreator.first).to eq('DOR')
+        expect(item.objectLabel.first).to eq(expected_label)
+        expect(item.objectType.first).to eq('item')
+
+        # Descriptive metadata set correctly.
+        expect(item.descMetadata.ng_xml.to_xml).to be_equivalent_to(expected_desc_md)
+      end
+    end
+
+    context 'with a hydrus object that has a title' do
+      # Hydrus has special handling of descriptive metadata
+      let(:label) { 'Hydrus' }
+      let(:title) { 'My Very Special Hydrus Title' }
+
+      let(:item) do
+        Dor::Item.new(pid: druid,
+                      admin_policy_object_id: 'druid:dd999df4567',
+                      source_id: 'googlebooks:999999',
+                      label: label)
+      end
+
+      let(:expected_desc_md) do
+        <<~XML
+          <?xml version="1.0"?>
+          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo>
+              <title>#{title}</title>
+            </titleInfo>
+          </mods>
+        XML
+      end
+
+      before do
+        item.descMetadata.title_info.main_title = title
+        allow(Dor::Item).to receive(:new).and_return(item)
+        allow(item).to receive(:collections).and_return([])
+        allow(item).to receive(:save!)
+      end
+
+      it 'registers the object with the registration service and immediately indexes' do
+        post '/v1/objects',
+             params: data,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
+        expect(response.body).to eq expected.to_json
+        expect(response.status).to eq(201)
+        expect(response.location).to eq "/v1/objects/#{druid}"
+
+        # Identity metadata set correctly.
+        expect(item.objectId).to eq(druid)
+        expect(item.objectCreator.first).to eq('DOR')
+        expect(item.objectLabel.first).to eq(expected_label)
+        expect(item.objectType.first).to eq('item')
+
+        # Descriptive metadata set correctly.
+        expect(item.descMetadata.ng_xml.to_xml).to be_equivalent_to(expected_desc_md)
       end
     end
   end
