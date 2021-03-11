@@ -812,15 +812,15 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
       let(:roundtrip_mods) do
         <<~XML
-        <name type="personal" usage="primary" valueURI="http://id.loc.gov/authorities/names/no2001053444">
-          <namePart>Perry, William P</namePart>
-          <role>
-            <roleTerm type="text">composer</roleTerm>
-          </role>
-          <role>
-            <roleTerm type="text">conductor</roleTerm>
-          </role>
-        </name>
+          <name type="personal" usage="primary" valueURI="http://id.loc.gov/authorities/names/no2001053444">
+            <namePart>Perry, William P</namePart>
+            <role>
+              <roleTerm type="text">composer</roleTerm>
+            </role>
+            <role>
+              <roleTerm type="text">conductor</roleTerm>
+            </role>
+          </name>
         XML
       end
 
