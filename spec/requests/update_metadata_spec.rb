@@ -637,14 +637,14 @@ RSpec.describe 'Update object' do
           {
             'externalIdentifier' => 'fs1',
             'version' => 1,
-            'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+            'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
             'label' => 'Page 1',
             'structural' => { 'contains' => [file1, file2] }
           },
           {
             'externalIdentifier' => 'fs2',
             'version' => 1,
-            'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+            'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
             'label' => 'Page 2',
             'structural' => { 'contains' => [file3, file4] }
           }
@@ -653,7 +653,7 @@ RSpec.describe 'Update object' do
 
       let(:fs1) do
         {
-          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld'
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld'
         }
       end
       let(:data) do
@@ -680,7 +680,7 @@ RSpec.describe 'Update object' do
             isMemberOf: ['druid:xx888xx7777'],
             contains: [
               {
-                type: 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+                type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
                 externalIdentifier: 'gg777gg7777_1', label: 'Page 1', version: 1,
                 structural: {
                   contains: [
@@ -715,7 +715,7 @@ RSpec.describe 'Update object' do
                   ]
                 }
               }, {
-                type: 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+                type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
                 externalIdentifier: 'gg777gg7777_2',
                 label: 'Page 2', version: 1,
                 structural: {
@@ -750,6 +750,7 @@ RSpec.describe 'Update object' do
           patch "/v1/objects/#{druid}",
                 params: data,
                 headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+
           expect(response.body).to eq expected.to_json
           expect(response.status).to eq(200)
           expect(item.contentMetadata.resource.file.count).to eq 4

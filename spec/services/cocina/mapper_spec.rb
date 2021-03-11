@@ -213,7 +213,7 @@ RSpec.describe Cocina::Mapper do
       let(:xml) do
         <<~XML
           <contentMetadata type="file" objectId="druid:dd116zh0343">
-            <resource sequence="1" type="folder" id="folder1PuSu">
+            <resource sequence="1" type="file" id="folder1PuSu">
               <label>Folder 1</label>
               <file mimetype="text/plain" shelve="yes" publish="yes" size="7888" preserve="yes" datetime="2012-06-15T22:57:43Z" id="folder1PuSu/story1u.txt">
                 <checksum type="md5">e2837b9f02e0b0b76f526eeb81c7aa7b</checksum>
@@ -232,7 +232,7 @@ RSpec.describe Cocina::Mapper do
                 <checksum type="sha1">d498b513add5bb138ed4f6205453a063a2434dc4</checksum>
               </file>
             </resource>
-            <resource sequence="2" type="folder" id="folder2PdSa">
+            <resource sequence="2" type="file" id="folder2PdSa">
               <file mimetype="text/plain" shelve="no" publish="yes" size="2534" preserve="yes" datetime="2012-06-15T23:05:03Z" id="folder2PdSa/story6u.txt">
                 <checksum type="md5">1f15cc786bfe832b2fa1e6f047c500ba</checksum>
                 <checksum type="sha1">bf3af01de2afa15719d8c42a4141e3b43d06fef6</checksum>

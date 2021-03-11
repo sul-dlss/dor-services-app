@@ -440,23 +440,17 @@ RSpec.describe 'Create object' do
         [
           {
             'version' => 1,
-            'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+            'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
             'label' => 'Page 1',
             'structural' => { 'contains' => [file1, file2] }
           },
           {
             'version' => 1,
-            'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+            'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
             'label' => 'Page 2',
             'structural' => { 'contains' => [file3, file4] }
           }
         ]
-      end
-
-      let(:fs1) do
-        {
-          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld'
-        }
       end
 
       let(:structural) { { contains: filesets } }
@@ -481,7 +475,7 @@ RSpec.describe 'Create object' do
         let(:expected_structural) do
           { contains: [
             {
-              type: 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+              type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
               externalIdentifier: 'gg777gg7777_1', label: 'Page 1', version: 1,
               structural: {
                 contains: [
@@ -516,7 +510,7 @@ RSpec.describe 'Create object' do
                 ]
               }
             }, {
-              type: 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+              type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
               externalIdentifier: 'gg777gg7777_2',
               label: 'Page 2', version: 1,
               structural: {
@@ -556,6 +550,7 @@ RSpec.describe 'Create object' do
                   source_id: 'googlebooks:999999',
                   collection_ids: [],
                   catkey: nil, label: 'This is my label')
+
           expect(response.body).to eq expected.to_json
           expect(response.status).to eq(201)
           expect(item.contentMetadata.resource.file.count).to eq 4
