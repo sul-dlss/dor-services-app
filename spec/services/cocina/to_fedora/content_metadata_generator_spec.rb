@@ -23,6 +23,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       'use' => 'transcription',
       'size' => 997,
       'administrative' => {
+        'publish' => false,
         'sdrPreserve' => true,
         'shelve' => false
       },
@@ -52,6 +53,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       'hasMimeType' => 'image/jp2',
       'size' => 149570,
       'administrative' => {
+        'publish' => true,
         'sdrPreserve' => true,
         'shelve' => true
       },
@@ -75,6 +77,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       'hasMimeType' => 'text/html',
       'size' => 1914,
       'administrative' => {
+        'publish' => true,
         'sdrPreserve' => true,
         'shelve' => false
       },
@@ -94,6 +97,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       'hasMimeType' => 'image/jp2',
       'size' => 111467,
       'administrative' => {
+        'publish' => true,
         'sdrPreserve' => true,
         'shelve' => true
       },
@@ -113,6 +117,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       'hasMimeType' => 'text/plain',
       'size' => 11468,
       'administrative' => {
+        'publish' => true,
         'sdrPreserve' => true,
         'shelve' => true
       },
@@ -281,6 +286,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'hasMimeType' => 'application/zip',
         'size' => 997,
         'administrative' => {
+          'publish' => false,
           'sdrPreserve' => true,
           'shelve' => false
         },
@@ -310,6 +316,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'hasMimeType' => 'text/xml',
         'size' => 1914,
         'administrative' => {
+          'publish' => true,
           'sdrPreserve' => true,
           'shelve' => false
         },
@@ -355,7 +362,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
           </resource>
           <resource id="bc123de5678_2" sequence="2" type="preview">
             <label>Preview</label>
-            <file id="00001.jp2" mimetype="image/jp2" size="149570" preserve="yes" publish="yes" shelve="yes">
+            <file id="00001.jp2" mimetype="image/jp2" size="149570" publish="yes" shelve="yes" preserve="yes">
               <imageData height="200" width="300"/>
             </file>
             <file id="00002.jp2" mimetype="image/jp2" size="111467" publish="yes" shelve="yes" preserve="yes"/>
@@ -454,6 +461,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'hasMimeType' => 'video/mpeg',
         'size' => 997,
         'administrative' => {
+          'publish' => false,
           'sdrPreserve' => true,
           'shelve' => false
         },
@@ -506,6 +514,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'hasMimeType' => 'video/mpeg',
         'size' => 997,
         'administrative' => {
+          'publish' => false,
           'sdrPreserve' => true,
           'shelve' => false
         },
@@ -561,6 +570,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'hasMimeType' => 'audio/mp4',
         'size' => 997,
         'administrative' => {
+          'publish' => false,
           'sdrPreserve' => true,
           'shelve' => false
         },

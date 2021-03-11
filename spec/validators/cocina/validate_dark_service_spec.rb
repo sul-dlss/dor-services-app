@@ -6,8 +6,8 @@ RSpec.describe Cocina::ValidateDarkService do
   let(:validator) { described_class.new(item) }
 
   let(:access) { 'dark' }
-  # Note that publish = false when file > access > access = dark
   let(:file_access) { 'dark' }
+  let(:publish) { false }
   let(:shelve) { false }
 
   let(:item) do
@@ -35,6 +35,7 @@ RSpec.describe Cocina::ValidateDarkService do
                   version: 1,
                   access: { access: file_access },
                   administrative: {
+                    publish: publish,
                     shelve: shelve,
                     sdrPreserve: true
                   },
@@ -72,11 +73,10 @@ RSpec.describe Cocina::ValidateDarkService do
   end
 
   context 'when dark and publish is true' do
-    let(:file_access) { 'world' }
+    let(:publish) { true }
 
-    it 'is not valid' do
-      expect(validator.valid?).to be false
-      expect(validator.error).to eq 'Not all files have dark access and/or are unshelved when item access is dark: ["page1.txt"]'
+    it 'is valid' do
+      expect(validator.valid?).to be true
     end
   end
 

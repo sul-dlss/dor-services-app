@@ -358,6 +358,7 @@ RSpec.describe 'Create object' do
           'hasMimeType' => 'text/html',
           'use' => 'transcription',
           'administrative' => {
+            'publish' => false,
             'sdrPreserve' => true,
             'shelve' => false
           },
@@ -386,6 +387,7 @@ RSpec.describe 'Create object' do
           'label' => '00001.jp2',
           'hasMimeType' => 'image/jp2',
           'administrative' => {
+            'publish' => true,
             'sdrPreserve' => true,
             'shelve' => true
           },
@@ -404,11 +406,12 @@ RSpec.describe 'Create object' do
           'label' => '00002.html',
           'hasMimeType' => 'text/html',
           'administrative' => {
+            'publish' => false,
             'sdrPreserve' => true,
             'shelve' => false
           },
           'access' => {
-            'access' => 'world'
+            'access' => 'dark'
           },
           'hasMessageDigests' => []
         }
@@ -422,6 +425,7 @@ RSpec.describe 'Create object' do
           'label' => '00002.jp2',
           'hasMimeType' => 'image/jp2',
           'administrative' => {
+            'publish' => true,
             'sdrPreserve' => true,
             'shelve' => true
           },
@@ -498,7 +502,7 @@ RSpec.describe 'Create object' do
                       }
                     ],
                     access: { access: 'dark', download: 'none' },
-                    administrative: { sdrPreserve: true, shelve: false }
+                    administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
                     type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
                     externalIdentifier: 'druid:gg777gg7777/00001.jp2',
@@ -507,7 +511,7 @@ RSpec.describe 'Create object' do
                     size: 0, version: 1,
                     hasMimeType: 'image/jp2', hasMessageDigests: [],
                     access: { access: 'world', download: 'world' },
-                    administrative: { sdrPreserve: true, shelve: true }
+                    administrative: { publish: true, sdrPreserve: true, shelve: true }
                   }
                 ]
               }
@@ -523,8 +527,8 @@ RSpec.describe 'Create object' do
                     label: '00002.html', filename: '00002.html', size: 0,
                     version: 1, hasMimeType: 'text/html',
                     hasMessageDigests: [],
-                    access: { access: 'world', download: 'world' },
-                    administrative: { sdrPreserve: true, shelve: false }
+                    access: { access: 'dark', download: 'none' },
+                    administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
                     type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
                     externalIdentifier: 'druid:gg777gg7777/00002.jp2',
@@ -534,7 +538,7 @@ RSpec.describe 'Create object' do
                     hasMimeType: 'image/jp2',
                     hasMessageDigests: [],
                     access: { access: 'world', download: 'world' },
-                    administrative: { sdrPreserve: true, shelve: true }
+                    administrative: { publish: true, sdrPreserve: true, shelve: true }
                   }
                 ]
               }
@@ -570,7 +574,7 @@ RSpec.describe 'Create object' do
           expect(response.body).to eq '{"errors":[' \
             '{"status":"400","title":"Bad Request",' \
             '"detail":"Not all files have dark access and/or are unshelved when item access is dark: ' \
-            '[\\"00001.jp2\\", \\"00002.html\\", \\"00002.jp2\\"]"}]}'
+            '[\\"00001.jp2\\", \\"00002.jp2\\"]"}]}'
         end
       end
     end
