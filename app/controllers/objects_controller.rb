@@ -112,7 +112,11 @@ class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassL
 
   def destroy
     DeleteService.destroy(@item.pid)
-    head :created
+    head :no_content
+  rescue StandardError => e
+    json_api_error(status: :internal_server_error,
+                   title: "Internal server error destroying #{@item.pid}",
+                   message: e.message)
   end
 
   # This endpoint is called by the goobi-notify process in the goobiWF

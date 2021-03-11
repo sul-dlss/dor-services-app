@@ -1056,6 +1056,8 @@ paths:
           description: Bad request
         '404':
           description: Object or tag not found
+        '500':
+          description: Internal Server Error
       parameters:
         - name: id
           in: path
