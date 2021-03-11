@@ -746,6 +746,39 @@ RSpec.describe Cocina::ModsNormalizers::OriginInfoNormalizer do
         XML
       end
     end
+
+    context 'when multiple originInfo with keyDates' do
+      # based on kc552wv4693
+      let(:mods_ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1947</dateCreated>
+              <dateCreated encoding="w3cdtf" point="end">1952</dateCreated>
+            </originInfo>
+            <originInfo displayLabel="Contract date">
+              <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1947</dateCreated>
+              <dateCreated encoding="w3cdtf" point="end">1952</dateCreated>
+            </originInfo>
+          </mods>
+        XML
+      end
+
+      it 'keeps them when correct' do
+        expect(normalized_ng_xml).to be_equivalent_to <<~XML
+          <mods #{MODS_ATTRIBUTES}>
+            <originInfo>
+              <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1947</dateCreated>
+              <dateCreated encoding="w3cdtf" point="end">1952</dateCreated>
+            </originInfo>
+            <originInfo displayLabel="Contract date">
+              <dateCreated keyDate="yes" encoding="w3cdtf" point="start">1947</dateCreated>
+              <dateCreated encoding="w3cdtf" point="end">1952</dateCreated>
+            </originInfo>
+          </mods>
+        XML
+      end
+    end
   end
 
   context 'when single place element with placeTerm for code and text' do

@@ -136,7 +136,7 @@ module Cocina
           next unless key_date_nodes.size == 2
 
           end_node = key_date_nodes.find { |node| node['point'] == 'end' }
-          end_node.delete('keyDate')
+          end_node.delete('keyDate') if end_node && end_node['keyDate'].present?
         end
       end
 
