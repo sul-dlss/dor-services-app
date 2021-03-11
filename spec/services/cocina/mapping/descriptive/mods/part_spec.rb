@@ -3,6 +3,38 @@
 require 'rails_helper'
 
 RSpec.describe 'MODS part <--> cocina mappings' do
+  describe 'Top level part' do
+    xit 'not implemented: top level part' do
+      let(:druid) { 'druid:dx023mr7150' }
+
+      let(:mods) do
+        <<~XML
+          <part>
+            <detail>
+              <caption>Late Summer 1997</caption>
+            </detail>
+          </part>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              groupedValue: [
+                {
+                  value: 'Late Summer 1997',
+                  type: 'caption'
+                }
+              ],
+              type: 'part'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'isReferencedBy relatedItem/part (510c)' do
     # Adapted from kf840zn4567
     it_behaves_like 'MODS cocina mapping' do
