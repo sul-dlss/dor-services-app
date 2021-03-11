@@ -3,6 +3,38 @@
 require 'rails_helper'
 
 RSpec.describe 'MODS part <--> cocina mappings' do
+  describe 'Top level part' do
+    xit 'not implemented: top level part' do
+      let(:druid) { 'druid:dx023mr7150' }
+
+      let(:mods) do
+        <<~XML
+          <part>
+            <detail>
+              <caption>Late Summer 1997</caption>
+            </detail>
+          </part>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              groupedValue: [
+                {
+                  value: 'Late Summer 1997',
+                  type: 'caption'
+                }
+              ],
+              type: 'part'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'isReferencedBy relatedItem/part (510c)' do
     # Adapted from kf840zn4567
     it_behaves_like 'MODS cocina mapping' do
@@ -400,6 +432,116 @@ RSpec.describe 'MODS part <--> cocina mappings' do
     end
   end
 
+  describe 'Part with hierarchy' do
+    xit 'not implemented: part with hierarchy' do
+      let(:druid) { 'druid:mw409jk5241' }
+
+      let(:mods) do
+        <<~XML
+          <relatedItem type="host" displayLabel="Published in">
+            <titleInfo>
+              <title>Journal of Information Science</title>
+            </titleInfo>
+            <part>
+              <detail type="volume">
+                <caption>Vol.</caption>
+                <number>1</number>
+              </detail>
+              <detail type="issue">
+                <caption>No.</caption>
+                <number>4</number>
+              </detail>
+              <extent unit="page">
+                <start>223</start>
+                <end>226</end>
+              </extent>
+              <date>1979-08</date>
+            </part>
+          </relatedItem>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          relatedResource: [
+            {
+              type: 'part of',
+              displayLabel: 'Published in',
+              title: [
+                {
+                  value: 'Journal of Information Science'
+                }
+              ],
+              note: [
+                {
+                  structuredValue: [
+                    {
+                      groupedValue: [
+                        {
+                          value: 'volume',
+                          type: 'detail type'
+                        },
+                        {
+                          value: 'Vol.',
+                          type: 'caption'
+                        },
+                        {
+                          value: '1',
+                          type: 'number'
+                        }
+                      ]
+                    },
+                    {
+                      groupedValue: [
+                        {
+                          value: 'issue',
+                          type: 'detail type'
+                        },
+                        {
+                          value: 'No.',
+                          type: 'caption'
+                        },
+                        {
+                          value: '4',
+                          type: 'number'
+                        }
+                      ]
+                    },
+                    {
+                      groupedValue: [
+                        {
+                          value: 'page',
+                          type: 'extent unit'
+                        },
+                        {
+                          structuredValue: [
+                            {
+                              value: '223',
+                              type: 'start'
+                            },
+                            {
+                              value: '226',
+                              type: 'end'
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      value: '1979-08',
+                      type: 'date'
+                    }
+                  ],
+                  type: 'part'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Monolingual part with all subelements' do
     # valid MODS, but Arcadia will not map unless it shows up in our data.
     xit 'not mapped (to cocina) unless it shows up in our data'
@@ -447,7 +589,7 @@ RSpec.describe 'MODS part <--> cocina mappings' do
     end
   end
 
-  describe 'Hierarchical detail' do
+  describe 'Full hierarchical detail' do
     # valid MODS, but Arcadia will not map unless it shows up in our data.
     xit 'not mapped (to cocina) unless it shows up in our data'
 
