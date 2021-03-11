@@ -1079,9 +1079,14 @@ components:
           description: Name of role
           type: string
           enum:
+            - 'dor-apo-creator'
+            - 'dor-apo-depositor'
+            - 'dor-apo-manager'
+            - 'dor-apo-metadata'
+            - 'dor-apo-reviewer'
+            - 'dor-apo-viewer'
             - 'sdr-administrator'
             - 'sdr-viewer'
-            - 'dor-apo-manager'
             - 'hydrus-collection-creator'
             - 'hydrus-collection-manager'
             - 'hydrus-collection-depositor'
