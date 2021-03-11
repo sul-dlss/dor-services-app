@@ -1043,6 +1043,28 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+    delete:
+      tags:
+        - objects
+      summary: Destroys the object
+      description: ''
+      operationId: 'objects#destroy'
+      responses:
+        '201':
+          description: Deleted
+        '400':
+          description: Bad request
+        '404':
+          description: Object or tag not found
+        '500':
+          description: Internal Server Error
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
 components:
   schemas:
     Access:

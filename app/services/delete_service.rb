@@ -2,7 +2,7 @@
 
 # Remove all traces of the object's data files from the workspace and export areas
 class DeleteService
-  # Tries to remove any exsitence of the object in our systems
+  # Tries to remove any existence of the object in our systems
   #   Does the following:
   #   - Removes item from Fedora/Solr
   #   - Removes content from dor workspace
