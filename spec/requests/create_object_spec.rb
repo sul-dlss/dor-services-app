@@ -698,6 +698,7 @@ RSpec.describe 'Create object' do
                                         hasAdminPolicy: 'druid:dd999df4567',
                                         disseminationWorkflow: 'assemblyWF',
                                         registrationWorkflow: %w[goobiWF registrationWF],
+                                        collectionsForRegistration: ['druid:gg888df4567', 'druid:bb888gg4444'],
                                         roles: [
                                           {
                                             name: 'dor-apo-manager',
@@ -723,6 +724,7 @@ RSpec.describe 'Create object' do
             "defaultObjectRights":#{default_object_rights.to_json},
             "disseminationWorkflow":"assemblyWF",
             "registrationWorkflow":["goobiWF","registrationWF"],
+            "collectionsForRegistration":["druid:gg888df4567","druid:bb888gg4444"],
             "hasAdminPolicy":"druid:dd999df4567",
             "roles":[{"name":"dor-apo-manager","members":[{"type":"workgroup","identifier":"sdr:psm-staff"}]}]
           },

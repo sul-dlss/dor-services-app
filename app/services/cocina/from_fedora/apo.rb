@@ -35,10 +35,12 @@ module Cocina
       def build_apo_administrative
         {}.tap do |admin|
           registration_workflows = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/registration/workflow/@id').map(&:value)
+          registration_collections = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/registration/collection/@id').map(&:value)
           dissemination_workflow = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/dissemination/workflow/@id').text
           admin[:defaultObjectRights] = item.defaultObjectRights.content
           admin[:disseminationWorkflow] = dissemination_workflow if dissemination_workflow.present?
           admin[:registrationWorkflow] = registration_workflows if registration_workflows.present?
+          admin[:collectionsForRegistration] = registration_collections if registration_collections.present?
           admin[:hasAdminPolicy] = item.admin_policy_object_id
           admin[:roles] = build_roles
         end

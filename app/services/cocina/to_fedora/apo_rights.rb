@@ -6,13 +6,17 @@ module Cocina
     # Fedora 3 data model rights
     class ApoRights
       def self.write(administrative_metadata, administrative)
-        admin_node = administrative_metadata.ng_xml.xpath('//administrativeMetadata').first
+        ng_xml = administrative_metadata.ng_xml
+        admin_node = ng_xml.xpath('//administrativeMetadata').first
+        # Clear out the nodes we are updating
+        admin_node.xpath('registration/workflow|registration/collection|dissemination/workflow').each(&:remove)
+
         # TODO: need to see if this node already exists
         admin_node.add_child "<dissemination><workflow id=\"#{administrative.disseminationWorkflow}\" /></dissemination>"
-        if administrative.registrationWorkflow
-          registration_workflows = administrative.registrationWorkflow.map { |wf_id| "<workflow id=\"#{wf_id}\" />" }.join
-          admin_node.add_child "<registration>#{registration_workflows}</registration>"
-        end
+
+        registration_workflows = Array(administrative.registrationWorkflow).map { |wf_id| "<workflow id=\"#{wf_id}\" />" }.join
+        registration_collections = Array(administrative.collectionsForRegistration).map { |wf_id| "<collection id=\"#{wf_id}\" />" }.join
+        admin_node.add_child "<registration>#{registration_workflows}#{registration_collections}</registration>"
 
         administrative_metadata.ng_xml_will_change!
       end
