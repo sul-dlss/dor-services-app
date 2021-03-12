@@ -734,7 +734,7 @@ paths:
       responses:
         '200':
           description: OK
-        422:
+        '422':
           description: Validation error
           content:
             application/json:

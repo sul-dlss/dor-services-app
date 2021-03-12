@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassLength
+class ObjectsController < ApplicationController
   before_action :load_item, except: [:create]
 
   rescue_from(Cocina::ObjectUpdater::NotImplemented) do |e|
@@ -130,23 +130,6 @@ class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassL
   end
 
   private
-
-  def json_api_error(status:, message:, title: nil, meta: nil)
-    status_code = Rack::Utils.status_code(status)
-    render status: status,
-           content_type: 'application/vnd.api+json',
-           json: {
-             errors: [
-               {
-                 status: status_code.to_s,
-                 title: title || Rack::Utils::HTTP_STATUS_CODES[status_code],
-                 detail: message
-               }.tap do |h|
-                 h[:meta] = meta if meta.present?
-               end
-             ]
-           }
-  end
 
   def workflow_client
     WorkflowClientFactory.build

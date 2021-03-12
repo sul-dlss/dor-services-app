@@ -154,7 +154,7 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
       allow(work).to receive(:save!).and_raise(Rubydora::FedoraInvalidRequest)
     end
 
-    it 'updates the object datastreams' do
+    it 'returns error' do
       patch "/v1/objects/#{work.pid}/metadata/legacy",
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
@@ -163,19 +163,17 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
     end
   end
 
-  context 'when rightsMetadata is invalid' do
-    let(:rights_xml) do
-      '<rightsMetadata></rightsMetadata>'
+  context 'when invalid datastream' do
+    before do
+      allow(LegacyMetadataService).to receive(:update_datastream_if_newer).and_raise(LegacyMetadataService::DatastreamValidationError.new('Invalid MODS'))
     end
 
-    it 'returns an error' do
+    it 'returns error' do
       patch "/v1/objects/#{work.pid}/metadata/legacy",
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(response).to have_http_status(:unprocessable_entity)
-      json = JSON.parse(response.body)
-      expect(json.dig('errors', 0, 'title')).to eq 'Invalid rightsMetadata'
-      expect(json.dig('errors', 0, 'detail')).to eq 'no_discover_access, no_discover_machine, no_read_access, and no_read_machine'
+      expect(response.body).to match(/Invalid MODS/)
       expect(work).not_to have_received(:save!)
     end
   end

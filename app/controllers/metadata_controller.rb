@@ -37,7 +37,6 @@ class MetadataController < ApplicationController
       values = params[section]
       next unless values
 
-      validate_rights(values[:content]) if datastream_name == 'rightsMetadata'
       LegacyMetadataService.update_datastream_if_newer(datastream: @item.datastreams[datastream_name],
                                                        updated: Time.zone.parse(values[:updated]),
                                                        content: values[:content],
@@ -45,36 +44,9 @@ class MetadataController < ApplicationController
     end
 
     @item.save!
-  rescue InvalidRights => e
-    render build_error('Invalid rightsMetadata', e)
+  rescue LegacyMetadataService::DatastreamValidationError => e
+    json_api_error(status: :unprocessable_entity, message: e.detail, title: e.message)
   rescue Rubydora::FedoraInvalidRequest
-    render json: { error: 'Invalid Fedora request possibly due to concurrent requests' },
-           status: :service_unavailable
-  end
-
-  class InvalidRights < StandardError; end
-
-  private
-
-  # JSON-API error response
-  def build_error(msg, err)
-    {
-      json: {
-        errors: [
-          {
-            status: '422',
-            title: msg,
-            detail: err.message
-          }
-        ]
-      },
-      content_type: 'application/vnd.api+json',
-      status: :unprocessable_entity
-    }
-  end
-
-  def validate_rights(xml)
-    dra = Dor::RightsMetadataDS.from_xml(xml).dra_object
-    raise InvalidRights, dra.index_elements[:errors].to_sentence if dra.index_elements[:errors].present?
+    json_api_error(status: :service_unavailable, message: 'Invalid Fedora request possibly due to concurrent requests')
   end
 end

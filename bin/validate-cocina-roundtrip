@@ -110,18 +110,9 @@ def write_error(druid, original_ng_xml, cocina, error)
 end
 
 def validate_mods(ng_xml)
-  mods_version = ng_xml.root[:version]
-  return 'MODS version attribute not found' if mods_version.nil?
+  result = ModsValidator.valid?(ng_xml)
 
-  Dir.chdir('mods') do
-    mods_xsd_filename = "mods-#{mods_version.sub('.', '-')}.xsd"
-    return 'Unknown MODS version' unless File.exist?(mods_xsd_filename)
-
-    xsd = Nokogiri::XML::Schema(File.read(mods_xsd_filename))
-    return 'Valid MODS' if xsd.valid?(ng_xml)
-
-    xsd.validate(ng_xml).map(&:to_s)
-  end
+  result.failure? ? result.failure : 'Valid MODS'
 end
 
 # rubocop:disable Metrics/CyclomaticComplexity

@@ -15,6 +15,23 @@ class ApplicationController < ActionController::API
 
   TOKEN_HEADER = 'Authorization'
 
+  def json_api_error(status:, message:, title: nil, meta: nil)
+    status_code = Rack::Utils.status_code(status)
+    render status: status,
+           content_type: 'application/vnd.api+json',
+           json: {
+             errors: [
+               {
+                 status: status_code.to_s,
+                 title: title || Rack::Utils::HTTP_STATUS_CODES[status_code],
+                 detail: message
+               }.tap do |h|
+                 h[:meta] = meta if meta.present?
+               end
+             ]
+           }
+  end
+
   private
 
   # Ensure a valid token is present, or renders "401: Not Authorized"
