@@ -14,6 +14,10 @@ class MetadataController < ApplicationController
     render xml: service
   end
 
+  def mods
+    render xml: @item.descMetadata.content
+  end
+
   # This supports the Legacy Fedora 3 data model. This is used by the accessionWF.
   def update_legacy_metadata
     datastream_names = {
