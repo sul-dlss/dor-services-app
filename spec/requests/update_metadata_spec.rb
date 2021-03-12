@@ -910,6 +910,8 @@ RSpec.describe 'Update object' do
     let(:item) do
       Dor::AdminPolicyObject.new(pid: druid).tap do |item|
         item.descMetadata.title_info.main_title = 'This is my title'
+        item.administrativeMetadata.default_workflow = 'myWorkflow'
+        item.administrativeMetadata.add_default_collection 'druid:gh333qq4444'
       end
     end
 
@@ -931,6 +933,7 @@ RSpec.describe 'Update object' do
                                         hasAdminPolicy: 'druid:dd999df4567',
                                         disseminationWorkflow: 'assemblyWF',
                                         registrationWorkflow: %w[goobiWF registrationWF],
+                                        collectionsForRegistration: ['druid:gg888df4567', 'druid:bb888gg4444'],
                                         roles: [
                                           {
                                             name: 'dor-apo-manager',
@@ -958,6 +961,7 @@ RSpec.describe 'Update object' do
             "defaultObjectRights":#{default_object_rights.to_json},
             "disseminationWorkflow":"assemblyWF",
             "registrationWorkflow":["goobiWF","registrationWF"],
+            "collectionsForRegistration":["druid:gg888df4567","druid:bb888gg4444"],
             "hasAdminPolicy":"druid:dd999df4567",
             "roles":[{"name":"dor-apo-manager","members":[{"type":"workgroup","identifier":"sdr:psm-staff"}]}]
           },
