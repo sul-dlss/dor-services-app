@@ -3,6 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe LegacyMetadataService do
+  include Dry::Monads[:result]
+
   describe '.update_datastream_if_newer' do
     subject(:update) do
       described_class.update_datastream_if_newer(datastream: datastream,
@@ -23,6 +25,11 @@ RSpec.describe LegacyMetadataService do
                                            mods_title: title)
     end
 
+    before do
+      allow(datastream).to receive(:ng_xml).and_return(Nokogiri::XML(content))
+      allow(ModsValidator).to receive(:valid?).and_return(Success())
+    end
+
     context 'with a new datastream' do
       let(:create_date) { nil }
 
@@ -30,6 +37,7 @@ RSpec.describe LegacyMetadataService do
         update
         expect(datastream).to have_received(:content=).with(content)
         expect(event_factory).to have_received(:create)
+        expect(ModsValidator).to have_received(:valid?)
       end
     end
 
