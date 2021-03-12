@@ -15,6 +15,22 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
   let(:rightsMetadata) { instance_double(Dor::RightsMetadataDS, createDate: create_date) }
   let(:technicalMetadata) { instance_double(Dor::TechnicalMetadataDS, createDate: create_date) }
   let(:version_metadata) { instance_double(Dor::VersionMetadataDS, createDate: create_date) }
+  let(:rights_xml) do
+    <<~XML
+      <rightsMetadata>
+        <access type="discover">
+          <machine>
+            <none></none>
+          </machine>
+        </access>
+        <access type="read">
+          <machine>
+            <none></none>
+          </machine>
+        </access>
+      </rightsMetadata>
+    XML
+  end
 
   let(:datastreams) do
     {
@@ -48,7 +64,7 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
         },
         "rights": {
           "updated": "2019-11-08T15:15:43Z",
-          "content": "<rightsMetadata></rightsMetadata>"
+          "content": #{rights_xml.to_json}
         },
         "identity": {
           "updated": "2019-11-08T15:15:43Z",
@@ -103,7 +119,7 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
         .with(datastream: rightsMetadata,
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
-              content: '<rightsMetadata></rightsMetadata>',
+              content: rights_xml,
               event_factory: EventFactory)
 
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
@@ -133,7 +149,7 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
     end
   end
 
-  context 'when update is not successful' do
+  context 'when fedora failed' do
     before do
       allow(work).to receive(:save!).and_raise(Rubydora::FedoraInvalidRequest)
     end
@@ -144,6 +160,23 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(response).to have_http_status(:service_unavailable)
       expect(response.body).to match(/Invalid Fedora request/)
+    end
+  end
+
+  context 'when rightsMetadata is invalid' do
+    let(:rights_xml) do
+      '<rightsMetadata></rightsMetadata>'
+    end
+
+    it 'returns an error' do
+      patch "/v1/objects/#{work.pid}/metadata/legacy",
+            params: data,
+            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
+      expect(response).to have_http_status(:unprocessable_entity)
+      json = JSON.parse(response.body)
+      expect(json.dig('errors', 0, 'title')).to eq 'Invalid rightsMetadata'
+      expect(json.dig('errors', 0, 'detail')).to eq 'no_discover_access, no_discover_machine, no_read_access, and no_read_machine'
+      expect(work).not_to have_received(:save!)
     end
   end
 end

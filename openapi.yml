@@ -734,6 +734,12 @@ paths:
       responses:
         '200':
           description: OK
+        422:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '503':
           description: Service unavailable when an error occurs saving to Fedora
       parameters:
