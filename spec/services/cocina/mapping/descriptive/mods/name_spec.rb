@@ -789,6 +789,68 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
+  describe 'Name repeated with different roles' do
+    xit 'unimplemented spec: name repeated with different roles' do
+      let(:druid) { 'druid:jr089rh8500' }
+
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary" valueURI="http://id.loc.gov/authorities/names/no2001053444">
+            <namePart>Perry, William P</namePart>
+            <role>
+              <roleTerm type="text">composer</roleTerm>
+            </role>
+          </name>
+          <name type="personal" valueURI="http://id.loc.gov/authorities/names/no2001053444">
+            <namePart>Perry, William P</namePart>
+            <role>
+              <roleTerm type="text">conductor</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <name type="personal" usage="primary" valueURI="http://id.loc.gov/authorities/names/no2001053444">
+            <namePart>Perry, William P</namePart>
+            <role>
+              <roleTerm type="text">composer</roleTerm>
+            </role>
+            <role>
+              <roleTerm type="text">conductor</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              type: 'person',
+              status: 'primary',
+              name: [
+                {
+                  value: 'Perry, William P',
+                  uri: 'http://id.loc.gov/authorities/names/no2001053444'
+                }
+              ],
+              role: [
+                {
+                  value: 'composer'
+                },
+                {
+                  value: 'conductor'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Personal name with authority' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
