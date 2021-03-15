@@ -1723,8 +1723,28 @@
 			<xsl:apply-templates select="marc:datafield[@tag = '351']" mode="physDesc"/>
 		</xsl:variable>
 		<xsl:choose>
+			<!-- SUL edit 20210315 issue #2308 -->
 			<xsl:when
 				test="
+				(marc:datafield[@tag = '130'][marc:subfield[@code = '6']][child::*[@code = 'h']] 
+				and marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '130')][marc:subfield[@code = 'h']]) or
+				(marc:datafield[@tag = '240'][marc:subfield[@code = '6']][child::*[@code = 'h']]
+				and marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '245')][marc:subfield[@code = 'h']]) or
+				(marc:datafield[@tag = '242'][marc:subfield[@code = '6']][child::*[@code = 'h']]
+				and marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '242')][marc:subfield[@code = 'h']]) or
+				(marc:datafield[@tag = '245'][marc:subfield[@code = '6']][child::*[@code = 'h']]
+				and marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '245')][marc:subfield[@code = 'h']]) or
+				(marc:datafield[@tag = '246'][marc:subfield[@code = '6']][child::*[@code = 'h']]
+				and marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '246')][marc:subfield[@code = 'h']]) or
+				(marc:datafield[@tag = '730'][marc:subfield[@code = '6']][child::*[@code = 'h']]
+				and marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '730')][marc:subfield[@code = 'h']]) or
+				marc:datafield[@tag = '256'][marc:subfield[@code = '6']][child::*[@code = 'a']] or
+				marc:datafield[@tag = '337'][marc:subfield[@code = '6']][child::*[@code = 'a']] or
+				marc:datafield[@tag = '338'][marc:subfield[@code = '6']][child::*[@code = 'a']] or
+				marc:datafield[@tag = '300'][marc:subfield[@code = '6']] or
+				(marc:datafield[@tag = '856'][marc:subfield[@code = '6']][child::*[@code = 'q']]
+				and marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '856')][marc:subfield[@code = 'q']])">
+				<!-- SUL edit 20210315 issue #2308
 					marc:datafield[@tag = '130'][marc:subfield[@code = '6']][child::*[@code = 'h']] or
 					marc:datafield[@tag = '240'][marc:subfield[@code = '6']][child::*[@code = 'h']] or
 					marc:datafield[@tag = '242'][marc:subfield[@code = '6']][child::*[@code = 'h']] or
@@ -1736,6 +1756,7 @@
 					marc:datafield[@tag = '338'][marc:subfield[@code = '6']][child::*[@code = 'a']] or
 					marc:datafield[@tag = '300'][marc:subfield[@code = '6']] or
 					marc:datafield[@tag = '856'][marc:subfield[@code = '6']][child::*[@code = 'q']]">
+				-->
 				<xsl:for-each
 					select="
 						marc:datafield[@tag = '130'][marc:subfield[@code = '6']]/child::*[@code = 'h'] |
@@ -1753,7 +1774,7 @@
 						<!--  880 field -->
 						<xsl:choose>
 							<xsl:when test="self::marc:subfield">
-								<xsl:call-template name="xxs880"/>
+									<xsl:call-template name="xxs880"/>
 							</xsl:when>
 							<xsl:when test="self::marc:datafield">
 								<xsl:call-template name="xxx880"/>
