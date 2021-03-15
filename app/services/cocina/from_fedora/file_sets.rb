@@ -23,7 +23,7 @@ module Cocina
       end
 
       def self.resource_type(resource_node)
-        val = resource_node['type']
+        val = resource_node['type']&.underscore
         val = 'three_dimensional' if val == '3d'
         if val && Cocina::Models::Vocab::Resources.respond_to?(val)
           Cocina::Models::Vocab::Resources.public_send(val)
