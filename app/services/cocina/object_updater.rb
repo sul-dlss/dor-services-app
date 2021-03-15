@@ -9,20 +9,25 @@ module Cocina
     # @param [ActiveFedora::Base] item the object to update
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj the cocina model provided by the client
     # @param [#create] event_factory creates events
-    def self.run(item, obj, event_factory: EventFactory)
-      new(item, obj).run(event_factory: event_factory)
+    # @param [boolean] trial do not persist or event; run all mappings regardless of changes
+    # @param [Cocina::FromFedora::DataErrorNotifier] notifier
+    def self.run(item, obj, event_factory: EventFactory, trial: false, notifier: nil)
+      new(item, obj, trial: trial).run(event_factory: event_factory, notifier: notifier)
     end
 
-    def initialize(item, obj)
+    def initialize(item, obj, trial: false)
       @params = params
       @obj = obj
       @item = item
-      @orig_obj = Mapper.build(item)
+      @trial = trial
     end
 
-    def run(event_factory:)
+    # rubocop:disable Metrics/AbcSize
+    def run(event_factory:, notifier: nil)
+      @orig_obj = Mapper.build(item, notifier: notifier)
+
       # Validate will raise an error if not valid.
-      validate
+      validate unless trial
 
       case obj
       when Cocina::Models::AdminPolicy
@@ -37,24 +42,27 @@ module Cocina
 
       update_descriptive if has_changed?(:description) && update_descriptive?
 
-      item.save!
+      item.save! unless trial
 
-      event_factory.create(druid: item.pid, event_type: 'update_complete', data: { success: true })
+      event_factory.create(druid: item.pid, event_type: 'update_complete', data: { success: true }) unless trial
 
       # This will rebuild the cocina model from fedora, which shows we are only returning persisted data
-      Mapper.build(item).tap do
-        event_factory.create(druid: item.pid, event_type: 'update', data: { success: true, request: obj.to_h })
+      Mapper.build(item, notifier: notifier).tap do
+        event_factory.create(druid: item.pid, event_type: 'update', data: { success: true, request: obj.to_h }) unless trial
       end
     rescue Mapper::MapperError, ValidationError, NotImplemented => e
-      event_factory.create(druid: item.pid, event_type: 'update', data: { success: false, error: e.message, request: obj.to_h })
+      event_factory.create(druid: item.pid, event_type: 'update', data: { success: false, error: e.message, request: obj.to_h }) unless trial
       raise
     end
+    # rubocop:enable Metrics/AbcSize
 
     private
 
-    attr_reader :obj, :item, :params, :orig_obj
+    attr_reader :obj, :item, :params, :orig_obj, :trial
 
     def has_changed?(key)
+      return true if trial
+
       # Update only if changed.
       obj.public_send(key) != orig_obj.public_send(key)
     end
@@ -161,6 +169,7 @@ module Cocina
     end
 
     def add_tag(pid, new_tag, prefix)
+      return if trial
       raise "Must provide a #{prefix} tag for #{pid}" unless new_tag
 
       existing_tag = tag_starting_with(pid, prefix)

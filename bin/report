@@ -166,7 +166,11 @@ Result = Struct.new(:druid, :apo, :collections, :catkey, :reports)
 
 run_reports = options[:reports].select { |name| REPORTS.key?(name) }
 results = Parallel.map(druids, progress: 'Testing') do |druid|
-  ng_xml = cache.descmd_xml(druid)
+  result = cache.datastream(druid, 'descMetadata')
+  next if result.failure?
+
+  ng_xml = Nokogiri::XML(result.value!)
+
   report_results = {}
   run_reports.each do |name|
     report_result = REPORTS[name].call(ng_xml)
@@ -184,10 +188,6 @@ rescue Errno::EBUSY
   retry
 rescue ActiveFedora::ObjectNotFoundError
   # noop
-rescue StandardError => e
-  raise if e.message != 'Missing item'
-
-  nil
 end.compact
 
 run_reports.each do |name|

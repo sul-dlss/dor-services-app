@@ -43,6 +43,5 @@ end
 
 druids.each_with_index do |druid, index|
   puts "#{druid} (#{index + 1})\n" unless options[:quiet]
-  cache.cache_object(druid)
-  cache.cache_descmd(druid)
+  cache.cache(druid)
 end

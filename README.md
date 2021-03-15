@@ -120,6 +120,11 @@ These tools are best run on a server within the network. (Currently installed on
 
         solr:
           url: 'https://sul-solr.stanford.edu/solr/argo3_prod'
+
+        dor_services:
+          url: 'https://dor-services-prod.stanford.edu'
+          token: '<create a token>'
+    
 2. Copy certificates locally:
 
         scp -r <user from puppet>@<dor serices production host>:/etc/pki/tls .
@@ -164,13 +169,34 @@ This script can be run from a cron job to keep the cache up to date.
 
 ### Validate mapping to Cocina from Fedora
 ```
-$ bin/validate-to-cocina -h
+$ bin/validate-cocina-roundtrip -h
+Usage: bin/validate-cocina-roundtrip [options]
+    -s, --sample SAMPLE              Sample size, otherwise all druids.
+    -r, --random                     Select random druids.
+    -d, --druids DRUIDS              List of druids (instead of druids.txt).
+    -h, --help                       Displays help.
+    
+$ bin/validate-cocina-roundtrip -s 100
+Testing |Time: 00:00:21 | ============================================================================ | Time: 00:00:21
+Status (n=100; not using Missing for success/different/error stats):
+  Success:   8 (8.0%)
+  Different: 56 (56.0%)
+  Mapping error:     36 (36.0%)
+  Update error:     0 (0.0%)
+  Missing:     0 (0.0%) 
+```
+
+Using the druids from `druids.txt` and the cache, this will create a Fedora item, map the Fedora item to the Cocina model, update the Fedora item from the Cocina object, map the changed Fedora item to the Cocina model, and compare the original Cocina object against the changed Cocina object and the original Fedora item against the changed Fedora item.
+
+### Validate mapping to Cocina from MODS (descriptive metadata only)
+```
+$ bin/validate-to-desc-cocina -h
 Usage: bin/validate-to-cocina [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -u, --unique-filename            Result file named for branch and runtime
     -h, --help                       Displays help.
 
-$ bin/validate-to-cocina -s 10
+$ bin/validate-to-desc-cocina -s 10
 Testing |Time: 00:00:00 | ===================================================================== | Time: 00:00:00
 
 Error: 0 of 10 (0.0%)%)
@@ -193,15 +219,15 @@ A complete set of results will be written to `results.txt`.
 
 Note that the location of the cache can be set with `FEDORA_CACHE` environment variable.
 
-### Validate mapping to Fedora from Cocina
+### Validate mapping to MODS from Cocina (descriptive metadata only)
 ```
-$ bin/validate-to-fedora -h
-Usage: bin/validate-to-fedora [options]
+$ bin/validate-to-mods -h
+Usage: bin/validate-to-mods [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -u, --unique-filename            Result file named for branch and runtime
     -h, --help                       Displays help.
 
-$ bin/validate-to-fedora
+$ bin/validate-to-mods
 Testing |Time: 00:00:06 | ============================================================= | Time: 00:00:06
 To Fedora error: 21 of 7500 (0.28%)
 To Cocina error: 0 of 7500 (0.0%)
@@ -209,28 +235,28 @@ Data error: 4 of 7500 (0.05333333333333334%)
 Missing: 26 of 7500 (0.3466666666666667%)
 ```
 
-This is similar to `bin/validate-to-cocina` but reports errors raised when mapping to Fedora.
+This is similar to `bin/validate-to-desc-cocina` but reports errors raised when mapping to Fedora.
 
 Note that the location of the cache can be set with `FEDORA_CACHE` environment variable.
 
-### Validate roundtrip mapping (to Cocina from Fedora then to Fedora from Cocina)
+### Validate roundtrip mapping (to Cocina from MODS then to Fedora from MODS -- descriptive metadata only)
 ```
-$ bin/validate-cocina-roundtrip -h
-Usage: bin/validate-cocina-roundtrip [options]
+$ bin/validate-desc-cocina-roundtrip -h
+Usage: bin/validate-desc-cocina-roundtrip [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -r, --random                     Select random druids.
     -f, --fast                       Do not write results files.
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
     -h, --help                       Displays help.
 
-$ bin/validate-cocina-roundtrip -s 10 -r
+$ bin/validate-desc-cocina-roundtrip -s 10 -r
 ```
 
 Using the druids from `druids.txt` and the cache, this will compare the differences between the original MODS (Fedora descriptive metadata) and the roundtripped MODS.
 
 Alternatively, to map a single druid:
 ```
-$ bin/validate-cocina-roundtrip -d druid:bh164hd2167
+$ bin/validate-desc-cocina-roundtrip -d druid:bh164hd2167
 ```
 
 Errors totals are summarized. For example:
@@ -290,12 +316,12 @@ Test with `bin/validate-cocina-roundtrip`, comparing results from main against y
 ```
 $ git checkout main
 $ git pull
-$ bin/validate-cocina-roundtrip -s 350000 -f
+$ bin/validate-desc-cocina-roundtrip -s 350000 -f
 $ git checkout YOUR_BRANCH_NAME
-$ bin/validate-cocina-roundtrip -s 350000 -f
+$ bin/validate-desc-cocina-roundtrip -s 350000 -f
 ```
 
-When running `bin/validate-to-cocina` or `bin/validate-to-feodora`, you may want to fetch the `results.txt` to your local drive (it is written to the root folder of dor-services-app)
+When running `bin/validate-to-desc-cocina` or `bin/validate-to-mods`, you may want to fetch the `results.txt` to your local drive (it is written to the root folder of dor-services-app)
 and look for errors.
 
 ```

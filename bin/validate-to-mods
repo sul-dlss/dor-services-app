@@ -3,16 +3,14 @@
 
 require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
-require_relative '../lib/data_error_notifier'
 require 'optparse'
 
 options = { unique_filename: false }
 parser = OptionParser.new do |option_parser|
-  option_parser.banner = 'Usage: bin/validate-to-cocina [options]'
+  option_parser.banner = 'Usage: bin/validate-to-mods [options]'
 
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
   option_parser.on('-u', '--unique-filename', 'Result file named for branch and runtime') { options[:unique_filename] = true }
-  option_parser.on('-a', '--apo', 'Include APO in report (slower).') { options[:apo] = true }
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -44,24 +42,39 @@ def print_results(aggregated_error_results, label)
   end
 end
 
-def apo_for(druid)
-  puts "Fetching #{druid}"
-  Dor.find(druid).admin_policy_object_id
-end
-
-def write_results(file, aggregated_error_results, label, with_apo)
+def write_results(file, aggregated_error_results, label)
   aggregated_error_results.each do |error_result|
     file.write("#{label}: #{error_result[0]} (#{error_result[1].size} errors)\n")
-    error_result[1].each do |druid|
-      file.write(druid)
-      file.write(" (APO: #{apo_for(druid)})") if with_apo
-      file.write("\n")
-    end
+    error_result[1].each { |druid| file.write("#{druid}\n") }
   end
 end
 
 def summary_line_for(label, count)
   "#{label}: #{count} of #{@sample_size} (#{100 * count.to_f / @sample_size}%)\n"
+end
+
+def validate_druid(druid, cache)
+  result = cache.label_and_desc_metadata(druid)
+  return Result.new(druid, 'Missing', :missing) if result.failure?
+
+  label, mods_xml = result.value!
+  mods_ng_xml = Nokogiri::XML(mods_xml)
+
+  begin
+    title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: label)
+    desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: mods_ng_xml, druid: druid)
+    cocina = Cocina::Models::Description.new(desc_props)
+  rescue StandardError => e
+    return Result.new(druid, e.message.gsub('\n', ' '), :to_cocina_error)
+  end
+
+  begin
+    Cocina::ToFedora::Descriptive.transform(cocina, druid)
+  rescue StandardError => e
+    return Result.new(druid, e.message.gsub('\n', ' '), :to_fedora_error)
+  end
+
+  nil
 end
 
 def branch_name
@@ -79,7 +92,7 @@ end
 def results_file_name(use_unique_filename)
   return 'results.txt' unless use_unique_filename
 
-  "results_to-cocina_#{now_str}_#{branch_name}_#{short_commit_hash}.txt"
+  "results_to-fedora_#{now_str}_#{branch_name}_#{short_commit_hash}.txt"
 end
 
 druids = File.read('druids.txt').split
@@ -89,44 +102,29 @@ druids = druids.take(options[:sample]) if options[:sample]
 Result = Struct.new(:druid, :msg, :error_type)
 
 results = Parallel.map(druids, progress: 'Testing') do |druid|
-  notifier = DataErrorNotifier.new
-  title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: cache.label(druid))
-  desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: cache.descmd_xml(druid), druid: druid, notifier: notifier)
-  Cocina::Models::Description.new(desc_props)
-  notifier.error? ? Result.new(druid, notifier.data_errors.first.msg, :data_error) : nil
-rescue StandardError => e
-  if e.message == 'Missing item'
-    Result.new(druid, e.message, :missing)
-  else
-    Result.new(druid, e.message.gsub('\n', ' '), :to_cocina_error)
-  end
+  validate_druid(druid, cache)
 end.compact
 
-error_results = results.select { |result| result.error_type == :to_cocina_error }
-data_error_results = results.select { |result| result.error_type == :data_error }
-
-counts = { to_cocina_error: 0, missing: 0, data_error: 0 }
+counts = { to_cocina_error: 0, to_fedora_error: 0, missing: 0, data_error: 0 }
 results.each { |result| counts[result.error_type] += 1 }
 
+puts summary_line_for('To Fedora error', counts[:to_fedora_error])
 puts summary_line_for('To Cocina error', counts[:to_cocina_error])
 puts summary_line_for('Data error', counts[:data_error])
 puts summary_line_for('Missing (no descMetadata)', counts[:missing])
 puts "\n"
 
+error_results = results.select { |result| result.error_type == :to_fedora_error }
 results_by_error = results_by(error_results)
-results_by_data_error = results_by(data_error_results)
-
 aggregated_error_results = aggregated_errors_for(results_by_error)
-aggregated_data_error_results = aggregated_errors_for(results_by_data_error)
 
-print_results(aggregated_error_results, 'Error')
-print_results(aggregated_data_error_results, 'Data error')
+print_results(aggregated_error_results, 'To Fedora error')
 
 File.open(results_file_name(options[:unique_filename]), 'w') do |file|
+  file.write(summary_line_for('To Fedora error', counts[:to_fedora_error]))
   file.write(summary_line_for('To Cocina error', counts[:to_cocina_error]))
   file.write(summary_line_for('Data error', counts[:data_error]))
-  file.write(summary_line_for('Missing', counts[:missing]))
+  file.write(summary_line_for('Missing (no descMetadata)', counts[:missing]))
   file.write("\n")
-  write_results(file, aggregated_error_results, 'Error', options[:apo])
-  write_results(file, aggregated_data_error_results, 'Data error', options[:apo])
+  write_results(file, aggregated_error_results, 'To Fedora error')
 end
