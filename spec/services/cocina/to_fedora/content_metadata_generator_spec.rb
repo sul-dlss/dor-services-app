@@ -132,13 +132,13 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     [
       {
         'version' => 1,
-        'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+        'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
         'label' => 'Page 1',
         'structural' => { 'contains' => [file1, file2] }
       },
       {
         'version' => 1,
-        'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+        'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
         'label' => 'Page 2',
         'structural' => { 'contains' => [file3, file4] }
       }
@@ -173,19 +173,19 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       [
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/page.jsonld',
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1, file2] }
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/page.jsonld',
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] }
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/object.jsonld',
           'label' => 'Object 1',
           'structural' => { 'contains' => [file5] }
         }
@@ -227,7 +227,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     it 'generates contentMetadata.xml' do
       expect(generate).to be_equivalent_to <<~XML
         <contentMetadata objectId="druid:bc123de5678" type="image">
-          <resource id="bc123de5678_1" sequence="1" type="image">
+          <resource id="bc123de5678_1" sequence="1" type="file">
             <label>Page 1</label>
             <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
@@ -237,7 +237,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
               <imageData height="200" width="300"/>
             </file>
           </resource>
-          <resource id="bc123de5678_2" sequence="2" type="image">
+          <resource id="bc123de5678_2" sequence="2" type="file">
             <label>Page 2</label>
             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
@@ -331,19 +331,19 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       [
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/object.jsonld',
           'label' => 'Data',
           'structural' => { 'contains' => [file1] }
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
           'label' => 'Preview',
           'structural' => { 'contains' => [file2, file4] }
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
           'label' => 'Attachment',
           'structural' => { 'contains' => [file3] }
         }
@@ -360,14 +360,14 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
             </file>
           </resource>
-          <resource id="bc123de5678_2" sequence="2" type="preview">
+          <resource id="bc123de5678_2" sequence="2" type="file">
             <label>Preview</label>
             <file id="00001.jp2" mimetype="image/jp2" size="149570" publish="yes" shelve="yes" preserve="yes">
               <imageData height="200" width="300"/>
             </file>
             <file id="00002.jp2" mimetype="image/jp2" size="111467" publish="yes" shelve="yes" preserve="yes"/>
           </resource>
-          <resource id="bc123de5678_3" sequence="3" type="attachment">
+          <resource id="bc123de5678_3" sequence="3" type="file">
             <label>Attachment</label>
             <file id="00002.xml" mimetype="text/xml" size="1914" publish="yes" shelve="no" preserve="yes"/>
           </resource>
@@ -386,7 +386,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         {
           'version' => 1,
           'label' => 'Preview',
-          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/image.jsonld',
           'structural' => { 'contains' => [file2] }
         }
       ]
@@ -412,7 +412,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     it 'generates contentMetadata.xml' do
       expect(generate).to be_equivalent_to <<~XML
         <contentMetadata objectId="druid:bc123de5678" type="document">
-          <resource id="bc123de5678_1" sequence="1" type="document">
+          <resource id="bc123de5678_1" sequence="1" type="file">
             <label>Page 1</label>
             <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
@@ -422,7 +422,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
               <imageData height="200" width="300"/>
             </file>
           </resource>
-          <resource id="bc123de5678_2" sequence="2" type="document">
+          <resource id="bc123de5678_2" sequence="2" type="file">
             <label>Page 2</label>
             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
@@ -439,13 +439,13 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       [
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/video.jsonld',
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1] }
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/fileset.jsonld',
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] }
         }
@@ -505,6 +505,23 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   context 'with a media (video resource, with thumbnail)' do
     let(:object_type) { Cocina::Models::Vocab.media }
 
+    let(:filesets) do
+      [
+        {
+          'version' => 1,
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/video.jsonld',
+          'label' => 'Page 1',
+          'structural' => { 'contains' => [file1, file2] }
+        },
+        {
+          'version' => 1,
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+          'label' => 'Page 2',
+          'structural' => { 'contains' => [file3, file4] }
+        }
+      ]
+    end
+
     let(:file1) do
       {
         'version' => 1,
@@ -560,6 +577,22 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
 
   context 'with a media (audio resource, with thumbnail)' do
     let(:object_type) { Cocina::Models::Vocab.media }
+    let(:filesets) do
+      [
+        {
+          'version' => 1,
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/audio.jsonld',
+          'label' => 'Page 1',
+          'structural' => { 'contains' => [file1, file2] }
+        },
+        {
+          'version' => 1,
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+          'label' => 'Page 2',
+          'structural' => { 'contains' => [file3, file4] }
+        }
+      ]
+    end
 
     let(:file1) do
       {

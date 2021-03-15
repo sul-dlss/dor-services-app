@@ -25,7 +25,7 @@ module Cocina
         add_book_data(orders.first) if orders.present?
         resources.each_with_index do |cocina_fileset, index|
           # each resource type description gets its own incrementing counter
-          type = ResourceType.for(object_type: object_type, file_set: cocina_fileset)
+          type = cocina_fileset.type.delete_prefix('http://cocina.sul.stanford.edu/models/resources/').delete_suffix('.jsonld')
           resource_type_counters[type] += 1
           @xml_doc.root.add_child create_resource_node(cocina_fileset, type, index + 1)
         end
