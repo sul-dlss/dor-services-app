@@ -1245,6 +1245,8 @@
 						</xsl:for-each>
 					</xsl:when>
 					<xsl:otherwise>
+						<!-- SUL edit 20210315 issue #2322 -->
+						<xsl:if test="marc:subfield[@code = 'a']">
 						<place>
 							<placeTerm type="text">
 								<!-- SUL edit 20200825 issue #990 -->
@@ -1259,6 +1261,9 @@
 								</xsl:call-template>
 							</placeTerm>
 						</place>
+						<!-- SUL edit 20210315 issue #2322 -->
+						</xsl:if>
+						<xsl:if test="marc:subfield[@code = 'b']">
 						<publisher>
 							<!-- SUL edit 20200825 issue #990 -->
 							<xsl:call-template name="chopPunctuation">
@@ -1271,6 +1276,8 @@
 								</xsl:with-param>
 							</xsl:call-template>
 						</publisher>
+						<!-- SUL edit 20210315 issue #2322 -->
+						</xsl:if>
 					</xsl:otherwise>
 				</xsl:choose>
 				<!-- 1.134 -->
@@ -1279,7 +1286,10 @@
 						<!-- SUL edit 20200825 issue #990 -->
 						<xsl:call-template name="chopPunctuation">
 							<xsl:with-param name="chopString">
-								<xsl:value-of select="marc:subfield[@code = 'a']"/>
+								<!-- SUL edit 20210315 issue #2322 -->
+								<xsl:value-of select="marc:subfield[@code = 'c']"/>
+								<!-- SUL edit 20210315 issue #2322
+								<xsl:value-of select="marc:subfield[@code = 'a']"/> -->
 								<!-- SUL edit 20200825 issue #990 -->
 							</xsl:with-param>
 						</xsl:call-template>
@@ -1334,6 +1344,8 @@
 						</xsl:for-each>
 					</xsl:when>
 					<xsl:otherwise>
+						<!-- SUL edit 20210315 issue #2322 -->
+						<xsl:if test="marc:subfield[@code = 'a']">
 						<place>
 							<placeTerm type="text">
 								<!-- SUL edit 20200825 issue #990 -->
@@ -1348,6 +1360,9 @@
 								</xsl:call-template>
 							</placeTerm>
 						</place>
+						<!-- SUL edit 20210315 issue #2322 -->
+						</xsl:if>
+						<xsl:if test="marc:subfield[@code = 'b']">
 						<publisher>
 							<!-- SUL edit 20200825 issue #990 -->
 							<xsl:call-template name="chopPunctuation">
@@ -1360,6 +1375,8 @@
 								</xsl:with-param>
 							</xsl:call-template>
 						</publisher>
+						<!-- SUL edit 20210315 issue #2322 -->
+						</xsl:if>
 					</xsl:otherwise>
 				</xsl:choose>
 				<!-- 1.134 -->
@@ -1423,6 +1440,8 @@
 						</xsl:for-each>
 					</xsl:when>
 					<xsl:otherwise>
+						<!-- SUL edit 20210315 issue #2322 -->
+						<xsl:if test="marc:subfield[@code = 'a']">
 						<place>
 							<placeTerm type="text">
 								<!-- SUL edit 20200825 issue #990 -->
@@ -1437,6 +1456,9 @@
 								</xsl:call-template>
 							</placeTerm>
 						</place>
+						<!-- SUL edit 20210315 issue #2322 -->
+						</xsl:if>
+						<xsl:if test="marc:subfield[@code = 'b']">
 						<publisher>
 							<!-- SUL edit 20200825 issue #990 -->
 							<xsl:call-template name="chopPunctuation">
@@ -1449,6 +1471,8 @@
 								</xsl:with-param>
 							</xsl:call-template>
 						</publisher>
+						<!-- SUL edit 20210315 issue #2322 -->
+						</xsl:if>
 					</xsl:otherwise>
 				</xsl:choose>
 				<!-- 1.134 -->
@@ -1512,6 +1536,8 @@
 						</xsl:for-each>
 					</xsl:when>
 					<xsl:otherwise>
+						<!-- SUL edit 20210315 issue #2322 -->
+						<xsl:if test="marc:subfield[@code = 'a']">
 						<place>
 							<placeTerm type="text">
 								<!-- SUL edit 20200825 issue #990 -->
@@ -1526,6 +1552,9 @@
 								</xsl:call-template>
 							</placeTerm>
 						</place>
+						<!-- SUL edit 20210315 issue #2322 -->
+						</xsl:if>
+						<xsl:if test="marc:subfield[@code = 'b']">
 						<publisher>
 							<!-- SUL edit 20200825 issue #990 -->
 							<xsl:call-template name="chopPunctuation">
@@ -1538,6 +1567,8 @@
 								</xsl:with-param>
 							</xsl:call-template>
 						</publisher>
+						<!-- SUL edit 20210315 issue #2322 -->
+						</xsl:if>
 					</xsl:otherwise>
 				</xsl:choose>
 				<!-- 1.134 -->
