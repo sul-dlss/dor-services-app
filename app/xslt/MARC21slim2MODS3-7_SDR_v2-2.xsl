@@ -2845,13 +2845,13 @@
 						<!-- originInfo -->
 						<xsl:if
 							test="marc:subfield[@code = 'b' or @code = 'd']">
-						<!--  
+						<!-- SUL edit 20210315 issue #2316
 						<xsl:if
 							test="marc:subfield[@code = 'b' or @code = 'd'] or marc:subfield[@code = 'f']">
 							-->
 							<originInfo>
 								<xsl:call-template name="xxx880"/>
-								<!--
+								<!-- SUL edit 20210315 issue #2316
 								<xsl:if test="@tag = '775'">
 									<xsl:for-each select="marc:subfield[@code = 'f']">
 										<place>
@@ -2884,7 +2884,7 @@
 								</xsl:for-each>
 							</originInfo>
 						</xsl:if>
-						<!--  -->
+						<!--  SUL edit 20210315 issue #2316 -->
 						<xsl:if test="marc:subfield[@code = 'f']">
 							<xsl:if test="@tag = '775'">
 								<originInfo>
