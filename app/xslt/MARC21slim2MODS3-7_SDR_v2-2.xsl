@@ -2844,9 +2844,14 @@
 
 						<!-- originInfo -->
 						<xsl:if
+							test="marc:subfield[@code = 'b' or @code = 'd']">
+						<!--  
+						<xsl:if
 							test="marc:subfield[@code = 'b' or @code = 'd'] or marc:subfield[@code = 'f']">
+							-->
 							<originInfo>
 								<xsl:call-template name="xxx880"/>
+								<!--
 								<xsl:if test="@tag = '775'">
 									<xsl:for-each select="marc:subfield[@code = 'f']">
 										<place>
@@ -2862,7 +2867,7 @@
 											</placeTerm>
 										</place>
 									</xsl:for-each>
-								</xsl:if>
+								</xsl:if> -->
 								<xsl:for-each select="marc:subfield[@code = 'd']">
 									<publisher>
 										<xsl:call-template name="chopPunctuation">
@@ -2878,6 +2883,27 @@
 									</edition>
 								</xsl:for-each>
 							</originInfo>
+						</xsl:if>
+						<!--  -->
+						<xsl:if test="marc:subfield[@code = 'f']">
+							<xsl:if test="@tag = '775'">
+								<originInfo>
+								<xsl:for-each select="marc:subfield[@code = 'f']">
+									<place>
+										<placeTerm>
+											<xsl:attribute name="type">code</xsl:attribute>
+											<xsl:attribute name="authority"
+												>marcgac</xsl:attribute>
+											<xsl:call-template name="chopPunctuation">
+												<xsl:with-param name="chopString">
+													<xsl:value-of select="."/>
+												</xsl:with-param>
+											</xsl:call-template>
+										</placeTerm>
+									</place>
+								</xsl:for-each>
+								</originInfo>
+							</xsl:if>
 						</xsl:if>
 						<!-- language -->
 						<xsl:if test="@tag = '775'">
