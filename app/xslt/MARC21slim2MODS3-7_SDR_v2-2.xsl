@@ -6386,25 +6386,32 @@
 	</xsl:template>
 
 	<xsl:template name="createSubGeoFrom043">
+		<!-- SUL edit 20210315 issue #2452 -->
+		<xsl:for-each select="marc:subfield[@code = 'a' or @code = 'c']">
 		<subject>
 			<xsl:call-template name="xxx880"/>
-			<xsl:for-each select="marc:subfield[@code = 'a' or @code = 'b' or @code = 'c']">
+			<!-- SUL edit 20210315 issue #2452
+			<xsl:for-each select="marc:subfield[@code = 'a' or @code = 'b' or @code = 'c']"> -->
 				<geographicCode>
 					<xsl:attribute name="authority">
 						<xsl:if test="@code = 'a'">
 							<xsl:text>marcgac</xsl:text>
 						</xsl:if>
+						<!-- SUL edit 20210315 issue #2452
 						<xsl:if test="@code = 'b'">
 							<xsl:value-of select="following-sibling::marc:subfield[@code = 2]"/>
-						</xsl:if>
+						</xsl:if> -->
 						<xsl:if test="@code = 'c'">
 							<xsl:text>iso3166</xsl:text>
 						</xsl:if>
 					</xsl:attribute>
 					<xsl:value-of select="self::marc:subfield"/>
 				</geographicCode>
-			</xsl:for-each>
+			<!-- SUL edit 20210315 issue #2452
+			</xsl:for-each> -->
 		</subject>
+		<!-- SUL edit 20210315 issue #2452 -->
+		</xsl:for-each>
 	</xsl:template>
 
 	<xsl:template name="createSubGeoFrom255">
