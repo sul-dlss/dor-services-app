@@ -49,12 +49,11 @@ module Cocina
         @resource_type_counters ||= Hash.new(0)
       end
 
-      # @param [String] id
       # @param [Hash] cocina_file
       # @return [Nokogiri::XML::Node] the file node
-      def create_file_node(id, cocina_file)
+      def create_file_node(cocina_file)
         Nokogiri::XML::Node.new('file', @xml_doc).tap do |file_node|
-          file_node['id'] = id
+          file_node['id'] = cocina_file.filename
           file_node['mimetype'] = cocina_file.hasMimeType
           file_node['size'] = cocina_file.size
           file_node['publish'] = publish_attr(cocina_file)
@@ -91,10 +90,8 @@ module Cocina
       # @param [String] type resource type to use
       # @param [Integer] sequence
       def create_resource_node(cocina_fileset, type, sequence)
-        pid = druid.gsub('druid:', '') # remove druid prefix when creating IDs
-
         Nokogiri::XML::Node.new('resource', @xml_doc).tap do |resource|
-          resource['id'] = "#{pid}_#{sequence}"
+          resource['id'] = IdGenerator.generate_or_existing_fileset_id(cocina_fileset.respond_to?(:externalIdentifier) ? cocina_fileset.externalIdentifier : nil)
           resource['sequence'] = sequence
           resource['type'] = type
 
@@ -106,7 +103,7 @@ module Cocina
 
       def create_file_nodes(resource, cocina_fileset)
         cocina_fileset.structural.contains.each do |cocina_file|
-          resource.add_child(create_file_node(cocina_file.filename, cocina_file))
+          resource.add_child(create_file_node(cocina_file))
         end
       end
 

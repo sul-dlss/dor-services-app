@@ -4,13 +4,13 @@ module Cocina
   module FromFedora
     # builds the FileSet instance from a Dor::Item
     class FileSets
-      def self.build(content_metadata_ds, version:, id:)
-        content_metadata_ds.ng_xml.xpath('//resource[file]').map.with_index(1) do |resource_node, index|
-          files = build_files(resource_node.xpath('file'), version: version, parent_id: id)
+      def self.build(content_metadata_ds, version:)
+        content_metadata_ds.ng_xml.xpath('//resource[file]').map do |resource_node|
+          files = build_files(resource_node.xpath('file'), version: version)
           structural = {}
           structural[:contains] = files if files.present?
           {
-            externalIdentifier: resource_node['id'] || "#{id}_#{index}",
+            externalIdentifier: IdGenerator.generate_or_existing_fileset_id(resource_node['id']),
             type: resource_type(resource_node),
             version: version,
             structural: structural
@@ -44,13 +44,14 @@ module Cocina
         end
       end
 
-      def self.build_files(file_nodes, version:, parent_id:)
+      def self.build_files(file_nodes, version:)
         file_nodes.map do |node|
           height = node.xpath('imageData/@height').text.presence&.to_i
           width = node.xpath('imageData/@width').text.presence&.to_i
           use = node.xpath('@role').text.presence
           {
-            externalIdentifier: "#{parent_id}/#{node['id']}",
+            # External identifier is always generated because it is not stored in Fedora.
+            externalIdentifier: IdGenerator.generate_file_id,
             type: Cocina::Models::Vocab.file,
             label: node['id'],
             filename: node['id'],

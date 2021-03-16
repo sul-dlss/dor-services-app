@@ -27,7 +27,7 @@ module Cocina
           has_member_orders = build_has_member_orders
           structural[:hasMemberOrders] = has_member_orders if has_member_orders.present?
 
-          contains = FileSets.build(item.contentMetadata, version: item.current_version.to_i, id: item.pid)
+          contains = FileSets.build(item.contentMetadata, version: item.current_version.to_i)
           structural[:contains] = contains if contains.present?
 
           structural[:hasAgreement] = item.identityMetadata.agreementId.first unless item.identityMetadata.agreementId.empty?
