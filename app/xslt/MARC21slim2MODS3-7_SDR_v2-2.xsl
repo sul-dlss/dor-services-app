@@ -7101,9 +7101,23 @@
 	</xsl:template>
 	<xsl:template name="createClassificationFrom084">
 		<classification>
-			<xsl:attribute name="authority">
-				<xsl:value-of select="marc:subfield[@code = '2']"/>
-			</xsl:attribute>
+			<!-- SUL edit 20210316 issue #2327 -->
+			<xsl:choose>
+				<xsl:when test="contains(marc:subfield[@code = '2'],'/')">
+					<xsl:attribute name="authority">
+						<xsl:value-of select="substring-before(marc:subfield[@code = '2'],'/')"/>
+					</xsl:attribute>
+					<xsl:attribute name="edition">
+						<xsl:value-of select="substring-after(marc:subfield[@code = '2'], '/')"/>
+					</xsl:attribute>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:attribute name="authority">
+						<xsl:value-of select="marc:subfield[@code = '2']"/>
+					</xsl:attribute>
+					<!-- SUL edit 20210316 issue #2327 -->
+				</xsl:otherwise>
+			</xsl:choose>
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subfieldSelect">
 				<xsl:with-param name="codes">ab</xsl:with-param>
