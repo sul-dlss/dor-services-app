@@ -3655,6 +3655,14 @@
 			</xsl:attribute>
 		</xsl:for-each>
 	</xsl:template>
+	<!-- SUL edit 20210316 issue #2330 -->
+	<xsl:template name="valueURI">
+		<xsl:for-each select="marc:subfield[@code = '0']">
+			<xsl:attribute name="valueURI">
+				<xsl:value-of select="."/>
+			</xsl:attribute>
+		</xsl:for-each>
+	</xsl:template>
 	<xsl:template name="role">
 		<xsl:for-each select="marc:subfield[@code = 'e']">
 			<!-- SUL edit 20210125 issue #1872 -->
@@ -6662,7 +6670,10 @@
 					<xsl:value-of select="marc:subfield[@code = 2]"/>
 				</xsl:attribute>
 			</xsl:if>
-			<xsl:call-template name="uri"/>
+			<!-- SUL edit 20210316 issue #2330 -->
+			<xsl:call-template name="valueURI"/>
+			<!-- SUL edit 20210316 issue #2330
+			<xsl:call-template name="uri"/> -->
 			<xsl:call-template name="subjectAuthority"/>
 			<temporal>
 				<xsl:call-template name="chopPunctuation">
