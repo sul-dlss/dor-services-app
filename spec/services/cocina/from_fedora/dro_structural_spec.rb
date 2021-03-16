@@ -235,7 +235,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
   context 'with bookData' do
     subject { structural[:hasMemberOrders].first[:viewingDirection] }
 
-    let(:book_data) { "<bookData readingDirection=\"#{reading_direction}\" />" }
+    let(:book_data) { "<bookData readingOrder=\"#{reading_direction}\" />" }
     let(:xml) do
       <<~XML
         <contentMetadata type="book" id="druid:hx013yf6680">
