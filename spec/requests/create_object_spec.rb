@@ -472,16 +472,21 @@ RSpec.describe 'Create object' do
       end
 
       context 'when access match' do
+        before do
+          # This gives every file and file set the same UUID. In reality, they would be unique.
+          allow(SecureRandom).to receive(:uuid).and_return('123-456-789')
+        end
+
         let(:expected_structural) do
           { contains: [
             {
               type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
-              externalIdentifier: 'gg777gg7777_1', label: 'Page 1', version: 1,
+              externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/123-456-789', label: 'Page 1', version: 1,
               structural: {
                 contains: [
                   {
                     type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
-                    externalIdentifier: 'druid:gg777gg7777/00001.html',
+                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/123-456-789',
                     label: '00001.html',
                     filename: '00001.html',
                     size: 0,
@@ -499,7 +504,7 @@ RSpec.describe 'Create object' do
                     administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
                     type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
-                    externalIdentifier: 'druid:gg777gg7777/00001.jp2',
+                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/123-456-789',
                     label: '00001.jp2',
                     filename: '00001.jp2',
                     size: 0, version: 1,
@@ -511,13 +516,13 @@ RSpec.describe 'Create object' do
               }
             }, {
               type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
-              externalIdentifier: 'gg777gg7777_2',
+              externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/123-456-789',
               label: 'Page 2', version: 1,
               structural: {
                 contains: [
                   {
                     type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
-                    externalIdentifier: 'druid:gg777gg7777/00002.html',
+                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/123-456-789',
                     label: '00002.html', filename: '00002.html', size: 0,
                     version: 1, hasMimeType: 'text/html',
                     hasMessageDigests: [],
@@ -525,7 +530,7 @@ RSpec.describe 'Create object' do
                     administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
                     type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
-                    externalIdentifier: 'druid:gg777gg7777/00002.jp2',
+                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/123-456-789',
                     label: '00002.jp2',
                     filename: '00002.jp2',
                     size: 0, version: 1,

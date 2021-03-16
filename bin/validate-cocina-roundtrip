@@ -180,7 +180,7 @@ def validate_druid(druid, cache)
     diff_datastreams[dsid] = [orig_ds_ng_xml, ds_ng_xml]
   end
 
-  return :success if DeepEqual.match?(normalize(orig_cocina_hash), roundtrip_cocina_hash)
+  return :success if DeepEqual.match?(normalize_orig(orig_cocina_hash), normalize(roundtrip_cocina_hash))
 
   # && diff_datastreams.empty?
   # Currently only determining success based on cocina.
@@ -190,11 +190,20 @@ def validate_druid(druid, cache)
   :different
 end
 
-def normalize(cocina_hash)
+def normalize_orig(cocina_hash)
   # Remove space from source id, e.g., "sul: M0443_S2_D-K_B9_F33_011"
   source_id = cocina_hash.dig(:identification, :sourceId)
   cocina_hash[:identification][:sourceId] = source_id.gsub(/ *: */, ':') if source_id
 
+  normalize(cocina_hash)
+end
+
+def normalize(cocina_hash)
+  # Remove file and fileSet externalIdentifiers, since usually regenerated.
+  Array(cocina_hash.dig(:structural, :contains)).each do |file_set|
+    file_set.delete(:externalIdentifier)
+    Array(file_set.dig(:structural, :contains)).each { |file| file.delete(:externalIdentifier) }
+  end
   cocina_hash
 end
 

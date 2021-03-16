@@ -71,6 +71,11 @@ RSpec.describe Cocina::FromFedora::DroStructural do
   end
 
   context 'when item has resources that lack identifiers and labels' do
+    before do
+      # This gives every file and file set the same UUID. In reality, they would be unique.
+      allow(SecureRandom).to receive(:uuid).and_return('123-456-789')
+    end
+
     let(:xml) do
       <<~XML
         <contentMetadata type="file" objectId="druid:dd116zh0343">
@@ -120,11 +125,10 @@ RSpec.describe Cocina::FromFedora::DroStructural do
 
       resource1 = structural[:contains].first
       expect(resource1[:label]).to eq 'Folder 1'
-      expect(resource1[:externalIdentifier]).to eq "#{item.pid}_1"
+      expect(resource1[:externalIdentifier]).to eq 'http://cocina.sul.stanford.edu/fileSet/123-456-789'
 
       resource2 = structural[:contains].second
-      expect(resource2[:label]).to eq "#{item.pid}_2"
-      expect(resource2[:externalIdentifier]).to eq "#{item.pid}_2"
+      expect(resource2[:label]).to eq 'http://cocina.sul.stanford.edu/fileSet/123-456-789'
     end
   end
 
