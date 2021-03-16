@@ -2415,8 +2415,16 @@
 							<!-- SUL edit 20200825 issue #1000
 							<xsl:call-template name="part"/>-->
 						</titleInfo>
+						<!-- SUL edit 20210316 issue #2493 -->
+						<xsl:if test="marc:subfield[@code = 'a']">
 						<name type="personal">
-							<xsl:call-template name="xxx880"/>
+							<!-- SUL edit 20210316 issue #2493 -->
+							<xsl:if test="
+								substring-after(marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '700')],'-') =
+								substring-after(marc:subfield[@code = '6'], '-')">
+								<xsl:call-template name="xxx880"/>
+							<!-- SUL edit 20210316 issue #2493 -->
+							</xsl:if>
 							<namePart>
 								<!-- SUL edit 20200828 issue #1017 -->
 								<xsl:call-template name="chopPunctuation">
@@ -2437,6 +2445,8 @@
 							<xsl:call-template name="nameDate"/>
 							<xsl:call-template name="role"/>
 						</name>
+						<!-- SUL edit 20210316 issue #2493 -->
+						</xsl:if>
 						<xsl:call-template name="relatedForm"/>
 						<!-- issn -->
 						<xsl:apply-templates select="marc:subfield[@code = 'x']" mode="relatedItem"
@@ -5706,7 +5716,6 @@
 			<!-- SUL edit 20200917 issue #1069
 		<xsl:if test="@ind1 = '0' or @ind1 = '1'"> -->
 			<name type="personal">
-				<xsl:call-template name="xxx880"/>
 				<!-- 1.123 Add nameTitleGroup attribute if necessary -->
 				<xsl:call-template name="nameTitleGroup"/>
 				<!-- 1.122 -->
