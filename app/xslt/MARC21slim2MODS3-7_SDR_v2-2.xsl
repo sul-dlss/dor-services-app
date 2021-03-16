@@ -5428,7 +5428,10 @@
 	</xsl:template>
 	<!-- 1.79 -->
 	<xsl:template name="createTitleInfoFrom245">
-		<titleInfo>
+		<!-- SUL edit 20210316 issue #2476 -->
+		<titleInfo usage="primary">
+		<!-- SUL edit 20210316 issue #2476
+		<titleInfo> -->
 			<xsl:call-template name="xxx880"/>
 			<xsl:variable name="title">
 				<xsl:choose>
