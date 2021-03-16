@@ -1,13 +1,18 @@
 # frozen_string_literal: true
 
-require 'active_support/gzip'
+require 'dry/monads'
+require 'zip'
 
 # Support local caching of DOR content (for validating cocina mappings)
 class FedoraCache
   include Rubydora::FedoraUrlHelpers
+  include Dry::Monads[:result]
 
-  def initialize(overwrite: false)
+  DATASTREAMS = %w[descMetadata identityMetadata rightsMetadata contentMetadata geoMetadata RELS-EXT].freeze
+
+  def initialize(overwrite: false, cache_dir: nil)
     @overwrite = overwrite
+    @cache_dir = cache_dir || ENV['FEDORA_CACHE'] || 'cache'
   end
 
   def connection
@@ -21,85 +26,102 @@ class FedoraCache
     )
   end
 
-  def cache_object(druid)
-    cache_id = cache_id_for_object(druid)
-    return if cached?(cache_id) && !overwrite
+  def cache(druid)
+    return if cached?(druid) && !overwrite
 
+    object = fetch_object(druid)
+    return if object.nil?
+
+    zip_path = zip_path_for(druid)
+    path = File.dirname(zip_path)
+    FileUtils.mkdir_p(path) unless Dir.exist?(path)
+
+    Zip::File.open(zip_path, Zip::File::CREATE) do |zipfile|
+      zipfile.get_output_stream('object.xml') { |file| file.write(object) }
+      DATASTREAMS.each do |dsid|
+        datastream = fetch_datastream(druid, dsid)
+        next if datastream.nil?
+
+        zipfile.get_output_stream("#{dsid}.xml") { |file| file.write(datastream) }
+      end
+    end
+  end
+
+  def cached?(druid)
+    File.exist?(zip_path_for(druid))
+  end
+
+  def label_and_desc_metadata(druid)
+    result = get_cache(druid, only: ['object', 'descMetadata'])
+    return result if result.failure?
+
+    contents = result.value!
+    Success([label_for(contents['object']), contents['descMetadata']])
+  end
+
+  def label_and_datastreams(druid)
+    result = get_cache(druid)
+    return result if result.failure?
+
+    contents = result.value!
+    Success([label_for(contents['object']), contents.except('object')])
+  end
+
+  def datastream(druid, dsid)
+    result = get_cache(druid, only: [dsid])
+    return result if result.failure?
+
+    contents = result.value!
+    return Failure() unless contents.key?(dsid)
+
+    Success(contents[dsid])
+  end
+
+  private
+
+  attr_reader :overwrite, :cache_dir
+
+  def fetch_object(druid)
     resp = connection.get(object_url(druid, { format: 'xml' }))
     return if resp.status == 404
 
     raise "Getting object for #{druid} returned #{resp.status}" if resp.status != 200
 
-    put_cache(cache_id, resp.body)
+    resp.body
   end
 
-  def object(druid)
-    cache_id = cache_id_for_object(druid)
-    get_cache(cache_id)
-  end
-
-  def cache_descmd(druid)
-    cache_id = cache_id_for_descmd(druid)
-    return if cached?(cache_id) && !overwrite
-
-    resp = connection.get(datastream_content_url(druid, 'descMetadata', { format: 'xml' }))
+  def fetch_datastream(druid, dsid)
+    resp = connection.get(datastream_content_url(druid, dsid, { format: 'xml' }))
     return if resp.status == 404
 
-    raise "Getting descMetadata for #{druid} returned #{resp.status}" if resp.status != 200
+    raise "Getting #{dsid} for #{druid} returned #{resp.status}" if resp.status != 200
 
-    put_cache(cache_id, resp.body)
+    resp.body
   end
 
-  def descmd(druid)
-    cache_id = cache_id_for_descmd(druid)
-    get_cache(cache_id)
+  def zip_path_for(druid)
+    id = druid.delete_prefix('druid:')
+    "#{cache_dir}/#{id[0..2]}/#{id[3..5]}/#{id}.zip"
   end
 
-  def descmd_xml(druid)
-    Nokogiri::XML(descmd(druid))
-  end
+  def get_cache(druid, only: nil)
+    return Failure() unless cached?(druid)
 
-  def label(druid)
-    ng_xml = Nokogiri::XML(object(druid))
-    ng_xml.xpath('//xmlns:objLabel').first.text
-  end
+    contents = {}
+    Zip::File.open(zip_path_for(druid)) do |zip_file|
+      zip_file.each do |entry|
+        key = entry.name.delete_suffix('.xml')
+        next unless only.nil? || only.include?(key)
 
-  private
-
-  attr_reader :overwrite
-
-  def cache_id_for_object(druid)
-    "#{druid}-object"
-  end
-
-  def cache_id_for_descmd(druid)
-    "#{druid}-descmd"
-  end
-
-  def cachepath_for(cache_id)
-    "#{cache_dir}/#{cache_id[6..8]}/#{cache_id[9..11]}/#{cache_id}.gz"
-  end
-
-  def cache_dir
-    @cache_dir ||= ENV['FEDORA_CACHE'] || 'cache'
-  end
-
-  def put_cache(cache_id, body)
-    filepath = cachepath_for(cache_id)
-    path = File.dirname(filepath)
-    FileUtils.mkdir_p(path) unless Dir.exist?(path)
-    Zlib::GzipWriter.open(filepath) do |gz|
-      gz.write body
+        contents[key] = entry.get_input_stream.read
+      end
     end
+
+    Success(contents)
   end
 
-  def cached?(cache_id)
-    File.exist?(cachepath_for(cache_id))
-  end
-
-  def get_cache(cache_id)
-    raise 'Missing item' unless cached?(cache_id)
-
-    Zlib::GzipReader.open(cachepath_for(cache_id)).read
+  def label_for(object)
+    ng_xml = Nokogiri::XML(object)
+    ng_xml.xpath('//xmlns:objLabel').first.text
   end
 end

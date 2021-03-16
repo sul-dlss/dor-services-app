@@ -1,0 +1,204 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+require_relative '../lib/fedora_cache'
+require_relative '../lib/data_error_notifier'
+require 'set'
+require 'optparse'
+require 'diffy'
+
+options = { random: false, druids: [], fast: false }
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/validate-desc-cocina-roundtrip [options]'
+
+  option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
+  option_parser.on('-r', '--random', 'Select random druids.')
+  option_parser.on('-f', '--fast', 'Do not write results files.')
+  option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+parser.parse!(into: options)
+
+cache = FedoraCache.new
+
+def round_tripped_ng_xml(cocina, druid)
+  Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina, druid).to_xml) { |config| config.default_xml.noblanks }
+end
+
+def cocina_props(ng_xml, druid, label, notifier)
+  title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: label)
+  Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: ng_xml, druid: druid, notifier: notifier)
+end
+
+def node_count_match?(ng_xml1, ng_xml2)
+  ng_xml1.root.elements.size == ng_xml2.root.elements.size
+end
+
+# rubocop:disable Metrics/ParameterLists
+# rubocop:disable Metrics/AbcSize
+# rubocop:disable Metrics/BlockLength
+# rubocop:disable Metrics/PerceivedComplexity
+def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, differences, reverse_differences, data_errors, mods_msg)
+  File.open("results/#{druid}.txt", 'w') do |file|
+    file.write("Druid: #{druid}\n\n")
+
+    if mods_msg.is_a?(Array)
+      mods_msg.each do |msg|
+        file.write("MODS error: #{msg}\n")
+      end
+      file.write("\nNote that data errors are from the original XML, not the normalized XML shown below.\n\n")
+    else
+      file.write("#{mods_msg}\n\n")
+    end
+
+    if data_errors.present?
+      data_errors.each do |data_error|
+        file.write("Data error: #{data_error.msg}")
+        file.write(" (#{data_error.context}") if data_error.context.present?
+        file.write("\n")
+      end
+      file.write("\nNote that data errors are from the original XML, not the normalized XML shown below.\n\n")
+    end
+
+    file.write("Node count mismatch between original and roundtripped.\n") unless node_count_match?(original_ng_xml, roundtrip_ng_xml)
+
+    differences.each_with_index do |difference, index|
+      file.write("Differences #{index + 1}\n")
+      file.write("Original node:\n#{difference.mods_node1}\n")
+      if difference.mods_node2
+        file.write("Best guess roundtripped node:\n#{difference.mods_node2}\n")
+        file.write("Difference:\n#{Diffy::Diff.new("#{difference.mods_node1}\n", "#{difference.mods_node2}\n")}\n")
+      else
+        file.write("Could not find similar roundtripped node.\n")
+      end
+    end
+
+    reverse_differences.each_with_index do |difference, index|
+      file.write("Differences #{index + 1}\n")
+      file.write("Roundtripped node:\n#{difference.mods_node1}\n")
+      if difference.mods_node2
+        file.write("Best guess original node:\n#{difference.mods_node2}\n")
+        file.write("Difference:\n#{Diffy::Diff.new("#{difference.mods_node1}\n", "#{difference.mods_node2}\n")}\n")
+      else
+        file.write("Could not find similar original node.\n")
+      end
+    end
+
+    file.write("\nOriginal XML:\n#{original_ng_xml.to_xml}\n")
+    file.write("Roundtripped XML:\n#{roundtrip_ng_xml.to_xml}\n")
+    file.write("Cocina:\n#{JSON.pretty_generate(cocina)}\n\n")
+  end
+end
+# rubocop:enable Metrics/ParameterLists
+# rubocop:enable Metrics/AbcSize
+# rubocop:enable Metrics/BlockLength
+# rubocop:enable Metrics/PerceivedComplexity
+
+def write_error(druid, original_ng_xml, cocina, error)
+  File.open("results/#{druid}.txt", 'w') do |file|
+    file.write("Druid: #{druid}\n\n")
+    file.write("Error: #{error}\n\n")
+    file.write("Expected XML:\n#{original_ng_xml.to_xml}\n\n")
+    file.write("Cocina:\n#{JSON.pretty_generate(cocina)}\n\n") if cocina
+    file.write("Backtrace:\n")
+    file.write(error.backtrace.join("\n"))
+  end
+end
+
+def validate_mods(ng_xml)
+  result = ModsValidator.valid?(ng_xml)
+
+  result.failure? ? result.failure : 'Valid MODS'
+end
+
+# rubocop:disable Metrics/CyclomaticComplexity
+def validate_druid(druid, cache, fast: false)
+  result = cache.label_and_desc_metadata(druid)
+  return :missing if result.failure?
+
+  label, original_xml = result.value!
+  original_ng_xml = Nokogiri::XML(original_xml)
+
+  notifier = DataErrorNotifier.new
+  begin
+    cocina_props = cocina_props(original_ng_xml, druid, label, notifier)
+    cocina = Cocina::Models::Description.new(cocina_props)
+  rescue StandardError => e
+    write_error(druid, original_ng_xml, cocina_props, e) unless fast
+    return :to_cocina_error
+  end
+
+  begin
+    # Perform approved XML normalization changes to avoid noise in roundtrip failures
+    norm_original_ng_xml = Cocina::ModsNormalizer.normalize(mods_ng_xml: original_ng_xml, druid: druid, label: label)
+  rescue StandardError => e
+    write_error(druid, original_ng_xml, cocina_props, e) unless fast
+    return :mods_normalizer_error
+  end
+
+  begin
+    roundtrip_ng_xml = round_tripped_ng_xml(cocina, druid)
+  rescue StandardError => e
+    write_error(druid, original_ng_xml, cocina_props, e) unless fast
+    return :to_fedora_error
+  end
+
+  if fast
+    return ModsEquivalentService.equivalent?(norm_original_ng_xml, roundtrip_ng_xml) ? :success : :different
+  end
+
+  equiv = ModsEquivalentService.equivalent_with_result?(norm_original_ng_xml, roundtrip_ng_xml)
+
+  return :success if equiv.success?
+
+  # If not equivalent, but no diffs reported, then try in reverse.
+  reverse_equiv = ModsEquivalentService.equivalent_with_result?(roundtrip_ng_xml, norm_original_ng_xml) if equiv.failure.empty?
+
+  write_result(druid,
+               norm_original_ng_xml,
+               roundtrip_ng_xml,
+               cocina_props,
+               equiv.failure,
+               Array(reverse_equiv&.failure),
+               notifier.data_errors,
+               validate_mods(original_ng_xml))
+  :different
+end
+# rubocop:enable Metrics/CyclomaticComplexity
+
+def percentage(raw_num, denom)
+  (100 * raw_num.to_f / denom).round(3)
+end
+
+unless options[:fast]
+  FileUtils.rm_rf('results')
+  FileUtils.mkdir_p('results')
+end
+
+if options[:druids].empty?
+  druids = File.read('druids.txt').split
+  druids.shuffle! if options[:random]
+  druids = druids.take(options[:sample]) if options[:sample]
+else
+  druids = options[:druids]
+end
+
+results = Parallel.map(druids, progress: 'Testing') do |druid|
+  validate_druid(druid, cache, fast: options[:fast])
+end
+counts = { different: 0, success: 0, to_cocina_error: 0, to_fedora_error: 0, missing: 0, mods_normalizer_error: 0 }
+results.each { |result| counts[result] += 1 }
+
+denom = druids.size - counts[:missing]
+
+puts "Status (n=#{druids.size}; not using Missing for success/different/error stats):"
+puts "  Success:   #{counts[:success]} (#{percentage(counts[:success], denom)}%)"
+puts "  Different: #{counts[:different]} (#{percentage(counts[:different], denom)}%)"
+puts "  To Cocina error:     #{counts[:to_cocina_error]} (#{percentage(counts[:to_cocina_error], denom)}%)"
+puts "  To Fedora error:     #{counts[:to_fedora_error]} (#{percentage(counts[:to_fedora_error], denom)}%)"
+puts "  MODS normalizer error:     #{counts[:mods_normalizer_error]} (#{percentage(counts[:mods_normalizer_error], denom)}%)"
+puts "  Missing (no descMetadata):     #{counts[:missing]} (#{(100 * counts[:missing].to_f / druids.size).round(3)}%)"

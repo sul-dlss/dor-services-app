@@ -9,7 +9,9 @@ gem 'rails', '~> 5.2.0'
 gem 'puma', '~> 3.12'
 
 group :development do
+  gem 'dor-services-client' # used by bin/validate-cocina-roundtrip
   gem 'listen', '~> 3.0.5'
+  gem 'rubyzip', '>= 1.0.0'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'

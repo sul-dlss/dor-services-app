@@ -22,14 +22,16 @@ module Cocina
 
     # @param [Dor::Abstract] item the Fedora object to convert to a cocina object
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
+    # @param [Cocina::FromFedora::DataErrorNotifier] notifier
     # @raises [SolrConnectionError,UnsupportedObjectType,MissingSourceID]
-    def self.build(item)
-      new(item).build
+    def self.build(item, notifier: nil)
+      new(item, notifier: notifier).build
     end
 
     # @param [Dor::Abstract] item the Fedora object to convert to a cocina object
-    def initialize(item)
+    def initialize(item, notifier: nil)
       @item = item
+      @notifier = notifier
     end
 
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
@@ -37,11 +39,11 @@ module Cocina
     def build
       klass = cocina_klass
       props = if klass == Cocina::Models::DRO
-                FromFedora::DRO.props(item)
+                FromFedora::DRO.props(item, notifier: notifier)
               elsif klass == Cocina::Models::Collection
-                FromFedora::Collection.props(item)
+                FromFedora::Collection.props(item, notifier: notifier)
               elsif klass == Cocina::Models::AdminPolicy
-                FromFedora::APO.props(item)
+                FromFedora::APO.props(item, notifier: notifier)
               else
                 raise "unable to build '#{klass}'"
               end
@@ -53,7 +55,7 @@ module Cocina
 
     private
 
-    attr_reader :item
+    attr_reader :item, :notifier
 
     # @todo This should have more specific type such as found in identityMetadata.objectType
     def cocina_klass

@@ -5,7 +5,7 @@ require 'rails_helper'
 # Tests whether partial updates are handled correctly.
 # It does not test the updates themselves.
 RSpec.describe Cocina::ObjectUpdater do
-  subject(:update) { described_class.run(item, cocina_object) }
+  subject(:update) { described_class.run(item, cocina_object, event_factory: event_factory, trial: trial) }
 
   # For the existing item.
   let(:orig_cocina_object) do
@@ -19,11 +19,16 @@ RSpec.describe Cocina::ObjectUpdater do
 
   let(:cocina_attrs) { orig_cocina_attrs }
 
+  let(:event_factory) { class_double(EventFactory) }
+
+  let(:trial) { false }
+
   before do
     allow(Cocina::Mapper).to receive(:build).and_return(orig_cocina_object)
     allow(Cocina::ApoExistenceValidator).to receive(:new).and_return(instance_double(Cocina::ApoExistenceValidator, valid?: true))
     allow(Settings.enabled_features).to receive(:update_descriptive).and_return(true)
     allow(AdministrativeTags).to receive(:for).and_return([])
+    allow(event_factory).to receive(:create)
   end
 
   context 'when an admin policy' do
@@ -505,6 +510,73 @@ RSpec.describe Cocina::ObjectUpdater do
           expect(content_metadata).not_to have_received(:contentType=)
         end
       end
+    end
+  end
+
+  context 'when a trial' do
+    let(:item) do
+      instance_double(Dor::Item, pid: 'druid:bc123df4567',
+                                 label: 'orig label',
+                                 contentMetadata: content_metadata,
+                                 descMetadata: desc_metadata)
+    end
+
+    let(:content_metadata) { double }
+
+    let(:desc_metadata) { double }
+
+    let(:orig_cocina_attrs) do
+      {
+        type: 'http://cocina.sul.stanford.edu/models/media.jsonld',
+        externalIdentifier: 'druid:bc123df4567',
+        label: 'orig label',
+        version: 1,
+        access: { access: 'world' },
+        administrative: { hasAdminPolicy: 'druid:dd999df4567' },
+        identification: {
+          sourceId: 'sul:8.559351',
+          catalogLinks: [{ catalog: 'symphony', catalogRecordId: '10121797' }]
+        }
+      }
+    end
+
+    let(:trial) { true }
+
+    before do
+      allow(item).to receive(:label=)
+      allow(item).to receive(:admin_policy_object_id=)
+      allow(item).to receive(:source_id=)
+      allow(item).to receive(:catkey=)
+      allow(item).to receive(:collection_ids=)
+      allow(item).to receive(:save!)
+      allow(Cocina::ToFedora::Identity).to receive(:apply)
+      allow(desc_metadata).to receive(:content=)
+      allow(desc_metadata).to receive(:content_will_change!)
+      allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Document.new)
+      allow(AdministrativeTags).to receive(:create)
+      allow(content_metadata).to receive(:contentType=)
+      allow(Cocina::ToFedora::Identity).to receive(:apply)
+      allow(Cocina::ToFedora::DROAccess).to receive(:apply)
+    end
+
+    it 'updates but does not save' do
+      update
+      expect(item).not_to have_received(:save!)
+      expect(event_factory).not_to have_received(:create)
+      expect(AdministrativeTags).not_to have_received(:create)
+
+      expect(item).to have_received(:label=)
+      expect(item).to have_received(:admin_policy_object_id=)
+      expect(item).to have_received(:source_id=)
+      expect(item).to have_received(:catkey=)
+      expect(item).to have_received(:collection_ids=)
+      expect(Cocina::ToFedora::Identity).to have_received(:apply)
+      expect(desc_metadata).to have_received(:content=)
+      expect(desc_metadata).to have_received(:content_will_change!)
+      expect(Cocina::ToFedora::Descriptive).to have_received(:transform)
+      expect(content_metadata).to have_received(:contentType=)
+      expect(Cocina::ToFedora::Identity).to have_received(:apply)
+      expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
     end
   end
 end
