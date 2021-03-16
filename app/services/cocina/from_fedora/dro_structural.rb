@@ -57,7 +57,7 @@ module Cocina
       end
 
       def create_member_order
-        reading_direction = item.contentMetadata.ng_xml.xpath('//bookData/@readingDirection').first&.value
+        reading_direction = item.contentMetadata.ng_xml.xpath('//bookData/@readingOrder').first&.value
         # See https://consul.stanford.edu/pages/viewpage.action?spaceKey=chimera&title=DOR+content+types%2C+resource+types+and+interpretive+metadata
         case reading_direction
         when 'ltr'
