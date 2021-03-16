@@ -5503,8 +5503,11 @@
 		<titleInfo>
 			<!-- 1.120 - @246/ind2=1 -->
 			<xsl:choose>
-				<xsl:when test="@ind2 = '1'">
+				<!-- SUL edit 20210316 issue #2350 -->
+				<xsl:when test="@ind2 = '1' and not(starts-with(marc:subfield[@code = '6'], '246'))">
 					<xsl:attribute name="type">translated</xsl:attribute>
+				<!-- SUL edit 20210316 issue #2350
+					<xsl:when test="@ind2 = '1'"> -->
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:attribute name="type">alternative</xsl:attribute>
