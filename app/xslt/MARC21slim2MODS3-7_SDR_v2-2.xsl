@@ -2419,9 +2419,8 @@
 						<xsl:if test="marc:subfield[@code = 'a']">
 						<name type="personal">
 							<!-- SUL edit 20210316 issue #2493 -->
-							<xsl:if test="
-								substring-after(marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '700')],'-') =
-								substring-after(marc:subfield[@code = '6'], '-')">
+							<xsl:if test="substring(../marc:datafield[@tag = '700'][marc:subfield[@code = '6']][child::*[@code = 'a']], 5, 2) = $s6 and
+									substring(../marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '700')][child::*[@code = 'a']], 5, 2) = $s6">
 								<xsl:call-template name="xxx880"/>
 							<!-- SUL edit 20210316 issue #2493 -->
 							</xsl:if>
