@@ -6019,7 +6019,13 @@
 		<xsl:if test="marc:subfield[@code = 'c']">
 			<note type="statement of responsibility">
 				<!-- 1.121 -->
-				<xsl:call-template name="xxx880"/>
+				<!-- SUL edit 20210316 issue #2466 -->
+				<xsl:if test="
+					marc:datafield[@tag = '245'][marc:subfield[@code = '6']][child::*[@code = 'c']] and 
+					marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '245')][marc:subfield[@code = 'c']]">
+					<xsl:call-template name="xxx880"/>
+				<!-- SUL edit 20210316 issue #2466 -->
+				</xsl:if>
 				<xsl:call-template name="subfieldSelect">
 					<xsl:with-param name="codes">c</xsl:with-param>
 				</xsl:call-template>
