@@ -130,10 +130,11 @@ module Cocina
     end
 
     def update_descriptive
-      item.descMetadata.content = Cocina::ToFedora::Descriptive.transform(obj.description, item.pid).to_xml
+      item.descMetadata.content = Cocina::ToFedora::Descriptive.transform(obj.description, item.pid).doc.to_xml
       item.descMetadata.content_will_change!
     end
 
+    # rubocop:disable Style/GuardClause
     def validate
       validator = ValidateDarkService.new(obj)
       raise ValidationError, validator.error unless validator.valid?
@@ -144,7 +145,13 @@ module Cocina
       raise ValidationError, validator.error unless validator.valid?
 
       raise NotImplemented, 'Updating descriptive metadata not supported' if !update_descriptive? && client_attempted_metadata_update?
+
+      if has_changed?(:description) && update_descriptive? && Settings.enabled_features.validate_descriptive_roundtrip.update
+        validator = DescriptionRoundtripValidator.new(obj)
+        raise RoundtripValidationError, validator.error unless validator.valid?
+      end
     end
+    # rubocop:enable Style/GuardClause
 
     def update_descriptive?
       Settings.enabled_features.update_descriptive
