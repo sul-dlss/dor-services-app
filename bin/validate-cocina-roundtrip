@@ -111,6 +111,8 @@ end
 def load_fedora_obj(druid, cache)
   label, datastreams = cache.label_and_datastreams(druid).value!
 
+  raise 'Bad cache' unless datastreams.key?('RELS-EXT')
+
   obj = fedora_class(datastreams['RELS-EXT']).new(pid: druid, label: label)
   FedoraCache::DATASTREAMS.each do |dsid|
     datastream = datastreams[dsid]
@@ -146,6 +148,11 @@ def validate_druid(druid, cache)
     fedora_obj = load_fedora_obj(druid, cache)
   rescue StandardError => e
     return :unmapped if e.message == 'Unmapped'
+
+    if e.message == 'Bad cache'
+      write_error(druid, e)
+      return :bad_cache
+    end
 
     raise
   end
@@ -218,10 +225,10 @@ end
 results = Parallel.map(druids, progress: 'Testing') do |druid|
   validate_druid(druid, cache)
 end
-counts = { different: 0, success: 0, mapping_error: 0, update_error: 0, missing: 0, unmapped: 0 }
+counts = { different: 0, success: 0, mapping_error: 0, update_error: 0, missing: 0, unmapped: 0, bad_cache: 0 }
 results.each { |result| counts[result] += 1 }
 
-denom = druids.size - counts[:missing] - counts[:unmapped]
+denom = druids.size - counts[:missing] - counts[:unmapped] - counts[:bad_cache]
 
 puts "Status (n=#{druids.size}; not using Missing for success/different/error stats):"
 puts "  Success:   #{counts[:success]} (#{percentage(counts[:success], denom)}%)"
@@ -230,3 +237,4 @@ puts "  Mapping error:     #{counts[:mapping_error]} (#{percentage(counts[:mappi
 puts "  Update error:     #{counts[:update_error]} (#{percentage(counts[:update_error], denom)}%)"
 puts "  Missing:     #{counts[:missing]} (#{(100 * counts[:missing].to_f / druids.size).round(3)}%)"
 puts "  Unmapped:     #{counts[:unmapped]} (#{(100 * counts[:unmapped].to_f / druids.size).round(3)}%)"
+puts "  Bad cache:     #{counts[:bad_cache]} (#{(100 * counts[:bad_cache].to_f / druids.size).round(3)}%)"
