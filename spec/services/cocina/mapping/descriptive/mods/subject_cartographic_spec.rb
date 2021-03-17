@@ -134,16 +134,18 @@ RSpec.describe 'MODS subject cartographic <--> cocina mappings' do
       let(:cocina) do
         {
           form: [
-            parallelValue: [
-              {
-                value: 'Scale 1:650,000.',
-                type: 'map scale'
-              },
-              {
-                value: '比例尺 1:650,000.',
-                type: 'map scale'
-              }
-            ]
+            {
+              parallelValue: [
+                {
+                  value: 'Scale 1:650,000.',
+                  type: 'map scale'
+                },
+                {
+                  value: '比例尺 1:650,000.',
+                  type: 'map scale'
+                }
+              ]
+            }
           ]
         }
       end
