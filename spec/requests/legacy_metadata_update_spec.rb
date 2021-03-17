@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Update the legacy (datastream) metadata' do
-  let(:work) { instance_double(Dor::Item, pid: 'druid:bc123df4567', datastreams: datastreams, save!: nil) }
+  let(:item) { instance_double(Dor::Item, pid: 'druid:bc123df4567', datastreams: datastreams, save!: nil) }
   let(:create_date) { Time.zone.parse('2019-08-09T19:18:15Z') }
   let(:administrative) { instance_double(Dor::AdministrativeMetadataDS, createDate: create_date) }
   let(:contentMetadata) { instance_double(Dor::ContentMetadataDS, createDate: create_date) }
@@ -32,6 +32,18 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
     XML
   end
 
+  let(:mods_xml) do
+    <<~XML
+      <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.loc.gov/mods/v3" version="3.6"
+        xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <titleInfo>
+          <title>Chi Running</title>
+        </titleInfo>
+      </mods>
+    XML
+  end
+
   let(:datastreams) do
     {
       'administrativeMetadata' => administrative,
@@ -56,7 +68,7 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
         },
         "descriptive": {
           "updated": "2019-11-08T15:15:43Z",
-          "content": "<descMetadata></descMetadata>"
+          "content": #{mods_xml.to_json}
         },
         "relationships": {
           "updated": "2019-11-08T15:15:43Z",
@@ -87,75 +99,83 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
   end
 
   before do
-    allow(Dor).to receive(:find).and_return(work)
+    allow(Dor).to receive(:find).and_return(item)
     allow(LegacyMetadataService).to receive(:update_datastream_if_newer)
   end
 
   context 'when update is successful' do
     it 'updates the object datastreams' do
-      patch "/v1/objects/#{work.pid}/metadata/legacy",
+      patch "/v1/objects/#{item.pid}/metadata/legacy",
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(response).to have_http_status(:no_content)
 
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
-        .with(datastream: administrative,
+        .with(item: item,
+              datastream_name: 'administrativeMetadata',
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
               content: '<administrativeMetadata></administrativeMetadata>',
               event_factory: EventFactory)
 
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
-        .with(datastream: descMetadata,
+        .with(item: item,
+              datastream_name: 'descMetadata',
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
-              content: '<descMetadata></descMetadata>',
+              content: mods_xml,
               event_factory: EventFactory)
 
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
-        .with(datastream: rels_ext,
+        .with(item: item,
+              datastream_name: 'RELS-EXT',
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
               content: '<relsExt></relsExt>',
               event_factory: EventFactory)
 
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
-        .with(datastream: rightsMetadata,
+        .with(item: item,
+              datastream_name: 'rightsMetadata',
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
               content: rights_xml,
               event_factory: EventFactory)
 
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
-        .with(datastream: identityMetadata,
+        .with(item: item,
+              datastream_name: 'identityMetadata',
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
               content: '<identityMetadata></identityMetadata>',
               event_factory: EventFactory)
 
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
-        .with(datastream: provenanceMetadata,
+        .with(item: item,
+              datastream_name: 'provenanceMetadata',
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
               content: '<provMetadata></provMetadata>',
               event_factory: EventFactory)
 
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
-        .with(datastream: geo_metadata,
+        .with(item: item,
+              datastream_name: 'geoMetadata',
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
               content: '<geoMetadata></geoMetadata>',
               event_factory: EventFactory)
 
       expect(LegacyMetadataService).to have_received(:update_datastream_if_newer)
-        .with(datastream: version_metadata,
+        .with(item: item,
+              datastream_name: 'versionMetadata',
               updated: Time.zone.parse('2019-11-08T15:15:43Z'),
               content: '<versionMetadata></versionMetadata>',
               event_factory: EventFactory)
-      expect(work).to have_received(:save!)
+      expect(item).to have_received(:save!)
     end
   end
 
   context 'when fedora failed' do
     before do
-      allow(work).to receive(:save!).and_raise(Rubydora::FedoraInvalidRequest)
+      allow(item).to receive(:save!).and_raise(Rubydora::FedoraInvalidRequest)
     end
 
     it 'returns error' do
-      patch "/v1/objects/#{work.pid}/metadata/legacy",
+      patch "/v1/objects/#{item.pid}/metadata/legacy",
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(response).to have_http_status(:service_unavailable)
@@ -169,12 +189,12 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
     end
 
     it 'returns error' do
-      patch "/v1/objects/#{work.pid}/metadata/legacy",
+      patch "/v1/objects/#{item.pid}/metadata/legacy",
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(response).to have_http_status(:unprocessable_entity)
       expect(response.body).to match(/Invalid MODS/)
-      expect(work).not_to have_received(:save!)
+      expect(item).not_to have_received(:save!)
     end
   end
 end

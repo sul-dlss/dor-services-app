@@ -5,6 +5,8 @@ require 'rails_helper'
 # Tests whether partial updates are handled correctly.
 # It does not test the updates themselves.
 RSpec.describe Cocina::ObjectUpdater do
+  include Dry::Monads[:result]
+
   subject(:update) { described_class.run(item, cocina_object, event_factory: event_factory, trial: trial) }
 
   # For the existing item.
@@ -82,13 +84,11 @@ RSpec.describe Cocina::ObjectUpdater do
     end
 
     context 'when updating description' do
-      let(:description_roundtrip_validator) { instance_double(Cocina::DescriptionRoundtripValidator, 'valid?' => true) }
-
       before do
         allow(desc_metadata).to receive(:content=)
         allow(desc_metadata).to receive(:content_will_change!)
         allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
-        allow(Cocina::DescriptionRoundtripValidator).to receive(:new).and_return(description_roundtrip_validator)
+        allow(Cocina::DescriptionRoundtripValidator).to receive(:valid_from_cocina?).and_return(Success())
       end
 
       context 'when description has changed' do
@@ -198,13 +198,11 @@ RSpec.describe Cocina::ObjectUpdater do
     end
 
     context 'when updating description' do
-      let(:description_roundtrip_validator) { instance_double(Cocina::DescriptionRoundtripValidator, 'valid?' => true) }
-
       before do
         allow(desc_metadata).to receive(:content=)
         allow(desc_metadata).to receive(:content_will_change!)
         allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
-        allow(Cocina::DescriptionRoundtripValidator).to receive(:new).and_return(description_roundtrip_validator)
+        allow(Cocina::DescriptionRoundtripValidator).to receive(:valid_from_cocina?).and_return(Success())
       end
 
       context 'when description has changed' do
@@ -331,13 +329,11 @@ RSpec.describe Cocina::ObjectUpdater do
     end
 
     context 'when updating description' do
-      let(:description_roundtrip_validator) { instance_double(Cocina::DescriptionRoundtripValidator, 'valid?' => true) }
-
       before do
         allow(desc_metadata).to receive(:content=)
         allow(desc_metadata).to receive(:content_will_change!)
         allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
-        allow(Cocina::DescriptionRoundtripValidator).to receive(:new).and_return(description_roundtrip_validator)
+        allow(Cocina::DescriptionRoundtripValidator).to receive(:valid_from_cocina?).and_return(Success())
       end
 
       context 'when description has changed' do

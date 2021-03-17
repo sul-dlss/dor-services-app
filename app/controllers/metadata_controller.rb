@@ -37,7 +37,8 @@ class MetadataController < ApplicationController
       values = params[section]
       next unless values
 
-      LegacyMetadataService.update_datastream_if_newer(datastream: @item.datastreams[datastream_name],
+      LegacyMetadataService.update_datastream_if_newer(item: @item,
+                                                       datastream_name: datastream_name,
                                                        updated: Time.zone.parse(values[:updated]),
                                                        content: values[:content],
                                                        event_factory: EventFactory)

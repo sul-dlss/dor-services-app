@@ -15,12 +15,13 @@ class LegacyMetadataService
 
   # If the updated value is newer than then createDate of the datastream, then update it.
   # @raise [DatastreamValidationError] if datastream fails validation
-  def self.update_datastream_if_newer(datastream:, updated:, content:, event_factory:)
-    new(datastream: datastream, updated: updated, content: content, event_factory: event_factory).update_datastream_if_newer
+  def self.update_datastream_if_newer(item:, datastream_name:, updated:, content:, event_factory:)
+    new(item: item, datastream_name: datastream_name, updated: updated, content: content, event_factory: event_factory).update_datastream_if_newer
   end
 
-  def initialize(datastream:, updated:, content:, event_factory:)
-    @datastream = datastream
+  def initialize(item:, datastream_name:, updated:, content:, event_factory:)
+    @item = item
+    @datastream = item.datastreams[datastream_name]
     @updated = updated
     @content = content
     @event_factory = event_factory
@@ -44,7 +45,7 @@ class LegacyMetadataService
 
   private
 
-  attr_reader :datastream, :updated, :content, :event_factory
+  attr_reader :datastream, :updated, :content, :event_factory, :item
 
   def validate_rights_metadata
     result = Fedora::RightsValidator.valid?(datastream.ng_xml)
@@ -54,6 +55,11 @@ class LegacyMetadataService
   def validate_desc_metadata
     result = ModsValidator.valid?(datastream.ng_xml)
     raise DatastreamValidationError.new('MODS validation failed', detail: result.failure.join(' ')) if result.failure?
+
+    if Settings.enabled_features.validate_descriptive_roundtrip.legacy
+      result = Cocina::DescriptionRoundtripValidator.valid_from_fedora?(item)
+      raise DatastreamValidationError.new('MODS roundtripping failed', detail: result.failure) unless result.success?
+    end
 
     raise DatastreamValidationError, "#{datastream.pid} descMetadata missing required fields (<title>)" if datastream.mods_title.blank?
   end

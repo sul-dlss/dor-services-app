@@ -147,8 +147,8 @@ module Cocina
       raise NotImplemented, 'Updating descriptive metadata not supported' if !update_descriptive? && client_attempted_metadata_update?
 
       if has_changed?(:description) && update_descriptive? && Settings.enabled_features.validate_descriptive_roundtrip.update
-        validator = DescriptionRoundtripValidator.new(obj)
-        raise RoundtripValidationError, validator.error unless validator.valid?
+        result = DescriptionRoundtripValidator.valid_from_cocina?(obj)
+        raise RoundtripValidationError, result.failure unless result.success?
       end
     end
     # rubocop:enable Style/GuardClause
