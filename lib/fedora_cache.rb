@@ -32,18 +32,19 @@ class FedoraCache
     object = fetch_object(druid)
     return if object.nil?
 
+    datastreams = {}
+    DATASTREAMS.each do |dsid|
+      datastream = fetch_datastream(druid, dsid)
+      datastreams[dsid] = datastream if datastream
+    end
+
     zip_path = zip_path_for(druid)
     path = File.dirname(zip_path)
     FileUtils.mkdir_p(path) unless Dir.exist?(path)
 
     Zip::File.open(zip_path, Zip::File::CREATE) do |zipfile|
       zipfile.get_output_stream('object.xml') { |file| file.write(object) }
-      DATASTREAMS.each do |dsid|
-        datastream = fetch_datastream(druid, dsid)
-        next if datastream.nil?
-
-        zipfile.get_output_stream("#{dsid}.xml") { |file| file.write(datastream) }
-      end
+      datastreams.each_pair { |dsid, datastream| zipfile.get_output_stream("#{dsid}.xml") { |file| file.write(datastream) } }
     end
   end
 
