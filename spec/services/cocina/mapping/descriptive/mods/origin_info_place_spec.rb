@@ -108,6 +108,64 @@ RSpec.describe 'MODS originInfo place <--> cocina mappings' do
     end
   end
 
+  describe 'Place - text and code in same place element, different authority on each' do
+    xit 'not implemented - placeTerm in same place element with different authority' do
+      let(:druid) { 'druid:kn689tm8699' }
+
+      let(:mods) do
+        <<~XML
+          <originInfo displayLabel="Place of creation" eventType="production">
+            <place>
+              <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries" valueURI="http://id.loc.gov/vocabulary/countries/xxu">xxu</placeTerm>
+              <placeTerm type="text" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+            </place>
+          </originInfo>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <originInfo displayLabel="Place of creation" eventType="production">
+            <place>
+              <placeTerm type="code" authority="marccountry" authorityURI="http://id.loc.gov/vocabulary/countries" valueURI="http://id.loc.gov/vocabulary/countries/xxu">xxu</placeTerm>
+            </place>
+            <place>
+              <placeTerm type="text" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n50046557">Stanford (Calif.)</placeTerm>
+            </place>
+          </originInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'production',
+              displayLabel: 'Place of creation',
+              location: [
+                {
+                  code: 'xxu',
+                  uri: 'http://id.loc.gov/vocabulary/countries/xxu',
+                  source: {
+                    code: 'marccountry',
+                    uri: 'http://id.loc.gov/vocabulary/countries'
+                  }
+                },
+                {
+                  value: 'Stanford (Calif.)',
+                  uri: 'http://id.loc.gov/authorities/names/n50046557',
+                  source: {
+                    uri: 'http://id.loc.gov/authorities/names'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Place - text and code in different place elements' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
