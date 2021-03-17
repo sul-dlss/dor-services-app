@@ -105,7 +105,73 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     end
   end
 
-  describe 'Name subject with authority' do
+  describe 'Name subject with description' do
+    xit 'not implemented - name subject with description' do
+      let(:druid) { 'druid:fv368nn6038' }
+
+      let(:mods) do
+        <<~XML
+          <subject>
+            <name type="personal" authority="naf">
+              <namePart type="family">Russell</namePart>
+              <namePart type="given">William</namePart>
+              <namePart type="termsOfAddress">Lord</namePart>
+              <namePart type="date">1639-1683</namePart>
+              <description>bart</description>
+              <displayForm>Russell, William, Lord, 1639-1683, bart</displayForm>
+            </name>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              type: 'person',
+              source: {
+                code: 'naf'
+              },
+              parallelValue: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Russell',
+                      type: 'surname'
+                    },
+                    {
+                      value: 'William',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Lord',
+                      type: 'term of address'
+                    },
+                    {
+                      value: '1639-1683',
+                      type: 'life dates'
+                    }
+                  ]
+                },
+                {
+                  value: 'Russell, William, Lord, 1639-1683, bart',
+                  type: 'display'
+                }
+              ],
+              note: [
+                {
+                  value: 'bart',
+                  type: 'description'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Name subject with authority on both subject and name' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -136,9 +202,9 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     end
   end
 
-  describe 'Name subject with authority with multiple name parts' do
+  describe 'Name subject with authority on subject and multiple name parts' do
     # adapted from cc942cg0153
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated spec not implemented: name subject with authority on subject' do
       let(:mods) do
         <<~XML
           <subject authority="lcsh" valueURI="http://id.loc.gov/authorities/names/n2006022928">
@@ -153,7 +219,7 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
       let(:roundtrip_mods) do
         <<~XML
           <subject authority="lcsh">
-            <name type="personal" authority="lcsh" valueURI="http://id.loc.gov/authorities/names/n2006022928">
+            <name type="personal" valueURI="http://id.loc.gov/authorities/names/n2006022928">
               <namePart>Morgan, Lee</namePart>
               <namePart type="termsOfAddress">II.</namePart>
             </name>
