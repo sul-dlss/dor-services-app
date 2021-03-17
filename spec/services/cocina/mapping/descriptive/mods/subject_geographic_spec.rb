@@ -424,7 +424,7 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
 
   describe 'Multiple geographic codes' do
     # Adapted from druid:zz236hg5740
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated spec not implemented: multiple geographic codes' do
       let(:mods) do
         <<~XML
           <subject>
@@ -441,9 +441,17 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
         <<~XML
           <subject authority="marcgac">
             <geographicCode>n-us-tx</geographicCode>
+          </subject>
+          <subject authority="marcgac">
             <geographicCode>n-us-ca</geographicCode>
+          </subject>
+          <subject authority="marcgac">
             <geographicCode>n-us-or</geographicCode>
+          </subject>
+          <subject authority="marcgac">
             <geographicCode>n-us-nm</geographicCode>
+          </subject>
+          <subject authority="marcgac">
             <geographicCode>n-us-ut</geographicCode>
           </subject>
         XML
@@ -453,38 +461,38 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
         {
           subject: [
             {
-              groupedValue: [
-                {
-                  source: {
-                    code: 'marcgac'
-                  },
-                  code: 'n-us-tx'
-                },
-                {
-                  source: {
-                    code: 'marcgac'
-                  },
-                  code: 'n-us-ca'
-                },
-                {
-                  source: {
-                    code: 'marcgac'
-                  },
-                  code: 'n-us-or'
-                },
-                {
-                  source: {
-                    code: 'marcgac'
-                  },
-                  code: 'n-us-nm'
-                },
-                {
-                  source: {
-                    code: 'marcgac'
-                  },
-                  code: 'n-us-ut'
-                }
-              ],
+              source: {
+                code: 'marcgac'
+              },
+              code: 'n-us-tx',
+              type: 'place'
+            },
+            {
+              source: {
+                code: 'marcgac'
+              },
+              code: 'n-us-ca',
+              type: 'place'
+            },
+            {
+              source: {
+                code: 'marcgac'
+              },
+              code: 'n-us-or',
+              type: 'place'
+            },
+            {
+              source: {
+                code: 'marcgac'
+              },
+              code: 'n-us-nm',
+              type: 'place'
+            },
+            {
+              source: {
+                code: 'marcgac'
+              },
+              code: 'n-us-ut',
               type: 'place'
             }
           ]

@@ -50,6 +50,35 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
     end
   end
 
+  describe 'Genre subject with type' do
+    xit 'not implemented: genre subject with type' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <genre type="style">Art Deco</genre>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Art Deco',
+              type: 'genre',
+              note: [
+                {
+                  value: 'style',
+                  type: 'genre type'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   # Bad data handling
 
   describe 'With multiple primary' do

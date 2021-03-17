@@ -223,4 +223,41 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Classification source code includes edition after slash' do
+    xit 'not implemented: classification source code includes edition after slash' do
+      let(:mods) do
+        <<~XML
+          <classification authority="ddc/11">683</classification>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <classification authority="ddc" edition="11">683</classification>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              type: 'classification',
+              value: '683',
+              source: {
+                code: 'ddc',
+                version: '11'
+              }
+            }
+          ]
+        }
+      end
+
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Authority code includes edition', context: { type: 'classification' })
+        ]
+      end
+    end
+  end
 end

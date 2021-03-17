@@ -65,8 +65,10 @@ RSpec.describe 'MODS genre <--> cocina mappings' do
               value: 'Art Deco',
               type: 'genre',
               note: [
-                value: 'style',
-                type: 'genre type'
+                {
+                  value: 'style',
+                  type: 'genre type'
+                }
               ]
             }
           ]
