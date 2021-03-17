@@ -540,6 +540,27 @@ paths:
               properties:
                 administrative_tag:
                   $ref: '#/components/schemas/AdministrativeTag'
+  '/v1/objects/{id}/apply_admin_policy_defaults':
+    post:
+      tags:
+        - objects
+      summary: Applies the default values (copyright, use_statement, rights) from the admin policy
+      description: ''
+      operationId: 'admin_policy_defaults#apply'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
   '/v1/objects/{id}/refresh_metadata':
     post:
       tags:

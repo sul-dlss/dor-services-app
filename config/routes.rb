@@ -36,6 +36,7 @@ Rails.application.routes.draw do
         post 'notify_goobi'
         post 'accession'
         post 'refresh_metadata', to: 'metadata_refresh#refresh'
+        post 'apply_admin_policy_defaults', to: 'admin_policy_defaults#apply'
       end
       resources :members, only: [:index], defaults: { format: :json }
 
