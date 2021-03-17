@@ -22,7 +22,7 @@ RSpec.describe 'Refresh metadata' do
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(RefreshMetadataAction).to have_received(:run)
-        .with(datastream: object.descMetadata, identifiers: [':catkey:123'])
+        .with(fedora_object: object, identifiers: [':catkey:123'])
       expect(object).to have_received(:save)
     end
   end
@@ -39,7 +39,7 @@ RSpec.describe 'Refresh metadata' do
       expect(response).to have_http_status(:unprocessable_entity)
       expect(response.body).to eq 'druid:1234 had no resolvable identifiers: [":uuid:1234"]'
       expect(RefreshMetadataAction).to have_received(:run)
-        .with(datastream: object.descMetadata, identifiers: [':uuid:1234'])
+        .with(fedora_object: object, identifiers: [':uuid:1234'])
       expect(object).not_to have_received(:save)
     end
   end
@@ -56,7 +56,7 @@ RSpec.describe 'Refresh metadata' do
       expect(response.status).to eq(500)
       expect(response.body).to eq('druid:1234 descMetadata missing required fields (<title>)')
       expect(RefreshMetadataAction).to have_received(:run)
-        .with(datastream: object.descMetadata, identifiers: [':catkey:123'])
+        .with(fedora_object: object, identifiers: [':catkey:123'])
       expect(object).not_to have_received(:save)
     end
   end

@@ -115,7 +115,7 @@ module Cocina
 
       # Synch from symphony if a catkey is present
       if item.catkey
-        RefreshMetadataAction.run(identifiers: ["catkey:#{item.catkey}"], datastream: item.descMetadata)
+        RefreshMetadataAction.run(identifiers: ["catkey:#{item.catkey}"], fedora_object: item)
         label = MetadataService.label_from_mods(item.descMetadata.ng_xml)
         item.label = truncate_label(label)
         item.objectLabel = label

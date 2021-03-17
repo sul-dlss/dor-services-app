@@ -14,7 +14,7 @@ RSpec.describe Cocina::ObjectCreator do
     allow(Dor).to receive(:find).with(apo).and_return(Dor::AdminPolicyObject.new)
     allow(Dor::SuriService).to receive(:mint_id).and_return('druid:mb046vj7485')
     allow(RefreshMetadataAction).to receive(:run) do |args|
-      args[:datastream].mods_title = 'foo'
+      args[:fedora_object].descMetadata.mods_title = 'foo'
     end
     allow(SynchronousIndexer).to receive(:reindex_remotely)
   end

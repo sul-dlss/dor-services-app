@@ -6,6 +6,7 @@ enabled_features:
     update: true
     create: true
     legacy: true
+    refresh: true
 
 content:
   base_dir: '/dor/workspace'
