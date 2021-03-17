@@ -132,7 +132,7 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
               source: {
                 code: 'naf'
               },
-              groupedValue: [
+              parallelValue: [
                 {
                   structuredValue: [
                     {
