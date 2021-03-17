@@ -851,6 +851,66 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
+  describe 'Name and role in different scripts' do
+    xit 'not implemented' do
+      let(:druid) { 'druid:jk495jh4582' }
+
+      let(:mods) do
+        <<~XML
+          <name type="personal" altRepGroup="08">
+            <namePart>Zhou, L.-F. (Liang-Fu)</namePart>
+            <role>
+              <roleTerm type="text">zeng bu</roleTerm>
+            </role>
+          </name>
+          <name type="personal" altRepGroup="08">
+            <namePart>周亮輔</namePart>
+            <role>
+              <roleTerm type="text">增補</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        # FIX ME: requires adding parallelContributor property to model
+        {
+          contributor: [
+            {
+              parallelContributor: [
+                {
+                  name: [
+                    {
+                      value: 'Zhou, L.-F. (Liang-Fu)'
+                    }
+                  ],
+                  role: [
+                    {
+                      value: 'zeng bu'
+                    }
+                  ]
+                },
+                {
+                  name: [
+                    {
+                      value: '周亮輔'
+                    }
+                  ],
+                  role: [
+                    {
+                      value: '增補'
+                    }
+                  ]
+                }
+              ],
+              type: 'person'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Personal name with authority' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
