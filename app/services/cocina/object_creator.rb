@@ -157,8 +157,8 @@ module Cocina
 
     def validate(obj)
       if Settings.enabled_features.validate_descriptive_roundtrip.create
-        validator = DescriptionRoundtripValidator.new(obj)
-        raise RoundtripValidationError, validator.error unless validator.valid?
+        result = DescriptionRoundtripValidator.valid_from_cocina?(obj)
+        raise RoundtripValidationError, result.failure unless result.success?
       end
 
       # Validate will raise an error if not valid.

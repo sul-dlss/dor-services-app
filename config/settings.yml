@@ -5,6 +5,7 @@ enabled_features:
   validate_descriptive_roundtrip:
     update: true
     create: true
+    legacy: true
 
 content:
   base_dir: '/dor/workspace'
