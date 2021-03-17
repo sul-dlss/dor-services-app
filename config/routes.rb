@@ -66,7 +66,7 @@ Rails.application.routes.draw do
 
       resources :events, only: [:create, :index], defaults: { format: :json }
 
-      resources :versions, only: [:create] do
+      resources :versions, only: [:create, :index] do
         collection do
           get 'openable'
           get 'current'
