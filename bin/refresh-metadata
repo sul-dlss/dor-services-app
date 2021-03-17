@@ -23,7 +23,7 @@ druids.each_with_index do |druid, index|
   puts "#{druid} (#{index + 1})\n"
   object = Dor.find(druid)
   orig_xml = object.descMetadata.ng_xml.canonicalize
-  status = RefreshMetadataAction.run(identifiers: object.identityMetadata.otherId.collect(&:to_s), datastream: object.descMetadata)
+  status = RefreshMetadataAction.run(identifiers: object.identityMetadata.otherId.collect(&:to_s), fedora_object: object)
   if status
     if orig_xml == object.descMetadata.ng_xml.canonicalize
       puts 'No change'
