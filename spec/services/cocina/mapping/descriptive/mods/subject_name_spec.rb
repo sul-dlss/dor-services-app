@@ -171,7 +171,7 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     end
   end
 
-  describe 'Name subject with authority' do
+  describe 'Name subject with authority on both subject and name' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -202,9 +202,9 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     end
   end
 
-  describe 'Name subject with authority with multiple name parts' do
+  describe 'Name subject with authority on subject and multiple name parts' do
     # adapted from cc942cg0153
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated spec not implemented: name subject with authority on subject' do
       let(:mods) do
         <<~XML
           <subject authority="lcsh" valueURI="http://id.loc.gov/authorities/names/n2006022928">
@@ -219,7 +219,7 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
       let(:roundtrip_mods) do
         <<~XML
           <subject authority="lcsh">
-            <name type="personal" authority="lcsh" valueURI="http://id.loc.gov/authorities/names/n2006022928">
+            <name type="personal" valueURI="http://id.loc.gov/authorities/names/n2006022928">
               <namePart>Morgan, Lee</namePart>
               <namePart type="termsOfAddress">II.</namePart>
             </name>
