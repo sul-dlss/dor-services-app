@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Access do
-  subject(:access) { described_class.props(item) }
+  subject(:access) { described_class.collection_props(item.rightsMetadata) }
 
   let(:item) do
     Dor::Collection.new
@@ -34,7 +34,7 @@ RSpec.describe Cocina::FromFedora::Access do
     end
 
     it 'builds the hash' do
-      expect(access).to eq(access: 'world', download: 'world')
+      expect(access).to eq(access: 'world')
     end
   end
 
@@ -58,7 +58,7 @@ RSpec.describe Cocina::FromFedora::Access do
     end
 
     it 'builds the hash' do
-      expect(access).to eq(access: 'location-based', readLocation: 'spec', download: 'location-based')
+      expect(access).to eq(access: 'location-based', readLocation: 'spec')
     end
   end
 
@@ -81,7 +81,7 @@ RSpec.describe Cocina::FromFedora::Access do
     end
 
     it 'builds the hash' do
-      expect(access).to eq(access: 'world', download: 'none')
+      expect(access).to eq(access: 'world')
     end
   end
 end

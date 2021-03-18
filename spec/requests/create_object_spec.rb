@@ -753,6 +753,14 @@ RSpec.describe 'Create object' do
                                       },
                                       administrative: {
                                         defaultObjectRights: default_object_rights,
+                                        defaultAccess: {
+                                          access: 'location-based',
+                                          download: 'location-based',
+                                          readLocation: 'ars',
+                                          copyright: 'My copyright statement',
+                                          license: 'http://opendatacommons.org/licenses/by/1.0/',
+                                          useAndReproductionStatement: 'Whatever makes you happy'
+                                        },
                                         hasAdminPolicy: 'druid:dd999df4567',
                                         disseminationWorkflow: 'assemblyWF',
                                         registrationWorkflow: %w[goobiWF registrationWF],
@@ -772,7 +780,32 @@ RSpec.describe 'Create object' do
                                       externalIdentifier: druid)
     end
 
-    let(:default_object_rights) { Dor::DefaultObjectRightsDS.new.content }
+    let(:default_object_rights) do
+      <<~XML
+        <?xml version="1.0" encoding="UTF-8"?>
+
+        <rightsMetadata>
+           <access type="discover">
+              <machine>
+                 <world/>
+              </machine>
+           </access>
+           <access type="read">
+              <machine>
+                 <location>ars</location>
+              </machine>
+           </access>
+           <use>
+              <human type="openDataCommons">Open Data Commons Attribution License 1.0</human>
+              <machine type="openDataCommons" uri="http://opendatacommons.org/licenses/by/1.0/">odc-by</machine>
+              <human type="useAndReproduction">Whatever makes you happy</human>
+           </use>
+           <copyright>
+              <human>My copyright statement</human>
+           </copyright>
+        </rightsMetadata>
+      XML
+    end
 
     let(:data) do
       <<~JSON
@@ -780,6 +813,14 @@ RSpec.describe 'Create object' do
           "label":"This is my label","version":1,
           "administrative":{
             "defaultObjectRights":#{default_object_rights.to_json},
+            "defaultAccess":{
+              "access":"location-based",
+              "download":"location-based",
+              "readLocation":"ars",
+              "copyright":"My copyright statement",
+              "license":"http://opendatacommons.org/licenses/by/1.0/",
+              "useAndReproductionStatement":"Whatever makes you happy"
+            },
             "disseminationWorkflow":"assemblyWF",
             "registrationWorkflow":["goobiWF","registrationWF"],
             "collectionsForRegistration":["druid:gg888df4567","druid:bb888gg4444"],
@@ -824,6 +865,10 @@ RSpec.describe 'Create object' do
                                       },
                                       administrative: {
                                         defaultObjectRights: default_object_rights,
+                                        defaultAccess: {
+                                          access: 'world',
+                                          download: 'world'
+                                        },
                                         hasAdminPolicy: 'druid:dd999df4567',
                                         roles: []
                                       },

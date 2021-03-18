@@ -978,6 +978,10 @@ RSpec.describe 'Update object' do
                                       },
                                       administrative: {
                                         defaultObjectRights: default_object_rights,
+                                        defaultAccess: {
+                                          access: 'world',
+                                          download: 'world'
+                                        },
                                         hasAdminPolicy: 'druid:dd999df4567',
                                         disseminationWorkflow: 'assemblyWF',
                                         registrationWorkflow: %w[goobiWF registrationWF],

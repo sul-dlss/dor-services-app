@@ -18,9 +18,10 @@ module Cocina
       def props
         {
           access: access_rights,
-          download: download? ? access_rights : 'none'
-        }.tap do |h|
-          h[:readLocation] = location if location
+          download: download? ? access_rights : 'none',
+          readLocation: location,
+          license: license_uri
+        }.compact.tap do |h|
           h[:controlledDigitalLending] = true if cdl?
         end
       end
@@ -28,6 +29,14 @@ module Cocina
       private
 
       attr_reader :rights_metadata_ds
+
+      def license_uri
+        if rights_metadata_ds.open_data_commons.first.present?
+          Dor::OpenDataLicenseService.property(rights_metadata_ds.open_data_commons.first).uri
+        elsif rights_metadata_ds.creative_commons.first.present?
+          Dor::CreativeCommonsLicenseService.property(rights_metadata_ds.creative_commons.first).uri
+        end
+      end
 
       def rights_object
         rights_metadata_ds.dra_object.obj_lvl

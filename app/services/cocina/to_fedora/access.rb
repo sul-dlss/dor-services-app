@@ -20,7 +20,7 @@ module Cocina
 
       def apply
         # See https://github.com/sul-dlss/dor-services/blob/main/lib/dor/datastreams/rights_metadata_ds.rb
-        Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, rights_type)
+        Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, Rights.rights_type(access))
         # This invalidates the dra_object, which is necessary if re-mapping.
         item.rightsMetadata.content = item.rightsMetadata.ng_xml.to_s
         item.rightsMetadata.ng_xml_will_change!
@@ -29,19 +29,6 @@ module Cocina
       private
 
       attr_reader :item, :access
-
-      def rights_type
-        case access.access
-        when 'location-based'
-          "loc:#{access.readLocation}"
-        when 'citation-only'
-          'none'
-        when 'dark'
-          'dark'
-        else
-          access.respond_to?(:download) && access.download == 'none' ? "#{access.access}-nd" : access.access
-        end
-      end
     end
   end
 end

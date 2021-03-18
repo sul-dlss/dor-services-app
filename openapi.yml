@@ -1304,7 +1304,7 @@ components:
           deprecated: true
           default: <?xml version="1.0" encoding="UTF-8"?><rightsMetadata><access type="discover"><machine><world/></machine></access><access type="read"><machine><world/></machine></access><use><human type="useAndReproduction"/><human type="creativeCommons"/><machine type="creativeCommons" uri=""/><human type="openDataCommons"/><machine type="openDataCommons" uri=""/></use><copyright><human/></copyright></rightsMetadata>
         defaultAccess:
-          $ref: '#/components/schemas/DROAccess'
+          $ref: '#/components/schemas/AdminPolicyDefaultAccess'
         registrationWorkflow:
           description: When you register an item with this admin policy, these are the workflows that are available.
           type: array
@@ -1350,8 +1350,6 @@ components:
           description: The human readable copyright statement that applies
           example: Copyright World Trade Organization
           type: string
-        embargo:
-          $ref: '#/components/schemas/Embargo'
         download:
           description: >
             Download access level. This is used in the transition from Fedora as

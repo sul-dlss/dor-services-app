@@ -60,7 +60,6 @@ class ObjectsController < ApplicationController
                    title: 'Unable to reach Solr',
                    message: e.message)
   rescue Cocina::Mapper::UnexpectedBuildError => e
-    byebug
     json_api_error(status: :unprocessable_entity,
                    title: 'Unexpected Cocina::Mapper.build error',
                    message: e.cause,

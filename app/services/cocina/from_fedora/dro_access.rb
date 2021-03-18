@@ -9,7 +9,7 @@ module Cocina
       end
 
       def initialize(rights_metadata_ds, embargo:)
-        @rights_metadata_ds = rights_metadata_ds
+        super(rights_metadata_ds)
         @embargo = embargo
       end
 
