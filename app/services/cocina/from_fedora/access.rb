@@ -4,19 +4,15 @@ module Cocina
   module FromFedora
     # builds the Access subschema for Collections
     class Access
-      def self.props(item)
-        new(item).props
-      end
-
-      def self.collection_props(item)
-        props = new(item).props
+      def self.collection_props(rights_metadata_ds)
+        props = new(rights_metadata_ds).props
         # Collection access does not have download
         props.delete(:download)
         props
       end
 
-      def initialize(item)
-        @item = item
+      def initialize(rights_metadata_ds)
+        @rights_metadata_ds = rights_metadata_ds
       end
 
       def props
@@ -31,10 +27,10 @@ module Cocina
 
       private
 
-      attr_reader :item
+      attr_reader :rights_metadata_ds
 
       def rights_object
-        item.rightsMetadata.dra_object.obj_lvl
+        rights_metadata_ds.dra_object.obj_lvl
       end
 
       # @return [Bool] true unless the rule="no-download" has been set or if the access is citation-only or dark
@@ -67,7 +63,7 @@ module Cocina
       end
 
       def rights_xml
-        @rights_xml ||= item.rightsMetadata.ng_xml
+        @rights_xml ||= rights_metadata_ds.ng_xml
       end
 
       def stanford?

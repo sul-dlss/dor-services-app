@@ -39,13 +39,18 @@ module Cocina
           registration_workflows = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/registration/workflow/@id').map(&:value)
           registration_collections = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/registration/collection/@id').map(&:value)
           dissemination_workflow = item.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/dissemination/workflow/@id').text
-          admin[:defaultObjectRights] = item.defaultObjectRights.content
+          admin[:defaultObjectRights] = item.defaultObjectRights.content # Deprecated. Use defaultAccess instead
+          admin[:defaultAccess] = build_default_access(item.defaultObjectRights)
           admin[:disseminationWorkflow] = dissemination_workflow if dissemination_workflow.present?
           admin[:registrationWorkflow] = registration_workflows if registration_workflows.present?
           admin[:collectionsForRegistration] = registration_collections if registration_collections.present?
           admin[:hasAdminPolicy] = item.admin_policy_object_id
           admin[:roles] = build_roles
         end
+      end
+
+      def build_default_access(default_object_rights)
+        DROAccess.props(Dor::RightsMetadataDS.from_xml(default_object_rights.content), embargo: {})
       end
 
       # @return [Array<Hash>] the list of name and members

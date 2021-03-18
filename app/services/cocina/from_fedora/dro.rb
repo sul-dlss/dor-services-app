@@ -19,6 +19,7 @@ module Cocina
       # @raises [SolrConnectionError]
       # rubocop:disable Metrics/AbcSize
       def props
+        embargo = Embargo.props(item.embargoMetadata)
         {
           externalIdentifier: item.pid,
           type: dro_type,
@@ -26,7 +27,7 @@ module Cocina
           label: item.objectLabel.first || item.label,
           version: item.current_version.to_i,
           administrative: FromFedora::Administrative.props(item),
-          access: DROAccess.props(item),
+          access: DROAccess.props(item.rightsMetadata, embargo: embargo),
           structural: DroStructural.props(item, type: dro_type)
         }.tap do |props|
           title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
