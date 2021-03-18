@@ -104,6 +104,7 @@ module Cocina
       if has_changed?(:identification)
         item.source_id = obj.identification.sourceId
         item.catkey = catkey_for(obj)
+        item.identityMetadata.barcode = obj.identification.barcode
       end
 
       if has_changed?(:label) || has_changed?(:structural)

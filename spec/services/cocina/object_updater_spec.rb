@@ -291,12 +291,15 @@ RSpec.describe Cocina::ObjectUpdater do
                                  save!: nil,
                                  label: 'orig label',
                                  contentMetadata: content_metadata,
-                                 descMetadata: desc_metadata)
+                                 descMetadata: desc_metadata,
+                                 identityMetadata: identity_metadata)
     end
 
     let(:content_metadata) { double }
 
     let(:desc_metadata) { double }
+
+    let(:identity_metadata) { double }
 
     let(:orig_cocina_attrs) do
       {
@@ -397,6 +400,7 @@ RSpec.describe Cocina::ObjectUpdater do
       before do
         allow(item).to receive(:source_id=)
         allow(item).to receive(:catkey=)
+        allow(identity_metadata).to receive(:barcode=)
       end
 
       context 'when identication has changed' do
@@ -404,7 +408,8 @@ RSpec.describe Cocina::ObjectUpdater do
           orig_cocina_attrs.tap do |attrs|
             attrs[:identification] = {
               sourceId: 'sul:8.559351',
-              catalogLinks: [{ catalog: 'symphony', catalogRecordId: '10121797' }]
+              catalogLinks: [{ catalog: 'symphony', catalogRecordId: '10121797' }],
+              barcode: '36105036289127'
             }
           end
         end
@@ -413,6 +418,7 @@ RSpec.describe Cocina::ObjectUpdater do
           update
           expect(item).to have_received(:source_id=)
           expect(item).to have_received(:catkey=)
+          expect(identity_metadata).to have_received(:barcode=)
         end
       end
 
@@ -421,6 +427,7 @@ RSpec.describe Cocina::ObjectUpdater do
           update
           expect(item).not_to have_received(:source_id=)
           expect(item).not_to have_received(:catkey=)
+          expect(identity_metadata).not_to have_received(:barcode=)
         end
       end
     end
@@ -523,12 +530,15 @@ RSpec.describe Cocina::ObjectUpdater do
       instance_double(Dor::Item, pid: 'druid:bc123df4567',
                                  label: 'orig label',
                                  contentMetadata: content_metadata,
-                                 descMetadata: desc_metadata)
+                                 descMetadata: desc_metadata,
+                                 identityMetadata: identity_metadata)
     end
 
     let(:content_metadata) { double }
 
     let(:desc_metadata) { double }
+
+    let(:identity_metadata) { double }
 
     let(:orig_cocina_attrs) do
       {
@@ -562,6 +572,7 @@ RSpec.describe Cocina::ObjectUpdater do
       allow(content_metadata).to receive(:contentType=)
       allow(Cocina::ToFedora::Identity).to receive(:apply)
       allow(Cocina::ToFedora::DROAccess).to receive(:apply)
+      allow(identity_metadata).to receive(:barcode=)
     end
 
     it 'updates but does not save' do
@@ -582,6 +593,7 @@ RSpec.describe Cocina::ObjectUpdater do
       expect(content_metadata).to have_received(:contentType=)
       expect(Cocina::ToFedora::Identity).to have_received(:apply)
       expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
+      expect(identity_metadata).to have_received(:barcode=)
     end
   end
 end
