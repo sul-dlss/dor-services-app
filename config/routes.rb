@@ -55,7 +55,9 @@ Rails.application.routes.draw do
       resource :embargo, only: [:update]
       resource :shelve, only: [:create]
 
-      resources :metadata, only: [] do
+      resource :metadata, only: [] do
+        resources :datastreams, only: %i[index show]
+
         collection do
           patch 'legacy', action: :update_legacy_metadata
           get 'dublin_core'
