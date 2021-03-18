@@ -17,6 +17,7 @@ RSpec.describe 'Datastreams' do
       allow(object.versionMetadata).to receive(:new?).and_return(false)
       object.contentMetadata.content = 'howdy'
       allow(object.contentMetadata).to receive(:new?).and_return(false)
+      allow(object.contentMetadata).to receive(:versionID).and_return('contentMetadata.5')
     end
 
     it 'returns a 200' do
@@ -24,8 +25,8 @@ RSpec.describe 'Datastreams' do
           headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(response.status).to eq(200)
-      expect(response.body).to eq '[{"label":"Version Metadata","dsid":"versionMetadata","pid":"druid:mx123qw2323","size":null,"mimeType":"text/xml"},' \
-        '{"label":"Content Metadata","dsid":"contentMetadata","pid":"druid:mx123qw2323","size":null,"mimeType":"text/xml"}]'
+      expect(response.body).to eq '[{"label":"Version Metadata","dsid":"versionMetadata","pid":"druid:mx123qw2323","size":null,"mimeType":"text/xml","versionId":"v0"},' \
+        '{"label":"Content Metadata","dsid":"contentMetadata","pid":"druid:mx123qw2323","size":null,"mimeType":"text/xml","versionId":"v5"}]'
     end
   end
 
