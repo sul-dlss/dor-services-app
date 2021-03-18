@@ -10,11 +10,19 @@ class DatastreamsController < ApplicationController
     result = @item.datastreams
                   .reject { |name, instance| instance.new? || name == 'workflows' }
                   .values
-                  .map { |ds| { label: ds.label, dsid: ds.dsid, pid: ds.pid, size: ds.size, mimeType: ds.mimeType } }
+                  .map { |ds| serialize_datastream(ds) }
     render json: result
   end
 
   def show
     render xml: @item.datastreams[params[:id]].content
+  end
+
+  private
+
+  def serialize_datastream(datastream)
+    version_id = datastream.versionID.nil? ? '0' : datastream.versionID.to_s.split('.').last
+    { label: datastream.label, dsid: datastream.dsid, pid: datastream.pid,
+      size: datastream.size, mimeType: datastream.mimeType, versionId: "v#{version_id}" }
   end
 end
