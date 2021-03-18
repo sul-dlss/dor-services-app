@@ -19,32 +19,16 @@ RSpec.describe 'Administrative tags' do
   end
 
   describe '#show' do
-    context 'when item is not found' do
-      before do
-        allow(Dor).to receive(:find)
-          .and_raise(ActiveFedora::ObjectNotFoundError, "Unable to find '#{druid}' in fedora. See logger for details.")
-      end
-
-      it 'returns a 404' do
-        get "/v1/objects/#{druid}/administrative_tags",
-            headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.status).to eq(404)
-        expect(response.body).to eq('Unable to find \'druid:mx123qw2323\' in fedora. See logger for details.')
-      end
+    before do
+      allow(AdministrativeTags).to receive(:for).and_return(tags)
     end
 
-    context 'when item is found' do
-      before do
-        allow(AdministrativeTags).to receive(:for).and_return(tags)
-      end
-
-      it 'returns a 200' do
-        get "/v1/objects/#{druid}/administrative_tags",
-            headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(AdministrativeTags).to have_received(:for).with(pid: druid).once
-        expect(response.status).to eq(200)
-        expect(response.body).to eq(tags.to_json)
-      end
+    it 'returns a 200' do
+      get "/v1/objects/#{druid}/administrative_tags",
+          headers: { 'Authorization' => "Bearer #{jwt}" }
+      expect(AdministrativeTags).to have_received(:for).with(pid: druid).once
+      expect(response.status).to eq(200)
+      expect(response.body).to eq(tags.to_json)
     end
   end
 

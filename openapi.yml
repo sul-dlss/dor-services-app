@@ -364,8 +364,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AdministrativeTag'
-        '404':
-          description: Object not found
       parameters:
         - name: object_id
           in: path
