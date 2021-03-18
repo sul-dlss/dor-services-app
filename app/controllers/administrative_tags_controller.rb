@@ -3,7 +3,7 @@
 # Administrative tags controller (nested resource under objects)
 class AdministrativeTagsController < ApplicationController
   # This just validates that this is an existing object
-  before_action :load_item, only: %i[create index update destroy]
+  before_action :load_item, only: %i[create update destroy]
 
   rescue_from(ActiveFedora::ObjectNotFoundError) do |e|
     render status: :not_found, plain: e.message
