@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def has_xlink_href?(ng_xml)
+  ng_xml.xpath('//mods:*[@xlink:href]', mods: MODS_NS, xlink: 'http://www.w3.org/1999/xlink').present?
+end
+
+Report.new(name: 'desc-xlink_href', dsid: 'descMetadata', report_func: method(:has_xlink_href?)).run

@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def date_other(ng_xml)
+  date_other_types = Set.new
+  ng_xml.root.xpath('mods:originInfo/mods:dateOther', mods: MODS_NS).each do |element|
+    date_other_types << "#{element['type'] || 'NONE'} - #{element.parent['eventType'] || 'NONE'}"
+  end
+  return false if date_other_types.empty?
+
+  date_other_types.to_a.join(', ')
+end
+
+Report.new(name: 'desc-date_other', dsid: 'descMetadata', report_func: method(:date_other)).run

@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def different_places?(ng_xml)
+  # any place which has a placeTerm type=code and placeTerm type=text where authority is present and authorityURI or valueURI contains id.loc.gov/authorities
+  ng_xml.root.xpath('//mods:place[count(mods:placeTerm) = 2]', mods: MODS_NS).each do |place_node|
+    code_place_term = place_node.xpath('//mods:placeTerm[@type="code"]', mods: MODS_NS).first
+    text_place_term = place_node.xpath('//mods:placeTerm[@type="text"]', mods: MODS_NS).first
+    next unless code_place_term && text_place_term
+    next unless code_place_term['authority'] && text_place_term['authority']
+    next unless code_place_term['authorityURI'] =~ %r{id.loc.gov/authorities} || code_place_term['valueURI'] =~ %r{id.loc.gov/authorities}
+    next unless text_place_term['authorityURI'] =~ %r{id.loc.gov/authorities} || text_place_term['valueURI'] =~ %r{id.loc.gov/authorities}
+
+    return true
+  end
+  false
+end
+
+Report.new(name: 'desc-different_places', dsid: 'descMetadata', report_func: method(:different_places?)).run

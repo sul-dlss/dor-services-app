@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def elements_start_with_spaces?(ng_xml)
+  bad_elements = ng_xml.root.xpath('//mods:*[name() != "mods:identifier" and not(*) and text() and (starts-with(text(), " "))]', mods: MODS_NS)
+  return false if bad_elements.empty?
+
+  bad_elements.map(&:to_s).join('; ')
+end
+
+Report.new(name: 'desc-element_spaces', dsid: 'descMetadata', report_func: method(:elements_start_with_spaces?)).run

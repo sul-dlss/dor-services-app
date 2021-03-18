@@ -46,6 +46,14 @@ Metrics/ClassLength:
     - 'app/services/cocina/to_fedora/descriptive/related_resource.rb'
     - 'app/services/cocina/object_updater.rb'
 
+Rails/Exit:
+  Exclude:
+    - 'lib/report.rb'
+
+Rails/Output:
+  Exclude:
+    - 'lib/report.rb'
+
 RSpec/DescribeClass:
   Exclude:
     - 'spec/requests/**/*'

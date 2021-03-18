@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+KNOWN_OTHER_IDS = %w[catkey barcode uuid shelfseq callseq label dissertationid previous_catkey symphony mdtoolkit].freeze
+
+def other_ids(ng_xml)
+  ng_xml.root.xpath('//otherId/@name').map(&:content).reject { |name| KNOWN_OTHER_IDS.include?(name) }.join(', ').presence
+end
+
+Report.new(name: 'identity-other_ids', dsid: 'identityMetadata', report_func: method(:other_ids)).run
