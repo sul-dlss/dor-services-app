@@ -26,11 +26,12 @@ RSpec.describe 'Update object' do
   let(:apo) { Dor::AdminPolicyObject.new(pid: apo_druid) }
   let(:item) do
     Dor::Item.new(pid: druid,
-                  source_id: 'google_books:99999',
+                  source_id: 'googlebooks:111111',
                   label: label,
                   admin_policy_object_id: apo_druid).tap do |item|
       item.descMetadata.title_info.main_title = title
       item.contentMetadata.contentType = ['book']
+      item.identityMetadata.barcode = '36105036289000'
     end
   end
 
@@ -106,7 +107,10 @@ RSpec.describe 'Update object' do
   end
 
   let(:identification) do
-    { sourceId: 'googlebooks:999999' }
+    {
+      sourceId: 'googlebooks:999999',
+      barcode: '36105036289127'
+    }
   end
 
   it 'updates the object' do

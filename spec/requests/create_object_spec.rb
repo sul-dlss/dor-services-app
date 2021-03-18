@@ -66,7 +66,10 @@ RSpec.describe 'Create object' do
     end
 
     let(:identification) do
-      { sourceId: 'googlebooks:999999' }
+      {
+        sourceId: 'googlebooks:999999',
+        barcode: '36105036289127'
+      }
     end
 
     let(:structural) do
@@ -190,6 +193,7 @@ RSpec.describe 'Create object' do
           expect(item.objectCreator.first).to eq('DOR')
           expect(item.objectLabel.first).to eq(expected_label)
           expect(item.objectType.first).to eq('item')
+          expect(item.identityMetadata.barcode).to eq('36105036289127')
         end
       end
 

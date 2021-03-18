@@ -21,11 +21,16 @@ RSpec.describe Cocina::Mapper do
     before do
       allow(item).to receive(:collection_ids).and_return([])
       item.identityMetadata.agreementId = [agreement]
+      item.identityMetadata.barcode = '36105036289127'
       item.descMetadata.title_info.main_title = 'Hello'
       item.contentMetadata.contentType = [content_type]
 
       create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Project : Google Books'))
       create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: type))
+    end
+
+    it 'maps barcode' do
+      expect(cocina_model.identification.barcode).to eq('36105036289127')
     end
 
     context 'when item has a manuscript tag' do
@@ -282,7 +287,7 @@ RSpec.describe Cocina::Mapper do
   context 'when item is a Dor::Collection' do
     let(:item) { Dor::Collection.new(pid: 'druid:fh138mm2023', label: 'test object', admin_policy_object_id: 'druid:sc012gz0974') }
     let(:identity_metadata_ds) do
-      instance_double(Dor::IdentityMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml), catkey: '777777', source_id: nil)
+      instance_double(Dor::IdentityMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml), catkey: '777777', source_id: nil, barcode: nil)
     end
     let(:xml) do
       <<~XML

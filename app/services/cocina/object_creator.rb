@@ -82,6 +82,8 @@ module Cocina
 
         item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: pid, object: obj)
         Cocina::ToFedora::Identity.apply(item, label: obj.label, object_type: 'item', agreement_id: obj.structural&.hasAgreement)
+
+        item.identityMetadata.barcode = obj.identification.barcode if obj.identification.barcode
       end
     end
 
