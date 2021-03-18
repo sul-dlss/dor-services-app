@@ -1197,6 +1197,13 @@ components:
             - 'art'
             - 'hoover'
             - 'm&m'
+        useAndReproductionStatement:
+          description: The human readable use and reproduction statement that applies
+          example: Property rights reside with the repository. Literary rights reside with the creators of the documents or their heirs. To obtain permission to publish or reproduce, please contact the Public Services Librarian of the Dept. of Special Collections (http://library.stanford.edu/spc).
+          type: string
+        license:
+          description: The license governing reuse of the Collection. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
+          type: string
     AccessRole:
       description: Access role conferred by an AdminPolicy to objects within it. (used by Argo)
       type: object
@@ -1293,7 +1300,11 @@ components:
       properties:
         defaultObjectRights:
           type: string
+          description: This is an XML expression of the default access (see defaultAccess)
+          deprecated: true
           default: <?xml version="1.0" encoding="UTF-8"?><rightsMetadata><access type="discover"><machine><world/></machine></access><access type="read"><machine><world/></machine></access><use><human type="useAndReproduction"/><human type="creativeCommons"/><machine type="creativeCommons" uri=""/><human type="openDataCommons"/><machine type="openDataCommons" uri=""/></use><copyright><human/></copyright></rightsMetadata>
+        defaultAccess:
+          $ref: '#/components/schemas/DROAccess'
         registrationWorkflow:
           description: When you register an item with this admin policy, these are the workflows that are available.
           type: array
@@ -1308,15 +1319,72 @@ components:
           type: array
           items:
             type: string
+        hasAdminPolicy:
+          $ref: '#/components/schemas/Druid'
+        referencesAgreement:
+          $ref: '#/components/schemas/Druid'
         roles:
           description: The access roles conferred by this AdminPolicy (used by Argo)
           type: array
           items:
             $ref: '#/components/schemas/AccessRole'
-        hasAdminPolicy:
-          type: string
       required:
         - hasAdminPolicy
+    AdminPolicyDefaultAccess:
+      description: 'Provides the default access settings for an AdminPolicy. This is almost the same as DROAccess, but it provides no defaults.'
+      type: object
+      additionalProperties: false
+      properties:
+        access:
+          type: string
+          enum:
+            - 'world'
+            - 'stanford'
+            - 'location-based'
+            - 'citation-only'
+            - 'dark'
+        controlledDigitalLending:
+          description: Available for controlled digital lending.
+          type: boolean
+        copyright:
+          description: The human readable copyright statement that applies
+          example: Copyright World Trade Organization
+          type: string
+        embargo:
+          $ref: '#/components/schemas/Embargo'
+        download:
+          description: >
+            Download access level. This is used in the transition from Fedora as
+            a way to set a default download level at registration that is copied
+            down to all the files.
+
+          type: string
+          enum:
+            - 'world'
+            - 'stanford'
+            - 'location-based'
+            - 'none'
+        readLocation:
+          description: >
+            If access is "location-based", which location should have access.
+            This is used in the transition from Fedora as a way to set a default
+            readLocation at registration that is copied down to all the files.
+
+          type: string
+          enum:
+            - 'spec'
+            - 'music'
+            - 'ars'
+            - 'art'
+            - 'hoover'
+            - 'm&m'
+        useAndReproductionStatement:
+          description: The human readable use and reproduction statement that applies
+          example: Property rights reside with the repository. Literary rights reside with the creators of the documents or their heirs. To obtain permission to publish or reproduce, please contact the Public Services Librarian of the Dept. of Special Collections (http://library.stanford.edu/spc).
+          type: string
+        license:
+          description: The license governing reuse of the Collection. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
+          type: string
     AppliesTo:
       description: Property model for indicating the parts, aspects, or versions of the resource to which a
         descriptive element is applicable.
@@ -1327,6 +1395,17 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DescriptiveBasicValue"
+    Barcode:
+      description: 'A barcode'
+      oneOf:
+        - $ref: '#/components/schemas/BusinessBarcode'
+        - $ref: '#/components/schemas/CatkeyBarcode'
+        - $ref: '#/components/schemas/StandardBarcode'
+    BusinessBarcode:
+      description: The barcode associated with a business library DRO object, prefixed with 2050
+      type: string
+      pattern: '^2050[0-9]{7}$'
+      example: 20503740296
     CatalogLink:
       type: object
       additionalProperties: false
@@ -1342,6 +1421,11 @@ components:
           description: Record identifier that is unique within the context of the linked record's catalog.
           type: string
           example: 11403803
+    CatkeyBarcode:
+      description: The barcode associated with a DRO object based on catkey, prefixed with 36105
+      type: string
+      pattern: '^[0-9]+-[0-9]+$'
+      example: 6772719-1001
     Collection:
       description: A group of Digital Repository Objects that indicate some type of conceptual grouping within the domain that is worth reusing across the system.
       type: object
@@ -1849,6 +1933,9 @@ components:
           description: The human readable use and reproduction statement that applies
           example: Property rights reside with the repository. Literary rights reside with the creators of the documents or their heirs. To obtain permission to publish or reproduce, please contact the Public Services Librarian of the Dept. of Special Collections (http://library.stanford.edu/spc).
           type: string
+        license:
+          description: The license governing reuse of the DRO. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
+          type: string
     DROStructural:
       description: Structural metadata
       type: object
@@ -2123,6 +2210,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CatalogLink'
+        barcode:
+          $ref: '#/components/schemas/Barcode'
     Language:
       description: Languages, scripts, symbolic systems, and notations used in all
         or part of a resource or its descriptive metadata.
@@ -2542,6 +2631,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CatalogLink'
+        barcode:
+          $ref: '#/components/schemas/Barcode'
       required:
         - sourceId
     Sequence:
@@ -2621,6 +2712,11 @@ components:
           type: string
         source:
           $ref: "#/components/schemas/Source"
+    StandardBarcode:
+      description: The standard barcode associated with a DRO object, prefixed with 36105
+      type: string
+      pattern: '^36105[0-9]{9}$'
+      example: 36105010362304
     Title:
       type: object
       additionalProperties: false
