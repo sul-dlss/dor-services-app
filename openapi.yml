@@ -775,6 +775,46 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateLegacyMetadata'
+  '/v1/objects/{object_id}/metadata/datastreams':
+    get:
+      tags:
+        - objects
+      summary: Retrieve the list of datastreams
+      description: 'This is meant to be a temporary API until we can remove the datastream abstraction from the Argo UX'
+      operationId: 'datastreams#index'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/metadata/datastreams/{dsid}':
+    get:
+      tags:
+        - objects
+      summary: Retrieve the contents of a datastream
+      description: 'This is meant to be a temporary API until we can remove the datastream abstraction from the Argo UX'
+      operationId: 'datastreams#show'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+        - name: dsid
+          in: path
+          description: ID of datastream
+          required: true
+          schema:
+            type: string
   '/v1/objects/{object_id}/metadata/dublin_core':
     get:
       tags:
