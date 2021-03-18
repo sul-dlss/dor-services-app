@@ -3,6 +3,21 @@
 class VersionsController < ApplicationController
   before_action :load_item
 
+  def index
+    return render json: {} unless @item.respond_to?(:versionMetadata)
+
+    # add an entry with version id, tag and description for each version
+    versions = (1..@item.current_version.to_i).map do |version_number|
+      {
+        versionId: version_number,
+        tag: @item.versionMetadata.tag_for_version(version_number.to_s),
+        message: @item.versionMetadata.description_for_version(version_number.to_s)
+      }
+    end
+
+    render json: { versions: versions }
+  end
+
   def create
     VersionService.open(@item, open_params, event_factory: EventFactory)
     render plain: @item.current_version

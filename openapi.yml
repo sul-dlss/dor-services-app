@@ -930,6 +930,25 @@ paths:
           required: false
           description: Indicates if accessionWF should be started after closing the version
   '/v1/objects/{object_id}/versions':
+    get:
+      tags:
+        - versions
+      summary: The version log for this object
+      operationId: 'versions#index'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionLog'
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
     post:
       tags:
         - versions
@@ -2595,6 +2614,29 @@ components:
       # environments and deployed environments that use Apache & Passenger
       pattern: '^.+(\+(?:%3A|:)\+.+)+$'
       example: 'Foo+%3A+Bar+%3A+Baz'
+    Version:
+      type: object
+      description: 'Similar to the version inventory specified by OCFL: https://ocfl.io/draft/spec/#version-inventory'
+      properties:
+        versionId:
+          type: integer
+          description: the number of the version
+        tag:
+          type: string
+          description: the number of the version
+        message:
+          type: string
+          description: a message that explans what changed
+      required:
+        - number
+    VersionLog:
+      type: object
+      description: 'Similar to the version inventory specified by OCFL: https://ocfl.io/draft/spec/#version-inventory'
+      properties:
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Version'
     BackgroundJobResultResponse:
       type: object
       properties:
