@@ -8,7 +8,7 @@ module Cocina
         # @params [Nokogiri::XML::Builder] xml
         # @param [Cocina::Models::Description] descriptive
         # @param [string] druid
-        def self.write(xml:, descriptive:, druid:, id_generator: IdGenerator.new)
+        def self.write(xml:, descriptive:, druid:, id_generator: Descriptive::IdGenerator.new)
           # ID Generator makes sure that different writers create unique altRepGroups and nameTitleGroups.
           Title.write(xml: xml, titles: descriptive.title, contributors: descriptive.contributor, id_generator: id_generator) if descriptive.title
           Contributor.write(xml: xml, contributors: descriptive.contributor, titles: descriptive.title, id_generator: id_generator)
