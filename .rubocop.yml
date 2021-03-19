@@ -46,11 +46,23 @@ Metrics/ClassLength:
     - 'app/services/cocina/to_fedora/descriptive/related_resource.rb'
     - 'app/services/cocina/object_updater.rb'
 
-Rails/Exit:
+Performance/CollectionLiteralInLoop:
+  Enabled: true
+  Exclude:
+    - 'app/models/dor/update_marc_record_service.rb'
+    - 'app/models/symphony_reader.rb'
+    - 'app/services/cocina/from_fedora/descriptive/access.rb'
+    - 'app/services/cocina/from_fedora/descriptive/form.rb'
+    - 'app/services/cocina/from_fedora/descriptive/title_builder.rb'
+    - 'app/services/cocina/to_fedora/descriptive/access.rb'
+    - 'app/services/cocina/to_fedora/descriptive/related_resource.rb'
+    - 'app/services/cocina/to_fedora/descriptive/part_writer.rb'
+
+Rails/Output:
   Exclude:
     - 'lib/report.rb'
 
-Rails/Output:
+Rails/Exit:
   Exclude:
     - 'lib/report.rb'
 
@@ -333,8 +345,6 @@ Performance/AncestorsInclude: # (new in 1.7)
 Performance/BigDecimalWithNumericArgument: # (new in 1.7)
   Enabled: true
 Performance/BlockGivenWithExplicitBlock: # (new in 1.9)
-  Enabled: true
-Performance/CollectionLiteralInLoop: # (new in 1.8)
   Enabled: true
 Performance/ConstantRegexp: # (new in 1.9)
   Enabled: true

@@ -20,7 +20,9 @@ module Cocina
 
         def write
           Array(notes).each do |note|
-            if note.parallelValue
+            if note.type == 'part'
+              PartWriter.write(xml: xml, part_note: note)
+            elsif note.parallelValue
               write_parallel(note)
             else
               write_basic(note)

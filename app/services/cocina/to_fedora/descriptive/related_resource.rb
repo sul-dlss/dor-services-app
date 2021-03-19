@@ -48,10 +48,9 @@ module Cocina
         end
 
         def write
-          filtered_related_resources.each do |(attributes, new_related, orig_related)|
+          filtered_related_resources.each do |(attributes, new_related, _orig_related)|
             xml.relatedItem attributes do
               DescriptiveWriter.write(xml: xml, descriptive: new_related, druid: druid, id_generator: id_generator)
-              write_part(orig_related)
             end
           end
 
@@ -72,9 +71,7 @@ module Cocina
 
             # Filter notes
             related_hash = related.to_h
-            new_notes = related_hash.fetch(:note, []).reject do |note|
-              ['part', 'other relation type'].include?(note[:type])
-            end
+            new_notes = related_hash.fetch(:note, []).reject { |note| note[:type] == 'other relation type' }
             related_hash[:note] = new_notes.empty? ? nil : new_notes
             next if related_hash.empty?
 
@@ -101,61 +98,6 @@ module Cocina
           return nil if related.note.nil?
 
           related.note.find { |note| note.type == 'other relation type' }
-        end
-
-        def write_part(related)
-          filtered_notes = Array(related.note).select { |note| note.type == 'part' }
-          return if filtered_notes.blank?
-
-          xml.part do
-            filtered_notes.each do |note|
-              write_part_note(note)
-            end
-          end
-        end
-
-        def write_part_note(note)
-          attrs = {
-            type: note_type_for(note)
-          }.compact
-
-          detail_values = detail_values_for(note)
-          if detail_values.present?
-            xml.detail attrs do
-              detail_values.each { |detail_value| write_part_note_value(detail_value) }
-            end
-          end
-          other_note_values_for(note).each { |other_value| write_part_note_value(other_value) }
-          write_extent(note)
-        end
-
-        def write_extent(note)
-          list = note.groupedValue.find { |value| value.type == 'list' }&.value
-          return unless list
-
-          extent_attrs = {
-            unit: note.groupedValue.find { |value| value.type == 'extent unit' }&.value
-          }.compact
-          xml.extent extent_attrs do
-            xml.list list
-          end
-        end
-
-        def note_type_for(note)
-          note.groupedValue.find { |value| value.type == 'detail type' }&.value
-        end
-
-        def detail_values_for(note)
-          note.groupedValue.select { |value| %w[number caption title].include?(value.type) }
-        end
-
-        def other_note_values_for(note)
-          note.groupedValue.select { |value| %w[text date].include?(value.type) }
-        end
-
-        def write_part_note_value(value)
-          # One of the tag names is "text". Since this is also a method name, normal magic doesn't work.
-          xml.method_missing value.type, value.value
         end
       end
     end
