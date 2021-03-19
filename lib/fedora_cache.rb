@@ -57,6 +57,8 @@ class FedoraCache
     return result if result.failure?
 
     contents = result.value!
+    return Failure() unless contents.key?('object') && contents.key?('descMetadata')
+
     Success([label_for(contents['object']), contents['descMetadata']])
   end
 
