@@ -1,6 +1,3 @@
-# This Dockerfile is optimized for running in development. That means it trades
-# build speed for size. If we were using this for production, we might instead
-# optimize for a smaller size at the cost of a slower build.
 FROM ruby:2.7.2-alpine
 
 # Provide SSL defaults that work in dev/test environments where we do not require connections to secured services
@@ -11,6 +8,13 @@ ARG SETTINGS__SSL__KEY_PASS=thisisatleast4bytes
 ENV SETTINGS__SSL__CERT_FILE="${SETTINGS__SSL__CERT_FILE}"
 ENV SETTINGS__SSL__KEY_FILE="${SETTINGS__SSL__KEY_FILE}"
 ENV SETTINGS__SSL__KEY_PASS="${SETTINGS__SSL__KEY_PASS}"
+
+# Avoid https://github.com/rails/rails/issues/32451
+# This happens when Argo registers an object and dor-services-app calls dor-indexing-app
+# which calls back to dor-services-app for the list of AdministrativeTags.
+# dor-services-app cannot respond to this second request, so the indexing call times out.
+# This probably wouldn't be a problem in Rails 6, but ActiveFedora is preventing that upgrade.
+ENV RAILS_ENV=production
 
 # postgresql-client is required for invoke.sh
 RUN apk add --update --no-cache  \
@@ -28,7 +32,7 @@ WORKDIR /app
 
 COPY Gemfile Gemfile.lock ./
 
-RUN bundle install --without production
+RUN bundle install --without development test
 
 COPY . .
 
