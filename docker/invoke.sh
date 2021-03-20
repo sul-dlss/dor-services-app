@@ -22,9 +22,5 @@ set -e
 echo "Migrating db"
 bin/rails db:migrate
 
-# Create the Ur-APO ('druid:hv992ry2431') and ensure it's in Solr.
-# We can't use the remote indexing service because it depends on dor-services-app being up.
-bin/rails runner "Dor::AdminPolicyObject.create!(pid: 'druid:hv992ry2431', label: 'Ur-Apo'); ActiveFedora::SolrService.add(id: 'druid:hv992ry2431', has_model_ssim: 'info:fedora/afmodel:Dor_AdminPolicyObject'); ActiveFedora::SolrService.commit"
-
 echo "Running server"
 exec bin/puma -C config/puma.rb config.ru
