@@ -57,6 +57,7 @@ module Cocina
                                  label: obj.label).tap do |item|
         add_description(item, obj)
 
+        Cocina::ToFedora::DefaultRights.write(item.defaultObjectRights, obj.administrative.defaultAccess) if obj.administrative.defaultAccess
         Cocina::ToFedora::ApoRights.write(item.administrativeMetadata, obj.administrative)
         Cocina::ToFedora::Roles.write(item, Array(obj.administrative.roles))
         Cocina::ToFedora::Identity.apply(item, label: obj.label, object_type: 'adminPolicy')

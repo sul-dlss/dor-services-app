@@ -21,12 +21,6 @@ module Cocina
                               access: embargo.access,
                               use_and_reproduction_statement: embargo.useAndReproductionStatement)
       end
-
-      def rights_type
-        return 'cdl-stanford-nd' if access.controlledDigitalLending
-
-        super
-      end
     end
   end
 end

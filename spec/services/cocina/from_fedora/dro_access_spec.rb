@@ -3,7 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::DROAccess do
-  subject(:access) { described_class.props(item) }
+  subject(:access) { described_class.props(item.rightsMetadata, embargo: embargo) }
+
+  let(:embargo) { {} }
 
   let(:item) do
     Dor::Item.new
@@ -140,12 +142,7 @@ RSpec.describe Cocina::FromFedora::DROAccess do
   end
 
   context 'with an embargo' do
-    before do
-      EmbargoService.create(item: item,
-                            release_date: DateTime.parse('2029-02-28'),
-                            access: 'world',
-                            use_and_reproduction_statement: 'in public domain')
-    end
+    let(:embargo) { Cocina::FromFedora::Embargo.props(item.embargoMetadata) }
     # from https://argo.stanford.edu/view/druid:bb003dn0409
 
     let(:xml) do
@@ -166,8 +163,86 @@ RSpec.describe Cocina::FromFedora::DROAccess do
       XML
     end
 
+    before do
+      EmbargoService.create(item: item,
+                            release_date: DateTime.parse('2029-02-28'),
+                            access: 'world',
+                            use_and_reproduction_statement: 'in public domain')
+    end
+
     it 'has embargo' do
       expect(access).to include(embargo: { access: 'world', releaseDate: '2029-02-28T00:00:00Z', useAndReproductionStatement: 'in public domain' })
+    end
+  end
+
+  context 'with world access' do
+    let(:xml) do
+      <<~XML
+        <?xml version="1.0"?>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <world/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <world/>
+            </machine>
+          </access>
+        </rightsMetadata>
+      XML
+    end
+
+    it 'builds the hash' do
+      expect(access).to eq(access: 'world', download: 'world')
+    end
+  end
+
+  context 'with location access' do
+    let(:xml) do
+      <<~XML
+        <?xml version="1.0"?>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <world/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <location>spec</location>
+            </machine>
+          </access>
+        </rightsMetadata>
+      XML
+    end
+
+    it 'builds the hash' do
+      expect(access).to eq(access: 'location-based', readLocation: 'spec', download: 'location-based')
+    end
+  end
+
+  context 'with no-download' do
+    let(:xml) do
+      <<~XML
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <world/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <world rule="no-download"/>
+            </machine>
+          </access>
+        </rightsMetadata>
+      XML
+    end
+
+    it 'builds the hash' do
+      expect(access).to eq(access: 'world', download: 'none')
     end
   end
 end
