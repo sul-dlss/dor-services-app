@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def bad_event_type?(ng_xml)
+  ng_xml.root.xpath('mods:originInfo[@eventType = "Production" or @eventType = "publisher"]', mods: MODS_NS).present?
+end
+
+Report.new(name: 'desc-bad_event_type', dsid: 'descMetadata', report_func: method(:bad_event_type?)).run

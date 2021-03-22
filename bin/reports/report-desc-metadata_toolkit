@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def metadata_toolkit?(ng_xml)
+  ng_xml.root.xpath('//mods:recordContentSource[contains(text(), "Metadata ToolKit")]', mods: MODS_NS).present?
+end
+
+Report.new(name: 'desc-metadata_toolkit', dsid: 'descMetadata', report_func: method(:metadata_toolkit?)).run

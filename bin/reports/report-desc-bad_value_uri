@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def elements_with_bad_value_uri(ng_xml)
+  bad_elements = ng_xml.root.xpath('mods:*[@valueURI and not(starts-with(@valueURI, "http"))]', mods: MODS_NS)
+  return false if bad_elements.empty?
+
+  bad_elements.map(&:name).uniq.join(', ')
+end
+
+Report.new(name: 'desc-bad_value_uri', dsid: 'descMetadata', report_func: method(:elements_with_bad_value_uri)).run

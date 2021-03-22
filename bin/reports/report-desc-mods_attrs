@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+# rubocop:disable Layout/LineLength
+MODS_ATTRS = %w[ID access altFormat altRepGroup altType areaType authority authorityURI calendar citySectionType collection contentType dateLastAccessed displayLabel edition encoding eventType generator invalid keyDate lang level manuscript nameTitleGroup note objectPart order otherType otherTypeAuth otherTypeAuthURI otherTypeURI period point qualifier regionType script shareable source supplied transliteration type typeURI unit unitType usage valueURI version].freeze
+# rubocop:enable Layout/LineLength
+
+def check_attrs(ng_xml)
+  bad_attrs = Set.new
+  ng_xml.xpath('//@*').each do |attr|
+    # Namespace is nil for MODS
+    bad_attrs << attr.name if MODS_ATTRS.exclude?(attr.name) && attr.namespace.nil?
+  end
+  bad_attrs.present? ? bad_attrs.to_a.join(', ') : false
+end
+
+Report.new(name: 'desc-mods_attrs', dsid: 'descMetadata', report_func: method(:check_attrs)).run

@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+# rubocop:disable Layout/LineLength
+MODS_ELEMENTS = %w[abstract accessCondition affiliation alternativeName area caption cartographicExtension cartographics city citySection classification continent coordinates copyInformation copyrightDate country county date dateCaptured dateCreated dateIssued dateModified dateOther dateValid description descriptionStandard detail digitalOrigin displayForm edition electronicLocator end enumerationAndChronology etal extension extent extraTerrestrialArea form frequency genre geographic geographicCode hierarchicalGeographic holdingExternal holdingSimple identifier internetMediaType island issuance itemIdentifier language languageOfCataloging languageTerm list location mods modsCollection name nameIdentifier namePart nonSort note number occupation originInfo part partName partNumber physicalDescription physicalLocation place placeTerm projection province publisher recordChangeDate recordContentSource recordCreationDate recordIdentifier recordInfo recordInfoNote recordOrigin reformattingQuality region relatedItem role roleTerm scale scriptTerm shelfLocator start state subLocation subTitle subject tableOfContents targetAudience temporal territory text title titleInfo topic total typeOfResource url].freeze
+# rubocop:enable Layout/LineLength
+
+def check_elements(ng_xml)
+  bad_elements = Set.new
+  ng_xml.xpath('//mods:*', mods: MODS_NS).each do |element|
+    bad_elements << element.name if MODS_ELEMENTS.exclude?(element.name)
+  end
+  bad_elements.present? ? bad_elements.to_a.join(', ') : false
+end
+
+Report.new(name: 'desc-mods_elements', dsid: 'descMetadata', report_func: method(:check_elements)).run

@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def attributes_start_with_spaces?(ng_xml)
+  bad_elements = ng_xml.root.xpath('//*[(starts-with(@*, " "))]')
+  return false if bad_elements.empty?
+
+  bad_elements.map(&:to_s).join('; ')
+end
+
+Report.new(name: 'desc-attrs_spaces', dsid: 'descMetadata', report_func: method(:attributes_start_with_spaces?)).run

@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def mods_34_from_marc?(ng_xml)
+  ng_xml.root['version'] == '3.4' &&
+    ng_xml.root.xpath('mods:recordInfo/mods:recordIdentifier[starts-with(text(), "a")]', mods: MODS_NS).present?
+end
+
+Report.new(name: 'desc-mods_34_from_marc', dsid: 'descMetadata', report_func: method(:mods_34_from_marc?)).run

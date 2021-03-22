@@ -3,6 +3,7 @@
 
 require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
+require_relative '../lib/fedora_loader'
 require_relative '../lib/data_error_notifier'
 require 'set'
 require 'optparse'
@@ -25,6 +26,7 @@ end
 parser.parse!(into: options)
 
 cache = FedoraCache.new
+loader = FedoraLoader.new(cache: cache)
 
 Dor::Services::Client.configure(url: Settings.dor_services.url,
                                 token: Settings.dor_services.token)
@@ -65,96 +67,24 @@ def write_error(druid, error)
   end
 end
 
-# A little monkeypatching never hurt anyone, right?
-
-# Monkeypatch to retrieve tags using dor-services-client so that does not need to be run on dor-services-app server.
-class AdministrativeTags
-  def self.project(pid:)
-    tag = Dor::Services::Client.object(pid)
-                               .administrative_tags
-                               .list
-                               .find { |check_tag| check_tag.start_with?('Project :') }
-
-    return [] unless tag
-
-    [tag.split(' : ', 2).last]
-  end
-
-  def self.content_type(pid:)
-    tag = Dor::Services::Client.object(pid)
-                               .administrative_tags
-                               .list
-                               .find { |check_tag| check_tag.start_with?('Process : Content Type :') }
-
-    return [] unless tag
-
-    [tag.split(' : ').last]
-  end
-end
-
-module ActiveFedora
-  # Monkeypatch to avoid hitting Solr.
-  class SolrService
-    def self.query(query)
-      return unless (match = query.match(/druid:.{11}/))
-
-      [{ 'id' => match[0] }]
-    end
-
-    def self.reify_solr_results(_result)
-      []
-    end
-  end
-end
-
-def load_fedora_obj(druid, cache)
-  label, datastreams = cache.label_and_datastreams(druid).value!
-
-  raise 'Bad cache' unless datastreams.key?('RELS-EXT')
-
-  obj = fedora_class(datastreams['RELS-EXT']).new(pid: druid, label: label)
-  FedoraCache::DATASTREAMS.each do |dsid|
-    datastream = datastreams[dsid]
-    obj.datastreams[dsid].content = datastream if datastream
-  end
-  obj.relationships = obj.rels_ext.content
-  obj
-end
-
-def fedora_class(rels_ext)
-  rels_ext_ng_xml = Nokogiri::XML(rels_ext)
-  model = rels_ext_ng_xml.root.xpath('//fedora-model:hasModel', 'fedora-model' => 'info:fedora/fedora-system:def/model#').first['rdf:resource']
-  case model
-  when 'info:fedora/afmodel:Dor_Collection'
-    Dor::Collection
-  when 'info:fedora/afmodel:Dor_AdminPolicyObject'
-    Dor::AdminPolicyObject
-  when 'info:fedora/afmodel:Dor_Item'
-    Dor::Item
-  else
-    raise 'Unmapped'
-  end
-end
-
 def ng_xml_for(xml)
   Nokogiri::XML(xml) { |config| config.default_xml.noblanks }
 end
 
-def validate_druid(druid, cache)
-  return :missing unless cache.cached?(druid)
+def validate_druid(druid, loader)
+  return :missing unless loader.cached?(druid)
 
   begin
-    fedora_obj = load_fedora_obj(druid, cache)
-  rescue StandardError => e
-    return :unmapped if e.message == 'Unmapped'
-
-    if e.message == 'Bad cache'
-      write_error(druid, e)
-      return :bad_cache
-    end
-
-    raise
+    fedora_obj = loader.load(druid)
+  rescue FedoraLoader::BadCache
+    write_error(druid, e)
+    return :bad_cache
+  rescue FedoraLoader::Unmapped
+    return :unmapped
   end
+
+  orig_datastreams = {}
+  FedoraCache::DATASTREAMS.each { |dsid| orig_datastreams[dsid] = fedora_obj.datastreams[dsid]&.content }
 
   begin
     orig_cocina_obj = Cocina::Mapper.build(fedora_obj, notifier: DataErrorNotifier.new)
@@ -174,16 +104,15 @@ def validate_druid(druid, cache)
   roundtrip_cocina_hash = roundtrip_cocina_obj.to_h
 
   diff_datastreams = {}
-  FedoraCache::DATASTREAMS.each do |dsid|
-    result = cache.datastream(druid, dsid)
-    next if result.failure?
+  orig_datastreams.each_pair do |dsid, orig_datastream|
+    next if orig_datastream.nil?
 
-    orig_ds_ng_xml = ng_xml_for(result.value!)
+    orig_datastream_ng_xml = ng_xml_for(orig_datastream)
 
-    ds_ng_xml = ng_xml_for(fedora_obj.datastreams[dsid].content)
-    next if EquivalentXml.equivalent?(orig_ds_ng_xml, ds_ng_xml, { element_order: false, normalize_whitespace: false })
+    datastream_ng_xml = ng_xml_for(fedora_obj.datastreams[dsid].content)
+    next if EquivalentXml.equivalent?(orig_datastream_ng_xml, datastream_ng_xml, { element_order: false, normalize_whitespace: false })
 
-    diff_datastreams[dsid] = [orig_ds_ng_xml, ds_ng_xml]
+    diff_datastreams[dsid] = [orig_datastream_ng_xml, datastream_ng_xml]
   end
 
   return :success if DeepEqual.match?(normalize_orig(orig_cocina_hash), normalize(roundtrip_cocina_hash))
@@ -231,7 +160,7 @@ else
 end
 
 results = Parallel.map(druids, progress: 'Testing') do |druid|
-  validate_druid(druid, cache)
+  validate_druid(druid, loader)
 end
 counts = { different: 0, success: 0, mapping_error: 0, update_error: 0, missing: 0, unmapped: 0, bad_cache: 0 }
 results.each { |result| counts[result] += 1 }
