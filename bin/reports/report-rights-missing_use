@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def missing_use?(ng_xml)
+  ng_xml.root.xpath('human | machine').present?
+end
+
+Report.new(name: 'rights-missing_use', dsid: 'rightsMetadata', report_func: method(:missing_use?)).run
