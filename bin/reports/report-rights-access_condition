@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def has_access_condition?(ng_xml)
+  ng_xml.root.xpath('accessCondition').present?
+end
+
+Report.new(name: 'rights-access_condition', dsid: 'rightsMetadata', report_func: method(:has_access_condition?)).run
