@@ -433,7 +433,8 @@ RSpec.describe 'MODS part <--> cocina mappings' do
 
   describe 'Part with hierarchy' do
     # Adapted from mw409jk5241
-    xit 'not implemented: part with hierarchy' do
+    # Hierarchy indicated by multiple <detail> with type attribute.
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <relatedItem type="host" displayLabel="Published in">
