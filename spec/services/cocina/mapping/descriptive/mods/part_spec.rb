@@ -4,9 +4,8 @@ require 'rails_helper'
 
 RSpec.describe 'MODS part <--> cocina mappings' do
   describe 'Top level part' do
-    xit 'not implemented: top level part' do
-      let(:druid) { 'druid:dx023mr7150' }
-
+    # Adapted from dx023mr7150
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <part>
@@ -433,9 +432,8 @@ RSpec.describe 'MODS part <--> cocina mappings' do
   end
 
   describe 'Part with hierarchy' do
+    # Adapted from mw409jk5241
     xit 'not implemented: part with hierarchy' do
-      let(:druid) { 'druid:mw409jk5241' }
-
       let(:mods) do
         <<~XML
           <relatedItem type="host" displayLabel="Published in">

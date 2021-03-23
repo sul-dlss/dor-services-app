@@ -18,7 +18,7 @@ module Cocina
         end
 
         def build
-          abstracts + notes + table_of_contents + target_audience
+          abstracts + notes + table_of_contents + target_audience + parts
         end
 
         private
@@ -115,6 +115,12 @@ module Cocina
             elsif value_parts.present?
               attributes[:structuredValue] = value_parts.map { |value_part| { value: value_part } }
             end
+          end.compact
+        end
+
+        def parts
+          resource_element.xpath('mods:part', mods: DESC_METADATA_NS).map do |part_node|
+            PartBuilder.build(part_element: part_node)
           end.compact
         end
       end

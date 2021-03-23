@@ -89,18 +89,6 @@ Naming/VariableNumber:
     - 'spec/services/cleanup_service_spec.rb'
     - 'spec/support/datastreams.rb'
 
-# Offense count: 9
-# Configuration parameters: MinSize.
-Performance/CollectionLiteralInLoop:
-  Exclude:
-    - 'app/models/dor/update_marc_record_service.rb'
-    - 'app/models/symphony_reader.rb'
-    - 'app/services/cocina/from_fedora/descriptive/access.rb'
-    - 'app/services/cocina/from_fedora/descriptive/form.rb'
-    - 'app/services/cocina/from_fedora/descriptive/title_builder.rb'
-    - 'app/services/cocina/to_fedora/descriptive/access.rb'
-    - 'app/services/cocina/to_fedora/descriptive/related_resource.rb'
-
 # Offense count: 17
 RSpec/AnyInstance:
   Exclude:
