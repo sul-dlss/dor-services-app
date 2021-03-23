@@ -3622,8 +3622,12 @@
 				</recordIdentifier>
 			</xsl:for-each>
 			<recordOrigin>Converted from MARCXML to MODS version 3.7 using
-				MARC21slim2MODS3-7_SDR_v2-2.xsl (SUL 3.7 version 2.2 20210316; LC Revision 1.140
+				MARC21slim2MODS3-7_SDR_v2-3.xsl (SUL 3.7 version 2.3 20210322; LC Revision 1.140
 				20200717)</recordOrigin>
+			<!-- SUL edit 20210322 issue #2564
+			<recordOrigin>Converted from MARCXML to MODS version 3.7 using
+				MARC21slim2MODS3-7_SDR_v2-2.xsl (SUL 3.7 version 2.2 20210316; LC Revision 1.140
+				20200717)</recordOrigin> -->
 			<!-- SUL edit 20210316
 			<recordOrigin>Converted from MARCXML to MODS version 3.7 using
 				MARC21slim2MODS3-7_SDR_v2-1.xsl (SUL 3.7 version 2.1 20210127; LC Revision 1.140
@@ -8184,9 +8188,14 @@
 						<xsl:call-template name="z2xx880"/>
 						<!-- SUL edit 20210125 issue #1629 #1634 #1635
 						<xsl:copy-of select="$originInfoShared"/> -->
+						<!-- SUL edit 20210322 issue #2562 -->
+						<xsl:apply-templates
+							select="marc:datafield[@tag = '044']"
+							mode="originInfo"/>
+						<!-- SUL edit 20210322 issue #2562
 						<xsl:apply-templates
 							select="marc:datafield[@tag = '044']/marc:subfield[@code = 'c']"
-							mode="originInfo"/>
+							mode="originInfo"/> -->
 						<xsl:apply-templates select="marc:datafield[@tag = '260']" mode="originInfo">
 							<xsl:with-param name="leader6" select="$leader6"/>
 						</xsl:apply-templates>
