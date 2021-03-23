@@ -18,18 +18,10 @@ module Cocina
         end
 
         def write
-          xml.part do
-            attrs = {
-              type: note_type
-            }.compact
-
-            if detail_values.present?
-              xml.detail attrs do
-                detail_values.each { |detail_value| write_part_note_value(detail_value) }
-              end
-            end
-            other_note_values.each { |other_value| write_part_note_value(other_value) }
-            write_extent
+          if note.groupedValue
+            write_grouped_value
+          else
+            write_structured_value
           end
         end
 
@@ -37,28 +29,76 @@ module Cocina
 
         attr_reader :xml, :note
 
-        def write_extent
-          list = note.groupedValue.find { |value| value.type == 'list' }&.value
-          return unless list
+        def write_grouped_value
+          xml.part do
+            attrs = {
+              type: find_value(note.groupedValue, 'detail type')
+            }.compact
 
-          extent_attrs = {
-            unit: note.groupedValue.find { |value| value.type == 'extent unit' }&.value
-          }.compact
-          xml.extent extent_attrs do
-            xml.list list
+            detail_values = detail_values_for(note)
+            if detail_values.present?
+              xml.detail attrs do
+                detail_values.each { |detail_value| write_part_note_value(detail_value) }
+              end
+            end
+            other_note_values_for(note).each { |other_value| write_part_note_value(other_value) }
+            write_extent_for(note)
           end
         end
 
-        def note_type
-          note.groupedValue.find { |value| value.type == 'detail type' }&.value
+        def write_structured_value
+          xml.part do
+            note.structuredValue.each do |note_value|
+              attrs = {
+                type: find_value(note_value.groupedValue, 'detail type')
+              }.compact
+
+              detail_values = detail_values_for(note_value)
+              if detail_values.present?
+                xml.detail attrs do
+                  detail_values.each { |detail_value| write_part_note_value(detail_value) }
+                end
+              end
+              write_part_note_value(note_value) if other_note?(note_value)
+              write_extent_for(note_value)
+            end
+          end
         end
 
-        def detail_values
-          @detail_values ||= note.groupedValue.select { |value| %w[number caption title].include?(value.type) }
+        def write_extent_for(note_value)
+          list_value = find_value(note_value.groupedValue, 'list')
+          structured_values = note_value.groupedValue&.find { |value| value.structuredValue }&.structuredValue
+          if structured_values
+            start_value = find_value(structured_values, 'start')
+            end_value = find_value(structured_values, 'end')
+          end
+          return unless list_value || start_value || end_value
+
+          extent_attrs = {
+            unit: find_value(note_value.groupedValue, 'extent unit')
+          }.compact
+
+          xml.extent extent_attrs do
+            xml.list list_value if list_value
+            xml.start start_value if start_value
+            xml.end end_value if end_value
+          end
         end
 
-        def other_note_values
-          @other_note_values ||= note.groupedValue.select { |value| %w[text date].include?(value.type) }
+        def find_value(values, type)
+          values&.find { |value| value.type == type }&.value
+        end
+
+        def detail_values_for(note_value)
+          note_value.groupedValue&.select { |value| %w[number caption title].include?(value.type) }
+        end
+
+        def other_note_values_for(note_value)
+          note_value.groupedValue&.select { |value| other_note?(value) }
+        end
+
+        def other_note?(value)
+          %w[text date].include?(value.type)
         end
 
         def write_part_note_value(value)
