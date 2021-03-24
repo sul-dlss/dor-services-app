@@ -194,23 +194,22 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
               source: {
                 code: 'lcsh'
               },
-                structuredValue: [
-                  {
-                    value: 'O\'Connor, Sandra Day',
-                    type: 'name'
-                  },
-                  {
-                    value: '1930-',
-                    type: 'life dates'
-                  }
-                ],
-                note: [
-                  {
-                    value: 'Stanford Law School graduate, LL.B. (1952)',
-                    type: 'affiliation'
-                  }
-                ]
-              }
+              structuredValue: [
+                {
+                  value: 'O\'Connor, Sandra Day',
+                  type: 'name'
+                },
+                {
+                  value: '1930-',
+                  type: 'life dates'
+                }
+              ],
+              note: [
+                {
+                  value: 'Stanford Law School graduate, LL.B. (1952)',
+                  type: 'affiliation'
+                }
+              ]
             }
           ]
         }
