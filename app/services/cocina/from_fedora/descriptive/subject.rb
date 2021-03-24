@@ -270,7 +270,7 @@ module Cocina
             notifier.warn('<subject> has <Topic>; normalized to "topic"')
             attrs.merge(value: node.text, type: 'topic')
           else
-            node_type = node_type_for(node)
+            node_type = node_type_for(node, attrs[:displayLabel])
             attrs.merge(value: node.text, type: node_type) if node_type
           end
         end
@@ -312,7 +312,9 @@ module Cocina
           name_attrs.merge(attrs)
         end
 
-        def node_type_for(node)
+        def node_type_for(node, display_label)
+          return 'event' if display_label == 'Event'
+
           return NODE_TYPE.fetch(node.name) if NODE_TYPE.key?(node.name)
 
           notifier.warn('Unexpected node type for subject', name: node.name)
