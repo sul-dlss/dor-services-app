@@ -28,13 +28,12 @@ module Cocina
     end
 
     def invalid_files
-      @invalid_files ||= begin
+      @invalid_files ||=
         [].tap do |invalid_files|
           files.each do |file|
             invalid_files << file if file.administrative.shelve || file.access.access != 'dark'
           end
         end
-      end
     end
 
     def invalid_filenames
