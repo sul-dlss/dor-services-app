@@ -201,6 +201,9 @@ Style/RedundantFileExtensionInRequire:
 Style/SingleArgumentDig:
   Enabled: true
 
+Style/StringChars: # (new in 1.12)
+  Enabled: true
+
 Style/StringConcatenation:
   Enabled: true
 
