@@ -963,6 +963,33 @@ RSpec.describe 'Update object' do
       end
     end
 
+    let(:default_object_rights_expected) do
+      <<~XML
+        <?xml version="1.0" encoding="UTF-8"?>
+
+        <rightsMetadata>
+           <access type="discover">
+              <machine>
+                 <world/>
+              </machine>
+           </access>
+           <access type="read">
+              <machine>
+                 <location>ars</location>
+              </machine>
+           </access>
+           <use>
+              <human type="openDataCommons">Open Data Commons Attribution License 1.0</human>
+              <machine type="openDataCommons" uri="http://opendatacommons.org/licenses/by/1.0/">odc-by</machine>
+              <human type="useAndReproduction">Whatever makes you happy</human>
+           </use>
+           <copyright>
+              <human>My copyright statement</human>
+           </copyright>
+        </rightsMetadata>
+      XML
+    end
+
     let(:expected) do
       Cocina::Models::AdminPolicy.new(type: Cocina::Models::Vocab.admin_policy,
                                       label: 'This is my label',
@@ -977,10 +1004,14 @@ RSpec.describe 'Update object' do
                                         }
                                       },
                                       administrative: {
-                                        defaultObjectRights: default_object_rights,
+                                        defaultObjectRights: default_object_rights_expected,
                                         defaultAccess: {
-                                          access: 'world',
-                                          download: 'world'
+                                          access: 'location-based',
+                                          download: 'location-based',
+                                          readLocation: 'ars',
+                                          copyright: 'My copyright statement',
+                                          license: 'http://opendatacommons.org/licenses/by/1.0/',
+                                          useAndReproductionStatement: 'Whatever makes you happy'
                                         },
                                         hasAdminPolicy: 'druid:dd999df4567',
                                         disseminationWorkflow: 'assemblyWF',
@@ -1015,6 +1046,14 @@ RSpec.describe 'Update object' do
             "registrationWorkflow":["goobiWF","registrationWF"],
             "collectionsForRegistration":["druid:gg888df4567","druid:bb888gg4444"],
             "hasAdminPolicy":"druid:dd999df4567",
+            "defaultAccess":{
+              "access":"location-based",
+              "download":"location-based",
+              "readLocation":"ars",
+              "copyright":"My copyright statement",
+              "license":"http://opendatacommons.org/licenses/by/1.0/",
+              "useAndReproductionStatement":"Whatever makes you happy"
+            },
             "roles":[{"name":"dor-apo-manager","members":[{"type":"workgroup","identifier":"sdr:psm-staff"}]}]
           },
           "description":{"title":[{"value":"This is my title"}]}}
