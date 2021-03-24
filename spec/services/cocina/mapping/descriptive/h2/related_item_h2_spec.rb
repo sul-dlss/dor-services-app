@@ -17,7 +17,6 @@ RSpec.describe 'Cocina --> MODS mappings for relatedItem' do
         {
           relatedResource: [
             {
-              type: 'related to',
               note: [
                 {
                   value: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. Professor Maya Aguirre. Department of Earth Sciences, Stanford University.',
@@ -28,22 +27,6 @@ RSpec.describe 'Cocina --> MODS mappings for relatedItem' do
           ]
         }
       end
-    end
-
-    # type="related to" is optional.
-    let(:roundtrip_cocina) do
-      {
-        relatedResource: [
-          {
-            note: [
-              {
-                value: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. Professor Maya Aguirre. Department of Earth Sciences, Stanford University.',
-                type: 'preferred citation'
-              }
-            ]
-          }
-        ]
-      }
     end
   end
 
