@@ -138,6 +138,53 @@ RSpec.describe 'Get the object' do
       end
     end
 
+    context 'when the object has a released embargo' do
+      before do
+        EmbargoService.create(item: object, release_date: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world')
+        object.embargoMetadata.status = 'released'
+      end
+
+      let(:expected) do
+        {
+          externalIdentifier: 'druid:bc123df4567',
+          type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
+          label: 'foo',
+          version: 1,
+          access: {
+            access: 'world',
+            copyright: 'All rights reserved unless otherwise indicated.',
+            download: 'world',
+            useAndReproductionStatement: 'Property rights reside with the repository...'
+          },
+          administrative: {
+            hasAdminPolicy: 'druid:df123cd4567'
+          },
+          description: {
+            title: [
+              { value: 'Hello' }
+            ],
+            purl: 'http://purl.stanford.edu/bc123df4567',
+            access: {
+              digitalRepository: [
+                { value: 'Stanford Digital Repository' }
+              ]
+            }
+          },
+          identification: {
+            sourceId: 'src:99999'
+          },
+          structural: {}
+        }
+      end
+
+      it 'returns the object without the embargo' do
+        get '/v1/objects/druid:bc123df4567',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:ok)
+        expect(response_model).to eq expected
+      end
+    end
+
     context 'when the object is a virtual object' do
       before do
         object.contentMetadata.content = <<~XML

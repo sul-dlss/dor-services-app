@@ -14,6 +14,7 @@ module Cocina
 
       def props
         return {} unless embargo_metadata_ds.release_date.any?
+        return {} if embargo_metadata_ds.status != 'embargoed' # We don't need to map any released embargos
 
         {
           releaseDate: embargo_metadata_ds.release_date.first.utc.iso8601,
