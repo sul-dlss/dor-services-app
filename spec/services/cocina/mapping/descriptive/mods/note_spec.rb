@@ -125,6 +125,34 @@ RSpec.describe 'MODS note <--> cocina mappings' do
     end
   end
 
+  describe 'Note with type "summary"' do
+    xit 'not implemented: note with type summary' do
+      let(:mods) do
+        <<~XML
+          <note type="summary" displayLabel="Summary">This is a note.</note>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <abstract displayLabel="Summary">This is a note.</note>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'This is a note.',
+              type: 'summary',
+              displayLabel: 'Summary'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Note with ID attribute' do
     # Adapted from dn184gm5872
     it_behaves_like 'MODS cocina mapping' do
