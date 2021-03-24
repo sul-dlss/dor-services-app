@@ -171,6 +171,53 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     end
   end
 
+  describe 'Name subject with affiliation' do
+    # nx523gb3191
+    xit 'not implemented - name subject with affiliation' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <name type="personal">
+              <namePart>O'Connor, Sandra Day</namePart>
+              <namePart type="date">1930-</namePart>
+              <affiliation>Stanford Law School graduate, LL.B. (1952)</affiliation>
+            </name>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              type: 'person',
+              source: {
+                code: 'lcsh'
+              },
+                structuredValue: [
+                  {
+                    value: 'O\'Connor, Sandra Day',
+                    type: 'name'
+                  },
+                  {
+                    value: '1930-',
+                    type: 'life dates'
+                  }
+                ],
+                note: [
+                  {
+                    value: 'Stanford Law School graduate, LL.B. (1952)',
+                    type: 'affiliation'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Name subject with authority on both subject and name' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
