@@ -60,7 +60,7 @@ module Cocina
         Cocina::ToFedora::DefaultRights.write(item.defaultObjectRights, obj.administrative.defaultAccess) if obj.administrative.defaultAccess
         Cocina::ToFedora::ApoRights.write(item.administrativeMetadata, obj.administrative)
         Cocina::ToFedora::Roles.write(item, Array(obj.administrative.roles))
-        Cocina::ToFedora::Identity.apply(item, label: obj.label, object_type: 'adminPolicy')
+        Cocina::ToFedora::Identity.apply(item, label: obj.label)
       end
     end
 
@@ -69,12 +69,13 @@ module Cocina
     # @raises SymphonyReader::ResponseError if symphony connection failed
     def create_dro(obj)
       pid = Dor::SuriService.mint_id
-      Dor::Item.new(pid: pid,
-                    admin_policy_object_id: obj.administrative.hasAdminPolicy,
-                    source_id: obj.identification.sourceId,
-                    collection_ids: Array.wrap(obj.structural&.isMemberOf).compact,
-                    catkey: catkey_for(obj),
-                    label: truncate_label(obj.label)).tap do |item|
+      klass = obj.type == Cocina::Models::Vocab.agreement ? Dor::Agreement : Dor::Item
+      klass.new(pid: pid,
+                admin_policy_object_id: obj.administrative.hasAdminPolicy,
+                source_id: obj.identification.sourceId,
+                collection_ids: Array.wrap(obj.structural&.isMemberOf).compact,
+                catkey: catkey_for(obj),
+                label: truncate_label(obj.label)).tap do |item|
         add_description(item, obj)
         add_dro_tags(pid, obj)
 
@@ -82,7 +83,7 @@ module Cocina
         Cocina::ToFedora::DROAccess.apply(item, obj.access) if obj.access
 
         item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: pid, object: obj)
-        Cocina::ToFedora::Identity.apply(item, label: obj.label, object_type: 'item', agreement_id: obj.structural&.hasAgreement)
+        Cocina::ToFedora::Identity.apply(item, label: obj.label, agreement_id: obj.structural&.hasAgreement)
 
         item.identityMetadata.barcode = obj.identification.barcode if obj.identification.barcode
       end
@@ -101,7 +102,7 @@ module Cocina
         add_collection_tags(pid, obj)
         apply_default_access(item)
         Cocina::ToFedora::Access.apply(item, obj.access) if obj.access
-        Cocina::ToFedora::Identity.apply(item, label: obj.label, object_type: 'collection')
+        Cocina::ToFedora::Identity.apply(item, label: obj.label)
       end
     end
 
