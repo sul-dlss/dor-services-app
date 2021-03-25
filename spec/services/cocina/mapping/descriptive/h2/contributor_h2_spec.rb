@@ -11,7 +11,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Jane Stanford. Author.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -68,7 +68,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Author.
     ## Leland Stanford. Author.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -161,7 +161,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Data collector.
     ## Stanford University. Sponsor.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -243,7 +243,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Stanford University. Host institution.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -290,7 +290,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University. Host institution.
     ## Department of English. Department.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -358,7 +358,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Leland Stanford. Contributing author.
     # Contributing author role maps to contributor.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -453,7 +453,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University. Sponsor.
     # Add contributor role to names in Additional contributors section.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -550,7 +550,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## San Francisco Symphony Concert. Event.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -589,7 +589,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Event organizer.
     # Additional contributors
     ## San Francisco Symphony Concert. Event.
-    xit 'not implemented' do
+
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -676,7 +677,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## LDCX. Conference.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -702,10 +703,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
         <<~XML
           <name type="conference" usage="primary">
             <namePart>LDCX</namePart>
+            <role>
+              <roleTerm type="text">conference</roleTerm>
+            </role>
           </name>
-          <role>
-            <roleTerm type="text">conference</roleTerm>
-          </role>
         XML
       end
     end
@@ -717,7 +718,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## LDCX. Conference.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -805,7 +806,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Stanford University. Funder.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -855,7 +856,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Stanford University. Funder.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -953,7 +954,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University Press. Publisher.
     # Cited publisher goes into both contributor and event.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1030,7 +1031,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University Press. Publisher.
     # Uncited publisher goes into event only.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1116,7 +1117,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Publication date
     ## 2020-02-02
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1170,7 +1171,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'w3cdtf'
                   },
                   value: '2020-02-02',
-                  status: 'primary'
+                  status: 'primary',
+                  type: 'publication'
                 }
               ]
             }
@@ -1204,7 +1206,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Publication date
     ## 2020-02-02
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1267,7 +1269,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'w3cdtf'
                   },
                   value: '2020-02-02',
-                  status: 'primary'
+                  status: 'primary',
+                  type: 'publication'
                 }
               ]
             }

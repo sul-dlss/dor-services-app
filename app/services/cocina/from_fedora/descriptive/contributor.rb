@@ -75,7 +75,8 @@ module Cocina
             name_node['xlink:href'].blank? &&
             name_node.xpath('mods:etal', mods: DESC_METADATA_NS).empty? &&
             name_node.ancestors('relatedItem').empty? &&
-            name_node['valueURI'].blank?
+            name_node['valueURI'].blank? &&
+            name_node.xpath('mods:role/mods:roleTerm[text() = "event"]', mods: DESC_METADATA_NS).empty?
         end
 
         def adjust_primary(contributors)
