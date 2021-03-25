@@ -126,9 +126,14 @@ module Cocina
 
     def update_content_metadata(fedora_object, cocina_object)
       # We don't want to overwrite contentMetadata unless they provided structural.contains
+      # Note that a change to a book content type will generate completely new structural metadata, and
+      # thus lead to a full replacement of the contentMetadata with the new bookData node.
       if cocina_object.structural&.contains
         fedora_object.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: fedora_object.pid, object: cocina_object)
       else
+        # remove bookData reading order node if no reading direction is specified in the cocina model
+        # ...this can happen if the content type is changed from a book type to a non-book type
+        fedora_object.contentMetadata.ng_xml.xpath('//bookData').each(&:remove) unless cocina_object.structural&.hasMemberOrders
         fedora_object.contentMetadata.contentType = ToFedora::ContentType.map(cocina_object.type)
       end
     end
