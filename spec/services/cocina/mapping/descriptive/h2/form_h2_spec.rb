@@ -7,55 +7,8 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
   # https://docs.google.com/spreadsheets/d/1EiGgVqtb6PUJE2cI_jhqnAoiQkiwZtar4tF7NHwSMz8/edit?usp=sharing
 
   describe 'Text - Article (AAT genre)' do
-    xit 'not implemented: DataCite mapping'
-
     it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
-        {
-          form: [
-            {
-              structuredValue: [
-                {
-                  value: 'Text',
-                  type: 'type'
-                },
-                {
-                  value: 'Article',
-                  type: 'subtype'
-                }
-              ],
-              source: {
-                value: 'Stanford self-deposit resource types'
-              },
-              type: 'resource type'
-            },
-            {
-              value: 'articles',
-              type: 'genre',
-              uri: 'http://vocab.getty.edu/page/aat/300048715',
-              source: {
-                code: 'aat'
-              }
-            },
-            {
-              value: 'text',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            },
-            {
-              value: 'Text',
-              type: 'resource type',
-              source: {
-                value: 'DataCite resource types'
-              }
-            }
-          ]
-        }
-      end
-
-      let(:roundtrip_cocina) do
         {
           form: [
             {
@@ -105,55 +58,8 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
   end
 
   describe 'Text - Essay (LC genre)' do
-    xit 'not implemented: DataCite mapping'
-
     it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
-        {
-          form: [
-            {
-              structuredValue: [
-                {
-                  value: 'Text',
-                  type: 'type'
-                },
-                {
-                  value: 'Essays',
-                  type: 'subtype'
-                }
-              ],
-              source: {
-                value: 'Stanford self-deposit resource types'
-              },
-              type: 'resource type'
-            },
-            {
-              value: 'Essays',
-              type: 'genre',
-              uri: 'http://id.loc.gov/authorities/genreForms/gf2014026094',
-              source: {
-                code: 'lcgft'
-              }
-            },
-            {
-              value: 'text',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            },
-            {
-              value: 'Text',
-              type: 'resource type',
-              source: {
-                value: 'DataCite resource types'
-              }
-            }
-          ]
-        }
-      end
-
-      let(:roundtrip_cocina) do
         {
           form: [
             {
@@ -203,51 +109,8 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
   end
 
   describe 'Data - 3D model (unauthorized genre)' do
-    xit 'not implemented: DataCite mapping'
-
     it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
-        {
-          form: [
-            {
-              structuredValue: [
-                {
-                  value: 'Data',
-                  type: 'type'
-                },
-                {
-                  value: '3D model',
-                  type: 'subtype'
-                }
-              ],
-              source: {
-                value: 'Stanford self-deposit resource types'
-              },
-              type: 'resource type'
-            },
-            {
-              value: 'Three dimensional scan',
-              type: 'genre'
-            },
-            {
-              value: 'three dimensional object',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            },
-            {
-              value: 'Dataset',
-              type: 'resource type',
-              source: {
-                value: 'DataCite resource types'
-              }
-            }
-          ]
-        }
-      end
-
-      let(:roundtrip_cocina) do
         {
           form: [
             {
@@ -293,66 +156,8 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
   end
 
   describe 'Data - GIS (multiple genres, multiple types of resource)' do
-    xit 'not implemented: DataCite mapping'
-
     it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
-        {
-          form: [
-            {
-              structuredValue: [
-                {
-                  value: 'Data',
-                  type: 'type'
-                },
-                {
-                  value: 'GIS',
-                  type: 'subtype'
-                }
-              ],
-              source: {
-                value: 'Stanford self-deposit resource types'
-              },
-              type: 'resource type'
-            },
-            {
-              value: 'Geographic information systems',
-              type: 'genre',
-              uri: 'http://id.loc.gov/authorities/genreForms/gf2011026294',
-              source: {
-                code: 'lcgft'
-              }
-            },
-            {
-              value: 'dataset',
-              type: 'genre'
-            },
-            {
-              value: 'cartographic',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            },
-            {
-              value: 'software, multimedia',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            },
-            {
-              value: 'Dataset',
-              type: 'resource type',
-              source: {
-                value: 'DataCite resource types'
-              }
-            }
-          ]
-        }
-      end
-
-      let(:roundtrip_cocina) do
         {
           form: [
             {
@@ -415,81 +220,8 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
   end
 
   describe 'Software - Code, Documentation (multiple subtypes)' do
-    xit 'not implemented: DataCite mapping'
-
     it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
-        {
-          form: [
-            {
-              structuredValue: [
-                {
-                  value: 'Software',
-                  type: 'type'
-                },
-                {
-                  value: 'Code',
-                  type: 'subtype'
-                },
-                {
-                  value: 'Documentation',
-                  type: 'subtype'
-                }
-              ],
-              source: {
-                value: 'Stanford self-deposit resource types'
-              },
-              type: 'resource type'
-            },
-            {
-              value: 'programs (computer)',
-              type: 'genre',
-              uri: 'http://vocab.getty.edu/page/aat/300312188',
-              source: {
-                code: 'aat'
-              }
-            },
-            {
-              value: 'technical manuals',
-              type: 'genre',
-              uri: 'http://vocab.getty.edu/aat/300026413',
-              source: {
-                code: 'aat'
-              }
-            },
-            {
-              value: 'software, multimedia',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            },
-            {
-              value: 'text',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            },
-            {
-              value: 'Software',
-              type: 'resource type',
-              source: {
-                value: 'DataCite resource types'
-              }
-            },
-            {
-              value: 'Text',
-              type: 'resource type',
-              source: {
-                value: 'DataCite resource types'
-              }
-            }
-          ]
-        }
-      end
-
-      let(:roundtrip_cocina) do
         {
           form: [
             {
@@ -561,40 +293,8 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
   end
 
   describe 'Other - Dance notation (Other type with user-entered subtype)' do
-    xit 'not implemented: DataCite mapping'
-
     it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
-        {
-          form: [
-            {
-              structuredValue: [
-                {
-                  value: 'Other',
-                  type: 'type'
-                },
-                {
-                  value: 'Dance notation',
-                  type: 'subtype'
-                }
-              ],
-              source: {
-                value: 'Stanford self-deposit resource types'
-              },
-              type: 'resource type'
-            },
-            {
-              value: 'Other',
-              type: 'resource type',
-              source: {
-                value: 'DataCite resource types'
-              }
-            }
-          ]
-        }
-      end
-
-      let(:roundtrip_cocina) do
         {
           form: [
             {
