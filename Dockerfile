@@ -22,6 +22,7 @@ RUN apk add --update --no-cache  \
   git \
   postgresql-dev \
   postgresql-client \
+  shared-mime-info \
   tzdata
 
 # Get bundler 2.0
