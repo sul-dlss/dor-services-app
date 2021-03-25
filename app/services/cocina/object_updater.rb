@@ -11,6 +11,7 @@ module Cocina
     # @param [#create] event_factory creates events
     # @param [boolean] trial do not persist or event; run all mappings regardless of changes
     # @param [Cocina::FromFedora::DataErrorNotifier] notifier
+    # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
     def self.run(fedora_object, cocina_object, event_factory: EventFactory, trial: false, notifier: nil)
       new(fedora_object, cocina_object, trial: trial).run(event_factory: event_factory, notifier: notifier)
     end
@@ -23,6 +24,7 @@ module Cocina
     end
 
     # rubocop:disable Metrics/AbcSize
+    # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
     def run(event_factory:, notifier: nil)
       @orig_cocina_object = Mapper.build(fedora_object, notifier: notifier)
 
