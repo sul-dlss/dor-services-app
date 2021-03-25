@@ -49,6 +49,8 @@ module Cocina
       attr_reader :item, :notifier
 
       def dro_type
+        return Cocina::Models::Vocab.agreement if item.is_a? Dor::Agreement
+
         case item.contentMetadata.contentType.first
         when 'image'
           if /^Manuscript/.match?(AdministrativeTags.content_type(pid: item.pid).first)

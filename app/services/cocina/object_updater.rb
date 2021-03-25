@@ -113,7 +113,7 @@ module Cocina
       if has_changed?(:label) || has_changed?(:structural)
         label = has_changed?(:label) ? cocina_object.label : fedora_object.label
         agreement_id = has_changed?(:structural) ? cocina_object.structural&.hasAgreement : nil
-        Cocina::ToFedora::Identity.apply(fedora_object, label: label, object_type: 'item', agreement_id: agreement_id)
+        Cocina::ToFedora::Identity.apply(fedora_object, label: label, agreement_id: agreement_id)
       end
       Cocina::ToFedora::DROAccess.apply(fedora_object, cocina_object.access) if has_changed?(:access)
       update_content_metadata(fedora_object, cocina_object) if has_changed?(:structural) || has_changed?(:type)

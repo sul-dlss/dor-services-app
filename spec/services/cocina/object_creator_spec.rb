@@ -225,6 +225,27 @@ RSpec.describe Cocina::ObjectCreator do
         expect { result }.to raise_error Cocina::ValidationError
       end
     end
+
+    context 'when the type is agreement' do
+      let(:params) do
+        {
+          'type' => 'http://cocina.sul.stanford.edu/models/agreement.jsonld',
+          'label' => 'My Agreement',
+          'access' => {},
+          'version' => 1,
+          'administrative' => {
+            'hasAdminPolicy' => apo
+          },
+          'identification' => {
+            'sourceId' => 'identifier:1'
+          }
+        }
+      end
+
+      it 'creates an agreement' do
+        expect(result.type).to eq Cocina::Models::Vocab.agreement
+      end
+    end
   end
 
   context 'when Cocina::Models::RequestCollection is received' do
