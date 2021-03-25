@@ -108,10 +108,129 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
     end
   end
 
-  describe 'Approximate creation date: approx. 1900' do
+  describe 'Approximate single creation date' do
+    xit 'not implemented: approx single date' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              date: [
+                {
+                  value: '1900',
+                  type: 'creation',
+                  qualifier: 'approximate',
+                  encoding: {
+                    code: 'w3cdtf'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="creation">
+            <dateCreated qualifier="approximate" encoding="w3cdtf">1900</dateCreated>
+          </originInfo>
+        XML
+      end
+    end
+  end
+
+  describe 'Approximate creation start date: approx. 1900' do
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'updated spec: approx start' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'creation',
+              date: [
+                {
+                  structuredValue: [
+                    {
+                      value: '1900',
+                      type: 'start',
+                      qualifier: 'approximate'
+                    },
+                    {
+                      value: '1910',
+                      type: 'end'
+                    }
+                  ],
+                  type: 'creation',
+                  encoding: {
+                    code: 'w3cdtf'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="creation">
+            <dateCreated qualifier="approximate" point="start" encoding="w3cdtf">1900</dateCreated>
+            <dateCreated point="end" encoding="w3cdtf">1910</dateCreated>
+          </originInfo>
+        XML
+      end
+    end
+  end
+
+  describe 'Approximate creation end date: approx. 1900' do
+    # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
+
+    xit 'unimplemented spec: approx end' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'creation',
+              date: [
+                {
+                  structuredValue: [
+                    {
+                      value: '1900',
+                      type: 'start'
+                    },
+                    {
+                      value: '1910',
+                      type: 'end',
+                      qualifier: 'approximate'
+                    }
+                  ],
+                  type: 'creation',
+                  encoding: {
+                    code: 'w3cdtf'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="creation">
+            <dateCreated point="start" encoding="w3cdtf">1900</dateCreated>
+            <dateCreated qualifier="approximate" point="end" encoding="w3cdtf">1910</dateCreated>
+          </originInfo>
+        XML
+      end
+    end
+  end
+
+  describe 'Approximate creation date range: approx. 1900' do
+    # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
+
+    xit 'unimplemented spec: approx range' do
       let(:cocina) do
         {
           event: [
