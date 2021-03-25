@@ -6,30 +6,30 @@ module Cocina
   class ObjectUpdater
     class NotImplemented < StandardError; end
 
-    # @param [ActiveFedora::Base] item the object to update
-    # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj the cocina model provided by the client
+    # @param [ActiveFedora::Base] fedora_object the Fedora object to update
+    # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object the cocina model provided by the client
     # @param [#create] event_factory creates events
     # @param [boolean] trial do not persist or event; run all mappings regardless of changes
     # @param [Cocina::FromFedora::DataErrorNotifier] notifier
-    def self.run(item, obj, event_factory: EventFactory, trial: false, notifier: nil)
-      new(item, obj, trial: trial).run(event_factory: event_factory, notifier: notifier)
+    def self.run(fedora_object, cocina_object, event_factory: EventFactory, trial: false, notifier: nil)
+      new(fedora_object, cocina_object, trial: trial).run(event_factory: event_factory, notifier: notifier)
     end
 
-    def initialize(item, obj, trial: false)
+    def initialize(fedora_object, cocina_object, trial: false)
       @params = params
-      @obj = obj
-      @item = item
+      @cocina_object = cocina_object
+      @fedora_object = fedora_object
       @trial = trial
     end
 
     # rubocop:disable Metrics/AbcSize
     def run(event_factory:, notifier: nil)
-      @orig_obj = Mapper.build(item, notifier: notifier)
+      @orig_cocina_object = Mapper.build(fedora_object, notifier: notifier)
 
       # Validate will raise an error if not valid.
       validate unless trial
 
-      case obj
+      case cocina_object
       when Cocina::Models::AdminPolicy
         update_apo
       when Cocina::Models::DRO
@@ -37,119 +37,119 @@ module Cocina
       when Cocina::Models::Collection
         update_collection
       else
-        raise "unsupported type #{obj.type}"
+        raise "unsupported type #{cocina_object.type}"
       end
 
       update_descriptive if has_changed?(:description) && update_descriptive?
 
-      item.save! unless trial
+      fedora_object.save! unless trial
 
-      event_factory.create(druid: item.pid, event_type: 'update_complete', data: { success: true }) unless trial
+      event_factory.create(druid: fedora_object.pid, event_type: 'update_complete', data: { success: true }) unless trial
 
       # This will rebuild the cocina model from fedora, which shows we are only returning persisted data
-      Mapper.build(item, notifier: notifier).tap do
-        event_factory.create(druid: item.pid, event_type: 'update', data: { success: true, request: obj.to_h }) unless trial
+      Mapper.build(fedora_object, notifier: notifier).tap do
+        event_factory.create(druid: fedora_object.pid, event_type: 'update', data: { success: true, request: cocina_object.to_h }) unless trial
       end
     rescue Mapper::MapperError, ValidationError, NotImplemented => e
-      event_factory.create(druid: item.pid, event_type: 'update', data: { success: false, error: e.message, request: obj.to_h }) unless trial
+      event_factory.create(druid: fedora_object.pid, event_type: 'update', data: { success: false, error: e.message, request: cocina_object.to_h }) unless trial
       raise
     end
     # rubocop:enable Metrics/AbcSize
 
     private
 
-    attr_reader :obj, :item, :params, :orig_obj, :trial
+    attr_reader :cocina_object, :fedora_object, :params, :orig_cocina_object, :trial
 
     def has_changed?(key)
       return true if trial
 
       # Update only if changed.
-      obj.public_send(key) != orig_obj.public_send(key)
+      cocina_object.public_send(key) != orig_cocina_object.public_send(key)
     end
 
     # rubocop:disable Style/GuardClause
     def update_apo
-      # item.source_id = obj.identification.sourceId
+      # fedora_object.source_id = cocina_object.identification.sourceId
       if has_changed?(:label)
-        Cocina::ToFedora::Identity.apply(item, label: obj.label, object_type: 'adminPolicy')
-        item.label = truncate_label(obj.label)
+        Cocina::ToFedora::Identity.apply(fedora_object, label: cocina_object.label, object_type: 'adminPolicy')
+        fedora_object.label = truncate_label(cocina_object.label)
       end
 
       if has_changed?(:administrative)
-        item.admin_policy_object_id = obj.administrative.hasAdminPolicy
-        Cocina::ToFedora::DefaultRights.write(item.defaultObjectRights, obj.administrative.defaultAccess) if obj.administrative.defaultAccess
-        Cocina::ToFedora::ApoRights.write(item.administrativeMetadata, obj.administrative)
-        Cocina::ToFedora::Roles.write(item, Array(obj.administrative.roles))
+        fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy
+        Cocina::ToFedora::DefaultRights.write(fedora_object.defaultObjectRights, cocina_object.administrative.defaultAccess) if cocina_object.administrative.defaultAccess
+        Cocina::ToFedora::ApoRights.write(fedora_object.administrativeMetadata, cocina_object.administrative)
+        Cocina::ToFedora::Roles.write(fedora_object, Array(cocina_object.administrative.roles))
       end
     end
     # rubocop:enable Style/GuardClause
 
     def update_collection
       if has_changed?(:label)
-        item.label = truncate_label(obj.label)
-        Cocina::ToFedora::Identity.apply(item, label: obj.label, object_type: 'collection')
+        fedora_object.label = truncate_label(cocina_object.label)
+        Cocina::ToFedora::Identity.apply(fedora_object, label: cocina_object.label, object_type: 'collection')
       end
-      item.admin_policy_object_id = obj.administrative.hasAdminPolicy if has_changed?(:administrative)
+      fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy if has_changed?(:administrative)
 
-      Cocina::ToFedora::Access.apply(item, obj.access) if has_changed?(:access)
+      Cocina::ToFedora::Access.apply(fedora_object, cocina_object.access) if has_changed?(:access)
     end
 
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/CyclomaticComplexity
     # rubocop:disable Metrics/PerceivedComplexity
     def update_dro
-      item.admin_policy_object_id = obj.administrative.hasAdminPolicy if has_changed?(:administrative)
-      item.collection_ids = Array.wrap(obj.structural&.isMemberOf).compact if has_changed?(:structural)
-      item.label = truncate_label(obj.label) if has_changed?(:label)
+      fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy if has_changed?(:administrative)
+      fedora_object.collection_ids = Array.wrap(cocina_object.structural&.isMemberOf).compact if has_changed?(:structural)
+      fedora_object.label = truncate_label(cocina_object.label) if has_changed?(:label)
 
       if has_changed?(:identification)
-        item.source_id = obj.identification.sourceId
-        item.catkey = catkey_for(obj)
-        item.identityMetadata.barcode = obj.identification.barcode
+        fedora_object.source_id = cocina_object.identification.sourceId
+        fedora_object.catkey = catkey_for(cocina_object)
+        fedora_object.identityMetadata.barcode = cocina_object.identification.barcode
       end
 
       if has_changed?(:label) || has_changed?(:structural)
-        label = has_changed?(:label) ? obj.label : item.label
-        agreement_id = has_changed?(:structural) ? obj.structural&.hasAgreement : nil
-        Cocina::ToFedora::Identity.apply(item, label: label, object_type: 'item', agreement_id: agreement_id)
+        label = has_changed?(:label) ? cocina_object.label : fedora_object.label
+        agreement_id = has_changed?(:structural) ? cocina_object.structural&.hasAgreement : nil
+        Cocina::ToFedora::Identity.apply(fedora_object, label: label, object_type: 'item', agreement_id: agreement_id)
       end
-      Cocina::ToFedora::DROAccess.apply(item, obj.access) if has_changed?(:access)
-      update_content_metadata(item, obj) if has_changed?(:structural) || has_changed?(:type)
+      Cocina::ToFedora::DROAccess.apply(fedora_object, cocina_object.access) if has_changed?(:access)
+      update_content_metadata(fedora_object, cocina_object) if has_changed?(:structural) || has_changed?(:type)
 
-      add_tags(item.pid, obj)
+      add_tags(fedora_object.pid, cocina_object)
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/CyclomaticComplexity
     # rubocop:enable Metrics/PerceivedComplexity
 
-    def update_content_metadata(item, obj)
+    def update_content_metadata(fedora_object, cocina_object)
       # We don't want to overwrite contentMetadata unless they provided structural.contains
-      if obj.structural&.contains
-        item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: item.pid, object: obj)
+      if cocina_object.structural&.contains
+        fedora_object.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: fedora_object.pid, object: cocina_object)
       else
-        item.contentMetadata.contentType = ToFedora::ContentType.map(obj.type)
+        fedora_object.contentMetadata.contentType = ToFedora::ContentType.map(cocina_object.type)
       end
     end
 
     def update_descriptive
-      item.descMetadata.content = Cocina::ToFedora::Descriptive.transform(obj.description, item.pid).doc.to_xml
-      item.descMetadata.content_will_change!
+      fedora_object.descMetadata.content = Cocina::ToFedora::Descriptive.transform(cocina_object.description, fedora_object.pid).doc.to_xml
+      fedora_object.descMetadata.content_will_change!
     end
 
     # rubocop:disable Style/GuardClause
     def validate
-      validator = ValidateDarkService.new(obj)
+      validator = ValidateDarkService.new(cocina_object)
       raise ValidationError, validator.error unless validator.valid?
 
-      raise ValidationError, "Identifier on the query and in the body don't match" if item.pid != obj.externalIdentifier
+      raise ValidationError, "Identifier on the query and in the body don't match" if fedora_object.pid != cocina_object.externalIdentifier
 
-      validator = ApoExistenceValidator.new(obj)
+      validator = ApoExistenceValidator.new(cocina_object)
       raise ValidationError, validator.error unless validator.valid?
 
       raise NotImplemented, 'Updating descriptive metadata not supported' if !update_descriptive? && client_attempted_metadata_update?
 
       if has_changed?(:description) && update_descriptive? && Settings.enabled_features.validate_descriptive_roundtrip.update
-        result = DescriptionRoundtripValidator.valid_from_cocina?(obj)
+        result = DescriptionRoundtripValidator.valid_from_cocina?(cocina_object)
         raise RoundtripValidationError, result.failure unless result.success?
       end
     end
@@ -160,21 +160,21 @@ module Cocina
     end
 
     def client_attempted_metadata_update?
-      title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
+      title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: fedora_object.label)
 
-      descriptive = FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml, druid: item.pid)
+      descriptive = FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_object.descMetadata.ng_xml, druid: fedora_object.pid)
 
-      obj.description.title != descriptive.fetch(:title).map { |value| Cocina::Models::Title.new(value) }
+      cocina_object.description.title != descriptive.fetch(:title).map { |value| Cocina::Models::Title.new(value) }
     end
 
     # TODO: duplicate from ObjectCreator
-    def catkey_for(obj)
-      obj.identification&.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
+    def catkey_for(cocina_object)
+      cocina_object.identification&.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
     end
 
-    def add_tags(pid, obj)
-      add_tag(pid, ToFedora::ProcessTag.map(obj.type, obj.structural&.hasMemberOrders&.first&.viewingDirection), 'Process : Content Type') if has_changed?(:structural)
-      add_tag(pid, "Project : #{obj.administrative.partOfProject}", 'Project') if obj.administrative.partOfProject && has_changed?(:administrative)
+    def add_tags(pid, cocina_object)
+      add_tag(pid, ToFedora::ProcessTag.map(cocina_object.type, cocina_object.structural&.hasMemberOrders&.first&.viewingDirection), 'Process : Content Type') if has_changed?(:structural)
+      add_tag(pid, "Project : #{cocina_object.administrative.partOfProject}", 'Project') if cocina_object.administrative.partOfProject && has_changed?(:administrative)
     end
 
     def add_tag(pid, new_tag, prefix)
