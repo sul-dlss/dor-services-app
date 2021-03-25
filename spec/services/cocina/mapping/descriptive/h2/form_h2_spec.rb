@@ -69,7 +69,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
                   type: 'type'
                 },
                 {
-                  value: 'Essays',
+                  value: 'Essay',
                   type: 'subtype'
                 }
               ],
@@ -100,7 +100,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
       let(:mods) do
         <<~XML
           <genre type="H2 type">Text</genre>
-          <genre type="H2 subtype">Essays</genre>
+          <genre type="H2 subtype">Essay</genre>
           <genre authority="lcgft" valueURI="http://id.loc.gov/authorities/genreForms/gf2014026094">Essays</genre>
           <typeOfResource>text</typeOfResource>
         XML
