@@ -36,11 +36,11 @@ class ObjectsController < ApplicationController
   end
 
   def update
-    obj = Dor.find(params[:id])
+    fedora_object = Dor.find(params[:id])
     update_request = Cocina::Models.build(params.except(:action, :controller, :id).to_unsafe_h)
-    cocina_object = Cocina::ObjectUpdater.run(obj, update_request)
+    persisted_cocina_object = Cocina::ObjectUpdater.run(fedora_object, update_request)
 
-    render json: cocina_object
+    render json: persisted_cocina_object
   rescue Cocina::RoundtripValidationError => e
     Honeybadger.notify(e)
     json_api_error(status: e.status, message: e.message)
