@@ -259,7 +259,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
             {
               structuredValue: [
                 {
-                  value: 'Software',
+                  value: 'Software/Code',
                   type: 'type'
                 },
                 {
@@ -287,7 +287,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
             {
               value: 'technical manuals',
               type: 'genre',
-              uri: 'http://vocab.getty.edu/aat/300026413',
+              uri: 'http://vocab.getty.edu/page/aat/300026413',
               source: {
                 code: 'aat'
               }
@@ -312,11 +312,11 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
 
       let(:mods) do
         <<~XML
-          <genre type="H2 type">Software</genre>
+          <genre type="H2 type">Software/Code</genre>
           <genre type="H2 subtype">Code</genre>
           <genre type="H2 subtype">Documentation</genre>
           <genre authority="aat" valueURI="http://vocab.getty.edu/page/aat/300312188">programs (computer)</genre>
-          <genre authority="aat" valueURI="http://vocab.getty.edu/aat/300026413">technical manuals</genre>
+          <genre authority="aat" valueURI="http://vocab.getty.edu/page/aat/300026413">technical manuals</genre>
           <typeOfResource>software, multimedia</typeOfResource>
           <typeOfResource>text</typeOfResource>
         XML
