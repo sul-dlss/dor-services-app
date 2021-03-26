@@ -167,7 +167,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
                   type: 'type'
                 },
                 {
-                  value: 'GIS',
+                  value: 'Geospatial data',
                   type: 'subtype'
                 }
               ],
@@ -175,6 +175,21 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
                 value: 'Stanford self-deposit resource types'
               },
               type: 'resource type'
+            },
+            {
+              value: 'Data sets',
+              type: 'genre',
+              uri: 'http://id.loc.gov/authorities/genreForms/gf2018026119',
+              source: {
+                code: 'lcgft'
+              }
+            },
+            {
+              value: 'dataset',
+              type: 'genre',
+              source: {
+                code: 'local'
+              }
             },
             {
               value: 'Geographic information systems',
@@ -185,18 +200,14 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               }
             },
             {
-              value: 'dataset',
-              type: 'genre'
-            },
-            {
-              value: 'cartographic',
+              value: 'software, multimedia',
               type: 'resource type',
               source: {
                 value: 'MODS resource types'
               }
             },
             {
-              value: 'software, multimedia',
+              value: 'cartographic',
               type: 'resource type',
               source: {
                 value: 'MODS resource types'
@@ -209,11 +220,12 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
       let(:mods) do
         <<~XML
           <genre type="H2 type">Data</genre>
-          <genre type="H2 subtype">GIS</genre>
+          <genre type="H2 subtype">Geospatial data</genre>
+          <genre authority="lcgft" valueURI="http://id.loc.gov/authorities/genreForms/gf2018026119">Data sets</genre>
+          <genre authority="local">dataset</genre>
           <genre authority="lcgft" valueURI="http://id.loc.gov/authorities/genreForms/gf2011026294">Geographic information systems</genre>
-          <genre>dataset</genre>
-          <typeOfResource>cartographic</typeOfResource>
           <typeOfResource>software, multimedia</typeOfResource>
+          <typeOfResource>cartographic</typeOfResource>
         XML
       end
     end
