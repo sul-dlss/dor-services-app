@@ -109,11 +109,12 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Approximate single creation date' do
-    xit 'not implemented: approx single date' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
             {
+              type: 'creation',
               date: [
                 {
                   value: '1900',
@@ -142,7 +143,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   describe 'Approximate creation start date: approx. 1900' do
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
 
-    xit 'updated spec: approx start' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -186,7 +187,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   describe 'Approximate creation end date: approx. 1900' do
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
 
-    xit 'unimplemented spec: approx end' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -230,7 +231,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   describe 'Approximate creation date range: approx. 1900' do
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
 
-    xit 'unimplemented spec: approx range' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
