@@ -130,11 +130,29 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               type: 'resource type'
             },
             {
-              value: 'Three dimensional scan',
-              type: 'genre'
+              value: 'Data sets',
+              type: 'genre',
+              uri: 'http://id.loc.gov/authorities/genreForms/gf2018026119',
+              source: {
+                code: 'lcgft'
+              }
             },
             {
-              value: 'three dimensional object',
+              value: 'dataset',
+              type: 'genre',
+              source: {
+                code: 'local'
+              }
+            },
+            {
+              value: 'software, multimedia',
+              type: 'resource type',
+              source: {
+                value: 'MODS resource types'
+              }
+            },
+            {
+              value: 'three-dimensional object',
               type: 'resource type',
               source: {
                 value: 'MODS resource types'
@@ -148,8 +166,10 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
         <<~XML
           <genre type="H2 type">Data</genre>
           <genre type="H2 subtype">3D model</genre>
-          <genre>Three dimensional scan</genre>
-          <typeOfResource>three dimensional object</typeOfResource>
+          <genre authority="lcgft" valueURI="http://id.loc.gov/authorities/genreForms/gf2018026119">Data sets</genre>
+          <genre authority="local">dataset</genre>
+          <typeOfResource>software, multimedia</typeOfResource>
+          <typeOfResource>three-dimensional object</typeOfResource>
         XML
       end
     end
