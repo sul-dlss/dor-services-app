@@ -126,7 +126,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
   end
 
   describe 'Note with type "summary"' do
-    xit 'not implemented: note with type summary' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <note type="summary" displayLabel="Summary">This is a note.</note>
@@ -135,7 +135,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
 
       let(:roundtrip_mods) do
         <<~XML
-          <abstract displayLabel="Summary">This is a note.</note>
+          <abstract displayLabel="Summary">This is a note.</abstract>
         XML
       end
 
