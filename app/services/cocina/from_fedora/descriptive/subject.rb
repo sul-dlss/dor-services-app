@@ -308,8 +308,16 @@ module Cocina
                        else
                          full_name[:name].first
                        end
-          name_attrs[:note] = full_name[:role].map { |role| role.merge({ type: 'role' }) } if full_name[:role].present?
+          notes = name_notes_for(full_name[:role], node)
+          name_attrs[:note] = notes unless notes.empty?
           name_attrs.merge(attrs)
+        end
+
+        def name_notes_for(roles, name_node)
+          notes = Array(roles).map { |role| role.merge({ type: 'role' }) }
+          name_node.xpath('mods:affiliation', mods: DESC_METADATA_NS).each { |affil_node| notes << { value: affil_node.text, type: 'affiliation' } }
+          name_node.xpath('mods:description', mods: DESC_METADATA_NS).each { |descr_node| notes << { value: descr_node.text, type: 'description' } }
+          notes
         end
 
         def node_type_for(node, display_label)

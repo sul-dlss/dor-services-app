@@ -91,7 +91,7 @@ module Cocina
         # rubocop:disable Metrics/PerceivedComplexity
         def write_structured_or_grouped(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
           type ||= subject_value.type || subject.type
-          xml.subject(structured_attributes_for(subject_value, alt_rep_group: alt_rep_group)) do
+          xml.subject(structured_attributes_for(subject_value, type, alt_rep_group: alt_rep_group)) do
             if type == 'place' && subject_value.structuredValue
               hierarchical_geographic(subject_value)
             elsif type == 'time'
@@ -128,33 +128,33 @@ module Cocina
         end
 
         # rubocop:disable Metrics/PerceivedComplexity
-        def structured_attributes_for(subject, alt_rep_group: nil)
-          values = subject.structuredValue || subject.groupedValue
+        def structured_attributes_for(subject_value, type, alt_rep_group: nil)
+          values = subject_value.structuredValue || subject_value.groupedValue
           {
             altRepGroup: alt_rep_group,
-            displayLabel: subject.displayLabel,
-            lang: subject.valueLanguage&.code,
-            script: subject.valueLanguage&.valueScript&.code
+            displayLabel: subject_value.displayLabel,
+            lang: subject_value.valueLanguage&.code,
+            script: subject_value.valueLanguage&.valueScript&.code
           }.tap do |attrs|
-            if subject.type == 'person'
-              attrs[:authority] = authority_for(subject)
+            if type == 'person'
+              attrs[:authority] = authority_for(subject_value) # unless subject.source&.code == 'naf' && subject_value.source&.code == 'naf'
             else
-              attrs[:valueURI] = subject.uri
-              if subject.source
+              attrs[:valueURI] = subject_value.uri
+              if subject_value.source
                 # If all values in structuredValue have uri, then authority only.
-                attrs[:authority] = authority_for(subject)
-                attrs[:authorityURI] = subject.source.uri if !all_values_have_uri?(values) || subject.uri
+                attrs[:authority] = authority_for(subject_value)
+                attrs[:authorityURI] = subject_value.source.uri if !all_values_have_uri?(values) || subject_value.uri
               elsif all_values_have_lcsh_authority?(values)
                 # No source, but all values in structuredValue are lcsh or naf then add authority
                 attrs[:authority] = 'lcsh'
-              elsif subject.type == 'place' && all_values_have_same_authority?(values)
+              elsif subject_value.type == 'place' && all_values_have_same_authority?(values)
                 attrs[:authority] = authority_for(values.first)
               end
             end
           end.compact
         end
-        # rubocop:enable Metrics/PerceivedComplexity
 
+        # rubocop:enable Metrics/PerceivedComplexity
         def all_values_have_uri?(values)
           values.present? && Array(values).all?(&:uri)
         end
@@ -184,7 +184,7 @@ module Cocina
             end
           elsif !type && !subject_value.value
             # For subject only (no children).
-            xml.subject subject_attributes.merge(topic_attributes_for(subject, subject_value))
+            xml.subject subject_attributes.merge(topic_attributes_for(subject, subject_value, type))
           else
             xml.subject(subject_attributes) do
               write_topic(subject, subject_value, type: type)
@@ -218,8 +218,9 @@ module Cocina
         end
 
         def write_topic(subject, subject_value, is_parallel: false, type: nil, subject_values_have_same_authority: true)
-          topic_attributes = topic_attributes_for(subject, subject_value, is_parallel: is_parallel, subject_values_have_same_authority: subject_values_have_same_authority)
-          case type || subject_value.type
+          type ||= subject_value.type
+          topic_attributes = topic_attributes_for(subject, subject_value, type, is_parallel: is_parallel, subject_values_have_same_authority: subject_values_have_same_authority)
+          case type
           when 'person'
             xml.name topic_attributes.merge(type: 'personal') do
               xml.namePart(subject_value.value) if subject_value.value
@@ -237,9 +238,9 @@ module Cocina
           end
         end
 
-        def topic_attributes_for(subject, subject_value, is_parallel: false, is_geo: false, subject_values_have_same_authority: true)
+        def topic_attributes_for(subject, subject_value, type, is_parallel: false, subject_values_have_same_authority: true)
           {
-            authority: authority_for_topic(subject, subject_value, is_geo, is_parallel, subject_values_have_same_authority),
+            authority: authority_for_topic(subject, subject_value, type, is_parallel, subject_values_have_same_authority),
             authorityURI: subject_value.source&.uri,
             encoding: subject_value.encoding&.code,
             valueURI: subject_value.uri
@@ -253,11 +254,12 @@ module Cocina
 
         # rubocop:disable Metrics/CyclomaticComplexity
         # rubocop:disable Metrics/PerceivedComplexity
-        def authority_for_topic(subject, subject_value, is_geo, is_parallel, subject_values_have_same_authority)
+        def authority_for_topic(subject, subject_value, type, is_parallel, subject_values_have_same_authority)
           return nil unless subject_value.source&.uri ||
                             subject_value.uri ||
-                            (is_geo && is_parallel) ||
+                            (type == 'place' && is_parallel) ||
                             (subject_value.source&.code && subject.source&.code && subject.source.code != subject_value.source.code) ||
+                            (subject.source&.code == 'naf' && subject_value.source&.code == 'naf' && type == 'person') ||
                             (subject_value.source&.code && !subject_values_have_same_authority)
 
           subject_value.source&.code
@@ -267,9 +269,9 @@ module Cocina
 
         def geographic(subject, subject_value, is_parallel: false)
           if subject_value.code
-            xml.geographicCode subject_value.code, topic_attributes_for(subject, subject_value, is_parallel: is_parallel, is_geo: true)
+            xml.geographicCode subject_value.code, topic_attributes_for(subject, subject_value, 'place', is_parallel: is_parallel)
           else
-            xml.geographic subject_value.value, topic_attributes_for(subject, subject_value, is_parallel: is_parallel, is_geo: true)
+            xml.geographic subject_value.value, topic_attributes_for(subject, subject_value, 'place', is_parallel: is_parallel)
           end
         end
 
@@ -330,19 +332,21 @@ module Cocina
         end
 
         def write_person(subject, subject_value, display_values: nil)
-          name_attrs = topic_attributes_for(subject, subject_value).tap do |attrs|
+          name_attrs = topic_attributes_for(subject, subject_value, 'person').tap do |attrs|
             attrs[:type] = name_type_for(subject.type || subject_value.type)
           end.compact
           xml.name name_attrs do
             write_name_part(subject_value)
             write_display_form(display_values)
             write_roles(subject.note)
+            write_other_notes(subject.note, 'description')
+            write_other_notes(subject.note, 'affiliation')
           end
         end
 
         def write_structured_person(subject, subject_value, type: nil, display_values: nil)
           type ||= subject_value.type
-          name_attrs = topic_attributes_for(subject, subject_value).tap do |attrs|
+          name_attrs = topic_attributes_for(subject, subject_value, type).tap do |attrs|
             attrs[:type] = name_type_for(type)
           end.compact
 
@@ -350,6 +354,8 @@ module Cocina
             write_name_parts(subject_value)
             write_display_form(display_values)
             write_roles(subject.note)
+            write_other_notes(subject.note, 'description')
+            write_other_notes(subject.note, 'affiliation')
           end
         end
 
@@ -361,6 +367,10 @@ module Cocina
 
         def write_roles(notes)
           Array(notes).filter { |note| note.type == 'role' }.each { |role| RoleWriter.write(xml: xml, role: role) }
+        end
+
+        def write_other_notes(notes, type)
+          Array(notes).filter { |note| note.type == type }.each { |note| xml.public_send(type, note.value) }
         end
 
         def write_name_parts(descriptive_value)
