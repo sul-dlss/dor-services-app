@@ -27,6 +27,7 @@ class LegacyMetadataService
     @event_factory = event_factory
   end
 
+  # rubocop:disable Metrics/AbcSize
   def update_datastream_if_newer
     if !datastream.createDate || updated > datastream.createDate
       datastream.content = content
@@ -38,10 +39,14 @@ class LegacyMetadataService
 
     return if !datastream.createDate || updated > datastream.createDate
 
+    # do not send alerts to HB for Hydrus items (see https://github.com/sul-dlss/dor-services-app/issues/2478)
+    return if AdministrativeTags.project(pid: @item.id).include?('Hydrus')
+
     Honeybadger.notify("Found #{datastream.pid}/#{datastream.dsid} that had a create " \
       "date (#{datastream.createDate}) after the file was modified (#{updated}). " \
       'Doing an experiment to see if this ever happens.')
   end
+  # rubocop:enable Metrics/AbcSize
 
   private
 
