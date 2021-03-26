@@ -297,6 +297,10 @@ RSpec.describe Cocina::ObjectUpdater do
 
     let(:content_metadata) { double }
 
+    let(:content_metadata_ng_xml) { double }
+
+    let(:book_data_node) { double }
+
     let(:desc_metadata) { double }
 
     let(:identity_metadata) { double }
@@ -432,12 +436,13 @@ RSpec.describe Cocina::ObjectUpdater do
       end
     end
 
-    context 'when updating structural' do
+    context 'when updating structural without a contains block and with reading direction' do
       before do
         allow(item).to receive(:collection_ids=)
         allow(content_metadata).to receive(:contentType=)
         allow(Cocina::ToFedora::Identity).to receive(:apply)
         allow(AdministrativeTags).to receive(:create)
+        allow(content_metadata).to receive(:ng_xml)
       end
 
       context 'when structural has changed' do
@@ -450,10 +455,11 @@ RSpec.describe Cocina::ObjectUpdater do
           end
         end
 
-        it 'updates structural' do
+        it 'does not rebuild contentMetadata and does not remove bookData nodes (because a memberOrders exists)' do
           update
           expect(item).to have_received(:collection_ids=)
           expect(content_metadata).to have_received(:contentType=)
+          expect(content_metadata).not_to have_received(:ng_xml)
           expect(Cocina::ToFedora::Identity).to have_received(:apply)
           expect(AdministrativeTags).to have_received(:create)
         end
@@ -467,6 +473,35 @@ RSpec.describe Cocina::ObjectUpdater do
           expect(Cocina::ToFedora::Identity).not_to have_received(:apply)
           expect(AdministrativeTags).not_to have_received(:create)
         end
+      end
+    end
+
+    context 'when updating structural with a contains block' do
+      before do
+        allow(item).to receive(:collection_ids=)
+        allow(content_metadata).to receive(:content=)
+        allow(content_metadata).to receive(:contentType=)
+        allow(content_metadata).to receive(:ng_xml)
+        allow(Cocina::ToFedora::Identity).to receive(:apply)
+        allow(AdministrativeTags).to receive(:create)
+      end
+
+      let(:cocina_attrs) do
+        orig_cocina_attrs.tap do |attrs|
+          attrs[:structural] = {
+            contains: []
+          }
+        end
+      end
+
+      it 'replaces all content with newly generated contentMetadata' do
+        update
+        expect(item).to have_received(:collection_ids=)
+        expect(content_metadata).to have_received(:content=)
+        expect(content_metadata).not_to have_received(:contentType=)
+        expect(content_metadata).not_to have_received(:ng_xml)
+        expect(Cocina::ToFedora::Identity).to have_received(:apply)
+        expect(AdministrativeTags).to have_received(:create)
       end
     end
 
@@ -501,18 +536,24 @@ RSpec.describe Cocina::ObjectUpdater do
     context 'when updating type' do
       before do
         allow(content_metadata).to receive(:contentType=)
+        allow(content_metadata).to receive(:ng_xml).and_return(content_metadata_ng_xml)
+        allow(content_metadata_ng_xml).to receive(:xpath).and_return([book_data_node])
+        allow(book_data_node).to receive(:remove)
       end
 
-      context 'when type has changed' do
+      context 'when type has changed to object' do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
             attrs[:type] = 'http://cocina.sul.stanford.edu/models/object.jsonld'
           end
         end
 
-        it 'updates access' do
+        it 'updates access and removes any bookData nodes' do
           update
           expect(content_metadata).to have_received(:contentType=)
+          expect(content_metadata).to have_received(:ng_xml)
+          expect(content_metadata_ng_xml).to have_received(:xpath).with('//bookData')
+          expect(book_data_node).to have_received(:remove)
         end
       end
 
@@ -535,6 +576,10 @@ RSpec.describe Cocina::ObjectUpdater do
     end
 
     let(:content_metadata) { double }
+
+    let(:content_metadata_ng_xml) { double }
+
+    let(:book_data_node) { double }
 
     let(:desc_metadata) { double }
 
@@ -570,6 +615,9 @@ RSpec.describe Cocina::ObjectUpdater do
       allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
       allow(AdministrativeTags).to receive(:create)
       allow(content_metadata).to receive(:contentType=)
+      allow(content_metadata).to receive(:ng_xml).and_return(content_metadata_ng_xml)
+      allow(content_metadata_ng_xml).to receive(:xpath).and_return([book_data_node])
+      allow(book_data_node).to receive(:remove)
       allow(Cocina::ToFedora::Identity).to receive(:apply)
       allow(Cocina::ToFedora::DROAccess).to receive(:apply)
       allow(identity_metadata).to receive(:barcode=)
@@ -591,6 +639,8 @@ RSpec.describe Cocina::ObjectUpdater do
       expect(desc_metadata).to have_received(:content_will_change!)
       expect(Cocina::ToFedora::Descriptive).to have_received(:transform)
       expect(content_metadata).to have_received(:contentType=)
+      allow(content_metadata).to receive(:ng_xml).and_return(content_metadata_ng_xml)
+      allow(content_metadata_ng_xml).to receive(:xpath).and_return([book_data_node])
       expect(Cocina::ToFedora::Identity).to have_received(:apply)
       expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
       expect(identity_metadata).to have_received(:barcode=)
