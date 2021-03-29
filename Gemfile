@@ -68,7 +68,7 @@ group :test, :development do
   gem 'rubocop-performance'
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
-  gem 'simplecov', '~> 0.17.1' # https://github.com/codeclimate/test-reporter/issues/413
+  gem 'simplecov'
   gem 'super_diff'
   gem 'webmock'
 end
