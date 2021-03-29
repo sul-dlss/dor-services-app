@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
   before_action :load_item, except: [:create]
 
@@ -111,6 +112,14 @@ class ObjectsController < ApplicationController
     head :created, location: result
   end
 
+  def unpublish
+    result = BackgroundJobResult.create
+    EventFactory.create(druid: params[:id], event_type: 'unpublish_request_received', data: { background_job_result_id: result.id })
+    queue = params['lane-id'] == 'low' ? :low : :default
+    UnpublishJob.set(queue: queue).perform_later(druid: params[:id], background_job_result: result)
+    head :accepted, location: result
+  end
+
   def update_marc_record
     Dor::UpdateMarcRecordService.new(@item).update
     head :created
@@ -163,4 +172,5 @@ class ObjectsController < ApplicationController
       {}
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
