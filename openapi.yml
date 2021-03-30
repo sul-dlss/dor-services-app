@@ -1187,6 +1187,10 @@ components:
             - 'citation-only'
             - 'dark'
           default: 'dark'
+        copyright:
+          description: The human readable copyright statement that applies
+          example: Copyright World Trade Organization
+          type: string
         readLocation:
           description: If access is "location-based", which location should have access.
           type: string
