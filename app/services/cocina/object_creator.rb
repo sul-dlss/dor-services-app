@@ -11,6 +11,8 @@ module Cocina
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] obj
     # @raises SymphonyReader::ResponseError if symphony connection failed
     def create(obj, event_factory:, persister:)
+      ensure_ur_admin_policy_exists if Settings.enabled_features.create_ur_admin_policy && obj.administrative.hasAdminPolicy == Settings.ur_admin_policy.druid
+
       validate(obj)
 
       af_model = create_from_model(obj, persister: persister)
@@ -32,8 +34,6 @@ module Cocina
     # @return [Dor::Abstract] a persisted ActiveFedora model
     # @raises SymphonyReader::ResponseError if symphony connection failed
     def create_from_model(obj, persister:)
-      ensure_ur_admin_policy_exists if Settings.enabled_features.create_ur_admin_policy && obj.administrative.hasAdminPolicy == Settings.ur_admin_policy.druid
-
       af_object = case obj
                   when Cocina::Models::RequestAdminPolicy
                     create_apo(obj)
