@@ -32,6 +32,8 @@ module Cocina
     # @return [Dor::Abstract] a persisted ActiveFedora model
     # @raises SymphonyReader::ResponseError if symphony connection failed
     def create_from_model(obj, persister:)
+      ensure_ur_admin_policy_exists if Settings.enabled_features.create_ur_admin_policy && obj.administrative.hasAdminPolicy == Settings.ur_admin_policy.druid
+
       af_object = case obj
                   when Cocina::Models::RequestAdminPolicy
                     create_apo(obj)
@@ -45,6 +47,12 @@ module Cocina
 
       persister.store(af_object)
       af_object
+    end
+
+    # If an object references the Ur-AdminPolicy, it has to exist first.
+    # This is particularly important in testing, where the repository may be empty.
+    def ensure_ur_admin_policy_exists
+      Dor::AdminPolicyObject.exists?(Settings.ur_admin_policy.druid) || UrAdminPolicyFactory.create
     end
 
     # @param [Cocina::Models::RequestAdminPolicy] obj

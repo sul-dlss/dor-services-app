@@ -831,18 +831,39 @@ RSpec.describe 'Create object' do
       JSON
     end
 
-    context 'when the request is successful' do
-      before do
-        # This stubs out Solr:
-        allow_any_instance_of(Dor::AdminPolicyObject).to receive(:admin_policy_object_id).and_return('druid:dd999df4567')
-      end
+    before do
+      # This stubs out Solr:
+      allow_any_instance_of(Dor::AdminPolicyObject).to receive(:admin_policy_object_id).and_return('druid:dd999df4567')
+    end
 
+    context 'when the request is successful' do
       it 'registers the object with the registration service' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to eq expected.to_json
 
+        expect(response.status).to eq(201)
+        expect(response.location).to eq "/v1/objects/#{druid}"
+      end
+    end
+
+    context 'when it belongs to the Ur-AdminPolicy and create_ur_admin_policy is enabled' do
+      let(:ur_apo) { instance_double(Dor::AdminPolicyObject, save!: true, add_relationship: true) }
+
+      before do
+        allow(Settings.enabled_features).to receive(:create_ur_admin_policy).and_return(true)
+        allow(Settings.ur_admin_policy).to receive(:druid).and_return('druid:dd999df4567')
+        allow(Dor::AdminPolicyObject).to receive(:exists?).and_return(false)
+        allow(UrAdminPolicyFactory).to receive(:create)
+      end
+
+      it 'creates the Ur-AdminPolicy' do
+        post '/v1/objects',
+             params: data,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response.body).to eq expected.to_json
+        expect(UrAdminPolicyFactory).to have_received(:create)
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
       end

@@ -7,6 +7,12 @@ enabled_features:
     create: true
     legacy: true
     refresh: true
+  create_ur_admin_policy: false
+
+# Ur Admin Policy
+ur_admin_policy:
+  druid: druid:hv992ry2431
+  label: Ur-APO
 
 content:
   base_dir: '/dor/workspace'
