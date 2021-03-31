@@ -15,9 +15,7 @@ module Cocina
             version: version,
             structural: structural
           }.tap do |attrs|
-            label = resource_node.xpath('label').text
-            # Use external identifier if label blank (which it is at least for some WAS Crawls).
-            attrs[:label] = label.presence || attrs[:externalIdentifier]
+            attrs[:label] = resource_node.xpath('label').text # some will be missing labels, they will just be blank
           end
         end
       end

@@ -128,7 +128,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
       expect(resource1[:externalIdentifier]).to eq 'http://cocina.sul.stanford.edu/fileSet/123-456-789'
 
       resource2 = structural[:contains].second
-      expect(resource2[:label]).to eq 'http://cocina.sul.stanford.edu/fileSet/123-456-789'
+      expect(resource2[:label]).to eq ''
     end
   end
 
