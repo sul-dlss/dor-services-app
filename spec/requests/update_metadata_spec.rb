@@ -1005,14 +1005,7 @@ RSpec.describe 'Update object' do
                                       },
                                       administrative: {
                                         defaultObjectRights: default_object_rights_expected,
-                                        defaultAccess: {
-                                          access: 'location-based',
-                                          download: 'location-based',
-                                          readLocation: 'ars',
-                                          copyright: 'My copyright statement',
-                                          license: 'http://opendatacommons.org/licenses/by/1.0/',
-                                          useAndReproductionStatement: 'Whatever makes you happy'
-                                        },
+                                        defaultAccess: default_access_expected,
                                         hasAdminPolicy: 'druid:dd999df4567',
                                         disseminationWorkflow: 'assemblyWF',
                                         registrationWorkflow: %w[goobiWF registrationWF],
@@ -1033,6 +1026,17 @@ RSpec.describe 'Update object' do
     end
 
     let(:default_object_rights) { Dor::DefaultObjectRightsDS.new.content }
+    let(:default_access) do
+      {
+        access: 'location-based',
+        download: 'location-based',
+        readLocation: 'ars',
+        copyright: 'My copyright statement',
+        license: 'http://opendatacommons.org/licenses/by/1.0/',
+        useAndReproductionStatement: 'Whatever makes you happy'
+      }
+    end
+    let(:default_access_expected) { default_access }
 
     let(:data) do
       <<~JSON
@@ -1046,14 +1050,7 @@ RSpec.describe 'Update object' do
             "registrationWorkflow":["goobiWF","registrationWF"],
             "collectionsForRegistration":["druid:gg888df4567","druid:bb888gg4444"],
             "hasAdminPolicy":"druid:dd999df4567",
-            "defaultAccess":{
-              "access":"location-based",
-              "download":"location-based",
-              "readLocation":"ars",
-              "copyright":"My copyright statement",
-              "license":"http://opendatacommons.org/licenses/by/1.0/",
-              "useAndReproductionStatement":"Whatever makes you happy"
-            },
+            "defaultAccess":#{default_access.to_json},
             "roles":[{"name":"dor-apo-manager","members":[{"type":"workgroup","identifier":"sdr:psm-staff"}]}]
           },
           "description":{"title":[{"value":"This is my title"}]}}
@@ -1067,6 +1064,54 @@ RSpec.describe 'Update object' do
       end
 
       it 'registers the object with the registration service' do
+        patch "/v1/objects/#{druid}",
+              params: data,
+              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response.body).to eq expected.to_json
+
+        expect(response.status).to eq(200)
+      end
+    end
+
+    context 'when the request clears out some values' do
+      let(:default_access) do
+        {
+          access: 'world',
+          download: 'world',
+          readLocation: nil,
+          copyright: nil,
+          license: nil,
+          useAndReproductionStatement: nil
+        }
+      end
+
+      let(:default_access_expected) { default_access.compact }
+
+      let(:default_object_rights_expected) do
+        <<~XML
+          <?xml version="1.0" encoding="UTF-8"?>
+
+          <rightsMetadata>
+             <access type="discover">
+                <machine>
+                   <world/>
+                </machine>
+             </access>
+             <access type="read">
+                <machine>
+                   <world/>
+                </machine>
+             </access>
+          </rightsMetadata>
+        XML
+      end
+
+      before do
+        # This stubs out Solr:
+        allow(item).to receive(:admin_policy_object_id).and_return('druid:dd999df4567')
+      end
+
+      it 'updates the metadata' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
