@@ -34,6 +34,8 @@ module Cocina
       attr_reader :item, :access
 
       def lookup_and_assign_license! # rubocop:disable Metrics/AbcSize
+        initialize_license_fields!
+
         if Dor::CreativeCommonsLicenseService.key?(license_code)
           item.rightsMetadata.creative_commons = license_code
           item.rightsMetadata.creative_commons.uri = access.license
@@ -58,6 +60,20 @@ module Cocina
         DefaultRights::LICENSE_CODES.merge(
           Cocina::FromFedora::Access::NONE_LICENSE_URI => 'none'
         )
+      end
+
+      def use_field
+        item.rightsMetadata.find_by_terms(:use).first # rubocop:disable Rails/DynamicFindBy
+      end
+
+      def initialize_field!(field_name, root_term = item.rightsMetadata.ng_xml.root)
+        item.rightsMetadata.add_child_node(root_term, field_name)
+      end
+
+      def initialize_license_fields!
+        initialize_field!(:use) if use_field.blank?
+        initialize_field!(:creative_commons, use_field) if item.rightsMetadata.creative_commons.blank?
+        initialize_field!(:open_data_commons, use_field) if item.rightsMetadata.open_data_commons.blank?
       end
     end
   end

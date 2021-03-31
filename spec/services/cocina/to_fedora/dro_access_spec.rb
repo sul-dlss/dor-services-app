@@ -9,7 +9,67 @@ RSpec.describe Cocina::ToFedora::DROAccess do
     Dor::Item.new
   end
 
-  describe 'with cdl access' do
+  context 'with an object lacking a license to start' do
+    let(:item) do
+      Dor::Item.new
+    end
+    let(:access) do
+      Cocina::Models::DROAccess.new(
+        license: 'http://opendatacommons.org/licenses/by/1.0/',
+        copyright: 'New Copyright Statement',
+        useAndReproductionStatement: 'New Use Statement'
+      )
+    end
+
+    before do
+      item.rightsMetadata.content = <<~XML
+        <?xml version="1.0"?>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+        </rightsMetadata>
+      XML
+    end
+
+    it 'builds the xml' do
+      apply
+      expect(item.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
+        <?xml version="1.0"?>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+          <use>
+            <human type="useAndReproduction">New Use Statement</human>
+            <human type="creativeCommons"/>
+            <machine type="creativeCommons" uri=""/>
+            <human type="openDataCommons">Open Data Commons Attribution License 1.0</human>
+            <machine type="openDataCommons" uri="http://opendatacommons.org/licenses/by/1.0/">odc-by</machine>
+          </use>
+          <copyright>
+            <human>New Copyright Statement</human>
+          </copyright>
+        </rightsMetadata>
+      XML
+    end
+  end
+
+  context 'with cdl access' do
     let(:access) do
       Cocina::Models::DROAccess.new(access: 'citation-only', controlledDigitalLending: true, download: 'none')
     end
