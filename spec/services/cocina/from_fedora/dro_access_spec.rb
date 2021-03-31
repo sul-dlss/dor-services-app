@@ -245,4 +245,55 @@ RSpec.describe Cocina::FromFedora::DROAccess do
       expect(access).to eq(access: 'world', download: 'none')
     end
   end
+
+  context 'with an ODC license' do
+    let(:xml) do
+      <<~XML
+        <rightsMetadata>
+          <use>
+            <human type="openDataCommons">Open Data Commons Attribution License 1.0</human>
+            <machine type="openDataCommons">odc-by</machine>
+          </use>
+        </rightsMetadata>
+      XML
+    end
+
+    it 'builds the hash' do
+      expect(access).to include(license: 'http://opendatacommons.org/licenses/by/1.0/')
+    end
+  end
+
+  context 'with a CC license' do
+    let(:xml) do
+      <<~XML
+        <rightsMetadata>
+          <use>
+            <human type="creativeCommons">Attribution Non-Commercial, No Derivatives 3.0 Unported</human>
+            <machine type="creativeCommons">by-nc-nd</machine>
+          </use>
+        </rightsMetadata>
+      XML
+    end
+
+    it 'builds the hash' do
+      expect(access).to include(license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/')
+    end
+  end
+
+  context 'with a "none" license' do
+    let(:xml) do
+      <<~XML
+        <rightsMetadata>
+          <use>
+            <human type="creativeCommons">no Creative Commons (CC) license</human>
+            <machine type="creativeCommons">none</machine>
+          </use>
+        </rightsMetadata>
+      XML
+    end
+
+    it 'builds the hash' do
+      expect(access).to include(license: 'http://cocina.sul.stanford.edu/licenses/none')
+    end
+  end
 end

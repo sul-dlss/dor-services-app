@@ -4,6 +4,8 @@ module Cocina
   module FromFedora
     # builds the Access subschema for Collections
     class Access
+      NONE_LICENSE_URI = 'http://cocina.sul.stanford.edu/licenses/none'
+
       def self.collection_props(rights_metadata_ds)
         props = new(rights_metadata_ds).props
         # Collection access does not have download
@@ -20,7 +22,9 @@ module Cocina
           access: access_rights,
           download: download? ? access_rights : 'none',
           readLocation: location,
-          license: license_uri
+          license: license_uri,
+          copyright: copyright,
+          useAndReproductionStatement: use_statement
         }.compact.tap do |h|
           h[:controlledDigitalLending] = true if cdl?
         end
@@ -31,6 +35,8 @@ module Cocina
       attr_reader :rights_metadata_ds
 
       def license_uri
+        return NONE_LICENSE_URI if rights_metadata_ds.use_license.first == 'none'
+
         if rights_metadata_ds.open_data_commons.first.present?
           Dor::OpenDataLicenseService.property(rights_metadata_ds.open_data_commons.first).uri
         elsif rights_metadata_ds.creative_commons.first.present?
@@ -40,6 +46,14 @@ module Cocina
 
       def rights_object
         rights_metadata_ds.dra_object.obj_lvl
+      end
+
+      def copyright
+        rights_metadata_ds.copyright.first.presence
+      end
+
+      def use_statement
+        rights_metadata_ds.use_statement.first.presence
       end
 
       # @return [Bool] true unless the rule="no-download" has been set or if the access is citation-only or dark
