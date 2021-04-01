@@ -38,13 +38,22 @@ module Cocina
           item.rightsMetadata.creative_commons = license_code
           item.rightsMetadata.creative_commons.uri = access.license
           item.rightsMetadata.creative_commons_human = Dor::CreativeCommonsLicenseService.property(license_code).label
+          item.rightsMetadata.open_data_commons = ''
+          item.rightsMetadata.open_data_commons.uri = ''
+          item.rightsMetadata.open_data_commons_human = ''
         elsif Dor::OpenDataLicenseService.key?(license_code)
           item.rightsMetadata.open_data_commons = license_code
           item.rightsMetadata.open_data_commons.uri = access.license
           item.rightsMetadata.open_data_commons_human = Dor::OpenDataLicenseService.property(license_code).label
+          item.rightsMetadata.creative_commons = ''
+          item.rightsMetadata.creative_commons.uri = ''
+          item.rightsMetadata.creative_commons_human = ''
         elsif license_code == 'none'
           item.rightsMetadata.creative_commons = license_code
           item.rightsMetadata.creative_commons_human = 'no Creative Commons (CC) license'
+          item.rightsMetadata.open_data_commons = ''
+          item.rightsMetadata.open_data_commons.uri = ''
+          item.rightsMetadata.open_data_commons_human = ''
         else
           raise ArgumentError, "'#{license_code}' is not a valid license code"
         end
