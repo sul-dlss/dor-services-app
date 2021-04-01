@@ -27,7 +27,7 @@ module Cocina
           has_member_orders = build_has_member_orders
           structural[:hasMemberOrders] = has_member_orders if has_member_orders.present?
 
-          contains = FileSets.build(item.contentMetadata, version: item.current_version.to_i, tags: AdministrativeTags.for(pid: item.id))
+          contains = FileSets.build(item.contentMetadata, version: item.current_version.to_i, ignore_resource_type_errors: project_phoenix?)
           structural[:contains] = contains if contains.present?
 
           structural[:hasAgreement] = item.identityMetadata.agreementId.first unless item.identityMetadata.agreementId.empty?
@@ -45,6 +45,10 @@ module Cocina
       private
 
       attr_reader :item, :type
+
+      def project_phoenix?
+        AdministrativeTags.for(pid: item.id).include?('Google Book : GBS VIEW_FULL')
+      end
 
       def build_has_member_orders
         member_orders = create_member_order if type == Cocina::Models::Vocab.book

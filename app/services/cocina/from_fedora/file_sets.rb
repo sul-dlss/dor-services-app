@@ -4,14 +4,14 @@ module Cocina
   module FromFedora
     # builds the FileSet instance from a Dor::Item
     class FileSets
-      def self.build(content_metadata_ds, version:, tags: [])
+      def self.build(content_metadata_ds, version:, ignore_resource_type_errors: false)
         content_metadata_ds.ng_xml.xpath('//resource[file]').map do |resource_node|
           files = build_files(resource_node.xpath('file'), version: version)
           structural = {}
           structural[:contains] = files if files.present?
           {
             externalIdentifier: IdGenerator.generate_or_existing_fileset_id(resource_node['id']),
-            type: resource_type(resource_node, tags: tags),
+            type: resource_type(resource_node, ignore_resource_type_errors: ignore_resource_type_errors),
             version: version,
             structural: structural
           }.tap do |attrs|
@@ -20,14 +20,14 @@ module Cocina
         end
       end
 
-      def self.resource_type(resource_node, tags: [])
+      def self.resource_type(resource_node, ignore_resource_type_errors:)
         val = resource_node['type']&.underscore
         val = 'three_dimensional' if val == '3d'
         if val && Cocina::Models::Vocab::Resources.respond_to?(val)
           Cocina::Models::Vocab::Resources.public_send(val)
         else
           # skip Honeybadber alerts for Project Phoenix (old Google books) which are known to have bad resource types
-          Honeybadger.notify("Invalid resource type: '#{val}'") unless tags.include?('Google Book : GBS VIEW_FULL')
+          Honeybadger.notify("Invalid resource type: '#{val}'") unless ignore_resource_type_errors
           Cocina::Models::Vocab::Resources.file
         end
       end
