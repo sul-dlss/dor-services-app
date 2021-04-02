@@ -956,7 +956,7 @@ RSpec.describe 'Update object' do
   context 'when an APO is provided' do
     let(:item) do
       Dor::AdminPolicyObject.new(pid: druid,
-                                 label: label).tap do |item|
+                                 label: 'old value').tap do |item|
         item.descMetadata.title_info.main_title = 'This is my title'
         item.administrativeMetadata.default_workflow = 'myWorkflow'
         item.administrativeMetadata.add_default_collection 'druid:gh333qq4444'
