@@ -73,7 +73,7 @@ module Cocina
     def update_apo
       # fedora_object.source_id = cocina_object.identification.sourceId
       if has_changed?(:label)
-        Cocina::ToFedora::Identity.apply(fedora_object, label: cocina_object.label, object_type: 'adminPolicy')
+        Cocina::ToFedora::Identity.apply(fedora_object, label: cocina_object.label)
         fedora_object.label = truncate_label(cocina_object.label)
       end
 
