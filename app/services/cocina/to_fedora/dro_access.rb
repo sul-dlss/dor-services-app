@@ -7,9 +7,6 @@ module Cocina
     class DROAccess < Access
       def apply
         create_embargo(access.embargo) if access.embargo
-        item.rightsMetadata.copyright = access.copyright if access.copyright
-        item.rightsMetadata.use_statement = access.useAndReproductionStatement if access.useAndReproductionStatement
-        lookup_and_assign_license! if access.license
 
         super
       end
