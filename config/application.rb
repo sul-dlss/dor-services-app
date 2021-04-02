@@ -54,5 +54,9 @@ module DorServices
 
     # This makes sure our Postgres enums function are persisted to the schema
     config.active_record.schema_format = :sql
+
+    # Set up a session store so we can access the Sidekiq Web UI
+    # See: https://github.com/mperham/sidekiq/wiki/Monitoring#rails-api-application-session-configuration
+    config.session_store :cookie_store, key: '_dor-services-app_session'
   end
 end
