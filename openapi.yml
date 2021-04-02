@@ -287,6 +287,46 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+  '/v1/objects/{id}/unpublish':
+    post:
+        tags:
+          - objects
+        summary: Unpublish an object from PURL
+        description: ''
+        operationId: 'objects#unpublish'
+        responses:
+          '201':
+            description: Unpublish action started
+            headers:
+              location:
+                description: the status of the action is found at this URI
+                schema:
+                  type: string
+                  format: uri
+        parameters:
+          - name: id
+            in: path
+            description: ID of object
+            required: true
+            schema:
+              $ref: '#/components/schemas/Druid'
+          - name: workflow
+            in: query
+            description: which workflow should this be reported to
+            schema:
+              type: string
+              enum:
+                - ????
+              example: releaseWF
+          - name: lane-id
+            in: query
+            description: Lane for prioritizing the work
+            schema:
+              type: string
+              enum:
+                - 'default'
+                - 'low'
+              default: 'default'
   '/v1/objects/{id}/notify_goobi':
     post:
       tags:

@@ -33,6 +33,7 @@ Rails.application.routes.draw do
         post 'publish'
         post 'preserve'
         post 'update_marc_record'
+        post 'unpublish'
         post 'notify_goobi'
         post 'accession'
         post 'refresh_metadata', to: 'metadata_refresh#refresh'
