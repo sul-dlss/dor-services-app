@@ -153,8 +153,9 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
   end
 
   describe 'altRepGroup for alternative title (880-246)' do
-    # based on druid:cp165bv2167
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
+      # based on druid:cp165bv2167
+
       let(:mods) do
         <<~XML
           <titleInfo usage="primary">
@@ -166,10 +167,10 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
           <titleInfo type="translated">
              <title>Contemporary Chinese literature from Taiwan, &lt;2005-&gt;</title>
           </titleInfo>
-          <titleInfo type="translated" altRepGroup="01">
+          <titleInfo type="translated" altRepGroup="1">
              <title>Dang dai Taiwan wen xue xuan yi &lt;2002-&gt;</title>
           </titleInfo>
-          <titleInfo type="alternative" altRepGroup="01">
+          <titleInfo type="alternative" altRepGroup="1">
              <title>當代台灣文學選譯 &lt;2002-&gt;</title>
           </titleInfo>
         XML
