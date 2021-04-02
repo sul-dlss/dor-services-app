@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
+require 'sidekiq/web'
+
+# From Sidekiq docs: https://github.com/mperham/sidekiq/wiki/Monitoring#rails-api-application-session-configuration
+# Configure Sidekiq-specific session middleware
+Sidekiq::Web.use ActionDispatch::Cookies
+Sidekiq::Web.use Rails.application.config.session_store, Rails.application.config.session_options
+
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
-
-  require 'sidekiq/web'
   mount Sidekiq::Web => '/queues'
 
   scope '/v1' do
