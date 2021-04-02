@@ -20,70 +20,19 @@ module Cocina
 
       def apply
         # See https://github.com/sul-dlss/dor-services/blob/main/lib/dor/datastreams/rights_metadata_ds.rb
-        Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(item.rightsMetadata.ng_xml, Rights.rights_type(access))
+        Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(rightsMetadata.ng_xml, Rights.rights_type(access))
         # This invalidates the dra_object, which is necessary if re-mapping.
-        item.rightsMetadata.content = item.rightsMetadata.ng_xml.to_s
-        item.rightsMetadata.copyright = access.copyright if access.copyright
-        item.rightsMetadata.use_statement = access.useAndReproductionStatement if access.useAndReproductionStatement
-        lookup_and_assign_license! if access.license
-        item.rightsMetadata.ng_xml_will_change!
+        rightsMetadata.content = rightsMetadata.ng_xml.to_s
+        rightsMetadata.copyright = access.copyright if access.copyright
+        rightsMetadata.use_statement = access.useAndReproductionStatement if access.useAndReproductionStatement
+        License.update(rightsMetadata, access.license) if access.license
       end
 
       private
 
       attr_reader :item, :access
 
-      def lookup_and_assign_license! # rubocop:disable Metrics/AbcSize
-        initialize_license_fields!
-
-        if Dor::CreativeCommonsLicenseService.key?(license_code)
-          item.rightsMetadata.creative_commons = license_code
-          item.rightsMetadata.creative_commons.uri = access.license
-          item.rightsMetadata.creative_commons_human = Dor::CreativeCommonsLicenseService.property(license_code).label
-          item.rightsMetadata.open_data_commons = ''
-          item.rightsMetadata.open_data_commons.uri = ''
-          item.rightsMetadata.open_data_commons_human = ''
-        elsif Dor::OpenDataLicenseService.key?(license_code)
-          item.rightsMetadata.open_data_commons = license_code
-          item.rightsMetadata.open_data_commons.uri = access.license
-          item.rightsMetadata.open_data_commons_human = Dor::OpenDataLicenseService.property(license_code).label
-          item.rightsMetadata.creative_commons = ''
-          item.rightsMetadata.creative_commons.uri = ''
-          item.rightsMetadata.creative_commons_human = ''
-        elsif license_code == 'none'
-          item.rightsMetadata.creative_commons = license_code
-          item.rightsMetadata.creative_commons_human = 'no Creative Commons (CC) license'
-          item.rightsMetadata.open_data_commons = ''
-          item.rightsMetadata.open_data_commons.uri = ''
-          item.rightsMetadata.open_data_commons_human = ''
-        else
-          raise ArgumentError, "'#{license_code}' is not a valid license code"
-        end
-      end
-
-      def license_code
-        license_codes.fetch(access.license)
-      end
-
-      def license_codes
-        DefaultRights::LICENSE_CODES.merge(
-          Cocina::FromFedora::Access::NONE_LICENSE_URI => 'none'
-        )
-      end
-
-      def use_field
-        item.rightsMetadata.find_by_terms(:use).first # rubocop:disable Rails/DynamicFindBy
-      end
-
-      def initialize_field!(field_name, root_term = item.rightsMetadata.ng_xml.root)
-        item.rightsMetadata.add_child_node(root_term, field_name)
-      end
-
-      def initialize_license_fields!
-        initialize_field!(:use) if use_field.blank?
-        initialize_field!(:creative_commons, use_field) if item.rightsMetadata.creative_commons.blank?
-        initialize_field!(:open_data_commons, use_field) if item.rightsMetadata.open_data_commons.blank?
-      end
+      delegate :rightsMetadata, to: :item
     end
   end
 end
