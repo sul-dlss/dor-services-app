@@ -979,8 +979,7 @@ RSpec.describe 'Update object' do
               </machine>
            </access>
            <use>
-              <human type="openDataCommons">Open Data Commons Attribution License 1.0</human>
-              <machine type="openDataCommons" uri="http://opendatacommons.org/licenses/by/1.0/">odc-by</machine>
+              <license>http://opendatacommons.org/licenses/by/1.0/</license>
               <human type="useAndReproduction">Whatever makes you happy</human>
            </use>
            <copyright>
