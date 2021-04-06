@@ -11,6 +11,9 @@ RSpec.describe Cocina::ToFedora::DefaultRights do
   describe 'write' do
     subject(:write) { described_class.write(default_object_rights_ds, default_access) }
 
+    let(:license_nodes) { default_object_rights_ds.ng_xml.xpath('//use/license') }
+    let(:license) { license_nodes.text }
+
     context 'when license is not present' do
       let(:default_access) do
         Cocina::Models::AdminPolicyDefaultAccess.new(
@@ -21,7 +24,7 @@ RSpec.describe Cocina::ToFedora::DefaultRights do
 
       it 'builds the xml' do
         write
-        expect(default_object_rights_ds.use_license).to be_nil
+        expect(license_nodes).to be_empty
       end
     end
 
@@ -36,7 +39,7 @@ RSpec.describe Cocina::ToFedora::DefaultRights do
 
       it 'builds the xml' do
         write
-        expect(default_object_rights_ds.use_license).to eq 'pdm'
+        expect(license).to eq 'https://creativecommons.org/publicdomain/mark/1.0/'
       end
     end
 
@@ -51,7 +54,7 @@ RSpec.describe Cocina::ToFedora::DefaultRights do
 
       it 'builds the xml' do
         write
-        expect(default_object_rights_ds.use_license).to eq 'pddl'
+        expect(license).to eq 'http://opendatacommons.org/licenses/pddl/1.0/'
       end
     end
   end

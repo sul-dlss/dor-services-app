@@ -16,10 +16,10 @@ module Cocina
       def props
         super.tap do |access|
           access[:embargo] = embargo unless embargo.empty?
-          access[:useAndReproductionStatement] = use_statement if use_statement.present?
-          access[:copyright] = copyright if copyright.present?
-          access[:license] = license_uri if license_uri.present?
-        end
+          access[:useAndReproductionStatement] = use_statement
+          access[:copyright] = copyright
+          access[:license] = License.find(rights_metadata_ds)
+        end.compact
       end
 
       private

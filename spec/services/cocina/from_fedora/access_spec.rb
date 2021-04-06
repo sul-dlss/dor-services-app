@@ -8,7 +8,7 @@ RSpec.describe Cocina::FromFedora::Access do
   let(:item) do
     Dor::Collection.new
   end
-  let(:rights_metadata_ds) { Dor::RightsMetadataDS.new.tap { |ds| ds.content = xml } }
+  let(:rights_metadata_ds) { Dor::RightsMetadataDS.from_xml(xml) }
 
   before do
     allow(item).to receive(:rightsMetadata).and_return(rights_metadata_ds)

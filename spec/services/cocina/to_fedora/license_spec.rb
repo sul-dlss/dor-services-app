@@ -17,11 +17,8 @@ RSpec.describe Cocina::ToFedora::License do
       expect(datastream.ng_xml.xpath('//use')).to be_equivalent_to <<~XML
         <use>
            <human type="useAndReproduction"/>
-           <human type="creativeCommons">No Rights Reserved</human>
-           <machine type="creativeCommons" uri="https://creativecommons.org/share-your-work/public-domain/cc0/">cc0</machine>
-           <human type="openDataCommons"/>
-           <machine type="openDataCommons" uri=""/>
-         </use>
+           <license>https://creativecommons.org/share-your-work/public-domain/cc0/</license>
+        </use>
       XML
     end
   end

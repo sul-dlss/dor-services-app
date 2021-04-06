@@ -56,10 +56,7 @@ RSpec.describe Cocina::ToFedora::DROAccess do
           </access>
           <use>
             <human type="useAndReproduction">New Use Statement</human>
-            <human type="creativeCommons"/>
-            <machine type="creativeCommons" uri=""/>
-            <human type="openDataCommons">Open Data Commons Attribution License 1.0</human>
-            <machine type="openDataCommons" uri="http://opendatacommons.org/licenses/by/1.0/">odc-by</machine>
+            <license>http://opendatacommons.org/licenses/by/1.0/</license>
           </use>
           <copyright>
             <human>New Copyright Statement</human>
@@ -129,10 +126,7 @@ RSpec.describe Cocina::ToFedora::DROAccess do
           </access>
           <use>
             <human type="useAndReproduction"/>
-            <human type="creativeCommons">Attribution Non-Commercial, No Derivatives 3.0 Unported</human>
-            <machine type="creativeCommons" uri="https://creativecommons.org/licenses/by-nc-nd/3.0/">by-nc-nd</machine>
-            <human type="openDataCommons"/>
-            <machine type="openDataCommons" uri=""/>
+            <license>https://creativecommons.org/licenses/by-nc-nd/3.0/</license>
           </use>
           <copyright>
             <human/>
@@ -164,10 +158,7 @@ RSpec.describe Cocina::ToFedora::DROAccess do
           </access>
           <use>
             <human type="useAndReproduction"/>
-            <human type="creativeCommons"/>
-            <machine type="creativeCommons" uri=""/>
-            <human type="openDataCommons">Open Data Commons Attribution License 1.0</human>
-            <machine type="openDataCommons" uri="http://opendatacommons.org/licenses/by/1.0/">odc-by</machine>
+            <license>http://opendatacommons.org/licenses/by/1.0/</license>
           </use>
           <copyright>
             <human/>
@@ -199,10 +190,7 @@ RSpec.describe Cocina::ToFedora::DROAccess do
           </access>
           <use>
             <human type="useAndReproduction"/>
-            <human type="creativeCommons">no Creative Commons (CC) license</human>
-            <machine type="creativeCommons" uri="">none</machine>
-            <human type="openDataCommons"/>
-            <machine type="openDataCommons" uri=""/>
+            <license>http://cocina.sul.stanford.edu/licenses/none</license>
           </use>
           <copyright>
             <human/>
