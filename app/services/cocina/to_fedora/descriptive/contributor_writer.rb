@@ -121,20 +121,9 @@ module Cocina
         end
 
         def write_roles(contributor)
-          Array(contributor.role).reject { |role| filtered_role?(role, contributor.type) }.each do |role|
+          Array(contributor.role).each do |role|
             RoleWriter.write(xml: xml, role: role)
           end
-        end
-
-        def filtered_role?(role, contributor_type)
-          return true if role.value&.match?(/conference/i)
-          return true if [
-            'Stanford self-deposit contributor types',
-            'DataCite contributor types',
-            'DataCite properties'
-          ].include?(role.source&.value) && Cocina::FromFedora::Descriptive::Contributor::ROLES.value?(contributor_type)
-
-          false
         end
 
         def write_basic(name)
