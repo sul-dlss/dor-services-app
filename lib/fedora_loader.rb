@@ -75,6 +75,11 @@ class FedoraLoader
 
   def fedora_class(rels_ext)
     rels_ext_ng_xml = Nokogiri::XML(rels_ext)
+
+    raise Unmapped if rels_ext_ng_xml.root.xpath('//fedora:conformsTo[@rdf:resource="info:fedora/afmodel:Part"]',
+                                                 'fedora' => 'info:fedora/fedora-system:def/relations-external#',
+                                                 'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#').present?
+
     model = rels_ext_ng_xml.root.xpath('//fedora-model:hasModel', 'fedora-model' => 'info:fedora/fedora-system:def/model#').first['rdf:resource']
     case model
     when 'info:fedora/afmodel:Dor_Collection'
