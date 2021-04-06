@@ -6,10 +6,7 @@ require 'active_fedora/solr_service'
 # Monkeypatch to retrieve tags using dor-services-client so that does not need to be run on dor-services-app server.
 class AdministrativeTags
   def self.project(pid:)
-    tag = Dor::Services::Client.object(pid)
-                               .administrative_tags
-                               .list
-                               .find { |check_tag| check_tag.start_with?('Project :') }
+    tag = self.for(pid: pid).find { |check_tag| check_tag.start_with?('Project :') }
 
     return [] unless tag
 
@@ -17,14 +14,17 @@ class AdministrativeTags
   end
 
   def self.content_type(pid:)
-    tag = Dor::Services::Client.object(pid)
-                               .administrative_tags
-                               .list
-                               .find { |check_tag| check_tag.start_with?('Process : Content Type :') }
+    tag = self.for(pid: pid).find { |check_tag| check_tag.start_with?('Process : Content Type :') }
 
     return [] unless tag
 
     [tag.split(' : ').last]
+  end
+
+  def self.for(pid:)
+    Dor::Services::Client.object(pid)
+                         .administrative_tags
+                         .list
   end
 end
 
