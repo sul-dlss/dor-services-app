@@ -56,7 +56,7 @@ module Cocina
             parallelValue: simple_or_structured(node_set, display_types: display_types?(node_set))
           }.tap do |result|
             type = parallel_type(node_set)
-            result[:type] = type if type
+            result[:type] = type if type && type != 'parallel'
           end
         end
 
