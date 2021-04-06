@@ -153,9 +153,8 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
   end
 
   describe 'altRepGroup for alternative title (880-246)' do
+    # based on druid:cp165bv2167
     xit 'not implemented' do
-      let(:druid) { 'druid:cp165bv2167' }
-
       let(:mods) do
         <<~XML
           <titleInfo usage="primary">
