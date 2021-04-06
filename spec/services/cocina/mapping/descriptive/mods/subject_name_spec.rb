@@ -106,9 +106,8 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
   end
 
   describe 'Name subject with description' do
+    # based on druid:fv368nn6038
     xit 'not implemented - name subject with description' do
-      let(:druid) { 'druid:fv368nn6038' }
-
       let(:mods) do
         <<~XML
           <subject>
