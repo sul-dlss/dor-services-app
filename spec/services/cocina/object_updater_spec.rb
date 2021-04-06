@@ -151,12 +151,8 @@ RSpec.describe Cocina::ObjectUpdater do
 
   context 'when a collection' do
     let(:item) do
-      instance_double(Dor::Collection, pid: 'druid:bc123df4567',
-                                       save!: nil,
-                                       descMetadata: desc_metadata)
+      Dor::Collection.new(pid: 'druid:bc123df4567')
     end
-
-    let(:desc_metadata) { double }
 
     let(:orig_cocina_attrs) do
       {
@@ -168,10 +164,13 @@ RSpec.describe Cocina::ObjectUpdater do
       }
     end
 
+    before do
+      allow(item).to receive(:save!)
+    end
+
     context 'when updating label' do
       before do
         allow(item).to receive(:label=)
-        allow(Cocina::ToFedora::Identity).to receive(:apply)
       end
 
       context 'when label has changed' do
@@ -184,7 +183,7 @@ RSpec.describe Cocina::ObjectUpdater do
         it 'updates label' do
           update
           expect(item).to have_received(:label=).with('new label')
-          expect(Cocina::ToFedora::Identity).to have_received(:apply)
+          expect(item.objectLabel).to eq ['new label']
         end
       end
 
@@ -192,16 +191,20 @@ RSpec.describe Cocina::ObjectUpdater do
         it 'does not update label' do
           update
           expect(item).not_to have_received(:label=)
-          expect(Cocina::ToFedora::Identity).not_to have_received(:apply)
+          expect(item.objectLabel).to eq []
         end
       end
     end
 
     context 'when updating description' do
+      let(:builder) do
+        Nokogiri::XML::Builder.new do |b|
+          b.test 'hello'
+        end
+      end
+
       before do
-        allow(desc_metadata).to receive(:content=)
-        allow(desc_metadata).to receive(:content_will_change!)
-        allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
+        allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(builder)
         allow(Cocina::DescriptionRoundtripValidator).to receive(:valid_from_cocina?).and_return(Success())
       end
 
@@ -214,18 +217,16 @@ RSpec.describe Cocina::ObjectUpdater do
 
         it 'updates description' do
           update
-          expect(desc_metadata).to have_received(:content=)
-          expect(desc_metadata).to have_received(:content_will_change!)
-          expect(Cocina::ToFedora::Descriptive).to have_received(:transform)
+          expect(item.descMetadata.content).to eq '<test>hello</test>'
+          expect(item.descMetadata).to be_content_changed
         end
       end
 
       context 'when description has not changed' do
         it 'does not update descriptive' do
           update
-          expect(desc_metadata).not_to have_received(:content=)
-          expect(desc_metadata).not_to have_received(:content_will_change!)
-          expect(Cocina::ToFedora::Descriptive).not_to have_received(:transform)
+          expect(item.descMetadata.content).to be_nil
+          expect(item.descMetadata).not_to be_content_changed
         end
       end
     end

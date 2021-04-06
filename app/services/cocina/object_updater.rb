@@ -89,7 +89,7 @@ module Cocina
     def update_collection
       if has_changed?(:label)
         fedora_object.label = truncate_label(cocina_object.label)
-        Cocina::ToFedora::Identity.apply(fedora_object, label: cocina_object.label, object_type: 'collection')
+        Cocina::ToFedora::Identity.apply(fedora_object, label: cocina_object.label)
       end
       fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy if has_changed?(:administrative)
 
