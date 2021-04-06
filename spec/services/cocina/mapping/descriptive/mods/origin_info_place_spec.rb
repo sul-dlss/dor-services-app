@@ -109,9 +109,8 @@ RSpec.describe 'MODS originInfo place <--> cocina mappings' do
   end
 
   describe 'Place - text and code in same place element, different authority on each' do
+    # based on druid:kn689tm8699
     xit 'not implemented - placeTerm in same place element with different authority' do
-      let(:druid) { 'druid:kn689tm8699' }
-
       let(:mods) do
         <<~XML
           <originInfo displayLabel="Place of creation" eventType="production">
