@@ -21,8 +21,11 @@ module Cocina
       title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: cocina_object.label)
       roundtrip_description = FromFedora::Descriptive.props(title_builder: title_builder, mods: descriptive_ng_xml, druid: druid)
 
+      # With Rails 6.1, .delete_if can be replace by compact_blank (for deleting empty array).
+      orig_description = cocina_object.description.to_h.delete_if { |_k, v| v.blank? }
+
       # Compare original description against roundtripped Cocina.
-      unless DeepEqual.match?(roundtrip_description, cocina_object.description.to_h)
+      unless DeepEqual.match?(roundtrip_description, orig_description)
         return Failure("Roundtripping of descriptive metadata unsuccessful. Expected #{cocina_object.description.to_h} but received #{roundtrip_description}.")
       end
 
