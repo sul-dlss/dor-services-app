@@ -40,6 +40,18 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
       end
     end
 
+    context 'when has empty values' do
+      let(:cocina_object) do
+        new_cocina_hash = cocina_hash.dup
+        new_cocina_hash[:description][:relatedResource] = []
+        Cocina::Models::DRO.new(new_cocina_hash)
+      end
+
+      it 'ignores and returns success' do
+        expect(result.success?).to be true
+      end
+    end
+
     context 'when invalid' do
       before do
         changed_cocina_hash = cocina_hash[:description].except(:purl)
