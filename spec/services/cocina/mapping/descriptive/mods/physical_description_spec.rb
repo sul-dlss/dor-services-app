@@ -155,9 +155,8 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
   end
 
   describe 'Multilingual physical descriptions' do
+    # based on druid:bx458nk9866
     xit 'not implemented' do
-      let(:druid) { 'druid:bx458nk9866' }
-
       let(:mods) do
         <<~XML
           <physicalDescription altRepGroup="01">
