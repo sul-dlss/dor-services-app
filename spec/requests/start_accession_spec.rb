@@ -18,6 +18,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
 
   context 'when newly registered object that has not been accessioned yet' do
     before do
+      allow(VersionService).to receive(:in_accessioning?).and_return(false)
       allow(VersionService).to receive(:can_open?).and_return(false)
       allow(VersionService).to receive(:open_for_versioning?).and_return(false)
     end
@@ -47,6 +48,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     let(:base_params) { { 'controller' => 'objects', 'action' => 'accession', 'id' => druid } }
 
     before do
+      allow(VersionService).to receive(:in_accessioning?).and_return(false)
       allow(VersionService).to receive(:can_open?).and_return(true)
     end
 
@@ -73,6 +75,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     let(:base_params) { { 'controller' => 'objects', 'action' => 'accession', 'id' => druid } }
 
     before do
+      allow(VersionService).to receive(:in_accessioning?).and_return(false)
       allow(VersionService).to receive(:can_open?).and_return(false)
       allow(VersionService).to receive(:open_for_versioning?).and_return(true)
     end
@@ -83,6 +86,23 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
       expect(workflow_client).to have_received(:create_workflow_by_name).with(object.pid, default_start_accession_workflow, version: '1')
       expect(VersionService).not_to have_received(:open).with(object, base_params, event_factory)
       expect(VersionService).to have_received(:close).with(object, base_params.merge('start_accession' => false), event_factory)
+    end
+  end
+
+  context 'when object currently in accessioning' do
+    let(:base_params) { { 'controller' => 'objects', 'action' => 'accession', 'id' => druid } }
+
+    before do
+      allow(VersionService).to receive(:in_accessioning?).and_return(true)
+    end
+
+    it 'returns an unacceptable response and does not start any workflows' do
+      post "/v1/objects/#{druid}/accession",
+           headers: { 'Authorization' => "Bearer #{jwt}" }
+      expect(workflow_client).not_to have_received(:create_workflow_by_name)
+      expect(VersionService).not_to have_received(:open)
+      expect(VersionService).not_to have_received(:close)
+      expect(response).to have_http_status(:not_acceptable)
     end
   end
 end
