@@ -153,7 +153,7 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
     it_behaves_like 'cocina MODS mapping' do
       let(:mods) do
         <<~XML
-          <subject authority="fast">
+          <subject authority="fast" displayLabel="Event">
             <topic authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/976704">International Year of the Ocean (1998)</topic>
           </subject>
         XML
@@ -169,24 +169,8 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
               source: {
                 code: 'fast',
                 uri: 'http://id.worldcat.org/fast/'
-              }
-            }
-          ]
-        }
-      end
-
-      # type will be submitted as "event" by H2. However, this will be lost in roundtrip to Cocina.
-      let(:roundtrip_cocina) do
-        {
-          subject: [
-            {
-              value: 'International Year of the Ocean (1998)',
-              type: 'topic',
-              uri: 'http://id.worldcat.org/fast/976704',
-              source: {
-                code: 'fast',
-                uri: 'http://id.worldcat.org/fast/'
-              }
+              },
+              displayLabel: 'Event'
             }
           ]
         }
