@@ -790,9 +790,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name repeated with different roles' do
+    # based on druid:jr089rh8500
     xit 'unimplemented spec: name repeated with different roles' do
-      let(:druid) { 'druid:jr089rh8500' }
-
       let(:mods) do
         <<~XML
           <name type="personal" usage="primary" valueURI="http://id.loc.gov/authorities/names/no2001053444">
@@ -852,9 +851,8 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Name and role in different scripts' do
+    # based on druid:jk495jh4582
     xit 'not implemented' do
-      let(:druid) { 'druid:jk495jh4582' }
-
       let(:mods) do
         <<~XML
           <name type="personal" altRepGroup="08">
