@@ -84,7 +84,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
       post "/v1/objects/#{druid}/accession",
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(workflow_client).to have_received(:create_workflow_by_name).with(object.pid, default_start_accession_workflow, version: '1')
-      expect(VersionService).not_to have_received(:open).with(object, base_params, event_factory)
+      expect(VersionService).not_to have_received(:open)
       expect(VersionService).to have_received(:close).with(object, base_params.merge('start_accession' => false), event_factory)
     end
   end
