@@ -106,11 +106,26 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
   end
 
   describe 'Name subject with description' do
-    # based on druid:fv368nn6038
-    xit 'not implemented - name subject with description' do
+    # adapted from fv368nn6038
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject>
+            <name type="personal" authority="naf">
+              <namePart type="family">Russell</namePart>
+              <namePart type="given">William</namePart>
+              <namePart type="termsOfAddress">Lord</namePart>
+              <namePart type="date">1639-1683</namePart>
+              <description>bart</description>
+              <displayForm>Russell, William, Lord, 1639-1683, bart</displayForm>
+            </name>
+          </subject>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="lcsh">
             <name type="personal" authority="naf">
               <namePart type="family">Russell</namePart>
               <namePart type="given">William</namePart>
@@ -150,7 +165,10 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
                       value: '1639-1683',
                       type: 'life dates'
                     }
-                  ]
+                  ],
+                  source: {
+                    code: 'naf'
+                  }
                 },
                 {
                   value: 'Russell, William, Lord, 1639-1683, bart',
@@ -172,7 +190,7 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
   describe 'Name subject with affiliation' do
     # nx523gb3191
-    xit 'not implemented - name subject with affiliation' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject authority="lcsh">

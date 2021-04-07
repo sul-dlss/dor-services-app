@@ -81,6 +81,7 @@ module Cocina
                         !have_valueURI?(subject_node) &&
                         have_authority?(child_node) &&
                         have_same_authority?(child_node, subject_node) &&
+                        child_node['authority'] != 'naf' &&
                         !(have_authorityURI?(child_node) || have_valueURI?(child_node))
 
             delete_authority(child_node)
@@ -151,7 +152,7 @@ module Cocina
       end
 
       def normalize_subject_authority
-        ng_xml.root.xpath('//mods:subject[not(@authority) and count(mods:*) = 1 and not(mods:geographicCode)]/mods:*[@authority]',
+        ng_xml.root.xpath('//mods:subject[not(@authority) and count(mods:*) = 1 and not(mods:geographicCode)]/mods:*[@authority and @authority != "naf"]',
                           mods: ModsNormalizer::MODS_NS).each do |node|
           node.parent['authority'] = node['authority']
           node.delete('authority') unless node['authorityURI'] || node['valueURI']

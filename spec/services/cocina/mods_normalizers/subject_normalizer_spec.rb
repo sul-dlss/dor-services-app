@@ -193,7 +193,7 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
     end
   end
 
-  context 'when normalizing subject with naf authority' do
+  context 'when normalizing subject with naf authority and valueURI' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{MODS_ATTRIBUTES}>
@@ -728,6 +728,42 @@ RSpec.describe Cocina::ModsNormalizers::SubjectNormalizer do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <subject xlink:href="http://name.org/name" />
+        </mods>
+      XML
+    end
+  end
+
+  context 'when subject name authority is naf' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject>
+            <name type="personal" authority="naf">
+              <namePart type="family">Russell</namePart>
+              <namePart type="given">William</namePart>
+              <namePart type="termsOfAddress">Lord</namePart>
+              <namePart type="date">1639-1683</namePart>
+              <description>bart</description>
+              <displayForm>Russell, William, Lord, 1639-1683, bart</displayForm>
+            </name>
+          </subject>
+        </mods>
+      XML
+    end
+
+    it 'adds lcsh authority to subject' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <subject authority="lcsh">
+            <name type="personal" authority="naf">
+              <namePart type="family">Russell</namePart>
+              <namePart type="given">William</namePart>
+              <namePart type="termsOfAddress">Lord</namePart>
+              <namePart type="date">1639-1683</namePart>
+              <description>bart</description>
+              <displayForm>Russell, William, Lord, 1639-1683, bart</displayForm>
+            </name>
+          </subject>
         </mods>
       XML
     end
