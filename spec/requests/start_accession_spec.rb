@@ -20,7 +20,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     before do
       allow(VersionService).to receive(:in_accessioning?).and_return(false)
       allow(VersionService).to receive(:can_open?).and_return(false)
-      allow(VersionService).to receive(:open_for_versioning?).and_return(false)
+      allow(VersionService).to receive(:open?).and_return(false)
     end
 
     it 'does not open or close a version and starts default workflow' do
@@ -77,7 +77,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     before do
       allow(VersionService).to receive(:in_accessioning?).and_return(false)
       allow(VersionService).to receive(:can_open?).and_return(false)
-      allow(VersionService).to receive(:open_for_versioning?).and_return(true)
+      allow(VersionService).to receive(:open?).and_return(true)
     end
 
     it 'closes a version and starts default workflow' do

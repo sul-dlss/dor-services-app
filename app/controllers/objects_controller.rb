@@ -91,7 +91,7 @@ class ObjectsController < ApplicationController
       VersionService.open(@item, params, event_factory: EventFactory)
       VersionService.close(@item, params.merge(start_accession: false), event_factory: EventFactory)
     # if this is an existing accessioned object that is currently open, just close it without starting accessionWF
-    elsif VersionService.open_for_versioning?(@item, params)
+    elsif VersionService.open?(@item)
       VersionService.close(@item, params.merge(start_accession: false), event_factory: EventFactory)
     end
 
