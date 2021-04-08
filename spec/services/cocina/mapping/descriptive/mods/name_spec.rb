@@ -2126,6 +2126,90 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
   # devs added specs below
 
+  describe 'Names with the same altRepGroup but differing types' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="conference" altRepGroup="1" script="Latn">
+            <namePart>Zhonghua gong nong bing Suwei'ai quan guo dai biao da hui 1931 : Ruijin)</namePart>
+          </name>
+          <name type="corporate" altRepGroup="1" script="Latn">
+            <namePart>中華工農兵蘇維埃全國代表大會</namePart>
+            <namePart>(1st : 1931 : Ruijin)</namePart>
+          </name>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        # first type declared wins
+        <<~XML
+          <name type="conference" altRepGroup="1" script="Latn">
+            <namePart>Zhonghua gong nong bing Suwei'ai quan guo dai biao da hui 1931 : Ruijin)</namePart>
+          </name>
+          <name type="conference" altRepGroup="1" script="Latn">
+            <namePart>中華工農兵蘇維埃全國代表大會</namePart>
+            <namePart>(1st : 1931 : Ruijin)</namePart>
+          </name>
+        XML
+      end
+
+      let(:skip_normalization) { true }
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  parallelValue: [
+                    {
+                      value: "Zhonghua gong nong bing Suwei'ai quan guo dai biao da hui 1931 : Ruijin)",
+                      valueLanguage: {
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
+                          }
+                        }
+                      }
+                    },
+                    {
+                      structuredValue: [
+                        {
+                          value: '中華工農兵蘇維埃全國代表大會',
+                          type: 'name'
+                        },
+                        {
+                          value: '(1st : 1931 : Ruijin)',
+                          type: 'name'
+                        }
+                      ],
+                      valueLanguage: {
+                        valueScript: {
+                          code: 'Latn',
+                          source: {
+                            code: 'iso15924'
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  type: 'conference'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:errors) do
+        [
+          Notification.new(msg: 'Multiple types for same altRepGroup', context: { types: %w[conference corporate] })
+        ]
+      end
+    end
+  end
+
   context 'with an invalid type' do
     context 'when miscapitalized' do
       it_behaves_like 'MODS cocina mapping' do

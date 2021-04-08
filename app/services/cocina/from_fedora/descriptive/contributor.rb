@@ -35,6 +35,7 @@ module Cocina
 
         def build
           grouped_altrepgroup_name_nodes, other_name_nodes = AltRepGroup.split(nodes: deduped_name_nodes)
+          check_altrepgroup_type_inconsistency(grouped_altrepgroup_name_nodes)
           contributors = grouped_altrepgroup_name_nodes.map { |name_nodes| build_name_nodes(name_nodes) } + \
                          other_name_nodes.map { |name_node| build_name_nodes([name_node]) }
           adjust_primary(contributors.compact).presence
@@ -61,6 +62,15 @@ module Cocina
           notifier.warn('Duplicate name entry') if name_nodes.size != uniq_name_nodes.size
 
           uniq_name_nodes
+        end
+
+        def check_altrepgroup_type_inconsistency(grouped_altrepgroup_name_nodes)
+          grouped_altrepgroup_name_nodes.each do |altrepgroup_name_nodes|
+            altrepgroup_name_types = altrepgroup_name_nodes.group_by { |name_node| name_node['type'] }.keys
+            next unless altrepgroup_name_types.size > 1
+
+            notifier.error('Multiple types for same altRepGroup', { types: altrepgroup_name_types })
+          end
         end
 
         def build_name_nodes(name_nodes)
