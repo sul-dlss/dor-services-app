@@ -23,6 +23,10 @@ class EmbargoService
   def create
     return unless release_date
 
+    # This is set because embargoMetadata datastream is not sent to Purl and
+    # sul-embed needs to know this value: https://github.com/sul-dlss/sul-embed/blob/305b3c12924a3de19040e8c96f3335e9e26ce013/app/models/embed/purl.rb#L54
+    # In the future we could just write this into the rightsMetadata that is transfered
+    # to Purl via the Publish::RightsMetadata service.
     item.rightsMetadata.embargo_release_date = release_date
 
     item.embargoMetadata.release_date = release_date
