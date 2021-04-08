@@ -61,7 +61,6 @@ module Cocina
         end
 
         def display_types?(node_set)
-          return false if node_set.all? { |node| node['type'] == 'translated' || node['usage'] == 'primary' }
           return false if node_set.all? { |node| node['type'] == 'uniform' }
 
           true

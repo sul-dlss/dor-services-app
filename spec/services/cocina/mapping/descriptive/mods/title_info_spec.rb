@@ -149,7 +149,8 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                     source: {
                       code: 'iso639-2b'
                     }
-                  }
+                  },
+                  type: 'translated'
                 }
               ]
             }
@@ -227,7 +228,8 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                     source: {
                       code: 'iso639-2b'
                     }
-                  }
+                  },
+                  type: 'translated'
                 }
               ]
             }
