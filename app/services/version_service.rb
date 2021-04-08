@@ -18,6 +18,10 @@ class VersionService
     new(work, event_factory: event_factory).close(opts)
   end
 
+  def self.in_accessioning?(work)
+    new(work).accessioning?
+  end
+
   def initialize(work, event_factory: nil)
     @work = work
     @event_factory = event_factory

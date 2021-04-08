@@ -80,9 +80,18 @@ class ObjectsController < ApplicationController
   def accession
     workflow = params[:workflow] || default_start_accession_workflow
 
-    # if this is an existing versionable object, open and close it without starting accessioning
+    # if this object is currently already in accessioning, we cannot start it again
+    if VersionService.in_accessioning?(@item)
+      head :not_acceptable
+      return
+    end
+
+    # if this is an existing versionable object, open and close it without starting accessionWF
     if VersionService.can_open?(@item, params)
       VersionService.open(@item, params, event_factory: EventFactory)
+      VersionService.close(@item, params.merge(start_accession: false), event_factory: EventFactory)
+    # if this is an existing accessioned object that is currently open, just close it without starting accessionWF
+    elsif VersionService.open?(@item)
       VersionService.close(@item, params.merge(start_accession: false), event_factory: EventFactory)
     end
 

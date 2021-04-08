@@ -32,6 +32,19 @@ RSpec.describe VersionService do
     end
   end
 
+  describe '.in_accessioning?' do
+    let(:instance) { instance_double(described_class, accessioning?: true) }
+
+    before do
+      allow(described_class).to receive(:new).and_return(instance)
+    end
+
+    it 'creates a new service instance and sends #accessioning?' do
+      described_class.in_accessioning?(obj)
+      expect(instance).to have_received(:accessioning?).once
+    end
+  end
+
   describe '.open' do
     subject(:open) { described_class.open(obj, event_factory: event_factory) }
 
