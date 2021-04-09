@@ -69,6 +69,7 @@ module Cocina
         end
 
         # rubocop:disable Metrics/PerceivedComplexity
+        # rubocop:disable Metrics/AbcSize
         def write_parallel(title:, title_info_attrs: {})
           title_alt_rep_group = id_generator.next_altrepgroup
 
@@ -84,7 +85,7 @@ module Cocina
             elsif title.parallelValue.any? { |parallel_value| parallel_value.status == 'primary' }
               if parallel_title.status == 'primary'
                 parallel_attrs[:usage] = 'primary'
-              else
+              elsif parallel_title.type == 'translated'
                 parallel_attrs[:type] = 'translated'
               end
             end
@@ -98,6 +99,7 @@ module Cocina
           end
         end
         # rubocop:enable Metrics/PerceivedComplexity
+        # rubocop:enable Metrics/AbcSize
 
         def write_grouped(title:, title_info_attrs: {})
           title.groupedValue.each { |grouped_title| write_basic(title: grouped_title, title_info_attrs: title_info_attrs) }
