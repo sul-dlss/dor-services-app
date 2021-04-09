@@ -112,7 +112,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
         expect(MetadataService).to have_received(:fetch).with('catkey:8888')
@@ -124,7 +124,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
 
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
@@ -177,7 +177,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
       end
@@ -218,7 +218,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
       end

@@ -120,7 +120,7 @@ RSpec.describe 'Update object' do
     expect(response.status).to eq(200)
     expect(item).to have_received(:save!)
     expect(item).to have_received(:admin_policy_object_id=).with(apo_druid)
-    expect(response.body).to eq expected.to_json
+    expect(response.body).to equal_cocina_model(expected)
 
     # Tags are created.
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Process : Content Type : Book (rtl)'])
@@ -180,7 +180,7 @@ RSpec.describe 'Update object' do
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.status).to eq(200)
         expect(item).to have_received(:save!)
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
       end
     end
 
@@ -345,7 +345,7 @@ RSpec.describe 'Update object' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(200)
       expect(item).to have_received(:save!)
-      expect(response.body).to eq expected.to_json
+      expect(response.body).to equal_cocina_model(expected)
     end
   end
 
@@ -378,7 +378,7 @@ RSpec.describe 'Update object' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(200)
       expect(item).to have_received(:save!)
-      expect(response.body).to eq expected.to_json
+      expect(response.body).to equal_cocina_model(expected)
     end
   end
 
@@ -394,7 +394,7 @@ RSpec.describe 'Update object' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(200)
       expect(item).to have_received(:save!)
-      expect(response.body).to eq expected.to_json
+      expect(response.body).to equal_cocina_model(expected)
 
       # Tags are updated.
       expect(AdministrativeTags).not_to have_received(:create)
@@ -414,7 +414,7 @@ RSpec.describe 'Update object' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(200)
       expect(item).to have_received(:save!)
-      expect(response.body).to eq expected.to_json
+      expect(response.body).to equal_cocina_model(expected)
 
       # Tags are not updated or created.
       expect(AdministrativeTags).not_to have_received(:create)
@@ -540,7 +540,7 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq 200
 
         # Identity metadata set correctly.
@@ -560,7 +560,7 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(200)
       end
     end
@@ -781,7 +781,7 @@ RSpec.describe 'Update object' do
           patch "/v1/objects/#{druid}",
                 params: data,
                 headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(response.body).to eq expected.to_json
+          expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(200)
           expect(item.contentMetadata.resource.file.count).to eq 4
         end
@@ -829,7 +829,7 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(200)
       end
     end
@@ -893,7 +893,7 @@ RSpec.describe 'Update object' do
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
 
-      expect(response.body).to eq expected.to_json
+      expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(200)
     end
   end
@@ -948,7 +948,7 @@ RSpec.describe 'Update object' do
       patch "/v1/objects/#{druid}",
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.body).to eq expected.to_json
+      expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(200)
     end
   end
@@ -1066,7 +1066,7 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
 
         expect(response.status).to eq(200)
       end
@@ -1114,7 +1114,7 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
 
         expect(response.status).to eq(200)
       end
@@ -1172,7 +1172,7 @@ RSpec.describe 'Update object' do
       patch "/v1/objects/#{druid}",
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.body).to eq expected.to_json
+      expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(200)
     end
   end
