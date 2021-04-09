@@ -76,6 +76,12 @@ RSpec.describe Cocina::FromFedora::Access do
               <world rule="no-download"/>
             </machine>
           </access>
+          <access type="read">
+            <file>foo_bar.pdf</file>
+            <machine>
+              <world/>
+            </machine>
+          </access>
         </rightsMetadata>
       XML
     end

@@ -3,11 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ToFedora::DROAccess do
-  subject(:apply) { described_class.apply(item, access) }
+  subject(:apply) { described_class.apply(item, object) }
 
-  let(:item) do
-    Dor::Item.new
-  end
+  let(:item) { Dor::Collection.new }
+  let(:object) { instance_double(Cocina::Models::DRO, access: access, dro?: true, structural: nil) }
 
   context 'with an object lacking a license to start' do
     let(:item) do

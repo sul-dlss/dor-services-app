@@ -88,7 +88,7 @@ module Cocina
         add_dro_tags(pid, obj)
 
         apply_default_access(item)
-        Cocina::ToFedora::DROAccess.apply(item, obj.access) if obj.access
+        Cocina::ToFedora::DROAccess.apply(item, obj) if obj.access
 
         item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: pid, object: obj)
         Cocina::ToFedora::Identity.apply(item, label: obj.label, agreement_id: obj.structural&.hasAgreement)
@@ -109,7 +109,7 @@ module Cocina
         add_description(item, obj)
         add_collection_tags(pid, obj)
         apply_default_access(item)
-        Cocina::ToFedora::Access.apply(item, obj.access) if obj.access
+        Cocina::ToFedora::Access.apply(item, obj) if obj.access
         Cocina::ToFedora::Identity.apply(item, label: obj.label)
       end
     end

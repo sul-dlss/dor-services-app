@@ -46,8 +46,16 @@ module Cocina
 
       attr_reader :item, :type
 
+      delegate :stanford_only_downloadable_file?, :stanford_only_unrestricted_file?,
+               :world_downloadable_file?, :world_unrestricted_file?, to: :rights_object
+
+
       def project_phoenix?
         AdministrativeTags.for(pid: item.id).include?('Google Book : GBS VIEW_FULL')
+      end
+
+      def rights_object
+        item.rightsMetadata.dra_object
       end
 
       def build_has_member_orders
@@ -81,6 +89,76 @@ module Cocina
         content_metadata_ds.ng_xml.xpath('//resource/externalFile').map do |resource_node|
           "#{resource_node['resourceId']}/#{resource_node['fileId']}"
         end
+      end
+
+      def digests(node)
+        [].tap do |digests|
+          # The old google books use upcased versions. See https://argo.stanford.edu/view/druid:dd116zh0343
+          # Web archive crawls use SHA1
+          sha1 = node.xpath('checksum[@type="sha1" or @type="SHA1" or @type="SHA-1"]').text.presence
+          digests << { type: 'sha1', digest: sha1 } if sha1
+          md5 = node.xpath('checksum[@type="md5" or @type="MD5"]').text.presence
+          digests << { type: 'md5', digest: md5 } if md5
+        end
+      end
+
+      def build_files(file_nodes, version:, parent_id:)
+        file_nodes.map do |node|
+          height = node.xpath('imageData/@height').text.presence&.to_i
+          width = node.xpath('imageData/@width').text.presence&.to_i
+          use = node.xpath('@role').text.presence
+          {
+            externalIdentifier: "#{parent_id}/#{node['id']}",
+            type: Cocina::Models::Vocab.file,
+            label: node['id'],
+            filename: node['id'],
+            size: node['size'].to_i,
+            version: version,
+            hasMessageDigests: digests(node),
+            access: access(node),
+            administrative: {
+              publish: node['publish'] == 'yes',
+              sdrPreserve: node['preserve'] == 'yes',
+              shelve: node['shelve'] == 'yes'
+            }
+          }.tap do |attrs|
+            # Files from Goobi and Hydrus don't have mimetype until they hit exif-collect in the assemblyWF
+            attrs[:hasMimeType] = node['mimetype'] if node['mimetype']
+            attrs[:presentation] = { height: height, width: width } if height && width
+            attrs[:use] = use if use
+          end
+        end
+      end
+
+      def access(node)
+        # file_specific_rights = file_rights_for(node['id'])
+        # item_rights_defaults.merge(file_specific_rights)
+        if (file_specific_rights = file_rights_for(node['id']))
+          byebug
+          file_specific_rights
+        else
+          item_rights_defaults
+        end
+      end
+
+      def file_rights_for(file_name)
+        {}.tap do |file_rights|
+          if world_unrestricted_file?(file_name)
+            file_rights[:access] = 'world'
+          elsif stanford_only_unrestricted_file?(file_name)
+            file_rights[:access] = 'stanford'
+          end
+
+          if world_downloadable_file?(file_name)
+            file_rights[:download] = 'world'
+          elsif stanford_only_downloadable_file?(file_name)
+            file_rights[:download] = 'stanford'
+          end
+        end.presence # drop?
+      end
+
+      def item_rights_defaults
+        Access.props(item)
       end
     end
   end

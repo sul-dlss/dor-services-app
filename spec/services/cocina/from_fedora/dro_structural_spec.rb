@@ -10,16 +10,16 @@ RSpec.describe Cocina::FromFedora::DroStructural do
   let(:item) do
     Dor::Item.new(pid: 'druid:hx013yf6680')
   end
-  let(:content_metadata_ds) { instance_double(Dor::ContentMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml)) }
+  let(:content_metadata_ds) { instance_double(Dor::ContentMetadataDS, new?: false, ng_xml: Nokogiri::XML(content_xml)) }
 
   before do
-    allow(item).to receive(:contentMetadata).and_return(content_metadata_ds)
     allow(item).to receive(:collections).and_return([])
+    allow(item).to receive(:contentMetadata).and_return(content_metadata_ds)
     allow(AdministrativeTags).to receive(:content_type).and_return(['file'])
   end
 
   context 'when a variety of checksum types' do
-    let(:xml) do
+    let(:content_xml) do
       <<~XML
         <contentMetadata type="file" stacks="/web-archiving-stacks/data/collections/jt898xc8096" id="druid:hx013yf6680">
           <resource type="file">
@@ -76,7 +76,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
       allow(SecureRandom).to receive(:uuid).and_return('123-456-789')
     end
 
-    let(:xml) do
+    let(:content_xml) do
       <<~XML
         <contentMetadata type="file" objectId="druid:dd116zh0343">
           <resource>
@@ -133,7 +133,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
   end
 
   context 'with files that have exif data' do
-    let(:xml) do
+    let(:content_xml) do
       <<~XML
         <contentMetadata type="file" objectId="druid:dd116zh0343">
           <resource sequence="1" type="file" id="folder1PuSu">
@@ -191,7 +191,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
       expect(file1[:hasMessageDigests].first[:type]).to eq 'sha1'
       expect(file1[:administrative][:shelve]).to eq true
       expect(file1[:administrative][:sdrPreserve]).to eq false
-      expect(file1[:access][:access]).to eq('world')
+      expect(file1[:access][:access]).to eq('dark')
 
       file2 = folder1[:structural][:contains][1]
       expect(file2[:administrative][:shelve]).to eq false
@@ -201,7 +201,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
   end
 
   context "with files that don't have exif data" do
-    let(:xml) do
+    let(:content_xml) do
       <<~XML
         <contentMetadata objectId="ck831vq4558" type="file">
           <resource id="ck831vq4558_1" sequence="1" type="file">
@@ -220,7 +220,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
   end
 
   context 'when there is an error with solr' do
-    let(:xml) do
+    let(:content_xml) do
       <<~XML
         <contentMetadata objectId="ck831vq4558" type="file">
         </contentMetadata>
@@ -240,7 +240,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
     subject { structural[:hasMemberOrders].first[:viewingDirection] }
 
     let(:book_data) { "<bookData readingOrder=\"#{reading_direction}\" />" }
-    let(:xml) do
+    let(:content_xml) do
       <<~XML
         <contentMetadata type="book" id="druid:hx013yf6680">
           #{book_data}
@@ -312,7 +312,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
     let(:resource1) { structural[:contains].first }
     let(:file2) { resource1[:structural][:contains].second }
 
-    let(:xml) do
+    let(:content_xml) do
       <<~XML
         <contentMetadata type="book" id="druid:hx013yf6680">
           <resource id="cd027gx5097_1" sequence="1" type="page">
@@ -332,5 +332,187 @@ RSpec.describe Cocina::FromFedora::DroStructural do
     end
 
     it { is_expected.to eq 'transcription' }
+  end
+
+  context 'when deriving rights metadata from item (mix of world and dark)' do
+    let(:content_xml) do
+      <<~XML
+        <contentMetadata objectId="druid:gs491bt1345" type="media">
+          <resource id="gs491bt1345_1" sequence="1" type="audio">
+            <label>Audio file</label>
+            <file id="gs491bt1345_sample_01_00_pm.wav" mimetype="audio/x-wav" size="299569842" publish="no" shelve="no" preserve="yes">
+              <checksum type="sha1">ccde1331b5bc6c3dce0231c352c7a11f1fd3e77f</checksum>
+              <checksum type="md5">d46055f03b4a9dc30fcfdfebea473127</checksum>
+            </file>
+            <file id="gs491bt1345_sample_01_00_sh.wav" mimetype="audio/x-wav" size="91743738" publish="no" shelve="no" preserve="yes">
+              <checksum type="sha1">a9cb4668c42c5416a301759ff40fe365ea2467a3</checksum>
+              <checksum type="md5">188c0c972bc039c679bf984e75c7500e</checksum>
+            </file>
+            <file id="gs491bt1345_sample_01_00_sl.m4a" mimetype="audio/mp4" size="16798755" publish="yes" shelve="yes" preserve="yes">
+              <checksum type="sha1">8d95b3b77f900b6d229ee32d05f927d75cbce032</checksum>
+              <checksum type="md5">b044b593d0d444180e82de064594339a</checksum>
+            </file>
+          </resource>
+          <resource id="gs491bt1345_2" sequence="2" type="file">
+            <label>Program PDF</label>
+            <file id="gs491bt1345_sample_md.pdf" mimetype="application/pdf" size="930089" publish="yes" shelve="yes" preserve="yes">
+              <checksum type="sha1">3b342f7b87f126997088720c1220122d41c8c159</checksum>
+              <checksum type="md5">6ed0004f39657ff81dff7b2b017fb9d9</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+    let(:rights_xml) do
+      <<~XML
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <world/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <world rule="no-download"/>
+            </machine>
+          </access>
+          <access type="read">
+            <file>gs491bt1345_sample_md.pdf</file>
+            <machine>
+              <world/>
+            </machine>
+          </access>
+          <use>
+            <human type="creativeCommons">Public Domain Mark 1.0</human>
+            <machine type="creativeCommons" uri="https://creativecommons.org/publicdomain/mark/1.0/">pdm</machine>
+            <human type="useAndReproduction">default use and reproduction</human>
+          </use>
+          <copyright>
+            <human>default copyright</human>
+          </copyright>
+        </rightsMetadata>
+      XML
+    end
+    let(:rights_metadata_ds) do
+      instance_double(Dor::RightsMetadataDS,
+                      new?: false,
+                      ng_xml: Nokogiri::XML(rights_xml),
+                      dra_object: Dor::RightsAuth.parse(rights_xml, true))
+    end
+    let(:type) { Cocina::Models::Vocab.media }
+    let(:audio_fileset) do
+      structural[:contains].first[:structural][:contains]
+    end
+    let(:text_fileset) do
+      structural[:contains].last[:structural][:contains]
+    end
+
+    before do
+      allow(item).to receive(:rightsMetadata).and_return(rights_metadata_ds)
+    end
+
+    it 'parses rights metadata when generating structural access' do
+      expect(audio_fileset.pluck(:access)).to eq(
+        [
+          { access: 'dark', download: 'none' },
+          { access: 'dark', download: 'none' },
+          { access: 'world', download: 'none' }
+        ]
+      )
+      expect(text_fileset.pluck(:access)).to eq(
+        [{ access: 'world', download: 'world' }]
+      )
+    end
+  end
+
+  context 'when deriving rights metadata from item (mix of stanford and no-download)' do
+    let(:content_xml) do
+      <<~XML
+        <contentMetadata objectId="druid:gs491bt1345" type="media">
+          <resource id="gs491bt1345_1" sequence="1" type="audio">
+            <label>Audio file</label>
+            <file id="gs491bt1345_sample_01_00_pm.wav" mimetype="audio/x-wav" size="299569842" publish="no" shelve="no" preserve="yes">
+              <checksum type="sha1">ccde1331b5bc6c3dce0231c352c7a11f1fd3e77f</checksum>
+              <checksum type="md5">d46055f03b4a9dc30fcfdfebea473127</checksum>
+            </file>
+            <file id="gs491bt1345_sample_01_00_sh.wav" mimetype="audio/x-wav" size="91743738" publish="no" shelve="no" preserve="yes">
+              <checksum type="sha1">a9cb4668c42c5416a301759ff40fe365ea2467a3</checksum>
+              <checksum type="md5">188c0c972bc039c679bf984e75c7500e</checksum>
+            </file>
+            <file id="gs491bt1345_sample_01_00_sl.m4a" mimetype="audio/mp4" size="16798755" publish="yes" shelve="yes" preserve="yes">
+              <checksum type="sha1">8d95b3b77f900b6d229ee32d05f927d75cbce032</checksum>
+              <checksum type="md5">b044b593d0d444180e82de064594339a</checksum>
+            </file>
+          </resource>
+          <resource id="gs491bt1345_2" sequence="2" type="file">
+            <label>Program PDF</label>
+            <file id="gs491bt1345_sample_md.pdf" mimetype="application/pdf" size="930089" publish="yes" shelve="yes" preserve="yes">
+              <checksum type="sha1">3b342f7b87f126997088720c1220122d41c8c159</checksum>
+              <checksum type="md5">6ed0004f39657ff81dff7b2b017fb9d9</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+    let(:rights_xml) do
+      <<~XML
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <world/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <world rule="no-download"/>
+            </machine>
+          </access>
+          <access type="read">
+            <file>gs491bt1345_sample_md.pdf</file>
+            <machine>
+              <group>stanford</group>
+            </machine>
+          </access>
+          <use>
+            <human type="creativeCommons">Public Domain Mark 1.0</human>
+            <machine type="creativeCommons" uri="https://creativecommons.org/publicdomain/mark/1.0/">pdm</machine>
+            <human type="useAndReproduction">default use and reproduction</human>
+          </use>
+          <copyright>
+            <human>default copyright</human>
+          </copyright>
+        </rightsMetadata>
+      XML
+    end
+    let(:rights_metadata_ds) do
+      instance_double(Dor::RightsMetadataDS,
+                      new?: false,
+                      ng_xml: Nokogiri::XML(rights_xml),
+                      dra_object: Dor::RightsAuth.parse(rights_xml, true))
+    end
+    let(:type) { Cocina::Models::Vocab.media }
+    let(:audio_fileset) do
+      structural[:contains].first[:structural][:contains]
+    end
+    let(:text_fileset) do
+      structural[:contains].last[:structural][:contains]
+    end
+
+    before do
+      allow(item).to receive(:rightsMetadata).and_return(rights_metadata_ds)
+    end
+
+    it 'parses rights metadata when generating structural access' do
+      expect(audio_fileset.pluck(:access)).to eq(
+        [
+          { access: 'dark', download: 'none' },
+          { access: 'dark', download: 'none' },
+          { access: 'world', download: 'none' }
+        ]
+      )
+      expect(text_fileset.pluck(:access)).to eq(
+        [{ access: 'stanford', download: 'stanford' }]
+      )
+    end
   end
 end

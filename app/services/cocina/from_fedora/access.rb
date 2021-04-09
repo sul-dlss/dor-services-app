@@ -24,7 +24,7 @@ module Cocina
           copyright: copyright,
           useAndReproductionStatement: use_statement
         }.compact.tap do |h|
-          h[:controlledDigitalLending] = true if cdl?
+          h[:controlledDigitalLending] = true if controlled_digital_lending?
         end
       end
 
@@ -32,8 +32,10 @@ module Cocina
 
       attr_reader :rights_metadata_ds
 
+      delegate :controlled_digital_lending?, :dark?, to: :rights_object
+
       def rights_object
-        rights_metadata_ds.dra_object.obj_lvl
+        rights_metadata_ds.dra_object
       end
 
       def copyright
@@ -46,13 +48,13 @@ module Cocina
 
       # @return [Bool] true unless the rule="no-download" has been set or if the access is citation-only or dark
       def download?
-        return false if %w[citation-only dark].include? access_rights
+        return false if %w[citation-only dark].include?(access_rights)
 
-        !rights_object.world.rule && !rights_object.group.fetch(:stanford).rule
+        !rights_object.obj_lvl.world.rule && !rights_object.obj_lvl.group.fetch(:stanford).rule
       end
 
       def location
-        @location ||= rights_object.location.keys.first
+        @location ||= rights_object.obj_lvl.location.keys.first
       end
 
       # Map values from dor-services
@@ -60,9 +62,9 @@ module Cocina
       # to https://github.com/sul-dlss/cocina-models/blob/main/docs/maps/DRO.json#L102
       def access_rights
         @access_rights ||=
-          if world?
+          if rights_object.obj_lvl.world.value
             'world'
-          elsif stanford?
+          elsif rights_object.obj_lvl.group.fetch(:stanford).value
             'stanford'
           elsif dark?
             'dark'
@@ -71,26 +73,6 @@ module Cocina
           else
             'citation-only'
           end
-      end
-
-      def rights_xml
-        @rights_xml ||= rights_metadata_ds.ng_xml
-      end
-
-      def stanford?
-        rights_xml.search('//rightsMetadata/access[@type=\'read\']/machine/group').length == 1
-      end
-
-      def world?
-        rights_xml.search('//rightsMetadata/access[@type=\'read\']/machine/world').length == 1
-      end
-
-      def dark?
-        rights_xml.search('//rightsMetadata/access[@type=\'discover\']/machine/none').length == 1
-      end
-
-      def cdl?
-        rights_object.controlled_digital_lending
       end
     end
   end
