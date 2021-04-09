@@ -141,7 +141,7 @@ RSpec.describe 'Create object' do
                  headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           end.to change(Event, :count).by(1)
           expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
-          expect(response.body).to eq expected.to_json
+          expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
           expect(MetadataService).to have_received(:fetch).with('catkey:8888')
@@ -184,7 +184,7 @@ RSpec.describe 'Create object' do
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
-          expect(response.body).to eq expected.to_json
+          expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
 
@@ -220,7 +220,7 @@ RSpec.describe 'Create object' do
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
-          expect(response.body).to eq expected.to_json
+          expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
 
@@ -288,7 +288,6 @@ RSpec.describe 'Create object' do
               'type' => 'md5',
               'digest' => 'e6d52da47a5ade91ae31227b978fb023'
             }
-
           ]
         }
       end
@@ -469,8 +468,7 @@ RSpec.describe 'Create object' do
                   source_id: 'googlebooks:999999',
                   collection_ids: [],
                   catkey: nil, label: 'This is my label')
-
-          expect(response.body).to eq expected.to_json
+          expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(201)
           expect(item.contentMetadata.resource.file.count).to eq 4
           expect(response.location).to eq "/v1/objects/#{druid}"
@@ -528,7 +526,7 @@ RSpec.describe 'Create object' do
                 source_id: 'googlebooks:999999',
                 collection_ids: ['druid:xx888xx7777'],
                 catkey: nil, label: 'This is my label')
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
       end
@@ -613,7 +611,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
         expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
@@ -664,7 +662,7 @@ RSpec.describe 'Create object' do
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
 
@@ -731,7 +729,7 @@ RSpec.describe 'Create object' do
       post '/v1/objects',
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.body).to eq expected.to_json
+      expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(201)
       expect(response.location).to eq "/v1/objects/#{druid}"
     end
@@ -867,7 +865,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
 
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
@@ -888,8 +886,9 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
         expect(UrAdminPolicyFactory).to have_received(:create)
+
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
       end
@@ -945,7 +944,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
 
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
@@ -1003,7 +1002,7 @@ RSpec.describe 'Create object' do
       post '/v1/objects',
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.body).to eq expected.to_json
+      expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(201)
       expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
     end
@@ -1059,7 +1058,7 @@ RSpec.describe 'Create object' do
       post '/v1/objects',
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.body).to eq expected.to_json
+      expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(201)
       expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
     end
@@ -1115,7 +1114,7 @@ RSpec.describe 'Create object' do
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
 
-      expect(response.body).to eq expected.to_json
+      expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(201)
       expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
     end
@@ -1162,7 +1161,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(201)
         expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
       end
@@ -1203,7 +1202,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(201)
         expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
       end
@@ -1274,7 +1273,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to eq expected.to_json
+        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(201)
         expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
       end
@@ -1322,7 +1321,7 @@ RSpec.describe 'Create object' do
       post '/v1/objects',
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.body).to eq expected.to_json
+      expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(201)
       expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
       expect(AdministrativeTags).not_to have_received(:create)
@@ -1370,7 +1369,7 @@ RSpec.describe 'Create object' do
       post '/v1/objects',
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.body).to eq expected.to_json
+      expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(201)
       expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
       expect(AdministrativeTags).to have_received(:create).with(pid: 'druid:gg777gg7777',
