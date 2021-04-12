@@ -36,10 +36,10 @@ module Publish
       'http://opendatacommons.org/licenses/odbl/1.0/' => Resource.new('odc-odbl', 'Open Data Commons Open Database License 1.0')
     }.freeze
 
-    # @return [String] the original xml with the legacy style rights added so that the description can be displayed.
-    def to_xml
+    # @return [Nokogiri::Xml] the original xml with the legacy style rights added so that the description can be displayed.
+    def create
       license_uri = original.xpath('/rightsMetadata/use/license').text.presence
-      return original.to_xml unless license_uri && LICENSE_CODES.key?(license_uri)
+      return original.clone unless license_uri && LICENSE_CODES.key?(license_uri)
 
       use_node = original.xpath('/rightsMetadata/use').first
       license = LICENSE_CODES.fetch(license_uri)
@@ -54,7 +54,7 @@ module Publish
         use_node.add_child("<machine type=\"openDataCommons\" uri=\"#{license_uri}\">#{license.code}</machine>")
         use_node.add_child("<human type=\"openDataCommons\">#{license.label}</human>")
       end
-      original.to_xml
+      original.clone
     end
   end
 end

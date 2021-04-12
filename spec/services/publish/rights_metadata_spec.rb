@@ -5,8 +5,8 @@ require 'rails_helper'
 RSpec.describe Publish::RightsMetadata do
   subject(:service) { described_class.new(Nokogiri::XML(original)) }
 
-  describe '#to_xml' do
-    subject(:result) { service.to_xml }
+  describe '#create' do
+    subject(:result) { service.create }
 
     context 'when no license node is present' do
       let(:original) do

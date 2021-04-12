@@ -63,7 +63,7 @@ module Publish
     end
 
     def public_rights_metadata
-      @public_rights_metadata ||= object.datastreams['rightsMetadata'].ng_xml.clone
+      @public_rights_metadata ||= RightsMetadata.new(object.rightsMetadata.ng_xml).create
     end
 
     def public_identity_metadata
