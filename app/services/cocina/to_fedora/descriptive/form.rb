@@ -50,10 +50,12 @@ module Cocina
 
         attr_reader :xml, :forms, :id_generator
 
-        def physical_description?(form)
+        def physical_description?(form, type: nil)
           (form.note.present? && form.type != 'genre') ||
+            PHYSICAL_DESCRIPTION_TAG.key?(type) ||
             PHYSICAL_DESCRIPTION_TAG.key?(form.type) ||
-            PHYSICAL_DESCRIPTION_TAG.key?(form.groupedValue&.first&.type)
+            PHYSICAL_DESCRIPTION_TAG.key?(form.groupedValue&.first&.type) ||
+            (form.parallelValue.present? && physical_description?(form.parallelValue.first))
         end
 
         def manuscript?(form)
@@ -88,62 +90,77 @@ module Cocina
         end
 
         def write_physical_descriptions
+          parallel_physical_descr_forms, other_physical_descr_forms = Array(forms).select { |form| physical_description?(form) }.partition(&:parallelValue)
+          write_physical_description(other_physical_descr_forms)
+
+          parallel_physical_descr_forms.each do |parallel_physical_descr_form|
+            alt_rep_group = id_generator.next_altrepgroup
+            write_physical_description(parallel_physical_descr_form.parallelValue, alt_rep_group: alt_rep_group, display_label: parallel_physical_descr_form.displayLabel,
+                                                                                   form: parallel_physical_descr_form)
+          end
+        end
+
+        def write_physical_description(physical_descr_forms, alt_rep_group: nil, display_label: nil, form: nil)
           grouped_forms = []
           # Each of these are its own physicalDescription
           simple_forms = []
           # These all get grouped together to form a single physicalDescription.
           other_forms = []
           other_notes = []
-          Array(forms).select { |form| physical_description?(form) }.each do |form|
-            if form.groupedValue
-              grouped_forms << form
-            elsif merge_form?(form)
-              simple_forms << form
+          Array(physical_descr_forms).select { |physical_descr_form| physical_description?(physical_descr_form, type: form&.type) }.each do |physical_descr_form|
+            if physical_descr_form.groupedValue
+              grouped_forms << physical_descr_form
+            elsif merge_form?(physical_descr_form, display_label) || alt_rep_group
+              simple_forms << physical_descr_form
             else
-              other_notes << form if form.note
-              other_forms << form if form.value
+              other_notes << physical_descr_form if physical_descr_form.note
+              other_forms << physical_descr_form if physical_descr_form.value
             end
           end
-          write_basic_physical_description(other_forms, other_notes) unless other_forms.empty?
-          simple_forms.each { |form| write_basic_physical_description([form], [form]) }
-          grouped_forms.each { |form| write_grouped_physical_description(form) }
+
+          write_basic_physical_description(other_forms, other_notes, alt_rep_group: alt_rep_group, form: form) unless other_forms.empty?
+          simple_forms.each { |simple_form| write_basic_physical_description([simple_form], [simple_form], alt_rep_group: alt_rep_group, form: form) }
+          grouped_forms.each { |grouped_form| write_grouped_physical_description(grouped_form, alt_rep_group: alt_rep_group, form: form) }
         end
 
-        def merge_form?(form)
-          form.value && (Array(form.note).any? { |note| note.type != 'unit' } || form.displayLabel)
+        def merge_form?(form, display_label)
+          form.value && (Array(form.note).any? { |note| note.type != 'unit' } || form.displayLabel || display_label)
         end
 
-        def write_basic_physical_description(forms, note_forms)
+        def write_basic_physical_description(forms, note_forms, alt_rep_group: nil, form: nil)
           physical_description_attrs = {
-            displayLabel: forms.first.displayLabel
+            displayLabel: forms.first.displayLabel || form&.displayLabel,
+            altRepGroup: alt_rep_group
           }.compact
 
           xml.physicalDescription physical_description_attrs do
-            write_physical_description_form_values(forms)
-            note_forms.each { |form| write_notes(form) if form.note }
+            write_physical_description_form_values(forms, form: form)
+            note_forms.each { |note_form| write_notes(note_form) if note_form.note }
           end
         end
 
-        def write_grouped_physical_description(form)
+        def write_grouped_physical_description(grouped_form, alt_rep_group: nil, form: nil)
           physical_description_attrs = {
-            displayLabel: form.displayLabel
+            displayLabel: grouped_form.displayLabel || form&.displayLabel,
+            altRepGroup: alt_rep_group
           }.compact
 
           xml.physicalDescription physical_description_attrs do
-            write_physical_description_form_values(form.groupedValue)
-            write_notes(form)
+            write_physical_description_form_values(grouped_form.groupedValue, form: form)
+            write_notes(grouped_form)
           end
         end
 
-        def write_physical_description_form_values(form_values)
-          form_values.each do |form|
+        def write_physical_description_form_values(form_values, form: nil)
+          form_values.each do |form_value|
+            form_type = form_value.type || form&.type
             attributes = {
-              unit: unit_for(form)
+              unit: unit_for(form_value)
             }.tap do |attrs|
-              attrs[:type] = form.type if PHYSICAL_DESCRIPTION_TAG.fetch(form.type) == :form && form.type != 'form'
+              attrs[:type] = form_type if PHYSICAL_DESCRIPTION_TAG.fetch(form_type) == :form && form_type != 'form'
             end.compact
 
-            xml.public_send PHYSICAL_DESCRIPTION_TAG.fetch(form.type), form.value, with_uri_info(form, attributes)
+            xml.public_send PHYSICAL_DESCRIPTION_TAG.fetch(form_type), form_value.value, attributes.merge(uri_attrs(form_value)).merge(uri_attrs(form))
           end
         end
 
@@ -170,7 +187,7 @@ module Cocina
           when 'map scale', 'map projection'
             # do nothing, these end up in subject/cartographics
           else # genre
-            xml.genre form.value, with_uri_info(form, attributes.merge({ type: genre_type_for(form) }.compact))
+            xml.genre form.value, attributes.merge({ type: genre_type_for(form) }.compact).merge(uri_attrs(form))
           end
         end
 
@@ -211,11 +228,14 @@ module Cocina
           end
         end
 
-        def with_uri_info(cocina, xml_attrs)
-          xml_attrs[:valueURI] = cocina.uri
-          xml_attrs[:authorityURI] = cocina.source&.uri
-          xml_attrs[:authority] = cocina.source&.code
-          xml_attrs.compact
+        def uri_attrs(form)
+          return {} if form.nil?
+
+          {
+            valueURI: form.uri,
+            authorityURI: form.source&.uri,
+            authority: form.source&.code
+          }.compact
         end
       end
     end

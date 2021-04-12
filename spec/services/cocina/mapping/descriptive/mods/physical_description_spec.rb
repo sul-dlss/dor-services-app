@@ -156,13 +156,13 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
 
   describe 'Multilingual physical descriptions' do
     # based on druid:bx458nk9866
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <physicalDescription altRepGroup="01">
+          <physicalDescription altRepGroup="1">
             <form authority="gmd">cartographic material</form>
           </physicalDescription>
-          <physicalDescription altRepGroup="01">
+          <physicalDescription altRepGroup="1">
             <form authority="gmd">地図資料</form>
           </physicalDescription>
         XML
@@ -178,12 +178,12 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
                 },
                 {
                   value: '地図資料'
-                },
-                type: 'form',
-                source: {
-                  code: 'gmd'
                 }
-              ]
+              ],
+              type: 'form',
+              source: {
+                code: 'gmd'
+              }
             }
           ]
         }
@@ -192,14 +192,14 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
   end
 
   describe 'Multilingual physical descriptions with multiple subelements' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <physicalDescription altRepGroup="01">
+          <physicalDescription altRepGroup="1">
             <form authority="gmd">cartographic material</form>
             <extent>1 page</extent>
           </physicalDescription>
-          <physicalDescription altRepGroup="01">
+          <physicalDescription altRepGroup="1">
             <form authority="gmd">地図資料</form>
             <extent>1 地</extent>
           </physicalDescription>
@@ -250,14 +250,14 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
   end
 
   describe 'Multilingual physical descriptions with same displayLabel' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <physicalDescription altRepGroup="01" displayLabel="Description">
+          <physicalDescription altRepGroup="1" displayLabel="Description">
             <form authority="gmd">cartographic material</form>
             <extent>1 page</extent>
           </physicalDescription>
-          <physicalDescription altRepGroup="01" displayLabel="Description">
+          <physicalDescription altRepGroup="1" displayLabel="Description">
             <form authority="gmd">地図資料</form>
             <extent>1 地</extent>
           </physicalDescription>
@@ -309,14 +309,14 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
   end
 
   describe 'Multilingual physical descriptions with different displayLabel' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <physicalDescription altRepGroup="01" displayLabel="Description">
+          <physicalDescription altRepGroup="1" displayLabel="Description">
             <form authority="gmd">cartographic material</form>
             <extent>1 page</extent>
           </physicalDescription>
-          <physicalDescription altRepGroup="01" displayLabel="図">
+          <physicalDescription altRepGroup="1" displayLabel="図">
             <form authority="gmd">地図資料</form>
             <extent>1 地</extent>
           </physicalDescription>
