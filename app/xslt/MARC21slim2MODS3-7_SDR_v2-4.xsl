@@ -3622,8 +3622,12 @@
 				</recordIdentifier>
 			</xsl:for-each>
 			<recordOrigin>Converted from MARCXML to MODS version 3.7 using
-				MARC21slim2MODS3-7_SDR_v2-3.xsl (SUL 3.7 version 2.3 20210322; LC Revision 1.140
+				MARC21slim2MODS3-7_SDR_v2-4.xsl (SUL 3.7 version 2.4 20210412; LC Revision 1.140
 				20200717)</recordOrigin>
+			<!-- SUL edit 20210412
+			<recordOrigin>Converted from MARCXML to MODS version 3.7 using
+				MARC21slim2MODS3-7_SDR_v2-3.xsl (SUL 3.7 version 2.3 20210322; LC Revision 1.140
+				20200717)</recordOrigin> -->
 			<!-- SUL edit 20210322 issue #2564
 			<recordOrigin>Converted from MARCXML to MODS version 3.7 using
 				MARC21slim2MODS3-7_SDR_v2-2.xsl (SUL 3.7 version 2.2 20210316; LC Revision 1.140
@@ -6042,12 +6046,20 @@
 		<xsl:if test="marc:subfield[@code = 'c']">
 			<note type="statement of responsibility">
 				<!-- 1.121 -->
-				<!-- SUL edit 20210316 issue #2466 -->
+				<!-- SUL edit 20210316 issue #2466 REVERTED 20210412
 				<xsl:if test="
 						marc:datafield[@tag = '245'][marc:subfield[@code = '6']][child::*[@code = 'c']] and
 						marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '245')][marc:subfield[@code = 'c']]">
+						<xsl:call-template name="xxx880"/>
+					</xsl:if -->
+				<!-- SUL edit 20210412 issue #2673 -->
+				<xsl:if test="
+						following-sibling::marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '245')][marc:subfield[@code = 'c']]">
 					<xsl:call-template name="xxx880"/>
-					<!-- SUL edit 20210316 issue #2466 -->
+				</xsl:if>
+				<xsl:if test="
+						preceding-sibling::marc:datafield[@tag = '245']">
+					<xsl:call-template name="xxx880"/>
 				</xsl:if>
 				<xsl:call-template name="subfieldSelect">
 					<xsl:with-param name="codes">c</xsl:with-param>
@@ -8189,9 +8201,7 @@
 						<!-- SUL edit 20210125 issue #1629 #1634 #1635
 						<xsl:copy-of select="$originInfoShared"/> -->
 						<!-- SUL edit 20210322 issue #2562 -->
-						<xsl:apply-templates
-							select="marc:datafield[@tag = '044']"
-							mode="originInfo"/>
+						<xsl:apply-templates select="marc:datafield[@tag = '044']" mode="originInfo"/>
 						<!-- SUL edit 20210322 issue #2562
 						<xsl:apply-templates
 							select="marc:datafield[@tag = '044']/marc:subfield[@code = 'c']"
