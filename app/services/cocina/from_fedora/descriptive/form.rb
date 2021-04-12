@@ -189,31 +189,61 @@ module Cocina
         end
 
         def add_physical_descriptions(forms)
-          physical_descriptions.each do |physical_description_node|
-            form_values = []
-            add_forms(form_values, physical_description_node)
-            add_reformatting_quality(form_values, physical_description_node)
-            add_media_type(form_values, physical_description_node)
-            add_extent(form_values, physical_description_node)
-            add_digital_origin(form_values, physical_description_node)
-            notes = physical_description_notes_for(physical_description_node)
-            # Depends on how many physicalDescriptions there are or if there is a displayLabel
-            if physical_descriptions.size == 1 && form_values.size > 1 && physical_description_node['displayLabel'].nil?
-              forms.concat(form_values)
-              forms << { note: notes } if notes.present?
-            elsif form_values.size == 1
-              forms << form_values.first.merge({
-                note: notes.presence,
-                displayLabel: physical_description_node['displayLabel']
-              }.compact)
-            else
-              forms << {
-                groupedValue: form_values,
-                note: notes.presence,
-                displayLabel: physical_description_node['displayLabel']
-              }.compact
-            end
+          altrepgroup_physical_descr_nodes, other_physical_descr_nodes = AltRepGroup.split(nodes: physical_descriptions)
+          other_physical_descr_nodes.each do |physical_description_node|
+            forms.concat(physical_description_forms_for(physical_description_node))
           end
+
+          altrepgroup_physical_descr_nodes.each do |altrepgroup_physical_descr_node_group|
+            form = { parallelValue: [] }
+            altrepgroup_physical_descr_node_group.each do |physical_descr_node|
+              form[:parallelValue].concat(physical_description_forms_for(physical_descr_node))
+            end
+            adjust_parallel_value(form, :displayLabel)
+            adjust_parallel_value(form, :type)
+            adjust_parallel_value(form, :source)
+            forms << form
+          end
+        end
+
+        def adjust_parallel_value(form, key)
+          return unless form[:parallelValue].all? { |form_value| form_value[key] && form_value[key] == form[:parallelValue].first[key] }
+
+          form[key] = form[:parallelValue].first[key]
+          form[:parallelValue].each { |form_value| form_value.delete(key) }
+        end
+
+        def physical_description_forms_for(physical_description_node)
+          form_values = physical_description_form_values_for(physical_description_node)
+          notes = physical_description_notes_for(physical_description_node)
+          # Depends on how many physicalDescriptions there are or if there is a displayLabel
+          forms = []
+          if physical_descriptions.size == 1 && form_values.size > 1 && physical_description_node['displayLabel'].nil?
+            forms.concat(form_values)
+            forms << { note: notes } if notes.present?
+          elsif form_values.size == 1
+            forms << form_values.first.merge({
+              note: notes.presence,
+              displayLabel: physical_description_node['displayLabel']
+            }.compact)
+          else
+            forms << {
+              groupedValue: form_values,
+              note: notes.presence,
+              displayLabel: physical_description_node['displayLabel']
+            }.compact
+          end
+          forms
+        end
+
+        def physical_description_form_values_for(physical_description_node)
+          form_values = []
+          add_forms(form_values, physical_description_node)
+          add_reformatting_quality(form_values, physical_description_node)
+          add_media_type(form_values, physical_description_node)
+          add_extent(form_values, physical_description_node)
+          add_digital_origin(form_values, physical_description_node)
+          form_values
         end
 
         def physical_description_notes_for(physical_description)
