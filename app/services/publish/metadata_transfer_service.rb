@@ -36,7 +36,7 @@ module Publish
         transfer_to_document_store(item.datastreams[stream].content.to_s, stream) if item.datastreams[stream]
       end
 
-      transfer_to_document_store(RightsMetadata.new(item.rightsMetadata.ng_xml).to_xml, 'rightsMetadata')
+      transfer_to_document_store(RightsMetadata.new(item.rightsMetadata.ng_xml).create.to_xml, 'rightsMetadata')
       transfer_to_document_store(PublicXmlService.new(item, released_for: release_tags).to_xml, 'public')
       transfer_to_document_store(PublicDescMetadataService.new(item).to_xml, 'mods')
     end

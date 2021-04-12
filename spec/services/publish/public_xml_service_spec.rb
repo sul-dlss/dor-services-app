@@ -26,22 +26,12 @@ RSpec.describe Publish::PublicXmlService do
       EOXML
     end
 
-    before do
-      mods = <<-EOXML
-        <mods:mods xmlns:mods="http://www.loc.gov/mods/v3"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   version="3.3"
-                   xsi:schemaLocation="http://www.loc.gov/mods/v3 http://cosimo.stanford.edu/standards/mods/v3/mods-3-3.xsd">
-          <mods:identifier type="local" displayLabel="SUL Resource ID">druid:ab123cd4567</mods:identifier>
-        </mods:mods>
-      EOXML
-
-      rights = <<-EOXML
+    let(:rights) do
+      <<~XML
         <rightsMetadata objectId="druid:ab123cd4567">
           <copyright>
             <human>(c) Copyright 2010 by Sebastian Jeremias Osterfeld</human>
           </copyright>
-          </access>
           <access type="read">
             <machine>
               <group>stanford:stanford</group>
@@ -52,6 +42,17 @@ RSpec.describe Publish::PublicXmlService do
             <human type="creativeCommons">CC Attribution Share Alike license</human>
           </use>
         </rightsMetadata>
+      XML
+    end
+
+    before do
+      mods = <<-EOXML
+        <mods:mods xmlns:mods="http://www.loc.gov/mods/v3"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   version="3.3"
+                   xsi:schemaLocation="http://www.loc.gov/mods/v3 http://cosimo.stanford.edu/standards/mods/v3/mods-3-3.xsd">
+          <mods:identifier type="local" displayLabel="SUL Resource ID">druid:ab123cd4567</mods:identifier>
+        </mods:mods>
       EOXML
 
       item.contentMetadata.content = '<contentMetadata/>'
@@ -71,6 +72,37 @@ RSpec.describe Publish::PublicXmlService do
       it 'does not include a releaseData element and any info in identityMetadata' do
         expect(ng_xml.at_xpath('/publicObject/releaseData')).to be_nil
         expect(ng_xml.at_xpath('/publicObject/identityMetadata/release')).to be_nil
+      end
+    end
+
+    context 'without a license node in the source (old way)' do
+      it 'has the license' do
+        expect(ng_xml.at_xpath('/publicObject/rightsMetadata/use/machine[@type="creativeCommons"]').text).to eq 'by-sa'
+      end
+    end
+
+    context 'with a licence node (new way)' do
+      let(:rights) do
+        <<~XML
+          <rightsMetadata objectId="druid:ab123cd4567">
+            <copyright>
+              <human>(c) Copyright 2010 by Sebastian Jeremias Osterfeld</human>
+            </copyright>
+            <access type="read">
+              <machine>
+                <group>stanford:stanford</group>
+              </machine>
+            </access>
+            <use>
+              <license>https://creativecommons.org/licenses/by-nc/4.0/</license>
+            </use>
+          </rightsMetadata>
+        XML
+      end
+
+      it 'has the license' do
+        expect(ng_xml.at_xpath('/publicObject/rightsMetadata/use/machine[@type="creativeCommons"]').text).to eq 'by-nc'
+        expect(ng_xml.at_xpath('/publicObject/rightsMetadata/use/license').text).to eq 'https://creativecommons.org/licenses/by-nc/4.0/'
       end
     end
 
@@ -120,10 +152,6 @@ RSpec.describe Publish::PublicXmlService do
         it 'include contentMetadata' do
           expect(ng_xml.at_xpath('/publicObject/contentMetadata')).to be
         end
-      end
-
-      it 'rightsMetadata' do
-        expect(ng_xml.at_xpath('/publicObject/rightsMetadata')).to be
       end
 
       it 'generated mods' do
