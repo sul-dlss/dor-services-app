@@ -96,10 +96,6 @@ RSpec.describe Publish::MetadataTransferService do
 
       context 'with an item' do
         before do
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<identityMetadata/, 'identityMetadata')
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<contentMetadata/, 'contentMetadata')
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<rightsMetadata/, 'rightsMetadata')
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<oai_dc:dc/, 'dc')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<mods:mods/, 'mods')
           expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(no_args)
@@ -112,7 +108,6 @@ RSpec.describe Publish::MetadataTransferService do
         it 'identityMetadta, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
           item.rightsMetadata.content = "<rightsMetadata><access type='discover'><machine><world/></machine></access></rightsMetadata>"
           service.publish
-          expect(Publish::DublinCoreService).to have_received(:new).with(item)
           expect(Publish::PublicXmlService).to have_received(:new).with(item, released_for: release_tags)
           expect(Publish::PublicDescMetadataService).to have_received(:new).with(item)
         end
@@ -134,10 +129,6 @@ RSpec.describe Publish::MetadataTransferService do
         end
 
         before do
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<identityMetadata/, 'identityMetadata')
-          expect_any_instance_of(described_class).not_to receive(:transfer_to_document_store).with(/<contentMetadata/, 'contentMetadata')
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<rightsMetadata/, 'rightsMetadata')
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<oai_dc:dc/, 'dc')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<mods:mods/, 'mods')
           expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(no_args)
