@@ -128,6 +128,20 @@ RSpec.describe 'Administrative tags' do
       end
     end
 
+    context 'when tags have a dot in them' do
+      let(:current_tag) { 'Remediated By : 4.21.4' }
+      let(:new_tag) { 'Remediated By : 4.21.5' }
+
+      it 'correctly routes and updates an administrative tag' do
+        put "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(current_tag)}",
+            params: %( {"administrative_tag":"#{new_tag}"} ),
+            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(AdministrativeTags).to have_received(:update)
+          .with(pid: druid, current: current_tag, new: new_tag)
+        expect(response.status).to eq(204)
+      end
+    end
+
     context 'when item is not found' do
       before do
         allow(Dor).to receive(:find)
@@ -237,6 +251,18 @@ RSpec.describe 'Administrative tags' do
 
     context 'when happy path' do
       it 'destroys an administrative tag' do
+        delete "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(tag)}",
+               headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(AdministrativeTags).to have_received(:destroy)
+          .with(pid: druid, tag: tag)
+        expect(response.status).to eq(204)
+      end
+    end
+
+    context 'when a tag has a dot in it' do
+      let(:tag) { 'Remediated By : 4.21.4' }
+
+      it 'correctly routes and destroys an administrative tag' do
         delete "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(tag)}",
                headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(AdministrativeTags).to have_received(:destroy)

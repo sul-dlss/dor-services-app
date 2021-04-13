@@ -31,7 +31,9 @@ Rails.application.routes.draw do
 
     resources :objects, only: %i[create update destroy show] do
       resource :release_tags, only: [:create, :show]
-      resources :administrative_tags, only: %i[create update destroy index]
+      # NOTE: administrative tags can have dots in the them, so the route needs to accept these
+      #  see https://github.com/sul-dlss/argo/issues/2611
+      resources :administrative_tags, only: %i[create update destroy index], id: %r{[^/]+}
 
       member do
         post 'publish'
