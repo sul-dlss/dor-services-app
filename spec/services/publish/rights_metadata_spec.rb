@@ -3,10 +3,55 @@
 require 'rails_helper'
 
 RSpec.describe Publish::RightsMetadata do
-  subject(:service) { described_class.new(Nokogiri::XML(original)) }
+  subject(:service) { described_class.new(Nokogiri::XML(original), release_date: release_date) }
+
+  let(:release_date) { nil }
 
   describe '#create' do
     subject(:result) { service.create }
+
+    context 'when an embargo date is present' do
+      let(:release_date) { '2020-02-26' }
+
+      let(:original) do
+        <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world />
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <group>stanford</group>
+              </machine>
+            </access>
+          </rightsMetadata>
+        XML
+      end
+
+      let(:expected) do
+        <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world />
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <group>stanford</group>
+                <embargoReleaseDate>2020-02-26</embargoReleaseDate>
+              </machine>
+            </access>
+          </rightsMetadata>
+        XML
+      end
+
+      it 'adds the embargo release date' do
+        expect(result).to be_equivalent_to(expected)
+      end
+    end
 
     context 'when no license node is present' do
       let(:original) do

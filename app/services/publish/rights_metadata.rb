@@ -3,12 +3,23 @@
 module Publish
   # Exports the rightsMetadata XML that is sent to purl.stanford.edu
   class RightsMetadata
-    attr_reader :original
+    attr_reader :original, :release_date
 
     # @param [Nokogiri::XML] original
-    def initialize(original)
+    # @param [String] release_date the embargo release date if one is set, otherwise send nil.
+    def initialize(original, release_date:)
       @original = original
+      @release_date = release_date
     end
+
+    # @return [Nokogiri::Xml] the original xml with the legacy style rights added so that the description can be displayed.
+    def create
+      add_license
+      add_release_date
+      original.clone
+    end
+
+    private
 
     Resource = Struct.new(:code, :label)
     # These codes are the only codes accepted by DefaultObjectRightsDS#use_license=
@@ -36,8 +47,15 @@ module Publish
       'http://opendatacommons.org/licenses/odbl/1.0/' => Resource.new('odc-odbl', 'Open Data Commons Open Database License 1.0')
     }.freeze
 
-    # @return [Nokogiri::Xml] the original xml with the legacy style rights added so that the description can be displayed.
-    def create
+    def add_release_date
+      return unless release_date
+
+      read_machine_node = original.xpath('/rightsMetadata/access[@type="read"]/machine').first
+      read_machine_node.add_child("<embargoReleaseDate>#{release_date}</embargoReleaseDate>")
+    end
+
+    # Add the machine and human nodes which purl uses instead of the license node.
+    def add_license
       license_uri = original.xpath('/rightsMetadata/use/license').text.presence
       return original.clone unless license_uri && LICENSE_CODES.key?(license_uri)
 
@@ -54,7 +72,6 @@ module Publish
         use_node.add_child("<machine type=\"openDataCommons\" uri=\"#{license_uri}\">#{license.code}</machine>")
         use_node.add_child("<human type=\"openDataCommons\">#{license.label}</human>")
       end
-      original.clone
     end
   end
 end
