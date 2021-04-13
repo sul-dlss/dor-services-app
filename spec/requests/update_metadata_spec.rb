@@ -1019,7 +1019,8 @@ RSpec.describe 'Update object' do
                                               }
                                             ]
                                           }
-                                        ]
+                                        ],
+                                        referencesAgreement: "druid:bc123df4567",
                                       },
                                       externalIdentifier: druid)
     end
@@ -1050,6 +1051,7 @@ RSpec.describe 'Update object' do
             "collectionsForRegistration":["druid:gg888df4567","druid:bb888gg4444"],
             "hasAdminPolicy":"druid:dd999df4567",
             "defaultAccess":#{default_access.to_json},
+            "referencesAgreement":"druid:bc123df4567",
             "roles":[{"name":"dor-apo-manager","members":[{"type":"workgroup","identifier":"sdr:psm-staff"}]}]
           },
           "description":{"title":[{"value":"This is my title"}]}}
