@@ -930,32 +930,17 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
   end
 
   describe 'Name subject with name type' do
-    # Example from bt573bx7287
-    it_behaves_like 'MODS cocina mapping' do
+    # based on bt573bx7287
+    xit 'updated mapping' do
       let(:mods) do
         <<~XML
-          <subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n83172096" altRepGroup="1">
-            <name type="personal">
+          <subject authority="lcsh" altRepGroup="1">
+            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n83172096">
               <namePart>Wang, Jingwei, 1883-1944</namePart>
             </name>
           </subject>
           <subject authority="lcsh" altRepGroup="1">
             <name type="personal" lang="chi" script="Hant">
-              <namePart>汪精衛, 1883-1944</namePart>
-            </name>
-          </subject>
-        XML
-      end
-
-      let(:roundtrip_mods) do
-        <<~XML
-          <subject authority="lcsh" altRepGroup="1">
-            <name type="personal" authority="lcsh" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n83172096">
-              <namePart>Wang, Jingwei, 1883-1944</namePart>
-            </name>
-          </subject>
-          <subject authority="lcsh" altRepGroup="1" lang="chi" script="Hant">
-            <name type="personal">
               <namePart>汪精衛, 1883-1944</namePart>
             </name>
           </subject>
@@ -971,7 +956,7 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
                   value: 'Wang, Jingwei, 1883-1944',
                   uri: 'http://id.loc.gov/authorities/names/n83172096',
                   source: {
-                    code: 'lcsh',
+                    code: 'naf',
                     uri: 'http://id.loc.gov/authorities/names/'
                   }
                 },
@@ -996,6 +981,83 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
               ],
               type: 'person'
 
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Structured subject with script' do
+    # based on dp130sv2563
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh" altRepGroup="1">
+            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n83172096">
+              <namePart>Wang, Jingwei, 1883-1944</namePart>
+            </name>
+            <topic>Personality cult</topic>
+          </subject>
+          <subject altRepGroup="1">
+            <name type="personal" lang="chi" script="Hant">
+              <namePart>汪精衛, 1883-1944</namePart>
+            </name>
+            <topic>個人崇拜</topic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              parallelValue: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Wang, Jingwei, 1883-1944',
+                      type: 'person',
+                      uri: 'http://id.loc.gov/authorities/names/n83172096',
+                      source: {
+                        code: 'naf',
+                        uri: 'http://id.loc.gov/authorities/names/'
+                      }
+                    },
+                    {
+                      value: 'Personality cult',
+                      type: 'topic'
+                    }
+                  ],
+                  source: {
+                    code: 'lcsh'
+                  }
+                },
+                {
+                  structuredValue: [
+                    {
+                      value: '汪精衛, 1883-1944',
+                      type: 'person',
+                      valueLanguage: {
+                        code: 'chi',
+                        source: {
+                          code: 'iso639-2b'
+                        },
+                        valueScript: {
+                          code: 'Hant',
+                          source: {
+                            code: 'iso15924'
+                          }
+                        }
+                      }
+                    },
+                    {
+                      value: '個人崇拜',
+                      type: 'topic'
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
