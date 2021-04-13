@@ -4,7 +4,7 @@ module Cocina
   module ToFedora
     # This transforms the AdminPolicyAdministrative schema to the
     # Fedora 3 data model rights
-    class ApoRights
+    class AdministrativeMetadata
       def self.write(administrative_metadata, administrative)
         ng_xml = administrative_metadata.ng_xml
         admin_node = ng_xml.xpath('//administrativeMetadata').first

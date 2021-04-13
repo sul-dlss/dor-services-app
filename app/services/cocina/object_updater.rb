@@ -80,7 +80,7 @@ module Cocina
       if has_changed?(:administrative)
         fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy
         Cocina::ToFedora::DefaultRights.write(fedora_object.defaultObjectRights, cocina_object.administrative.defaultAccess) if cocina_object.administrative.defaultAccess
-        Cocina::ToFedora::ApoRights.write(fedora_object.administrativeMetadata, cocina_object.administrative)
+        Cocina::ToFedora::AdministrativeMetadata.write(fedora_object.administrativeMetadata, cocina_object.administrative)
         Cocina::ToFedora::Roles.write(fedora_object, Array(cocina_object.administrative.roles))
       end
     end

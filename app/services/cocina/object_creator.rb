@@ -66,7 +66,7 @@ module Cocina
         add_description(fedora_apo, cocina_admin_policy)
 
         Cocina::ToFedora::DefaultRights.write(fedora_apo.defaultObjectRights, cocina_admin_policy.administrative.defaultAccess) if cocina_admin_policy.administrative.defaultAccess
-        Cocina::ToFedora::ApoRights.write(fedora_apo.administrativeMetadata, cocina_admin_policy.administrative)
+        Cocina::ToFedora::AdministrativeMetadata.write(fedora_apo.administrativeMetadata, cocina_admin_policy.administrative)
         Cocina::ToFedora::Roles.write(fedora_apo, Array(cocina_admin_policy.administrative.roles))
         Cocina::ToFedora::Identity.apply(fedora_apo, label: cocina_admin_policy.label)
       end
