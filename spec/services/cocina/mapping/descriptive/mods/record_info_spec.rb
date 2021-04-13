@@ -487,4 +487,29 @@ RSpec.describe 'MODS recordInfo <--> cocina mappings' do
       end
     end
   end
+
+  describe 'With recordInfoNote' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <recordInfo>
+            <recordInfoNote>Modified from source.</recordInfoNote>
+          </recordInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          adminMetadata: {
+            note: [
+              {
+                value: 'Modified from source.',
+                type: 'record information'
+              }
+            ]
+          }
+        }
+      end
+    end
+  end
 end
