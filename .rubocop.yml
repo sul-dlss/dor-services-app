@@ -70,6 +70,7 @@ RSpec/DescribeClass:
   Exclude:
     - 'spec/requests/**/*'
     - 'spec/services/cocina/mapping/descriptive/**/*'
+    - 'spec/services/cocina/mapping/administrative/**/*'
 
 RSpec/ExampleLength:
   Max: 8
