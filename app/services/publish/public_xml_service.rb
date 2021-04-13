@@ -63,10 +63,14 @@ module Publish
     end
 
     def public_rights_metadata
-      @public_rights_metadata ||= begin
-        release_date = object.is_a?(Dor::Item) && object.embargoMetadata.status == 'embargoed' ? object.embargoMetadata.release_date : nil
-        RightsMetadata.new(object.rightsMetadata.ng_xml, release_date: release_date).create
-      end
+      @public_rights_metadata ||= RightsMetadata.new(object.rightsMetadata.ng_xml, release_date: release_date).create
+    end
+
+    def release_date
+      return unless object.is_a?(Dor::Item)
+      return unless object.embargoMetadata.status == 'embargoed'
+
+      object.embargoMetadata.release_date.first.to_datetime.utc.iso8601
     end
 
     def public_identity_metadata
