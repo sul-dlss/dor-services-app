@@ -23,22 +23,17 @@ class EmbargoService
   def create
     return unless release_date
 
-    # This is set because embargoMetadata datastream is not sent to Purl and
-    # sul-embed needs to know this value: https://github.com/sul-dlss/sul-embed/blob/305b3c12924a3de19040e8c96f3335e9e26ce013/app/models/embed/purl.rb#L54
-    # In the future we could just write this into the rightsMetadata that is transfered
-    # to Purl via the Publish::RightsMetadata service.
-    item.rightsMetadata.embargo_release_date = release_date
-
-    item.embargoMetadata.release_date = release_date
-    item.embargoMetadata.status = 'embargoed'
-
-    item.embargoMetadata.release_access_node = Nokogiri::XML(generic_access_xml)
-    item.embargoMetadata.use_and_reproduction_statement = use_and_reproduction_statement if use_and_reproduction_statement
+    embargoMetadata.release_date = release_date
+    embargoMetadata.status = 'embargoed'
+    embargoMetadata.release_access_node = Nokogiri::XML(generic_access_xml)
+    embargoMetadata.use_and_reproduction_statement = use_and_reproduction_statement if use_and_reproduction_statement
   end
 
   private
 
   attr_reader :item, :release_date, :access, :use_and_reproduction_statement
+
+  delegate :embargoMetadata, to: :item
 
   def generic_access_xml
     <<-XML

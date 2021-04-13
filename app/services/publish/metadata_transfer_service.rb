@@ -29,6 +29,7 @@ module Publish
     attr_reader :item
 
     # @raise [Dor::DataError]
+    # rubocop:disable Metrics/AbcSize
     def transfer_metadata(release_tags)
       transfer_to_document_store(DublinCoreService.new(item).ng_xml.to_xml(&:no_declaration), 'dc')
 
@@ -36,10 +37,12 @@ module Publish
         transfer_to_document_store(item.datastreams[stream].content.to_s, stream) if item.datastreams[stream]
       end
 
-      transfer_to_document_store(RightsMetadata.new(item.rightsMetadata.ng_xml).create.to_xml, 'rightsMetadata')
+      release_date = item.is_a?(Dor::Item) && item.embargoMetadata.status == 'embargoed' ? item.embargoMetadata.release_date : nil
+      transfer_to_document_store(RightsMetadata.new(item.rightsMetadata.ng_xml, release_date: release_date).create.to_xml, 'rightsMetadata')
       transfer_to_document_store(PublicXmlService.new(item, released_for: release_tags).to_xml, 'public')
       transfer_to_document_store(PublicDescMetadataService.new(item).to_xml, 'mods')
     end
+    # rubocop:enable Metrics/AbcSize
 
     # Clear out the document cache for this item
     def unpublish
