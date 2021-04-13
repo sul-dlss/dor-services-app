@@ -66,6 +66,59 @@ RSpec.describe 'MODS subject topic <--> cocina mappings' do
     end
   end
 
+  describe 'With only LCSH authorityURI on subject element' do
+    # Example from fx157yc1405
+    # Add authority based on authorityURI
+    xit 'unimplemented spec' do
+      let(:mods) do
+        <<~XML
+          <subject authorityURI="http://id.loc.gov/authorities/subjects">
+            <geographic authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh85001531">Africa</geographic>
+            <temporal authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh2002012476">20th century</temporal>
+          </subject>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <geographic authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh85001531">Africa</geographic>
+            <temporal authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" valueURI="http://id.loc.gov/authorities/subjects/sh2002012476">20th century</temporal>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  value: 'Africa',
+                  type: 'place',
+                  uri: 'http://id.loc.gov/authorities/subjects/sh85001531',
+                  source: {
+                    code: 'lcsh',
+                    uri: 'http://id.loc.gov/authorities/subjects'
+                  }
+                },
+                {
+                  value: '20th century',
+                  type: 'time',
+                  uri: 'http://id.loc.gov/authorities/subjects/sh85001531',
+                  source: {
+                    code: 'lcsh',
+                    uri: 'http://id.loc.gov/authorities/subjects'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'With language attributes on subject element' do
     # Example from bc770gm9177
     it_behaves_like 'MODS cocina mapping' do
