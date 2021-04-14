@@ -34,8 +34,6 @@ tags:
     description: Operations about files
   - name: workspaces
     description: Operations about workspaces
-  - name: embargoes
-    description: Operations about embargoes
 paths:
   /v1/about:
     get:
@@ -720,23 +718,6 @@ paths:
       operationId: 'workspaces#reset'
       responses:
         '204':
-          description: OK
-      parameters:
-        - name: object_id
-          in: path
-          description: ID of object
-          required: true
-          schema:
-            $ref: '#/components/schemas/Druid'
-  '/v1/objects/{object_id}/embargo':
-    patch:
-      tags:
-        - embargoes
-      summary: Update the embargo for an object
-      description: ''
-      operationId: 'embargoes#update'
-      responses:
-        '200':
           description: OK
       parameters:
         - name: object_id
