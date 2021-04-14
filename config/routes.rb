@@ -59,7 +59,6 @@ Rails.application.routes.draw do
         end
       end
 
-      resource :embargo, only: [:update]
       resource :shelve, only: [:create]
 
       resource :metadata, only: [] do
