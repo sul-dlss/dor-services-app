@@ -114,7 +114,7 @@ module Cocina
             source = {
               code: code_for(subject),
               uri: Authority.normalize_uri(subject[:authorityURI]),
-              version: subject['edition']
+              version: subject['edition'].presence # We are not interested in blank versions
             }.compact
             attrs[:source] = source unless source.empty?
             attrs[:uri] = ValueURI.sniff(subject[:valueURI], notifier)

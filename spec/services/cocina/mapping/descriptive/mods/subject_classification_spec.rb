@@ -79,6 +79,36 @@ RSpec.describe 'MODS subject classification <--> cocina mappings' do
     end
   end
 
+  describe 'Classification with blank edition' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <classification authority="ddc" edition="">949.6</classification>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <classification authority="ddc">949.6</classification>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              type: 'classification',
+              value: '949.6',
+              source: {
+                code: 'ddc'
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Classification with display label' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
