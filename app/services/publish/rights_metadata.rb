@@ -51,7 +51,8 @@ module Publish
       return unless release_date
 
       read_machine_node = original.xpath('/rightsMetadata/access[@type="read"]/machine').first
-      read_machine_node.add_child("<embargoReleaseDate>#{release_date}</embargoReleaseDate>")
+      date_node = read_machine_node.xpath('./embargoReleaseDate').first || read_machine_node.add_child('<embargoReleaseDate />').first
+      date_node.content = release_date
     end
 
     # Add the machine and human nodes which purl uses instead of the license node.

@@ -10,25 +10,8 @@ RSpec.describe Publish::RightsMetadata do
   describe '#create' do
     subject(:result) { service.create }
 
-    context 'when an embargo date is present' do
-      let(:release_date) { '2020-02-26' }
-
-      let(:original) do
-        <<~XML
-          <rightsMetadata>
-            <access type="discover">
-              <machine>
-                <world />
-              </machine>
-            </access>
-            <access type="read">
-              <machine>
-                <group>stanford</group>
-              </machine>
-            </access>
-          </rightsMetadata>
-        XML
-      end
+    context 'when an embargo date is provided' do
+      let(:release_date) { '2020-02-26T00:00:00Z' }
 
       let(:expected) do
         <<~XML
@@ -41,15 +24,58 @@ RSpec.describe Publish::RightsMetadata do
             <access type="read">
               <machine>
                 <group>stanford</group>
-                <embargoReleaseDate>2020-02-26</embargoReleaseDate>
+                <embargoReleaseDate>2020-02-26T00:00:00Z</embargoReleaseDate>
               </machine>
             </access>
           </rightsMetadata>
         XML
       end
 
-      it 'adds the embargo release date' do
-        expect(result).to be_equivalent_to(expected)
+      context 'without an existing embargoReleaseDate node' do
+        let(:original) do
+          <<~XML
+            <rightsMetadata>
+              <access type="discover">
+                <machine>
+                  <world />
+                </machine>
+              </access>
+              <access type="read">
+                <machine>
+                  <group>stanford</group>
+                </machine>
+              </access>
+            </rightsMetadata>
+          XML
+        end
+
+        it 'adds the embargo release date' do
+          expect(result).to be_equivalent_to(expected)
+        end
+      end
+
+      context 'with an existing embargoReleaseDate node' do
+        let(:original) do
+          <<~XML
+            <rightsMetadata>
+              <access type="discover">
+                <machine>
+                  <world />
+                </machine>
+              </access>
+              <access type="read">
+                <machine>
+                  <embargoReleaseDate>2025-11-11T00:00:00Z</embargoReleaseDate>
+                  <group>stanford</group>
+                </machine>
+              </access>
+            </rightsMetadata>
+          XML
+        end
+
+        it 'adds the embargo release date' do
+          expect(result).to be_equivalent_to(expected)
+        end
       end
     end
 
