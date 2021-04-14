@@ -789,122 +789,95 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
-  describe 'Name repeated with different roles' do
-    # based on druid:jr089rh8500
-    xit 'unimplemented spec: name repeated with different roles' do
-      let(:mods) do
-        <<~XML
-          <name type="personal" usage="primary" valueURI="http://id.loc.gov/authorities/names/no2001053444">
-            <namePart>Perry, William P</namePart>
-            <role>
-              <roleTerm type="text">composer</roleTerm>
-            </role>
-          </name>
-          <name type="personal" valueURI="http://id.loc.gov/authorities/names/no2001053444">
-            <namePart>Perry, William P</namePart>
-            <role>
-              <roleTerm type="text">conductor</roleTerm>
-            </role>
-          </name>
-        XML
-      end
-
-      let(:roundtrip_mods) do
-        <<~XML
-          <name type="personal" usage="primary" valueURI="http://id.loc.gov/authorities/names/no2001053444">
-            <namePart>Perry, William P</namePart>
-            <role>
-              <roleTerm type="text">composer</roleTerm>
-            </role>
-            <role>
-              <roleTerm type="text">conductor</roleTerm>
-            </role>
-          </name>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              type: 'person',
-              status: 'primary',
-              name: [
-                {
-                  value: 'Perry, William P',
-                  uri: 'http://id.loc.gov/authorities/names/no2001053444'
+  describe 'Repeated name, one with role, one part of uniform title' do
+    let(:cocina) do
+      {
+        title: [
+          {
+            value: 'Russian dance'
+          },
+          {
+            structuredValue: [
+              {
+                value: 'Zimbalist, Efrem',
+                type: 'name'
+              },
+              {
+                structuredValue: [
+                  {
+                    value: 'Slavische Tänze',
+                    type: 'main title'
+                  },
+                  {
+                    value: 'Russisch',
+                    type: 'part name'
+                  }
+                ],
+                type: 'title'
+              }
+            ],
+            type: 'uniform'
+          }
+        ],
+        contributor: [
+          {
+            name: [
+              {
+                value: 'Zimbalist, Efrem'
+              }
+            ],
+            type: 'person',
+            status: 'primary',
+            role: [
+              {
+                code: 'prf',
+                source: {
+                  code: 'marcrelator'
                 }
-              ],
-              role: [
-                {
-                  value: 'composer'
-                },
-                {
-                  value: 'conductor'
-                }
-              ]
-            }
-          ]
-        }
-      end
+              }
+            ]
+          }
+        ]
+      }
     end
-  end
+    let(:roundtrip_mods) do
+      <<~XML
+        <titleInfo>
+          <title>Russian dance</title>
+        </titleInfo>
+        <titleInfo type="uniform" nameTitleGroup="1">
+          <title>Slavische Tänze</title>
+          <partName>Russisch</partName>
+        </titleInfo>
+        <name type="personal" usage="primary" nameTitleGroup="1">
+          <namePart>Zimbalist, Efrem</namePart>
+          <role>
+            <roleTerm authority="marcrelator" type="code">prf</roleTerm>
+          </role>
+        </name>
+      XML
+    end
 
-  describe 'Name and role in different scripts' do
-    # based on druid:jk495jh4582
     xit 'not implemented' do
       let(:mods) do
         <<~XML
-          <name type="personal" altRepGroup="08">
-            <namePart>Zhou, L.-F. (Liang-Fu)</namePart>
-            <role>
-              <roleTerm type="text">zeng bu</roleTerm>
-            </role>
+          <titleInfo>
+            <title>Russian dance</title>
+          </titleInfo>
+          <titleInfo type="uniform" nameTitleGroup="1">
+            <title>Slavische Tänze</title>
+            <partName>Russisch</partName>
+          </titleInfo>
+          <name type="personal" usage="primary" nameTitleGroup="1">
+            <namePart>Zimbalist, Efrem</namePart>
           </name>
-          <name type="personal" altRepGroup="08">
-            <namePart>周亮輔</namePart>
+          <name type="personal">
+            <namePart>Zimbalist, Efrem</namePart>
             <role>
-              <roleTerm type="text">增補</roleTerm>
+              <roleTerm authority="marcrelator" type="code">prf</roleTerm>
             </role>
           </name>
         XML
-      end
-
-      let(:cocina) do
-        # FIX ME: requires adding parallelContributor property to model
-        {
-          contributor: [
-            {
-              parallelContributor: [
-                {
-                  name: [
-                    {
-                      value: 'Zhou, L.-F. (Liang-Fu)'
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'zeng bu'
-                    }
-                  ]
-                },
-                {
-                  name: [
-                    {
-                      value: '周亮輔'
-                    }
-                  ],
-                  role: [
-                    {
-                      value: '增補'
-                    }
-                  ]
-                }
-              ],
-              type: 'person'
-            }
-          ]
-        }
       end
     end
   end
@@ -1584,7 +1557,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
         {
           contributor: [
             {
-              identifier: [
+              name: [
                 {
                   value: '0000-0000-0000',
                   type: 'ORCID'
@@ -1764,16 +1737,12 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  structuredValue: [
-                    {
-                      value: 'Yao, Zongyi',
-                      type: 'name'
-                    },
-                    {
-                      value: '1618',
-                      type: 'activity dates'
-                    }
-                  ]
+                  value: 'Yao, Zongyi',
+                  type: 'name'
+                },
+                {
+                  value: '1618',
+                  type: 'activity dates'
                 }
               ]
             }
@@ -1802,16 +1771,12 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  structuredValue: [
-                    {
-                      value: 'Inoue, Kaian',
-                      type: 'name'
-                    },
-                    {
-                      value: '18th century',
-                      type: 'activity dates'
-                    }
-                  ]
+                  value: 'Inoue, Kaian',
+                  type: 'name'
+                },
+                {
+                  value: '18th century',
+                  type: 'activity dates'
                 }
               ]
             }
@@ -2125,90 +2090,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   # devs added specs below
-
-  describe 'Names with the same altRepGroup but differing types' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <name type="conference" altRepGroup="1" script="Latn">
-            <namePart>Zhonghua gong nong bing Suwei'ai quan guo dai biao da hui 1931 : Ruijin)</namePart>
-          </name>
-          <name type="corporate" altRepGroup="1" script="Latn">
-            <namePart>中華工農兵蘇維埃全國代表大會</namePart>
-            <namePart>(1st : 1931 : Ruijin)</namePart>
-          </name>
-        XML
-      end
-
-      let(:roundtrip_mods) do
-        # first type declared wins
-        <<~XML
-          <name type="conference" altRepGroup="1" script="Latn">
-            <namePart>Zhonghua gong nong bing Suwei'ai quan guo dai biao da hui 1931 : Ruijin)</namePart>
-          </name>
-          <name type="conference" altRepGroup="1" script="Latn">
-            <namePart>中華工農兵蘇維埃全國代表大會</namePart>
-            <namePart>(1st : 1931 : Ruijin)</namePart>
-          </name>
-        XML
-      end
-
-      let(:skip_normalization) { true }
-
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  parallelValue: [
-                    {
-                      value: "Zhonghua gong nong bing Suwei'ai quan guo dai biao da hui 1931 : Ruijin)",
-                      valueLanguage: {
-                        valueScript: {
-                          code: 'Latn',
-                          source: {
-                            code: 'iso15924'
-                          }
-                        }
-                      }
-                    },
-                    {
-                      structuredValue: [
-                        {
-                          value: '中華工農兵蘇維埃全國代表大會',
-                          type: 'name'
-                        },
-                        {
-                          value: '(1st : 1931 : Ruijin)',
-                          type: 'name'
-                        }
-                      ],
-                      valueLanguage: {
-                        valueScript: {
-                          code: 'Latn',
-                          source: {
-                            code: 'iso15924'
-                          }
-                        }
-                      }
-                    }
-                  ],
-                  type: 'conference'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:errors) do
-        [
-          Notification.new(msg: 'Multiple types for same altRepGroup', context: { types: %w[conference corporate] })
-        ]
-      end
-    end
-  end
 
   context 'with an invalid type' do
     context 'when miscapitalized' do
