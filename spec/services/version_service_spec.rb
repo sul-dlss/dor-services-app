@@ -101,11 +101,63 @@ RSpec.describe VersionService do
       end
     end
 
+    context 'when skipping the preservation catalog sync' do
+      before do
+        allow(Settings.version_service).to receive(:sync_with_preservation).and_return false
+        allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+        allow(obj).to receive(:new_record?).and_return(false)
+        allow(vmd_ds).to receive(:save)
+      end
+
+      let(:workflow_client) do
+        instance_double(Dor::Workflow::Client,
+                        create_workflow_by_name: true,
+                        lifecycle: true,
+                        active_lifecycle: nil)
+      end
+
+      it 'creates the versionMetadata datastream and starts a workflow' do
+        expect(obj).to receive(:new_record?).and_return(false)
+        expect(vmd_ds).to receive(:save)
+        expect(vmd_ds.ng_xml.to_xml).to match(/Initial Version/)
+        open
+        expect(workflow_client).to have_received(:lifecycle).with(druid: druid, milestone_name: 'accessioned')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1')
+        expect(workflow_client).to have_received(:create_workflow_by_name).with(obj.pid, 'versioningWF', version: '2')
+      end
+
+      it 'includes options' do
+        options = { significance: 'real_major', description: 'same as it ever was', opening_user_name: 'sunetid' }
+        cur_vers = '2'
+        allow(vmd_ds).to receive(:current_version).and_return(cur_vers)
+        allow(obj).to receive(:save!)
+
+        expect(ev_ds).to receive(:add_event).with('open', options[:opening_user_name], "Version #{cur_vers} opened")
+        expect(vmd_ds).to receive(:update_current_version).with(description: options[:description], significance: options[:significance].to_sym)
+        expect(obj).to receive(:save!)
+
+        described_class.open(obj, options, event_factory: event_factory)
+
+        expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
+                                                             druid: 'druid:ab12cd3456',
+                                                             event_type: 'version_open')
+      end
+
+      it "doesn't include options" do
+        expect(ev_ds).not_to receive(:add_event)
+        expect(vmd_ds).not_to receive(:update_current_version)
+        expect(obj).not_to receive(:save!)
+
+        open
+      end
+    end
+
     context 'when a new version cannot be opened' do
       let(:instance) { described_class.new obj }
 
       before do
-        allow(instance).to receive(:try_to_get_current_version).and_raise(Dor::Exception, 'Object net yet accessioned')
+        allow(instance).to receive(:ensure_openable!).and_raise(Dor::Exception, 'Object net yet accessioned')
         allow(described_class).to receive(:new).and_return(instance)
       end
 

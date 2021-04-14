@@ -38,6 +38,11 @@ workflow:
   shift_age: 'weekly'
   timeout: 60
 
+version_service:
+  # Turn sync_with_preservation to false in a testing environment where you don't
+  # have a preservation-catalog container
+  sync_with_preservation: true
+
 # URLs
 fedora_url: 'https://user:password@fedora.example.com:1000/fedora'
 solr:

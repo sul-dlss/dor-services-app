@@ -37,10 +37,15 @@ class VersionService
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   # rubocop:disable Metrics/AbcSize
   def open(opts = {})
-    sdr_version = try_to_get_current_version(opts[:assume_accessioned])
-
     vmd_ds = work.versionMetadata
-    vmd_ds.sync_then_increment_version sdr_version
+    ensure_openable!(opts[:assume_accessioned])
+    if Settings.version_service.sync_with_preservation
+      sdr_version = retrieve_version_from_preservation
+      vmd_ds.sync_then_increment_version sdr_version
+    else
+      # This is for testing when we don't have the SDR container available
+      vmd_ds.increment_version
+    end
     vmd_ds.save unless work.new_record?
 
     workflow_client.create_workflow_by_name(work.pid, 'versioningWF', version: work.current_version)
@@ -62,7 +67,8 @@ class VersionService
   # @return [Boolean] true if a new version can be opened.
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   def can_open?(opts = {})
-    try_to_get_current_version(opts[:assume_accessioned])
+    ensure_openable!(opts[:assume_accessioned])
+    retrieve_version_from_preservation
     true
   rescue Dor::Exception
     false
@@ -103,12 +109,11 @@ class VersionService
   # rubocop:enable Metrics/AbcSize
 
   # Performs checks on whether a new version can be opened for an object
-  # @return [Integer] the version from Preservation (SDR) if a version can be opened
+  # @return [Void]
   # @param [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
-  # @raise [Dor::Exception, Preservation::Client::NotFoundError] if the object hasn't been accessioned,
-  #    if a version is already opened, or if Preservation returns 404 when queried.
-  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  def try_to_get_current_version(assume_accessioned = false)
+  # @raise [Dor::Exception] if the object hasn't been accessioned,
+  #    if a version is already opened
+  def ensure_openable!(assume_accessioned = false)
     # Raised when the object has never been accessioned.
     # The accessioned milestone is the last step of the accessionWF.
     # During local development, we need a way to open a new version even if the object has not been accessioned.
@@ -120,7 +125,13 @@ class VersionService
     # Raised when the current version has any incomplete wf steps and there is an accessionWF.
     # The submitted milestone is part of the accessionWF.
     raise Dor::Exception, 'Object currently being accessioned' if accessioning?
+  end
 
+  # Performs checks on whether a new version can be opened for an object
+  # @return [Integer] the version from Preservation (SDR) if a version can be opened
+  # @raise [Dor::Exception] if Preservation returns 404 when queried.
+  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
+  def retrieve_version_from_preservation
     Preservation::Client.objects.current_version(work.pid)
   rescue Preservation::Client::NotFoundError
     raise Dor::Exception, 'Preservation (SDR) is not yet answering queries about this object. ' \
