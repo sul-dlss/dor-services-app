@@ -41,6 +41,9 @@ class ObjectsController < ApplicationController
     update_request = Cocina::Models.build(params.except(:action, :controller, :id).to_unsafe_h)
     persisted_cocina_object = Cocina::ObjectUpdater.run(fedora_object, update_request)
 
+    # Broadcast this update action to a topic
+    Notifications::ObjectUpdated.publish(model: cocina_object) if Settings.rabbitmq.enabled
+
     render json: persisted_cocina_object
   rescue Cocina::RoundtripValidationError => e
     Honeybadger.notify(e)

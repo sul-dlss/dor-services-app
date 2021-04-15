@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Notifications::ObjectCreated do
+RSpec.describe Notifications::ObjectUpdated do
   subject(:publish) { described_class.publish(model: model) }
 
   let(:data) { { data: '455' } }
@@ -40,9 +40,13 @@ RSpec.describe Notifications::ObjectCreated do
                                       type: Cocina::Models::Vocab.admin_policy)
     end
 
+    before do
+      allow(model).to receive(:to_h).and_return(data)
+    end
+
     it 'is successful' do
       publish
-      expect(topic).not_to have_received(:publish)
+      expect(topic).to have_received(:publish).with('{"model":{"data":"455"}}', routing_key: 'SDR')
     end
   end
 end
