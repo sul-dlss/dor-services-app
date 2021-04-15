@@ -545,17 +545,12 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
         }
       end
     end
-
-    # TODO: problems when administrativeMetadata contains
-    # <descMetadata>
-    #   <format>MODS</format>
-    #   <source>Symphony</source>
-    # </descMetadata>
-    # or empty <registration/> ...
-
-    # TODO: defaultAccess:  readLocation; controlleddigitallending
-    # TODO: test without registrationWF ?
-    # TODO: test without admin policy (? - should throw error?)
-    # TODO: test without roles ?
   end
+
+  # TODO: add specs for additional data wrinkles surfaced via prod data roundtrip validation
+  #   and from thinking about possible situations such as:
+  # - defaultAccess:  readLocation; controlleddigitallending
+  # - test without registrationWF ?
+  # - test without admin policy (? - should throw error?)
+  # - test without roles ?
 end
