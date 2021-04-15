@@ -8,20 +8,9 @@ module Notifications
       # Skipping APOs because they don't (yet) have a partOfProject assertion.
       return if model.is_a? Cocina::Models::AdminPolicy
 
-      Rails.logger.info "Publishing Rabbitmq Message for #{model.externalIdentifier}"
-      new(model: model, channel: channel).publish
-      Rails.logger.info "Published Rabbitmq Message for #{model.externalIdentifier}"
-    end
-
-    def self.channel
-      @channel ||= connection.create_channel
-    end
-
-    def self.connection
-      @connection ||= Bunny.new(hostname: Settings.rabbitmq.hostname,
-                                vhost: Settings.rabbitmq.vhost,
-                                username: Settings.rabbitmq.username,
-                                password: Settings.rabbitmq.password).tap(&:start)
+      Rails.logger.debug "Publishing Rabbitmq Message for creating #{model.externalIdentifier}"
+      new(model: model, channel: RabbitChannel.instance).publish
+      Rails.logger.debug "Published Rabbitmq Message for creating #{model.externalIdentifier}"
     end
 
     def initialize(model:, channel:)
@@ -31,12 +20,15 @@ module Notifications
 
     def publish
       message = { model: model.to_h }
-      exchange = channel.topic('sdr.objects.created')
       # Using the project as a routing key because listeners may only care about their projects.
       exchange.publish(message.to_json, routing_key: model.administrative.partOfProject)
     end
 
     private
+
+    def exchange
+      channel.topic('sdr.objects.created')
+    end
 
     attr_reader :model, :channel
   end
