@@ -1042,7 +1042,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         { "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
           "label":"This is my label","version":1,
-          "access":{"access":"location-based","readLocation":"m&m"},
+          "access":{"access":"location-based","download":"location-based","readLocation":"m&m"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"This is my title"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
           "identification":{"sourceId":"googlebooks:999999"},

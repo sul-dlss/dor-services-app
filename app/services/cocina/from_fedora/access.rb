@@ -18,13 +18,13 @@ module Cocina
       def props
         {
           access: access_rights,
-          download: download? ? access_rights : 'none',
+          download: download,
           readLocation: location,
           license: License.find(rights_metadata_ds),
           copyright: copyright,
           useAndReproductionStatement: use_statement
         }.compact.tap do |h|
-          h[:controlledDigitalLending] = true if cdl?
+          h[:controlledDigitalLending] = true if controlled_digital_lending?
         end
       end
 
@@ -32,8 +32,10 @@ module Cocina
 
       attr_reader :rights_metadata_ds
 
+      delegate :controlled_digital_lending?, :dark?, :citation_only?, :obj_lvl, to: :rights_object
+
       def rights_object
-        rights_metadata_ds.dra_object.obj_lvl
+        rights_metadata_ds.dra_object
       end
 
       def copyright
@@ -44,15 +46,73 @@ module Cocina
         rights_metadata_ds.use_statement.first.presence
       end
 
-      # @return [Bool] true unless the rule="no-download" has been set or if the access is citation-only or dark
-      def download?
-        return false if %w[citation-only dark].include? access_rights
+      # @note This method implements an algorithm for determining download
+      #       access based on both the object-level rights and the object-level
+      #       download, using helper methods that lean on the `dor-rights-auth`
+      #       gem.
+      def download
+        # Some access types dictate no downloading. Handle those cases first.
+        return 'none' if no_download? || stanford_no_download? || world_no_download? || location_no_download?
 
-        !rights_object.world.rule && !rights_object.group.fetch(:stanford).rule
+        # Then check to see if download is based on location
+        return 'location-based' if location_based_download?
+
+        # If no specific download rules have been found yet and there are no explicit download rules set, set download to access rights
+        return access_rights if no_world_or_group_download_rules?
+
+        # Finally: the only remaining case is when rights are stanford + world (no-download), so grant download to stanford
+        return 'stanford' if stanford_world_no_download?
+
+        raise "Unexpected download rights: #{obj_lvl}"
+      end
+
+      def no_download?
+        citation_only? || dark? || controlled_digital_lending?
+      end
+
+      def no_world_or_group_download_rules?
+        obj_lvl.world.rule.nil? && obj_lvl.group.fetch(:stanford).rule.nil?
+      end
+
+      def stanford_no_download?
+        stanford? &&
+          obj_lvl.group.fetch(:stanford).rule == 'no-download' &&
+          !(location && obj_lvl.location.fetch(location).value)
+      end
+
+      def world_no_download?
+        world? &&
+          obj_lvl.world.rule == 'no-download' &&
+          !stanford? &&
+          !(location && obj_lvl.location.fetch(location).value)
+      end
+
+      def location_no_download?
+        location &&
+          obj_lvl.location.fetch(location).value &&
+          obj_lvl.location.fetch(location).rule == 'no-download'
+      end
+
+      def location_based_download?
+        location &&
+          obj_lvl.location.fetch(location).value &&
+          obj_lvl.location.fetch(location).rule.nil?
+      end
+
+      def stanford_world_no_download?
+        stanford? && obj_lvl.world.rule == 'no-download'
+      end
+
+      def stanford?
+        obj_lvl.group.fetch(:stanford).value
+      end
+
+      def world?
+        obj_lvl.world.value
       end
 
       def location
-        @location ||= rights_object.location.keys.first
+        @location ||= obj_lvl.location.keys.first
       end
 
       # Map values from dor-services
@@ -62,35 +122,17 @@ module Cocina
         @access_rights ||=
           if world?
             'world'
-          elsif stanford?
+          elsif stanford? || controlled_digital_lending?
             'stanford'
+          elsif citation_only?
+            'citation-only'
           elsif dark?
             'dark'
           elsif location
             'location-based'
           else
-            'citation-only'
+            raise "Cannot interpret access rights from #{rights_metadata_ds.to_xml}"
           end
-      end
-
-      def rights_xml
-        @rights_xml ||= rights_metadata_ds.ng_xml
-      end
-
-      def stanford?
-        rights_xml.search('//rightsMetadata/access[@type=\'read\']/machine/group').length == 1
-      end
-
-      def world?
-        rights_xml.search('//rightsMetadata/access[@type=\'read\']/machine/world').length == 1
-      end
-
-      def dark?
-        rights_xml.search('//rightsMetadata/access[@type=\'discover\']/machine/none').length == 1
-      end
-
-      def cdl?
-        rights_object.controlled_digital_lending
       end
     end
   end

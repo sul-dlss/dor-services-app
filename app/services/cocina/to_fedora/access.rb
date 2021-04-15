@@ -19,12 +19,8 @@ module Cocina
       end
 
       def apply
-        # See https://github.com/sul-dlss/dor-services/blob/main/lib/dor/datastreams/rights_metadata_ds.rb
-        Dor::RightsMetadataDS.upd_rights_xml_for_rights_type(rightsMetadata.ng_xml, Rights.rights_type(access))
-        # This invalidates the dra_object, which is necessary if re-mapping.
-        rightsMetadata.content = rightsMetadata.ng_xml.to_s
-        rightsMetadata.copyright = access.copyright if access.copyright
-        rightsMetadata.use_statement = access.useAndReproductionStatement if access.useAndReproductionStatement
+        RightsMetadataGenerator.generate(rights: rightsMetadata, access: access)
+        update_rights_statements!
         License.update(rightsMetadata, access.license) if access.license
       end
 
@@ -33,6 +29,12 @@ module Cocina
       attr_reader :item, :access
 
       delegate :rightsMetadata, to: :item
+
+      def update_rights_statements!
+        rightsMetadata.copyright = access.copyright if access.copyright
+        rightsMetadata.use_statement = access.useAndReproductionStatement if access.useAndReproductionStatement
+        rightsMetadata.ng_xml_will_change!
+      end
     end
   end
 end
