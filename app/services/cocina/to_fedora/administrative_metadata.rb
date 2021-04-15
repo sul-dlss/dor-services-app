@@ -11,8 +11,7 @@ module Cocina
         # Clear out the nodes we are updating
         admin_node.xpath('registration/workflow|registration/collection|dissemination/workflow').each(&:remove)
 
-        # TODO: need to see if this node already exists
-        admin_node.add_child "<dissemination><workflow id=\"#{administrative.disseminationWorkflow}\" /></dissemination>"
+        admin_node.add_child "<dissemination><workflow id=\"#{administrative.disseminationWorkflow}\" /></dissemination>" if administrative.disseminationWorkflow
 
         registration_workflows = Array(administrative.registrationWorkflow).map { |wf_id| "<workflow id=\"#{wf_id}\" />" }.join
         registration_collections = Array(administrative.collectionsForRegistration).map { |wf_id| "<collection id=\"#{wf_id}\" />" }.join
