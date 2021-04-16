@@ -69,6 +69,7 @@ module Cocina
       cocina_object.public_send(key) != orig_cocina_object.public_send(key)
     end
 
+    # rubocop:disable Metrics/AbcSize
     # rubocop:disable Style/GuardClause
     def update_apo
       # fedora_object.source_id = cocina_object.identification.sourceId
@@ -79,11 +80,14 @@ module Cocina
 
       if has_changed?(:administrative)
         fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy
+        fedora_object.agreement_object_id = cocina_object.administrative.referencesAgreement
+
         Cocina::ToFedora::DefaultRights.write(fedora_object.defaultObjectRights, cocina_object.administrative.defaultAccess) if cocina_object.administrative.defaultAccess
         Cocina::ToFedora::AdministrativeMetadata.write(fedora_object.administrativeMetadata, cocina_object.administrative)
         Cocina::ToFedora::Roles.write(fedora_object, Array(cocina_object.administrative.roles))
       end
     end
+    # rubocop:enable Metrics/AbcSize
     # rubocop:enable Style/GuardClause
 
     def update_collection

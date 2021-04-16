@@ -34,6 +34,7 @@ module Cocina
 
       attr_reader :fedora_apo, :notifier
 
+      # rubocop:disable Metrics/AbcSize
       def build_apo_administrative
         {}.tap do |admin|
           registration_workflows = fedora_apo.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/registration/workflow/@id').map(&:value)
@@ -45,9 +46,11 @@ module Cocina
           admin[:registrationWorkflow] = registration_workflows if registration_workflows.present?
           admin[:collectionsForRegistration] = registration_collections if registration_collections.present?
           admin[:hasAdminPolicy] = fedora_apo.admin_policy_object_id
+          admin[:referencesAgreement] = fedora_apo.agreement_object_id if fedora_apo.agreement_object_id.present?
           admin[:roles] = build_roles
         end
       end
+      # rubocop:enable Metrics/AbcSize
 
       def build_default_access(default_object_rights)
         DROAccess.props(Dor::RightsMetadataDS.from_xml(default_object_rights.content), embargo: {})

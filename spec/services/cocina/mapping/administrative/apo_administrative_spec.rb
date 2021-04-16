@@ -3,8 +3,8 @@
 require 'rails_helper'
 
 RSpec.shared_examples 'APO Fedora Cocina mapping' do
-  # Required: admin_metadata_xml, default_object_rights_xml, role_metadata_xml, rels_ext, cocina
-  # Optional: roundtrip_admin_metadata_xml, roundtrip_default_object_rights_xml
+  # Required: admin_metadata_xml, default_object_rights_xml, role_metadata_xml, agreement_druid, cocina
+  # Optional: roundtrip_admin_metadata_xml, roundtrip_default_object_rights_xml, roundtrip_role_metadata_xml
 
   let(:apo_druid) { 'apo_druid' }
   let(:apo_label) { 'apo_label' }
@@ -17,6 +17,7 @@ RSpec.shared_examples 'APO Fedora Cocina mapping' do
       label: apo_label,
       current_version: '1',
       admin_policy_object_id: ur_apo_druid,
+      agreement_object_id: agreement_druid,
       administrativeMetadata: Dor::AdministrativeMetadataDS.from_xml(admin_metadata_xml),
       descMetadata: Dor::DescMetadataDS.from_xml('<mods/>'),
       # NOTE: DefaultObjectRights doesn't work with :from_xml
@@ -58,9 +59,10 @@ RSpec.shared_examples 'APO Fedora Cocina mapping' do
   context 'when mapping from Cocina to Fedora' do
     let(:actual_cocina_apo_admin) { Cocina::Models::AdminPolicyAdministrative.new(cocina) }
     let(:roundtrip_fedora_apo) do
-      Dor::AdminPolicyObject.new(pid: apo_druid,
+      Dor::AdminPolicyObject.new(pid: actual_cocina_props[:externalIdentifier],
                                  admin_policy_object_id: actual_cocina_apo_admin.hasAdminPolicy,
-                                 label: apo_label)
+                                 agreement_object_id: actual_cocina_apo_admin.referencesAgreement,
+                                 label: actual_cocina_props[:label])
     end
 
     describe 'Cocina::ToFedora::AdministrativeMetadata' do
@@ -95,6 +97,21 @@ RSpec.shared_examples 'APO Fedora Cocina mapping' do
         expect(actual_role_xml).to be_equivalent_to(role_metadata_xml)
       end
     end
+
+    describe 'object relations (RELS-EXT)' do
+      let(:rels_ext_ng_xml) do
+        ng = Nokogiri::XML(roundtrip_fedora_apo.datastreams['RELS-EXT'].to_rels_ext)
+        ng.remove_namespaces!
+      end
+
+      it 'admin_policy_object_id roundtrips to original' do
+        expect(rels_ext_ng_xml.xpath('//RDF/Description/isGovernedBy/@resource').text).to eq "info:fedora/#{cocina[:hasAdminPolicy]}"
+      end
+
+      it 'agreement_object_id roundtrips to original' do
+        expect(rels_ext_ng_xml.xpath('//RDF/Description/referencesAgreement/@resource').text).to eq "info:fedora/#{agreement_druid}"
+      end
+    end
   end
 
   context 'when mapping from roundtrip Fedora to Cocina' do
@@ -104,6 +121,9 @@ RSpec.shared_examples 'APO Fedora Cocina mapping' do
     let(:my_roundtrip_default_object_rights_xml) do
       defined?(roundtrip_default_object_rights_xml) ? roundtrip_default_object_rights_xml : default_object_rights_xml
     end
+    let(:my_roundtrip_role_metadata_xml) do
+      defined?(roundtrip_role_metadata_xml) ? roundtrip_role_metadata_xml : role_metadata_xml
+    end
     let(:roundtrip_fedora_apo_mock) do
       # need to mock to avoid call to Solr
       instance_double(
@@ -112,11 +132,12 @@ RSpec.shared_examples 'APO Fedora Cocina mapping' do
         label: apo_label,
         current_version: '1',
         admin_policy_object_id: ur_apo_druid,
+        agreement_object_id: agreement_druid,
         administrativeMetadata: Dor::AdministrativeMetadataDS.from_xml(my_roundtrip_admin_metadata_xml),
         descMetadata: Dor::DescMetadataDS.from_xml('<mods/>'),
         # NOTE: DefaultObjectRights doesn't work with :from_xml
         defaultObjectRights: instance_double(Dor::DefaultObjectRightsDS, content: my_roundtrip_default_object_rights_xml),
-        roleMetadata: Dor::RoleMetadataDS.from_xml(role_metadata_xml)
+        roleMetadata: Dor::RoleMetadataDS.from_xml(my_roundtrip_role_metadata_xml)
       )
     end
     let(:roundtrip_cocina_props) { Cocina::FromFedora::APO.props(roundtrip_fedora_apo_mock) }
@@ -173,17 +194,7 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
           </roleMetadata>
         XML
       end
-      let(:rels_ext) do
-        <<~XML
-          <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:hydra="http://projecthydra.org/ns/relations#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-            <rdf:Description rdf:about="info:fedora/druid:bz845pv2292">
-              <hydra:isGovernedBy rdf:resource="info:fedora/druid:hv992ry2431"/>
-              <hydra:referencesAgreement rdf:resource="info:fedora/druid:yr951qr4199"/>
-              <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_AdminPolicyObject"/>
-            </rdf:Description>
-          </rdf:RDF>
-        XML
-      end
+      let(:agreement_druid) { 'druid:yr951qr4199' }
       let(:cocina) do
         {
           defaultObjectRights: default_object_rights_xml,
@@ -200,7 +211,7 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
             'druid:ny719df8518'
           ],
           hasAdminPolicy: ur_apo_druid,
-          # referencesAgreement: 'druid:yr951qr4199',
+          referencesAgreement: agreement_druid,
           roles: [
             {
               name: 'dor-apo-manager',
@@ -267,17 +278,7 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
           </roleMetadata>
         XML
       end
-      let(:rels_ext) do
-        <<~XML
-          <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:hydra="http://projecthydra.org/ns/relations#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-            <rdf:Description rdf:about="info:fedora/druid:wr005wn5739">
-              <hydra:isGovernedBy rdf:resource="info:fedora/druid:hv992ry2431"/>
-              <hydra:referencesAgreement rdf:resource="info:fedora/druid:wn586st0695"/>
-              <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_AdminPolicyObject"/>
-            </rdf:Description>
-          </rdf:RDF>
-        XML
-      end
+      let(:agreement_druid) { 'druid:wn586st0695' }
       let(:cocina) do
         {
           defaultObjectRights: default_object_rights_xml,
@@ -294,6 +295,7 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
             'druid:bp350ns9783'
           ],
           hasAdminPolicy: ur_apo_druid,
+          referencesAgreement: 'druid:wn586st0695',
           roles: [
             {
               name: 'dor-apo-manager',
@@ -367,17 +369,7 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
           </roleMetadata>
         XML
       end
-      let(:rels_ext) do
-        <<~XML
-          <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:hydra="http://projecthydra.org/ns/relations#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-            <rdf:Description rdf:about="info:fedora/druid:zd878cf9993">
-              <hydra:isGovernedBy rdf:resource="info:fedora/druid:hv992ry2431"/>
-              <hydra:referencesAgreement rdf:resource="info:fedora/druid:zh747vq3919"/>
-              <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_AdminPolicyObject"/>
-            </rdf:Description>
-          </rdf:RDF>
-        XML
-      end
+      let(:agreement_druid) { 'druid:zh747vq3919' }
       let(:cocina) do
         {
           defaultObjectRights: default_object_rights_xml,
@@ -394,7 +386,7 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
             'druid:ns135jb1096'
           ],
           hasAdminPolicy: ur_apo_druid,
-          # referencesAgreement: 'druid:zh747vq3919',
+          referencesAgreement: 'druid:zh747vq3919',
           roles: [
             {
               name: 'dor-apo-manager',
@@ -479,18 +471,7 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
           </roleMetadata>
         XML
       end
-      let(:rels_ext) do
-        <<~XML
-          <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:hydra="http://projecthydra.org/ns/relations#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-            <rdf:Description rdf:about="info:fedora/druid:kt538yv1733">
-              <hydra:isGovernedBy rdf:resource="info:fedora/druid:hv992ry2431"/>
-              <hydra:referencesAgreement rdf:resource="info:fedora/druid:xf765cv5573"/>
-              <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_AdminPolicyObject"/>
-              <fedora-model:hasModel rdf:resource="info:fedora/afmodel:Dor_Abstract"/>
-            </rdf:Description>
-          </rdf:RDF>
-        XML
-      end
+      let(:agreement_druid) { 'druid:xf765cv5573' }
       let(:cocina) do
         {
           defaultObjectRights: default_object_rights_xml,
@@ -504,7 +485,7 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
             'registrationWF'
           ],
           hasAdminPolicy: ur_apo_druid,
-          # referencesAgreement: 'druid:xf765cv5573',
+          referencesAgreement: agreement_druid,
           roles: [
             {
               name: 'hydrus-collection-manager',
