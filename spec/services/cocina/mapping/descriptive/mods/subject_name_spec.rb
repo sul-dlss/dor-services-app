@@ -732,6 +732,80 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     end
   end
 
+  describe 'Name subject with subelements, role, displayForm, and subject subdivision' do
+    xit 'not implemented in cocina>MODS direction' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <name type="personal">
+              <role>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/dpc">Depicted</roleTerm>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/dpc">dpc</roleTerm>
+              </role>
+              <namePart type="family">Andrada</namePart>
+              <namePart type="given">Leitao, Francisco d'</namePart>
+              <namePart type="date">17th C.</namePart>
+              <displayForm>Andrada, Leitao, Francisco d', 17th C.</displayForm>
+            </name>
+            <topic>Pictorial works</topic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  parallelValue: [
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Andrada',
+                          type: 'surname'
+                        },
+                        {
+                          value: 'Leitao, Francisco d\'',
+                          type: 'forename'
+                        },
+                        {
+                          value: '17th C.',
+                          type: 'life dates'
+                        }
+                      ]
+                    },
+                    {
+                      value: 'Andrada, Leitao, Francisco d\', 17th C.',
+                      type: 'display'
+                    }
+                  ],
+                  type: 'person',
+                  note: [
+                    {
+                      value: 'Depicted',
+                      type: 'role',
+                      code: 'dpc',
+                      uri: 'http://id.loc.gov/vocabulary/relators/dpc',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
+                },
+                {
+                  value: 'Pictorial works',
+                  type: 'topic'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Link to external value only' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
