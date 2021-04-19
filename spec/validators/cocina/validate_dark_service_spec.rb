@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Cocina::ValidateDarkService do
   let(:validator) { described_class.new(item) }
 
-  let(:access) { 'dark' }
+  let(:access) { { access: 'dark' } }
   let(:file_access) { 'dark' }
   let(:publish) { false }
   let(:shelve) { false }
@@ -19,7 +19,7 @@ RSpec.describe Cocina::ValidateDarkService do
       administrative: {
         hasAdminPolicy: 'druid:df123cd4567'
       },
-      access: { access: access },
+      access: access,
       structural: {
         contains: [
           {
@@ -56,7 +56,7 @@ RSpec.describe Cocina::ValidateDarkService do
   end
 
   context 'when not dark' do
-    let(:access) { 'world' }
+    let(:access) { { access: 'world', download: 'world' } }
 
     it 'is valid' do
       expect(validator.valid?).to be true
@@ -87,7 +87,7 @@ RSpec.describe Cocina::ValidateDarkService do
         label: 'The Structure of Scientific Revolutions',
         type: Cocina::Models::Vocab.collection,
         version: 1,
-        access: { access: access }
+        access: access
       )
     end
 

@@ -23,7 +23,7 @@ module Cocina
           label: item.label,
           version: item.current_version.to_i,
           administrative: FromFedora::Administrative.props(item),
-          access: Access.collection_props(item.rightsMetadata)
+          access: CollectionAccess.props(item.rightsMetadata)
         }.tap do |props|
           title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
           description = FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml, druid: item.pid, notifier: notifier)

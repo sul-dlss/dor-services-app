@@ -17,24 +17,21 @@ module Cocina
         return {} if embargo_metadata_ds.status != 'embargoed' # We don't need to map any released embargos
 
         {
-          releaseDate: embargo_metadata_ds.release_date.first.utc.iso8601,
-          access: build_embargo_access
+          releaseDate: embargo_metadata_ds.release_date.first.utc.iso8601
         }.tap do |embargo|
           embargo[:useAndReproductionStatement] = embargo_metadata_ds.use_and_reproduction_statement.first if embargo_metadata_ds.use_and_reproduction_statement.present?
-        end
+        end.merge(AccessHelper.props(dra_object: dor_rights_auth_object))
       end
 
       private
 
       attr_reader :embargo_metadata_ds
 
-      def build_embargo_access
-        access_node = embargo_metadata_ds.release_access_node.xpath('//access[@type="read"]/machine/*[1]').first
-        return 'dark' if access_node.nil?
-        return 'world' if access_node.name == 'world'
-        return access_node.content if access_node.name == 'group'
-
-        'dark'
+      def dor_rights_auth_object
+        # Adapt the XML so that a DRA object can be used.
+        access_xml = embargo_metadata_ds.ng_xml.search('access').to_xml
+        xml = "<?xml version=\"1.0\"?><rightsMetadata>#{access_xml}</rightsMetadata>"
+        Dor::RightsAuth.parse(Nokogiri::XML(xml), true)
       end
     end
   end

@@ -25,7 +25,7 @@ RSpec.describe Cocina::ObjectCreator do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/media.jsonld',
           'label' => ':auto',
-          'access' => { 'access' => 'world' },
+          'access' => {},
           'version' => 1,
           'structural' => {},
           'administrative' => {
@@ -48,7 +48,7 @@ RSpec.describe Cocina::ObjectCreator do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
           'label' => 'label value',
-          'access' => { 'access' => 'world' },
+          'access' => {},
           'version' => 1,
           'structural' => {},
           'administrative' => {
@@ -70,7 +70,7 @@ RSpec.describe Cocina::ObjectCreator do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
           'label' => 'contributor mapping test',
-          'access' => { 'access' => 'world' },
+          'access' => {},
           'version' => 1,
           'structural' => {},
           'administrative' => {

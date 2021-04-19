@@ -268,7 +268,7 @@ RSpec.describe Cocina::ObjectUpdater do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
             attrs[:access] = {
-              access: 'stanford'
+              access: 'dark'
             }
           end
         end
@@ -314,7 +314,7 @@ RSpec.describe Cocina::ObjectUpdater do
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         version: 1,
-        access: { access: 'world' },
+        access: {},
         administrative: { hasAdminPolicy: 'druid:dd999df4567' }
       }
     end
@@ -517,7 +517,8 @@ RSpec.describe Cocina::ObjectUpdater do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
             attrs[:access] = {
-              access: 'stanford'
+              access: 'stanford',
+              download: 'stanford'
             }
           end
         end
@@ -594,7 +595,7 @@ RSpec.describe Cocina::ObjectUpdater do
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         version: 1,
-        access: { access: 'world' },
+        access: {},
         administrative: { hasAdminPolicy: 'druid:dd999df4567' },
         identification: {
           sourceId: 'sul:8.559351',

@@ -3,20 +3,74 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ToFedora::Access do
-  subject(:apply) { described_class.apply(collection, access) }
+  subject(:apply) { described_class.apply(item, access) }
 
-  let(:collection) do
-    Dor::Collection.new
+  let(:item) do
+    Dor::Item.new
   end
 
-  context 'with stanford access' do
+  context 'with an object lacking a license to start' do
     let(:access) do
-      Cocina::Models::Access.new(access: 'stanford')
+      Cocina::Models::DROAccess.new(
+        license: 'http://opendatacommons.org/licenses/by/1.0/',
+        copyright: 'New Copyright Statement',
+        useAndReproductionStatement: 'New Use Statement'
+      )
+    end
+
+    before do
+      item.rightsMetadata.content = <<~XML
+        <?xml version="1.0"?>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+        </rightsMetadata>
+      XML
     end
 
     it 'builds the xml' do
       apply
-      expect(collection.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
+      expect(item.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
+        <?xml version="1.0"?>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+          <use>
+            <human type="useAndReproduction">New Use Statement</human>
+            <license>http://opendatacommons.org/licenses/by/1.0/</license>
+          </use>
+          <copyright>
+            <human>New Copyright Statement</human>
+          </copyright>
+        </rightsMetadata>
+      XML
+    end
+  end
+
+  context 'with stanford access' do
+    let(:access) do
+      Cocina::Models::DROAccess.new(access: 'stanford', download: 'stanford')
+    end
+
+    it 'builds the xml' do
+      apply
+      expect(item.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
         <?xml version="1.0"?>
         <rightsMetadata>
           <access type="discover">
@@ -46,12 +100,12 @@ RSpec.describe Cocina::ToFedora::Access do
 
   context 'with copyright statement' do
     let(:access) do
-      Cocina::Models::Access.new(copyright: 'A Very Good Copyright')
+      Cocina::Models::DROAccess.new(copyright: 'A Very Good Copyright')
     end
 
     it 'builds the xml' do
       apply
-      expect(collection.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
+      expect(item.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
         <?xml version="1.0"?>
         <rightsMetadata>
           <access type="discover">
@@ -81,12 +135,12 @@ RSpec.describe Cocina::ToFedora::Access do
 
   context 'with use statement' do
     let(:access) do
-      Cocina::Models::Access.new(useAndReproductionStatement: 'A Very Good Use Statement')
+      Cocina::Models::DROAccess.new(useAndReproductionStatement: 'A Very Good Use Statement')
     end
 
     it 'builds the xml' do
       apply
-      expect(collection.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
+      expect(item.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
         <?xml version="1.0"?>
         <rightsMetadata>
           <access type="discover">
@@ -118,11 +172,11 @@ RSpec.describe Cocina::ToFedora::Access do
   #       the existing license, not merely setting it
   context 'with an existing (ODC) license of a different class than the new one (CC)' do
     let(:access) do
-      Cocina::Models::Access.new(license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/')
+      Cocina::Models::DROAccess.new(license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/')
     end
 
     before do
-      collection.rightsMetadata.content = <<~XML
+      item.rightsMetadata.content = <<~XML
         <?xml version="1.0"?>
         <rightsMetadata>
           <access type="discover">
@@ -148,7 +202,7 @@ RSpec.describe Cocina::ToFedora::Access do
 
     it 'builds the xml, blanking the existing license' do
       apply
-      expect(collection.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
+      expect(item.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
         <?xml version="1.0"?>
         <rightsMetadata>
           <access type="discover">
@@ -175,12 +229,12 @@ RSpec.describe Cocina::ToFedora::Access do
 
   context 'with a CC license' do
     let(:access) do
-      Cocina::Models::Access.new(license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/')
+      Cocina::Models::DROAccess.new(license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/')
     end
 
     it 'builds the xml' do
       apply
-      expect(collection.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
+      expect(item.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
         <?xml version="1.0"?>
         <rightsMetadata>
           <access type="discover">
@@ -207,12 +261,12 @@ RSpec.describe Cocina::ToFedora::Access do
 
   context 'with an ODC license' do
     let(:access) do
-      Cocina::Models::Access.new(license: 'http://opendatacommons.org/licenses/by/1.0/')
+      Cocina::Models::DROAccess.new(license: 'http://opendatacommons.org/licenses/by/1.0/')
     end
 
     it 'builds the xml' do
       apply
-      expect(collection.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
+      expect(item.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
         <?xml version="1.0"?>
         <rightsMetadata>
           <access type="discover">
@@ -239,12 +293,12 @@ RSpec.describe Cocina::ToFedora::Access do
 
   context 'with a "none" license' do
     let(:access) do
-      Cocina::Models::Access.new(license: 'http://cocina.sul.stanford.edu/licenses/none')
+      Cocina::Models::DROAccess.new(license: 'http://cocina.sul.stanford.edu/licenses/none')
     end
 
     it 'builds the xml' do
       apply
-      expect(collection.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
+      expect(item.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
         <?xml version="1.0"?>
         <rightsMetadata>
           <access type="discover">
@@ -265,6 +319,44 @@ RSpec.describe Cocina::ToFedora::Access do
             <human/>
           </copyright>
         </rightsMetadata>
+      XML
+    end
+  end
+
+  context 'with cdl access' do
+    let(:access) do
+      Cocina::Models::DROAccess.new(access: 'citation-only', controlledDigitalLending: true, download: 'none')
+    end
+
+    it 'builds the xml' do
+      apply
+      expect(item.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
+        <?xml version="1.0"?>
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <cdl>
+                  <group rule="no-download">stanford</group>
+                </cdl>
+              </machine>
+            </access>
+            <use>
+              <human type="useAndReproduction"/>
+              <human type="creativeCommons"/>
+              <machine type="creativeCommons" uri=""/>
+              <human type="openDataCommons"/>
+              <machine type="openDataCommons" uri=""/>
+            </use>
+            <copyright>
+              <human/>
+            </copyright>
+          </rightsMetadata>
+        </xml>
       XML
     end
   end

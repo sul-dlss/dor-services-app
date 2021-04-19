@@ -8,7 +8,7 @@ module Cocina
       # TODO: this should be expanded to support file level rights: https://consul.stanford.edu/pages/viewpage.action?spaceKey=chimera&title=Rights+metadata+--+the+rightsMetadata+datastream
       #       See https://argo.stanford.edu/view/druid:bb142ws0723 as an example
       # @param [Dor::Item, Dor::Collection] item
-      # @param [Cocina::Models::DROAccess, Cocina::Models::Access] access
+      # @param [Cocina::Models::DROAccess, Cocina::Models::CollectionAccess] access
       def self.apply(item, access)
         new(item, access).apply
       end
