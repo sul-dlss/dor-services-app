@@ -288,6 +288,65 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
+  describe 'Name with altRepGroup and affiliation' do
+    # druid:zn746hz1696
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary" altRepGroup="01">
+            <namePart>Li, Yahong</namePart>
+            <namePart type="date">1963-</namePart>
+            <affiliation>Stanford Law School graduate, J.S.D. (2007)</affiliation>
+          </name>
+          <name type="personal" altRepGroup="01">
+            <namePart>李亞虹</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              parallelContributor: [
+                {
+                  name: [
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Li, Yahong',
+                          type: 'name'
+                        },
+                        {
+                          value: '1963-',
+                          type: 'life dates'
+                        }
+                      ]
+                    }
+                  ],
+                  note: [
+                    {
+                      value: 'Stanford Law School graduate, J.S.D. (2007)',
+                      type: 'affiliation'
+                    }
+                  ]
+                },
+                {
+                  name: [
+                    {
+                      value: '李亞虹'
+                    }
+                  ]
+                }
+              ],
+              type: 'person'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Name with untyped nameIdentifier' do
     # NOTE: name identifiers that are uris, for mods mapping purposes are 'value' rather than uri
     #  in identifier and nameIdentifier mods doesn't distinguish between a uri and other non-uri identifiers
@@ -780,6 +839,64 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   },
                   code: 'ths'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Name with multiple roles, text and code' do
+    # druid:bn929dg2083
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <name authority="naf" type="personal" valueURI="http://id.loc.gov/authorities/names/n81074396">
+            <namePart>Meredith, Burgess, 1907-1997</namePart>
+            <role>
+              <roleTerm authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/nrt" type="code">nrt</roleTerm>
+              <roleTerm authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" type="text" valueURI="http://id.loc.gov/vocabulary/relators/nrt">narrator</roleTerm>
+              <roleTerm authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pro" type="code">pro</roleTerm>
+              <roleTerm authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" type="text" valueURI="http://id.loc.gov/vocabulary/relators/pro">producer</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Meredith, Burgess, 1907-1997',
+                  uri: 'http://id.loc.gov/authorities/names/n81074396',
+                  source: {
+                    code: 'naf'
+                  }
+                }
+              ],
+              type: 'person',
+              role: [
+                {
+                  value: 'narrator',
+                  code: 'nrt',
+                  uri: 'http://id.loc.gov/vocabulary/relators/nrt',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'producer',
+                  code: 'pro',
+                  uri: 'http://id.loc.gov/vocabulary/relators/pro',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
                 }
               ]
             }
