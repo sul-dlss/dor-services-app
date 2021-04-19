@@ -598,6 +598,45 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
     end
   end
 
+  describe 'Extent with unit and note sibling' do
+    # druid:gx952gd8699
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <physicalDescription>
+            <extent unit="linear feet (16 boxes)">27.25</extent>
+            <note type="arrangement">The records are arranged in four series: Series 1. Administrative Records; Series 2. Photographs; Series 3. Emeriti files; Series 4. Posters.</note>
+          </physicalDescription>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          form: [
+            {
+              value: '27.25',
+              type: 'extent',
+              note: [
+                {
+                  value: 'linear feet (16 boxes)',
+                  type: 'unit'
+                }
+              ]
+            },
+            {
+              note: [
+                {
+                  value: 'The records are arranged in four series: Series 1. Administrative Records; Series 2. Photographs; Series 3. Emeriti files; Series 4. Posters.',
+                  type: 'arrangement'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Physical description with empty note' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
