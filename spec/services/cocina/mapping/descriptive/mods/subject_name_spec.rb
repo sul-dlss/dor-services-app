@@ -190,7 +190,7 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
   describe 'Name subject with affiliation' do
     # nx523gb3191
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'not implemented in cocina>MODS direction' do
       let(:mods) do
         <<~XML
           <subject authority="lcsh">
@@ -732,6 +732,80 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     end
   end
 
+  describe 'Name subject with subelements, role, displayForm, and subject subdivision' do
+    xit 'not implemented in cocina>MODS direction' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <name type="personal">
+              <role>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/dpc">Depicted</roleTerm>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/dpc">dpc</roleTerm>
+              </role>
+              <namePart type="family">Andrada</namePart>
+              <namePart type="given">Leitao, Francisco d'</namePart>
+              <namePart type="date">17th C.</namePart>
+              <displayForm>Andrada, Leitao, Francisco d', 17th C.</displayForm>
+            </name>
+            <topic>Pictorial works</topic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  parallelValue: [
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Andrada',
+                          type: 'surname'
+                        },
+                        {
+                          value: 'Leitao, Francisco d\'',
+                          type: 'forename'
+                        },
+                        {
+                          value: '17th C.',
+                          type: 'life dates'
+                        }
+                      ]
+                    },
+                    {
+                      value: 'Andrada, Leitao, Francisco d\', 17th C.',
+                      type: 'display'
+                    }
+                  ],
+                  type: 'person',
+                  note: [
+                    {
+                      value: 'Depicted',
+                      type: 'role',
+                      code: 'dpc',
+                      uri: 'http://id.loc.gov/vocabulary/relators/dpc',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    }
+                  ]
+                },
+                {
+                  value: 'Pictorial works',
+                  type: 'topic'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Link to external value only' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
@@ -1058,6 +1132,142 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
                   ]
                 }
               ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Name subject without name type' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <name>
+              <namePart>Coutts, Peter, -1889</namePart>
+            <name>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Coutts, Peter, -1889',
+              type: 'name'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Multiscript name subject without name type' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <subject altRepGroup="1">
+            <name>
+              <namePart>СФУ</namePart>
+            </name>
+          </subject>
+          <subject altRepGroup="1">
+            <name>
+              <namePart>SFU</namePart>
+            </name>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              parallelValue: [
+                {
+                  value: 'СФУ'
+                },
+                {
+                  value: 'SFU'
+                }
+              ],
+              type: 'name'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Name subject without name type and subdivisions' do
+    # druid:zf880vq0424
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <name>
+              <namePart>Coutts, Peter, -1889</namePart>
+            </name>
+            <topic>Homes and haunts</topic>
+            <geographic>California</geographic>
+            <geographic>Palo Alto</geographic>
+            <genre>Pictorial works</genre>
+          </subject>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <name>
+              <namePart>Coutts, Peter, -1889</namePart>
+            </name>
+            <topic>Homes and haunts</topic>
+            <geographic>California</geographic>
+            <geographic>Palo Alto</geographic>
+            <genre>Pictorial works</genre>
+          </subject>
+          <genre>Pictorial works</genre>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  value: 'Coutts, Peter, -1889',
+                  type: 'name'
+                },
+                {
+                  value: 'Homes and haunts',
+                  type: 'topic'
+                },
+                {
+                  value: 'California',
+                  type: 'place'
+                },
+                {
+                  value: 'Palo Alto',
+                  type: 'place'
+                },
+                {
+                  value: 'Pictorial works',
+                  type: 'genre'
+                }
+              ],
+              source: {
+                code: 'lcsh'
+              }
+            }
+          ],
+          form: [
+            {
+              value: 'Pictorial works',
+              type: 'genre'
             }
           ]
         }
