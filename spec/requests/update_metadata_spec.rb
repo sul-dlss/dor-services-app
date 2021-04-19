@@ -20,11 +20,13 @@ RSpec.describe 'Update object' do
     allow(AdministrativeTags).to receive(:for).and_return([])
 
     allow(EventFactory).to receive(:create)
+
+    allow(Cocina::ToFedora::RightsMetadataGenerator).to receive(:generate)
   end
 
   let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
   let(:apo) { Dor::AdminPolicyObject.new(pid: apo_druid) }
-  let(:item) do
+  let!(:item) do
     Dor::Item.new(pid: druid,
                   source_id: 'googlebooks:111111',
                   label: label,
@@ -32,6 +34,10 @@ RSpec.describe 'Update object' do
       item.descMetadata.title_info.main_title = title
       item.contentMetadata.contentType = ['book']
       item.identityMetadata.barcode = '36105036289000'
+      item.rightsMetadata.content = Cocina::ToFedora::RightsMetadataGenerator.generate(
+        rights: Dor::RightsMetadataDS.new,
+        access: cocina_access
+      )
     end
   end
 
@@ -50,17 +56,19 @@ RSpec.describe 'Update object' do
     }
   end
   let(:access) { 'world' }
+  let(:download) { 'world' }
+  let(:cocina_access) do
+    Cocina::Models::DROAccess.new(access: access, download: download)
+  end
   let(:expected) do
     Cocina::Models::DRO.new(externalIdentifier: druid,
                             type: Cocina::Models::Vocab.book,
                             label: label,
                             version: 1,
                             access: {
-                              access: access,
-                              download: 'world',
                               copyright: 'All rights reserved unless otherwise indicated.',
                               useAndReproductionStatement: 'Property rights reside with the repository...'
-                            },
+                            }.merge(cocina_access.to_h),
                             description: {
                               title: [{ value: title }],
                               purl: 'http://purl.stanford.edu/gg777gg7777',
@@ -90,7 +98,7 @@ RSpec.describe 'Update object' do
         "label":"#{label}","version":1,
         "access":{
           "access":"#{access}",
-          "download":"world",
+          "download":"#{access}",
           "copyright":"All rights reserved unless otherwise indicated.",
           "useAndReproductionStatement":"Property rights reside with the repository..."
         },
@@ -118,14 +126,15 @@ RSpec.describe 'Update object' do
           params: data,
           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
     expect(response.status).to eq(200)
+    expect(response.body).to equal_cocina_model(expected)
     expect(item).to have_received(:save!)
     expect(item).to have_received(:admin_policy_object_id=).with(apo_druid)
-    expect(response.body).to equal_cocina_model(expected)
 
     # Tags are created.
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Process : Content Type : Book (rtl)'])
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
     expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
+    expect(Cocina::ToFedora::RightsMetadataGenerator).to have_received(:generate).once
   end
 
   context 'when update_descriptive is true' do
@@ -258,6 +267,10 @@ RSpec.describe 'Update object' do
   end
 
   context 'with a structured title' do
+    let(:cocina_access) do
+      Cocina::Models::DROAccess.new(access: access, download: access)
+    end
+
     let(:expected) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::Vocab.book,
@@ -321,7 +334,7 @@ RSpec.describe 'Update object' do
         }
       JSON
     end
-    let(:item) do
+    let!(:item) do
       Dor::Item.new(pid: druid,
                     source_id: 'google_books:99999',
                     label: label,
@@ -336,6 +349,10 @@ RSpec.describe 'Update object' do
           </mods>
         XML
         item.contentMetadata.contentType = ['book']
+        item.rightsMetadata.content = Cocina::ToFedora::RightsMetadataGenerator.generate(
+          rights: Dor::RightsMetadataDS.new,
+          access: cocina_access
+        )
       end
     end
 
@@ -346,6 +363,7 @@ RSpec.describe 'Update object' do
       expect(response.status).to eq(200)
       expect(item).to have_received(:save!)
       expect(response.body).to equal_cocina_model(expected)
+      expect(Cocina::ToFedora::RightsMetadataGenerator).to have_received(:generate).once
     end
   end
 
@@ -366,6 +384,10 @@ RSpec.describe 'Update object' do
         XML
 
         item.contentMetadata.contentType = ['book']
+        item.rightsMetadata.content = Cocina::ToFedora::RightsMetadataGenerator.generate(
+          rights: Dor::RightsMetadataDS.new,
+          access: cocina_access
+        )
       end
     end
 
@@ -379,6 +401,7 @@ RSpec.describe 'Update object' do
       expect(response.status).to eq(200)
       expect(item).to have_received(:save!)
       expect(response.body).to equal_cocina_model(expected)
+      expect(Cocina::ToFedora::RightsMetadataGenerator).to have_received(:generate).once
     end
   end
 
@@ -789,6 +812,7 @@ RSpec.describe 'Update object' do
 
       context 'when access mismatch' do
         let(:access) { 'dark' }
+        let(:download) { 'none' }
 
         it 'returns 400' do
           patch "/v1/objects/#{druid}",
@@ -1163,6 +1187,8 @@ RSpec.describe 'Update object' do
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
     end
+    let(:access) { 'stanford' }
+    let(:download) { 'none' }
 
     before do
       allow(AdministrativeTags).to receive(:project).and_return([])
@@ -1174,6 +1200,7 @@ RSpec.describe 'Update object' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(200)
+      expect(Cocina::ToFedora::RightsMetadataGenerator).to have_received(:generate).once
     end
   end
 end
