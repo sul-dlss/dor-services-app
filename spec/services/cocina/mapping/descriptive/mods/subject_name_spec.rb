@@ -1139,6 +1139,142 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
     end
   end
 
+  describe 'Name subject without name type' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <name>
+              <namePart>Coutts, Peter, -1889</namePart>
+            <name>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Coutts, Peter, -1889',
+              type: 'name'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Multiscript name subject without name type' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <subject altRepGroup="1">
+            <name>
+              <namePart>СФУ</namePart>
+            </name>
+          </subject>
+          <subject altRepGroup="1">
+            <name>
+              <namePart>SFU</namePart>
+            </name>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              parallelValue: [
+                {
+                  value: 'СФУ'
+                },
+                {
+                  value: 'SFU'
+                }
+              ],
+              type: 'name'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Name subject without name type and subdivisions' do
+    # druid:zf880vq0424
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <name>
+              <namePart>Coutts, Peter, -1889</namePart>
+            </name>
+            <topic>Homes and haunts</topic>
+            <geographic>California</geographic>
+            <geographic>Palo Alto</geographic>
+            <genre>Pictorial works</genre>
+          </subject>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="lcsh">
+            <name>
+              <namePart>Coutts, Peter, -1889</namePart>
+            </name>
+            <topic>Homes and haunts</topic>
+            <geographic>California</geographic>
+            <geographic>Palo Alto</geographic>
+            <genre>Pictorial works</genre>
+          </subject>
+          <genre>Pictorial works</genre>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  value: 'Coutts, Peter, -1889',
+                  type: 'name'
+                },
+                {
+                  value: 'Homes and haunts',
+                  type: 'topic'
+                },
+                {
+                  value: 'California',
+                  type: 'place'
+                },
+                {
+                  value: 'Palo Alto',
+                  type: 'place'
+                },
+                {
+                  value: 'Pictorial works',
+                  type: 'genre'
+                }
+              ],
+              source: {
+                code: 'lcsh'
+              }
+            }
+          ],
+          form: [
+            {
+              value: 'Pictorial works',
+              type: 'genre'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   # Data consistency fix
   describe 'Single subject subelement with authority code same as subject, no URI' do
     it_behaves_like 'MODS cocina mapping' do
