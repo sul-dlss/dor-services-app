@@ -2707,7 +2707,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                   {
                     source:
                       {
-                        code: 'marcreleator'
+                        code: 'marcrelator'
                       }
                   }
                 ]
