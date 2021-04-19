@@ -512,4 +512,60 @@ RSpec.describe 'MODS recordInfo <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Multiple modification dates' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <recordInfo>
+            <recordCreationDate encoding="marc">761020</recordCreationDate>
+            <recordChangeDate encoding="iso8601">19900913000000.0</recordChangeDate>
+            <recordChangeDate encoding="iso8601">19900905000000.0</recordChangeDate>
+          </recordInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          adminMetadata: {
+            event: [
+              {
+                type: 'creation',
+                date: [
+                  {
+                    value: '761020',
+                    encoding: {
+                      code: 'marc'
+                    }
+                  }
+                ]
+              },
+              {
+                type: 'modification',
+                date: [
+                  {
+                    value: '19900913000000.0',
+                    encoding: {
+                      code: 'iso8601'
+                    }
+                  }
+                ]
+              },
+              {
+                type: 'modification',
+                date: [
+                  {
+                    value: '19900905000000.0',
+                    encoding: {
+                      code: 'iso8601'
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      end
+    end
+  end
 end
