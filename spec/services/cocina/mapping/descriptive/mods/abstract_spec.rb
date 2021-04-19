@@ -146,27 +146,27 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
     end
   end
 
-    describe 'Abstract with display label and type' do
-      xit 'updated spec not implemented' do
-        let(:mods) do
-          <<~XML
-            <abstract displayLabel='Synopsis'>This is a synopsis.</abstract>
-          XML
-        end
+  describe 'Abstract with display label and type' do
+    xit 'updated spec not implemented' do
+      let(:mods) do
+        <<~XML
+          <abstract displayLabel='Synopsis'>This is a synopsis.</abstract>
+        XML
+      end
 
-        let(:cocina) do
-          {
-            note: [
-              {
-                value: 'This is a synopsis.',
-                type: 'abstract',
-                displayLabel: 'Synopsis'
-              }
-            ]
-          }
-        end
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'This is a synopsis.',
+              type: 'abstract',
+              displayLabel: 'Synopsis'
+            }
+          ]
+        }
       end
     end
+  end
 
   describe 'Abstract with displayLabel "Summary" and no type' do
     xit 'not implemented' do
