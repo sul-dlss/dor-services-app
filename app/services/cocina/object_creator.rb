@@ -89,7 +89,7 @@ module Cocina
         add_dro_tags(pid, cocina_item)
 
         apply_default_access(fedora_item)
-        Cocina::ToFedora::DROAccess.apply(fedora_item, cocina_item.access) if cocina_item.access
+        Cocina::ToFedora::DROAccess.apply(fedora_item, cocina_item.access, cocina_item.structural) if cocina_item.access || cocina_item.structural
 
         fedora_item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: pid, object: cocina_item)
         Cocina::ToFedora::Identity.apply(fedora_item, label: cocina_item.label, agreement_id: cocina_item.structural&.hasAgreement)

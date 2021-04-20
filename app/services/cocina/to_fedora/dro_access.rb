@@ -6,7 +6,7 @@ module Cocina
     # Fedora 3 data model rightsMetadata
     class DROAccess < Access
       def apply
-        create_embargo(access.embargo) if access.embargo
+        create_embargo(access.embargo) if access&.embargo
 
         super
       end

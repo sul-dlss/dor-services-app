@@ -422,7 +422,7 @@ RSpec.describe 'Create object' do
                     filename: '00001.jp2',
                     size: 0, version: 1,
                     hasMimeType: 'image/jp2', hasMessageDigests: [],
-                    access: { access: 'world', download: 'world' },
+                    access: { access: 'stanford', download: 'none' },
                     administrative: { publish: true, sdrPreserve: true, shelve: true }
                   }
                 ]
@@ -449,7 +449,7 @@ RSpec.describe 'Create object' do
                     size: 0, version: 1,
                     hasMimeType: 'image/jp2',
                     hasMessageDigests: [],
-                    access: { access: 'world', download: 'world' },
+                    access: { access: 'world', download: 'none' },
                     administrative: { publish: true, sdrPreserve: true, shelve: true }
                   }
                 ]

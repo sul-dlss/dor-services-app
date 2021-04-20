@@ -191,11 +191,12 @@ RSpec.describe Cocina::FromFedora::DroStructural do
       expect(file1[:hasMessageDigests].first[:type]).to eq 'sha1'
       expect(file1[:administrative][:shelve]).to eq true
       expect(file1[:administrative][:sdrPreserve]).to eq false
-      expect(file1[:access][:access]).to eq('world')
+      expect(file1[:administrative][:publish]).to eq true
 
       file2 = folder1[:structural][:contains][1]
       expect(file2[:administrative][:shelve]).to eq false
       expect(file2[:administrative][:sdrPreserve]).to eq true
+      expect(file2[:administrative][:publish]).to eq false
       expect(file2[:access][:access]).to eq('dark')
     end
   end

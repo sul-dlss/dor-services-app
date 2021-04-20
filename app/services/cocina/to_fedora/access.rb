@@ -9,24 +9,28 @@ module Cocina
       #       See https://argo.stanford.edu/view/druid:bb142ws0723 as an example
       # @param [Dor::Item, Dor::Collection] item
       # @param [Cocina::Models::DROAccess, Cocina::Models::Access] access
-      def self.apply(item, access)
-        new(item, access).apply
+      # @param [Cocina::Models::DROStructural] structural
+      def self.apply(item, access, structural = nil)
+        new(item, access, structural).apply
       end
 
-      def initialize(item, access)
+      def initialize(item, access, structural)
         @item = item
         @access = access
+        @structural = structural
       end
 
       def apply
-        RightsMetadataGenerator.generate(rights: rightsMetadata, access: access)
+        return if access.nil?
+
+        RightsMetadataGenerator.generate(rights: rightsMetadata, access: access, structural: structural)
         update_rights_statements!
         License.update(rightsMetadata, access.license) if access.license
       end
 
       private
 
-      attr_reader :item, :access
+      attr_reader :item, :access, :structural
 
       delegate :rightsMetadata, to: :item
 
