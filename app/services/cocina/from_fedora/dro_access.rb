@@ -15,7 +15,7 @@ module Cocina
 
       def props
         super.tap do |access|
-          access[:embargo] = embargo unless embargo.empty?
+          access[:embargo] = embargo if embargo&.any?
           access[:useAndReproductionStatement] = use_statement
           access[:copyright] = copyright
           access[:license] = License.find(rights_metadata_ds)

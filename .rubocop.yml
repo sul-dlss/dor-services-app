@@ -71,6 +71,7 @@ RSpec/DescribeClass:
     - 'spec/requests/**/*'
     - 'spec/services/cocina/mapping/descriptive/**/*'
     - 'spec/services/cocina/mapping/administrative/**/*'
+    - 'spec/services/cocina/mapping/access/**/*'
 
 RSpec/ExampleLength:
   Max: 8
