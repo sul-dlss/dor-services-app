@@ -1030,6 +1030,7 @@ RSpec.describe 'Update object' do
                                         defaultObjectRights: default_object_rights_expected,
                                         defaultAccess: default_access_expected,
                                         hasAdminPolicy: 'druid:dd999df4567',
+                                        referencesAgreement: 'druid:bc123df4567',
                                         disseminationWorkflow: 'assemblyWF',
                                         registrationWorkflow: %w[goobiWF registrationWF],
                                         collectionsForRegistration: ['druid:gg888df4567', 'druid:bb888gg4444'],
@@ -1073,6 +1074,7 @@ RSpec.describe 'Update object' do
             "registrationWorkflow":["goobiWF","registrationWF"],
             "collectionsForRegistration":["druid:gg888df4567","druid:bb888gg4444"],
             "hasAdminPolicy":"druid:dd999df4567",
+            "referencesAgreement":"druid:bc123df4567",
             "defaultAccess":#{default_access.to_json},
             "roles":[{"name":"dor-apo-manager","members":[{"type":"workgroup","identifier":"sdr:psm-staff"}]}]
           },

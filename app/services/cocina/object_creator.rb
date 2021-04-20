@@ -61,6 +61,7 @@ module Cocina
       pid = Dor::SuriService.mint_id
       Dor::AdminPolicyObject.new(pid: pid,
                                  admin_policy_object_id: cocina_admin_policy.administrative.hasAdminPolicy,
+                                 agreement_object_id: cocina_admin_policy.administrative.referencesAgreement,
                                  # source_id: cocina_admin_policy.identification.sourceId,
                                  label: cocina_admin_policy.label).tap do |fedora_apo|
         add_description(fedora_apo, cocina_admin_policy)

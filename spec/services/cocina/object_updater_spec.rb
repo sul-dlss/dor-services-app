@@ -119,6 +119,7 @@ RSpec.describe Cocina::ObjectUpdater do
     context 'when updating administrative' do
       before do
         allow(item).to receive(:admin_policy_object_id=)
+        allow(item).to receive(:agreement_object_id=)
         allow(Cocina::ToFedora::AdministrativeMetadata).to receive(:write)
         allow(Cocina::ToFedora::Roles).to receive(:write)
       end
@@ -133,6 +134,7 @@ RSpec.describe Cocina::ObjectUpdater do
         it 'updates administrative' do
           update
           expect(item).to have_received(:admin_policy_object_id=).with('druid:dd999df4567')
+          expect(item).to have_received(:agreement_object_id=).with(nil) # nil is legitimate
           expect(Cocina::ToFedora::AdministrativeMetadata).to have_received(:write)
           expect(Cocina::ToFedora::Roles).to have_received(:write)
         end
