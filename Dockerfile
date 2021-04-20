@@ -1,4 +1,4 @@
-FROM ruby:2.7.2-alpine
+FROM ruby:2.7.3-alpine
 
 # Provide SSL defaults that work in dev/test environments where we do not require connections to secured services
 # These values are overrideable at both buildtime and runtime (hence the ARG/ENV combo).
