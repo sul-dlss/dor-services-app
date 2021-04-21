@@ -3639,8 +3639,12 @@
 				</recordIdentifier>
 			</xsl:for-each>
 			<recordOrigin>Converted from MARCXML to MODS version 3.7 using
-				MARC21slim2MODS3-7_SDR_v2-4.xsl (SUL 3.7 version 2.4 20210412; LC Revision 1.140
+				MARC21slim2MODS3-7_SDR_v2-5.xsl (SUL 3.7 version 2.5 20210421; LC Revision 1.140
 				20200717)</recordOrigin>
+			<!-- SUL edit 20210421
+			<recordOrigin>Converted from MARCXML to MODS version 3.7 using
+				MARC21slim2MODS3-7_SDR_v2-4.xsl (SUL 3.7 version 2.4 20210412; LC Revision 1.140
+				20200717)</recordOrigin> -->
 			<!-- SUL edit 20210412
 			<recordOrigin>Converted from MARCXML to MODS version 3.7 using
 				MARC21slim2MODS3-7_SDR_v2-3.xsl (SUL 3.7 version 2.3 20210322; LC Revision 1.140
