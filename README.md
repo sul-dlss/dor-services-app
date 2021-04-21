@@ -273,6 +273,25 @@ In addition, detailed results for each item with a difference are provided in an
 
 Note that the location of the cache can be set with `FEDORA_CACHE` environment variable.
 
+### Validate mapping to Cocina from MODS (rights metadata only)
+```
+$ bin/validate-rights-cocina-roundtrip -h
+Usage: bin/validate-rights-cocina-roundtrip [options]
+    -s, --sample SAMPLE              Sample size, otherwise all druids.
+    -r, --random                     Select random druids.
+    -d, --druids DRUIDS              List of druids (instead of druids.txt).
+    -h, --help                       Displays help.
+
+$ bin/validate-rights-cocina-roundtrip -s 10
+Testing |Time: 00:00:00 | ==================================================================================== | Time: 00:00:00
+Status (n=10; not using Missing for success/different/error stats):
+  Success:   8 (100.0%)
+  Different: 0 (0.0%)
+  To Cocina error:     0 (0.0%)
+  To Fedora error:     0 (0.0%)
+  Missing (no rightsMetadata):     2 (20.0%)
+```
+
 ### Running the validation on sdr-deploy
 
 All of these directions required that you be sshed into sdr-deploy server.
