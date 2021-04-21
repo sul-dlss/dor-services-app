@@ -145,6 +145,70 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
     end
   end
 
+  context 'with full example from https://github.com/sul-dlss/cocina-models/issues/236' do
+    # from bb001xb8305
+    it_behaves_like 'DRO Access Fedora Cocina mapping' do
+      let(:rights_xml) do
+        <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <use>
+              <human type="creativeCommons">Public Domain Mark 1.0</human>
+              <machine type="creativeCommons" uri="https://creativecommons.org/publicdomain/mark/1.0/">pdm</machine>
+              <human type="useAndReproduction">hrrm hoo hum</human>
+            </use>
+            <copyright>
+              <human>Public Domain.</human>
+            </copyright>
+          </rightsMetadata>
+        XML
+      end
+
+      let(:roundtrip_rights_xml) do
+        <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <use>
+              <license>https://creativecommons.org/publicdomain/mark/1.0/</license>
+              <human type="useAndReproduction">hrrm hoo hum</human>
+            </use>
+            <copyright>
+              <human>Public Domain.</human>
+            </copyright>
+          </rightsMetadata>
+        XML
+      end
+
+      let(:cocina_access_props) do
+        {
+          access: 'world',
+          copyright: 'Public Domain.',
+          download: 'world',
+          license: 'https://creativecommons.org/publicdomain/mark/1.0/',
+          useAndReproductionStatement: 'hrrm hoo hum'
+        }
+      end
+    end
+  end
+
   context 'with new style license specification (world access)' do
     it_behaves_like 'DRO Access Fedora Cocina mapping' do
       let(:rights_xml) do
@@ -209,63 +273,6 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           download: 'world',
           useAndReproductionStatement: 'baroque',
           license: 'https://creativecommons.org/licenses/pdm/????'
-        }
-      end
-    end
-  end
-
-  context 'with CC 4.0 license' do
-    # based on bd324jt9731
-    it_behaves_like 'DRO Access Fedora Cocina mapping' do
-      let(:rights_xml) do
-        <<~XML
-          <rightsMetadata>
-            <access type="discover">
-              <machine>
-                <world/>
-              </machine>
-            </access>
-            <access type="read">
-              <machine>
-                <world/>
-              </machine>
-            </access>
-            <use>
-              <human type="creativeCommons">CC-BY SA 4.0</human>
-              <machine type="creativeCommons" uri="https://creativecommons.org/licenses/by-sa/4.0/">by-sa</machine>
-              <human type="useAndReproduction">we are all one</human>
-            </use>
-          </rightsMetadata>
-        XML
-      end
-
-      let(:roundtrip_rights_xml) do
-        <<~XML
-          <rightsMetadata>
-            <access type="discover">
-              <machine>
-                <world/>
-              </machine>
-            </access>
-            <access type="read">
-              <machine>
-                <world/>
-              </machine>
-            </access>
-            <use>
-              <license>https://creativecommons.org/licenses/by-sa/4.0/</license>
-              <human type="useAndReproduction">we are all one</human>
-            </use>
-          </rightsMetadata>
-        XML
-      end
-
-      let(:cocina_access_props) do
-        {
-          access: 'world',
-          download: 'world',
-          useAndReproductionStatement: 'we are all one',
-          license: 'https://creativecommons.org/licenses/by-sa/4.0/'
         }
       end
     end
@@ -419,7 +426,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
   end
 
   describe 'license types' do
-    context 'with an ODC license' do
+    context 'with an ODC license (default access = dark)' do
       it_behaves_like 'DRO Access Fedora Cocina mapping' do
         let(:rights_xml) do
           <<~XML
@@ -462,7 +469,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
       end
     end
 
-    context 'with a CC license' do
+    context 'with a CC license (default access = dark)' do
       it_behaves_like 'DRO Access Fedora Cocina mapping' do
         let(:rights_xml) do
           <<~XML
@@ -505,7 +512,64 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
       end
     end
 
-    context 'with a "none" license' do
+    context 'with CC 4.0 license' do
+      # based on bd324jt9731
+      it_behaves_like 'DRO Access Fedora Cocina mapping' do
+        let(:rights_xml) do
+          <<~XML
+            <rightsMetadata>
+              <access type="discover">
+                <machine>
+                  <world/>
+                </machine>
+              </access>
+              <access type="read">
+                <machine>
+                  <world/>
+                </machine>
+              </access>
+              <use>
+                <human type="creativeCommons">CC-BY SA 4.0</human>
+                <machine type="creativeCommons" uri="https://creativecommons.org/licenses/by-sa/4.0/">by-sa</machine>
+                <human type="useAndReproduction">we are all one</human>
+              </use>
+            </rightsMetadata>
+          XML
+        end
+
+        let(:roundtrip_rights_xml) do
+          <<~XML
+            <rightsMetadata>
+              <access type="discover">
+                <machine>
+                  <world/>
+                </machine>
+              </access>
+              <access type="read">
+                <machine>
+                  <world/>
+                </machine>
+              </access>
+              <use>
+                <license>https://creativecommons.org/licenses/by-sa/4.0/</license>
+                <human type="useAndReproduction">we are all one</human>
+              </use>
+            </rightsMetadata>
+          XML
+        end
+
+        let(:cocina_access_props) do
+          {
+            access: 'world',
+            download: 'world',
+            useAndReproductionStatement: 'we are all one',
+            license: 'https://creativecommons.org/licenses/by-sa/4.0/'
+          }
+        end
+      end
+    end
+
+    context 'with a "none" license (default access = dark)' do
       it_behaves_like 'DRO Access Fedora Cocina mapping' do
         let(:rights_xml) do
           <<~XML
@@ -543,6 +607,48 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
             access: 'dark',
             download: 'none',
             license: 'http://cocina.sul.stanford.edu/licenses/none'
+          }
+        end
+      end
+    end
+
+    context 'with cc0 (default access = dark)' do
+      it_behaves_like 'DRO Access Fedora Cocina mapping' do
+        let(:rights_xml) do
+          <<~XML
+            <rightsMetadata>
+              <use>
+                <license>https://creativecommons.org/share-your-work/public-domain/cc0/</license>
+              </use>
+            </rightsMetadata>
+          XML
+        end
+
+        let(:roundtrip_rights_xml) do
+          <<~XML
+            <rightsMetadata>
+              <use>
+                <license>https://creativecommons.org/share-your-work/public-domain/cc0/</license>
+              </use>
+              <access type="discover">
+                <machine>
+                  <none/>
+                </machine>
+              </access>
+              <access type="read">
+                <machine>
+                  <none/>
+                </machine>
+              </access>
+            </rightsMetadata>
+          XML
+        end
+
+        let(:cocina_access_props) do
+          {
+            access: 'dark',
+            download: 'none',
+            license: 'https://creativecommons.org/share-your-work/public-domain/cc0/'
           }
         end
       end
