@@ -163,10 +163,10 @@ RSpec/MessageSpies:
     - 'spec/services/shelving_service_spec.rb'
     - 'spec/services/version_service_spec.rb'
 
-# Offense count: 298
+# Offense count: 301
 # Configuration parameters: AllowSubject.
 RSpec/MultipleMemoizedHelpers:
-  Max: 22
+  Max: 23
 
 # Offense count: 15
 # Configuration parameters: IgnoreSharedExamples.

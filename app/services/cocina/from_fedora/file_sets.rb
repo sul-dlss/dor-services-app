@@ -4,14 +4,30 @@ module Cocina
   module FromFedora
     # builds the FileSet instance from a Dor::Item
     class FileSets
-      def self.build(content_metadata_ds, version:, ignore_resource_type_errors: false)
+      def self.build(content_metadata_ds, rights_metadata:, version:, ignore_resource_type_errors: false)
+        new(
+          content_metadata_ds,
+          rights_metadata: rights_metadata,
+          version: version,
+          ignore_resource_type_errors: ignore_resource_type_errors
+        ).build
+      end
+
+      def initialize(content_metadata_ds, rights_metadata:, version:, ignore_resource_type_errors:)
+        @content_metadata_ds = content_metadata_ds
+        @rights_metadata = rights_metadata
+        @version = version
+        @ignore_resource_type_errors = ignore_resource_type_errors
+      end
+
+      def build
         content_metadata_ds.ng_xml.xpath('//resource[file]').map do |resource_node|
-          files = build_files(resource_node.xpath('file'), version: version)
+          files = build_files(resource_node.xpath('file'))
           structural = {}
           structural[:contains] = files if files.present?
           {
             externalIdentifier: IdGenerator.generate_or_existing_fileset_id(resource_node['id']),
-            type: resource_type(resource_node, ignore_resource_type_errors: ignore_resource_type_errors),
+            type: resource_type(resource_node),
             version: version,
             structural: structural
           }.tap do |attrs|
@@ -20,7 +36,15 @@ module Cocina
         end
       end
 
-      def self.resource_type(resource_node, ignore_resource_type_errors:)
+      private
+
+      attr_reader :content_metadata_ds, :rights_metadata, :version, :ignore_resource_type_errors
+
+      def rights_object
+        rights_metadata.dra_object
+      end
+
+      def resource_type(resource_node)
         val = resource_node['type']&.underscore
         val = 'three_dimensional' if val == '3d'
         if val && Cocina::Models::Vocab::Resources.respond_to?(val)
@@ -32,7 +56,7 @@ module Cocina
         end
       end
 
-      def self.digests(node)
+      def digests(node)
         [].tap do |digests|
           # The old google books use upcased versions. See https://argo.stanford.edu/view/druid:dd116zh0343
           # Web archive crawls use SHA1
@@ -43,7 +67,7 @@ module Cocina
         end
       end
 
-      def self.build_files(file_nodes, version:)
+      def build_files(file_nodes)
         file_nodes.map do |node|
           height = node.xpath('imageData/@height').text.presence&.to_i
           width = node.xpath('imageData/@width').text.presence&.to_i
@@ -57,7 +81,7 @@ module Cocina
             size: node['size'].to_i,
             version: version,
             hasMessageDigests: digests(node),
-            access: access(node),
+            access: access(node['id']),
             administrative: {
               publish: node['publish'] == 'yes',
               sdrPreserve: node['preserve'] == 'yes',
@@ -72,12 +96,15 @@ module Cocina
         end
       end
 
-      def self.access(node)
-        if node['publish'] == 'yes'
-          { access: 'world', download: 'world' }
-        else
-          { access: 'dark', download: 'none' }
-        end
+      def access(filename)
+        file_specific_rights = rights_object.file[filename]
+        return item_rights if file_specific_rights.nil?
+
+        Access::AccessRights.props(file_specific_rights, rights_xml: rights_metadata.ng_xml.to_xml)
+      end
+
+      def item_rights
+        Access::AccessRights.props(rights_object, rights_xml: rights_metadata.ng_xml.to_xml)
       end
     end
   end

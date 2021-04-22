@@ -27,7 +27,13 @@ module Cocina
           has_member_orders = build_has_member_orders
           structural[:hasMemberOrders] = has_member_orders if has_member_orders.present?
 
-          contains = FileSets.build(item.contentMetadata, version: item.current_version.to_i, ignore_resource_type_errors: project_phoenix?)
+          # To build file sets, we need to consider both content metadata and
+          # rights metadata, the latter of which is used to map file-specific
+          # access/rights.
+          contains = FileSets.build(item.contentMetadata,
+                                    rights_metadata: item.rightsMetadata,
+                                    version: item.current_version.to_i,
+                                    ignore_resource_type_errors: project_phoenix?)
           structural[:contains] = contains if contains.present?
 
           structural[:hasAgreement] = item.identityMetadata.agreementId.first unless item.identityMetadata.agreementId.empty?

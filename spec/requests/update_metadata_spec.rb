@@ -36,7 +36,8 @@ RSpec.describe 'Update object' do
       item.identityMetadata.barcode = '36105036289000'
       item.rightsMetadata.content = Cocina::ToFedora::RightsMetadataGenerator.generate(
         rights: Dor::RightsMetadataDS.new,
-        access: cocina_access
+        access: cocina_access,
+        structural: cocina_structural
       )
     end
   end
@@ -55,6 +56,7 @@ RSpec.describe 'Update object' do
       hasAgreement: 'druid:cd777df7777'
     }
   end
+  let(:cocina_structural) { Cocina::Models::DROStructural.new(structural) }
   let(:access) { 'world' }
   let(:download) { 'world' }
   let(:cocina_access) do

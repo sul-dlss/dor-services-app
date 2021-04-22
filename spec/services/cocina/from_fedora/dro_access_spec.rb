@@ -6,10 +6,7 @@ RSpec.describe Cocina::FromFedora::DROAccess do
   subject(:access) { described_class.props(item.rightsMetadata, embargo: embargo) }
 
   let(:embargo) { {} }
-
-  let(:item) do
-    Dor::Item.new
-  end
+  let(:item) { Dor::Item.new }
   let(:rights_metadata_ds) { Dor::RightsMetadataDS.new.tap { |ds| ds.content = xml } }
 
   before do
@@ -49,7 +46,31 @@ RSpec.describe Cocina::FromFedora::DROAccess do
     end
   end
 
-  describe 'access and download rights' do
+  describe 'access and download rights for items' do
+    context 'when citation-only' do
+      let(:xml) do
+        <<~XML
+          <?xml version="1.0"?>
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <none/>
+              </machine>
+            </access>
+          </rightsMetadata>
+        XML
+      end
+
+      it 'specifies access as citation-only w/ no download' do
+        expect(access).to eq(access: 'citation-only', download: 'none')
+      end
+    end
+
     context 'when controlled digital lending' do
       let(:xml) do
         <<~XML

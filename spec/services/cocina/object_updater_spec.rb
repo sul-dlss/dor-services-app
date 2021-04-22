@@ -442,10 +442,14 @@ RSpec.describe Cocina::ObjectUpdater do
     context 'when updating structural without a contains block and with reading direction' do
       before do
         allow(item).to receive(:collection_ids=)
+        allow(item).to receive(:rightsMetadata).and_return(
+          instance_double(Dor::RightsMetadataDS, ng_xml_will_change!: nil)
+        )
         allow(content_metadata).to receive(:contentType=)
         allow(Cocina::ToFedora::Identity).to receive(:apply)
         allow(AdministrativeTags).to receive(:create)
         allow(content_metadata).to receive(:ng_xml)
+        allow(Cocina::ToFedora::RightsMetadataGenerator).to receive(:generate)
       end
 
       context 'when structural has changed' do
@@ -465,6 +469,7 @@ RSpec.describe Cocina::ObjectUpdater do
           expect(content_metadata).not_to have_received(:ng_xml)
           expect(Cocina::ToFedora::Identity).to have_received(:apply)
           expect(AdministrativeTags).to have_received(:create)
+          expect(Cocina::ToFedora::RightsMetadataGenerator).to have_received(:generate)
         end
       end
 
@@ -475,6 +480,7 @@ RSpec.describe Cocina::ObjectUpdater do
           expect(content_metadata).not_to have_received(:contentType=)
           expect(Cocina::ToFedora::Identity).not_to have_received(:apply)
           expect(AdministrativeTags).not_to have_received(:create)
+          expect(Cocina::ToFedora::RightsMetadataGenerator).not_to have_received(:generate)
         end
       end
     end
@@ -482,11 +488,15 @@ RSpec.describe Cocina::ObjectUpdater do
     context 'when updating structural with a contains block' do
       before do
         allow(item).to receive(:collection_ids=)
+        allow(item).to receive(:rightsMetadata).and_return(
+          instance_double(Dor::RightsMetadataDS, ng_xml_will_change!: nil)
+        )
         allow(content_metadata).to receive(:content=)
         allow(content_metadata).to receive(:contentType=)
         allow(content_metadata).to receive(:ng_xml)
         allow(Cocina::ToFedora::Identity).to receive(:apply)
         allow(AdministrativeTags).to receive(:create)
+        allow(Cocina::ToFedora::RightsMetadataGenerator).to receive(:generate)
       end
 
       let(:cocina_attrs) do
@@ -505,6 +515,7 @@ RSpec.describe Cocina::ObjectUpdater do
         expect(content_metadata).not_to have_received(:ng_xml)
         expect(Cocina::ToFedora::Identity).to have_received(:apply)
         expect(AdministrativeTags).to have_received(:create)
+        expect(Cocina::ToFedora::RightsMetadataGenerator).to have_received(:generate)
       end
     end
 
