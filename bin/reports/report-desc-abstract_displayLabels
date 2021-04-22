@@ -5,7 +5,7 @@ require_relative '../../config/environment'
 require_relative '../../lib/unique_report'
 
 def abstract_display_labels(ng_xml)
-  ng_xml.root.xpath('mods:abstract/@displayLabel', mods: MODS_NS).map(&:content)
+  ng_xml.root.xpath('//mods:abstract/@displayLabel', mods: MODS_NS).map(&:content)
 end
 
 UniqueReport.new(name: 'desc-abstract_displayLabels', dsid: 'descMetadata', report_func: method(:abstract_display_labels)).run
