@@ -55,6 +55,7 @@ RSpec.describe 'Create object' do
           "label":"#{label}","version":1,
           "access":{
             "access":"#{access}",
+            "download":"none",
             "copyright":"All rights reserved unless otherwise indicated.",
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
@@ -305,7 +306,8 @@ RSpec.describe 'Create object' do
             'shelve' => true
           },
           'access' => {
-            'access' => 'stanford'
+            'access' => 'stanford',
+            'download' => 'stanford'
           },
           'hasMessageDigests' => []
         }
@@ -343,7 +345,8 @@ RSpec.describe 'Create object' do
             'shelve' => true
           },
           'access' => {
-            'access' => 'world'
+            'access' => 'world',
+            'download' => 'world'
           },
           'hasMessageDigests' => []
         }
@@ -413,7 +416,7 @@ RSpec.describe 'Create object' do
                         type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
                       }
                     ],
-                    access: { access: 'dark', download: 'none' },
+                    access: { access: 'dark' },
                     administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
                     type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
@@ -422,7 +425,7 @@ RSpec.describe 'Create object' do
                     filename: '00001.jp2',
                     size: 0, version: 1,
                     hasMimeType: 'image/jp2', hasMessageDigests: [],
-                    access: { access: 'stanford', download: 'none' },
+                    access: { access: 'stanford', download: 'stanford' },
                     administrative: { publish: true, sdrPreserve: true, shelve: true }
                   }
                 ]
@@ -439,7 +442,7 @@ RSpec.describe 'Create object' do
                     label: '00002.html', filename: '00002.html', size: 0,
                     version: 1, hasMimeType: 'text/html',
                     hasMessageDigests: [],
-                    access: { access: 'dark', download: 'none' },
+                    access: { access: 'dark' },
                     administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
                     type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
@@ -449,7 +452,7 @@ RSpec.describe 'Create object' do
                     size: 0, version: 1,
                     hasMimeType: 'image/jp2',
                     hasMessageDigests: [],
-                    access: { access: 'world', download: 'none' },
+                    access: { access: 'world', download: 'world' },
                     administrative: { publish: true, sdrPreserve: true, shelve: true }
                   }
                 ]
@@ -569,6 +572,7 @@ RSpec.describe 'Create object' do
           "label":"#{label}","version":1,
           "access":{
             "access":"world",
+            "download":"none",
             "copyright":"All rights reserved unless otherwise indicated.",
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
@@ -979,14 +983,15 @@ RSpec.describe 'Create object' do
                               access: {
                                 access: 'stanford',
                                 download: 'none',
-                                embargo: { access: 'world', releaseDate: '2020-02-29' }
+                                controlledDigitalLending: false,
+                                embargo: { access: 'world', download: 'world', releaseDate: '2020-02-29' }
                               })
     end
     let(:data) do
       <<~JSON
         { "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
-          "label":"This is my label","version":1,"access":{"access":"stanford",
-          "embargo":{"access":"world","releaseDate":"2020-02-29"}},
+          "label":"This is my label","version":1,"access":{"access":"stanford","download":"none","controlledDigitalLending":false,
+          "embargo":{"access":"world","download":"world","releaseDate":"2020-02-29"}},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"This is my title"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
           "identification":{"sourceId":"googlebooks:999999"},
@@ -1145,12 +1150,12 @@ RSpec.describe 'Create object' do
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
                                 structural: {},
-                                access: { access: 'world' })
+                                access: {})
       end
       let(:data) do
         <<~JSON
           { "type":"http://cocina.sul.stanford.edu/models/object.jsonld",
-            "label":"This is my label","version":1,"access":{"access":"world"},
+            "label":"This is my label","version":1,"access":{},
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "identification":{"sourceId":"googlebooks:999999"},
             "structural":{}}
@@ -1187,12 +1192,12 @@ RSpec.describe 'Create object' do
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
                                 structural: {},
-                                access: { access: 'world' })
+                                access: {})
       end
       let(:data) do
         <<~JSON
           { "type":"http://cocina.sul.stanford.edu/models/object.jsonld",
-            "label":"This is my label","version":1,"access":{"access":"world"},
+            "label":"This is my label","version":1,"access":{},
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "identification":{"sourceId":"googlebooks:999999"}}
         JSON
@@ -1305,12 +1310,12 @@ RSpec.describe 'Create object' do
                               identification: { sourceId: 'warc:999999' },
                               externalIdentifier: 'druid:gg777gg7777',
                               structural: {},
-                              access: { access: 'world' })
+                              access: {})
     end
     let(:data) do
       <<~JSON
         { "type":"http://cocina.sul.stanford.edu/models/webarchive-binary.jsonld",
-          "label":"This is my label","version":1,"access":{"access":"world"},
+          "label":"This is my label","version":1,"access":{},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "identification":{"sourceId":"warc:999999"},
           "structural":{}}
@@ -1353,12 +1358,12 @@ RSpec.describe 'Create object' do
                               identification: { sourceId: 'warc:999999' },
                               externalIdentifier: 'druid:gg777gg7777',
                               structural: {},
-                              access: { access: 'world' })
+                              access: {})
     end
     let(:data) do
       <<~JSON
         { "type":"http://cocina.sul.stanford.edu/models/object.jsonld",
-          "label":"This is my label","version":1,"access":{"access":"world"},
+          "label":"This is my label","version":1,"access":{},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "identification":{"sourceId":"warc:999999"},
           "structural":{}}

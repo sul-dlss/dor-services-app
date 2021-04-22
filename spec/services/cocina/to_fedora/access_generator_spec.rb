@@ -2,14 +2,15 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::ToFedora::RightsMetadataGenerator do
+RSpec.describe Cocina::ToFedora::AccessGenerator do
   subject(:generate) do
-    described_class.generate(rights: rights, access: access, structural: structural)
+    Nokogiri::XML(described_class.generate(root: root, access: access, structural: structural))
   end
 
+  let(:root) { Nokogiri::XML("<rightsMetadata>#{rights_statements}</rightsMetadata>").root }
+
   let(:access) { Cocina::Models::DROAccess.new(JSON.parse(cocina_access)) }
-  let(:item) { instantiate_fixture('druid:hj097bm8879', Dor::Item) }
-  let(:rights) { item.rightsMetadata }
+
   let(:rights_statements) do
     <<~XML
       <use>
@@ -998,6 +999,65 @@ RSpec.describe Cocina::ToFedora::RightsMetadataGenerator do
             </rightsMetadata>
           XML
         end
+      end
+    end
+
+    context 'when citation-only' do
+      let(:cocina_access) do
+        <<~JSON
+          {
+            "access": "citation-only",
+            "download": "none",
+            "controlledDigitalLending": false
+          }
+        JSON
+      end
+
+      let(:cocina_file_access) do
+        <<~JSON
+          {
+            "access": "dark",
+            "download": "none",
+            "controlledDigitalLending": false
+          }
+        JSON
+      end
+
+      it 'maps rights metadata as expected' do
+        expect(generate).to be_equivalent_to <<~XML
+          <?xml version="1.0"?>
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <none/>
+              </machine>
+            </access>
+            <access type="read">
+              <file>gs491bt1345_sample_01_00_pm.wav</file>
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <file>gs491bt1345_sample_01_00_sh.wav</file>
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <file>gs491bt1345_sample_01_00_sl.m4a</file>
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            #{rights_statements}
+          </rightsMetadata>
+        XML
       end
     end
   end

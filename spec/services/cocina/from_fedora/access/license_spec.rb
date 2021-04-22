@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::FromFedora::License do
+RSpec.describe Cocina::FromFedora::Access::License do
   subject(:license) { described_class.find(rights_metadata_ds) }
 
   let(:rights_metadata_ds) { Dor::RightsMetadataDS.from_xml(xml) }

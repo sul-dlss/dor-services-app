@@ -28,7 +28,8 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'shelve' => false
       },
       'access' => {
-        'access' => 'dark'
+        'access' => 'dark',
+        'download' => 'none'
       },
       'hasMessageDigests' => [
         {
@@ -58,7 +59,8 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'shelve' => true
       },
       'access' => {
-        'access' => 'stanford'
+        'access' => 'stanford',
+        'download' => 'stanford'
       },
       'hasMessageDigests' => [],
       'presentation' => {
@@ -82,7 +84,8 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'shelve' => false
       },
       'access' => {
-        'access' => 'world'
+        'access' => 'world',
+        'download' => 'world'
       },
       'hasMessageDigests' => []
     }
@@ -102,7 +105,8 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'shelve' => true
       },
       'access' => {
-        'access' => 'world'
+        'access' => 'world',
+        'download' => 'world'
       },
       'hasMessageDigests' => []
     }
@@ -122,7 +126,8 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'shelve' => true
       },
       'access' => {
-        'access' => 'world'
+        'access' => 'world',
+        'download' => 'world'
       },
       'hasMessageDigests' => []
     }
@@ -296,7 +301,8 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
           'shelve' => false
         },
         'access' => {
-          'access' => 'dark'
+          'access' => 'dark',
+          'download' => 'none'
         },
         'hasMessageDigests' => [
           {
@@ -326,7 +332,8 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
           'shelve' => false
         },
         'access' => {
-          'access' => 'world'
+          'access' => 'world',
+          'download' => 'world'
         },
         'hasMessageDigests' => []
       }

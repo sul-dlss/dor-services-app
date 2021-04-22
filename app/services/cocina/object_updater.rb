@@ -97,7 +97,7 @@ module Cocina
       end
       fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy if has_changed?(:administrative)
 
-      Cocina::ToFedora::Access.apply(fedora_object, cocina_object.access) if has_changed?(:access)
+      Cocina::ToFedora::CollectionAccess.apply(fedora_object, cocina_object.access) if has_changed?(:access)
     end
 
     # rubocop:disable Metrics/AbcSize
@@ -119,6 +119,7 @@ module Cocina
         agreement_id = has_changed?(:structural) ? cocina_object.structural&.hasAgreement : nil
         Cocina::ToFedora::Identity.apply(fedora_object, label: label, agreement_id: agreement_id)
       end
+
       Cocina::ToFedora::DROAccess.apply(fedora_object, cocina_object.access, cocina_object.structural) if has_changed?(:access) || has_changed?(:structural)
       update_content_metadata(fedora_object, cocina_object) if has_changed?(:structural) || has_changed?(:type)
 

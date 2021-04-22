@@ -287,44 +287,44 @@ paths:
             $ref: '#/components/schemas/Druid'
   '/v1/objects/{id}/unpublish':
     post:
-        tags:
-          - objects
-        summary: Unpublish an object from PURL
-        description: ''
-        operationId: 'objects#unpublish'
-        responses:
-          '201':
-            description: Unpublish action started
-            headers:
-              location:
-                description: the status of the action is found at this URI
-                schema:
-                  type: string
-                  format: uri
-        parameters:
-          - name: id
-            in: path
-            description: ID of object
-            required: true
-            schema:
-              $ref: '#/components/schemas/Druid'
-          - name: workflow
-            in: query
-            description: which workflow should this be reported to
-            schema:
-              type: string
-              enum:
-                - ????
-              example: releaseWF
-          - name: lane-id
-            in: query
-            description: Lane for prioritizing the work
-            schema:
-              type: string
-              enum:
-                - 'default'
-                - 'low'
-              default: 'default'
+      tags:
+        - objects
+      summary: Unpublish an object from PURL
+      description: ''
+      operationId: 'objects#unpublish'
+      responses:
+        '201':
+          description: Unpublish action started
+          headers:
+            location:
+              description: the status of the action is found at this URI
+              schema:
+                type: string
+                format: uri
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+        - name: workflow
+          in: query
+          description: which workflow should this be reported to
+          schema:
+            type: string
+            enum:
+              - ????
+            example: releaseWF
+        - name: lane-id
+          in: query
+          description: Lane for prioritizing the work
+          schema:
+            type: string
+            enum:
+              - 'default'
+              - 'low'
+            default: 'default'
   '/v1/objects/{id}/notify_goobi':
     post:
       tags:
@@ -1211,41 +1211,16 @@ paths:
 components:
   schemas:
     Access:
-      description: Access metadata for collections
       type: object
-      additionalProperties: false
-      properties:
-        access:
-          description: Access level
-          type: string
-          enum:
-            - 'world'
-            - 'stanford'
-            - 'location-based'
-            - 'citation-only'
-            - 'dark'
-          default: 'dark'
-        copyright:
-          description: The human readable copyright statement that applies
-          example: Copyright World Trade Organization
-          type: string
-        readLocation:
-          description: If access is "location-based", which location should have access.
-          type: string
-          enum:
-            - 'spec'
-            - 'music'
-            - 'ars'
-            - 'art'
-            - 'hoover'
-            - 'm&m'
-        useAndReproductionStatement:
-          description: The human readable use and reproduction statement that applies
-          example: Property rights reside with the repository. Literary rights reside with the creators of the documents or their heirs. To obtain permission to publish or reproduce, please contact the Public Services Librarian of the Dept. of Special Collections (http://library.stanford.edu/spc).
-          type: string
-        license:
-          description: The license governing reuse of the Collection. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
-          type: string
+      oneOf:
+        # Being first, makes DarkAccess the default.
+        - $ref: '#/components/schemas/DarkAccess'
+        - $ref: '#/components/schemas/CitationOnlyAccess'
+        - $ref: '#/components/schemas/ControlledDigitalLendingAccess'
+        - $ref: '#/components/schemas/LocationBasedAccess'
+        - $ref: '#/components/schemas/LocationBasedDownloadAccess'
+        - $ref: '#/components/schemas/StanfordAccess'
+        - $ref: '#/components/schemas/WorldAccess'
     AccessRole:
       description: Access role conferred by an AdminPolicy to objects within it. (used by Argo)
       type: object
@@ -1470,6 +1445,33 @@ components:
       type: string
       pattern: '^[0-9]+-[0-9]+$'
       example: 6772719-1001
+    CitationOnlyAccess:
+      type: object
+      properties:
+        access:
+          description: Access level.
+          type: string
+          enum:
+            - citation-only
+        download:
+          description: Download access level.
+          type: string
+          enum:
+            - 'none'
+        readLocation:
+          description: If access is "location-based", which location should have access.
+          type: string
+          nullable: true
+          enum:
+            - null
+        controlledDigitalLending:
+          type: boolean
+          default: false
+          enum:
+            - false
+      required:
+        - access
+        - download
     Collection:
       description: A group of Digital Repository Objects that indicate some type of conceptual grouping within the domain that is worth reusing across the system.
       type: object
@@ -1494,7 +1496,7 @@ components:
           description: Version for the Collection within SDR.
           type: integer
         access:
-          $ref: '#/components/schemas/Access'
+          $ref: '#/components/schemas/CollectionAccess'
         administrative:
           $ref: '#/components/schemas/Administrative'
         description:
@@ -1507,6 +1509,29 @@ components:
         - type
         - version
         - access
+    CollectionAccess:
+      description: Access metadata for collections
+      type: object
+      additionalProperties: false
+      properties:
+        access:
+          description: Access level
+          type: string
+          enum:
+            - 'world'
+            - 'dark'
+          default: 'dark'
+        copyright:
+          description: The human readable copyright statement that applies
+          example: Copyright World Trade Organization
+          type: string
+        useAndReproductionStatement:
+          description: The human readable use and reproduction statement that applies
+          example: Property rights reside with the repository. Literary rights reside with the creators of the documents or their heirs. To obtain permission to publish or reproduce, please contact the Public Services Librarian of the Dept. of Special Collections (http://library.stanford.edu/spc).
+          type: string
+        license:
+          description: The license governing reuse of the Collection. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
+          type: string
     CollectionIdentification:
       type: object
       additionalProperties: false
@@ -1557,6 +1582,60 @@ components:
         valueAt:
           description: URL or other pointer to the location of the contributor information.
           type: string
+    ControlledDigitalLendingAccess:
+      type: object
+      properties:
+        access:
+          description: Access level.
+          type: string
+          enum:
+            - stanford
+        download:
+          description: Download access level.
+          type: string
+          enum:
+            - none
+        readLocation:
+          description: If access is "location-based", which location should have access.
+          type: string
+          nullable: true
+          enum:
+            - null
+        controlledDigitalLending:
+          description: Available for controlled digital lending.
+          type: boolean
+          default: false
+      required:
+        - access
+        - download
+        - controlledDigitalLending
+    DarkAccess:
+      type: object
+      properties:
+        access:
+          description: Access level.
+          type: string
+          default: 'dark'
+          enum:
+            - dark
+        download:
+          description: Download access level.
+          type: string
+          default: 'none'
+          enum:
+            - 'none'
+        readLocation:
+          description: If access is "location-based", which location should have access.
+          type: string
+          nullable: true
+          default: null
+          enum:
+            - null
+        controlledDigitalLending:
+          type: boolean
+          default: false
+          enum:
+            - false
     Description:
       type: object
       additionalProperties: false
@@ -1926,60 +2005,23 @@ components:
     DROAccess:
       type: object
       additionalProperties: false
-      properties:
-        access:
-          type: string
-          enum:
-            - 'world'
-            - 'stanford'
-            - 'location-based'
-            - 'citation-only'
-            - 'dark'
-          default: 'dark'
-        controlledDigitalLending:
-          description: Available for controlled digital lending.
-          type: boolean
-          default: false
-        copyright:
-          description: The human readable copyright statement that applies
-          example: Copyright World Trade Organization
-          type: string
-        embargo:
-          $ref: '#/components/schemas/Embargo'
-        download:
-          description: >
-            Download access level. This is used in the transition from Fedora as
-            a way to set a default download level at registration that is copied
-            down to all the files.
-
-          type: string
-          enum:
-            - 'world'
-            - 'stanford'
-            - 'location-based'
-            - 'none'
-          default: 'none'
-        readLocation:
-          description: >
-            If access is "location-based", which location should have access.
-            This is used in the transition from Fedora as a way to set a default
-            readLocation at registration that is copied down to all the files.
-
-          type: string
-          enum:
-            - 'spec'
-            - 'music'
-            - 'ars'
-            - 'art'
-            - 'hoover'
-            - 'm&m'
-        useAndReproductionStatement:
-          description: The human readable use and reproduction statement that applies
-          example: Property rights reside with the repository. Literary rights reside with the creators of the documents or their heirs. To obtain permission to publish or reproduce, please contact the Public Services Librarian of the Dept. of Special Collections (http://library.stanford.edu/spc).
-          type: string
-        license:
-          description: The license governing reuse of the DRO. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
-          type: string
+      allOf:
+        - $ref: "#/components/schemas/Access"
+        - type: object
+          properties:
+            copyright:
+              description: The human readable copyright statement that applies
+              example: Copyright World Trade Organization
+              type: string
+            embargo:
+              $ref: '#/components/schemas/Embargo'
+            useAndReproductionStatement:
+              description: The human readable use and reproduction statement that applies
+              example: Property rights reside with the repository. Literary rights reside with the creators of the documents or their heirs. To obtain permission to publish or reproduce, please contact the Public Services Librarian of the Dept. of Special Collections (http://library.stanford.edu/spc).
+              type: string
+            license:
+              description: The license governing reuse of the DRO. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
+              type: string
     DROStructural:
       description: Structural metadata
       type: object
@@ -2010,28 +2052,21 @@ components:
     Embargo:
       type: object
       additionalProperties: false
-      properties:
-        releaseDate:
-          description: Date when the Collection is released from an embargo.
-          type: string
-          format: date-time
-          example: '2029-06-22T07:00:00.000+00:00'
-        access:
-          description: Access level that applies when embargo expires.
-          type: string
-          enum:
-            - world
-            - stanford
-            - location-based
-            - citation-only
-            - dark
-        useAndReproductionStatement:
-          description: The human readable use and reproduction statement that applies when the embargo expires.
-          example: These materials are in the public domain.
-          type: string
-      required:
-        - releaseDate
-        - access
+      allOf:
+        - $ref: "#/components/schemas/Access"
+        - type: object
+          properties:
+            releaseDate:
+              description: Date when the Collection is released from an embargo.
+              type: string
+              format: date-time
+              example: '2029-06-22T07:00:00.000+00:00'
+            useAndReproductionStatement:
+              description: The human readable use and reproduction statement that applies when the embargo expires.
+              example: These materials are in the public domain.
+              type: string
+          required:
+            - releaseDate
     Event:
       description: Property model for describing events in the history of the resource.
       type: object
@@ -2134,40 +2169,14 @@ components:
       description: Access metadata for files
       type: object
       additionalProperties: false
-      properties:
-        access:
-          description: Access level
-          type: string
-          enum:
-            - 'world'
-            - 'stanford'
-            - 'location-based'
-            - 'citation-only'
-            - 'dark'
-          default: 'dark'
-        controlledDigitalLending:
-          description: Available for controlled digital lending.
-          type: boolean
-          default: false
-        download:
-          description: Download access level for a file
-          type: string
-          enum:
-            - 'world'
-            - 'stanford'
-            - 'location-based'
-            - 'none'
-          default: 'none'
-        readLocation:
-          description: If access is "location-based", which location should have access.
-          type: string
-          enum:
-            - 'spec'
-            - 'music'
-            - 'ars'
-            - 'art'
-            - 'hoover'
-            - 'm&m'
+      oneOf:
+        # Being first, makes DarkAccess the default.
+        - $ref: '#/components/schemas/DarkAccess'
+        - $ref: '#/components/schemas/ControlledDigitalLendingAccess'
+        - $ref: '#/components/schemas/LocationBasedAccess'
+        - $ref: '#/components/schemas/LocationBasedDownloadAccess'
+        - $ref: '#/components/schemas/StanfordAccess'
+        - $ref: '#/components/schemas/WorldAccess'
     FileAdministrative:
       type: object
       additionalProperties: false
@@ -2325,6 +2334,72 @@ components:
         valueLanguage:
           # description: present for mapping to additional schemas in the future and for consistency but not otherwise used
           $ref: "#/components/schemas/DescriptiveValueLanguage"
+    LocationBasedAccess:
+      type: object
+      properties:
+        access:
+          description: Access level.
+          type: string
+          enum:
+            - location-based
+        download:
+          description: Download access level.
+          type: string
+          enum:
+            - location-based
+            - none
+        readLocation:
+          description: If access is "location-based", which location should have access.
+          type: string
+          enum:
+            - 'spec'
+            - 'music'
+            - 'ars'
+            - 'art'
+            - 'hoover'
+            - 'm&m'
+        controlledDigitalLending:
+          type: boolean
+          default: false
+          enum:
+            - false
+      required:
+        - access
+        - download
+        - readLocation
+    LocationBasedDownloadAccess:
+      type: object
+      properties:
+        access:
+          description: Access level.
+          type: string
+          enum:
+            - stanford
+            - world
+        download:
+          description: Download access level.
+          type: string
+          enum:
+            - location-based
+        readLocation:
+          description: If access is "location-based", which location should have access.
+          type: string
+          enum:
+            - 'spec'
+            - 'music'
+            - 'ars'
+            - 'art'
+            - 'hoover'
+            - 'm&m'
+        controlledDigitalLending:
+          type: boolean
+          default: false
+          enum:
+            - false
+      required:
+        - access
+        - download
+        - readLocation
     MessageDigest:
       description: The output of the message digest algorithm.
       type: object
@@ -2502,7 +2577,7 @@ components:
         version:
           type: integer
         access:
-          $ref: '#/components/schemas/Access'
+          $ref: '#/components/schemas/CollectionAccess'
         administrative:
           $ref: '#/components/schemas/Administrative'
         description:
@@ -2761,6 +2836,33 @@ components:
       type: string
       pattern: '^36105[0-9]{9}$'
       example: 36105010362304
+    StanfordAccess:
+      type: object
+      properties:
+        access:
+          description: Access level.
+          type: string
+          enum:
+            - stanford
+        download:
+          description: Download access level.
+          type: string
+          enum:
+            - stanford
+        readLocation:
+          description: If access is "location-based", which location should have access.
+          type: string
+          nullable: true
+          enum:
+            - null
+        controlledDigitalLending:
+          type: boolean
+          default: false
+          enum:
+            - false
+      required:
+        - access
+        - download
     Title:
       type: object
       additionalProperties: false
@@ -2782,6 +2884,35 @@ components:
             - type: object
               required:
                 - valueAt
+    WorldAccess:
+      type: object
+      properties:
+        access:
+          description: Access level.
+          type: string
+          enum:
+            - world
+        download:
+          description: Download access level.
+          type: string
+          enum:
+            - none
+            - stanford
+            - world
+        readLocation:
+          description: If access is "location-based", which location should have access.
+          type: string
+          nullable: true
+          enum:
+            - null
+        controlledDigitalLending:
+          type: boolean
+          default: false
+          enum:
+            - false
+      required:
+        - access
+        - download
     AdministrativeTag:
       type: string
       pattern: '^.+( : .+)+$'

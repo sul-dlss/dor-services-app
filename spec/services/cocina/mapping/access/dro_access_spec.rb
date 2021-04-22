@@ -4,16 +4,86 @@ require 'rails_helper'
 
 RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
   # Required: rights_xml, cocina_access_props
-  # Optional: embargo_props, roundtrip_rights_xml
+  # Optional: roundtrip_rights_xml, embargo_xml, content_xml, roundtrip_content_xml, cocina_file_access_props
 
-  let(:cocina_embargo_props) { defined?(embargo_props) ? embargo_props : nil }
-  let(:fedora_item_obj) { Dor::Item.new }
-  let(:mapped_dro_access_props) { Cocina::FromFedora::DROAccess.props(fedora_item_obj.rightsMetadata, embargo: cocina_embargo_props) }
+  let(:fedora_item) { Dor::Item.new }
+  let(:mapped_access_props) { Cocina::FromFedora::DROAccess.props(fedora_item.rightsMetadata, fedora_item.embargoMetadata) }
+  let(:mapped_structural_props) { Cocina::FromFedora::DroStructural.props(fedora_item, type: Cocina::Models::Vocab.book) }
+  let(:cocina_file_access_props) { cocina_access_props }
   let(:roundtrip_rights_metadata_xml) { defined?(roundtrip_rights_xml) ? roundtrip_rights_xml : rights_xml }
+  let(:roundtrip_content_metadata_xml) { defined?(roundtrip_content_xml) ? roundtrip_content_xml : content_xml }
+  let(:content_xml) do
+    <<~XML
+      <contentMetadata objectId="druid:db708qz9486" type="file">
+        <resource id="http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f" sequence="1" type="file">
+          <label/>
+          <file id="sul-logo.png" mimetype="image/png" size="19823" publish="yes" shelve="yes" preserve="yes">
+            <checksum type="sha1">b5f3221455c8994afb85214576bc2905d6b15418</checksum>
+            <checksum type="md5">7142ce948827c16120cc9e19b05acd49</checksum>
+            <imageData height="50" width="315"/>
+          </file>
+        </resource>
+      </contentMetadata>
+    XML
+  end
+
+  let(:cocina_structural_props) do
+    {
+      contains: [
+        {
+          externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
+          type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+          version: 1,
+          structural: {
+            contains: [
+              {
+                externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                label: 'sul-logo.png',
+                filename: 'sul-logo.png',
+                size: 19823,
+                version: 1,
+                hasMessageDigests: [
+                  {
+                    type: 'sha1',
+                    digest: 'b5f3221455c8994afb85214576bc2905d6b15418'
+                  },
+                  {
+                    type: 'md5',
+                    digest: '7142ce948827c16120cc9e19b05acd49'
+                  }
+                ],
+                access: cocina_file_access_props,
+                administrative: {
+                  publish: true,
+                  sdrPreserve: true,
+                  shelve: true
+                },
+                hasMimeType: 'image/png',
+                presentation: {
+                  height: 50,
+                  width: 315
+                }
+              }
+            ]
+          },
+          label: ''
+        }
+      ]
+    }
+  end
 
   before do
     rights_metadata_ds = Dor::RightsMetadataDS.from_xml(rights_xml)
-    allow(fedora_item_obj).to receive(:rightsMetadata).and_return(rights_metadata_ds)
+    allow(fedora_item).to receive(:rightsMetadata).and_return(rights_metadata_ds)
+    if defined?(embargo_xml)
+      embargo_metadata_ds = Dor::EmbargoMetadataDS.from_xml(embargo_xml)
+      allow(fedora_item).to receive(:embargoMetadata).and_return(embargo_metadata_ds)
+    end
+    content_metadata_ds = Dor::ContentMetadataDS.from_xml(content_xml)
+    allow(fedora_item).to receive(:contentMetadata).and_return(content_metadata_ds)
+    allow(Cocina::IdGenerator).to receive(:generate_or_existing_fileset_id).and_return('http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f')
+    allow(Cocina::IdGenerator).to receive(:generate_file_id).and_return('http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181')
   end
 
   context 'when mapping from Fedora to Cocina' do
@@ -21,34 +91,54 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
       expect { Cocina::Models::DROAccess.new(cocina_access_props) }.not_to raise_error
     end
 
+    it 'cocina hash produces valid Cocina DROStructural' do
+      expect { Cocina::Models::DROStructural.new(cocina_structural_props) }.not_to raise_error
+    end
+
     it 'Fedora maps to expected Cocina' do
-      expect(mapped_dro_access_props).to be_deep_equal(cocina_access_props)
+      expect(mapped_access_props).to be_deep_equal(cocina_access_props)
+      expect(mapped_structural_props).to be_deep_equal(cocina_structural_props)
     end
   end
 
   context 'when mapping from Cocina to Fedora' do
-    let(:mapped_dro_access) { Cocina::Models::DROAccess.new(mapped_dro_access_props) }
-    let(:mapped_roundtrip_rights_xml) do
-      Cocina::ToFedora::DROAccess.apply(fedora_item_obj, mapped_dro_access)
-      fedora_item_obj.rightsMetadata.to_xml
+    let(:mapped_access) { Cocina::Models::DROAccess.new(mapped_access_props) }
+    let(:mapped_structural) { Cocina::Models::DROStructural.new(mapped_structural_props) }
+    let(:mapped_roundtrip_rights_xml) { fedora_item.rightsMetadata.to_xml }
+    let(:mapped_roundtrip_content_xml) { fedora_item.contentMetadata.to_xml }
+
+    before do
+      Cocina::ToFedora::DROAccess.apply(fedora_item, mapped_access, mapped_structural)
     end
 
     it 'rightsMetadata roundtrips thru cocina model to original rightsMetadata.xml' do
       expect(mapped_roundtrip_rights_xml).to be_equivalent_to(roundtrip_rights_metadata_xml)
     end
+
+    it 'contentMetadata roundtrips thru cocina model to original contentMetadata.xml' do
+      expect(mapped_roundtrip_content_xml).to be_equivalent_to(roundtrip_content_metadata_xml)
+    end
   end
 
   context 'when mapping from roundtrip Fedora to Cocina' do
     let(:roundtrip_fedora_item) { Dor::Item.new }
-    let(:roundtrip_cocina_props) { Cocina::FromFedora::DROAccess.props(roundtrip_fedora_item.rightsMetadata, embargo: cocina_embargo_props) }
+    let(:roundtrip_access_props) { Cocina::FromFedora::DROAccess.props(roundtrip_fedora_item.rightsMetadata, roundtrip_fedora_item.embargoMetadata) }
+    let(:roundtrip_structural_props) { Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: Cocina::Models::Vocab.book) }
 
     before do
       roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(roundtrip_rights_metadata_xml)
       allow(roundtrip_fedora_item).to receive(:rightsMetadata).and_return(roundtrip_rights_metadata_ds)
+      if defined?(embargo_xml)
+        embargo_metadata_ds = Dor::EmbargoMetadataDS.from_xml(embargo_xml)
+        allow(roundtrip_fedora_item).to receive(:embargoMetadata).and_return(embargo_metadata_ds)
+      end
+      roundtrip_content_metadata_ds = Dor::ContentMetadataDS.from_xml(roundtrip_content_metadata_xml)
+      allow(roundtrip_fedora_item).to receive(:contentMetadata).and_return(roundtrip_content_metadata_ds)
     end
 
     it 'roundtrip Fedora maps to expected Cocina object props' do
-      expect(roundtrip_cocina_props).to be_deep_equal(cocina_access_props)
+      expect(roundtrip_access_props).to be_deep_equal(cocina_access_props)
+      expect(roundtrip_structural_props).to be_deep_equal(cocina_structural_props)
     end
   end
 end
@@ -77,6 +167,47 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
         {
           access: 'world',
           download: 'world'
+        }
+      end
+    end
+  end
+
+  context 'with world object access - dark file access' do
+    it_behaves_like 'DRO Access Fedora Cocina mapping' do
+      let(:rights_xml) do
+        <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <file>sul-logo.png</file>
+              <machine>
+                <none/>
+              </machine>
+            </access>
+          </rightsMetadata>
+        XML
+      end
+
+      let(:cocina_access_props) do
+        {
+          access: 'world',
+          download: 'world'
+        }
+      end
+
+      let(:cocina_file_access_props) do
+        {
+          access: 'dark',
+          download: 'none'
         }
       end
     end
@@ -140,6 +271,13 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           download: 'world',
           useAndReproductionStatement: 'blah blah',
           license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/'
+        }
+      end
+
+      let(:cocina_file_access_props) do
+        {
+          access: 'world',
+          download: 'world'
         }
       end
     end
@@ -206,6 +344,13 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           useAndReproductionStatement: 'hrrm hoo hum'
         }
       end
+
+      let(:cocina_file_access_props) do
+        {
+          access: 'world',
+          download: 'world'
+        }
+      end
     end
   end
 
@@ -236,6 +381,13 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           access: 'world',
           download: 'world',
           license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/'
+        }
+      end
+
+      let(:cocina_file_access_props) do
+        {
+          access: 'world',
+          download: 'world'
         }
       end
     end
@@ -308,6 +460,13 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           useAndReproductionStatement: 'wacka wacka wacka'
         }
       end
+
+      let(:cocina_file_access_props) do
+        {
+          access: 'world',
+          download: 'world'
+        }
+      end
     end
   end
 
@@ -347,6 +506,13 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           useAndReproductionStatement: 'Official WTO documents are free for public use.'
         }
       end
+
+      let(:cocina_file_access_props) do
+        {
+          access: 'world',
+          download: 'world'
+        }
+      end
     end
   end
 
@@ -379,6 +545,13 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           copyright: 'Copyright © DLSS'
         }
       end
+
+      let(:cocina_file_access_props) do
+        {
+          access: 'world',
+          download: 'world'
+        }
+      end
     end
   end
 
@@ -402,12 +575,28 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
         XML
       end
 
-      let(:embargo_props) do
-        {
-          releaseDate: DateTime.parse('2029-02-28'),
-          access: 'world',
-          useAndReproductionStatement: 'in public domain'
-        }
+      let(:embargo_xml) do
+        <<~XML
+          <embargoMetadata>
+            <status>embargoed</status>
+            <releaseDate>2029-02-28T00:00:00Z</releaseDate>
+            <releaseAccess>
+              <access type="discover">
+                <machine>
+                  <world/>
+                </machine>
+              </access>
+              <access type="read">
+                <machine>
+                  <world/>
+                </machine>
+              </access>
+              <use>
+                <human type="useAndReproduction">in public domain</human>
+              </use>
+            </releaseAccess>
+          </embargoMetadata>
+        XML
       end
 
       let(:cocina_access_props) do
@@ -417,9 +606,17 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           embargo:
             {
               access: 'world',
+              download: 'world',
               releaseDate: DateTime.parse('2029-02-28'),
               useAndReproductionStatement: 'in public domain'
             }
+        }
+      end
+
+      let(:cocina_file_access_props) do
+        {
+          access: 'world',
+          download: 'world'
         }
       end
     end
@@ -466,6 +663,13 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
             license: 'http://opendatacommons.org/licenses/by/1.0/'
           }
         end
+
+        let(:cocina_file_access_props) do
+          {
+            access: 'dark',
+            download: 'none'
+          }
+        end
       end
     end
 
@@ -507,6 +711,13 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
             access: 'dark',
             download: 'none',
             license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/'
+          }
+        end
+
+        let(:cocina_file_access_props) do
+          {
+            access: 'dark',
+            download: 'none'
           }
         end
       end
@@ -566,6 +777,13 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
             license: 'https://creativecommons.org/licenses/by-sa/4.0/'
           }
         end
+
+        let(:cocina_file_access_props) do
+          {
+            access: 'world',
+            download: 'world'
+          }
+        end
       end
     end
 
@@ -607,6 +825,13 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
             access: 'dark',
             download: 'none',
             license: 'http://cocina.sul.stanford.edu/licenses/none'
+          }
+        end
+
+        let(:cocina_file_access_props) do
+          {
+            access: 'dark',
+            download: 'none'
           }
         end
       end
@@ -651,6 +876,13 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
             license: 'https://creativecommons.org/share-your-work/public-domain/cc0/'
           }
         end
+
+        let(:cocina_file_access_props) do
+          {
+            access: 'dark',
+            download: 'none'
+          }
+        end
       end
     end
   end
@@ -679,6 +911,54 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           {
             access: 'citation-only',
             download: 'none'
+          }
+        end
+
+        let(:cocina_file_access_props) do
+          {
+            access: 'dark',
+            download: 'none'
+          }
+        end
+      end
+    end
+
+    context 'when citation-only -- world file access' do
+      it_behaves_like 'DRO Access Fedora Cocina mapping' do
+        let(:rights_xml) do
+          <<~XML
+            <rightsMetadata>
+              <access type="discover">
+                <machine>
+                  <world/>
+                </machine>
+              </access>
+              <access type="read">
+                <machine>
+                  <none/>
+                </machine>
+              </access>
+              <access type="read">
+                <file>sul-logo.png</file>
+                <machine>
+                  <world/>
+                </machine>
+              </access>
+            </rightsMetadata>
+          XML
+        end
+
+        let(:cocina_access_props) do
+          {
+            access: 'citation-only',
+            download: 'none'
+          }
+        end
+
+        let(:cocina_file_access_props) do
+          {
+            access: 'world',
+            download: 'world'
           }
         end
       end
@@ -771,9 +1051,8 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
       end
     end
 
-    context 'when stanford (no-download) with file level read' do
-      # it_behaves_like 'DRO Access Fedora Cocina mapping' do
-      xit 'waiting for file level access implementation' do
+    context 'when stanford (no-download) -- world file access' do
+      it_behaves_like 'DRO Access Fedora Cocina mapping' do
         let(:rights_xml) do
           <<~XML
             <rightsMetadata>
@@ -788,7 +1067,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
                 </machine>
               </access>
               <access type="read">
-                <file>foo_bar.pdf</file>
+                <file>sul-logo.png</file>
                 <machine>
                   <world/>
                 </machine>
@@ -800,7 +1079,15 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
         let(:cocina_access_props) do
           {
             access: 'stanford',
-            download: 'none'
+            download: 'none',
+            controlledDigitalLending: false
+          }
+        end
+
+        let(:cocina_file_access_props) do
+          {
+            access: 'world',
+            download: 'world'
           }
         end
       end
@@ -867,9 +1154,8 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
       end
     end
 
-    context 'when world (no-download) with file level read' do
-      # it_behaves_like 'DRO Access Fedora Cocina mapping' do
-      xit 'waiting for file level access implementation' do
+    context 'when world (no-download) -- world file access' do
+      it_behaves_like 'DRO Access Fedora Cocina mapping' do
         let(:rights_xml) do
           <<~XML
             <rightsMetadata>
@@ -884,7 +1170,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
                 </machine>
               </access>
               <access type="read">
-                <file>foo_bar.pdf</file>
+                <file>sul-logo.png</file>
                 <machine>
                   <world/>
                 </machine>
@@ -897,6 +1183,13 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           {
             access: 'world',
             download: 'none'
+          }
+        end
+
+        let(:cocina_file_access_props) do
+          {
+            access: 'world',
+            download: 'world'
           }
         end
       end

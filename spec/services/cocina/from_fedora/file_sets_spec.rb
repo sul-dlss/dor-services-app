@@ -213,7 +213,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
       end
 
       it 'generates file-level access metadata for files with their own rights' do
-        expect(text_fileset.pluck(:access)).to include(access: 'stanford', download: 'none')
+        expect(text_fileset.pluck(:access)).to include(access: 'stanford', download: 'none', controlledDigitalLending: false)
       end
     end
 
@@ -372,6 +372,52 @@ RSpec.describe Cocina::FromFedora::FileSets do
         it 'generates file-level access metadata for files with their own rights' do
           expect(text_fileset.pluck(:access)).to include(access: 'world', download: 'location-based', readLocation: location)
         end
+      end
+    end
+    context 'when item is citation-only' do
+      let(:file_specific_rights) do
+        <<~XML
+          <access type="read">
+            <file>gs491bt1345_sample_md.pdf</file>
+            <machine>
+              <world/>
+            </machine>
+          </access>
+        XML
+      end
+
+      let(:item_cocina_rights) do
+        {
+          access: 'dark',
+          download: 'none'
+        }
+      end
+
+      let(:rights_xml) do
+        <<~XML
+          <?xml version="1.0"?>
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <none/>
+              </machine>
+            </access>
+            #{file_specific_rights}
+          </rightsMetadata>
+        XML
+      end
+
+      it 'returns no access metadata for files without their own rights' do
+        expect(audio_fileset.pluck(:access)).to all(eq(item_cocina_rights))
+      end
+
+      it 'generates file-level access metadata for files with their own rights' do
+        expect(text_fileset.pluck(:access)).to include(access: 'world', download: 'world')
       end
     end
   end

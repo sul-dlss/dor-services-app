@@ -2,7 +2,7 @@
 
 module Cocina
   module FromFedora
-    class Access
+    module Access
       # builds the access rights portion of the Access subschema
       class AccessRights
         def self.props(rights_object, rights_xml:)
@@ -20,7 +20,7 @@ module Cocina
             download: download,
             readLocation: location
           }.compact.tap do |h|
-            h[:controlledDigitalLending] = true if controlled_digital_lending?
+            h[:controlledDigitalLending] = controlled_digital_lending? if h[:access] == 'stanford' && h[:download] == 'none'
           end
         end
 
@@ -34,7 +34,7 @@ module Cocina
         #       `dor-rights-auth` gem.
         def download
           # Some access types dictate no downloading. Handle those cases first.
-          return 'none' if no_download? || stanford_no_download? || world_no_download? || location_no_download?
+          return 'none' if no_download? || stanford_no_download? || world_no_download? || location_no_download? || controlled_digital_lending?
 
           # Then check to see if download is based on location
           return 'location-based' if location_based_download?

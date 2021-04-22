@@ -31,13 +31,23 @@ module Cocina
       @invalid_files ||=
         [].tap do |invalid_files|
           files.each do |file|
-            invalid_files << file if file.administrative.shelve || file.access.access != 'dark'
+            invalid_files << file if invalid?(file)
           end
         end
     end
 
     def invalid_filenames
       invalid_files.map { |invalid_file| invalid_file.filename || invalid_file.label }
+    end
+
+    def invalid?(file)
+      # Ignore if a WARC
+      return false if file.hasMimeType == 'application/warc'
+
+      return true if file.administrative.shelve
+      return true if file.access.access != 'dark'
+
+      false
     end
 
     def files

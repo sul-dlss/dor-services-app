@@ -2,17 +2,10 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::FromFedora::Access do
-  subject(:access) { described_class.collection_props(item.rightsMetadata) }
+RSpec.describe Cocina::FromFedora::Access::AccessRights do
+  subject(:access) { described_class.props(rights_metadata_ds.dra_object, rights_xml: xml) }
 
-  let(:item) do
-    Dor::Collection.new
-  end
   let(:rights_metadata_ds) { Dor::RightsMetadataDS.from_xml(xml) }
-
-  before do
-    allow(item).to receive(:rightsMetadata).and_return(rights_metadata_ds)
-  end
 
   describe 'access rights' do
     context 'when citation-only' do
@@ -35,7 +28,7 @@ RSpec.describe Cocina::FromFedora::Access do
       end
 
       it 'specifies access as citation-only' do
-        expect(access).to eq(access: 'citation-only')
+        expect(access).to eq(access: 'citation-only', download: 'none')
       end
     end
 
@@ -61,7 +54,7 @@ RSpec.describe Cocina::FromFedora::Access do
       end
 
       it 'specifies access as stanford with cdl = true' do
-        expect(access).to eq(access: 'stanford', controlledDigitalLending: true)
+        expect(access).to eq(access: 'stanford', download: 'none', controlledDigitalLending: true)
       end
     end
 
@@ -85,7 +78,7 @@ RSpec.describe Cocina::FromFedora::Access do
       end
 
       it 'specifies access as dark' do
-        expect(access).to eq(access: 'dark')
+        expect(access).to eq(access: 'dark', download: 'none')
       end
     end
 
@@ -109,7 +102,7 @@ RSpec.describe Cocina::FromFedora::Access do
       end
 
       it 'specifies access as stanford' do
-        expect(access).to eq(access: 'stanford')
+        expect(access).to eq(access: 'stanford', download: 'stanford')
       end
     end
 
@@ -138,7 +131,7 @@ RSpec.describe Cocina::FromFedora::Access do
       end
 
       it 'specifies access as stanford' do
-        expect(access).to eq(access: 'stanford')
+        expect(access).to eq(access: 'stanford', download: 'none', controlledDigitalLending: false)
       end
     end
 
@@ -166,7 +159,7 @@ RSpec.describe Cocina::FromFedora::Access do
       end
 
       it 'specifies access as world' do
-        expect(access).to eq(access: 'world')
+        expect(access).to eq(access: 'world', download: 'stanford')
       end
     end
 
@@ -190,7 +183,7 @@ RSpec.describe Cocina::FromFedora::Access do
       end
 
       it 'specifies access as world' do
-        expect(access).to eq(access: 'world')
+        expect(access).to eq(access: 'world', download: 'world')
       end
     end
 
@@ -219,7 +212,7 @@ RSpec.describe Cocina::FromFedora::Access do
       end
 
       it 'specifies access as world' do
-        expect(access).to eq(access: 'world')
+        expect(access).to eq(access: 'world', download: 'none')
       end
     end
 
@@ -244,7 +237,7 @@ RSpec.describe Cocina::FromFedora::Access do
         end
 
         it "specifies access as location-based for #{location}" do
-          expect(access).to eq(access: 'location-based', readLocation: location)
+          expect(access).to eq(access: 'location-based', download: 'location-based', readLocation: location)
         end
       end
 
@@ -268,7 +261,7 @@ RSpec.describe Cocina::FromFedora::Access do
         end
 
         it "specifies access as location-based for #{location}" do
-          expect(access).to eq(access: 'location-based', readLocation: location)
+          expect(access).to eq(access: 'location-based', download: 'none', readLocation: location)
         end
       end
 
@@ -297,7 +290,7 @@ RSpec.describe Cocina::FromFedora::Access do
         end
 
         it "specifies access as stanford for #{location}" do
-          expect(access).to eq(access: 'stanford', readLocation: location)
+          expect(access).to eq(access: 'stanford', download: 'location-based', readLocation: location)
         end
       end
 
@@ -326,7 +319,7 @@ RSpec.describe Cocina::FromFedora::Access do
         end
 
         it "specifies access as world for #{location}" do
-          expect(access).to eq(access: 'world', readLocation: location)
+          expect(access).to eq(access: 'world', download: 'location-based', readLocation: location)
         end
       end
     end

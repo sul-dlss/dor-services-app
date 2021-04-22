@@ -27,7 +27,7 @@ module Publish
     # https://github.com/sul-dlss/dor-services/blob/main/lib/dor/services/creative_commons_license_service.rb
     # https://github.com/sul-dlss/dor-services/blob/main/lib/dor/services/open_data_license_service.rb
     LICENSE_CODES = {
-      Cocina::FromFedora::License::NONE_LICENSE_URI => Resource.new('none', 'no Creative Commons (CC) license'), # Only used in some legacy ETDs.
+      Cocina::FromFedora::Access::License::NONE_LICENSE_URI => Resource.new('none', 'no Creative Commons (CC) license'), # Only used in some legacy ETDs.
       'https://creativecommons.org/licenses/by/3.0/' => Resource.new('by', 'Attribution 3.0 Unported'),
       'https://creativecommons.org/licenses/by-sa/3.0/' => Resource.new('by-sa', 'Attribution Share Alike 3.0 Unported'),
       'https://creativecommons.org/licenses/by-nd/3.0/' => Resource.new('by-nd', 'Attribution No Derivatives 3.0 Unported'),
@@ -63,7 +63,7 @@ module Publish
       use_node = original.xpath('/rightsMetadata/use').first
       license = LICENSE_CODES.fetch(license_uri)
       case license_uri
-      when Cocina::FromFedora::License::NONE_LICENSE_URI
+      when Cocina::FromFedora::Access::License::NONE_LICENSE_URI
         use_node.add_child("<machine type=\"creativeCommons\">#{license.code}</machine>")
         use_node.add_child("<human type=\"creativeCommons\">#{license.label}</human>")
       when %r{://creativecommons.org/}

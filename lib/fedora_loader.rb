@@ -56,14 +56,17 @@ class FedoraLoader
   end
 
   def load(druid)
-    label, datastreams = cache.label_and_datastreams(druid).value!
+    result = cache.label_and_datastreams(druid)
+    raise BadCache if result.failure?
+
+    label, datastreams = result.value!
 
     raise BadCache unless datastreams.key?('RELS-EXT')
 
     obj = fedora_class(datastreams['RELS-EXT']).new(pid: druid, label: label)
     FedoraCache::DATASTREAMS.each do |dsid|
       datastream = datastreams[dsid]
-      obj.datastreams[dsid].content = datastream if datastream
+      obj.datastreams[dsid].content = datastream if datastream && obj.datastreams[dsid]
     end
     obj.relationships = obj.rels_ext.content
     obj
@@ -80,7 +83,10 @@ class FedoraLoader
                                                  'fedora' => 'info:fedora/fedora-system:def/relations-external#',
                                                  'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#').present?
 
-    model = rels_ext_ng_xml.root.xpath('//fedora-model:hasModel', 'fedora-model' => 'info:fedora/fedora-system:def/model#').first['rdf:resource']
+    has_model_nodes = rels_ext_ng_xml.root.xpath('//fedora-model:hasModel', 'fedora-model' => 'info:fedora/fedora-system:def/model#')
+    raise Unmapped if has_model_nodes.empty?
+
+    model = has_model_nodes.first['rdf:resource']
     case model
     when 'info:fedora/afmodel:Dor_Collection'
       Dor::Collection
