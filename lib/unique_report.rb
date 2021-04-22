@@ -32,7 +32,7 @@ class UniqueReport
       ng_xml = Nokogiri::XML(cache_result.value!)
 
       report_func.call(ng_xml)
-    end.compact.flatten.uniq
+    end.compact.flatten.uniq.sort
   end
 
   def write_report(results)
