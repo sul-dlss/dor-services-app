@@ -61,10 +61,12 @@ Performance/CollectionLiteralInLoop:
 Rails/Output:
   Exclude:
     - 'lib/report.rb'
+    - 'lib/unique_report.rb'
 
 Rails/Exit:
   Exclude:
     - 'lib/report.rb'
+    - 'lib/unique_report.rb'
 
 RSpec/DescribeClass:
   Exclude:

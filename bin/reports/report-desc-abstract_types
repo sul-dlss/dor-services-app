@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/unique_report'
+
+def abstract_types(ng_xml)
+  ng_xml.root.xpath('mods:abstract/@type', mods: MODS_NS).map(&:content)
+end
+
+UniqueReport.new(name: 'desc-abstract_types', dsid: 'descMetadata', report_func: method(:abstract_types)).run
