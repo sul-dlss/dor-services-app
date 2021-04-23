@@ -92,7 +92,7 @@ results = Parallel.map(druids, progress: 'Testing') do |druid|
   notifier = DataErrorNotifier.new
 
   result = cache.label_and_desc_metadata(druid)
-  return Result.new(druid, 'Missing', :missing) if result.failure?
+  next Result.new(druid, 'Missing', :missing) if result.failure?
 
   label, mods_xml = result.value!
   mods_ng_xml = Nokogiri::XML(mods_xml)
