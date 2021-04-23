@@ -18,6 +18,12 @@ class MetadataController < ApplicationController
     render xml: @item.descMetadata.content
   end
 
+  def public_xml
+    release_tags = ReleaseTags.for(item: @item)
+    service = Publish::PublicXmlService.new(@item, released_for: release_tags)
+    render xml: service
+  end
+
   # This supports the Legacy Fedora 3 data model. This is used by the accessionWF.
   def update_legacy_metadata
     datastream_names = {

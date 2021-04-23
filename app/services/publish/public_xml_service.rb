@@ -14,12 +14,12 @@ module Publish
 
     # @raise [Dor::DataError]
     # rubocop:disable Metrics/AbcSize
-    def to_xml
+    # @note Rails sends args when rendering XML but we ignore them
+    def to_xml(**)
       pub = Nokogiri::XML('<publicObject/>').root
       pub['id'] = object.pid
       pub['published'] = Time.now.utc.xmlschema
       pub['publishVersion'] = 'dor-services/' + Dor::VERSION
-
       pub.add_child(public_identity_metadata.root) # add in modified identityMetadata datastream
       pub.add_child(public_content_metadata.root) if public_content_metadata.xpath('//resource').any?
       pub.add_child(public_rights_metadata.root)

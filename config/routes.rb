@@ -69,6 +69,7 @@ Rails.application.routes.draw do
           get 'dublin_core'
           get 'descriptive'
           get 'mods'
+          get 'public_xml'
         end
       end
 

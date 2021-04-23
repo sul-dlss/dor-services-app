@@ -885,6 +885,23 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/metadata/public_xml':
+    get:
+      tags:
+        - objects
+      summary: Retrieve the full public XML metadata for the object
+      description: ''
+      operationId: 'metadata#public_xml'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
   '/v1/objects/{object_id}/events':
     get:
       tags:
