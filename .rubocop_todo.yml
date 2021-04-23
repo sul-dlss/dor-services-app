@@ -89,10 +89,11 @@ Naming/VariableNumber:
     - 'spec/services/cleanup_service_spec.rb'
     - 'spec/support/datastreams.rb'
 
-# Offense count: 10
+# Offense count: 11
 RSpec/AnyInstance:
   Exclude:
     - 'spec/requests/create_object_spec.rb'
+    - 'spec/requests/metadata_spec.rb'
     - 'spec/requests/notify_goobi_spec.rb'
     - 'spec/services/publish/metadata_transfer_service_spec.rb'
     - 'spec/services/publish/public_xml_service_spec.rb'

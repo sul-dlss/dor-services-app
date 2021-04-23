@@ -96,7 +96,7 @@ Edit this file to add the appropriate URLs.  You may also need certs to talk to 
 
 To spin up a local rails console:
 
- `bundle exec rails c`
+  `bundle exec rails c`
 
 To spin up a local development server:
 
@@ -124,7 +124,7 @@ These tools are best run on a server within the network. (Currently installed on
         dor_services:
           url: 'https://dor-services-prod.stanford.edu'
           token: '<create a token>'
-    
+
 2. Copy certificates locally:
 
         scp -r <user from puppet>@<dor serices production host>:/etc/pki/tls .
@@ -175,7 +175,7 @@ Usage: bin/validate-cocina-roundtrip [options]
     -r, --random                     Select random druids.
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
     -h, --help                       Displays help.
-    
+
 $ bin/validate-cocina-roundtrip -s 100
 Testing |Time: 00:00:21 | ============================================================================ | Time: 00:00:21
 Status (n=100; not using Missing for success/different/error stats):
@@ -183,7 +183,7 @@ Status (n=100; not using Missing for success/different/error stats):
   Different: 56 (56.0%)
   Mapping error:     36 (36.0%)
   Update error:     0 (0.0%)
-  Missing:     0 (0.0%) 
+  Missing:     0 (0.0%)
 ```
 
 Using the druids from `druids.txt` and the cache, this will create a Fedora item, map the Fedora item to the Cocina model, update the Fedora item from the Cocina object, map the changed Fedora item to the Cocina model, and compare the original Cocina object against the changed Cocina object and the original Fedora item against the changed Fedora item.
