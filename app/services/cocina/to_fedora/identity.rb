@@ -2,8 +2,7 @@
 
 module Cocina
   module ToFedora
-    # This transforms the DRO.access schema to the
-    # Fedora 3 data model identityMetadata
+    # This transforms the DRO.identification schema to the Fedora 3 data model identityMetadata
     class Identity
       # @param [String] agreement_id (nil) the identifier for the agreement. Note that only items have an agreement.
       def self.apply(item, label:, agreement_id: nil)
