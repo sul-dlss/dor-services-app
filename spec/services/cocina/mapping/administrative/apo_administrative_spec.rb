@@ -409,8 +409,7 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
 
   describe 'no collections, has license, roles with type sunetid' do
     # based on kt538yv1733 combined with default_obj_rights and roles from qv549bf9093
-    # it_behaves_like 'APO Fedora Cocina mapping' do
-    xit 'problems with empty name elements in role/person, with sunetid members, with license (roundtrips as license url)' do
+    it_behaves_like 'APO Fedora Cocina mapping' do
       let(:admin_metadata_xml) do
         <<~XML
           <administrativeMetadata>
