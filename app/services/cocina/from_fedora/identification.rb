@@ -2,39 +2,39 @@
 
 module Cocina
   module FromFedora
-    # Creates Cocina Identification objects from Fedora objects
+    # Creates Cocina::Identification object properties from Fedora objects
     class Identification
-      # @param [Dor::Item,Dor::Collection,Dor::Etd] item
-      # @return [Hash] a hash that can be mapped to a cocina administrative model
+      # @param [Dor::Item,Dor::Collection,Dor::Etd] fedora_object
+      # @return [Hash] a hash that can be mapped to a Cocina::Identification object
       # @raises [Mapper::MissingSourceID]
-      def self.props(item)
-        new(item).props
+      def self.props(fedora_object)
+        new(fedora_object).props
       end
 
-      def initialize(item)
-        @item = item
+      def initialize(fedora_object)
+        @fedora_object = fedora_object
       end
 
       def props
         {
           sourceId: source_id,
-          barcode: item.identityMetadata.barcode
+          barcode: fedora_object.identityMetadata.barcode
         }.compact
       end
 
       private
 
-      attr_reader :item
+      attr_reader :fedora_object
 
       def source_id
-        if item.source_id
-          item.source_id
-        elsif item.is_a? Dor::Collection
+        if fedora_object.source_id
+          fedora_object.source_id
+        elsif fedora_object.is_a? Dor::Collection
           nil
         else
           # ETDs post Summer 2020 have a source id, but legacy ones don't.  In that case look for a dissertation_id.
-          dissertation = item.otherId.find { |id| id.start_with?('dissertationid:') }
-          raise Mapper::MissingSourceID, "unable to resolve a sourceId for #{item.pid}" unless dissertation
+          dissertation = fedora_object.otherId.find { |id| id.start_with?('dissertationid:') }
+          raise Mapper::MissingSourceID, "unable to resolve a sourceId for #{fedora_object.pid}" unless dissertation
 
           dissertation
         end

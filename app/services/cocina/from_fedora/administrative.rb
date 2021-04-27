@@ -2,34 +2,34 @@
 
 module Cocina
   module FromFedora
-    # Creates Cocina Administrative objects from Fedora objects
+    # Creates Cocina::Administrative object properties from Fedora objects
     class Administrative
-      # @param [Dor::Item,Dor::Etd] item
-      # @return [Hash] a hash that can be mapped to a cocina administrative model
-      def self.props(item)
-        new(item).props
+      # @param [Dor::Item,Dor::Etd,Dor::Collection] fedora_object
+      # @return [Hash] a hash that can be mapped to a Cocina::Administrative object
+      def self.props(fedora_object)
+        new(fedora_object).props
       end
 
-      def initialize(item)
-        @item = item
+      def initialize(fedora_object)
+        @fedora_object = fedora_object
       end
 
       def props
         {}.tap do |admin|
-          admin[:hasAdminPolicy] = item.admin_policy_object_id if item.admin_policy_object_id
+          admin[:hasAdminPolicy] = fedora_object.admin_policy_object_id if fedora_object.admin_policy_object_id
           release_tags = build_release_tags
           admin[:releaseTags] = release_tags unless release_tags.empty?
-          projects = AdministrativeTags.project(pid: item.id)
+          projects = AdministrativeTags.project(pid: fedora_object.id)
           admin[:partOfProject] = projects.first if projects.any?
         end
       end
 
       private
 
-      attr_reader :item
+      attr_reader :fedora_object
 
       def build_release_tags
-        item.identityMetadata.ng_xml.xpath('//release').map do |node|
+        fedora_object.identityMetadata.ng_xml.xpath('//release').map do |node|
           {
             to: node.attributes['to'].value,
             what: node.attributes['what'].value,
