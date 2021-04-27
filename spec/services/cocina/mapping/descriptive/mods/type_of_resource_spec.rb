@@ -199,6 +199,31 @@ RSpec.describe 'MODS typeOfResource <--> cocina mappings' do
     end
   end
 
+  describe 'With authority' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <typeOfResource authorityURI="http://id.loc.gov/vocabulary/resourceTypes/" valueURI="http://id.loc.gov/vocabulary/resourceTypes/dat">Dataset</typeOfResource>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          form: [
+            {
+              value: 'Dataset',
+              type: 'resource type',
+              uri: 'http://id.loc.gov/vocabulary/resourceTypes/dat',
+              source: {
+                uri: 'http://id.loc.gov/vocabulary/resourceTypes/'
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'With display label' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
