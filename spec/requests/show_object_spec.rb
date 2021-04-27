@@ -72,7 +72,8 @@ RSpec.describe 'Get the object' do
       before do
         allow(object).to receive(:collections).and_return([collection])
 
-        EmbargoService.create(item: object, release_date: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world')
+        embargo = Cocina::Models::Embargo.new(releaseDate: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world', download: 'world')
+        Cocina::ToFedora::EmbargoMetadataGenerator.generate(embargo_metadata: object.embargoMetadata, embargo: embargo)
         ReleaseTags.create(object, release: true,
                                    what: 'self',
                                    to: 'Searchworks',
@@ -94,7 +95,8 @@ RSpec.describe 'Get the object' do
             download: 'world',
             embargo: {
               releaseDate: '2019-09-26T07:00:00.000+00:00',
-              access: 'world'
+              access: 'world',
+              download: 'world'
             },
             useAndReproductionStatement: 'Property rights reside with the repository...'
           },
@@ -140,7 +142,8 @@ RSpec.describe 'Get the object' do
 
     context 'when the object has a released embargo' do
       before do
-        EmbargoService.create(item: object, release_date: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world')
+        embargo = Cocina::Models::Embargo.new(releaseDate: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world', download: 'world')
+        Cocina::ToFedora::EmbargoMetadataGenerator.generate(embargo_metadata: object.embargoMetadata, embargo: embargo)
         object.embargoMetadata.status = 'released'
       end
 

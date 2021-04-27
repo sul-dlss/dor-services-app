@@ -7,7 +7,7 @@ RSpec.shared_examples 'Collection Access Fedora Cocina mapping' do
   # Optional: roundtrip_rights_xml
 
   let(:fedora_collection) { Dor::Collection.new }
-  let(:mapped_coll_access_props) { Cocina::FromFedora::Access.collection_props(fedora_collection.rightsMetadata) }
+  let(:mapped_coll_access_props) { Cocina::FromFedora::CollectionAccess.props(fedora_collection.rightsMetadata) }
   let(:roundtrip_rights_metadata_xml) { defined?(roundtrip_rights_xml) ? roundtrip_rights_xml : rights_xml }
 
   before do
@@ -17,7 +17,7 @@ RSpec.shared_examples 'Collection Access Fedora Cocina mapping' do
 
   context 'when mapping from Fedora to Cocina' do
     it 'cocina hash produces valid Cocina (Collection) Access' do
-      expect { Cocina::Models::Access.new(cocina_access_props) }.not_to raise_error
+      expect { Cocina::Models::CollectionAccess.new(cocina_access_props) }.not_to raise_error
     end
 
     it 'Fedora maps to expected Cocina' do
@@ -26,9 +26,9 @@ RSpec.shared_examples 'Collection Access Fedora Cocina mapping' do
   end
 
   context 'when mapping from Cocina to Fedora' do
-    let(:mapped_coll_access) { Cocina::Models::Access.new(mapped_coll_access_props) }
+    let(:mapped_coll_access) { Cocina::Models::CollectionAccess.new(mapped_coll_access_props) }
     let(:mapped_roundtrip_rights_xml) do
-      Cocina::ToFedora::Access.apply(fedora_collection, mapped_coll_access)
+      Cocina::ToFedora::CollectionAccess.apply(fedora_collection, mapped_coll_access)
       fedora_collection.rightsMetadata.to_xml
     end
 
@@ -39,7 +39,7 @@ RSpec.shared_examples 'Collection Access Fedora Cocina mapping' do
 
   context 'when mapping from roundtrip Fedora to Cocina' do
     let(:roundtrip_fedora_collection) { Dor::Collection.new }
-    let(:roundtrip_cocina_props) { Cocina::FromFedora::Access.collection_props(roundtrip_fedora_collection.rightsMetadata) }
+    let(:roundtrip_cocina_props) { Cocina::FromFedora::CollectionAccess.props(roundtrip_fedora_collection.rightsMetadata) }
 
     before do
       roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(roundtrip_rights_metadata_xml)

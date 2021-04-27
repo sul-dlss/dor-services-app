@@ -11,44 +11,9 @@ module Cocina
         new(item, notifier: notifier).props
       end
 
-      def initialize(item, notifier: nil)
-        @item = item
-        @notifier = notifier
-      end
-
-      # @raises [SolrConnectionError]
-      # rubocop:disable Metrics/AbcSize
-      def props
-        embargo = Embargo.props(item.embargoMetadata)
-        {
-          externalIdentifier: item.pid,
-          type: dro_type,
-          # Label may have been truncated, so prefer objectLabel.
-          label: item.objectLabel.first || item.label,
-          version: item.current_version.to_i,
-          administrative: FromFedora::Administrative.props(item),
-          access: DROAccess.props(item.rightsMetadata, embargo: embargo),
-          structural: DroStructural.props(item, type: dro_type)
-        }.tap do |props|
-          title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
-          description = FromFedora::Descriptive.props(title_builder: title_builder,
-                                                      mods: item.descMetadata.ng_xml,
-                                                      druid: item.pid,
-                                                      notifier: notifier)
-          props[:description] = description unless description.nil?
-          props[:geographic] = { iso19139: item.geoMetadata.content } if dro_type == Cocina::Models::Vocab.geo
-          identification = FromFedora::Identification.props(item)
-          identification[:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
-          props[:identification] = identification unless identification.empty?
-        end
-      end
-      # rubocop:enable Metrics/AbcSize
-
-      private
-
-      attr_reader :item, :notifier
-
-      def dro_type
+      # @param [Dor::Item,Dor::Etd] item
+      # @return [String] item's type
+      def self.dro_type(item)
         return Cocina::Models::Vocab.agreement if item.is_a? Dor::Agreement
 
         case item.contentMetadata.contentType.first
@@ -78,6 +43,43 @@ module Cocina
           raise "Unknown content type #{item.contentMetadata.contentType.first}"
         end
       end
+
+      def initialize(item, notifier: nil)
+        @item = item
+        @notifier = notifier
+      end
+
+      # @raises [SolrConnectionError]
+      # rubocop:disable Metrics/AbcSize
+      def props
+        type = DRO.dro_type(item)
+        {
+          externalIdentifier: item.pid,
+          type: type,
+          # Label may have been truncated, so prefer objectLabel.
+          label: item.objectLabel.first || item.label,
+          version: item.current_version.to_i,
+          administrative: FromFedora::Administrative.props(item),
+          access: DROAccess.props(item.rightsMetadata, item.embargoMetadata),
+          structural: DroStructural.props(item, type: type)
+        }.tap do |props|
+          title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
+          description = FromFedora::Descriptive.props(title_builder: title_builder,
+                                                      mods: item.descMetadata.ng_xml,
+                                                      druid: item.pid,
+                                                      notifier: notifier)
+          props[:description] = description unless description.nil?
+          props[:geographic] = { iso19139: item.geoMetadata.content } if type == Cocina::Models::Vocab.geo
+          identification = FromFedora::Identification.props(item)
+          identification[:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
+          props[:identification] = identification unless identification.empty?
+        end
+      end
+      # rubocop:enable Metrics/AbcSize
+
+      private
+
+      attr_reader :item, :notifier
     end
   end
 end

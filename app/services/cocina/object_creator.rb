@@ -16,7 +16,6 @@ module Cocina
       validate(cocina_object)
 
       af_model = create_from_model(cocina_object, persister: persister)
-
       # Fedora 3 has no unique constrains, so
       # index right away to reduce the likelyhood of duplicate sourceIds
       SynchronousIndexer.reindex_remotely(af_model.pid)
@@ -110,7 +109,7 @@ module Cocina
         add_description(fedora_collection, cocina_collection)
         add_collection_tags(pid, cocina_collection)
         apply_default_access(fedora_collection)
-        Cocina::ToFedora::Access.apply(fedora_collection, cocina_collection.access) if cocina_collection.access
+        Cocina::ToFedora::CollectionAccess.apply(fedora_collection, cocina_collection.access) if cocina_collection.access
         Cocina::ToFedora::Identity.apply(fedora_collection, label: cocina_collection.label)
       end
     end

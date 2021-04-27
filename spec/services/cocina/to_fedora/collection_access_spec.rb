@@ -2,16 +2,16 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::ToFedora::Access do
+RSpec.describe Cocina::ToFedora::CollectionAccess do
   subject(:apply) { described_class.apply(collection, access) }
 
   let(:collection) do
     Dor::Collection.new
   end
 
-  context 'with stanford access' do
+  context 'with world access' do
     let(:access) do
-      Cocina::Models::Access.new(access: 'stanford')
+      Cocina::Models::CollectionAccess.new(access: 'world')
     end
 
     it 'builds the xml' do
@@ -26,7 +26,7 @@ RSpec.describe Cocina::ToFedora::Access do
           </access>
           <access type="read">
             <machine>
-              <group>stanford</group>
+              <world/>
             </machine>
           </access>
           <use>
@@ -48,7 +48,7 @@ RSpec.describe Cocina::ToFedora::Access do
   #       the existing license, not merely setting it
   context 'with an existing (ODC) license of a different class than the new one (CC)' do
     let(:access) do
-      Cocina::Models::Access.new(license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/')
+      Cocina::Models::CollectionAccess.new(license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/')
     end
 
     before do

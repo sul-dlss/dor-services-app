@@ -261,28 +261,28 @@ RSpec.describe Cocina::ObjectUpdater do
 
     context 'when updating access' do
       before do
-        allow(Cocina::ToFedora::Access).to receive(:apply)
+        allow(Cocina::ToFedora::CollectionAccess).to receive(:apply)
       end
 
       context 'when access has changed' do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
             attrs[:access] = {
-              access: 'stanford'
+              access: 'dark'
             }
           end
         end
 
         it 'updates access' do
           update
-          expect(Cocina::ToFedora::Access).to have_received(:apply)
+          expect(Cocina::ToFedora::CollectionAccess).to have_received(:apply)
         end
       end
 
       context 'when access has not changed' do
         it 'does not update access' do
           update
-          expect(Cocina::ToFedora::Access).not_to have_received(:apply)
+          expect(Cocina::ToFedora::CollectionAccess).not_to have_received(:apply)
         end
       end
     end
@@ -314,7 +314,7 @@ RSpec.describe Cocina::ObjectUpdater do
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         version: 1,
-        access: { access: 'world' },
+        access: {},
         administrative: { hasAdminPolicy: 'druid:dd999df4567' }
       }
     end
@@ -449,7 +449,7 @@ RSpec.describe Cocina::ObjectUpdater do
         allow(Cocina::ToFedora::Identity).to receive(:apply)
         allow(AdministrativeTags).to receive(:create)
         allow(content_metadata).to receive(:ng_xml)
-        allow(Cocina::ToFedora::RightsMetadataGenerator).to receive(:generate)
+        allow(Cocina::ToFedora::DROAccess).to receive(:apply)
       end
 
       context 'when structural has changed' do
@@ -469,7 +469,7 @@ RSpec.describe Cocina::ObjectUpdater do
           expect(content_metadata).not_to have_received(:ng_xml)
           expect(Cocina::ToFedora::Identity).to have_received(:apply)
           expect(AdministrativeTags).to have_received(:create)
-          expect(Cocina::ToFedora::RightsMetadataGenerator).to have_received(:generate)
+          expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
         end
       end
 
@@ -480,7 +480,7 @@ RSpec.describe Cocina::ObjectUpdater do
           expect(content_metadata).not_to have_received(:contentType=)
           expect(Cocina::ToFedora::Identity).not_to have_received(:apply)
           expect(AdministrativeTags).not_to have_received(:create)
-          expect(Cocina::ToFedora::RightsMetadataGenerator).not_to have_received(:generate)
+          expect(Cocina::ToFedora::DROAccess).not_to have_received(:apply)
         end
       end
     end
@@ -496,7 +496,7 @@ RSpec.describe Cocina::ObjectUpdater do
         allow(content_metadata).to receive(:ng_xml)
         allow(Cocina::ToFedora::Identity).to receive(:apply)
         allow(AdministrativeTags).to receive(:create)
-        allow(Cocina::ToFedora::RightsMetadataGenerator).to receive(:generate)
+        allow(Cocina::ToFedora::DROAccess).to receive(:apply)
       end
 
       let(:cocina_attrs) do
@@ -515,7 +515,7 @@ RSpec.describe Cocina::ObjectUpdater do
         expect(content_metadata).not_to have_received(:ng_xml)
         expect(Cocina::ToFedora::Identity).to have_received(:apply)
         expect(AdministrativeTags).to have_received(:create)
-        expect(Cocina::ToFedora::RightsMetadataGenerator).to have_received(:generate)
+        expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
       end
     end
 
@@ -528,7 +528,8 @@ RSpec.describe Cocina::ObjectUpdater do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
             attrs[:access] = {
-              access: 'stanford'
+              access: 'stanford',
+              download: 'stanford'
             }
           end
         end
@@ -605,7 +606,7 @@ RSpec.describe Cocina::ObjectUpdater do
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         version: 1,
-        access: { access: 'world' },
+        access: {},
         administrative: { hasAdminPolicy: 'druid:dd999df4567' },
         identification: {
           sourceId: 'sul:8.559351',

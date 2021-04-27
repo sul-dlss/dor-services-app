@@ -20,8 +20,6 @@ RSpec.describe 'Update object' do
     allow(AdministrativeTags).to receive(:for).and_return([])
 
     allow(EventFactory).to receive(:create)
-
-    allow(Cocina::ToFedora::RightsMetadataGenerator).to receive(:generate)
   end
 
   let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
@@ -34,8 +32,8 @@ RSpec.describe 'Update object' do
       item.descMetadata.title_info.main_title = title
       item.contentMetadata.contentType = ['book']
       item.identityMetadata.barcode = '36105036289000'
-      item.rightsMetadata.content = Cocina::ToFedora::RightsMetadataGenerator.generate(
-        rights: Dor::RightsMetadataDS.new,
+      item.rightsMetadata.content = Cocina::ToFedora::AccessGenerator.generate(
+        root: Dor::RightsMetadataDS.new.ng_xml.root,
         access: cocina_access,
         structural: cocina_structural
       )
@@ -136,7 +134,6 @@ RSpec.describe 'Update object' do
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Process : Content Type : Book (rtl)'])
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
     expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
-    expect(Cocina::ToFedora::RightsMetadataGenerator).to have_received(:generate).once
   end
 
   context 'when update_descriptive is true' do
@@ -351,8 +348,8 @@ RSpec.describe 'Update object' do
           </mods>
         XML
         item.contentMetadata.contentType = ['book']
-        item.rightsMetadata.content = Cocina::ToFedora::RightsMetadataGenerator.generate(
-          rights: Dor::RightsMetadataDS.new,
+        item.rightsMetadata.content = Cocina::ToFedora::AccessGenerator.generate(
+          root: Dor::RightsMetadataDS.new.ng_xml.root,
           access: cocina_access
         )
       end
@@ -365,7 +362,6 @@ RSpec.describe 'Update object' do
       expect(response.status).to eq(200)
       expect(item).to have_received(:save!)
       expect(response.body).to equal_cocina_model(expected)
-      expect(Cocina::ToFedora::RightsMetadataGenerator).to have_received(:generate).once
     end
   end
 
@@ -386,8 +382,8 @@ RSpec.describe 'Update object' do
         XML
 
         item.contentMetadata.contentType = ['book']
-        item.rightsMetadata.content = Cocina::ToFedora::RightsMetadataGenerator.generate(
-          rights: Dor::RightsMetadataDS.new,
+        item.rightsMetadata.content = Cocina::ToFedora::AccessGenerator.generate(
+          root: Dor::RightsMetadataDS.new.ng_xml.root,
           access: cocina_access
         )
       end
@@ -403,7 +399,6 @@ RSpec.describe 'Update object' do
       expect(response.status).to eq(200)
       expect(item).to have_received(:save!)
       expect(response.body).to equal_cocina_model(expected)
-      expect(Cocina::ToFedora::RightsMetadataGenerator).to have_received(:generate).once
     end
   end
 
@@ -637,7 +632,8 @@ RSpec.describe 'Update object' do
             'shelve' => true
           },
           'access' => {
-            'access' => 'stanford'
+            'access' => 'stanford',
+            'download' => 'stanford'
           },
           'hasMessageDigests' => []
         }
@@ -657,7 +653,8 @@ RSpec.describe 'Update object' do
             'shelve' => false
           },
           'access' => {
-            'access' => 'world'
+            'access' => 'world',
+            'download' => 'world'
           },
           'hasMessageDigests' => []
         }
@@ -677,7 +674,8 @@ RSpec.describe 'Update object' do
             'shelve' => true
           },
           'access' => {
-            'access' => 'world'
+            'access' => 'world',
+            'download' => 'world'
           },
           'hasMessageDigests' => []
         }
@@ -821,10 +819,6 @@ RSpec.describe 'Update object' do
                 params: data,
                 headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           expect(response.status).to eq 400
-          expect(response.body).to eq '{"errors":[' \
-            '{"status":"400","title":"Bad Request",' \
-            '"detail":"Not all files have dark access and/or are unshelved when item access is dark: ' \
-            '[\\"00001.jp2\\", \\"00002.html\\", \\"00002.jp2\\"]"}]}'
         end
       end
     end
@@ -1174,7 +1168,15 @@ RSpec.describe 'Update object' do
                                 ],
                                 isMemberOf: ['druid:xx888xx7777']
                               },
-                              access: { access: 'stanford', embargo: { access: 'world', releaseDate: '2020-02-29' } })
+                              access: {
+                                access: 'stanford',
+                                download: 'stanford',
+                                embargo: {
+                                  access: 'world',
+                                  download: 'world',
+                                  releaseDate: '2020-02-29'
+                                }
+                              })
     end
     let(:data) do
       <<~JSON
@@ -1182,8 +1184,8 @@ RSpec.describe 'Update object' do
           "externalIdentifier": "#{druid}",
           "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
           "label":"This is my label","version":1,
-          "access":{"access":"stanford",
-            "embargo":{"access":"world","releaseDate":"2020-02-29"}
+          "access":{"access":"stanford","download":"stanford",
+            "embargo":{"access":"world","download":"world","releaseDate":"2020-02-29"}
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"This is my title"}]},
@@ -1192,7 +1194,7 @@ RSpec.describe 'Update object' do
       JSON
     end
     let(:access) { 'stanford' }
-    let(:download) { 'none' }
+    let(:download) { 'stanford' }
 
     before do
       allow(AdministrativeTags).to receive(:project).and_return([])
@@ -1204,7 +1206,6 @@ RSpec.describe 'Update object' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(200)
-      expect(Cocina::ToFedora::RightsMetadataGenerator).to have_received(:generate).once
     end
   end
 end

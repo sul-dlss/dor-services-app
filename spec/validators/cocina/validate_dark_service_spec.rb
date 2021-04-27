@@ -9,6 +9,7 @@ RSpec.describe Cocina::ValidateDarkService do
   let(:file_access) { 'dark' }
   let(:publish) { false }
   let(:shelve) { false }
+  let(:mime_type) { 'text/plain' }
 
   let(:item) do
     Cocina::Models::DRO.new(
@@ -19,7 +20,7 @@ RSpec.describe Cocina::ValidateDarkService do
       administrative: {
         hasAdminPolicy: 'druid:df123cd4567'
       },
-      access: { access: access },
+      access: { access: access, download: 'none' },
       structural: {
         contains: [
           {
@@ -33,13 +34,14 @@ RSpec.describe Cocina::ValidateDarkService do
                   label: 'Page 1',
                   type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
                   version: 1,
-                  access: { access: file_access },
+                  access: { access: file_access, download: 'none' },
                   administrative: {
                     publish: publish,
                     shelve: shelve,
                     sdrPreserve: true
                   },
                   hasMessageDigests: [],
+                  hasMimeType: mime_type,
                   filename: 'page1.txt' }
               ]
             }
@@ -66,9 +68,19 @@ RSpec.describe Cocina::ValidateDarkService do
   context 'when dark and shelve is true' do
     let(:shelve) { true }
 
-    it 'is not valid' do
-      expect(validator.valid?).to be false
-      expect(validator.error).to eq 'Not all files have dark access and/or are unshelved when item access is dark: ["page1.txt"]'
+    context 'when not a WARC' do
+      it 'is not valid' do
+        expect(validator.valid?).to be false
+        expect(validator.error).to eq 'Not all files have dark access and/or are unshelved when item access is dark: ["page1.txt"]'
+      end
+    end
+
+    context 'when a WARC' do
+      let(:mime_type) { 'application/warc' }
+
+      it 'is valid' do
+        expect(validator.valid?).to be true
+      end
     end
   end
 

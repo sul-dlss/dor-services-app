@@ -104,7 +104,11 @@ module Cocina
       end
 
       def item_rights
-        Access::AccessRights.props(rights_object, rights_xml: rights_metadata.ng_xml.to_xml)
+        rights = Access::AccessRights.props(rights_object, rights_xml: rights_metadata.ng_xml.to_xml)
+
+        # File rights can't be citation-only, so if they are make dark.
+        rights[:access] = 'dark' if rights[:access] == 'citation-only'
+        rights
       end
     end
   end

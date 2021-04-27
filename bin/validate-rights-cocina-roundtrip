@@ -3,6 +3,7 @@
 
 require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
+require_relative '../lib/fedora_loader'
 require_relative '../lib/data_error_notifier'
 require 'set'
 require 'optparse'
@@ -23,6 +24,10 @@ end
 parser.parse!(into: options)
 
 cache = FedoraCache.new
+loader = FedoraLoader.new(cache: cache)
+
+Dor::Services::Client.configure(url: Settings.dor_services.url,
+                                token: Settings.dor_services.token)
 
 # rubocop:disable Metrics/ParameterLists
 def write_result(druid, original_ng_xml, normalized_original_ng_xml, roundtrip_ng_xml, normalized_roundtrip_ng_xml, cocina)
@@ -31,10 +36,10 @@ def write_result(druid, original_ng_xml, normalized_original_ng_xml, roundtrip_n
 
     file.write("Difference:\n#{Diffy::Diff.new("#{normalized_original_ng_xml.to_xml}\n", "#{normalized_roundtrip_ng_xml.to_xml}\n")}\n")
 
-    file.write("\nOriginal XML:\n#{original_ng_xml.to_xml}\n")
-    file.write("Roundtripped XML:\n#{roundtrip_ng_xml.to_xml}\n")
-    file.write("\nNormalized original XML:\n#{normalized_original_ng_xml.to_xml}\n")
-    file.write("Normalized roundtripped XML:\n#{normalized_roundtrip_ng_xml.to_xml}\n")
+    file.write("\nOriginal XML:\n#{format_xml(original_ng_xml)}\n")
+    file.write("Roundtripped XML:\n#{format_xml(roundtrip_ng_xml)}\n")
+    file.write("\nNormalized original XML:\n#{format_xml(normalized_original_ng_xml)}\n")
+    file.write("Normalized roundtripped XML:\n#{format_xml(normalized_roundtrip_ng_xml)}\n")
     file.write("Cocina:\n#{JSON.pretty_generate(cocina)}\n\n")
   end
 end
@@ -44,7 +49,7 @@ def write_error(druid, original_ng_xml, cocina, error)
   File.open("results/#{druid}.txt", 'w') do |file|
     file.write("Druid: #{druid}\n\n")
     file.write("Error: #{error}\n\n")
-    file.write("Expected XML:\n#{original_ng_xml.to_xml}\n\n")
+    file.write("Expected XML:\n#{format_xml(original_ng_xml)}\n\n")
     file.write("Cocina:\n#{JSON.pretty_generate(cocina)}\n\n") if cocina
     file.write("Backtrace:\n")
     file.write(error.backtrace.join("\n"))
@@ -53,10 +58,17 @@ end
 
 def normalize_original_ng_xml(ng_xml)
   new_ng_xml = ng_xml.dup
-  new_ng_xml.root.xpath('//use/machine[@type="creativeCommons" and text()]').each(&:remove)
-  new_ng_xml.root.xpath('//use/human[@type="creativeCommons" and text()]').each(&:remove)
+  ['openDataCommons', 'creativeCommons'].each do |license_type|
+    new_ng_xml.root.xpath("//use/machine[@type='#{license_type}' and text()]").each(&:remove)
+    new_ng_xml.root.xpath("//use/human[@type='#{license_type}' and text()]").each(&:remove)
+  end
   new_ng_xml.root.xpath('//embargoReleaseDate').each(&:remove)
   new_ng_xml.root.xpath('//group[text()]').each { |group_node| group_node.content = group_node.content.downcase }
+  # Pending https://github.com/sul-dlss/dor-services-app/issues/2752
+  new_ng_xml.root.xpath('//use/human[@type="useAndReproduction" and text()]').each { |human_node| human_node.content = human_node.content }
+  # Multiple access discover nodes.
+  discover_nodes = new_ng_xml.root.xpath('//access[@type="discover"]')
+  discover_nodes[1, discover_nodes.size - 1].each(&:remove) if discover_nodes.size > 1
   Nokogiri::XML(new_ng_xml.canonicalize) { |config| config.default_xml.noblanks }
 end
 
@@ -69,40 +81,55 @@ def normalize_roundtrip_ng_xml(ng_xml, original_ng_xml)
       use_node.remove if use_node.children.empty?
     end
   end
-  Nokogiri::XML(new_ng_xml.canonicalize) { |config| config.default_xml.noblanks }
+  new_ng_xml
+end
+
+def format_xml(ng_xml)
+  new_ng_xml = Nokogiri::XML(ng_xml.canonicalize) { |config| config.default_xml.noblanks }
+  new_ng_xml.to_xml
 end
 
 def license_nodes(ng_xml)
   ng_xml.root.xpath('//license')
 end
 
-def roundtripped_ng_xml(original_xml, cocina)
-  item = Dor::Item.new
-  item.datastreams['rightsMetadata'].content = original_xml
-  Cocina::ToFedora::DROAccess.apply(item, cocina)
-  item.rightsMetadata.ng_xml
+def roundtripped_ng_xml(fedora_obj, cocina_access, cocina_structural)
+  Cocina::ToFedora::DROAccess.apply(fedora_obj, cocina_access, cocina_structural)
+  fedora_obj.rightsMetadata.ng_xml
 end
 
-def validate_druid(druid, cache)
-  result = cache.datastream(druid, 'rightsMetadata')
-  return :missing if result.failure?
+def validate_druid(druid, loader)
+  begin
+    fedora_obj = loader.load(druid)
+  rescue FedoraLoader::BadCache
+    return :bad_cache
+  rescue FedoraLoader::Unmapped
+    return :missing
+  end
+  # TODO: Also handle collections.
+  return :not_dro unless fedora_obj.is_a?(Dor::Item) || fedora_obj.is_a?(Hydrus::Item)
 
-  original_xml = result.value!
-  original_ng_xml = Nokogiri::XML(original_xml)
-  datastream = Dor::RightsMetadataDS.from_xml(original_ng_xml)
+  orig_datastreams = {}
+  FedoraCache::DATASTREAMS.each { |dsid| orig_datastreams[dsid] = fedora_obj.datastreams[dsid]&.content }
+  return :missing unless orig_datastreams['rightsMetadata']
+
+  original_ng_xml = Nokogiri::XML(orig_datastreams['rightsMetadata'])
 
   begin
-    cocina_props = Cocina::FromFedora::DROAccess.props(datastream, embargo: {})
-    cocina = Cocina::Models::DROAccess.new(cocina_props, cocina)
+    cocina_access_props = Cocina::FromFedora::DROAccess.props(fedora_obj.rightsMetadata, fedora_obj.embargoMetadata)
+    cocina_access = Cocina::Models::DROAccess.new(cocina_access_props)
+
+    cocina_structural_props = Cocina::FromFedora::DroStructural.props(fedora_obj, type: Cocina::FromFedora::DRO.dro_type(fedora_obj))
+    cocina_structural = Cocina::Models::DROStructural.new(cocina_structural_props)
   rescue StandardError => e
-    write_error(druid, original_ng_xml, cocina_props, e)
+    write_error(druid, original_ng_xml, cocina_access_props, e)
     return :to_cocina_error
   end
 
   begin
-    roundtrip_ng_xml = roundtripped_ng_xml(original_xml, cocina)
+    roundtrip_ng_xml = roundtripped_ng_xml(fedora_obj, cocina_access, cocina_structural)
   rescue StandardError => e
-    write_error(druid, original_ng_xml, cocina_props, e)
+    write_error(druid, original_ng_xml, cocina_access_props, e)
     return :to_fedora_error
   end
 
@@ -115,7 +142,7 @@ def validate_druid(druid, cache)
                normalized_original_ng_xml,
                roundtrip_ng_xml,
                normalized_roundtrip_ng_xml,
-               cocina_props)
+               cocina_access_props)
   :different
 end
 
@@ -144,12 +171,12 @@ end
 
 puts "On branch name: #{branch_name} (commit: #{short_commit_hash})..."
 results = Parallel.map(druids, progress: 'Testing') do |druid|
-  validate_druid(druid, cache)
+  validate_druid(druid, loader)
 end
-counts = { different: 0, success: 0, to_cocina_error: 0, to_fedora_error: 0, missing: 0 }
+counts = { different: 0, success: 0, to_cocina_error: 0, to_fedora_error: 0, missing: 0, not_dro: 0, bad_cache: 0 }
 results.each { |result| counts[result] += 1 }
 
-denom = druids.size - counts[:missing]
+denom = druids.size - counts[:missing] - counts[:not_dro] - counts[:bad_cache]
 
 puts "Status (n=#{druids.size}; not using Missing for success/different/error stats):"
 puts "  Success:   #{counts[:success]} (#{percentage(counts[:success], denom)}%)"
@@ -157,3 +184,5 @@ puts "  Different: #{counts[:different]} (#{percentage(counts[:different], denom
 puts "  To Cocina error:     #{counts[:to_cocina_error]} (#{percentage(counts[:to_cocina_error], denom)}%)"
 puts "  To Fedora error:     #{counts[:to_fedora_error]} (#{percentage(counts[:to_fedora_error], denom)}%)"
 puts "  Missing (no rightsMetadata):     #{counts[:missing]} (#{(100 * counts[:missing].to_f / druids.size).round(3)}%)"
+puts "  Not a DRO:     #{counts[:not_dro]} (#{(100 * counts[:not_dro].to_f / druids.size).round(3)}%)"
+puts "  Bad cache:     #{counts[:bad_cache]} (#{(100 * counts[:bad_cache].to_f / druids.size).round(3)}%)"
