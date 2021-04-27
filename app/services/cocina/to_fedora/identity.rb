@@ -2,16 +2,18 @@
 
 module Cocina
   module ToFedora
-    # This transforms the DRO.identification schema to the Fedora 3 data model identityMetadata
+    # This transforms the cocina identification information to the Fedora 3 data model identityMetadata
     class Identity
-      # @param [String] agreement_id (nil) the identifier for the agreement. Note that only items have an agreement.
-      def self.apply(item, label:, agreement_id: nil)
-        item.objectId = item.pid
-        item.objectCreator = 'DOR'
-        # May have already been set when setting descriptive metadata.
-        item.objectLabel = label if item.objectLabel.empty?
-        item.objectType = item.object_type # This comes from the class definition in dor-services
-        item.identityMetadata.agreementId = agreement_id if agreement_id
+      # @param [Dor::Item,Dor::Collection,Dor::Etd,Dor::AdminPolicyObject] fedora_object
+      # @param [String] label the label for the cocina object.
+      # @param [String] agreement_id (nil) the identifier for the agreement. Note that only apos and items may have an agreement.
+      def self.apply(fedora_object, label:, agreement_id: nil)
+        fedora_object.objectId = fedora_object.pid
+        fedora_object.objectCreator = 'DOR'
+        # Label may have already been set when setting descriptive metadata.
+        fedora_object.objectLabel = label if fedora_object.objectLabel.empty?
+        fedora_object.objectType = fedora_object.object_type # This comes from the class definition in dor-services
+        fedora_object.identityMetadata.agreementId = agreement_id if agreement_id
       end
     end
   end
