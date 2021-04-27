@@ -129,7 +129,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
     xit 'not implemented' do
       let(:mods) do
         <<~XML
-          <abstract type="scope and context">This is a scope and content note.</abstract>
+          <abstract type="scope and content">This is a scope and content note.</abstract>
         XML
       end
 
