@@ -124,7 +124,7 @@ RSpec.shared_examples 'MODS cocina mapping' do
       # the starting MODS is normalized to address discrepancies found against MODS roundtripped to data store (Fedora)
       #  and back, per Arcadia's specifications.  E.g., removal of empty nodes and attributes; addition of eventType to
       #  originInfo nodes.
-      expect(actual_xml).to be_equivalent_to Cocina::ModsNormalizer.normalize(mods_ng_xml: orig_mods_ng, druid: local_druid, label: label).to_xml unless skip_normalization
+      expect(actual_xml).to be_equivalent_to Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: orig_mods_ng, druid: local_druid, label: label).to_xml unless skip_normalization
     end
   end
 
@@ -156,7 +156,7 @@ RSpec.shared_examples 'MODS cocina mapping' do
       # the starting MODS is normalized to address discrepancies found against MODS roundtripped to data store (Fedora)
       #  and back, per Arcadia's specifications.  E.g., removal of empty nodes and attributes; addition of eventType to
       #  originInfo nodes.
-      normalized_rt_mods_xml = Cocina::ModsNormalizer.normalize(mods_ng_xml: roundtrip_mods_xml, druid: local_druid, label: label).to_xml if defined?(roundtrip_mods)
+      normalized_rt_mods_xml = Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: roundtrip_mods_xml, druid: local_druid, label: label).to_xml if defined?(roundtrip_mods)
       expect(re_roundtrip_mods_xml).to be_equivalent_to normalized_rt_mods_xml if defined?(roundtrip_mods)
     end
   end
@@ -270,7 +270,7 @@ RSpec.shared_examples 'cocina MODS mapping' do
 
     it 'roundtrip cocina Description maps to expected MODS, normalized' do
       # the roundtrip cocina is, effectively, the cocina for the normalized MODS - the MODS is normalized before it gets to cocina
-      normalized_mods_xml = Cocina::ModsNormalizer.normalize(mods_ng_xml: mods_xml, druid: local_druid, label: label).to_xml if defined?(roundtrip_cocina)
+      normalized_mods_xml = Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: mods_xml, druid: local_druid, label: label).to_xml if defined?(roundtrip_cocina)
       expect(roundtrip_mods_xml).to be_equivalent_to normalized_mods_xml if defined?(roundtrip_cocina)
     end
 

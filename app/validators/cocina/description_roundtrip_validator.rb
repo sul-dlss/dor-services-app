@@ -43,7 +43,7 @@ module Cocina
       roundtrip_mods_ng_xml = Cocina::ToFedora::Descriptive.transform(cocina_description, fedora_object.pid).doc
 
       # Perform approved XML normalization changes to avoid noise in roundtrip failures
-      norm_original_ng_xml = Cocina::ModsNormalizer.normalize(mods_ng_xml: fedora_object.descMetadata.ng_xml, druid: fedora_object.pid, label: fedora_object.label)
+      norm_original_ng_xml = Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: fedora_object.descMetadata.ng_xml, druid: fedora_object.pid, label: fedora_object.label)
 
       unless ModsEquivalentService.equivalent?(norm_original_ng_xml, roundtrip_mods_ng_xml)
         return Failure("Roundtripping of descriptive metadata unsuccessful. Expected #{fedora_object.descMetadata.ng_xml.to_xml} but received #{roundtrip_mods_ng_xml.to_xml}.")

@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::ModsNormalizers::NameNormalizer do
-  let(:normalized_ng_xml) { Cocina::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: nil, label: nil).to_xml }
+RSpec.describe Cocina::Normalizers::Mods::NameNormalizer do
+  let(:normalized_ng_xml) { Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: nil, label: nil).to_xml }
 
   context 'when the role term has no type' do
     let(:mods_ng_xml) do

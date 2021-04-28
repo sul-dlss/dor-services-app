@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::ModsNormalizer do
+RSpec.describe Cocina::Normalizers::ModsNormalizer do
   let(:normalized_ng_xml) { described_class.normalize(mods_ng_xml: mods_ng_xml, druid: nil, label: nil) }
 
   context 'when normalizing version' do
