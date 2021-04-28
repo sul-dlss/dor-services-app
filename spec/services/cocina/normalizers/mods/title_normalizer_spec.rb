@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::ModsNormalizers::TitleNormalizer do
-  let(:normalized_ng_xml) { Cocina::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: nil, label: label).to_xml }
+RSpec.describe Cocina::Normalizers::Mods::TitleNormalizer do
+  let(:normalized_ng_xml) { Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: mods_ng_xml, druid: nil, label: label).to_xml }
 
   let(:label) { nil }
 

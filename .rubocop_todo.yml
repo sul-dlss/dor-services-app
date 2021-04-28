@@ -193,7 +193,7 @@ RSpec/RepeatedExampleGroupDescription:
   Exclude:
     - 'spec/services/cleanup_service_spec.rb'
     - 'spec/services/cocina/mapping/descriptive/mods/subject_topic_spec.rb'
-    - 'spec/services/cocina/mods_normalizers/subject_normalizer_spec.rb'
+    - 'spec/services/cocina/normalizers/mods/subject_normalizer_spec.rb'
 
 # Offense count: 3
 # Cop supports --auto-correct.

@@ -134,7 +134,7 @@ def validate_druid(druid, cache, fast: false)
 
   begin
     # Perform approved XML normalization changes to avoid noise in roundtrip failures
-    norm_original_ng_xml = Cocina::ModsNormalizer.normalize(mods_ng_xml: original_ng_xml, druid: druid, label: label)
+    norm_original_ng_xml = Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: original_ng_xml, druid: druid, label: label)
   rescue StandardError => e
     write_error(druid, original_ng_xml, cocina_props, e) unless fast
     return :mods_normalizer_error
