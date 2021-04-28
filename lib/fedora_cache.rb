@@ -8,7 +8,7 @@ class FedoraCache
   include Rubydora::FedoraUrlHelpers
   include Dry::Monads[:result]
 
-  DATASTREAMS = %w[descMetadata identityMetadata rightsMetadata contentMetadata geoMetadata embargoMetadata RELS-EXT].freeze
+  DATASTREAMS = %w[descMetadata identityMetadata rightsMetadata contentMetadata geoMetadata embargoMetadata administrativeMetadata roleMetadata defaultObjectRights RELS-EXT].freeze
 
   def initialize(overwrite: false, cache_dir: nil)
     @overwrite = overwrite
