@@ -375,3 +375,5 @@ Performance/StringInclude: # (new in 1.7)
   Enabled: true
 Performance/Sum: # (new in 1.8)
   Enabled: true
+Performance/MapCompact: # (new in 1.11)
+  Enabled: true
