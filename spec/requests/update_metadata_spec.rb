@@ -942,12 +942,21 @@ RSpec.describe 'Update object' do
                                          ]
                                        }
                                      },
+                                     identification: identification,
                                      administrative: {
                                        hasAdminPolicy: 'druid:dd999df4567'
                                      },
                                      externalIdentifier: druid,
                                      access: {})
     end
+    let(:identification) do
+      {
+        catalogLinks: [
+          { catalog: 'symphony', catalogRecordId: '8888' }
+        ]
+      }
+    end
+
     let(:data) do
       <<~JSON
         {
@@ -955,6 +964,7 @@ RSpec.describe 'Update object' do
           "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
           "label":"#{label}","version":1,
           "access":{},
+          "identification":#{identification.to_json},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"#{title}"}]}}
       JSON
