@@ -56,22 +56,6 @@ def write_error(druid, original_ng_xml, cocina, error)
   end
 end
 
-def normalize_original_ng_xml(ng_xml)
-  new_ng_xml = ng_xml.dup
-  ['openDataCommons', 'creativeCommons'].each do |license_type|
-    new_ng_xml.root.xpath("//use/machine[@type='#{license_type}' and text()]").each(&:remove)
-    new_ng_xml.root.xpath("//use/human[@type='#{license_type}' and text()]").each(&:remove)
-  end
-  new_ng_xml.root.xpath('//embargoReleaseDate').each(&:remove)
-  new_ng_xml.root.xpath('//group[text()]').each { |group_node| group_node.content = group_node.content.downcase }
-  # Pending https://github.com/sul-dlss/dor-services-app/issues/2752
-  new_ng_xml.root.xpath('//use/human[@type="useAndReproduction" and text()]').each { |human_node| human_node.content = human_node.content }
-  # Multiple access discover nodes.
-  discover_nodes = new_ng_xml.root.xpath('//access[@type="discover"]')
-  discover_nodes[1, discover_nodes.size - 1].each(&:remove) if discover_nodes.size > 1
-  Nokogiri::XML(new_ng_xml.canonicalize) { |config| config.default_xml.noblanks }
-end
-
 def normalize_roundtrip_ng_xml(ng_xml, original_ng_xml)
   new_ng_xml = ng_xml.dup
   if license_nodes(original_ng_xml).blank?
@@ -133,8 +117,16 @@ def validate_druid(druid, loader)
     return :to_fedora_error
   end
 
-  normalized_original_ng_xml = normalize_original_ng_xml(original_ng_xml)
   normalized_roundtrip_ng_xml = normalize_roundtrip_ng_xml(roundtrip_ng_xml, original_ng_xml)
+
+  begin
+    # Perform approved XML normalization changes to avoid noise in roundtrip failures
+    normalized_original_ng_xml = Cocina::Normalizers::RightsNormalizer.normalize(rights_ng_xml: original_ng_xml)
+  rescue StandardError => e
+    write_error(druid, original_ng_xml, cocina_props, e)
+    return :rights_normalizer_error
+  end
+
   return :success if EquivalentXml.equivalent?(normalized_original_ng_xml, normalized_roundtrip_ng_xml)
 
   write_result(druid,
