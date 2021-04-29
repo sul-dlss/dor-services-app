@@ -48,8 +48,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::HydrusDefaultTitleBuilder do
 
       it 'returns empty' do
         expect(build).to be_empty
-        expect(notifier).to have_received(:warn).with('Empty title node')
-        expect(notifier).to have_received(:error).with('Missing title')
+        expect(notifier).not_to have_received(:warn)
+        expect(notifier).not_to have_received(:error)
       end
     end
   end
