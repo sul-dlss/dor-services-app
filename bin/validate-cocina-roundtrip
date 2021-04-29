@@ -76,7 +76,7 @@ def validate_druid(druid, loader)
 
   begin
     fedora_obj = loader.load(druid)
-  rescue FedoraLoader::BadCache
+  rescue FedoraLoader::BadCache => e
     write_error(druid, e)
     return :bad_cache
   rescue FedoraLoader::Unmapped
