@@ -95,6 +95,7 @@ module Cocina
         fedora_object.label = truncate_label(cocina_object.label)
         Cocina::ToFedora::Identity.apply(fedora_object, label: cocina_object.label)
       end
+      fedora_object.catkey = catkey_for(cocina_object)
       fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy if has_changed?(:administrative)
 
       Cocina::ToFedora::CollectionAccess.apply(fedora_object, cocina_object.access) if has_changed?(:access)
