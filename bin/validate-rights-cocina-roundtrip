@@ -56,25 +56,9 @@ def write_error(druid, original_ng_xml, cocina, error)
   end
 end
 
-def normalize_roundtrip_ng_xml(ng_xml, original_ng_xml)
-  new_ng_xml = ng_xml.dup
-  if license_nodes(original_ng_xml).blank?
-    license_nodes(new_ng_xml).each do |license_node|
-      use_node = license_node.parent
-      license_node.remove
-      use_node.remove if use_node.children.empty?
-    end
-  end
-  new_ng_xml
-end
-
 def format_xml(ng_xml)
   new_ng_xml = Nokogiri::XML(ng_xml.canonicalize) { |config| config.default_xml.noblanks }
   new_ng_xml.to_xml
-end
-
-def license_nodes(ng_xml)
-  ng_xml.root.xpath('//license')
 end
 
 def roundtripped_ng_xml(fedora_obj, cocina_access, cocina_structural)
@@ -117,11 +101,9 @@ def validate_druid(druid, loader)
     return :to_fedora_error
   end
 
-  normalized_roundtrip_ng_xml = normalize_roundtrip_ng_xml(roundtrip_ng_xml, original_ng_xml)
-
   begin
-    # Perform approved XML normalization changes to avoid noise in roundtrip failures
     normalized_original_ng_xml = Cocina::Normalizers::RightsNormalizer.normalize(rights_ng_xml: original_ng_xml)
+    normalized_roundtrip_ng_xml = Cocina::Normalizers::RightsNormalizer.normalize_roundtrip(rights_ng_xml: roundtrip_ng_xml, original_ng_xml: original_ng_xml)
   rescue StandardError => e
     write_error(druid, original_ng_xml, cocina_props, e)
     return :rights_normalizer_error
@@ -165,7 +147,7 @@ puts "On branch name: #{branch_name} (commit: #{short_commit_hash})..."
 results = Parallel.map(druids, progress: 'Testing') do |druid|
   validate_druid(druid, loader)
 end
-counts = { different: 0, success: 0, to_cocina_error: 0, to_fedora_error: 0, missing: 0, not_dro: 0, bad_cache: 0 }
+counts = { different: 0, success: 0, to_cocina_error: 0, to_fedora_error: 0, rights_normalizer_error: 0, missing: 0, not_dro: 0, bad_cache: 0 }
 results.each { |result| counts[result] += 1 }
 
 denom = druids.size - counts[:missing] - counts[:not_dro] - counts[:bad_cache]
@@ -176,5 +158,6 @@ puts "  Different: #{counts[:different]} (#{percentage(counts[:different], denom
 puts "  To Cocina error:     #{counts[:to_cocina_error]} (#{percentage(counts[:to_cocina_error], denom)}%)"
 puts "  To Fedora error:     #{counts[:to_fedora_error]} (#{percentage(counts[:to_fedora_error], denom)}%)"
 puts "  Missing (no rightsMetadata):     #{counts[:missing]} (#{(100 * counts[:missing].to_f / druids.size).round(3)}%)"
+puts "  Rights normalizer error:     #{counts[:rights_normalizer_error]} (#{percentage(counts[:rights_normalizer_error], denom)}%)"
 puts "  Not a DRO:     #{counts[:not_dro]} (#{(100 * counts[:not_dro].to_f / druids.size).round(3)}%)"
 puts "  Bad cache:     #{counts[:bad_cache]} (#{(100 * counts[:bad_cache].to_f / druids.size).round(3)}%)"
