@@ -31,6 +31,10 @@ class AdministrativeTags
     @@tag_cache[pid] = tags
     tags
   end
+
+  def self.cache(pid:, tags:)
+    @@tag_cache[pid] = tags
+  end
 end
 
 module ActiveFedora
@@ -61,12 +65,14 @@ class FedoraLoader
   end
 
   def load(druid)
-    result = cache.label_and_datastreams(druid)
+    result = cache.label_and_datastreams_and_tags(druid)
     raise BadCache if result.failure?
 
-    label, datastreams = result.value!
+    label, datastreams, tags = result.value!
 
     raise BadCache unless datastreams.key?('RELS-EXT')
+
+    AdministrativeTags.cache(pid: druid, tags: tags) if tags
 
     obj = fedora_class(datastreams['RELS-EXT']).new(pid: druid, label: label)
     FedoraCache::DATASTREAMS.each do |dsid|
