@@ -171,7 +171,7 @@ module Cocina
     # rubocop:enable Style/GuardClause
 
     def update_descriptive?
-      Settings.enabled_features.update_descriptive
+      Settings.enabled_features.update_descriptive || trial
     end
 
     def client_attempted_metadata_update?
