@@ -5,6 +5,8 @@ require 'active_fedora/solr_service'
 
 # Monkeypatch to retrieve tags using dor-services-client so that does not need to be run on dor-services-app server.
 class AdministrativeTags
+  @@tag_cache = {} # rubocop:disable Style/ClassVars
+
   def self.project(pid:)
     tag = self.for(pid: pid).find { |check_tag| check_tag.start_with?('Project :') }
 
@@ -22,9 +24,16 @@ class AdministrativeTags
   end
 
   def self.for(pid:)
-    Dor::Services::Client.object(pid)
-                         .administrative_tags
-                         .list
+    cached_tags = @@tag_cache[pid]
+    return cached_tags if cached_tags
+
+    tags = Dor::Services::Client.object(pid).administrative_tags.list
+    @@tag_cache[pid] = tags
+    tags
+  end
+
+  def self.cache(pid:, tags:)
+    @@tag_cache[pid] = tags
   end
 end
 
@@ -56,12 +65,14 @@ class FedoraLoader
   end
 
   def load(druid)
-    result = cache.label_and_datastreams(druid)
+    result = cache.label_and_datastreams_and_tags(druid)
     raise BadCache if result.failure?
 
-    label, datastreams = result.value!
+    label, datastreams, tags = result.value!
 
     raise BadCache unless datastreams.key?('RELS-EXT')
+
+    AdministrativeTags.cache(pid: druid, tags: tags) if tags
 
     obj = fedora_class(datastreams['RELS-EXT']).new(pid: druid, label: label)
     FedoraCache::DATASTREAMS.each do |dsid|

@@ -23,10 +23,9 @@ module Cocina
       @trial = trial
     end
 
-    # rubocop:disable Metrics/AbcSize
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
     def run(event_factory:, notifier: nil)
-      @orig_cocina_object = Mapper.build(fedora_object, notifier: notifier)
+      @notifier = notifier
 
       # Validate will raise an error if not valid.
       validate unless trial
@@ -56,17 +55,20 @@ module Cocina
       event_factory.create(druid: fedora_object.pid, event_type: 'update', data: { success: false, error: e.message, request: cocina_object.to_h }) unless trial
       raise
     end
-    # rubocop:enable Metrics/AbcSize
 
     private
 
-    attr_reader :cocina_object, :fedora_object, :params, :orig_cocina_object, :trial
+    attr_reader :cocina_object, :fedora_object, :params, :notifier, :trial
 
     def has_changed?(key)
       return true if trial
 
       # Update only if changed.
       cocina_object.public_send(key) != orig_cocina_object.public_send(key)
+    end
+
+    def orig_cocina_object
+      @orig_cocina_object ||= Mapper.build(fedora_object, notifier: notifier)
     end
 
     # rubocop:disable Metrics/AbcSize

@@ -38,6 +38,8 @@ class FedoraCache
       datastreams[dsid] = datastream if datastream
     end
 
+    tags = fetch_tags(druid)
+
     zip_path = zip_path_for(druid)
     path = File.dirname(zip_path)
     FileUtils.mkdir_p(path) unless Dir.exist?(path)
@@ -45,6 +47,7 @@ class FedoraCache
     Zip::File.open(zip_path, Zip::File::CREATE) do |zipfile|
       zipfile.get_output_stream('object.xml') { |file| file.write(object) }
       datastreams.each_pair { |dsid, datastream| zipfile.get_output_stream("#{dsid}.xml") { |file| file.write(datastream) } }
+      zipfile.get_output_stream('tags.json') { |file| file.write(JSON.generate(tags)) }
     end
   end
 
@@ -67,7 +70,16 @@ class FedoraCache
     return result if result.failure?
 
     contents = result.value!
-    Success([label_for(contents['object']), contents.except('object')])
+    Success([label_for(contents['object']), contents.except('object', 'tags')])
+  end
+
+  def label_and_datastreams_and_tags(druid)
+    result = get_cache(druid)
+    return result if result.failure?
+
+    contents = result.value!
+    tags = contents.key?('tags') ? JSON.parse(contents['tags']) : nil
+    Success([label_for(contents['object']), contents.except('object', 'tags'), tags])
   end
 
   def datastream(druid, dsid)
@@ -113,7 +125,7 @@ class FedoraCache
     contents = {}
     Zip::File.open(zip_path_for(druid)) do |zip_file|
       zip_file.each do |entry|
-        key = entry.name.delete_suffix('.xml')
+        key = entry.name.delete_suffix('.xml').delete_suffix('.json')
         next unless only.nil? || only.include?(key)
 
         contents[key] = entry.get_input_stream.read
@@ -126,5 +138,9 @@ class FedoraCache
   def label_for(object)
     ng_xml = Nokogiri::XML(object)
     ng_xml.xpath('//xmlns:objLabel').first.text
+  end
+
+  def fetch_tags(druid)
+    Dor::Services::Client.object(druid).administrative_tags.list
   end
 end
