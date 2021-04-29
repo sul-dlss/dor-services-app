@@ -2,41 +2,41 @@
 
 module Cocina
   module FromFedora
-    # Creates Cocina Collection objects from Fedora objects
+    # Creates Cocina::Collection object properties from Fedora objects
     class Collection
-      # @param [Dor::Item,Dor::Etd] item
+      # @param [Dor::Collection] fedora_collection
       # @param [Cocina::FromFedora::DataErrorNotifier] notifier
-      # @return [Hash] a hash that can be mapped to a cocina model
-      def self.props(item, notifier: nil)
-        new(item, notifier: notifier).props
+      # @return [Hash] a hash that can be mapped to a Cocina::Collection object
+      def self.props(fedora_collection, notifier: nil)
+        new(fedora_collection, notifier: notifier).props
       end
 
-      def initialize(item, notifier: nil)
-        @item = item
+      def initialize(fedora_collection, notifier: nil)
+        @fedora_collection = fedora_collection
         @notifier = notifier
       end
 
       def props
         {
-          externalIdentifier: item.pid,
+          externalIdentifier: fedora_collection.pid,
           type: Cocina::Models::Vocab.collection,
-          label: item.label,
-          version: item.current_version.to_i,
-          administrative: FromFedora::Administrative.props(item),
-          access: CollectionAccess.props(item.rightsMetadata)
+          label: fedora_collection.label,
+          version: fedora_collection.current_version.to_i,
+          administrative: FromFedora::Administrative.props(fedora_collection),
+          access: CollectionAccess.props(fedora_collection.rightsMetadata)
         }.tap do |props|
-          title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: item.label)
-          description = FromFedora::Descriptive.props(title_builder: title_builder, mods: item.descMetadata.ng_xml, druid: item.pid, notifier: notifier)
+          title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: fedora_collection.label)
+          description = FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_collection.descMetadata.ng_xml, druid: fedora_collection.pid, notifier: notifier)
           props[:description] = description unless description.nil?
-          identification = FromFedora::Identification.props(item)
-          identification[:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: item.catkey }] if item.catkey
+          identification = FromFedora::Identification.props(fedora_collection)
+          identification[:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: fedora_collection.catkey }] if fedora_collection.catkey
           props[:identification] = identification unless identification.empty?
         end
       end
 
       private
 
-      attr_reader :item, :notifier
+      attr_reader :fedora_collection, :notifier
     end
   end
 end
