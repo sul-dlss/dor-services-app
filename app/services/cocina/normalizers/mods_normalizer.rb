@@ -5,6 +5,8 @@ module Cocina
     # Normalizes a Fedora MODS document, accounting for differences between Fedora MODS and MODS generated from Cocina.
     # these adjustments have been approved by our metadata authority, Arcadia.
     class ModsNormalizer
+      include Cocina::Normalizers::Base
+
       MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
       XLINK_NS = Cocina::FromFedora::Descriptive::XLINK_NS
 
@@ -77,10 +79,6 @@ module Cocina
         xml.sub!('<mods ', '<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ')
 
         regenerate_ng_xml(xml)
-      end
-
-      def regenerate_ng_xml(xml)
-        @ng_xml = Nokogiri::XML(xml) { |config| config.default_xml.noblanks }
       end
 
       def normalize_version
@@ -304,23 +302,6 @@ module Cocina
           next if primary_nodes.size < 2
 
           primary_nodes[1..].each { |primary_node| primary_node.delete('usage') }
-        end
-      end
-
-      # remove all empty elements that have no attributes and no children, recursively
-      def remove_empty_elements(start_node)
-        return unless start_node
-
-        # remove node if there are no element children, there is no text value and there are no attributes
-        if start_node.elements.size.zero? &&
-           start_node.text.blank? &&
-           start_node.attributes.size.zero? &&
-           start_node.name != 'etal'
-          parent = start_node.parent
-          start_node.remove
-          remove_empty_elements(parent) # need to call again after child has been deleted
-        else
-          start_node.element_children.each { |e| remove_empty_elements(e) }
         end
       end
 
