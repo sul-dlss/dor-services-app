@@ -29,21 +29,18 @@ loader = FedoraLoader.new(cache: cache)
 Dor::Services::Client.configure(url: Settings.dor_services.url,
                                 token: Settings.dor_services.token)
 
-# rubocop:disable Metrics/ParameterLists
-def write_result(druid, original_ng_xml, normalized_original_ng_xml, roundtrip_ng_xml, normalized_roundtrip_ng_xml, cocina)
+def write_result(druid, original_ng_xml, normalized_original_ng_xml, roundtrip_ng_xml, cocina)
   File.open("results/#{druid}.txt", 'w') do |file|
     file.write("Druid: #{druid}\n\n")
 
-    file.write("Difference:\n#{Diffy::Diff.new("#{normalized_original_ng_xml.to_xml}\n", "#{normalized_roundtrip_ng_xml.to_xml}\n")}\n")
+    file.write("Difference:\n#{Diffy::Diff.new("#{normalized_original_ng_xml.to_xml}\n", "#{roundtrip_ng_xml.to_xml}\n")}\n")
 
     file.write("\nOriginal XML:\n#{format_xml(original_ng_xml)}\n")
-    file.write("Roundtripped XML:\n#{format_xml(roundtrip_ng_xml)}\n")
     file.write("\nNormalized original XML:\n#{format_xml(normalized_original_ng_xml)}\n")
-    file.write("Normalized roundtripped XML:\n#{format_xml(normalized_roundtrip_ng_xml)}\n")
+    file.write("Roundtripped XML:\n#{format_xml(roundtrip_ng_xml)}\n")
     file.write("Cocina:\n#{JSON.pretty_generate(cocina)}\n\n")
   end
 end
-# rubocop:enable Metrics/ParameterLists
 
 def write_error(druid, original_ng_xml, cocina, error)
   File.open("results/#{druid}.txt", 'w') do |file|
@@ -102,20 +99,18 @@ def validate_druid(druid, loader)
   end
 
   begin
-    normalized_original_ng_xml = Cocina::Normalizers::RightsNormalizer.normalize(rights_ng_xml: original_ng_xml)
-    normalized_roundtrip_ng_xml = Cocina::Normalizers::RightsNormalizer.normalize_roundtrip(rights_ng_xml: roundtrip_ng_xml, original_ng_xml: original_ng_xml)
+    normalized_original_ng_xml = Cocina::Normalizers::RightsNormalizer.normalize(datastream: fedora_obj.datastreams['rightsMetadata'])
   rescue StandardError => e
-    write_error(druid, original_ng_xml, cocina_props, e)
+    write_error(druid, original_ng_xml, cocina_access_props, e)
     return :rights_normalizer_error
   end
 
-  return :success if EquivalentXml.equivalent?(normalized_original_ng_xml, normalized_roundtrip_ng_xml)
+  return :success if EquivalentXml.equivalent?(normalized_original_ng_xml, roundtrip_ng_xml)
 
   write_result(druid,
                original_ng_xml,
                normalized_original_ng_xml,
                roundtrip_ng_xml,
-               normalized_roundtrip_ng_xml,
                cocina_access_props)
   :different
 end
