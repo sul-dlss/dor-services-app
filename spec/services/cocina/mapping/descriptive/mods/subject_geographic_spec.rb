@@ -185,6 +185,40 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
     end
   end
 
+  describe 'marc geographic area code subject with trailing dashes' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <geographicCode authority="marcgac">n-us---</geographicCode>
+          </subject>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <subject authority="marcgac">
+            <geographicCode>n-us</geographicCode>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              code: 'n-us',
+              type: 'place',
+              source: {
+                code: 'marcgac'
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Geographic code and term' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do

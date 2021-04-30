@@ -131,7 +131,6 @@ module Cocina
           return nil if code.nil?
 
           notifier.warn('Subject has unknown authority code', { code: code }) unless SubjectAuthorityCodes::SUBJECT_AUTHORITY_CODES.include?(code)
-
           code
         end
 
@@ -262,7 +261,9 @@ module Cocina
           when 'titleInfo'
             title(node, attrs, orig_attrs)
           when 'geographicCode'
-            attrs.merge(code: node.text, type: 'place')
+            code = node.text
+            code = normalized_marcgac(code) if attrs.dig(:source, :code) == 'marcgac'
+            attrs.merge(code: code, type: 'place')
           when 'cartographics'
             # Cartographics are built separately
             nil
@@ -273,6 +274,11 @@ module Cocina
             node_type = node_type_for(node, attrs[:displayLabel])
             attrs.merge(value: node.text, type: node_type) if node_type
           end
+        end
+
+        # Strip any trailing dashes
+        def normalized_marcgac(code)
+          code.sub(/-+$/, '')
         end
 
         def title(node, attrs, orig_attrs)
