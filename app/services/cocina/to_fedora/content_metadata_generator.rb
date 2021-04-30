@@ -95,8 +95,11 @@ module Cocina
           resource['sequence'] = sequence
           resource['type'] = type
 
-          resource.add_child(Nokogiri::XML::Node.new('label', @xml_doc)
-            .tap { |c| c.content = fileset_label(cocina_fileset, resource['type']) })
+          fileset_label = fileset_label(cocina_fileset, resource['type'])
+          if fileset_label.present?
+            resource.add_child(Nokogiri::XML::Node.new('label', @xml_doc)
+              .tap { |c| c.content = fileset_label })
+          end
           create_file_nodes(resource, cocina_fileset)
         end
       end

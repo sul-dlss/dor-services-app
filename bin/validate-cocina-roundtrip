@@ -32,6 +32,7 @@ loader = FedoraLoader.new(cache: cache)
 Dor::Services::Client.configure(url: Settings.dor_services.url,
                                 token: Settings.dor_services.token)
 
+# rubocop:disable Metrics/AbcSize
 def write_result(druid, orig_cocina_hash, roundtrip_cocina_hash, diff_datastreams)
   File.open("results/#{druid}.txt", 'w') do |file|
     file.write("Druid: #{druid}\n\n")
@@ -56,8 +57,12 @@ def write_result(druid, orig_cocina_hash, roundtrip_cocina_hash, diff_datastream
       file.write("\nNormalized roundtripped XML for #{dsid}:\n#{norm_roundtrip_datastream_ng_xml.to_xml}\n") if roundtrip_datastream_ng_xml != norm_roundtrip_datastream_ng_xml
       file.write("\n\n")
     end
+
+    file.write("Original cocina:\n#{JSON.pretty_generate(orig_cocina_hash)}\n\n")
+    file.write("Roundtrip cocina:\n#{JSON.pretty_generate(roundtrip_cocina_hash)}\n\n")
   end
 end
+# rubocop:enable Metrics/AbcSize
 
 def write_error(druid, error)
   File.open("results/#{druid}.txt", 'w') do |file|
