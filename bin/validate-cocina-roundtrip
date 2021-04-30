@@ -84,7 +84,7 @@ def norm_orig_datastream_ng_xml_for(dsid, orig_datastream_ng_xml, druid, label)
   when 'rightsMetadata'
     Cocina::Normalizers::RightsNormalizer.normalize(rights_ng_xml: orig_datastream_ng_xml)
   when 'contentMetadata'
-    Cocina::Normalizers::ContentMetadataNormalizer.normalize(content_ng_xml: orig_datastream_ng_xml)
+    Cocina::Normalizers::ContentMetadataNormalizer.normalize(druid: druid, content_ng_xml: orig_datastream_ng_xml)
   else
     orig_datastream_ng_xml
   end
@@ -96,7 +96,7 @@ def norm_roundtrip_datastream_ng_xml_for(dsid, roundtrip_datastream_ng_xml, orig
   when 'rightsMetadata'
     Cocina::Normalizers::RightsNormalizer.normalize_roundtrip(rights_ng_xml: roundtrip_datastream_ng_xml, original_ng_xml: orig_datastream_ng_xml)
   when 'contentMetadata'
-    Cocina::Normalizers::ContentMetadataNormalizer.normalize(content_ng_xml: roundtrip_datastream_ng_xml)
+    Cocina::Normalizers::ContentMetadataNormalizer.normalize_roundtrip(content_ng_xml: roundtrip_datastream_ng_xml)
   else
     roundtrip_datastream_ng_xml
   end
