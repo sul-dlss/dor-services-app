@@ -85,10 +85,28 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       end
     end
 
-    context 'when reading missing' do
+    context 'when no resources' do
       let(:original_xml) do
         <<~XML
           <contentMetadata objectId="druid:bb035tg0974" type="book" />
+        XML
+      end
+
+      before do
+        allow(AdministrativeTags).to receive(:content_type).and_return(['Book (ltr)'])
+      end
+
+      it 'does nothing' do
+        expect(normalized_ng_xml).to be_equivalent_to(original_xml)
+      end
+    end
+
+    context 'when reading missing' do
+      let(:original_xml) do
+        <<~XML
+          <contentMetadata objectId="druid:bb035tg0974" type="book">
+            <resource sequence="1" type="page" />
+          </contentMetadata>
         XML
       end
 
@@ -101,6 +119,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
           <<~XML
             <contentMetadata objectId="druid:bb035tg0974" type="book">
               <bookData readingOrder="ltr"/>
+              <resource sequence="1" type="page" />
             </contentMetadata>
           XML
         )
