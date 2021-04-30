@@ -17,6 +17,7 @@ parser = OptionParser.new do |option_parser|
 
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
   option_parser.on('-r', '--random', 'Select random druids.')
+  option_parser.on('-f', '--fast', 'Without content metadata.')
   option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
@@ -126,7 +127,7 @@ def diff_datatreams_for(druid, label, orig_datastreams, fedora_obj)
   diff_datastreams
 end
 
-def validate_druid(druid, loader)
+def validate_druid(druid, loader, fast: false)
   return :missing unless loader.cached?(druid)
 
   begin
@@ -137,6 +138,8 @@ def validate_druid(druid, loader)
   rescue FedoraLoader::Unmapped
     return :unmapped
   end
+
+  fedora_obj.contentMetadata.content = "<contentMetadata type='#{fedora_obj.contentMetadata.contentType.first}' />" if fast && fedora_obj.datastreams.include?('contentMetadata')
 
   orig_datastreams = {}
   FedoraCache::DATASTREAMS.each { |dsid| orig_datastreams[dsid] = fedora_obj.datastreams[dsid]&.content }
@@ -197,10 +200,8 @@ def percentage(raw_num, denom)
   (100 * raw_num.to_f / denom).round(3)
 end
 
-unless options[:fast]
-  FileUtils.rm_rf('results')
-  FileUtils.mkdir_p('results')
-end
+FileUtils.rm_rf('results')
+FileUtils.mkdir_p('results')
 
 if options[:druids].empty?
   druids = File.read('druids.txt').split
@@ -211,7 +212,7 @@ else
 end
 
 results = Parallel.map(druids, progress: 'Testing') do |druid|
-  validate_druid(druid, loader)
+  validate_druid(druid, loader, fast: options[:fast])
 end
 counts = { different: 0, success: 0, mapping_error: 0, update_error: 0, normalization_error: 0, missing: 0, unmapped: 0, bad_cache: 0 }
 results.each { |result| counts[result] += 1 }
