@@ -29,6 +29,7 @@ module Cocina
         remove_resource_id
         normalize_object_id
         normalize_reading_order(druid)
+        normalize_attr
 
         regenerate_ng_xml(ng_xml.to_s)
       end
@@ -64,6 +65,11 @@ module Cocina
         book_data_node = Nokogiri::XML::Node.new('bookData', ng_xml.root)
         book_data_node['readingOrder'] = reading_direction == 'left-to-right' ? 'ltr' : 'rtl'
         ng_xml.root << book_data_node
+      end
+
+      def normalize_attr
+        # Pending https://github.com/sul-dlss/dor-services-app/issues/2808
+        ng_xml.root.xpath('//attr').each(&:remove)
       end
     end
   end

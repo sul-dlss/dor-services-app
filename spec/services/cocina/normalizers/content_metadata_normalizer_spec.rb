@@ -106,5 +106,46 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         )
       end
     end
+
+    context 'when normalizing project phoenix' do
+      let(:original_xml) do
+        <<~XML
+          <contentMetadata objectId="druid:bk689jd2364" type="file">
+            <resource type="page" sequence="268" id="page268">
+              <attr name="pageLabel">256</attr>
+              <file preserve="yes" mimetype="image/jp2" format="JPEG2000" size="92631" shelve="no" id="00000268.jp2" deliver="no">
+                <imageData width="1310" height="2071"/>
+                <checksum type="SHA-1">50d77a392ba30dcbbf4ada379e09ded02f9658f2</checksum>
+                <checksum type="MD5">dcea2fd8ed01b2ef978093cf45ea3ce9</checksum>
+              </file>
+              <file preserve="yes" mimetype="text/html" format="HTML" size="19144" dataType="hocr" shelve="yes" id="00000268.html" deliver="no">
+                <checksum type="SHA-1">335c75c2e2a13f024f73b0dd7dc5fc35fc47e7ce</checksum>
+                <checksum type="MD5">42d8261046c449230a7c3809a246b353</checksum>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+
+      it 'removes attrs' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <contentMetadata objectId="druid:bk689jd2364" type="file">
+              <resource type="page" sequence="268">
+                <file preserve="yes" mimetype="image/jp2" format="JPEG2000" size="92631" shelve="no" id="00000268.jp2" deliver="no">
+                  <imageData width="1310" height="2071"/>
+                  <checksum type="SHA-1">50d77a392ba30dcbbf4ada379e09ded02f9658f2</checksum>
+                  <checksum type="MD5">dcea2fd8ed01b2ef978093cf45ea3ce9</checksum>
+                </file>
+                <file preserve="yes" mimetype="text/html" format="HTML" size="19144" dataType="hocr" shelve="yes" id="00000268.html" deliver="no">
+                  <checksum type="SHA-1">335c75c2e2a13f024f73b0dd7dc5fc35fc47e7ce</checksum>
+                  <checksum type="MD5">42d8261046c449230a7c3809a246b353</checksum>
+                </file>
+              </resource>
+            </contentMetadata>
+          XML
+        )
+      end
+    end
   end
 end
