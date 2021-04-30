@@ -19,6 +19,7 @@ module Cocina
         def normalize
           normalize_xlink_href
           normalize_empty_geographic
+          normalize_marcgac
           normalize_empty_temporal
           normalize_subject
           normalize_subject_children
@@ -35,6 +36,12 @@ module Cocina
         private
 
         attr_reader :ng_xml
+
+        def normalize_marcgac
+          ng_xml.root.xpath('//mods:geographicCode', mods: ModsNormalizer::MODS_NS).each do |node|
+            node.content = node.content.sub(/-+$/, '')
+          end
+        end
 
         # rubocop:disable Metrics/PerceivedComplexity
         # rubocop:disable Metrics/CyclomaticComplexity
