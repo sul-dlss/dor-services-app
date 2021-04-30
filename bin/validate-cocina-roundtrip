@@ -85,6 +85,8 @@ def norm_orig_datastream_ng_xml_for(dsid, orig_datastream_ng_xml, druid, label)
     Cocina::Normalizers::RightsNormalizer.normalize(rights_ng_xml: orig_datastream_ng_xml)
   when 'contentMetadata'
     Cocina::Normalizers::ContentMetadataNormalizer.normalize(druid: druid, content_ng_xml: orig_datastream_ng_xml)
+  when 'identityMetadata'
+    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: orig_datastream_ng_xml)
   else
     orig_datastream_ng_xml
   end
@@ -169,18 +171,10 @@ def validate_druid(druid, loader, fast: false)
     return :normalization_error
   end
 
-  return :success if DeepEqual.match?(normalize_orig_cocina(orig_cocina_hash), normalize_roundtrip_cocina(roundtrip_cocina_hash)) && diff_datastreams.empty?
+  return :success if DeepEqual.match?(normalize_cocina(orig_cocina_hash), normalize_cocina(roundtrip_cocina_hash)) && diff_datastreams.empty?
 
   write_result(druid, orig_cocina_hash, roundtrip_cocina_hash, diff_datastreams)
   :different
-end
-
-def normalize_orig_cocina(cocina_hash)
-  # Remove space from source id, e.g., "sul: M0443_S2_D-K_B9_F33_011"
-  source_id = cocina_hash.dig(:identification, :sourceId)
-  cocina_hash[:identification][:sourceId] = source_id.gsub(/ *: */, ':') if source_id
-
-  normalize_roundtrip_cocina(cocina_hash)
 end
 
 def normalize_external_identifiers(cocina_hash)
@@ -192,7 +186,7 @@ def normalize_external_identifiers(cocina_hash)
   cocina_hash
 end
 
-def normalize_roundtrip_cocina(cocina_hash)
+def normalize_cocina(cocina_hash)
   normalize_external_identifiers(cocina_hash)
 end
 

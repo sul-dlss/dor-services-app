@@ -28,7 +28,7 @@ module Cocina
 
       def source_id
         if fedora_object.source_id
-          fedora_object.source_id
+          fedora_object.source_id.strip.sub(/ *: */, ':')
         elsif fedora_object.is_a? Dor::Collection
           nil
         else
