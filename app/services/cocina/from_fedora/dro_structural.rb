@@ -4,15 +4,6 @@ module Cocina
   module FromFedora
     # builds the Structural subschema for Cocina::Models::DRO from a Dor::Item
     class DroStructural
-      VIEWING_DIRECTION_FOR_CONTENT_TYPE = {
-        'Book (ltr)' => 'left-to-right',
-        'Book (rtl)' => 'right-to-left',
-        'Book (flipbook, ltr)' => 'left-to-right',
-        'Book (flipbook, rtl)' => 'right-to-left',
-        'Manuscript (flipbook, ltr)' => 'left-to-right',
-        'Manuscript (ltr)' => 'left-to-right'
-      }.freeze
-
       def self.props(fedora_item, type:)
         new(fedora_item, type: type).props
       end
@@ -68,19 +59,10 @@ module Cocina
       end
 
       def create_member_order
-        reading_direction = fedora_item.contentMetadata.ng_xml.xpath('//bookData/@readingOrder').first&.value
-        # See https://consul.stanford.edu/pages/viewpage.action?spaceKey=chimera&title=DOR+content+types%2C+resource+types+and+interpretive+metadata
-        case reading_direction
-        when 'ltr'
-          [{ viewingDirection: 'left-to-right' }]
-        when 'rtl'
-          [{ viewingDirection: 'right-to-left' }]
-        else
-          # Fallback to using tags.  Some books don't have bookData nodes in contentMetadata XML.
-          # When we migrate from Fedora 3, we don't need to look this up from AdministrativeTags
-          content_type = AdministrativeTags.content_type(pid: fedora_item.id).first
-          [{ viewingDirection: VIEWING_DIRECTION_FOR_CONTENT_TYPE[content_type] }] if VIEWING_DIRECTION_FOR_CONTENT_TYPE[content_type]
-        end
+        viewing_direction = ViewingDirectionHelper.viewing_direction(druid: fedora_item.pid, content_ng_xml: fedora_item.contentMetadata.ng_xml)
+        return unless viewing_direction
+
+        [{ viewingDirection: viewing_direction }]
       end
 
       # @return [Array<String>] the identifiers of files in a sequence for a virtual object
