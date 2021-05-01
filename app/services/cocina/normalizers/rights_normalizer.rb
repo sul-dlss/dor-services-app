@@ -62,6 +62,7 @@ module Cocina
           ng_xml.root.xpath("//use/machine[@type='#{license_type}' and text()]").each(&:remove)
           ng_xml.root.xpath("//use/human[@type='#{license_type}' and text()]").each(&:remove)
         end
+        ng_xml.root.xpath('//use[count(*) = 0]').each(&:remove)
       end
 
       def remove_embargo_release_date
