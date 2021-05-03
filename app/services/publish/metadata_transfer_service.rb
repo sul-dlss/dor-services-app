@@ -30,6 +30,7 @@ module Publish
 
     # @raise [Dor::DataError]
     def transfer_metadata(release_tags)
+      transfer_to_document_store(PublicCocinaService.create(item), 'cocina.json')
       transfer_to_document_store(PublicXmlService.new(item, released_for: release_tags).to_xml, 'public')
       transfer_to_document_store(PublicDescMetadataService.new(item).to_xml, 'mods')
     end
