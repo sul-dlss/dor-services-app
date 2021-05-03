@@ -34,10 +34,11 @@ module Cocina
         datastream.ng_xml.xpath('/rightsMetadata/use/machine[@type="creativeCommons"]').each(&:remove)
         datastream.ng_xml.xpath('/rightsMetadata/use/human[@type="openDataCommons"]').each(&:remove)
         datastream.ng_xml.xpath('/rightsMetadata/use/human[@type="creativeCommons"]').each(&:remove)
+        datastream.ng_xml.xpath('/rightsMetadata/use[count(*) = 0]').each(&:remove)
       end
 
       def use_node
-        datastream.ng_xml.xpath('/rightsMetadata/use').first
+        datastream.ng_xml.xpath('/rightsMetadata/use').first || datastream.ng_xml.root.add_child('<use/>').first
       end
 
       def initialize_use_node!
