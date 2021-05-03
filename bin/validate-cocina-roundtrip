@@ -81,13 +81,13 @@ def ng_xml_for(xml)
   Nokogiri::XML(xml) { |config| config.default_xml.noblanks }
 end
 
-def norm_orig_datastream_ng_xml_for(dsid, orig_datastream_ng_xml, druid, label)
+def norm_orig_datastream_ng_xml_for(dsid, orig_datastream_ng_xml, druid, label, fedora_obj)
   case dsid
   # Additional normalizers to go here.
   when 'descMetadata'
     Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: orig_datastream_ng_xml, druid: druid, label: label)
   when 'rightsMetadata'
-    Cocina::Normalizers::RightsNormalizer.normalize(rights_ng_xml: orig_datastream_ng_xml)
+    Cocina::Normalizers::RightsNormalizer.normalize(datastream: fedora_obj.datastreams['rightsMetadata'])
   when 'contentMetadata'
     Cocina::Normalizers::ContentMetadataNormalizer.normalize(druid: druid, content_ng_xml: orig_datastream_ng_xml)
   when 'identityMetadata'
@@ -97,11 +97,9 @@ def norm_orig_datastream_ng_xml_for(dsid, orig_datastream_ng_xml, druid, label)
   end
 end
 
-def norm_roundtrip_datastream_ng_xml_for(dsid, roundtrip_datastream_ng_xml, orig_datastream_ng_xml)
+def norm_roundtrip_datastream_ng_xml_for(dsid, roundtrip_datastream_ng_xml)
   case dsid
     # Additional normalizers to go here.
-  when 'rightsMetadata'
-    Cocina::Normalizers::RightsNormalizer.normalize_roundtrip(rights_ng_xml: roundtrip_datastream_ng_xml, original_ng_xml: orig_datastream_ng_xml)
   when 'contentMetadata'
     Cocina::Normalizers::ContentMetadataNormalizer.normalize_roundtrip(content_ng_xml: roundtrip_datastream_ng_xml)
   else
@@ -123,10 +121,10 @@ def diff_datatreams_for(druid, label, orig_datastreams, fedora_obj)
     next if orig_datastream.nil?
 
     orig_datastream_ng_xml = ng_xml_for(orig_datastream)
-    norm_orig_datastream_ng_xml = norm_orig_datastream_ng_xml_for(dsid, orig_datastream_ng_xml, druid, label)
+    norm_orig_datastream_ng_xml = norm_orig_datastream_ng_xml_for(dsid, orig_datastream_ng_xml, druid, label, fedora_obj)
 
     roundtrip_datastream_ng_xml = ng_xml_for(fedora_obj.datastreams[dsid].content)
-    norm_roundtrip_datastream_ng_xml = norm_roundtrip_datastream_ng_xml_for(dsid, roundtrip_datastream_ng_xml, orig_datastream_ng_xml)
+    norm_roundtrip_datastream_ng_xml = norm_roundtrip_datastream_ng_xml_for(dsid, roundtrip_datastream_ng_xml)
     next if equivalent?(dsid, norm_orig_datastream_ng_xml, norm_roundtrip_datastream_ng_xml)
 
     diff_datastreams[dsid] = [orig_datastream_ng_xml, norm_orig_datastream_ng_xml, roundtrip_datastream_ng_xml, norm_roundtrip_datastream_ng_xml]

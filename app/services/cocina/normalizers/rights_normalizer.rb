@@ -7,25 +7,22 @@ module Cocina
     class RightsNormalizer
       include Cocina::Normalizers::Base
 
-      # @param [Nokogiri::Document] rights_ng_xml rights XML to be normalized
+      # @param [Nokogiri::Document] the rights datastream to be normalized
       # @return [Nokogiri::Document] normalized rights xml
-      def self.normalize(rights_ng_xml:)
-        new(rights_ng_xml: rights_ng_xml).normalize
+      # Note: this is different than other normalizers in that it takes in a datastream as a parameter instead of the XML
+      #  because we use an existing class below to fetch the license URI and this class requires a datastream
+      def self.normalize(datastream:)
+        new(datastream: datastream).normalize
       end
 
-      # @param [Nokogiri::Document] roundtripped rights_ng_xml rights XML to be normalized
-      # @return [Nokogiri::Document] normalized roundtripped rights xml
-      def self.normalize_roundtrip(rights_ng_xml:, original_ng_xml:)
-        new(rights_ng_xml: rights_ng_xml).normalize_roundtrip(original_ng_xml)
-      end
-
-      def initialize(rights_ng_xml:)
-        @ng_xml = rights_ng_xml.dup
+      def initialize(datastream:)
+        @datastream = datastream
+        @ng_xml = datastream.ng_xml.dup
         @ng_xml.encoding = 'UTF-8' if @ng_xml.respond_to?(:encoding=) # sometimes it's a String (?)
       end
 
       def normalize
-        remove_license
+        normalize_license_to_uri
         remove_embargo_release_date
         normalize_group
         normalize_use_and_reproduction
@@ -33,35 +30,25 @@ module Cocina
         regenerate_ng_xml(ng_xml.to_s)
       end
 
-      def normalize_roundtrip(original_ng_xml)
-        normalize_roundtrip_ng_xml(original_ng_xml)
-        regenerate_ng_xml(ng_xml.to_s)
-      end
-
       private
 
-      attr_reader :ng_xml
-
-      def normalize_roundtrip_ng_xml(original_ng_xml)
-        if license_nodes(original_ng_xml).blank?
-          license_nodes(ng_xml).each do |license_node|
-            use_node = license_node.parent
-            license_node.remove
-            use_node.remove if use_node.children.empty?
-          end
-        end
-        regenerate_ng_xml(ng_xml.to_s)
-      end
+      attr_reader :ng_xml, :datastream
 
       def license_nodes(xml)
         xml.root.xpath('//license')
       end
 
-      def remove_license
+      def normalize_license_to_uri
+        # first remove old style license nodes
         ['openDataCommons', 'creativeCommons'].each do |license_type|
           ng_xml.root.xpath("//use/machine[@type='#{license_type}' and text()]").each(&:remove)
           ng_xml.root.xpath("//use/human[@type='#{license_type}' and text()]").each(&:remove)
         end
+        # now add new <license> node
+        license_uri = Cocina::FromFedora::Access::License.find(datastream)
+        new_license_node = Nokogiri::XML::Node.new('license', ng_xml)
+        new_license_node.content = license_uri
+        ng_xml.at('//use') << new_license_node if license_uri.present?
         ng_xml.root.xpath('//use[count(*) = 0]').each(&:remove)
       end
 
