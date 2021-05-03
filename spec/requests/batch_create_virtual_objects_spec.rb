@@ -47,7 +47,7 @@ RSpec.describe 'Batch creation of virtual objects' do
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
       expect(body['errors'][0]['detail']).to eq('#/paths/~1v1~1virtual_objects/post/requestBody/content/application~1json/schema/properties/virtual_objects ' \
-        "expected array, but received String: #{child1_id}")
+        "expected array, but received String: \"#{child1_id}\"")
     end
   end
 
@@ -80,7 +80,7 @@ RSpec.describe 'Batch creation of virtual objects' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq("#/components/schemas/Druid pattern #{druid_pattern} does not match value: , example: druid:bc123df4567")
+      expect(body['errors'][0]['detail']).to eq("#/components/schemas/Druid pattern #{druid_pattern} does not match value: \"\", example: druid:bc123df4567")
     end
   end
 
@@ -102,7 +102,7 @@ RSpec.describe 'Batch creation of virtual objects' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq('#/components/schemas/VirtualObjectRequest/properties/child_ids expected array, but received String: ')
+      expect(body['errors'][0]['detail']).to eq('#/components/schemas/VirtualObjectRequest/properties/child_ids expected array, but received String: ""')
     end
   end
 
@@ -124,7 +124,7 @@ RSpec.describe 'Batch creation of virtual objects' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq("#/components/schemas/Druid pattern #{druid_pattern} does not match value: , example: druid:bc123df4567")
+      expect(body['errors'][0]['detail']).to eq("#/components/schemas/Druid pattern #{druid_pattern} does not match value: \"\", example: druid:bc123df4567")
     end
   end
 end

@@ -201,7 +201,7 @@ RSpec.describe 'Administrative tags' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.status).to eq(400)
         expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":' \
-                                    '"#/components/schemas/AdministrativeTag pattern ^.+( : .+)+$ does not match value: , example: Foo : Bar : Baz"}]}')
+                                    '"#/components/schemas/AdministrativeTag pattern ^.+( : .+)+$ does not match value: \\"\\", example: Foo : Bar : Baz"}]}')
       end
     end
 
