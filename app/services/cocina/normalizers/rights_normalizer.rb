@@ -9,6 +9,8 @@ module Cocina
 
       # @param [Nokogiri::Document] the rights datastream to be normalized
       # @return [Nokogiri::Document] normalized rights xml
+      # Note: this is different than other normalizers in that it takes in a datastream as a parameter instead of the XML
+      #  because we use an existing class below to fetch the license URI and this class requires a datastream
       def self.normalize(datastream:)
         new(datastream: datastream).normalize
       end
@@ -44,7 +46,7 @@ module Cocina
         end
         # now add new <license> node
         license_uri = Cocina::FromFedora::Access::License.find(datastream)
-        new_license_node = Nokogiri::XML::Node.new('license', Nokogiri::XML(nil))
+        new_license_node = Nokogiri::XML::Node.new('license', ng_xml)
         new_license_node.content = license_uri
         ng_xml.at('//use') << new_license_node if license_uri.present?
         ng_xml.root.xpath('//use[count(*) = 0]').each(&:remove)
