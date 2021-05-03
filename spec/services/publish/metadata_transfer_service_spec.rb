@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Publish::MetadataTransferService do
   let(:item) do
-    instantiate_fixture('druid:ab123cd4567', Dor::Item).tap do |i|
+    instantiate_fixture('druid:bc123df4567', Dor::Item).tap do |i|
       i.contentMetadata.content = '<contentMetadata/>'
       i.rels_ext.content = rels
     end
@@ -14,7 +14,7 @@ RSpec.describe Publish::MetadataTransferService do
   let(:rels) do
     <<-EOXML
       <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:hydra="http://projecthydra.org/ns/relations#">
-        <rdf:Description rdf:about="info:fedora/druid:ab123cd4567">
+        <rdf:Description rdf:about="info:fedora/druid:bc123df4567">
           <hydra:isGovernedBy rdf:resource="info:fedora/druid:789012"></hydra:isGovernedBy>
           <fedora-model:hasModel rdf:resource="info:fedora/hydra:commonMetadata"></fedora-model:hasModel>
           <fedora:isMemberOf rdf:resource="info:fedora/druid:xh235dd9059"></fedora:isMemberOf>
@@ -27,7 +27,7 @@ RSpec.describe Publish::MetadataTransferService do
 
   describe '#publish' do
     before do
-      allow(OpenURI).to receive(:open_uri).with('https://purl-test.stanford.edu/ab123cd4567.xml').and_return('<xml/>')
+      allow(OpenURI).to receive(:open_uri).with('https://purl-test.stanford.edu/bc123df4567.xml').and_return('<xml/>')
     end
 
     context 'with no world discover access in rightsMetadata' do
@@ -35,7 +35,7 @@ RSpec.describe Publish::MetadataTransferService do
 
       before do
         item.rightsMetadata.content = <<-EOXML
-          <rightsMetadata objectId="druid:ab123cd4567">
+          <rightsMetadata objectId="druid:bc123df4567">
             <copyright>
               <human>(c) Copyright 2010 by Sebastian Jeremias Osterfeld</human>
             </copyright>
@@ -55,7 +55,7 @@ RSpec.describe Publish::MetadataTransferService do
         allow(Settings).to receive(:purl_services_url).and_return('http://example.com/purl')
         allow(Settings.stacks).to receive(:local_document_cache_root).and_return(purl_root)
 
-        stub_request(:delete, 'example.com/purl/purls/ab123cd4567')
+        stub_request(:delete, 'example.com/purl/purls/bc123df4567')
       end
 
       after do
@@ -69,7 +69,7 @@ RSpec.describe Publish::MetadataTransferService do
         File.open(File.join(druid1.path, 'tmpfile'), 'w') { |f| f.write 'junk' }
         service.publish
         expect(File).not_to exist(druid1.path) # it should now be gone
-        expect(WebMock).to have_requested(:delete, 'example.com/purl/purls/ab123cd4567')
+        expect(WebMock).to have_requested(:delete, 'example.com/purl/purls/bc123df4567')
       end
     end
 
@@ -80,7 +80,7 @@ RSpec.describe Publish::MetadataTransferService do
                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                      version="3.3"
                      xsi:schemaLocation="http://www.loc.gov/mods/v3 http://cosimo.stanford.edu/standards/mods/v3/mods-3-3.xsd">
-            <mods:identifier type="local" displayLabel="SUL Resource ID">druid:ab123cd4567</mods:identifier>
+            <mods:identifier type="local" displayLabel="SUL Resource ID">druid:bc123df4567</mods:identifier>
           </mods:mods>
         EOXML
       end
@@ -120,7 +120,7 @@ RSpec.describe Publish::MetadataTransferService do
       end
 
       context 'with a collection object' do
-        let(:item) { instantiate_fixture('druid:ab123cd4567', Dor::Collection) }
+        let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Collection) }
 
         before do
           item.descMetadata.content = mods
@@ -148,12 +148,12 @@ RSpec.describe Publish::MetadataTransferService do
       before do
         allow(Settings).to receive(:purl_services_url).and_return('http://example.com/purl')
 
-        stub_request(:post, 'example.com/purl/purls/ab123cd4567')
+        stub_request(:post, 'example.com/purl/purls/bc123df4567')
       end
 
       it 'notifies the purl service of the update' do
         notify
-        expect(WebMock).to have_requested(:post, 'example.com/purl/purls/ab123cd4567')
+        expect(WebMock).to have_requested(:post, 'example.com/purl/purls/bc123df4567')
       end
     end
 

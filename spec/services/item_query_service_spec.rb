@@ -5,8 +5,8 @@ require 'rails_helper'
 RSpec.describe ItemQueryService do
   subject(:service) { described_class }
 
-  let(:druid) { 'ab123cd4567' }
-  let(:item) { instantiate_fixture('druid:ab123cd4567', Dor::Item) }
+  let(:druid) { 'bc123df4567' }
+  let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
   let(:workflow_client) { instance_double(Dor::Workflow::Client, workflow_routes: workflow_routes) }
   let(:workflow_routes) { instance_double(Dor::Workflow::Client::WorkflowRoutes, all_workflows: workflows_response) }
   let(:workflows_response) do
@@ -26,35 +26,35 @@ RSpec.describe ItemQueryService do
       let(:errors) { ['Net::ReadTimeout', 'Gremlins'] }
 
       it 'raises an error' do
-        expect { service.find_combinable_item('ab123cd4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:ab123cd4567 has workflow errors: Net::ReadTimeout; Gremlins')
+        expect { service.find_combinable_item('bc123df4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:bc123df4567 has workflow errors: Net::ReadTimeout; Gremlins')
       end
     end
 
     it 'raises error if object is neither open nor openable' do
       allow(VersionService).to receive(:can_open?).with(item).and_return(false)
       allow(VersionService).to receive(:open?).with(item).and_return(false)
-      expect { service.find_combinable_item('ab123cd4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:ab123cd4567 is not open or openable')
+      expect { service.find_combinable_item('bc123df4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:bc123df4567 is not open or openable')
     end
 
     it 'raises error if object is dark' do
       dra = instance_double(Dor::RightsAuth, dark?: true, citation_only?: false)
       rights_ds = instance_double(Dor::RightsMetadataDS, dra_object: dra)
       allow(item).to receive(:rightsMetadata).and_return(rights_ds)
-      expect { service.find_combinable_item('ab123cd4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:ab123cd4567 is dark')
+      expect { service.find_combinable_item('bc123df4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:bc123df4567 is dark')
     end
 
     it 'raises error if object is citation_only' do
       dra = instance_double(Dor::RightsAuth, dark?: false, citation_only?: true)
       rights_ds = instance_double(Dor::RightsMetadataDS, dra_object: dra)
       allow(item).to receive(:rightsMetadata).and_return(rights_ds)
-      expect { service.find_combinable_item('ab123cd4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:ab123cd4567 is citation_only')
+      expect { service.find_combinable_item('bc123df4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:bc123df4567 is citation_only')
     end
 
     it 'returns item otherwise' do
       dra = instance_double(Dor::RightsAuth, dark?: false, citation_only?: false)
       rights_ds = instance_double(Dor::RightsMetadataDS, dra_object: dra)
       allow(item).to receive(:rightsMetadata).and_return(rights_ds)
-      service.find_combinable_item('ab123cd4567')
+      service.find_combinable_item('bc123df4567')
     end
   end
 
@@ -89,8 +89,8 @@ RSpec.describe ItemQueryService do
       end
 
       it 'returns a single error' do
-        expect(service.validate_combinable_items(parent: 'druid:ab123cd4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
-          'druid:ab123cd4567' => ['Item druid:ab123cd4567 has workflow errors: Boom']
+        expect(service.validate_combinable_items(parent: 'druid:bc123df4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
+          'druid:bc123df4567' => ['Item druid:bc123df4567 has workflow errors: Boom']
         )
       end
     end
@@ -102,8 +102,8 @@ RSpec.describe ItemQueryService do
       end
 
       it 'returns a single error if one object does not allow modification' do
-        expect(service.validate_combinable_items(parent: 'druid:ab123cd4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
-          'druid:ab123cd4567' => ['Item druid:ab123cd4567 is not open or openable']
+        expect(service.validate_combinable_items(parent: 'druid:bc123df4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
+          'druid:bc123df4567' => ['Item druid:bc123df4567 is not open or openable']
         )
       end
     end
@@ -116,8 +116,8 @@ RSpec.describe ItemQueryService do
       end
 
       it 'returns errors if any objects are dark' do
-        expect(service.validate_combinable_items(parent: 'druid:ab123cd4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
-          'druid:ab123cd4567' => ['Item druid:xh235dd9059 is dark', 'Item druid:hj097bm8879 is dark']
+        expect(service.validate_combinable_items(parent: 'druid:bc123df4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
+          'druid:bc123df4567' => ['Item druid:xh235dd9059 is dark', 'Item druid:hj097bm8879 is dark']
         )
       end
     end
@@ -130,8 +130,8 @@ RSpec.describe ItemQueryService do
       end
 
       it 'raises error if any objects are citation_only' do
-        expect(service.validate_combinable_items(parent: 'druid:ab123cd4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
-          'druid:ab123cd4567' => ['Item druid:ab123cd4567 is citation_only', 'Item druid:hj097bm8879 is citation_only']
+        expect(service.validate_combinable_items(parent: 'druid:bc123df4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
+          'druid:bc123df4567' => ['Item druid:bc123df4567 is citation_only', 'Item druid:hj097bm8879 is citation_only']
         )
       end
     end
@@ -144,7 +144,7 @@ RSpec.describe ItemQueryService do
       end
 
       it 'returns an empty hash otherwise' do
-        expect(service.validate_combinable_items(parent: 'druid:ab123cd4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq({})
+        expect(service.validate_combinable_items(parent: 'druid:bc123df4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq({})
       end
     end
   end
