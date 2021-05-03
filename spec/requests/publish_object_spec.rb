@@ -29,7 +29,7 @@ RSpec.describe 'Publish object' do
     it 'is a bad request' do
       post "/v1/objects/#{druid}/publish?workflow=badWF", headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:bad_request)
-      expect(error).to eq("badWF isn't include enum in #/paths/~1v1~1objects~1{id}~1publish/post/parameters/1/schema")
+      expect(error).to eq("\"badWF\" isn't part of the enum in #/paths/~1v1~1objects~1{id}~1publish/post/parameters/1/schema")
     end
   end
 

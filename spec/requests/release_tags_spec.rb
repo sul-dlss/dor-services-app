@@ -93,7 +93,7 @@ RSpec.describe 'Release tags' do
              params: %( {"to":"searchworks","who":"carrickr","what":"self","release":"seven"} ),
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.status).to eq(400)
-        expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":"#/components/schemas/ReleaseTag/properties/release expected boolean, but received String: seven"}]}')
+        expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":"#/components/schemas/ReleaseTag/properties/release expected boolean, but received String: \\"seven\\""}]}')
       end
     end
 
@@ -105,7 +105,8 @@ RSpec.describe 'Release tags' do
         expect(response.status).to eq(400)
         expect(response.body).to eq(
           '{"errors":[{"status":"bad_request",'\
-          '"detail":"#/components/schemas/Druid pattern ^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$ does not match value: druid:1234, example: druid:bc123df4567"}]}'
+          '"detail":"#/components/schemas/Druid pattern '\
+          '^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$ does not match value: \\"druid:1234\\", example: druid:bc123df4567"}]}'
         )
       end
     end
