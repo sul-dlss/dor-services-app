@@ -34,10 +34,6 @@ module Cocina
 
       attr_reader :ng_xml, :datastream
 
-      def license_nodes(xml)
-        xml.root.xpath('//license')
-      end
-
       def normalize_license_to_uri
         # first remove old style license nodes
         ['openDataCommons', 'creativeCommons'].each do |license_type|
@@ -46,9 +42,15 @@ module Cocina
         end
         # now add new <license> node
         license_uri = Cocina::FromFedora::Access::License.find(datastream)
-        new_license_node = Nokogiri::XML::Node.new('license', ng_xml)
-        new_license_node.content = license_uri
-        ng_xml.at('//use') << new_license_node if license_uri.present?
+        if license_uri.present?
+          existing_use_element = ng_xml.at('//use')
+          unless existing_use_element.content.include?(license_uri)
+            new_license_node = Nokogiri::XML::Node.new('license', ng_xml)
+            new_license_node.content = license_uri
+            existing_use_element << new_license_node
+          end
+        end
+        # now remove any empty use elements
         ng_xml.root.xpath('//use[count(*) = 0]').each(&:remove)
       end
 
