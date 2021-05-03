@@ -144,7 +144,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       {
         'version' => 1,
         'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
-        'label' => 'Page 2',
+        'label' => '', # Some fileset have blank labels
         'structural' => { 'contains' => [file3, file4] }
       }
     ]
@@ -248,7 +248,6 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
             </file>
           </resource>
           <resource id="http://cocina.sul.stanford.edu/fileSet/123-456-789" sequence="2" type="file">
-            <label>Page 2</label>
             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
           </resource>
@@ -274,7 +273,6 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
             </file>
           </resource>
           <resource id="http://cocina.sul.stanford.edu/fileSet/123-456-789" sequence="2" type="file">
-            <label>Page 2</label>
             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
           </resource>
@@ -435,7 +433,6 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
             </file>
           </resource>
           <resource id="http://cocina.sul.stanford.edu/fileSet/123-456-789" sequence="2" type="file">
-            <label>Page 2</label>
             <file id="00002.html" mimetype="text/html" size="1914" preserve="yes" publish="yes" shelve="no"/>
             <file id="00002.jp2" mimetype="image/jp2" size="111467" preserve="yes" publish="yes" shelve="yes"/>
           </resource>
