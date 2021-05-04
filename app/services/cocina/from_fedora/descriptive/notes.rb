@@ -77,7 +77,7 @@ module Cocina
         end
 
         def target_audience
-          resource_element.xpath('mods:targetAudience', mods: DESC_METADATA_NS).map do |node|
+          resource_element.xpath('mods:targetAudience', mods: DESC_METADATA_NS).filter_map do |node|
             {
               type: 'target audience',
               value: node.content,
@@ -85,7 +85,7 @@ module Cocina
             }.tap do |attrs|
               attrs[:source] = { code: node[:authority] } if node[:authority]
             end.compact
-          end.compact
+          end
         end
 
         def table_of_contents
@@ -119,9 +119,9 @@ module Cocina
         end
 
         def parts
-          resource_element.xpath('mods:part', mods: DESC_METADATA_NS).map do |part_node|
+          resource_element.xpath('mods:part', mods: DESC_METADATA_NS).filter_map do |part_node|
             PartBuilder.build(part_element: part_node)
-          end.compact
+          end
         end
       end
     end

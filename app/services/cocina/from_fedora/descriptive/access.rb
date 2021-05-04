@@ -69,18 +69,18 @@ module Cocina
         end
 
         def shelf_location
-          resource_element.xpath('mods:location/mods:shelfLocator', mods: DESC_METADATA_NS).map do |shelf_locator_elem|
-            next nil if shelf_locator_elem.content.blank?
+          resource_element.xpath('mods:location/mods:shelfLocator', mods: DESC_METADATA_NS).filter_map do |shelf_locator_elem|
+            next if shelf_locator_elem.content.blank?
 
             {
               value: shelf_locator_elem.content,
               type: 'shelf locator'
             }
-          end.compact
+          end
         end
 
         def url
-          url_nodes.map do |url_node|
+          url_nodes.filter_map do |url_node|
             {
               value: url_node.text.presence,
               displayLabel: url_node[:displayLabel]
@@ -88,7 +88,7 @@ module Cocina
               attrs[:status] = 'primary' if url_node == primary_url_node
               attrs[:note] = [{ value: url_node[:note] }] if url_node[:note]
             end.compact.presence
-          end.compact
+          end
         end
 
         def primary_url_node
@@ -141,7 +141,7 @@ module Cocina
         end
 
         def descriptive_value_for(nodes, type: nil)
-          nodes.map do |node|
+          nodes.filter_map do |node|
             next nil if node.text.blank?
 
             {}.tap do |attrs|
@@ -160,7 +160,7 @@ module Cocina
               attrs[:displayLabel] = node[:displayLabel]
               attrs[:valueLanguage] = LanguageScript.build(node: node)
             end.compact
-          end.compact
+          end
         end
       end
     end

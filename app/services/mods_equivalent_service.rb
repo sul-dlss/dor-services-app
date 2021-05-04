@@ -108,18 +108,16 @@ class ModsEquivalentService
   end
 
   def diff
-    element_diff = mods_nodes1.map do |mods_node1|
-      next nil if has_equivalent_node?(mods_node1)
+    element_diff = mods_nodes1.filter_map do |mods_node1|
+      next if has_equivalent_node?(mods_node1)
 
       Difference.new(mods_node1, find_closest_node(mods_node1))
-    end.compact
-
-    attr_diff = mods_ng_xml1.root.keys.map do |attr_key|
+    end
+    attr_diff = mods_ng_xml1.root.keys.filter_map do |attr_key|
       next if mods_ng_xml1.root[attr_key] == mods_ng_xml2.root[attr_key]
 
       Difference.new(mods_ng_xml1.root[attr_key], mods_ng_xml2.root[attr_key])
-    end.compact
-
+    end
     element_diff + attr_diff
   end
 
@@ -172,28 +170,28 @@ class ModsEquivalentService
   end
 
   def altrepgroup_diff
-    @altrepgroup_diff ||= altrepgroup_nodes.keys.map do |node1|
+    @altrepgroup_diff ||= altrepgroup_nodes.keys.filter_map do |node1|
       node1_altrepgroup = node1['altRepGroup']
       node2 = altrepgroup_nodes[node1]
       node2_altrepgroup = node2 ? node2['altRepGroup'] : nil
       expected_node2_altrepgroup = altrepgroup_ids[[node1_altrepgroup, node1.name, node1.parent]]
 
-      next nil if expected_node2_altrepgroup && expected_node2_altrepgroup == node2_altrepgroup
+      next if expected_node2_altrepgroup && expected_node2_altrepgroup == node2_altrepgroup
 
       Difference.new(node1, node2)
-    end.compact
+    end
   end
 
   def nametitlegroup_diff
-    @nametitlegroup_diff ||= nametitlegroup_nodes.keys.map do |node1|
+    @nametitlegroup_diff ||= nametitlegroup_nodes.keys.filter_map do |node1|
       node1_nametitlegroup = node1['nameTitleGroup']
       node2 = nametitlegroup_nodes[node1]
       node2_nametitlegroup = node2 ? node2['nameTitleGroup'] : nil
       expected_node2_nametitlegroup = nametitlegroup_ids[[node1_nametitlegroup, node1.parent]]
 
-      next nil if expected_node2_nametitlegroup && expected_node2_nametitlegroup == node2_nametitlegroup
+      next if expected_node2_nametitlegroup && expected_node2_nametitlegroup == node2_nametitlegroup
 
       Difference.new(node1, node2)
-    end.compact
+    end
   end
 end

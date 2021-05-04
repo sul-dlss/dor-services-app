@@ -13,7 +13,7 @@ class MetadataService
     # return the identifiers found in the same order of the known prefixes we specified
     def resolvable(identifiers)
       res_ids = identifiers.select { |identifier| can_resolve?(identifier) }
-      VALID_PREFIXES.map { |prefix| res_ids.find { |res_id| res_id.start_with?(prefix.to_s) } }.compact
+      VALID_PREFIXES.filter_map { |prefix| res_ids.find { |res_id| res_id.start_with?(prefix.to_s) } }
       # NOTE: the purpose of .map here is to ensure we return any resolvable identifiers in the
       #       preferred order specified above in KNOWN_PREFIXES, so that the .first is the preferred one
     end

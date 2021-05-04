@@ -76,14 +76,14 @@ module Cocina
         end
 
         def simple_or_structured(node_set, display_types: true)
-          node_set.map do |node|
+          node_set.filter_map do |node|
             if node['nameTitleGroup']
               structured_name(node: node, display_types: display_types)
             else
               attrs = TitleBuilder.build(title_info_element: node, notifier: notifier)
               attrs.present? ? attrs.merge(common_attributes(node, display_types: display_types)) : nil
             end
-          end.compact
+          end
         end
 
         def structured_name(node:, display_types: true)

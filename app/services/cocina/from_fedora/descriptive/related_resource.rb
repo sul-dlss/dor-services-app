@@ -32,17 +32,17 @@ module Cocina
         attr_reader :resource_element, :descriptive_builder, :notifier, :purl
 
         def related_items
-          resource_element.xpath('mods:relatedItem', mods: DESC_METADATA_NS).map do |related_item|
+          resource_element.xpath('mods:relatedItem', mods: DESC_METADATA_NS).filter_map do |related_item|
             check_other_type(related_item)
             next { valueAt: related_item['xlink:href'] } if related_item['xlink:href']
-            next nil if related_item.elements.empty?
+            next if related_item.elements.empty?
 
             related_item = build_related_item(related_item)
             # Skip if type only.
-            next nil if related_item.keys == [:type]
+            next if related_item.keys == [:type]
 
             related_item.presence
-          end.compact
+          end
         end
 
         def build_related_item(related_item)
