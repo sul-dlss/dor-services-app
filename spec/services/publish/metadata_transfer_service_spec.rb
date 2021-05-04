@@ -4,8 +4,14 @@ require 'rails_helper'
 
 RSpec.describe Publish::MetadataTransferService do
   let(:item) do
-    instantiate_fixture('druid:bc123df4567', Dor::Item).tap do |i|
+    Dor::Item.new(pid: 'druid:bc123df4567').tap do |i|
       i.contentMetadata.content = '<contentMetadata/>'
+      i.identityMetadata.content = <<~XML
+        <identityMetadata>
+          <release release="true" to="Searchworks" what="self" when="2015-07-27T21:44:26Z" who="lauraw15">true</release>
+          <release release="true" to="Some_special_place" what="self" when="2015-08-31T23:59:59" who="atz">true</release>
+        </identityMetadata>
+      XML
       i.rels_ext.content = rels
     end
   end
@@ -120,7 +126,7 @@ RSpec.describe Publish::MetadataTransferService do
       end
 
       context 'with a collection object' do
-        let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Collection) }
+        let(:item) { Dor::Collection.new }
 
         before do
           item.descMetadata.content = mods
