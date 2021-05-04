@@ -78,14 +78,14 @@ module Cocina
         attr_reader :resource_element, :notifier
 
         def build_ungrouped_origin_infos(origin_infos)
-          origin_infos.map do |origin_info|
+          origin_infos.filter_map do |origin_info|
             next if origin_info.content.blank? &&
                     origin_info.xpath('//*[@valueURI]').empty? &&
                     origin_info.xpath('//*[@xlink:href]', xlink: XLINK_NS).empty?
 
             event = build_event_for_origin_info(origin_info)
             event.compact
-          end.compact
+          end
         end
 
         def build_event_for_origin_info(origin_info_node)

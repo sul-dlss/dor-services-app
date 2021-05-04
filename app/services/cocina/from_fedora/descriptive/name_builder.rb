@@ -34,7 +34,7 @@ module Cocina
           names = {
             parallelValue: name_elements.map { |name_node| build_parallel_name(name_node) },
             type: type_for(name_elements.first['type']),
-            status: name_elements.map { |name_element| name_element['usage'] }.compact.first
+            status: name_elements.filter_map { |name_element| name_element['usage'] }.first
           }.compact
           { name: [names] }.tap do |attrs|
             roles = name_elements.flat_map { |name_node| build_roles(name_node) }.compact.uniq
@@ -104,7 +104,7 @@ module Cocina
             parts << build_name_part(name_node, name_part_nodes.first, default_type: alternative_name_nodes.present?)
                      .merge(common_authority(name_node)).merge(common_lang_script(name_node)).presence
           else
-            vals = name_part_nodes.map { |name_part| build_name_part(name_node, name_part).presence }.compact
+            vals = name_part_nodes.filter_map { |name_part| build_name_part(name_node, name_part).presence }
             parts << { structuredValue: vals }.merge(common_authority(name_node)).merge(common_lang_script(name_node))
           end
 
@@ -203,9 +203,7 @@ module Cocina
 
         def build_roles(name_node)
           role_nodes = name_node.xpath('mods:role', mods: DESC_METADATA_NS)
-          role_nodes.map do |role_node|
-            role_for(role_node)
-          end.compact.presence
+          role_nodes.filter_map { |role_node| role_for(role_node) }.presence
         end
 
         # shameless green

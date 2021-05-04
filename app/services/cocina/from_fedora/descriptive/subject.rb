@@ -32,7 +32,7 @@ module Cocina
           altrepgroup_subject_nodes, other_subject_nodes = AltRepGroup.split(nodes: subject_nodes)
 
           subjects = (altrepgroup_subject_nodes.map { |subject_nodes| build_parallel_subject(subject_nodes) } +
-            other_subject_nodes.map { |subject_node| build_subject(subject_node) }.compact +
+            other_subject_nodes.filter_map { |subject_node| build_subject(subject_node) } +
             build_cartographics).compact
           Primary.adjust(subjects, 'classification', notifier, match_type: true)
           Primary.adjust(subjects.reject { |subject| subject[:type] == 'classification' }, 'subject', notifier)
@@ -44,10 +44,10 @@ module Cocina
         attr_reader :resource_element, :notifier
 
         def build_parallel_subject(parallel_subject_nodes)
-          parallel_subjects = parallel_subject_nodes.map { |subject_node| build_subject(subject_node) }.compact
+          parallel_subjects = parallel_subject_nodes.filter_map { |subject_node| build_subject(subject_node) }
           # Moving type up from parallel subjects if they are all the same.
           move_type = parallel_subjects.uniq { |subject| subject[:type] }.size == 1
-          type = move_type ? parallel_subjects.map { |subject| subject.delete(:type) }.compact.first : nil
+          type = move_type ? parallel_subjects.filter_map { |subject| subject.delete(:type) }.first : nil
           {
             parallelValue: parallel_subjects.presence,
             type: type
@@ -135,7 +135,7 @@ module Cocina
         end
 
         def structured_value(node_set, attrs)
-          values = node_set.map { |node| simple_item(node) }.compact
+          values = node_set.filter_map { |node| simple_item(node) }
           if values.present?
             Primary.adjust(values, 'genre', notifier, match_type: true)
             attrs = attrs.merge(structuredValue: values)
@@ -150,7 +150,7 @@ module Cocina
         end
 
         def geo_code_and_terms(node_set, attrs)
-          values = node_set.map { |node| simple_item(node) }.compact
+          values = node_set.filter_map { |node| simple_item(node) }
           if values.present?
             # Removes type from values
 
@@ -368,12 +368,12 @@ module Cocina
 
         def build_cartographics
           coordinates = subject_nodes.map do |subject_node|
-            subject_node.xpath('mods:cartographics/mods:coordinates', mods: DESC_METADATA_NS).map do |coordinate_node|
+            subject_node.xpath('mods:cartographics/mods:coordinates', mods: DESC_METADATA_NS).filter_map do |coordinate_node|
               coordinate = coordinate_node.content
-              next nil if coordinate.blank?
+              next if coordinate.blank?
 
               coordinate.delete_prefix('(').delete_suffix(')')
-            end.compact
+            end
           end.flatten.compact.uniq
 
           coordinates.map { |coordinate| { value: coordinate, type: 'map coordinates' } }

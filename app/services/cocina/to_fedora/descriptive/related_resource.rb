@@ -64,7 +64,7 @@ module Cocina
         attr_reader :xml, :related_resources, :druid, :id_generator
 
         def filtered_related_resources
-          related_resources.map do |related|
+          related_resources.filter_map do |related|
             next if related.valueAt
 
             other_type_note = other_type_note_for(related)
@@ -78,7 +78,7 @@ module Cocina
             new_related = Cocina::Models::RelatedResource.new(related_hash.compact)
 
             [attributes_for(related, other_type_note), new_related, related]
-          end.compact
+          end
         end
 
         def attributes_for(related, other_type_note)

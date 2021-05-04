@@ -55,7 +55,7 @@ module Cocina
 
           {
             type: 'part',
-            structuredValue: values.map { |value| structured_value_value_for(value) }.compact
+            structuredValue: values.filter_map { |value| structured_value_value_for(value) }
           }
         end
 
@@ -72,7 +72,7 @@ module Cocina
         end
 
         def detail_values
-          part_element.xpath('mods:detail', mods: DESC_METADATA_NS).map { |detail_node| detail_values_for(detail_node) }.compact
+          part_element.xpath('mods:detail', mods: DESC_METADATA_NS).filter_map { |detail_node| detail_values_for(detail_node) }
         end
 
         def detail_values_for(detail_node)
@@ -86,7 +86,7 @@ module Cocina
         end
 
         def extent_values
-          part_element.xpath('mods:extent', mods: DESC_METADATA_NS).map { |extent_node| extent_values_for(extent_node) }.compact
+          part_element.xpath('mods:extent', mods: DESC_METADATA_NS).filter_map { |extent_node| extent_values_for(extent_node) }
         end
 
         def extent_values_for(extent_node)
@@ -123,11 +123,11 @@ module Cocina
 
         def part_note_value_for(node, type, xpath: nil)
           xpath ||= "mods:#{type}"
-          node.xpath(xpath, mods: DESC_METADATA_NS).map do |value_node|
-            next nil if value_node.content.blank?
+          node.xpath(xpath, mods: DESC_METADATA_NS).filter_map do |value_node|
+            next if value_node.content.blank?
 
             { type: type, value: value_node.content }
-          end.compact
+          end
         end
       end
     end

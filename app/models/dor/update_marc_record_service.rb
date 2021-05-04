@@ -164,7 +164,7 @@ module Dor
         %w(partName partNumber).include?(child.name)
       end
 
-      part_label = part_parts.map(&:text).compact.join(parts_delimiter(part_parts))
+      part_label = part_parts.filter_map(&:text).join(parts_delimiter(part_parts))
 
       part_sort = mods_xml.xpath('//*[@type="date/sequential designation"]').first
 
