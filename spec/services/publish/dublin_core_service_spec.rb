@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Publish::DublinCoreService do
   subject(:service) { described_class.new(item) }
 
-  let(:item) { instantiate_fixture('druid:ab123cd4567', Dor::Item) }
+  let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
 
   describe '#ng_xml' do
     subject(:xml) { service.ng_xml }

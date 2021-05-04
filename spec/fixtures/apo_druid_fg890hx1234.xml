@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<foxml:digitalObject xmlns:foxml="info:fedora/fedora-system:def/foxml#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" VERSION="1.1" PID="druid:fg890hi1234" xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+<foxml:digitalObject xmlns:foxml="info:fedora/fedora-system:def/foxml#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" VERSION="1.1" PID="druid:fg890hx1234" xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
   <foxml:objectProperties>
     <foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
     <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Topographical Map"/>
@@ -11,7 +11,7 @@
       <foxml:xmlContent>
         <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
           <dc:title>Kitai Topographical Maps</dc:title>
-          <dc:identifier>druid:fg890hi1234</dc:identifier>
+          <dc:identifier>druid:fg890hx1234</dc:identifier>
         </oai_dc:dc>
       </foxml:xmlContent>
     </foxml:datastreamVersion>
@@ -19,7 +19,7 @@
       <foxml:xmlContent>
         <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
           <dc:title>Kitai Topographical Maps</dc:title>
-          <dc:identifier>druid:fg890hi1234</dc:identifier>
+          <dc:identifier>druid:fg890hx1234</dc:identifier>
           <dc:language>eng</dc:language>
         </oai_dc:dc>
       </foxml:xmlContent>
@@ -28,7 +28,7 @@
       <foxml:xmlContent>
         <oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
           <dc:title>Topographical Maps</dc:title>
-          <dc:identifier>druid:fg890hi1234</dc:identifier>
+          <dc:identifier>druid:fg890hx1234</dc:identifier>
           <dc:language>eng</dc:language>
         </oai_dc:dc>
       </foxml:xmlContent>
@@ -37,7 +37,7 @@
       <foxml:xmlContent>
         <oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
           <dc:title>Topographical Map</dc:title>
-          <dc:identifier>druid:fg890hi1234</dc:identifier>
+          <dc:identifier>druid:fg890hx1234</dc:identifier>
           <dc:language>eng</dc:language>
         </oai_dc:dc>
       </foxml:xmlContent>
@@ -47,7 +47,7 @@
     <foxml:datastreamVersion ID="identityMetadata.0" LABEL="Identity Metadata" CREATED="2011-04-18T18:45:37.109Z" MIMETYPE="text/xml" SIZE="353">
       <foxml:xmlContent>
         <identityMetadata>
-          <objectId>druid:fg890hi1234</objectId>
+          <objectId>druid:fg890hx1234</objectId>
           <objectType>adminPolicy</objectType>
           <objectLabel>Kitai Topographical Maps</objectLabel>
           <objectDescription>Kitai Topographical Map Collection</objectDescription>
@@ -59,7 +59,7 @@
     <foxml:datastreamVersion ID="identityMetadata.1" LABEL="Identity Metadata" CREATED="2011-05-23T17:04:04.652Z" MIMETYPE="text/xml" SIZE="335">
       <foxml:xmlContent>
         <identityMetadata>
-          <objectId>druid:fg890hi1234</objectId>
+          <objectId>druid:fg890hx1234</objectId>
           <objectType>adminPolicy</objectType>
           <objectLabel>Topographical Maps</objectLabel>
           <objectDescription>Topographical Maps</objectDescription>
@@ -71,7 +71,7 @@
     <foxml:datastreamVersion ID="identityMetadata.2" LABEL="Identity Metadata" CREATED="2011-05-23T17:04:31.969Z" MIMETYPE="text/xml" SIZE="344">
       <foxml:xmlContent>
         <identityMetadata>
-          <objectId>druid:fg890hi1234</objectId>
+          <objectId>druid:fg890hx1234</objectId>
           <objectType>adminPolicy</objectType>
           <objectLabel>Topographical Maps</objectLabel>
           <objectDescription>Topographical Maps</objectDescription>
@@ -83,7 +83,7 @@
     <foxml:datastreamVersion ID="identityMetadata.3" LABEL="Identity Metadata" CREATED="2011-05-23T17:07:15.558Z" MIMETYPE="text/xml" SIZE="341">
       <foxml:xmlContent>
         <identityMetadata>
-          <objectId>druid:fg890hi1234</objectId>
+          <objectId>druid:fg890hx1234</objectId>
           <objectType>adminPolicy</objectType>
           <objectLabel>Topographical Map</objectLabel>
           <objectDescription>Topographical Map</objectDescription>

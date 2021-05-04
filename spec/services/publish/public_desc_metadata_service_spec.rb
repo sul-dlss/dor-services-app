@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Publish::PublicDescMetadataService do
   subject(:service) { described_class.new(obj) }
 
-  let(:obj) { instantiate_fixture('druid:ab123cd4567', Dor::Item) }
+  let(:obj) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
 
   describe '#ng_xml' do
     subject(:doc) { service.ng_xml }
@@ -86,7 +86,7 @@ RSpec.describe Publish::PublicDescMetadataService do
       XML
     end
 
-    let(:collection) { instantiate_fixture('druid:ab123cd4567', Dor::Item) }
+    let(:collection) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
 
     before do
       allow(obj).to receive(:relationships).with(:is_member_of).and_return(['info:fedora/druid:zb871zd0767'])
@@ -308,7 +308,7 @@ RSpec.describe Publish::PublicDescMetadataService do
   end
 
   describe 'add_collection_reference' do
-    let(:collection) { instantiate_fixture('druid:ab123cd4567', Dor::Item) }
+    let(:collection) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
 
     before do
       allow(obj).to receive(:relationships).with(:is_member_of).and_return(['info:fedora/druid:zb871zd0767'])

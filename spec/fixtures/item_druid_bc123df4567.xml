@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<foxml:digitalObject xmlns:foxml="info:fedora/fedora-system:def/foxml#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" PID="druid:ab123cd4567" VERSION="1.1" xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+<foxml:digitalObject xmlns:foxml="info:fedora/fedora-system:def/foxml#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" PID="druid:bc123df4567" VERSION="1.1" xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
   <foxml:objectProperties>
     <foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
     <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Foxml Test Object"/>
@@ -14,7 +14,7 @@
           <dc:identifier>barcode:36105049267078</dc:identifier>
           <dc:identifier>catkey:129483625</dc:identifier>
           <dc:identifier>uuid:7f3da130-7b02-11de-8a39-0800200c9a66</dc:identifier>
-          <dc:identifier>druid:ab123cd4567</dc:identifier>
+          <dc:identifier>druid:bc123df4567</dc:identifier>
         </oai_dc:dc>
       </foxml:xmlContent>
     </foxml:datastreamVersion>
@@ -48,11 +48,11 @@
   <foxml:datastream CONTROL_GROUP="X" ID="RELS-EXT" STATE="A">
     <foxml:datastreamVersion FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" ID="RELS-EXT.0" LABEL="RDF Statements about this object" MIMETYPE="application/rdf+xml">
       <foxml:xmlContent>
-        <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+        <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
           xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:hydra="http://projecthydra.org/ns/relations#">
-          <rdf:Description rdf:about="info:fedora/druid:ab123cd4567">
+          <rdf:Description rdf:about="info:fedora/druid:bc123df4567">
             <fedora-model:hasModel rdf:resource="info:fedora/testObject"/>
-            <hydra:isGovernedBy rdf:resource="info:fedora/druid:fg890hi1234"/>
+            <hydra:isGovernedBy rdf:resource="info:fedora/druid:fg890hx1234"/>
           </rdf:Description>
         </rdf:RDF>
       </foxml:xmlContent>

@@ -7,7 +7,7 @@ RSpec.describe Publish::PublicXmlService do
 
   let(:release_tags) { {} }
 
-  let(:item) { instantiate_fixture('druid:ab123cd4567', Dor::Item) }
+  let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
 
   describe '#to_xml' do
     subject(:xml) { service.to_xml }
@@ -15,7 +15,7 @@ RSpec.describe Publish::PublicXmlService do
     let(:rels) do
       <<-EOXML
             <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:hydra="http://projecthydra.org/ns/relations#">
-              <rdf:Description rdf:about="info:fedora/druid:ab123cd4567">
+              <rdf:Description rdf:about="info:fedora/druid:bc123df4567">
                 <hydra:isGovernedBy rdf:resource="info:fedora/druid:789012"></hydra:isGovernedBy>
                 <fedora-model:hasModel rdf:resource="info:fedora/hydra:commonMetadata"></fedora-model:hasModel>
                 <fedora:isMemberOf rdf:resource="info:fedora/druid:xh235dd9059"></fedora:isMemberOf>
@@ -28,7 +28,7 @@ RSpec.describe Publish::PublicXmlService do
 
     let(:rights) do
       <<~XML
-        <rightsMetadata objectId="druid:ab123cd4567">
+        <rightsMetadata objectId="druid:bc123df4567">
           <copyright>
             <human>(c) Copyright 2010 by Sebastian Jeremias Osterfeld</human>
           </copyright>
@@ -51,7 +51,7 @@ RSpec.describe Publish::PublicXmlService do
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    version="3.3"
                    xsi:schemaLocation="http://www.loc.gov/mods/v3 http://cosimo.stanford.edu/standards/mods/v3/mods-3-3.xsd">
-          <mods:identifier type="local" displayLabel="SUL Resource ID">druid:ab123cd4567</mods:identifier>
+          <mods:identifier type="local" displayLabel="SUL Resource ID">druid:bc123df4567</mods:identifier>
         </mods:mods>
       EOXML
 
@@ -60,7 +60,7 @@ RSpec.describe Publish::PublicXmlService do
       item.rightsMetadata.content  = rights
       item.rels_ext.content        = rels
       allow_any_instance_of(Publish::PublicDescMetadataService).to receive(:ng_xml).and_return(Nokogiri::XML(mods)) # calls Item.find and not needed in general tests
-      allow(OpenURI).to receive(:open_uri).with('https://purl-test.stanford.edu/ab123cd4567.xml').and_return('<xml/>')
+      allow(OpenURI).to receive(:open_uri).with('https://purl-test.stanford.edu/bc123df4567.xml').and_return('<xml/>')
       WebMock.disable_net_connect!
     end
 
@@ -84,7 +84,7 @@ RSpec.describe Publish::PublicXmlService do
     context 'with a licence node (new way)' do
       let(:rights) do
         <<~XML
-          <rightsMetadata objectId="druid:ab123cd4567">
+          <rightsMetadata objectId="druid:bc123df4567">
             <copyright>
               <human>(c) Copyright 2010 by Sebastian Jeremias Osterfeld</human>
             </copyright>
@@ -155,7 +155,7 @@ RSpec.describe Publish::PublicXmlService do
       end
 
       it 'an id attribute' do
-        expect(ng_xml.at_xpath('/publicObject/@id').value).to match(/^druid:ab123cd4567/)
+        expect(ng_xml.at_xpath('/publicObject/@id').value).to match(/^druid:bc123df4567/)
       end
 
       it 'a published attribute' do
@@ -178,7 +178,7 @@ RSpec.describe Publish::PublicXmlService do
         before do
           item.contentMetadata.content = <<-XML
             <?xml version="1.0"?>
-            <contentMetadata objectId="druid:ab123cd4567" type="file">
+            <contentMetadata objectId="druid:bc123df4567" type="file">
               <resource id="0001" sequence="1" type="file">
                 <file id="some_file.pdf" mimetype="file/pdf" publish="yes"/>
               </resource>
@@ -228,16 +228,16 @@ RSpec.describe Publish::PublicXmlService do
       it 'include a thumb node if a thumb is present' do
         item.contentMetadata.content = <<-XML
           <?xml version="1.0"?>
-          <contentMetadata objectId="druid:ab123cd4567" type="map">
+          <contentMetadata objectId="druid:bc123df4567" type="map">
             <resource id="0001" sequence="1" type="image">
-              <file id="ab123cd4567_05_0001.jp2" mimetype="image/jp2"/>
+              <file id="bc123df4567_05_0001.jp2" mimetype="image/jp2"/>
             </resource>
             <resource id="0002" sequence="2" thumb="yes" type="image">
-              <file id="ab123cd4567_05_0002.jp2" mimetype="image/jp2"/>
+              <file id="bc123df4567_05_0002.jp2" mimetype="image/jp2"/>
             </resource>
           </contentMetadata>
         XML
-        expect(ng_xml.at_xpath('/publicObject/thumb').to_xml).to be_equivalent_to('<thumb>ab123cd4567/ab123cd4567_05_0002.jp2</thumb>')
+        expect(ng_xml.at_xpath('/publicObject/thumb').to_xml).to be_equivalent_to('<thumb>bc123df4567/bc123df4567_05_0002.jp2</thumb>')
       end
 
       context 'when there is content inside it' do
@@ -306,7 +306,7 @@ RSpec.describe Publish::PublicXmlService do
         end
 
         it 'raises an error' do
-          expect { xml }.to raise_error(Dor::DataError, 'The contentMetadata of druid:ab123cd4567 has an externalFile ' \
+          expect { xml }.to raise_error(Dor::DataError, 'The contentMetadata of druid:bc123df4567 has an externalFile ' \
             "reference to druid:cg767mn6478, cg767mn6478_1, but druid:cg767mn6478 doesn't have " \
             'a matching resource node in its contentMetadata')
         end
@@ -338,7 +338,7 @@ RSpec.describe Publish::PublicXmlService do
         end
 
         it 'raises an error' do
-          expect { xml }.to raise_error(Dor::DataError, 'Unable to find a file node with id="2542A.jp2" (child of druid:ab123cd4567)')
+          expect { xml }.to raise_error(Dor::DataError, 'Unable to find a file node with id="2542A.jp2" (child of druid:bc123df4567)')
         end
       end
 
