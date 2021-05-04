@@ -123,7 +123,6 @@ RSpec.describe Publish::MetadataTransferService do
         let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Collection) }
 
         before do
-          item.descMetadata.content = mods
           item.rightsMetadata.content = "<rightsMetadata><access type='discover'><machine><world/></machine></access></rightsMetadata>"
           item.rels_ext.content = rels
         end
