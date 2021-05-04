@@ -1175,10 +1175,10 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
   end
 
   context 'with 2 collections and objectLabel with xml encoding' do
-    # it_behaves_like 'DRO Identification Fedora Cocina mapping' do
-    xit 'to be implemented: do not double XML escape ampersands in objectLabel' do
+    it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb001zc5754' }
-      let(:label) { 'French Grand Prix &amp; 12 Hour Rheims 7/4/1954' }
+      let(:label) { 'French Grand Prix & 12 Hour Rheims 7/4/1954' }
+      let(:xml_escaped_label) { 'French Grand Prix &amp; 12 Hour Rheims 7/4/1954' }
       let(:admin_policy_id) { 'druid:qv648vd4392' } # from RELS-EXT
       let(:collection_ids) { ['druid:nt028fd5773', 'druid:wy149zp6932'] } # from RELS-EXT
       let(:source_id_source) { 'Revs' }
@@ -1189,7 +1189,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <sourceId source="#{source_id_source}">#{source_id}</sourceId>
             <objectId>#{item_id}</objectId>
             <objectCreator>DOR</objectCreator>
-            <objectLabel>#{label}</objectLabel>
+            <objectLabel>#{xml_escaped_label}</objectLabel>
             <objectType>item</objectType>
             <adminPolicy>#{admin_policy_id}</adminPolicy>
             <otherId name="uuid">b9af2444-2525-11e2-a4c7-0050569b52d5</otherId>
@@ -1204,7 +1204,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <sourceId source="#{source_id_source}">#{source_id}</sourceId>
             <objectId>#{item_id}</objectId>
             <objectCreator>DOR</objectCreator>
-            <objectLabel>#{label}</objectLabel>
+            <objectLabel>#{xml_escaped_label}</objectLabel>
             <objectType>item</objectType>
           </identityMetadata>
         XML
@@ -1334,7 +1334,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
   context 'with &#x escaped chars in objectLabel (FRDA)' do
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb016nw8128' }
-      let(:label) { 'E&#x301;ve&#x301;nement du 19 fevrier 1790' }
+      let(:label) { 'Événement du 19 fevrier 1790' }
+      let(:xml_escaped_label) { 'E&#x301;ve&#x301;nement du 19 fevrier 1790' }
       let(:admin_policy_id) { 'druid:ht275vw4351' } # from RELS-EXT
       let(:collection_ids) { ['druid:jh957jy1101'] } # from RELS-EXT
       let(:source_id_source) { 'French Revolution Digital Archive' }
@@ -1345,7 +1346,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <sourceId source="#{source_id_source}">#{source_id}</sourceId>
             <objectId>#{item_id}</objectId>
             <objectCreator>DOR</objectCreator>
-            <objectLabel>#{label}</objectLabel>
+            <objectLabel>#{xml_escaped_label}</objectLabel>
             <objectType>item</objectType>
             <adminPolicy>druid:ht275vw4351</adminPolicy>
             <otherId name="uuid">c2c9b4f6-4bac-11e2-b8ce-0050569b52d5</otherId>
@@ -1354,14 +1355,13 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           </identityMetadata>
         XML
       end
-      # NOTE: label: xml escapes ampersands in unicode hex characters
       let(:roundtrip_identity_metadata_xml) do
         <<~XML
           <identityMetadata>
             <sourceId source="#{source_id_source}">#{source_id}</sourceId>
             <objectId>#{item_id}</objectId>
             <objectCreator>DOR</objectCreator>
-            <objectLabel>E&amp;#x301;ve&amp;#x301;nement du 19 fevrier 1790</objectLabel>
+            <objectLabel>#{xml_escaped_label}</objectLabel>
             <objectType>item</objectType>
           </identityMetadata>
         XML
