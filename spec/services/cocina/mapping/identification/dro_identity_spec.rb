@@ -54,6 +54,12 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
                     rightsMetadata: Dor::RightsMetadataDS.new)
   end
   let(:mapped_cocina_props) { Cocina::FromFedora::DRO.props(fedora_item_mock) }
+  let(:normalized_orig_identity_xml) do
+    # the starting identityMetadata.xml is normalized to address discrepancies found against identityMetadata roundtripped
+    #  from data store (Fedora) and back, per Andrew's specifications.
+    #  E.g., <citationTitle> and <citationCreator> are removed
+    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml)).to_xml
+  end
   let(:roundtrip_identity_md_xml) { defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml }
   let(:roundtrip_fedora_item) do
     cocina_dro = Cocina::Models::DRO.new(mapped_cocina_props)
@@ -64,10 +70,6 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
     Cocina::ToFedora::Identity.apply(fedora_item, label: cocina_dro.label, agreement_id: cocina_dro.structural&.hasAgreement)
     fedora_item.identityMetadata.barcode = cocina_dro.identification.barcode
     fedora_item
-  end
-  let(:mapped_roundtrip_identity_xml) do
-    Cocina::ToFedora::Identity.apply(roundtrip_fedora_item, label: mapped_cocina_props[:label])
-    roundtrip_fedora_item.identityMetadata.to_xml
   end
 
   context 'when mapping from Fedora to Cocina' do
@@ -81,8 +83,20 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
   end
 
   context 'when mapping from Cocina to (roundtrip) Fedora' do
-    it 'identityMetadata roundtrips thru cocina model to original identityMetadata.xml' do
-      expect(mapped_roundtrip_identity_xml).to be_equivalent_to(roundtrip_identity_md_xml)
+    before do
+      Cocina::ToFedora::Identity.apply(roundtrip_fedora_item, label: mapped_cocina_props[:label])
+    end
+
+    it 'identityMetadata roundtrips thru cocina model to expected roundtrip identityMetadata.xml' do
+      # for some reason, fedora_item.identityMetadata.ng_xml.to_xml fails here, but fedora_item.identityMetadata.to_xml passes.
+      #   ? Maybe some encoding assumptions baked in to active fedora.  Likewise, the opposite is true for the test below.
+      expect(roundtrip_fedora_item.identityMetadata.to_xml).to be_equivalent_to(roundtrip_identity_md_xml)
+    end
+
+    it 'identityMetadata roundtrips thru cocina maps to normalized original identityMetadata.xml' do
+      # for some reason, fedora_item.identityMetadata.to_xml fails here, but fedora_item.identityMetadata.ng_xml.to_xml passes.
+      #    ? Maybe some encoding assumptions baked in to active fedora.  Likewise, the opposite is true for the test above.
+      expect(roundtrip_fedora_item.identityMetadata.ng_xml.to_xml).to be_equivalent_to normalized_orig_identity_xml
     end
   end
 
@@ -90,6 +104,10 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
     let(:roundtrip_catkey) do
       catalog_link = mapped_cocina_props[:identification][:catalogLinks]&.find { |clink| clink[:catalog] == 'symphony' }
       catalog_link[:catalogRecordId] if catalog_link
+    end
+    let(:mapped_roundtrip_identity_xml) do
+      Cocina::ToFedora::Identity.apply(roundtrip_fedora_item, label: mapped_cocina_props[:label])
+      roundtrip_fedora_item.identityMetadata.to_xml
     end
     let(:roundtrip_namespaced_other_ids) do
       other_id_nodes = Nokogiri::XML(mapped_roundtrip_identity_xml).xpath('//identityMetadata/otherId')
@@ -130,6 +148,43 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
     end
 
     it 'roundtrip Fedora maps to expected Cocina props' do
+      expect(roundtrip_cocina_props).to be_deep_equal(cocina_props)
+    end
+  end
+
+  context 'when mapping from normalized orig Fedora identity_metadata_xml to (roundtrip) Cocina' do
+    let(:roundtrip_namespaced_other_ids) do
+      other_id_nodes = Nokogiri::XML(normalized_orig_identity_xml).xpath('//identityMetadata/otherId')
+      other_id_nodes.map { |other_id_node| "#{other_id_node['name']}:#{other_id_node.text}" }
+    end
+    # using a mock rather than every example having all relevant datastreams
+    let(:normalized_orig_fedora_item_mock) do
+      instance_double(Dor::Item,
+                      pid: item_id,
+                      id: item_id, # see app/services/cocina/from_fedora/administrative.rb:22
+                      objectLabel: [label],
+                      label: mapped_cocina_props[:label],
+                      current_version: '1',
+                      admin_policy_object_id: defined?(admin_policy_id) ? admin_policy_id : nil,
+                      collections: collection_ids.map { |id| Dor::Collection.new(pid: id) },
+                      catkey: defined?(catkey) ? catkey : nil,
+                      source_id: namespaced_source_id,
+                      otherId: roundtrip_namespaced_other_ids, # see app/services/cocina/from_fedora/identification.rb:36
+                      identityMetadata: Dor::IdentityMetadataDS.from_xml(normalized_orig_identity_xml),
+                      descMetadata: Dor::DescMetadataDS.from_xml(mods_xml),
+                      embargoMetadata: Dor::EmbargoMetadataDS.new,
+                      geoMetadata: Dor::GeoMetadataDS.new,
+                      contentMetadata: Dor::ContentMetadataDS.new,
+                      rightsMetadata: Dor::RightsMetadataDS.new)
+    end
+    let(:roundtrip_cocina_props) { Cocina::FromFedora::DRO.props(normalized_orig_fedora_item_mock) }
+
+    before do
+      allow(normalized_orig_fedora_item_mock).to receive(:is_a?).with(Dor::Agreement).and_return(false)
+      allow(normalized_orig_fedora_item_mock).to receive(:is_a?).with(Dor::Item).and_return(true)
+    end
+
+    it 'normalized orig Fedora identity_metadata_xml maps to expected Cocina props' do
       expect(roundtrip_cocina_props).to be_deep_equal(cocina_props)
     end
   end
@@ -418,7 +473,6 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <sourceId source="#{source_id_source}">#{source_id}</sourceId>
             <otherId name="catkey">#{catkey}</otherId>
             <otherId name="barcode">#{barcode}</otherId>
-            <agreementId>druid:zn292gq7284</agreementId>
           </identityMetadata>
         XML
       end
@@ -441,9 +495,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           administrative: {
             hasAdminPolicy: admin_policy_id
           },
-          structural: {
-            hasAgreement: 'druid:zn292gq7284'
-          },
+          structural: {},
           access: access_props,
           description: description_props
         }

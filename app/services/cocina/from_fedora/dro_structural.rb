@@ -27,8 +27,6 @@ module Cocina
                                     ignore_resource_type_errors: project_phoenix?)
           structural[:contains] = contains if contains.present?
 
-          structural[:hasAgreement] = fedora_item.identityMetadata.agreementId.first unless fedora_item.identityMetadata.agreementId.empty?
-
           begin
             # Note that there is a bug with fedora_item.collection_ids that returns [] until fedora_item.collections is called.
             # Below side-steps this.

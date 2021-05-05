@@ -20,7 +20,7 @@ RSpec.describe 'Create object' do
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected_label) { label }
-    let(:expected_structural) { { hasAgreement: 'druid:bc777df7777' } }
+    let(:expected_structural) { {} }
     let(:access) { 'world' }
     let(:expected) do
       Cocina::Models::DRO.new(type: Cocina::Models::Vocab.image,
@@ -65,17 +65,13 @@ RSpec.describe 'Create object' do
           "structural":#{structural.to_json}}
       JSON
     end
-
     let(:identification) do
       {
         sourceId: 'googlebooks:999999',
         barcode: '36105036289127'
       }
     end
-
-    let(:structural) do
-      { hasAgreement: 'druid:bc777df7777' }
-    end
+    let(:structural) { {} }
 
     context 'when the service is disabled' do
       before do

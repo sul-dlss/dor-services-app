@@ -42,12 +42,19 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
                     current_version: '1',
                     admin_policy_object_id: admin_policy_id,
                     agreement_object_id: agreement_object_id,
+                    identityMetadata: Dor::IdentityMetadataDS.from_xml(identity_metadata_xml),
                     descMetadata: instance_double(Dor::DescMetadataDS, ng_xml: mods_ng_xml),
                     defaultObjectRights: instance_double(Dor::DefaultObjectRightsDS, content: default_object_rights_xml),
                     administrativeMetadata: Dor::AdministrativeMetadataDS.from_xml(administrative_metadata_xml),
                     roleMetadata: instance_double(Dor::RoleMetadataDS, find_by_xpath: []))
   end
   let(:mapped_cocina_props) { Cocina::FromFedora::APO.props(fedora_apo_mock) }
+  let(:normalized_orig_identity_xml) do
+    # the starting identityMetadata.xml is normalized to address discrepancies found against identityMetadata roundtripped
+    #  from data store (Fedora) and back, per Andrew's specifications.
+    #  E.g., <adminPolicy> is removed as that information will not be carried over and is retrieved from RELS-EXT
+    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml)).to_xml
+  end
   let(:roundtrip_identity_metadata_xml) { defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml }
 
   context 'when mapping from Fedora to Cocina' do
@@ -73,8 +80,12 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
       mapped_fedora_apo.identityMetadata.to_xml
     end
 
-    it 'identityMetadata roundtrips thru cocina model to original identityMetadata.xml' do
+    it 'identityMetadata roundtrips thru cocina model to expected roundtrip identityMetadata.xml' do
       expect(mapped_roundtrip_identity_xml).to be_equivalent_to(roundtrip_identity_metadata_xml)
+    end
+
+    it 'identityMetadata roundtrips thru cocina maps to normalized original identityMetadata.xml' do
+      expect(mapped_roundtrip_identity_xml).to be_equivalent_to normalized_orig_identity_xml
     end
   end
 
@@ -86,6 +97,7 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
                       current_version: '1',
                       admin_policy_object_id: mapped_cocina_props[:administrative][:hasAdminPolicy],
                       agreement_object_id: mapped_cocina_props[:administrative][:referencesAgreement],
+                      identityMetadata: Dor::IdentityMetadataDS.from_xml(identity_metadata_xml),
                       descMetadata: instance_double(Dor::DescMetadataDS, ng_xml: mods_ng_xml),
                       defaultObjectRights: instance_double(Dor::DefaultObjectRightsDS, content: default_object_rights_xml),
                       administrativeMetadata: Dor::AdministrativeMetadataDS.from_xml(administrative_metadata_xml),
@@ -97,9 +109,30 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
       expect(roundtrip_cocina_props).to be_deep_equal(cocina_props)
     end
   end
+
+  context 'when mapping from normalized orig Fedora identity_metadata_xml to (roundtrip) Cocina' do
+    let(:normalized_orig_fedora_apo_mock) do
+      instance_double(Dor::AdminPolicyObject,
+                      pid: pid,
+                      label: label,
+                      current_version: '1',
+                      admin_policy_object_id: admin_policy_id,
+                      agreement_object_id: agreement_object_id,
+                      identityMetadata: Dor::IdentityMetadataDS.from_xml(normalized_orig_identity_xml),
+                      descMetadata: instance_double(Dor::DescMetadataDS, ng_xml: mods_ng_xml),
+                      defaultObjectRights: instance_double(Dor::DefaultObjectRightsDS, content: default_object_rights_xml),
+                      administrativeMetadata: Dor::AdministrativeMetadataDS.from_xml(administrative_metadata_xml),
+                      roleMetadata: instance_double(Dor::RoleMetadataDS, find_by_xpath: []))
+    end
+    let(:roundtrip_cocina_props) { Cocina::FromFedora::APO.props(normalized_orig_fedora_apo_mock) }
+
+    it 'roundtrip Fedora maps to expected Cocina props' do
+      expect(roundtrip_cocina_props).to be_deep_equal(cocina_props)
+    end
+  end
 end
 
-RSpec.describe 'APO Fedora identityMetadata <--> Cocina Identification mappings' do
+RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identification mappings' do
   # NOTE: tested in mapping/administrative/apo_administrative_spec.rb
   let(:default_access_props) do
     {

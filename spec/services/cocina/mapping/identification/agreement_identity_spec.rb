@@ -48,6 +48,12 @@ RSpec.shared_examples 'Agreement Object Identification Fedora Cocina mapping' do
                     rightsMetadata: Dor::RightsMetadataDS.new)
   end
   let(:mapped_cocina_props) { Cocina::FromFedora::DRO.props(fedora_agreement_mock) }
+  let(:normalized_orig_identity_xml) do
+    # the starting identityMetadata.xml is normalized to address discrepancies found against identityMetadata roundtripped
+    #  from data store (Fedora) and back, per Andrew's specifications.
+    #  E.g., <adminPolicy> is removed as that information will not be carried over and is retrieved from RELS-EXT
+    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml)).to_xml
+  end
   let(:roundtrip_identity_md_xml) { defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml }
   let(:roundtrip_fedora_agreement) do
     cocina_dro = Cocina::Models::DRO.new(mapped_cocina_props)
@@ -81,6 +87,10 @@ RSpec.shared_examples 'Agreement Object Identification Fedora Cocina mapping' do
   context 'when mapping from Cocina to (roundtrip) Fedora' do
     it 'identityMetadata roundtrips thru cocina model to original identityMetadata.xml' do
       expect(mapped_roundtrip_identity_xml).to be_equivalent_to(roundtrip_identity_md_xml)
+    end
+
+    it 'identityMetadata roundtrips thru cocina maps to normalized original identityMetadata.xml' do
+      expect(mapped_roundtrip_identity_xml).to be_equivalent_to normalized_orig_identity_xml
     end
   end
 
@@ -129,9 +139,40 @@ RSpec.shared_examples 'Agreement Object Identification Fedora Cocina mapping' do
       expect(roundtrip_cocina_props).to be_deep_equal(cocina_props)
     end
   end
+
+  context 'when mapping from normalized orig Fedora identity_metadata_xml to (roundtrip) Cocina' do
+    # using a mock rather than every example having all relevant datastreams
+    let(:normalized_orig_fedora_agreement_mock) do
+      instance_double(Dor::Agreement,
+                      pid: agreement_id,
+                      id: agreement_id, # see app/services/cocina/from_fedora/administrative.rb:22
+                      objectLabel: [label],
+                      label: label,
+                      current_version: '1',
+                      admin_policy_object_id: defined?(admin_policy_id) ? admin_policy_id : nil,
+                      catkey: defined?(catkey) ? catkey : nil,
+                      source_id: namespaced_source_id, # see app/services/cocina/from_fedora/identification.rb:30
+                      otherId: namespaced_other_ids, # see app/services/cocina/from_fedora/identification.rb:36
+                      collections: collection_ids.map { |id| Dor::Collection.new(pid: id) },
+                      identityMetadata: Dor::IdentityMetadataDS.from_xml(normalized_orig_identity_xml),
+                      descMetadata: Dor::DescMetadataDS.from_xml(mods_xml),
+                      embargoMetadata: Dor::EmbargoMetadataDS.new,
+                      contentMetadata: Dor::ContentMetadataDS.new,
+                      rightsMetadata: Dor::RightsMetadataDS.new)
+    end
+    let(:roundtrip_cocina_props) { Cocina::FromFedora::DRO.props(normalized_orig_fedora_agreement_mock) }
+
+    before do
+      allow(normalized_orig_fedora_agreement_mock).to receive(:is_a?).with(Dor::Agreement).and_return(true)
+    end
+
+    it 'roundtrip Fedora maps to expected Cocina props' do
+      expect(roundtrip_cocina_props).to be_deep_equal(cocina_props)
+    end
+  end
 end
 
-RSpec.describe 'Agreement Object Fedora identityMetadata <--> Cocina Identification mappings' do
+RSpec.describe 'Fedora Agreement Object identityMetadata <--> Cocina Identification mappings' do
   # NOTE: access tested in mapping/access/dro_access_spec.rb
   let(:access_props) do
     {
