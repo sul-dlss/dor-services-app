@@ -33,7 +33,6 @@ module Cocina
             access[:accessContact] = access_contact.presence
             access[:url] = url.presence
             access[:note] = (note + purl_note).presence
-            # Without the count check, this node winds up all over the damn place and breaks dozens of tests
             access[:digitalRepository] = [{ value: 'Stanford Digital Repository' }] if purl
           end.compact
         end
