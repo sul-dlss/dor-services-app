@@ -1,0 +1,44 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+require_relative '../lib/fedora_cache'
+require_relative '../lib/fedora_loader'
+require 'set'
+require 'optparse'
+
+# Loads Fedora objects from cache into Fedora.
+
+options = { random: false, druids: [], fast: false }
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/test-items'
+
+  option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
+  option_parser.on('-r', '--random', 'Select random druids.')
+  option_parser.on('-f', '--fast', 'Without content metadata.')
+  option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+parser.parse!(into: options)
+
+cache = FedoraCache.new
+loader = FedoraLoader.new(cache: cache)
+
+if options[:druids].empty?
+  druids = File.read('druids.txt').split
+  druids.shuffle! if options[:random]
+  druids = druids.take(options[:sample]) if options[:sample]
+else
+  druids = options[:druids]
+end
+
+druids.each do |druid|
+  puts "Creating #{druid}"
+  fedora_obj = loader.load(druid)
+  Cocina::ActiveFedoraPersister.store(fedora_obj)
+rescue StandardError => e
+  puts e
+end

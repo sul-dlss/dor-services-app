@@ -40,7 +40,7 @@ end
 module ActiveFedora
   # Monkeypatch to avoid hitting Solr.
   class SolrService
-    def self.query(query)
+    def self.query(query, rows: nil)
       return unless (match = query.match(/druid:.{11}/))
 
       [{ 'id' => match[0] }]

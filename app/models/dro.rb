@@ -2,6 +2,18 @@
 
 # Model for a Digital Repository Object.
 class Dro < ApplicationRecord
+  # rubocop:disable Layout/LineLength
+  # Version all cocina fields.
+  # trigger.after(:update) do
+  #   "INSERT INTO dro_versions(dro_id, druid, content_type, label, version, access, administrative, description, identification, structural, geographic, created_at, updated_at) VALUES (OLD.id, OLD.druid, OLD.content_type, OLD.label, OLD.version, OLD.access, OLD.administrative, OLD.description, OLD.identification, OLD.structural, OLD.geographic, OLD.created_at, OLD.updated_at);"
+  # end
+
+  # Version only cocina fields that have changed.
+  trigger.after(:update) do
+    'INSERT INTO dro_versions(dro_id, druid, content_type, label, version, access, administrative, description, identification, structural, geographic, created_at, updated_at) VALUES (OLD.id, OLD.druid, NULLIF(OLD.content_type, NEW.content_type), NULLIF(OLD.label, NEW.label), NULLIF(OLD.version, NEW.version), NULLIF(OLD.access, NEW.access), NULLIF(OLD.administrative, NEW.administrative), NULLIF(OLD.description, NEW.description), NULLIF(OLD.identification, NEW.identification), NULLIF(OLD.structural, NEW.structural), NULLIF(OLD.geographic, NEW.geographic), OLD.created_at, OLD.updated_at);'
+  end
+  # rubocop:enable Layout/LineLength
+
   def to_cocina
     Cocina::Models::DRO.new({
       type: content_type,

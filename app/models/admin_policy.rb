@@ -2,6 +2,18 @@
 
 # Model for an AdminPolicy.
 class AdminPolicy < ApplicationRecord
+  # rubocop:disable Layout/LineLength
+  # Version all cocina fields.
+  # trigger.after(:update) do
+  #   "INSERT INTO admin_policy_versions(admin_policy_id, druid, label, version, administrative, description, created_at, updated_at) VALUES (OLD.id, OLD.druid, OLD.label, OLD.version, OLD.administrative, OLD.description, OLD.created_at, OLD.updated_at);"
+  # end
+
+  # Version only cocina fields that have changed.
+  trigger.after(:update) do
+    'INSERT INTO admin_policy_versions(admin_policy_id, druid, label, version, administrative, description, created_at, updated_at) VALUES (OLD.id, OLD.druid, NULLIF(OLD.label, NEW.version), NULLIF(OLD.version, NEW.version), NUllIF(OLD.administrative, NEW.administrative), NULLIF(OLD.description, NEW.description), OLD.created_at, OLD.updated_at);'
+  end
+  # rubocop:enable Layout/LineLength
+
   def to_cocina
     Cocina::Models::AdminPolicy.new({
       type: 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld',

@@ -11,7 +11,6 @@ gem 'puma', '~> 3.12'
 group :development do
   gem 'dor-services-client' # used by bin/validate-cocina-roundtrip
   gem 'listen', '~> 3.0.5'
-  gem 'rubyzip', '>= 1.0.0'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
@@ -27,6 +26,7 @@ gem 'dry-schema', '~> 1.4'
 gem 'equivalent-xml' # for diffing MODS
 gem 'faraday', '~> 1.0'
 gem 'faraday_middleware', '~> 1.0.0.rc1' # dependency of dor-workflow-client. remove when release > 0.14.0
+gem 'hairtrigger' # DB triggers
 gem 'honeybadger'
 # iso-639 0.3.0 isn't compatible with ruby 2.5.  This declaration can be dropped when we upgrade to 2.6
 # see https://github.com/alphabetum/iso-639/issues/12
@@ -40,6 +40,7 @@ gem 'pg'
 gem 'progressbar' # for the cleaner rake task
 gem 'retries' # for ReleaseTags::PurlClient and Goobi
 gem 'ruby-cache', '~> 0.3.0'
+gem 'rubyzip', '>= 1.0.0' # Used for Fedora cache
 gem 'sidekiq', '~> 6.0'
 gem 'sidekiq-statistic'
 gem 'uuidtools', '~> 2.1.4'
