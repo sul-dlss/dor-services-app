@@ -13,7 +13,6 @@ module Cocina
         # Label may have already been set when setting descriptive metadata.
         fedora_object.objectLabel = label if fedora_object.objectLabel.empty?
         fedora_object.objectType = fedora_object.object_type # This comes from the class definition in dor-services
-        fedora_object.identityMetadata.agreementId = agreement_id if agreement_id
       end
     end
   end
