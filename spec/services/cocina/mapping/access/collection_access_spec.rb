@@ -8,6 +8,13 @@ RSpec.shared_examples 'Collection Access Fedora Cocina mapping' do
 
   let(:fedora_collection) { Dor::Collection.new }
   let(:mapped_coll_access_props) { Cocina::FromFedora::CollectionAccess.props(fedora_collection.rightsMetadata) }
+  let(:normalized_orig_rights_xml) do
+    # the starting rightsMetadata is normalized to address discrepancies found against rightsMetadata roundtripped
+    #  to data store (Fedora) and back, per Andrew's specifications.
+    #  E.g., license codes in use element become URL in license element
+    orig_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(rights_xml)
+    Cocina::Normalizers::RightsNormalizer.normalize(datastream: orig_rights_metadata_ds).to_xml
+  end
   let(:roundtrip_rights_metadata_xml) { defined?(roundtrip_rights_xml) ? roundtrip_rights_xml : rights_xml }
 
   before do
@@ -32,8 +39,12 @@ RSpec.shared_examples 'Collection Access Fedora Cocina mapping' do
       fedora_collection.rightsMetadata.to_xml
     end
 
-    it 'rightsMetadata roundtrips thru cocina model to original rightsMetadata.xml' do
+    it 'rightsMetadata roundtrips thru cocina model to provided expected rightsMetadata.xml' do
       expect(mapped_roundtrip_rights_xml).to be_equivalent_to(roundtrip_rights_metadata_xml)
+    end
+
+    it 'rightsMetadata roundtrips thru cocina model to normalized original rightsMetadata.xml' do
+      expect(mapped_roundtrip_rights_xml).to be_equivalent_to(normalized_orig_rights_xml)
     end
   end
 
@@ -41,12 +52,15 @@ RSpec.shared_examples 'Collection Access Fedora Cocina mapping' do
     let(:roundtrip_fedora_collection) { Dor::Collection.new }
     let(:roundtrip_cocina_props) { Cocina::FromFedora::CollectionAccess.props(roundtrip_fedora_collection.rightsMetadata) }
 
-    before do
+    it 'roundtrip Fedora maps to expected Cocina (collection) Access props' do
       roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(roundtrip_rights_metadata_xml)
       allow(roundtrip_fedora_collection).to receive(:rightsMetadata).and_return(roundtrip_rights_metadata_ds)
+      expect(roundtrip_cocina_props).to be_deep_equal(cocina_access_props)
     end
 
-    it 'roundtrip Fedora maps to expected Cocina (collection) Access props' do
+    it 'normalized original Fedora rights_xml maps to expected Cocina (collection) Access props' do
+      roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(normalized_orig_rights_xml)
+      allow(roundtrip_fedora_collection).to receive(:rightsMetadata).and_return(roundtrip_rights_metadata_ds)
       expect(roundtrip_cocina_props).to be_deep_equal(cocina_access_props)
     end
   end
@@ -117,6 +131,16 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
                 <human type="openDataCommons">Open Data Commons Attribution License 1.0</human>
                 <machine type="openDataCommons">odc-by</machine>
               </use>
+              <access type="discover">
+                <machine>
+                  <none/>
+                </machine>
+              </access>
+              <access type="read">
+                <machine>
+                  <none/>
+                </machine>
+              </access>
             </rightsMetadata>
           XML
         end
@@ -263,6 +287,16 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
             <use>
               <human type="useAndReproduction">User agrees that, where applicable, stuff.</human>
             </use>
+            <access type="discover">
+              <machine>
+                <none/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <none/>
+              </machine>
+            </access>
           </rightsMetadata>
         XML
       end

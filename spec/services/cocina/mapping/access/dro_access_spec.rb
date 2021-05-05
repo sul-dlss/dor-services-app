@@ -11,6 +11,13 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
   let(:mapped_structural_props) { Cocina::FromFedora::DroStructural.props(fedora_item, type: Cocina::Models::Vocab.book) }
   let(:cocina_file_access_props) { cocina_access_props }
   let(:roundtrip_rights_metadata_xml) { defined?(roundtrip_rights_xml) ? roundtrip_rights_xml : rights_xml }
+  let(:normalized_orig_rights_xml) do
+    # the starting rightsMetadata is normalized to address discrepancies found against rightsMetadata roundtripped
+    #  to data store (Fedora) and back, per Andrew's specifications.
+    #  E.g., license codes in use element become URL in license element
+    orig_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(rights_xml)
+    Cocina::Normalizers::RightsNormalizer.normalize(datastream: orig_rights_metadata_ds).to_xml
+  end
   let(:roundtrip_content_metadata_xml) { defined?(roundtrip_content_xml) ? roundtrip_content_xml : content_xml }
   let(:content_xml) do
     <<~XML
@@ -26,7 +33,7 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
       </contentMetadata>
     XML
   end
-
+  # we need cocina_structural_props to test file level access (via cocina_file_access_props passed in)
   let(:cocina_structural_props) do
     {
       contains: [
@@ -104,15 +111,22 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
   context 'when mapping from Cocina to Fedora' do
     let(:mapped_access) { Cocina::Models::DROAccess.new(mapped_access_props) }
     let(:mapped_structural) { Cocina::Models::DROStructural.new(mapped_structural_props) }
-    let(:mapped_roundtrip_rights_xml) { fedora_item.rightsMetadata.to_xml }
     let(:mapped_roundtrip_content_xml) { fedora_item.contentMetadata.to_xml }
 
     before do
       Cocina::ToFedora::DROAccess.apply(fedora_item, mapped_access, mapped_structural)
     end
 
-    it 'rightsMetadata roundtrips thru cocina model to original rightsMetadata.xml' do
-      expect(mapped_roundtrip_rights_xml).to be_equivalent_to(roundtrip_rights_metadata_xml)
+    it 'rightsMetadata roundtrips thru cocina model to provided expected rightsMetadata.xml' do
+      # for some reason, fedora_item.rightsMetadata.ng_xml.to_xml fails here, but fedora_item.rightsMetadata.to_xml passes.
+      #   ? Maybe some encoding assumptions baked in to active fedora.  Likewise, the opposite is true for the test below.
+      expect(fedora_item.rightsMetadata.to_xml).to be_equivalent_to(roundtrip_rights_metadata_xml)
+    end
+
+    it 'rightsMetadata roundtrips thru cocina model to normalized original rightsMetadata.xml' do
+      # for some reason, fedora_item.rightsMetadata.to_xml fails here, but fedora_item.rightsMetadata.ng_xml.to_xml passes.
+      #    ? Maybe some encoding assumptions baked in to active fedora.  Likewise, the opposite is true for the test above.
+      expect(fedora_item.rightsMetadata.ng_xml.to_xml).to be_equivalent_to(normalized_orig_rights_xml)
     end
 
     it 'contentMetadata roundtrips thru cocina model to original contentMetadata.xml' do
@@ -120,7 +134,7 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
     end
   end
 
-  context 'when mapping from roundtrip Fedora to Cocina' do
+  context 'when mapping from roundtrip Fedora to (roundtrip) Cocina' do
     let(:roundtrip_fedora_item) { Dor::Item.new }
     let(:roundtrip_access_props) { Cocina::FromFedora::DROAccess.props(roundtrip_fedora_item.rightsMetadata, roundtrip_fedora_item.embargoMetadata) }
     let(:roundtrip_structural_props) { Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: Cocina::Models::Vocab.book) }
@@ -137,6 +151,28 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
     end
 
     it 'roundtrip Fedora maps to expected Cocina object props' do
+      expect(roundtrip_access_props).to be_deep_equal(cocina_access_props)
+      expect(roundtrip_structural_props).to be_deep_equal(cocina_structural_props)
+    end
+  end
+
+  context 'when mapping from normalized orig Fedora rights_xml to (roundtrip) Cocina' do
+    let(:roundtrip_fedora_item) { Dor::Item.new }
+    let(:roundtrip_access_props) { Cocina::FromFedora::DROAccess.props(roundtrip_fedora_item.rightsMetadata, roundtrip_fedora_item.embargoMetadata) }
+    let(:roundtrip_structural_props) { Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: Cocina::Models::Vocab.book) }
+
+    before do
+      roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(normalized_orig_rights_xml)
+      allow(roundtrip_fedora_item).to receive(:rightsMetadata).and_return(roundtrip_rights_metadata_ds)
+      if defined?(embargo_xml)
+        embargo_metadata_ds = Dor::EmbargoMetadataDS.from_xml(embargo_xml)
+        allow(roundtrip_fedora_item).to receive(:embargoMetadata).and_return(embargo_metadata_ds)
+      end
+      roundtrip_content_metadata_ds = Dor::ContentMetadataDS.from_xml(roundtrip_content_metadata_xml)
+      allow(roundtrip_fedora_item).to receive(:contentMetadata).and_return(roundtrip_content_metadata_ds)
+    end
+
+    it 'normalized Fedora rights_xml maps to expected Cocina object props' do
       expect(roundtrip_access_props).to be_deep_equal(cocina_access_props)
       expect(roundtrip_structural_props).to be_deep_equal(cocina_structural_props)
     end
@@ -632,6 +668,16 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
                 <human type="openDataCommons">Open Data Commons Attribution License 1.0</human>
                 <machine type="openDataCommons">odc-by</machine>
               </use>
+              <access type="discover">
+                <machine>
+                  <none/>
+                </machine>
+              </access>
+              <access type="read">
+                <machine>
+                  <none/>
+                </machine>
+              </access>
             </rightsMetadata>
           XML
         end
@@ -682,6 +728,16 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
                 <human type="creativeCommons">Attribution Non-Commercial, No Derivatives 3.0 Unported</human>
                 <machine type="creativeCommons">by-nc-nd</machine>
               </use>
+              <access type="discover">
+                <machine>
+                  <none/>
+                </machine>
+              </access>
+              <access type="read">
+                <machine>
+                  <none/>
+                </machine>
+              </access>
             </rightsMetadata>
           XML
         end
@@ -796,6 +852,16 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
                 <human type="creativeCommons">no Creative Commons (CC) license</human>
                 <machine type="creativeCommons">none</machine>
               </use>
+              <access type="discover">
+                <machine>
+                  <none/>
+                </machine>
+              </access>
+              <access type="read">
+                <machine>
+                  <none/>
+                </machine>
+              </access>
             </rightsMetadata>
           XML
         end
@@ -845,6 +911,16 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
               <use>
                 <license>https://creativecommons.org/share-your-work/public-domain/cc0/</license>
               </use>
+              <access type="discover">
+                <machine>
+                  <none/>
+                </machine>
+              </access>
+              <access type="read">
+                <machine>
+                  <none/>
+                </machine>
+              </access>
             </rightsMetadata>
           XML
         end
