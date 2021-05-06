@@ -148,7 +148,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::RelatedResource do
           note: [
             {
               value: 'Additional data.',
-              type: 'summary'
+              type: 'abstract'
             }
           ]
         }

@@ -28,13 +28,13 @@ module Cocina
         def abstracts
           all_abstract_nodes = resource_element.xpath('mods:abstract', mods: DESC_METADATA_NS).select { |node| note_present?(node) }
           altrepgroup_abstract_nodes, other_abstract_nodes = AltRepGroup.split(nodes: all_abstract_nodes)
-          other_abstract_nodes.map { |node| common_note_for(node).merge({ type: 'summary' }) } + \
+          other_abstract_nodes.map { |node| common_note_for(node).merge({ type: abstract_type(node) }) } + \
             altrepgroup_abstract_nodes.map { |parallel_nodes| parallel_abstract_for(parallel_nodes) }
         end
 
         def parallel_abstract_for(abstract_nodes)
           {
-            type: 'summary',
+            type: 'abstract',
             parallelValue: abstract_nodes.map { |node| common_note_for(node) }
           }
         end
@@ -57,6 +57,12 @@ module Cocina
               ]
             end
           end.compact
+        end
+
+        def abstract_type(node)
+          return 'abstract' unless node['type'].present?
+
+          node['type']
         end
 
         def notes

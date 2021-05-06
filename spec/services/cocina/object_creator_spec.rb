@@ -82,7 +82,7 @@ RSpec.describe Cocina::ObjectCreator do
           description: {
             note: [
               {
-                type: 'summary',
+                type: 'abstract',
                 value: 'I am an abstract'
               },
               {
@@ -156,8 +156,8 @@ RSpec.describe Cocina::ObjectCreator do
         expect(result.description.subject.first.value).to eq 'I am a keyword'
       end
 
-      it 'abstract (note of type summary) is set' do
-        summary_note = result.description.note.find { |note| note.type == 'summary' }
+      it 'abstract (note of type abstract) is set' do
+        summary_note = result.description.note.find { |note| note.type == 'abstract' }
         expect(summary_note.value).to eq 'I am an abstract'
       end
 
@@ -271,7 +271,7 @@ RSpec.describe Cocina::ObjectCreator do
               {
                 # NOTE: current mappings require that this is the first note
                 'value' => 'I am an abstract',
-                'type' => 'summary'
+                'type' => 'abstract'
               },
               {
                 'value' => 'I am not an abstract',
@@ -286,8 +286,8 @@ RSpec.describe Cocina::ObjectCreator do
         expect(result.description.title.first.value).to eq 'collection title'
       end
 
-      it 'collection abstract (note of type summary) is set' do
-        summary_note = result.description.note.find { |note| note.type == 'summary' }
+      it 'collection abstract (note of type abstract) is set' do
+        summary_note = result.description.note.find { |note| note.type == 'abstract' }
         expect(summary_note.value).to eq 'I am an abstract'
       end
     end

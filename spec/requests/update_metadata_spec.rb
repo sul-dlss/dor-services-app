@@ -144,7 +144,7 @@ RSpec.describe 'Update object' do
           { type: 'topic', value: 'MyString' }
         ],
         note: [
-          { type: 'summary', value: 'test abstract' },
+          { type: 'abstract', value: 'test abstract' },
           { type: 'preferred citation', value: 'test citation' },
           { displayLabel: 'Contact', type: 'email', value: 'io@io.io' }
         ],

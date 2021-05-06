@@ -9,7 +9,7 @@ RSpec.describe 'Cocina --> MODS mappings for note' do
         {
           note: [
             {
-              type: 'summary',
+              type: 'abstract',
               value: 'My paper is about dolphins.'
             }
           ]

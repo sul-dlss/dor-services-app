@@ -34,9 +34,11 @@ module Cocina
 
         attr_reader :xml, :notes, :id_generator
 
-        def tag_name(type)
-          case type
-          when 'summary'
+        def tag_name(note)
+          return :abstract if display_label_to_abstract_types.include? note.displayLabel
+
+          case note.type&.downcase
+          when 'summary', 'abstract', 'scope and content'
             :abstract
           when 'table of contents'
             :tableOfContents
@@ -45,6 +47,11 @@ module Cocina
           else
             :note
           end
+        end
+
+        # noted with a displayLabel set to any of these values will product an `abstract` XML node
+        def display_label_to_abstract_types
+          ['Content advice', 'Subject', 'Abstract', 'Review', 'Summary', 'Scope and content']
         end
 
         def tag(note, tag_name, attributes)
@@ -58,7 +65,7 @@ module Cocina
         end
 
         def write_basic(note)
-          tag(note, tag_name(note.type), note_attributes(note))
+          tag(note, tag_name(note), note_attributes(note))
         end
 
         def write_parallel(note)
@@ -66,7 +73,7 @@ module Cocina
           note.parallelValue.each do |parallel_note|
             attributes = { altRepGroup: alt_rep_group }.merge(note_attributes(parallel_note))
 
-            tag(parallel_note, tag_name(note.type), attributes)
+            tag(parallel_note, tag_name(note), attributes)
           end
         end
 

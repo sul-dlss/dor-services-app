@@ -144,7 +144,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
           note: [
             {
               value: 'This is a note.',
-              type: 'summary',
+              type: 'abstract',
               displayLabel: 'Summary'
             }
           ]
@@ -325,7 +325,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
           note: [
             {
               value: 'This is a synopsis.',
-              type: 'summary'
+              type: 'abstract'
             }
           ]
         }

@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'MODS abstract <--> cocina mappings' do
   describe 'Single abstract' do
-    xit 'updated spec not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract>This is an abstract.</abstract>
@@ -25,7 +25,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Multilingual abstract' do
-    xit 'updated spec not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract lang='eng' script='Latn' altRepGroup='1'>This is an abstract.</abstract>
@@ -78,7 +78,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Abstract with type "summary"' do
-    xit 'updated spec not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract type="summary">This is a summary.</abstract>
@@ -99,7 +99,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Abstract with type "Summary"' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract type="Summary">This is a summary.</abstract>
@@ -126,7 +126,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Abstract with type "scope and content"' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract type="scope and content">This is a scope and content note.</abstract>
@@ -147,7 +147,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Abstract with display label and type' do
-    xit 'updated spec not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract displayLabel='Synopsis'>This is a synopsis.</abstract>
@@ -169,7 +169,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Abstract with displayLabel "Summary" and no type' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract displayLabel="Summary">Summary</abstract>
@@ -190,7 +190,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Abstract with displayLabel "Subject" and no type' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract displayLabel="Subject">Subject</abstract>
@@ -211,7 +211,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Abstract with displayLabel "Review" and no type' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract displayLabel="Review">Review</abstract>
@@ -232,7 +232,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Abstract with displayLabel "Scope and content" and no type' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract displayLabel="Scope and content">Scope and content</abstract>
@@ -253,7 +253,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Abstract with displayLabel "Abstract" and no type' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract displayLabel="Abstract">Abstract</abstract>
@@ -274,7 +274,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Abstract with displayLabel "Content advice" and no type' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract displayLabel="Content advice">Content advice</abstract>
@@ -295,7 +295,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Link to external value only' do
-    xit 'updated spec not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract xlink:href="http://hereistheabstract.com" />
