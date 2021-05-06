@@ -79,7 +79,7 @@ RSpec.describe Publish::PublicDescMetadataService do
           </human>
           <machine type="creativeCommons">by-nc</machine>
           <human type="creativeCommons">
-            This work is licensed under a Creative Commons Attribution-NonCommercial 3.0 Unported License
+            Attribution Non-Commercial 3.0 Unported
           </human>
         </use>
       </rightsMetadata>
@@ -131,7 +131,7 @@ RSpec.describe Publish::PublicDescMetadataService do
         end
         expect(doc.xpath('//mods:accessCondition[@type="useAndReproduction"]').text).to match(/yada/)
         expect(doc.xpath('//mods:accessCondition[@type="copyright"]').text).to match(/Property rights reside with/)
-        expect(doc.xpath('//mods:accessCondition[@type="license"]').text).to match(/This work is licensed under/)
+        expect(doc.xpath('//mods:accessCondition[@type="license"]').text).to eq 'CC by-nc: Attribution-NonCommercial 3.0 Unported License'
       end
     end
 
@@ -160,7 +160,7 @@ RSpec.describe Publish::PublicDescMetadataService do
         end
         expect(doc.xpath('//xmlns:accessCondition[@type="useAndReproduction"]').text).to match(/yada/)
         expect(doc.xpath('//xmlns:accessCondition[@type="copyright"]').text).to match(/Property rights reside with/)
-        expect(doc.xpath('//xmlns:accessCondition[@type="license"]').text).to match(/This work is licensed under/)
+        expect(doc.xpath('//xmlns:accessCondition[@type="license"]').text).to eq 'CC by-nc: Attribution-NonCommercial 3.0 Unported License'
       end
     end
   end
@@ -190,13 +190,14 @@ RSpec.describe Publish::PublicDescMetadataService do
           </human>
           <machine type="creativeCommons">by-nc</machine>
           <human type="creativeCommons">
-            This work is licensed under a Creative Commons Attribution-NonCommercial 3.0 Unported License
+            Attribution Non-Commercial 3.0 Unported
           </human>
         </use>
       </rightsMetadata>
       XML
     end
 
+    let(:license_node) { public_mods.xpath('//mods:accessCondition[@type="license"]').first }
     let(:mods) { read_fixture('ex2_related_mods.xml') }
     let(:obj) do
       b = Dor::Item.new
@@ -221,35 +222,58 @@ RSpec.describe Publish::PublicDescMetadataService do
 
     it 'adds license accessCondtitions based on creativeCommons or openDataCommons statements' do
       expect(public_mods.xpath('//mods:accessCondition[@type="license"]').size).to eq 1
-      expect(public_mods.xpath('//mods:accessCondition[@type="license"]').text).to match(/by-nc: This work is licensed under/)
+      expect(license_node.text).to match(/by-nc: Attribution-NonCommercial 3.0 Unported/)
+      expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
     end
 
-    it 'searches for creativeCommons and openData /use/machine/@type case-insensitively' do
-      rxml = <<-XML
-        <rightsMetadata>
-          <use>
-            <machine type="openDataCommoNS">by-nc</machine>
-            <human type="OpenDATAcommOns">
-              Open Data hoo ha
-            </human>
-          </use>
-        </rightsMetadata>
-      XML
-      obj.rightsMetadata.content = rxml
-      expect(public_mods.xpath('//mods:accessCondition[@type="license"]').size).to eq(1)
-      expect(public_mods.xpath('//mods:accessCondition[@type="license"]').text).to match(/by-nc: Open Data hoo ha/)
+    context 'when a license node is present in rightsMetadata' do
+      before do
+        obj.rightsMetadata.content = <<~XML
+          <rightsMetadata>
+            <use>
+              <license>https://creativecommons.org/licenses/by-nd/4.0/legalcode</license>
+            </use>
+          </rightsMetadata>
+        XML
+      end
+
+      it 'adds license accessConditions' do
+        expect(license_node.text).to eq 'CC BY-ND: Attribution-No Derivatives International'
+        expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nd/4.0/legalcode'
+      end
     end
 
-    it 'does not add license accessConditions when createCommons or openData has a value of none in rightsMetadata' do
-      rxml = <<-XML
-        <rightsMetadata>
-          <use>
-            <machine type="OpenDatA">none</machine>
-          </use>
-        </rightsMetadata>
-      XML
-      obj.rightsMetadata.content = rxml
-      expect(public_mods.xpath('//mods:accessCondition[@type="license"]').size).to eq 0
+    context 'when the machine node is odc-by' do
+      before do
+        obj.rightsMetadata.content = <<~XML
+          <rightsMetadata>
+            <use>
+              <machine type="openDataCommons">odc-by</machine>
+            </use>
+          </rightsMetadata>
+        XML
+      end
+
+      it 'adds license accessConditions' do
+        expect(license_node.text).to eq 'ODC odc-by: ODC-By-1.0 Attribution License'
+        expect(license_node['xlink:href']).to eq 'https://opendatacommons.org/licenses/by/1-0/'
+      end
+    end
+
+    context 'when the machine node has a value of none' do
+      before do
+        obj.rightsMetadata.content = <<~XML
+          <rightsMetadata>
+            <use>
+              <machine type="creativeCommons">none</machine>
+            </use>
+          </rightsMetadata>
+        XML
+      end
+
+      it 'does not add license accessConditions' do
+        expect(license_node).to be_nil
+      end
     end
 
     it 'removes any pre-existing accessConditions already in the mods' do
@@ -302,7 +326,6 @@ RSpec.describe Publish::PublicDescMetadataService do
       it 'does not add empty mods nodes' do
         expect(public_mods.xpath('//mods:accessCondition[@type="useAndReproduction"]').size).to eq 0
         expect(public_mods.xpath('//mods:accessCondition[@type="copyright"]').size).to eq 0
-        expect(public_mods.xpath('//mods:accessCondition[@type="license"]').size).to eq 0
       end
     end
   end

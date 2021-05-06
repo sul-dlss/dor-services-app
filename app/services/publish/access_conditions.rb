@@ -28,10 +28,6 @@ module Publish
     def rights
       @rights ||= rights_md.ng_xml
     end
-    #
-    # def last_element
-    #   public_mods.root.element_children.last
-    # end
 
     # clear out any existing accessConditions
     def clear_existing_access_conditions
@@ -57,25 +53,69 @@ module Publish
     end
 
     def add_license
-      rights.xpath("//use/machine[#{ci_compare('type', 'creativecommons')}]").each do |lic_type|
-        next if /none/i.match?(lic_type.text)
+      return unless license?
 
-        lic_text = rights.at_xpath("//use/human[#{ci_compare('type', 'creativecommons')}]").text.strip
-        next if lic_text.empty?
+      last_element.add_next_sibling public_mods.create_element('accessCondition', license.description,
+                                                               type: 'license', 'xlink:href' => license_url)
+    end
 
-        new_text = "CC #{lic_type.text}: #{lic_text}"
-        add_access_condition(new_text, 'license')
+    def license
+      @license ||= License.new(url: license_url)
+    end
+
+    def license?
+      license_url.present?
+    end
+
+    # Try each way, from most prefered to least preferred to get the license
+    def license_url
+      license_url_from_node || url_from_attribute || url_from_code
+    end
+
+    # This is the most modern way of determining what license to use.
+    def license_url_from_node
+      rights.at_xpath('//use/license').try(:text).presence
+    end
+
+    # This is a slightly older way, but it can differentiate between CC 3.0 and 4.0 licenses
+    def url_from_attribute
+      return unless machine_node
+
+      machine_node['uri'].presence
+    end
+
+    # This is the most legacy and least preferred way, because it only handles out of data license versions
+    def url_from_code
+      type, code = machine_readable_license
+      return unless type && code.present?
+
+      case type.to_s
+      when 'creativeCommons'
+        case code
+        when 'pdm'
+          'https://creativecommons.org/publicdomain/mark/1.0/'
+        when 'none'
+          nil
+        else
+          "https://creativecommons.org/licenses/#{code}/3.0/legalcode"
+        end
+      when 'openDataCommons'
+        code = code.delete_prefix('odc-')
+        case code
+        when 'none'
+          nil
+        when 'pddl', 'by', 'odbl'
+          "https://opendatacommons.org/licenses/#{code}/1-0/"
+        end
       end
+    end
 
-      rights.xpath("//use/machine[#{ci_compare('type', 'opendatacommons')}]").each do |lic_type|
-        next if /none/i.match?(lic_type.text)
+    def machine_readable_license
+      [machine_node.attribute('type'), machine_node.text] if machine_node
+    end
 
-        lic_text = rights.at_xpath("//use/human[#{ci_compare('type', 'opendatacommons')}]").text.strip
-        next if lic_text.empty?
-
-        new_text = "ODC #{lic_type.text}: #{lic_text}"
-        add_access_condition(new_text, 'license')
-      end
+    def machine_node
+      @machine_node ||= rights.at_xpath('//use/machine[@type="openDataCommons" or @type="creativeCommons"]')
     end
 
     def add_access_condition(text, type)
@@ -84,15 +124,6 @@ module Publish
 
     def last_element
       public_mods.root.element_children.last
-    end
-
-    # Builds case-insensitive xpath translate function call that will match the attribute to a value
-    def ci_compare(attribute, value)
-      "translate(
-        @#{attribute},
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-        'abcdefghijklmnopqrstuvwxyz'
-       ) = '#{value}' "
     end
   end
 end
