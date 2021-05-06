@@ -49,7 +49,7 @@ RSpec.describe ShelveJob, type: :job do
     let(:error_message) { "file isn't where we looked" }
 
     before do
-      allow(ShelvingService).to receive(:shelve).and_raise(ShelvingService::ContentDirNotFoundError, error_message)
+      allow(ShelvingService).to receive(:shelve).and_raise(ShelvableFilesStager::FileNotFound, error_message)
       allow(LogFailureJob).to receive(:perform_later)
     end
 
@@ -62,7 +62,7 @@ RSpec.describe ShelveJob, type: :job do
               background_job_result: result,
               workflow: 'accessionWF',
               workflow_process: 'shelve',
-              output: { errors: [{ detail: error_message, title: 'Content directory not found' }] })
+              output: { errors: [{ detail: error_message, title: 'Unable to shelve files' }] })
     end
   end
 

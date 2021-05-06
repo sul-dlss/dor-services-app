@@ -30,12 +30,12 @@ class ShelveJob < ApplicationJob
       # So reset to avoid: ActiveRecord::StatementInvalid: PG::ConnectionBad: PQconsumeInput() could not receive data from server: Connection timed out : BEGIN
       ActiveRecord::Base.clear_active_connections!
       EventFactory.create(druid: druid, event_type: 'shelving_complete', data: { background_job_result_id: background_job_result.id })
-    rescue ShelvingService::ContentDirNotFoundError => e
+    rescue ShelvableFilesStager::FileNotFound => e
       return LogFailureJob.perform_later(druid: druid,
                                          background_job_result: background_job_result,
                                          workflow: 'accessionWF',
                                          workflow_process: 'shelve',
-                                         output: { errors: [{ title: 'Content directory not found', detail: e.message }] })
+                                         output: { errors: [{ title: 'Unable to shelve files', detail: e.message }] })
     end
 
     LogSuccessJob.perform_later(druid: druid,
