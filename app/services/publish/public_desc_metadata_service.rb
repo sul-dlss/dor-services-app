@@ -41,7 +41,8 @@ module Publish
       doc.xpath('//comment()').remove
     end
 
-    # Create MODS accessCondition statements from rightsMetadata
+    # Create MODS accessCondition statements from rightsMetadata.
+    # These are used in the searchworks item view via the mods_display gem.
     # rubocop:disable Metrics/AbcSize
     def add_access_conditions!
       # clear out any existing accessConditions
