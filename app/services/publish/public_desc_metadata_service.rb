@@ -25,7 +25,7 @@ module Publish
     def ng_xml(include_access_conditions: true)
       @ng_xml ||= begin
         add_collection_reference!
-        add_access_conditions! if include_access_conditions
+        AccessConditions.add(public_mods: doc, rights_md: object.rightsMetadata) if include_access_conditions
         add_constituent_relations!
         strip_comments!
 
@@ -40,47 +40,6 @@ module Publish
     def strip_comments!
       doc.xpath('//comment()').remove
     end
-
-    # Create MODS accessCondition statements from rightsMetadata.
-    # These are used in the searchworks item view via the mods_display gem.
-    # rubocop:disable Metrics/AbcSize
-    def add_access_conditions!
-      # clear out any existing accessConditions
-      doc.xpath('//mods:accessCondition', 'mods' => 'http://www.loc.gov/mods/v3').each(&:remove)
-      rights = object.datastreams['rightsMetadata'].ng_xml
-
-      rights.xpath('//use/human[@type="useAndReproduction"]').each do |use|
-        txt = use.text.strip
-        next if txt.empty?
-
-        doc.root.element_children.last.add_next_sibling doc.create_element('accessCondition', txt, type: 'useAndReproduction')
-      end
-      rights.xpath('//copyright/human[@type="copyright"]').each do |cr|
-        txt = cr.text.strip
-        next if txt.empty?
-
-        doc.root.element_children.last.add_next_sibling doc.create_element('accessCondition', txt, type: 'copyright')
-      end
-      rights.xpath("//use/machine[#{ci_compare('type', 'creativecommons')}]").each do |lic_type|
-        next if /none/i.match?(lic_type.text)
-
-        lic_text = rights.at_xpath("//use/human[#{ci_compare('type', 'creativecommons')}]").text.strip
-        next if lic_text.empty?
-
-        new_text = "CC #{lic_type.text}: #{lic_text}"
-        doc.root.element_children.last.add_next_sibling doc.create_element('accessCondition', new_text, type: 'license')
-      end
-      rights.xpath("//use/machine[#{ci_compare('type', 'opendatacommons')}]").each do |lic_type|
-        next if /none/i.match?(lic_type.text)
-
-        lic_text = rights.at_xpath("//use/human[#{ci_compare('type', 'opendatacommons')}]").text.strip
-        next if lic_text.empty?
-
-        new_text = "ODC #{lic_type.text}: #{lic_text}"
-        doc.root.element_children.last.add_next_sibling doc.create_element('accessCondition', new_text, type: 'license')
-      end
-    end
-    # rubocop:enable Metrics/AbcSize
 
     # expand constituent relations into relatedItem references -- see JUMBO-18
     # @return [Void]
@@ -169,15 +128,6 @@ module Publish
       related_item_node.add_child(type_node)
 
       doc.root.add_child(related_item_node)
-    end
-
-    # Builds case-insensitive xpath translate function call that will match the attribute to a value
-    def ci_compare(attribute, value)
-      "translate(
-        @#{attribute},
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-        'abcdefghijklmnopqrstuvwxyz'
-       ) = '#{value}' "
     end
   end
 end
