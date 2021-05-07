@@ -54,18 +54,18 @@ RSpec.shared_examples 'Collection Identification Fedora Cocina mapping' do
     Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml)).to_xml
   end
   let(:roundtrip_identity_md_xml) { defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml }
+  let(:mapped_cocina_collection) { Cocina::Models::Collection.new(mapped_cocina_props) }
   let(:mapped_fedora_collection) do
-    cocina_collection = Cocina::Models::Collection.new(mapped_cocina_props)
-    Dor::Collection.new(pid: cocina_collection.externalIdentifier,
-                        admin_policy_object_id: cocina_collection.administrative.hasAdminPolicy,
-                        source_id: cocina_collection.identification&.sourceId,
-                        catkey: Cocina::ObjectCreator.new.send(:catkey_for, cocina_collection),
-                        label: Cocina::ObjectCreator.new.send(:truncate_label, cocina_collection.label))
+    Dor::Collection.new(pid: mapped_cocina_collection.externalIdentifier,
+                        admin_policy_object_id: mapped_cocina_collection.administrative.hasAdminPolicy,
+                        source_id: mapped_cocina_collection.identification&.sourceId,
+                        catkey: Cocina::ObjectCreator.new.send(:catkey_for, mapped_cocina_collection),
+                        label: Cocina::ObjectCreator.new.send(:truncate_label, mapped_cocina_collection.label))
   end
   let(:mapped_roundtrip_identity_xml) do
     Cocina::ToFedora::Identity.initialize_identity(mapped_fedora_collection)
-    Cocina::ToFedora::Identity.apply_label(mapped_fedora_collection, label: mapped_cocina_props[:label])
-    Cocina::ToFedora::Identity.apply_release_tags(mapped_fedora_collection, release_tags: mapped_cocina_props.dig(:administrative, :releaseTags))
+    Cocina::ToFedora::Identity.apply_label(mapped_fedora_collection, label: mapped_cocina_collection.label)
+    Cocina::ToFedora::Identity.apply_release_tags(mapped_fedora_collection, release_tags: mapped_cocina_collection.administrative.releaseTags)
     mapped_fedora_collection.identityMetadata.to_xml
   end
 
