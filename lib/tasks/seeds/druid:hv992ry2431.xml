@@ -1749,7 +1749,6 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
   <objectLabel>Internal Objects</objectLabel>
   <objectDescription>Default Administrative Policy Object</objectDescription>
   <otherId name="uuid">661e629a-24c8-2ef3-227e-883eb4e2c6d4</otherId>
-  <agreementId>druid:tx617qp8040</agreementId>
   <tag>Remediated By : 3.6.2</tag>
 </identityMetadata>
 </foxml:xmlContent>
@@ -1762,7 +1761,6 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
   <objectLabel>Default Admin Policy</objectLabel>
   <objectDescription>Default Administrative Policy Object</objectDescription>
   <otherId name="uuid">661e629a-24c8-2ef3-227e-883eb4e2c6d4</otherId>
-  <agreementId>druid:tx617qp8040</agreementId>
   <tag>Remediated By : 3.6.2</tag>
 </identityMetadata>
 </foxml:xmlContent>
@@ -1775,7 +1773,6 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
   <objectLabel>Default Admin Policy</objectLabel>
   <objectDescription>Default Administrative Policy Object</objectDescription>
   <otherId name="uuid">661e629a-24c8-2ef3-227e-883eb4e2c6d4</otherId>
-  <agreementId>druid:tx617qp8040</agreementId>
 </identityMetadata>
 </foxml:xmlContent>
 </foxml:datastreamVersion>
@@ -1845,7 +1842,6 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
   <objectLabel>Internal Objects</objectLabel>
   <objectDescription>Default Administrative Policy Object</objectDescription>
   <otherId name="uuid">661e629a-24c8-2ef3-227e-883eb4e2c6d4</otherId>
-  <agreementId>druid:tx617qp8040</agreementId>
   <tag>Remediated By : 3.22.1</tag>
 </identityMetadata>
 </foxml:xmlContent>
@@ -1858,7 +1854,6 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
   <objectLabel>[Internal System Objects]</objectLabel>
   <objectDescription>Default Administrative Policy Object</objectDescription>
   <otherId name="uuid">661e629a-24c8-2ef3-227e-883eb4e2c6d4</otherId>
-  <agreementId>druid:tx617qp8040</agreementId>
   <tag>Remediated By : 3.22.1</tag>
 </identityMetadata>
 </foxml:xmlContent>
@@ -1871,7 +1866,6 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
   <objectLabel>[Internal System Objects]</objectLabel>
   <objectDescription>Default Administrative Policy Object</objectDescription>
   <otherId name="uuid">661e629a-24c8-2ef3-227e-883eb4e2c6d4</otherId>
-  <agreementId>druid:tx617qp8040</agreementId>
   <tag>Remediated By : 4.6.6.2</tag>
 </identityMetadata>
 </foxml:xmlContent>
@@ -1884,7 +1878,6 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
   <objectLabel>[Internal System Objects]</objectLabel>
   <objectDescription>Default Administrative Policy Object</objectDescription>
   <otherId name="uuid">661e629a-24c8-2ef3-227e-883eb4e2c6d4</otherId>
-  <agreementId>druid:tx617qp8040</agreementId>
   <tag>Remediated By : 4.17.1</tag>
 </identityMetadata>
 </foxml:xmlContent>
@@ -1897,7 +1890,6 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
   <objectLabel>[Internal System Objects]</objectLabel>
   <objectDescription>Default Administrative Policy Object</objectDescription>
   <otherId name="uuid">661e629a-24c8-2ef3-227e-883eb4e2c6d4</otherId>
-  <agreementId>druid:tx617qp8040</agreementId>
   <tag>Remediated By : 4.22.3</tag>
 </identityMetadata>
 </foxml:xmlContent>
@@ -1910,7 +1902,6 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
   <objectLabel>[Internal System Objects]</objectLabel>
   <objectDescription>Default Administrative Policy Object</objectDescription>
   <otherId name="uuid">661e629a-24c8-2ef3-227e-883eb4e2c6d4</otherId>
-  <agreementId>druid:tx617qp8040</agreementId>
   <tag>Remediated By : 5.7.0</tag>
 </identityMetadata>
 </foxml:xmlContent>

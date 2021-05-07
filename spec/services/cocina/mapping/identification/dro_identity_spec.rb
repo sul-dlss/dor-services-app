@@ -454,7 +454,6 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <otherId name="barcode">#{barcode}</otherId>
             <otherId name="callseq">29</otherId>
             <otherId name="uuid">6d408a7d-46c1-446c-ad4c-e5b0633830eb</otherId>
-            <agreementId>druid:zn292gq7284</agreementId>
             <tag>Book : Multi-volume work</tag>
             <tag>Google Book : GBS VIEW_FULL</tag>
             <tag>Book : Non-US pre-1891</tag>
@@ -523,7 +522,6 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <otherId name="dissertationid">0000000001</otherId>
             <otherId name="catkey">#{catkey}</otherId>
             <otherId name="uuid">aefeb8c0-632e-11e1-b86c-0800200c9a66</otherId>
-            <agreementId>druid:ct692vv3660</agreementId>
             <objectAdminClass>ETDs</objectAdminClass>
             <tag>ETD : Term 1102</tag>
             <tag>ETD : Dissertation</tag>
@@ -542,7 +540,6 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <objectCreator>DOR</objectCreator>
             <sourceId source="dissertationid">0000000001</sourceId>
             <otherId name="catkey">#{catkey}</otherId>
-            <agreementId>druid:ct692vv3660</agreementId>
             <release to="Searchworks" what="self" when="2017-02-07T10:45:17Z" who="blalbrit">true</release>
           </identityMetadata>
         XML
@@ -607,7 +604,6 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <otherId name="dissertationid">0000000296</otherId>
             <otherId name="catkey">#{catkey}</otherId>
             <otherId name="uuid">bb8e629e-6328-11e1-9378-022c4a816c60</otherId>
-            <agreementId>druid:ct692vv3660</agreementId>
             <tag>ETD : Term 1106</tag>
             <tag>ETD : Dissertation</tag>
             <tag>Remediated By : 4.20.1</tag>
@@ -628,7 +624,6 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <objectCreator>DOR</objectCreator>
             <sourceId source="dissertationid">0000000296</sourceId>
             <otherId name="catkey">#{catkey}</otherId>
-            <agreementId>druid:ct692vv3660</agreementId>
             <release to="Searchworks" who="blalbrit" what="self" when="2017-02-07T11:07:41Z">true</release>
             <release to="Searchworks" who="blalbrit" what="self" when="2017-02-07T15:15:41Z">true</release>
             <otherId name="catkey">12303517</otherId>
@@ -707,7 +702,6 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <otherId name="dissertationid">0000002905</otherId>
             <otherId name="catkey">#{catkey}</otherId>
             <otherId name="uuid">f8493238-61a8-11e3-922e-0050569b52d5</otherId>
-            <agreementId>druid:ct692vv3660</agreementId>
             <objectAdminClass>ETDs</objectAdminClass>
             <tag>ETD : Dissertation</tag>
             <tag>Remediated By : 4.17.1</tag>
@@ -725,7 +719,6 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <objectCreator>DOR</objectCreator>
             <sourceId source="dissertationid">0000002905</sourceId>
             <otherId name="catkey">#{catkey}</otherId>
-            <agreementId>druid:ct692vv3660</agreementId>
             <release to="Searchworks" what="self" when="2017-02-07T10:01:59Z" who="blalbrit">true</release>
           </identityMetadata>
         XML
@@ -788,7 +781,6 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <otherId name="dissertationid">0000006152</otherId>
             <otherId name="catkey">#{catkey}</otherId>
             <otherId name="uuid">2f3dc52e-7487-11e8-ae3a-005056a7d1e9</otherId>
-            <agreementId>druid:ct692vv3660</agreementId>
             <objectAdminClass>ETDs</objectAdminClass>
             <tag>ETD : Dissertation</tag>
             <release to="Searchworks" what="self" when="2018-10-19T17:37:18Z" who="arcadia">true</release>
@@ -805,7 +797,6 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <objectCreator>DOR</objectCreator>
             <sourceId source="dissertationid">0000006152</sourceId>
             <otherId name="catkey">#{catkey}</otherId>
-            <agreementId>druid:ct692vv3660</agreementId>
             <release to="Searchworks" what="self" when="2018-10-19T17:37:18Z" who="arcadia">true</release>
           </identityMetadata>
         XML
@@ -1303,7 +1294,6 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <objectType>item</objectType>
             <objectLabel>#{label}</objectLabel>
             <objectAdminClass>EEMs</objectAdminClass>
-            <agreementId>druid:fn200hb6598</agreementId>
             <tag>EEM : 1.0</tag>
             <otherId name="catkey">#{catkey}</otherId>
             <tag>Remediated By : 5.8.1</tag>
@@ -1323,7 +1313,6 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <objectType>item</objectType>
             <objectLabel>#{label}</objectLabel>
             <objectCreator>DOR</objectCreator>
-            <agreementId>druid:fn200hb6598</agreementId>
             <otherId name="catkey">#{catkey}</otherId>
             <release to="Searchworks" what="self" when="2016-11-22T19:21:08Z" who="blalbrit">true</release>
             <release to="Searchworks" what="self" when="2016-11-22T21:35:46Z" who="blalbrit">true</release>

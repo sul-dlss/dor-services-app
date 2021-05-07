@@ -837,7 +837,6 @@
           <objectLabel>ETDs</objectLabel>
           <objectCreator>DOR</objectCreator>
           <otherId name="uuid">89477060-bc79-11e0-962b-0800200c9a66</otherId>
-          <agreementId>druid:tx617qp8040</agreementId>
           <tag>Project : DOR</tag>
           <tag>Remediated By : 3.6.2</tag>
         </identityMetadata>
@@ -851,7 +850,6 @@
           <objectLabel>ETDs</objectLabel>
           <objectCreator>DOR</objectCreator>
           <otherId name="uuid">89477060-bc79-11e0-962b-0800200c9a66</otherId>
-          <agreementId>druid:tx617qp8040</agreementId>
           <tag>Project : DOR</tag>
           <tag>Remediated By : 3.25.0</tag>
         </identityMetadata>
@@ -865,7 +863,6 @@
           <objectLabel>ETDs</objectLabel>
           <objectCreator>DOR</objectCreator>
           <otherId name="uuid">89477060-bc79-11e0-962b-0800200c9a66</otherId>
-          <agreementId>druid:tx617qp8040</agreementId>
           <tag>Project : DOR</tag>
           <tag>Remediated By : 4.6.4</tag>
         </identityMetadata>
@@ -879,7 +876,6 @@
           <objectLabel>ETDs</objectLabel>
           <objectCreator>DOR</objectCreator>
           <otherId name="uuid">89477060-bc79-11e0-962b-0800200c9a66</otherId>
-          <agreementId>druid:tx617qp8040</agreementId>
           <tag>Project : DOR</tag>
           <tag>Remediated By : 4.6.6.2</tag>
         </identityMetadata>
@@ -893,7 +889,6 @@
           <objectLabel>ETDs</objectLabel>
           <objectCreator>DOR</objectCreator>
           <otherId name="uuid">89477060-bc79-11e0-962b-0800200c9a66</otherId>
-          <agreementId>druid:tx617qp8040</agreementId>
           <tag>Project : DOR</tag>
           <tag>Remediated By : 4.17.1</tag>
         </identityMetadata>
