@@ -38,7 +38,7 @@ RSpec.describe Cocina::ToFedora::Descriptive do
         note: [
           {
             value: 'This is an abstract.',
-            type: 'summary'
+            type: 'abstract'
           }
         ],
         form: [

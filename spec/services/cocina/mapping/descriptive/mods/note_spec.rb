@@ -144,7 +144,6 @@ RSpec.describe 'MODS note <--> cocina mappings' do
           note: [
             {
               value: 'This is a note.',
-              type: 'abstract',
               displayLabel: 'Summary'
             }
           ]

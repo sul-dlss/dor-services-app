@@ -779,16 +779,16 @@ RSpec.describe Cocina::Normalizers::ModsNormalizer do
     end
   end
 
-  context 'when normalizing abstract summary' do
+  context 'when normalizing abstract of type abstract' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
         <mods #{MODS_ATTRIBUTES}>
-          <abstract type="summary">This is a summary.</abstract>
+          <abstract type="abstract">This is a summary.</abstract>
         </mods>
       XML
     end
 
-    it 'removes attribute' do
+    it 'removes type attribute' do
       expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <abstract>This is a summary.</abstract>

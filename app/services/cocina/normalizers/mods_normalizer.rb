@@ -285,7 +285,7 @@ module Cocina
       end
 
       def normalize_abstract_summary
-        ng_xml.root.xpath('//mods:abstract[@type="summary"]', mods: MODS_NS).each do |abstract_node|
+        ng_xml.root.xpath('//mods:abstract[@type="abstract"]', mods: MODS_NS).each do |abstract_node|
           abstract_node.delete('type')
         end
       end
