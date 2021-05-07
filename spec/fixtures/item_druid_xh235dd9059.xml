@@ -193,7 +193,6 @@ David Rumsey Map Collection at Stanford University Libraries
 <otherId name="uuid">43ea055e-6fbc-11e1-a721-02231e89cef0</otherId>
 <objectId>druid:xh235dd9059</objectId>
 <objectCreator>DOR</objectCreator>
-<agreementId>druid:xf765cv5573</agreementId>
 <tag>Remediated By : 3.6.2</tag>
 </identityMetadata>
 </foxml:xmlContent>
@@ -210,7 +209,6 @@ David Rumsey Map Collection at Stanford University Libraries
 <otherId name="uuid">43ea055e-6fbc-11e1-a721-02231e89cef0</otherId>
 <objectId>druid:xh235dd9059</objectId>
 <objectCreator>DOR</objectCreator>
-<agreementId>druid:xf765cv5573</agreementId>
 <tag>Remediated By : 4.20.1</tag>
 </identityMetadata>
 </foxml:xmlContent>
@@ -227,7 +225,6 @@ David Rumsey Map Collection at Stanford University Libraries
 <otherId name="uuid">43ea055e-6fbc-11e1-a721-02231e89cef0</otherId>
 <objectId>druid:xh235dd9059</objectId>
 <objectCreator>DOR</objectCreator>
-<agreementId>druid:xf765cv5573</agreementId>
 <tag>Remediated By : 4.20.1</tag>
 <displayType>image</displayType>
 <release displayType="image" release="true" to="Searchworks" what="collection" when="2015-08-14T21:49:29Z" who="lauraw15">true</release>

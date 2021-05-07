@@ -167,7 +167,6 @@
             <itemTag>AdminPolicy : Topographical Map</itemTag>
             <itemTag>Keyword : topographical</itemTag>
             <itemTag>Keyword : map</itemTag>
-            <agreementId>druid:wr729gb4199</agreementId>
             <workflow id="digitizationWF">
               <process id="initiate" lifecycle="registered" status="completed"/>
               <process id="digitize" status="waiting"/>

@@ -204,7 +204,6 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
         <<~XML
           <identityMetadata>
             <objectId>foo</objectId>
-            <agreementId>druid:ct692vv3660</agreementId>
             <otherId name="catkey">666</otherId>
           </identityMetadata>
         XML

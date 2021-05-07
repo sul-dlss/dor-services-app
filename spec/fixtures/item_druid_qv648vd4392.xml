@@ -45,7 +45,6 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
     <fedora-rel:isMemberOfCollection rdf:resource="info:fedora/druid:nt028fd5773"></fedora-rel:isMemberOfCollection>
   </relationships>
   <registration>
-    <agreementId>druid:xf765cv5573</agreementId>
     <workflow id="digitizationWF">
       <process lifecycle="registered" name="initiate" status="completed"></process>
       <process name="digitize" status="waiting"></process>
@@ -89,7 +88,6 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
   <objectLabel>Revs Institute</objectLabel>
   <objectCreator>DOR</objectCreator>
   <otherId name="uuid">20d6c780-42eb-11e1-b86c-0800200c9a66</otherId>
-  <agreementId>druid:tx617qp8040</agreementId>
   <tag>Project : DOR</tag>
 </identityMetadata>
 </foxml:xmlContent>
