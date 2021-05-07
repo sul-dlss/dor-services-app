@@ -63,7 +63,9 @@ RSpec.shared_examples 'Collection Identification Fedora Cocina mapping' do
                         label: Cocina::ObjectCreator.new.send(:truncate_label, cocina_collection.label))
   end
   let(:mapped_roundtrip_identity_xml) do
-    Cocina::ToFedora::Identity.apply(mapped_fedora_collection, label: mapped_cocina_props[:label])
+    Cocina::ToFedora::Identity.initialize_identity(mapped_fedora_collection)
+    Cocina::ToFedora::Identity.apply_label(mapped_fedora_collection, label: mapped_cocina_props[:label])
+    Cocina::ToFedora::Identity.apply_release_tags(mapped_fedora_collection, release_tags: mapped_cocina_props.dig(:administrative, :releaseTags))
     mapped_fedora_collection.identityMetadata.to_xml
   end
 
@@ -174,8 +176,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
 
   describe 'Hydrus collection' do
     context 'with release tags' do
-      # it_behaves_like 'Collection Identification Fedora Cocina mapping' do
-      xit 'to be implemented: release tags need to roundtrip back into identityMetadata.xml' do
+      it_behaves_like 'Collection Identification Fedora Cocina mapping' do
         let(:collection_id) { 'druid:ds247vz0452' }
         let(:label) { 'Undergraduate Theses, Department of Physics' }
         let(:admin_policy_id) { 'druid:dx569vq3421' } # from RELS-EXT
@@ -199,7 +200,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
               <release displayType="file" release="true" to="Searchworks" what="self" when="2015-10-25T21:12:42Z" who="blalbrit">true</release>
               <tag>Remediated By : 4.22.3</tag>
               <displayType>file</displayType>
-              <release displayType="file" release="true" to="Searchworks" what="self" when="2016-07-15T23:44:01Z" who="blalbrit">true</release>
+              <release displayType="file" release="false" to="Searchworks" what="self" when="2016-07-15T23:44:01Z" who="blalbrit">false</release>
             </identityMetadata>
           XML
         end
@@ -211,9 +212,9 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
               <objectCreator>DOR</objectCreator>
               <objectLabel>#{label}</objectLabel>
               <objectType>collection</objectType>
-              <release displayType="file" release="true" to="Searchworks" what="self" when="2015-07-27T18:43:32Z" who="lauraw15">true</release>
-              <release displayType="file" release="true" to="Searchworks" what="self" when="2015-10-25T21:12:42Z" who="blalbrit">true</release>
-              <release displayType="file" release="true" to="Searchworks" what="self" when="2016-07-15T23:44:01Z" who="blalbrit">true</release>
+              <release to="Searchworks" what="self" when="2015-07-27T18:43:32Z" who="lauraw15">true</release>
+              <release to="Searchworks" what="self" when="2015-10-25T21:12:42Z" who="blalbrit">true</release>
+              <release to="Searchworks" what="self" when="2016-07-15T23:44:01Z" who="blalbrit">false</release>
             </identityMetadata>
           XML
         end
@@ -249,7 +250,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
                   what: 'self',
                   date: '2016-07-15T23:44:01Z',
                   who: 'blalbrit',
-                  release: true
+                  release: false
                 }
               ]
             },
@@ -368,8 +369,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
     end
 
     context 'with ckey and release tags' do
-      # it_behaves_like 'Collection Identification Fedora Cocina mapping' do
-      xit 'to be implemented: release tags need to roundtrip back into identityMetadata.xml' do
+      it_behaves_like 'Collection Identification Fedora Cocina mapping' do
         let(:collection_id) { 'druid:bc225xg9715' }
         let(:label) { 'Generation Anthropocene' }
         let(:admin_policy_id) { 'druid:yp636tj5357' } # from RELS-EXT
@@ -402,7 +402,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
               <objectCreator>DOR</objectCreator>
               <objectLabel>#{label}</objectLabel>
               <objectType>collection</objectType>
-              <release displayType="file" release="true" to="Searchworks" what="self" when="2016-10-03T21:55:25Z" who="blalbrit">true</release>
+              <release to="Searchworks" what="self" when="2016-10-03T21:55:25Z" who="blalbrit">true</release>
             </identityMetadata>
           XML
         end
@@ -436,8 +436,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
   end
 
   context 'with non-hydrus collection with catkey and uuid' do
-    # it_behaves_like 'Collection Identification Fedora Cocina mapping' do
-    xit 'to be implemented: release tags need to roundtrip back into identityMetadata.xml' do
+    it_behaves_like 'Collection Identification Fedora Cocina mapping' do
       let(:collection_id) { 'druid:dj477pz3643' }
       let(:label) { 'Casa Zapata murals collection, 1984-1995' }
       let(:admin_policy_id) { 'druid:yf767bj4831' } # from RELS-EXT
