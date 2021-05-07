@@ -273,7 +273,6 @@ RSpec.describe Cocina::FromFedora::Descriptive do
     it 'has a url' do
       expect(descriptive[:note]).to match_array [
         {
-          type: 'abstract',
           value: 'Blah blah blah, I believe in science!',
           displayLabel: 'Abstract'
         },

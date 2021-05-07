@@ -12,6 +12,11 @@ module Cocina
           new(xml: xml, notes: notes, id_generator: id_generator).write
         end
 
+        # notes with a displayLabel set to any of these values will produce an `abstract` XML node
+        def self.display_label_to_abstract_types
+          ['Content advice', 'Subject', 'Abstract', 'Review', 'Summary', 'Scope and content']
+        end
+
         def initialize(xml:, notes:, id_generator:)
           @xml = xml
           @notes = notes
@@ -35,7 +40,7 @@ module Cocina
         attr_reader :xml, :notes, :id_generator
 
         def tag_name(note)
-          return :abstract if display_label_to_abstract_types.include? note.displayLabel
+          return :abstract if self.class.display_label_to_abstract_types.include? note.displayLabel
 
           case note.type&.downcase
           when 'summary', 'abstract', 'scope and content'
@@ -49,13 +54,8 @@ module Cocina
           end
         end
 
-        # noted with a displayLabel set to any of these values will product an `abstract` XML node
-        def display_label_to_abstract_types
-          ['Content advice', 'Subject', 'Abstract', 'Review', 'Summary', 'Scope and content']
-        end
-
         def tag(note, tag_name, attributes)
-          attributes[:type] = note.type if note.type && [:abstract, :tableOfContents, :targetAudience].exclude?(tag_name)
+          attributes[:type] = note.type if note.type && note.type != 'abstract' && [:tableOfContents, :targetAudience].exclude?(tag_name)
           value = if note.structuredValue
                     note.structuredValue.map(&:value).join(' -- ')
                   else

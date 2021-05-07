@@ -106,12 +106,6 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
         XML
       end
 
-      let(:roundtrip_mods) do
-        <<~XML
-          <abstract type="summary">This is a summary.</abstract>
-        XML
-      end
-
       let(:cocina) do
         {
           note: [
