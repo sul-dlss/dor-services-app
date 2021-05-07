@@ -69,7 +69,7 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
                                 label: Cocina::ObjectCreator.new.send(:truncate_label, cocina_dro.label))
     Cocina::ToFedora::Identity.initialize_identity(fedora_item)
     Cocina::ToFedora::Identity.apply_label(fedora_item, label: cocina_dro.label)
-    Cocina::ToFedora::Identity.apply_release_tags(fedora_item, release_tags: mapped_cocina_props.dig(:administrative, :releaseTags))
+    Cocina::ToFedora::Identity.apply_release_tags(fedora_item, release_tags: cocina_dro.administrative.releaseTags)
     fedora_item.identityMetadata.barcode = cocina_dro.identification.barcode
     fedora_item
   end
