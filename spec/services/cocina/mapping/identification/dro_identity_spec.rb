@@ -67,7 +67,9 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
                                 source_id: cocina_dro.identification.sourceId,
                                 catkey: Cocina::ObjectCreator.new.send(:catkey_for, cocina_dro),
                                 label: Cocina::ObjectCreator.new.send(:truncate_label, cocina_dro.label))
-    Cocina::ToFedora::Identity.apply(fedora_item, label: cocina_dro.label, agreement_id: cocina_dro.structural&.hasAgreement)
+    Cocina::ToFedora::Identity.initialize_identity(fedora_item)
+    Cocina::ToFedora::Identity.apply_label(fedora_item, label: cocina_dro.label)
+    Cocina::ToFedora::Identity.apply_release_tags(fedora_item, release_tags: mapped_cocina_props.dig(:administrative, :releaseTags))
     fedora_item.identityMetadata.barcode = cocina_dro.identification.barcode
     fedora_item
   end
@@ -84,7 +86,7 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
 
   context 'when mapping from Cocina to (roundtrip) Fedora' do
     before do
-      Cocina::ToFedora::Identity.apply(roundtrip_fedora_item, label: mapped_cocina_props[:label])
+      Cocina::ToFedora::Identity.apply_label(roundtrip_fedora_item, label: mapped_cocina_props[:label])
     end
 
     it 'identityMetadata roundtrips thru cocina model to expected roundtrip identityMetadata.xml' do
@@ -106,7 +108,7 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
       catalog_link[:catalogRecordId] if catalog_link
     end
     let(:mapped_roundtrip_identity_xml) do
-      Cocina::ToFedora::Identity.apply(roundtrip_fedora_item, label: mapped_cocina_props[:label])
+      Cocina::ToFedora::Identity.apply_label(roundtrip_fedora_item, label: mapped_cocina_props[:label])
       roundtrip_fedora_item.identityMetadata.to_xml
     end
     let(:roundtrip_namespaced_other_ids) do
@@ -144,6 +146,7 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
 
     before do
       allow(roundtrip_fedora_item_mock).to receive(:is_a?).with(Dor::Agreement).and_return(false)
+      # allow(roundtrip_fedora_item_mock).to receive(:is_a?).with(Dor::Collection).and_return(false)
       allow(roundtrip_fedora_item_mock).to receive(:is_a?).with(Dor::Item).and_return(true)
     end
 
@@ -181,6 +184,7 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
 
     before do
       allow(normalized_orig_fedora_item_mock).to receive(:is_a?).with(Dor::Agreement).and_return(false)
+      allow(normalized_orig_fedora_item_mock).to receive(:is_a?).with(Dor::Collection).and_return(false)
       allow(normalized_orig_fedora_item_mock).to receive(:is_a?).with(Dor::Item).and_return(true)
     end
 
@@ -361,8 +365,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
   end
 
   context 'with googlebooks item (with release tags)' do
-    # it_behaves_like 'DRO Identification Fedora Cocina mapping' do
-    xit 'to be implemented: release tags need to roundtrip back into identityMetadata.xml' do
+    it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb000jd2736' }
       let(:label) { 'The life of Goethe' }
       let(:catkey) { '2003938' }
@@ -503,13 +506,14 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
   end
 
   context 'with early ETD, empty objectLabel, no sourceID ... (with release tags)' do
-    # it_behaves_like 'DRO Identification Fedora Cocina mapping' do
-    xit 'to be implemented: release tags need to roundtrip back into identityMetadata.xml' do
+    it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:px901zd6069' }
       let(:label) { '' }
       let(:catkey) { '8537171' }
       let(:admin_policy_id) { 'druid:bx911tp9024' } # from RELS-EXT
       let(:collection_ids) { [] } # not in RELS-EXT
+      let(:source_id) { '0000000001' }
+      let(:source_id_source) { 'dissertationid' }
       let(:identity_metadata_xml) do
         <<~XML
           <identityMetadata>
@@ -571,12 +575,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
               }
             ]
           },
-          structural: {
-            hasAgreement: 'druid:ct692vv3660'
-            # isMemberOf: [
-            #   nil
-            # ]
-          },
+          structural: {},
           access: access_props,
           description: description_props
         }
@@ -586,7 +585,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
 
   context 'with ETD with 2 catkeys' do
     # it_behaves_like 'DRO Identification Fedora Cocina mapping' do
-    xit 'to be implemented: what to do with 2 catkeys; release tags need to roundtrip back into identityMetadata.xml' do
+    xit 'to be implemented: what to do with 2 catkeys' do
       let(:item_id) { 'druid:zw844wz5427' }
       let(:label) { '' }
       let(:catkey) { '8652337' }
@@ -683,13 +682,14 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
   end
 
   context 'with ETD with empty citation elements' do
-    # it_behaves_like 'DRO Identification Fedora Cocina mapping' do
-    xit 'to be implemented: release tags need to roundtrip back into identityMetadata.xml' do
+    it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:mr401cc4586' }
       let(:label) { '' }
       let(:catkey) { '10327542' }
       let(:admin_policy_id) { 'druid:bx911tp9024' } # from RELS-EXT
       let(:collection_ids) { [] } # not in RELS-EXT
+      let(:source_id) { '0000002905' }
+      let(:source_id_source) { 'dissertationid' }
       let(:identity_metadata_xml) do
         <<~XML
           <identityMetadata>
@@ -750,12 +750,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
               }
             ]
           },
-          structural: {
-            hasAgreement: 'druid:ct692vv3660'
-            # isMemberOf: [
-            #   nil
-            # ]
-          },
+          structural: {},
           access: access_props,
           description: description_props
         }
@@ -764,13 +759,14 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
   end
 
   context 'with ETD without citation elements' do
-    # it_behaves_like 'DRO Identification Fedora Cocina mapping' do
-    xit 'to be implemented: release tags need to roundtrip back into identityMetadata.xml' do
+    it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:xs522rn2310' }
       let(:label) { '' }
       let(:catkey) { '12684953' }
       let(:admin_policy_id) { 'druid:bx911tp9024' } # from RELS-EXT
       let(:collection_ids) { [] } # not in RELS-EXT
+      let(:source_id) { '0000006152' }
+      let(:source_id_source) { 'dissertationid' }
       let(:identity_metadata_xml) do
         <<~XML
           <identityMetadata>
@@ -829,12 +825,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
               }
             ]
           },
-          structural: {
-            hasAgreement: 'druid:ct692vv3660'
-            # isMemberOf: [
-            #   nil
-            # ]
-          },
+          structural: {},
           access: access_props,
           description: description_props
         }
@@ -1022,8 +1013,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
   end
 
   context 'with displayType (Hydrus item)' do
-    # it_behaves_like 'DRO Identification Fedora Cocina mapping' do
-    xit 'to be implemented: release tags need to roundtrip back into identityMetadata.xml' do
+    it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:gj077jb7878' }
       let(:label) { 'Open Science Perspective' }
       let(:admin_policy_id) { 'druid:sn486kf1487' } # from RELS-EXT
@@ -1055,7 +1045,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <objectCreator>DOR</objectCreator>
             <objectLabel>#{label}</objectLabel>
             <objectType>item</objectType>
-            <release displayType="file" release="true" to="Searchworks" what="self" when="2015-10-25T21:29:13Z" who="blalbrit">true</release>
+            <release to="Searchworks" what="self" when="2015-10-25T21:29:13Z" who="blalbrit">true</release>
           </identityMetadata>
         XML
       end
@@ -1091,8 +1081,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
   end
 
   context 'with web archive seed (old)' do
-    # it_behaves_like 'DRO Identification Fedora Cocina mapping' do
-    xit 'to be implemented: release tags need to roundtrip back into identityMetadata.xml' do
+    it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bj731rx4986' }
       let(:label) { 'http://nippongenkikai.jp/' }
       let(:admin_policy_id) { 'druid:xt299pt7593' } # from RELS-EXT
@@ -1166,8 +1155,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
   end
 
   context 'with web archive seed (new)' do
-    # it_behaves_like 'DRO Identification Fedora Cocina mapping' do
-    xit 'to be implemented: release tags need to roundtrip back into identityMetadata.xml' do
+    it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb143kr5856' }
       let(:label) { 'http://cheme.stanford.edu/' }
       let(:admin_policy_id) { 'druid:xt299pt7593' } # from RELS-EXT
@@ -1279,7 +1267,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
 
   context 'with objectAdminClass (EEMS) and same catkey twice, no collection' do
     # it_behaves_like 'DRO Identification Fedora Cocina mapping' do
-    xit 'to be implemented: release tags need to roundtrip back into identityMetadata.xml' do
+    xit 'to be implemented: what to do with 2 catkeys' do
       let(:item_id) { 'druid:bb029vy9696' }
       let(:label) { 'EEMs: Finite State Continuous-Time Markov Decision Processes with Applications to a Class of Optimization Problems in Queueing Theory' }
       let(:catkey) { '10208128' }

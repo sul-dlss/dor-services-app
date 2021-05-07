@@ -31,6 +31,7 @@ module Cocina
         normalize_out_call_sequence_ids
         normalize_out_empty_other_ids
         normalize_source_id_whitespace
+        normalize_release_tags
 
         regenerate_ng_xml(ng_xml.to_xml)
       end
@@ -110,6 +111,13 @@ module Cocina
       def normalize_out_call_sequence_ids
         ng_xml.root.xpath('//otherId[@name="callseq"]').each(&:remove)
         ng_xml.root.xpath('//otherId[@name="shelfseq"]').each(&:remove)
+      end
+
+      def normalize_release_tags
+        ng_xml.root.xpath('//release').each do |release_node|
+          release_node.delete('displayType')
+          release_node.delete('release')
+        end
       end
     end
   end

@@ -61,12 +61,14 @@ RSpec.shared_examples 'Agreement Object Identification Fedora Cocina mapping' do
                                           source_id: cocina_dro.identification.sourceId,
                                           catkey: Cocina::ObjectCreator.new.send(:catkey_for, cocina_dro),
                                           label: Cocina::ObjectCreator.new.send(:truncate_label, cocina_dro.label))
-    Cocina::ToFedora::Identity.apply(fedora_agreement, label: cocina_dro.label, agreement_id: cocina_dro.structural&.hasAgreement)
+    Cocina::ToFedora::Identity.initialize_identity(fedora_agreement)
+    Cocina::ToFedora::Identity.apply_label(fedora_agreement, label: cocina_dro.label)
     fedora_agreement.identityMetadata.barcode = cocina_dro.identification.barcode
     fedora_agreement
   end
   let(:mapped_roundtrip_identity_xml) do
-    Cocina::ToFedora::Identity.apply(roundtrip_fedora_agreement, label: mapped_cocina_props[:label])
+    Cocina::ToFedora::Identity.initialize_identity(roundtrip_fedora_agreement)
+    Cocina::ToFedora::Identity.apply_label(roundtrip_fedora_agreement, label: mapped_cocina_props[:label])
     roundtrip_fedora_agreement.identityMetadata.to_xml
   end
 

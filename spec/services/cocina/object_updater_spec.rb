@@ -57,7 +57,7 @@ RSpec.describe Cocina::ObjectUpdater do
     context 'when updating label' do
       before do
         allow(item).to receive(:label=)
-        allow(Cocina::ToFedora::Identity).to receive(:apply)
+        allow(Cocina::ToFedora::Identity).to receive(:apply_label)
       end
 
       context 'when label has changed' do
@@ -70,7 +70,7 @@ RSpec.describe Cocina::ObjectUpdater do
         it 'updates label' do
           update
           expect(item).to have_received(:label=).with('new label')
-          expect(Cocina::ToFedora::Identity).to have_received(:apply)
+          expect(Cocina::ToFedora::Identity).to have_received(:apply_label)
         end
       end
 
@@ -78,7 +78,7 @@ RSpec.describe Cocina::ObjectUpdater do
         it 'does not update label' do
           update
           expect(item).not_to have_received(:label=)
-          expect(Cocina::ToFedora::Identity).not_to have_received(:apply)
+          expect(Cocina::ToFedora::Identity).not_to have_received(:apply_label)
         end
       end
     end
@@ -328,13 +328,13 @@ RSpec.describe Cocina::ObjectUpdater do
 
       before do
         allow(item).to receive(:label=)
-        allow(Cocina::ToFedora::Identity).to receive(:apply)
+        allow(Cocina::ToFedora::Identity).to receive(:apply_label)
       end
 
       it 'updates label' do
         update
         expect(item).to have_received(:label=).with('new label')
-        expect(Cocina::ToFedora::Identity).to have_received(:apply)
+        expect(Cocina::ToFedora::Identity).to have_received(:apply_label)
       end
     end
 
@@ -446,7 +446,6 @@ RSpec.describe Cocina::ObjectUpdater do
           instance_double(Dor::RightsMetadataDS, ng_xml_will_change!: nil)
         )
         allow(content_metadata).to receive(:contentType=)
-        allow(Cocina::ToFedora::Identity).to receive(:apply)
         allow(AdministrativeTags).to receive(:create)
         allow(content_metadata).to receive(:ng_xml)
         allow(Cocina::ToFedora::DROAccess).to receive(:apply)
@@ -467,7 +466,6 @@ RSpec.describe Cocina::ObjectUpdater do
           expect(item).to have_received(:collection_ids=)
           expect(content_metadata).to have_received(:contentType=)
           expect(content_metadata).not_to have_received(:ng_xml)
-          expect(Cocina::ToFedora::Identity).to have_received(:apply)
           expect(AdministrativeTags).to have_received(:create)
           expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
         end
@@ -478,7 +476,6 @@ RSpec.describe Cocina::ObjectUpdater do
           update
           expect(item).not_to have_received(:collection_ids=)
           expect(content_metadata).not_to have_received(:contentType=)
-          expect(Cocina::ToFedora::Identity).not_to have_received(:apply)
           expect(AdministrativeTags).not_to have_received(:create)
           expect(Cocina::ToFedora::DROAccess).not_to have_received(:apply)
         end
@@ -494,7 +491,6 @@ RSpec.describe Cocina::ObjectUpdater do
         allow(content_metadata).to receive(:content=)
         allow(content_metadata).to receive(:contentType=)
         allow(content_metadata).to receive(:ng_xml)
-        allow(Cocina::ToFedora::Identity).to receive(:apply)
         allow(AdministrativeTags).to receive(:create)
         allow(Cocina::ToFedora::DROAccess).to receive(:apply)
       end
@@ -513,7 +509,6 @@ RSpec.describe Cocina::ObjectUpdater do
         expect(content_metadata).to have_received(:content=)
         expect(content_metadata).not_to have_received(:contentType=)
         expect(content_metadata).not_to have_received(:ng_xml)
-        expect(Cocina::ToFedora::Identity).to have_received(:apply)
         expect(AdministrativeTags).to have_received(:create)
         expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
       end
@@ -624,7 +619,7 @@ RSpec.describe Cocina::ObjectUpdater do
       allow(item).to receive(:catkey=)
       allow(item).to receive(:collection_ids=)
       allow(item).to receive(:save!)
-      allow(Cocina::ToFedora::Identity).to receive(:apply)
+      allow(Cocina::ToFedora::Identity).to receive(:apply_label)
       allow(desc_metadata).to receive(:content=)
       allow(desc_metadata).to receive(:content_will_change!)
       allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
@@ -633,7 +628,6 @@ RSpec.describe Cocina::ObjectUpdater do
       allow(content_metadata).to receive(:ng_xml).and_return(content_metadata_ng_xml)
       allow(content_metadata_ng_xml).to receive(:xpath).and_return([book_data_node])
       allow(book_data_node).to receive(:remove)
-      allow(Cocina::ToFedora::Identity).to receive(:apply)
       allow(Cocina::ToFedora::DROAccess).to receive(:apply)
       allow(identity_metadata).to receive(:barcode=)
     end
@@ -649,14 +643,13 @@ RSpec.describe Cocina::ObjectUpdater do
       expect(item).to have_received(:source_id=)
       expect(item).to have_received(:catkey=)
       expect(item).to have_received(:collection_ids=)
-      expect(Cocina::ToFedora::Identity).to have_received(:apply)
+      expect(Cocina::ToFedora::Identity).to have_received(:apply_label)
       expect(desc_metadata).to have_received(:content=)
       expect(desc_metadata).to have_received(:content_will_change!)
       expect(Cocina::ToFedora::Descriptive).to have_received(:transform)
       expect(content_metadata).to have_received(:contentType=)
       allow(content_metadata).to receive(:ng_xml).and_return(content_metadata_ng_xml)
       allow(content_metadata_ng_xml).to receive(:xpath).and_return([book_data_node])
-      expect(Cocina::ToFedora::Identity).to have_received(:apply)
       expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
       expect(identity_metadata).to have_received(:barcode=)
     end

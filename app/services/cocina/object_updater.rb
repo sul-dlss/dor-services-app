@@ -76,7 +76,7 @@ module Cocina
     def update_apo
       # fedora_object.source_id = cocina_object.identification.sourceId
       if has_changed?(:label)
-        Cocina::ToFedora::Identity.apply(fedora_object, label: cocina_object.label)
+        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
         fedora_object.label = truncate_label(cocina_object.label)
       end
 
@@ -94,9 +94,12 @@ module Cocina
 
     def update_collection
       if has_changed?(:label)
-        fedora_object.label = truncate_label(cocina_object.label)
-        Cocina::ToFedora::Identity.apply(fedora_object, label: cocina_object.label)
+        fedora_object.label = truncate_label(cocina_object.label) if has_changed?(:label)
+        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
       end
+
+      Cocina::ToFedora::Identity.apply_release_tags(fedora_object, release_tags: cocina_object.administrative&.releaseTags) if has_changed?(:administrative)
+
       fedora_object.catkey = catkey_for(cocina_object)
       fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy if has_changed?(:administrative)
 
@@ -104,12 +107,14 @@ module Cocina
     end
 
     # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/CyclomaticComplexity
-    # rubocop:disable Metrics/PerceivedComplexity
     def update_dro
       fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy if has_changed?(:administrative)
       fedora_object.collection_ids = Array.wrap(cocina_object.structural&.isMemberOf).compact if has_changed?(:structural)
-      fedora_object.label = truncate_label(cocina_object.label) if has_changed?(:label)
+
+      if has_changed?(:label)
+        fedora_object.label = truncate_label(cocina_object.label)
+        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
+      end
 
       if has_changed?(:identification)
         fedora_object.source_id = cocina_object.identification.sourceId
@@ -117,21 +122,15 @@ module Cocina
         fedora_object.identityMetadata.barcode = cocina_object.identification.barcode
       end
 
-      if has_changed?(:label) || has_changed?(:structural)
-        label = has_changed?(:label) ? cocina_object.label : fedora_object.label
-        agreement_id = has_changed?(:structural) ? cocina_object.structural&.hasAgreement : nil
-        Cocina::ToFedora::Identity.apply(fedora_object, label: label, agreement_id: agreement_id)
-      end
+      Cocina::ToFedora::Identity.apply_release_tags(fedora_object, release_tags: cocina_object.administrative&.releaseTags) if has_changed?(:administrative)
 
       Cocina::ToFedora::DROAccess.apply(fedora_object, cocina_object.access, cocina_object.structural) if has_changed?(:access) || has_changed?(:structural)
       update_content_metadata(fedora_object, cocina_object) if has_changed?(:structural) || has_changed?(:type)
 
       add_tags(fedora_object.pid, cocina_object)
     end
-    # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/CyclomaticComplexity
-    # rubocop:enable Metrics/PerceivedComplexity
 
+    # rubocop:enable Metrics/AbcSize
     def update_content_metadata(fedora_object, cocina_object)
       # We don't want to overwrite contentMetadata unless they provided structural.contains
       # Note that a change to a book content type will generate completely new structural metadata, and

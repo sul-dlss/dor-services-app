@@ -68,13 +68,15 @@ module Cocina
         Cocina::ToFedora::DefaultRights.write(fedora_apo.defaultObjectRights, cocina_admin_policy.administrative.defaultAccess) if cocina_admin_policy.administrative.defaultAccess
         Cocina::ToFedora::AdministrativeMetadata.write(fedora_apo.administrativeMetadata, cocina_admin_policy.administrative)
         Cocina::ToFedora::Roles.write(fedora_apo, Array(cocina_admin_policy.administrative.roles))
-        Cocina::ToFedora::Identity.apply(fedora_apo, label: cocina_admin_policy.label)
+        Cocina::ToFedora::Identity.initialize_identity(fedora_apo)
+        Cocina::ToFedora::Identity.apply_label(fedora_apo, label: cocina_admin_policy.label)
       end
     end
 
     # @param [Cocina::Models::RequestDRO] cocina_item
     # @return [Dor::Item] a persisted Item model
     # @raises SymphonyReader::ResponseError if symphony connection failed
+    # rubocop:disable Metrics/AbcSize
     def create_dro(cocina_item)
       pid = Dor::SuriService.mint_id
       klass = cocina_item.type == Cocina::Models::Vocab.agreement ? Dor::Agreement : Dor::Item
@@ -91,11 +93,14 @@ module Cocina
         Cocina::ToFedora::DROAccess.apply(fedora_item, cocina_item.access, cocina_item.structural) if cocina_item.access || cocina_item.structural
 
         fedora_item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: pid, object: cocina_item)
-        Cocina::ToFedora::Identity.apply(fedora_item, label: cocina_item.label, agreement_id: cocina_item.structural&.hasAgreement)
+        Cocina::ToFedora::Identity.initialize_identity(fedora_item)
+        Cocina::ToFedora::Identity.apply_label(fedora_item, label: cocina_item.label)
+        Cocina::ToFedora::Identity.apply_release_tags(fedora_item, release_tags: cocina_item.administrative&.releaseTags)
 
         fedora_item.identityMetadata.barcode = cocina_item.identification.barcode if cocina_item.identification.barcode
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     # @param [Cocina::Models::RequestCollection] cocina_collection
     # @return [Dor::Collection] a persisted Collection model
@@ -110,7 +115,9 @@ module Cocina
         add_collection_tags(pid, cocina_collection)
         apply_default_access(fedora_collection)
         Cocina::ToFedora::CollectionAccess.apply(fedora_collection, cocina_collection.access) if cocina_collection.access
-        Cocina::ToFedora::Identity.apply(fedora_collection, label: cocina_collection.label)
+        Cocina::ToFedora::Identity.initialize_identity(fedora_collection)
+        Cocina::ToFedora::Identity.apply_label(fedora_collection, label: cocina_collection.label)
+        Cocina::ToFedora::Identity.apply_release_tags(fedora_collection, release_tags: cocina_collection.administrative&.releaseTags)
       end
     end
 

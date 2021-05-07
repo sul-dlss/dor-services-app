@@ -76,7 +76,9 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
                                  label: mapped_cocina_props[:label])
     end
     let(:mapped_roundtrip_identity_xml) do
-      Cocina::ToFedora::Identity.apply(mapped_fedora_apo, label: mapped_cocina_props[:label], agreement_id: mapped_cocina_props[:agreement_object_id])
+      Cocina::ToFedora::Identity.initialize_identity(mapped_fedora_apo)
+      Cocina::ToFedora::Identity.apply_label(mapped_fedora_apo, label: mapped_cocina_props[:label])
+      Cocina::ToFedora::Identity.apply_release_tags(mapped_fedora_apo, release_tags: mapped_cocina_props.dig(:administrative, :releaseTags))
       mapped_fedora_apo.identityMetadata.to_xml
     end
 

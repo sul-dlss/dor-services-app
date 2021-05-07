@@ -562,10 +562,7 @@ RSpec.describe 'Update object' do
         expect(response.status).to eq 200
 
         # Identity metadata set correctly.
-        expect(item.objectId).to eq(druid)
-        expect(item.objectCreator.first).to eq('DOR')
         expect(item.objectLabel.first).to eq(expected_label)
-        expect(item.objectType.first).to eq('item')
       end
     end
 
