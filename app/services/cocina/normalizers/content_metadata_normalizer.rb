@@ -68,6 +68,7 @@ module Cocina
         ng_xml.root << book_data_node
       end
 
+      # FIXME: I'm not confident we want to remove all of these.
       def normalize_attr
         # Pending https://github.com/sul-dlss/dor-services-app/issues/2808
         ng_xml.root.xpath('//attr').each(&:remove)
