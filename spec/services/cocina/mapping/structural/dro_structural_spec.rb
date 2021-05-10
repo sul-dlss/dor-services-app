@@ -55,7 +55,7 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
         label: '',
         version: version,
         access: {},
-        description: { title: [{ value: 'contentMetadata <-> cocina structural testing'}] },
+        description: { title: [{ value: 'contentMetadata <-> cocina structural testing' }] },
         administrative: { hasAdminPolicy: 'druid:nn000nn0000' },
         identification: {},
         structural: mapped_structural_props
@@ -852,7 +852,7 @@ RSpec.describe 'Fedora item contentMetadata <--> Cocina DRO structural mappings'
 
     context 'with recent ETD but before ETD rewrite' do
       it_behaves_like 'DRO Structural Fedora Cocina mapping' do
-      # xit 'to be implemented:  this does not roundtrip cleanly' do
+        # xit 'to be implemented:  this does not roundtrip cleanly' do
         let(:bare_druid) { 'bb164pj1759' }
         let(:collection_ids) { ['druid:ct692vv3660'] } # from RELS-EXT
         let(:version) { 3 }
