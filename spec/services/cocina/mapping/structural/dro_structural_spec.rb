@@ -6,11 +6,12 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
   # Required: content_metadata_xml, dro_type, bare_druid, version, collection_ids, rights_metadata_xml, cocina_structural_props
   # Optional: roundtrip_content_metadata_xml
 
+  let(:full_druid) { "druid:#{bare_druid}" }
   let(:fedora_item) { Dor::Item.new }
   let(:fedora_item_mock) do
     instance_double(Dor::Item,
-                    pid: "druid:#{bare_druid}",
-                    id: "druid:#{bare_druid}",
+                    pid: full_druid,
+                    id: full_druid,
                     current_version: version,
                     collections: collection_ids.map { |coll_id| Dor::Collection.new(pid: coll_id) },
                     contentMetadata: Dor::ContentMetadataDS.from_xml(content_metadata_xml),
@@ -22,7 +23,8 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
     # the starting contentMetadata is normalized to address discrepancies found against contentMetadata roundtripped
     #  to data store (Fedora) and back, per Andrew's specifications.
     #  E.g., removing id attribute on resource nodes
-    Cocina::Normalizers::ContentMetadataNormalizer.normalize(druid: "druid:#{bare_druid}", content_ng_xml: Nokogiri::XML(content_metadata_xml)).to_xml
+    norm_b4 = Cocina::Normalizers::ContentMetadataNormalizer.normalize(druid: full_druid, content_ng_xml: Nokogiri::XML(content_metadata_xml)).to_xml
+    Cocina::Normalizers::ContentMetadataNormalizer.normalize_roundtrip(content_ng_xml: Nokogiri::XML(norm_b4)).to_xml
   end
   let(:new_file_set_uuid) { 'http://cocina.sul.stanford.edu/fileSet/(new_uuid)' }
   let(:new_file_uuid) { 'http://cocina.sul.stanford.edu/file/(new_uuid)' }
@@ -44,39 +46,41 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
     end
   end
 
-  # context 'when mapping from Cocina to Fedora' do
-  #   let(:mapped_access) { Cocina::Models::DROAccess.new(mapped_access_props) }
-  #   let(:mapped_structural) { Cocina::Models::DROStructural.new(mapped_structural_props) }
-  #   let(:mapped_roundtrip_content_xml) { fedora_item.contentMetadata.to_xml }
-  #
-  #   before do
-  #     Cocina::ToFedora::DROAccess.apply(fedora_item, mapped_access, mapped_structural)
-  #   end
-  #
-  #   it 'rightsMetadata roundtrips thru cocina model to provided expected rightsMetadata.xml' do
-  #     # for some reason, fedora_item.rightsMetadata.ng_xml.to_xml fails here, but fedora_item.rightsMetadata.to_xml passes.
-  #     #   ? Maybe some encoding assumptions baked in to active fedora.  Likewise, the opposite is true for the test below.
-  #     expect(fedora_item.rightsMetadata.to_xml).to be_equivalent_to(roundtrip_rights_metadata_xml)
-  #   end
-  #
-  #   it 'rightsMetadata roundtrips thru cocina model to normalized original rightsMetadata.xml' do
-  #     # for some reason, fedora_item.rightsMetadata.to_xml fails here, but fedora_item.rightsMetadata.ng_xml.to_xml passes.
-  #     #    ? Maybe some encoding assumptions baked in to active fedora.  Likewise, the opposite is true for the test above.
-  #     expect(fedora_item.rightsMetadata.ng_xml.to_xml).to be_equivalent_to(normalized_orig_rights_xml)
-  #   end
-  #
-  #   it 'contentMetadata roundtrips thru cocina model to original contentMetadata.xml' do
-  #     expect(mapped_roundtrip_content_xml).to be_equivalent_to(roundtrip_content_metadata_xml)
-  #   end
-  # end
+  context 'when mapping from Cocina to Fedora' do
+    let(:mapped_structural) { Cocina::Models::DROStructural.new(mapped_structural_props) }
+    let(:cocina_dro_hash) do
+      {
+        type: dro_type,
+        externalIdentifier: full_druid,
+        label: '',
+        version: version,
+        access: {},
+        description: { title: [{ value: 'contentMetadata <-> cocina structural testing'}] },
+        administrative: { hasAdminPolicy: 'druid:nn000nn0000' },
+        identification: {},
+        structural: mapped_structural_props
+      }
+    end
+    let(:cocina_dro) { Cocina::Models::DRO.new(cocina_dro_hash) }
+    let(:roundtripped_content_metadata_xml) { Cocina::ToFedora::ContentMetadataGenerator.generate(druid: full_druid, object: cocina_dro) }
+
+    it 'contentMetadata roundtrips thru cocina model to provided expected contentMetadata.xml' do
+      # FIXME: this is not working due to sequence attribute on resource tag, see https://github.com/sul-dlss/dor-services-app/issues/2841
+      expect(roundtripped_content_metadata_xml).to be_equivalent_to(roundtrip_content_md_xml)
+    end
+
+    it 'contentMetadata roundtrips thru cocina model to normalized original contentMetadata.xml' do
+      expect(roundtripped_content_metadata_xml).to be_equivalent_to(normalized_orig_content_xml)
+    end
+  end
 
   # context 'when mapping from roundtrip Fedora to (roundtrip) Cocina' do
   #   let(:roundtrip_fedora_item) { Dor::Item.new }
   #   let(:roundtrip_access_props) { Cocina::FromFedora::DROAccess.props(roundtrip_fedora_item.rightsMetadata, roundtrip_fedora_item.embargoMetadata) }
-  #   let(:roundtrip_structural_props) { Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: Cocina::Models::Vocab.book) }
+  #   let(:roundtrip_structural_props) { Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: dro_type) }
   #
   #   before do
-  #     roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(roundtrip_rights_metadata_xml)
+  #     roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(rights_metadata_xml)
   #     allow(roundtrip_fedora_item).to receive(:rightsMetadata).and_return(roundtrip_rights_metadata_ds)
   #     if defined?(embargo_xml)
   #       embargo_metadata_ds = Dor::EmbargoMetadataDS.from_xml(embargo_xml)
@@ -87,7 +91,6 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
   #   end
   #
   #   it 'roundtrip Fedora maps to expected Cocina object props' do
-  #     expect(roundtrip_access_props).to be_deep_equal(cocina_access_props)
   #     expect(roundtrip_structural_props).to be_deep_equal(cocina_structural_props)
   #   end
   # end
@@ -116,7 +119,7 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
 end
 
 RSpec.describe 'Fedora item contentMetadata <--> Cocina DRO structural mappings' do
-  describe 'book' do
+  describe 'book Argo object type' do
     let(:dro_type) { Cocina::Models::Vocab.book }
 
     context 'with newark newspaper collection object' do
@@ -838,15 +841,18 @@ RSpec.describe 'Fedora item contentMetadata <--> Cocina DRO structural mappings'
     end
   end
 
-  describe 'document' do
+  describe 'document Argo object type' do
     let(:dro_type) { Cocina::Models::Vocab.document }
+
+    xit 'to be implemented: get a recent object of this type and an object of this type from before 2015 and call shared examples for each'
   end
 
-  describe 'file' do
-    let(:dro_type) { Cocina::Models::Vocab.file }
+  describe 'file Argo object type' do
+    let(:dro_type) { Cocina::Models::Vocab.object }
 
-    context 'with recent ETD' do
+    context 'with recent ETD but before ETD rewrite' do
       it_behaves_like 'DRO Structural Fedora Cocina mapping' do
+      # xit 'to be implemented:  this does not roundtrip cleanly' do
         let(:bare_druid) { 'bb164pj1759' }
         let(:collection_ids) { ['druid:ct692vv3660'] } # from RELS-EXT
         let(:version) { 3 }
@@ -878,6 +884,28 @@ RSpec.describe 'Fedora item contentMetadata <--> Cocina DRO structural mappings'
               </resource>
               <resource id="bb164pj1759_2" type="main-augmented" objectId="druid:yx117zy0511">
                 <attr name="label">Body of dissertation</attr>
+                <file id="e-thesis submitted-augmented.pdf" mimetype="application/pdf" size="4792366" shelve="yes" publish="yes" preserve="yes">
+                  <checksum type="md5">0b2b4e8cf1bbb30e8a266b95965ed0d1</checksum>
+                  <checksum type="sha1">eeaea05d7f85519f26665fc51e522d47281e0ba7</checksum>
+                </file>
+              </resource>
+            </contentMetadata>
+          XML
+        end
+        # FIXME: sequence numbers have problematic mapping rules: https://github.com/sul-dlss/dor-services-app/issues/2841
+        # FIXME:  should these nodes just become label nodes?
+        # <attr name="label">Body of dissertation (as submitted)</attr>
+        # <attr name="label">Body of dissertation</attr>
+        let(:roundtrip_content_metadata_xml) do
+          <<~XML
+            <contentMetadata type="file" objectId="druid:bb164pj1759">
+              <resource id="http://cocina.sul.stanford.edu/fileSet/(new_uuid)" sequence="1" type="main-original">
+                <file id="e-thesis submitted.pdf" mimetype="application/pdf" size="4900178" shelve="yes" publish="no" preserve="yes">
+                  <checksum type="md5">0bdfb9d688f96c1cd8cf7d2c51ea1e40</checksum>
+                  <checksum type="sha1">bf515ab4babd8a500b278b2c4bf634f395b94cce</checksum>
+                </file>
+              </resource>
+              <resource id="http://cocina.sul.stanford.edu/fileSet/(new_uuid)" sequence="2" type="main-augmented">
                 <file id="e-thesis submitted-augmented.pdf" mimetype="application/pdf" size="4792366" shelve="yes" publish="yes" preserve="yes">
                   <checksum type="md5">0b2b4e8cf1bbb30e8a266b95965ed0d1</checksum>
                   <checksum type="sha1">eeaea05d7f85519f26665fc51e522d47281e0ba7</checksum>
@@ -974,29 +1002,43 @@ RSpec.describe 'Fedora item contentMetadata <--> Cocina DRO structural mappings'
         end
       end
     end
+
+    xit 'to be implemented: get a recent object of this type and an object of this type from before 2015 and call shared examples for each'
   end
 
-  describe 'geo' do
+  describe 'geo Argo object type' do
     let(:dro_type) { Cocina::Models::Vocab.geo }
+
+    xit 'to be implemented: get a recent object of this type and an object of this type from before 2015 and call shared examples for each'
   end
 
-  describe 'image' do
+  describe 'image Argo object type' do
     let(:dro_type) { Cocina::Models::Vocab.image }
+
+    xit 'to be implemented: get a recent object of this type and an object of this type from before 2015 and call shared examples for each'
   end
 
-  describe 'map' do
+  describe 'map Argo object type' do
     let(:dro_type) { Cocina::Models::Vocab.map }
+
+    xit 'to be implemented: get a recent object of this type and an object of this type from before 2015 and call shared examples for each'
   end
 
-  describe 'media' do
+  describe 'media Argo object type' do
     let(:dro_type) { Cocina::Models::Vocab.media }
+
+    xit 'to be implemented: get a recent object of this type and an object of this type from before 2015 and call shared examples for each'
   end
 
-  describe 'webarchive-seed' do
+  describe 'webarchive-seed Argo object type' do
     let(:dro_type) { Cocina::Models::Vocab.webarchive_seed }
+
+    xit 'to be implemented: get a recent object of this type and an object of this type from before 2015 and call shared examples for each'
   end
 
-  describe '3d' do
+  describe '3d Argo object type' do
     let(:dro_type) { Cocina::Models::Vocab.three_dimensional }
+
+    xit 'to be implemented: get a recent object of this type and an object of this type from before 2015 and call shared examples for each'
   end
 end
