@@ -70,7 +70,7 @@ module Cocina
 
         def note_type(node)
           if node['type'].present? && node['type'] != 'summary'
-            { type: node['type'].downcase }
+            { type: node['type'] }
           else
             {}
           end
@@ -89,7 +89,7 @@ module Cocina
 
         def parallel_note_for(note_nodes)
           {
-            parallelValue: note_nodes.map { |note_node| common_note_for(note_node) }
+            parallelValue: note_nodes.map { |note_node| common_note_for(note_node).merge(note_type(note_node)) }
           }
         end
 

@@ -225,6 +225,57 @@ RSpec.describe 'MODS note <--> cocina mappings' do
     end
   end
 
+  describe 'Multilingual note with type' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note type="reproduction">Microfilm. 1 reel. (Chen Cheng colletion reel no. 14)</note>
+          <note type="statement of responsibility" altRepGroup="1" script="Latn">Zhong yang jun shi zheng zhi xue xiao bian.</note>
+          <note type="statement of responsibility" altRepGroup="1" script="Latn">中央軍事政治學校編.</note>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'Microfilm. 1 reel. (Chen Cheng colletion reel no. 14)',
+              type: 'reproduction'
+            },
+            {
+              parallelValue: [
+                {
+                  type: 'statement of responsibility',
+                  value: 'Zhong yang jun shi zheng zhi xue xiao bian.',
+                  valueLanguage: {
+                    valueScript: {
+                      code: 'Latn',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                },
+                {
+                  type: 'statement of responsibility',
+                  value: '中央軍事政治學校編.',
+                  valueLanguage: {
+                    valueScript: {
+                      code: 'Latn',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Link to external value only' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
