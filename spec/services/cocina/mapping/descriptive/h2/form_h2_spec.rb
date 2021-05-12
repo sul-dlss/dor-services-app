@@ -19,7 +19,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
                 }
               ],
               source: {
-                'Stanford self-deposit resource types'
+                value: 'Stanford self-deposit resource types'
               },
               type: 'resource type'
             },
