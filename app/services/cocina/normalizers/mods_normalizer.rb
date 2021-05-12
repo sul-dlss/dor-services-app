@@ -47,7 +47,7 @@ module Cocina
         @ng_xml = Cocina::Normalizers::Mods::TitleNormalizer.normalize(mods_ng_xml: ng_xml, label: label)
         @ng_xml = Cocina::Normalizers::Mods::GeoExtensionNormalizer.normalize(mods_ng_xml: ng_xml, druid: druid)
         normalize_empty_type_of_resource # Must be after normalize_empty_attributes
-        normalize_note_summary
+        normalize_notes
         normalize_abstracts
         normalize_usage_primary
         normalize_related_item_attributes
@@ -277,8 +277,8 @@ module Cocina
         ng_xml.root.xpath('//mods:relatedItem[not(mods:*) and not(@xlink:href)]', mods: MODS_NS, xlink: XLINK_NS).each(&:remove)
       end
 
-      def normalize_note_summary
-        ng_xml.root.xpath('//mods:note[@type="summary"]', mods: MODS_NS).each do |note_node|
+      def normalize_notes
+        ng_xml.root.xpath('//mods:note[@type="summary"] | //mods:note[@displayLabel="Scope and content"]', mods: MODS_NS).each do |note_node|
           note_node.name = 'abstract'
           note_node.delete('type')
         end

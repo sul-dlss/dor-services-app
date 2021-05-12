@@ -44,6 +44,33 @@ RSpec.describe 'MODS note <--> cocina mappings' do
     end
   end
 
+  describe 'Note with a displayLabel of Scope and content' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note displayLabel="Scope and content">sound effects and outtakes.</note>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <abstract displayLabel="Scope and content">sound effects and outtakes.</abstract>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'sound effects and outtakes.',
+              displayLabel: 'Scope and content'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Note with uppercase type' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
