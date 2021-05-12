@@ -5,9 +5,65 @@ require 'rails_helper'
 RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
   # Mapping of H2 types and subtypes to genre and MODS type of resource:
   # https://docs.google.com/spreadsheets/d/1EiGgVqtb6PUJE2cI_jhqnAoiQkiwZtar4tF7NHwSMz8/edit?usp=sharing
+  describe 'type only, resource type with URI' do
+    # User enters type: Data, subtype: nil
+    xit 'not implemented' do
+      let(:cocina) do
+        {
+          form: [
+            {
+              structuredValue: [
+                {
+                  value: 'Data',
+                  type: 'type'
+                }
+              ],
+              source: {
+                'Stanford self-deposit resource types'
+              },
+              type: 'resource type'
+            },
+            {
+              value: 'Dataset',
+              type: 'resource type',
+              uri: 'http://id.loc.gov/vocabulary/resourceTypes/dat',
+              source: {
+                uri: 'http://id.loc.gov/vocabulary/resourceTypes/'
+              }
+            },
+            {
+              value: 'Data sets',
+              type: 'genre',
+              uri: 'https://id.loc.gov/authorities/genreForms/gf2018026119',
+              source: {
+                code: 'lcgft'
+              }
+            },
+            {
+              value: 'dataset',
+              type: 'genre',
+              source: {
+                code: 'local'
+              }
+            }
+          ]
+        }
+      end
 
-  describe 'Text - Article (AAT genre)' do
-    it_behaves_like 'cocina MODS mapping' do
+      let(:mods) do
+        <<~XML
+          <genre type="H2 type">Data</genre>
+          <typeOfResource authorityURI="http://id.loc.gov/vocabulary/resourceTypes/" valueURI="http://id.loc.gov/vocabulary/resourceTypes/dat">Dataset</typeOfResource>
+          <genre authority="lcgft" valueURI="https://id.loc.gov/authorities/genreForms/gf2018026119">Data sets</genre>
+          <genre authority="local">dataset</genre>
+        XML
+      end
+    end
+  end
+
+  describe 'type with subtype' do
+    # User enters type: Text, subtype: Article
+    xit 'not implemented' do
       let(:cocina) do
         {
           form: [
@@ -28,14 +84,6 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               type: 'resource type'
             },
             {
-              value: 'articles',
-              type: 'genre',
-              uri: 'http://vocab.getty.edu/page/aat/300048715',
-              source: {
-                code: 'aat'
-              }
-            },
-            {
               value: 'text',
               type: 'resource type',
               source: {
@@ -50,209 +98,15 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
         <<~XML
           <genre type="H2 type">Text</genre>
           <genre type="H2 subtype">Article</genre>
-          <genre authority="aat" valueURI="http://vocab.getty.edu/page/aat/300048715">articles</genre>
           <typeOfResource>text</typeOfResource>
         XML
       end
     end
   end
 
-  describe 'Text - Essay (LC genre)' do
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          form: [
-            {
-              structuredValue: [
-                {
-                  value: 'Text',
-                  type: 'type'
-                },
-                {
-                  value: 'Essay',
-                  type: 'subtype'
-                }
-              ],
-              source: {
-                value: 'Stanford self-deposit resource types'
-              },
-              type: 'resource type'
-            },
-            {
-              value: 'Essays',
-              type: 'genre',
-              uri: 'http://id.loc.gov/authorities/genreForms/gf2014026094',
-              source: {
-                code: 'lcgft'
-              }
-            },
-            {
-              value: 'text',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <genre type="H2 type">Text</genre>
-          <genre type="H2 subtype">Essay</genre>
-          <genre authority="lcgft" valueURI="http://id.loc.gov/authorities/genreForms/gf2014026094">Essays</genre>
-          <typeOfResource>text</typeOfResource>
-        XML
-      end
-    end
-  end
-
-  describe 'Data - 3D model (unauthorized genre)' do
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          form: [
-            {
-              structuredValue: [
-                {
-                  value: 'Data',
-                  type: 'type'
-                },
-                {
-                  value: '3D model',
-                  type: 'subtype'
-                }
-              ],
-              source: {
-                value: 'Stanford self-deposit resource types'
-              },
-              type: 'resource type'
-            },
-            {
-              value: 'Data sets',
-              type: 'genre',
-              uri: 'http://id.loc.gov/authorities/genreForms/gf2018026119',
-              source: {
-                code: 'lcgft'
-              }
-            },
-            {
-              value: 'dataset',
-              type: 'genre',
-              source: {
-                code: 'local'
-              }
-            },
-            {
-              value: 'software, multimedia',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            },
-            {
-              value: 'three-dimensional object',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <genre type="H2 type">Data</genre>
-          <genre type="H2 subtype">3D model</genre>
-          <genre authority="lcgft" valueURI="http://id.loc.gov/authorities/genreForms/gf2018026119">Data sets</genre>
-          <genre authority="local">dataset</genre>
-          <typeOfResource>software, multimedia</typeOfResource>
-          <typeOfResource>three-dimensional object</typeOfResource>
-        XML
-      end
-    end
-  end
-
-  describe 'Data - GIS (multiple genres, multiple types of resource)' do
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          form: [
-            {
-              structuredValue: [
-                {
-                  value: 'Data',
-                  type: 'type'
-                },
-                {
-                  value: 'Geospatial data',
-                  type: 'subtype'
-                }
-              ],
-              source: {
-                value: 'Stanford self-deposit resource types'
-              },
-              type: 'resource type'
-            },
-            {
-              value: 'Data sets',
-              type: 'genre',
-              uri: 'http://id.loc.gov/authorities/genreForms/gf2018026119',
-              source: {
-                code: 'lcgft'
-              }
-            },
-            {
-              value: 'dataset',
-              type: 'genre',
-              source: {
-                code: 'local'
-              }
-            },
-            {
-              value: 'Geographic information systems',
-              type: 'genre',
-              uri: 'http://id.loc.gov/authorities/genreForms/gf2011026294',
-              source: {
-                code: 'lcgft'
-              }
-            },
-            {
-              value: 'software, multimedia',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            },
-            {
-              value: 'cartographic',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <genre type="H2 type">Data</genre>
-          <genre type="H2 subtype">Geospatial data</genre>
-          <genre authority="lcgft" valueURI="http://id.loc.gov/authorities/genreForms/gf2018026119">Data sets</genre>
-          <genre authority="local">dataset</genre>
-          <genre authority="lcgft" valueURI="http://id.loc.gov/authorities/genreForms/gf2011026294">Geographic information systems</genre>
-          <typeOfResource>software, multimedia</typeOfResource>
-          <typeOfResource>cartographic</typeOfResource>
-        XML
-      end
-    end
-  end
-
-  describe 'Software - Code, Documentation (multiple subtypes)' do
-    it_behaves_like 'cocina MODS mapping' do
+  describe 'type with multiple subtypes' do
+    # User enters type: Software/Code, subtype: Code, Documentation
+    xit 'not implemented' do
       let(:cocina) do
         {
           form: [
@@ -277,26 +131,17 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               type: 'resource type'
             },
             {
-              value: 'programs (computer)',
-              type: 'genre',
-              uri: 'http://vocab.getty.edu/page/aat/300312188',
-              source: {
-                code: 'aat'
-              }
-            },
-            {
-              value: 'technical manuals',
-              type: 'genre',
-              uri: 'http://vocab.getty.edu/page/aat/300026413',
-              source: {
-                code: 'aat'
-              }
-            },
-            {
               value: 'software, multimedia',
               type: 'resource type',
               source: {
                 value: 'MODS resource types'
+              }
+            },
+            {
+              value: 'computer program',
+              uri: 'http://id.loc.gov/vocabulary/marcgt/com',
+              source: {
+                code: 'marcgt'
               }
             },
             {
@@ -315,16 +160,16 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
           <genre type="H2 type">Software/Code</genre>
           <genre type="H2 subtype">Code</genre>
           <genre type="H2 subtype">Documentation</genre>
-          <genre authority="aat" valueURI="http://vocab.getty.edu/page/aat/300312188">programs (computer)</genre>
-          <genre authority="aat" valueURI="http://vocab.getty.edu/page/aat/300026413">technical manuals</genre>
           <typeOfResource>software, multimedia</typeOfResource>
+          <genre authority="marcgt" valueURI="http://id.loc.gov/vocabulary/marcgt/com">computer program</genre>
           <typeOfResource>text</typeOfResource>
         XML
       end
     end
   end
 
-  describe 'Other - Dance notation (Other type with user-entered subtype)' do
+  describe 'type with user-entered subtype' do
+    # User enters type: Other, subtype: Dance notation
     it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
