@@ -70,7 +70,7 @@ module Cocina
 
         def note_type(node)
           if node['type'].present? && node['type'] != 'summary'
-            { type: node['type'] }
+            { type: node['type'].downcase }
           else
             {}
           end
