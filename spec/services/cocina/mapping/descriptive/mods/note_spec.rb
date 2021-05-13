@@ -44,8 +44,37 @@ RSpec.describe 'MODS note <--> cocina mappings' do
     end
   end
 
-  describe 'Note with type associated with abstract' do
-    # abstract type values: abstract, scope and content, summary
+  describe 'Note with type "abstract"' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <note type="abstract">This is an abstract.</note>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <abstract>This is an abstract.</abstract>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          {
+            note: [
+              {
+                value: 'This is an abstract',
+                type: 'abstract'
+              }
+            ]
+          }
+        }
+      end
+    end
+  end
+
+  describe 'Note with other type associated with abstract' do
+    # other abstract type values: scope and content, summary
     # these types round trip to abstract regardless of displayLabel value
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
