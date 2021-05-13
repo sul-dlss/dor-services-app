@@ -770,10 +770,10 @@ RSpec.describe Cocina::Normalizers::ModsNormalizer do
       XML
     end
 
-    it 'removes attribute' do
+    it 'coverts to abstract and leaves type attribute' do
       expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
-          <abstract displayLabel="Summary">This is a note.</abstract>
+          <abstract type="summary" displayLabel="Summary">This is a note.</abstract>
         </mods>
       XML
     end

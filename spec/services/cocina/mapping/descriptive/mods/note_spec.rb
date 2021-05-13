@@ -45,7 +45,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
   end
 
   describe 'Note with type "abstract"' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <note type="abstract">This is an abstract.</note>
@@ -62,7 +62,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
         {
           note: [
             {
-              value: 'This is an abstract',
+              value: 'This is an abstract.',
               type: 'abstract'
             }
           ]

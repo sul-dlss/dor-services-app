@@ -279,8 +279,9 @@ module Cocina
 
       def normalize_notes
         ng_xml.root.xpath('//mods:note', mods: MODS_NS).each do |note_node|
-          if note_node['type']&.downcase == 'summary' || ToFedora::Descriptive::Note.display_label_to_abstract_types.include?(note_node['displayLabel'])
-            note_node.delete('type')
+          if ToFedora::Descriptive::Note.note_type_to_abstract_type.include?(note_node['type']&.downcase) ||
+             ToFedora::Descriptive::Note.display_label_to_abstract_types.include?(note_node['displayLabel'])
+            note_node.delete('type') unless note_node['type']&.downcase == 'summary'
             note_node.name = 'abstract'
           end
           note_node['displayLabel'] = note_node['displayLabel'].capitalize if ToFedora::Descriptive::Note.display_label_to_abstract_types.include? note_node['displayLabel']
