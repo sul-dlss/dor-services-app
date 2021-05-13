@@ -42,7 +42,8 @@ module Cocina
         def common_note_for(node)
           {
             value: node.content.presence,
-            displayLabel: node[:displayLabel].presence,
+            displayLabel: display_label(node),
+            type: node['type']&.downcase,
             valueAt: node['xlink:href']
           }.tap do |attributes|
             value_language = LanguageScript.build(node: node)
@@ -58,6 +59,12 @@ module Cocina
           end.compact
         end
 
+        def display_label(node)
+          return node[:displayLabel].capitalize if ToFedora::Descriptive::Note.display_label_to_abstract_types.include? node[:displayLabel]
+
+          node[:displayLabel].presence
+        end
+
         def abstract_type(node, parallel: false)
           if node['type'].present?
             { type: node['type'].downcase }
@@ -68,18 +75,10 @@ module Cocina
           end
         end
 
-        def note_type(node)
-          if node['type'].present? && node['type'] != 'summary'
-            { type: node['type'] }
-          else
-            {}
-          end
-        end
-
         def notes
           all_note_nodes = resource_element.xpath('mods:note', mods: DESC_METADATA_NS).select { |node| note_present?(node) && node[:type] != 'contact' }
           altrepgroup_note_nodes, other_note_nodes = AltRepGroup.split(nodes: all_note_nodes)
-          other_note_nodes.map { |node| common_note_for(node).merge(note_type(node)) } + \
+          other_note_nodes.map { |node| common_note_for(node) } + \
             altrepgroup_note_nodes.map { |parallel_nodes| parallel_note_for(parallel_nodes) }
         end
 
@@ -89,7 +88,7 @@ module Cocina
 
         def parallel_note_for(note_nodes)
           {
-            parallelValue: note_nodes.map { |note_node| common_note_for(note_node).merge(note_type(note_node)) }
+            parallelValue: note_nodes.map { |note_node| common_note_for(note_node) }
           }
         end
 
