@@ -130,6 +130,28 @@ RSpec.describe 'MODS note <--> cocina mappings' do
     end
   end
 
+  describe 'Note with type not associated with abstract, capitalization retained' do
+    # druid:rn086hc5967
+    xit 'unimplemented spec' do
+      let(:mods) do
+        <<~XML
+          <note type="Qualifications and Caveats">Attribution of Caracciolo as creator is probable but uncertain.</note>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'Attribution of Caracciolo as creator is probable but uncertain.',
+              type: 'Qualifications and Caveats'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Note with display label' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
@@ -205,6 +227,27 @@ RSpec.describe 'MODS note <--> cocina mappings' do
             {
               value: 'This is a scope and content note.',
               displayLabel: 'Scope and content'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Note with display label not associated with abstract, capitalization retained' do
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <note displayLabel="Qualifications and Caveats">Attribution of Caracciolo as creator is probable but uncertain.</note>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'Attribution of Caracciolo as creator is probable but uncertain.',
+              displayLabel: 'Qualifications and Caveats'
             }
           ]
         }

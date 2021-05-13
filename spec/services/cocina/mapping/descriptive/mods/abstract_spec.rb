@@ -350,6 +350,28 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
     end
   end
 
+  describe 'Abstract with other displayLabel, capitalization retained' do
+    xit 'unimplemented spec' do
+      let(:mods) do
+        <<~XML
+          <abstract displayLabel="Summary from Barnes Catalogue of Works">A summary.</abstract>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'A summary.',
+              type: 'abstract',
+              displayLabel: 'Summary from Barnes Catalogue of Works'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Link to external value only' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
