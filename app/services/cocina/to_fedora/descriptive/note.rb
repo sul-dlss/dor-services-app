@@ -14,7 +14,7 @@ module Cocina
 
         # notes with a displayLabel set to any of these values will produce an `abstract` XML node
         def self.display_label_to_abstract_types
-          ['Content advice', 'Subject', 'Abstract', 'Review', 'Summary', 'Scope and content']
+          ['Content advice', 'Subject', 'Abstract', 'Review', 'Summary', 'Scope and content', 'Scope and Content', 'Content Advice']
         end
 
         def initialize(xml:, notes:, id_generator:)

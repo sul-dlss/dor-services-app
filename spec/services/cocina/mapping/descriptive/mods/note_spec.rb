@@ -47,7 +47,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
   describe 'Note with type associated with abstract' do
     # abstract type values: abstract, scope and content, summary
     # these types round trip to abstract regardless of displayLabel value
-    xit 'updated spec' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <note type="summary">This is a note.</note>
@@ -56,7 +56,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
 
       let(:roundtrip_mods) do
         <<~XML
-          <abstract type="summary">This is a note.</abstract>#{' '}
+          <abstract type="summary">This is a note.</abstract>
         XML
       end
 
@@ -77,7 +77,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
     # abstract type values: abstract, scope and content, summary
     # these types round trip to abstract regardless of displayLabel value
     # TODO: these specific values should be downcased (but not note type in general)
-    xit 'unimplemented spec' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <note type="Summary">This is a note.</note>
@@ -128,7 +128,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
     # abstract display label values:
     # Abstract, Content advice, Review, Scope and content, Subject, Summary
     # these display labels round trip to to abstract regardless of type value
-    xit 'unimplemented spec' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <note displayLabel="Scope and content">This is a scope and content note.</note>
@@ -137,7 +137,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
 
       let(:roundtrip_mods) do
         <<~XML
-          <abstract displayLabel="Scope and content">This is a scope and content note.</note>
+          <abstract displayLabel="Scope and content">This is a scope and content note.</abstract>
         XML
       end
 
@@ -159,7 +159,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
     # Abstract, Content advice, Review, Scope and content, Subject, Summary
     # TODO: these specific values should be downcased after the first letter (but not note displayLabel in general)
     # these display labels round trip to to abstract regardless of type value
-    xit 'unimplemented spec' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <note displayLabel="Scope and Content">This is a scope and content note.</note>
@@ -168,7 +168,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
 
       let(:roundtrip_mods) do
         <<~XML
-          <abstract displayLabel="Scope and content">This is a scope and content note.</note>
+          <abstract displayLabel="Scope and content">This is a scope and content note.</abstract>
         XML
       end
 

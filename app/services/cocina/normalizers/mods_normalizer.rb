@@ -278,8 +278,10 @@ module Cocina
       end
 
       def normalize_notes
-        ng_xml.root.xpath('//mods:note[@type="summary"] | //mods:note[@displayLabel="Scope and content"]', mods: MODS_NS).each do |note_node|
+        selector = '//mods:note[@type="summary"] | //mods:note[@type="Summary"] | //mods:note[@displayLabel="Scope and content"] | //mods:note[@displayLabel="Scope and Content"]'
+        ng_xml.root.xpath(selector, mods: MODS_NS).each do |note_node|
           note_node.name = 'abstract'
+          note_node['displayLabel'] = note_node['displayLabel'].capitalize if note_node['displayLabel']
           note_node.delete('type')
         end
       end

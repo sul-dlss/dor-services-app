@@ -99,7 +99,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Abstract with type "Summary"' do
-    xit 'failing test' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract type="Summary">This is a summary.</abstract>
