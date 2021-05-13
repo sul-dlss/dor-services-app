@@ -60,14 +60,12 @@ RSpec.describe 'MODS note <--> cocina mappings' do
 
       let(:cocina) do
         {
-          {
-            note: [
-              {
-                value: 'This is an abstract',
-                type: 'abstract'
-              }
-            ]
-          }
+          note: [
+            {
+              value: 'This is an abstract',
+              type: 'abstract'
+            }
+          ]
         }
       end
     end

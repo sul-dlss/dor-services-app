@@ -278,17 +278,19 @@ module Cocina
       end
 
       def normalize_notes
-        selector = '//mods:note[@type="summary"] | //mods:note[@type="Summary"] | //mods:note[@displayLabel="Scope and content"] | //mods:note[@displayLabel="Scope and Content"]'
-        ng_xml.root.xpath(selector, mods: MODS_NS).each do |note_node|
-          note_node.name = 'abstract'
-          note_node['displayLabel'] = note_node['displayLabel'].capitalize if note_node['displayLabel']
-          note_node.delete('type')
+        ng_xml.root.xpath('//mods:note', mods: MODS_NS).each do |note_node|
+          if note_node['type']&.downcase == 'summary' || ToFedora::Descriptive::Note.display_label_to_abstract_types.include?(note_node['displayLabel'])
+            note_node.delete('type')
+            note_node.name = 'abstract'
+          end
+          note_node['displayLabel'] = note_node['displayLabel'].capitalize if ToFedora::Descriptive::Note.display_label_to_abstract_types.include? note_node['displayLabel']
         end
       end
 
       def normalize_abstracts
-        ng_xml.root.xpath('mods:abstract[@type!=""]', mods: MODS_NS).each do |abstract_node|
-          abstract_node['type'] = abstract_node['type'].downcase
+        ng_xml.root.xpath('mods:abstract', mods: MODS_NS).each do |abstract_node|
+          abstract_node['type'] = abstract_node['type'].downcase if ToFedora::Descriptive::Note.note_type_to_abstract_type.include? abstract_node['type']&.downcase
+          abstract_node['displayLabel'] = abstract_node['displayLabel'].capitalize if ToFedora::Descriptive::Note.display_label_to_abstract_types.include? abstract_node['displayLabel']
           abstract_node.delete('type') if abstract_node['type'] == 'abstract'
         end
       end
