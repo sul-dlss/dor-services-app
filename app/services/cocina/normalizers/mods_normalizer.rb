@@ -103,7 +103,7 @@ module Cocina
       end
 
       def normalize_purl
-        normalize_purl_for(ng_xml.root, purl: Cocina::FromFedora::Descriptive::Purl.purl_for(druid))
+        normalize_purl_for(ng_xml.root, purl: Purl.for(druid: druid))
         ng_xml.root.xpath('mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_purl_for(related_item_node) }
       end
 

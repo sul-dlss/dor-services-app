@@ -39,12 +39,6 @@ module Cocina
           end
           notes
         end
-
-        def self.purl_for(druid)
-          return nil if druid.nil?
-
-          "http://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-        end
       end
     end
   end

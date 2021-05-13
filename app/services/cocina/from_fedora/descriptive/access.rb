@@ -115,7 +115,7 @@ module Cocina
         end
 
         def primary_purl_node
-          @primary_purl_node ||= Purl.primary_purl_node(resource_element, purl)
+          @primary_purl_node ||= Descriptive::Purl.primary_purl_node(resource_element, purl)
         end
 
         def url_nodes
