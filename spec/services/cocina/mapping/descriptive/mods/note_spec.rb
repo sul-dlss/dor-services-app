@@ -132,7 +132,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
 
   describe 'Note with type not associated with abstract, capitalization retained' do
     # druid:rn086hc5967
-    xit 'unimplemented spec' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <note type="Qualifications and Caveats">Attribution of Caracciolo as creator is probable but uncertain.</note>
@@ -235,7 +235,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
   end
 
   describe 'Note with display label not associated with abstract, capitalization retained' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <note displayLabel="Qualifications and Caveats">Attribution of Caracciolo as creator is probable but uncertain.</note>

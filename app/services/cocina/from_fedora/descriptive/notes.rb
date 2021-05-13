@@ -43,7 +43,7 @@ module Cocina
           {
             value: node.content.presence,
             displayLabel: display_label(node),
-            type: node['type']&.downcase,
+            type: note_type(node),
             valueAt: node['xlink:href']
           }.tap do |attributes|
             value_language = LanguageScript.build(node: node)
@@ -59,8 +59,14 @@ module Cocina
           end.compact
         end
 
+        def note_type(node)
+          return node['type'].downcase if ToFedora::Descriptive::Note.note_type_to_abstract_type.include?(node['type']&.downcase)
+
+          node['type']
+        end
+
         def display_label(node)
-          return node[:displayLabel].capitalize if ToFedora::Descriptive::Note.display_label_to_abstract_types.include? node[:displayLabel]
+          return node[:displayLabel].capitalize if ToFedora::Descriptive::Note.display_label_to_abstract_type.include? node[:displayLabel]
 
           node[:displayLabel].presence
         end
@@ -68,7 +74,7 @@ module Cocina
         def abstract_type(node, parallel: false)
           if node['type'].present?
             { type: node['type'].downcase }
-          elsif ToFedora::Descriptive::Note.display_label_to_abstract_types.exclude?(node['displayLabel']) && !parallel
+          elsif ToFedora::Descriptive::Note.display_label_to_abstract_type.exclude?(node['displayLabel']) && !parallel
             { type: 'abstract' }
           else
             {}

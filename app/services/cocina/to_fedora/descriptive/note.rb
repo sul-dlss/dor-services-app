@@ -13,7 +13,7 @@ module Cocina
         end
 
         # notes with a displayLabel set to any of these values will produce an `abstract` XML node
-        def self.display_label_to_abstract_types
+        def self.display_label_to_abstract_type
           ['Content advice', 'Subject', 'Abstract', 'Review', 'Summary', 'Scope and content', 'Scope and Content', 'Content Advice']
         end
 
@@ -45,7 +45,7 @@ module Cocina
         attr_reader :xml, :notes, :id_generator
 
         def tag_name(note)
-          return :abstract if self.class.display_label_to_abstract_types.include? note.displayLabel
+          return :abstract if self.class.display_label_to_abstract_type.include? note.displayLabel
           return :abstract if self.class.note_type_to_abstract_type.include? note.type&.downcase
 
           case note.type&.downcase

@@ -351,7 +351,7 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   end
 
   describe 'Abstract with other displayLabel, capitalization retained' do
-    xit 'unimplemented spec' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <abstract displayLabel="Summary from Barnes Catalogue of Works">A summary.</abstract>
