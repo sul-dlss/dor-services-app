@@ -252,6 +252,34 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
     end
   end
 
+  describe 'Abstract with scope and content displayLabel and no type, nonstandard capitalization' do
+    # normalize this displayLabel to be lowercase after first letter
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <abstract displayLabel="Scope and Content">Scope and content</abstract>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <abstract displayLabel="Scope and content">Scope and content</abstract>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'Scope and content',
+              displayLabel: 'Scope and content'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Abstract with displayLabel "Abstract" and no type' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
@@ -276,6 +304,34 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
   describe 'Abstract with displayLabel "Content advice" and no type' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
+        <<~XML
+          <abstract displayLabel="Content advice">Content advice</abstract>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'Content advice',
+              displayLabel: 'Content advice'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Abstract with content advice displayLabel and no type, nonstandard capitalization' do
+    # normalize this displayLabel to be lowercase after first letter
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <abstract displayLabel="Content Advice">Content advice</abstract>
+        XML
+      end
+
+      let(:roundtrip_mods) do
         <<~XML
           <abstract displayLabel="Content advice">Content advice</abstract>
         XML
