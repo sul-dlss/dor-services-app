@@ -10,17 +10,12 @@ module Cocina
 
       notes = description.note.map do |note|
         if note.type == 'preferred citation'
-          note.new(value: note.value.gsub(/:link:/, purl_link(pid)))
+          note.new(value: note.value.gsub(/:link:/, Purl.for(druid: pid)))
         else
           note
         end
       end
       description.new(note: notes)
     end
-
-    def self.purl_link(pid)
-      "#{Settings.release.purl_base_url}/#{pid.delete_prefix('druid:')}"
-    end
-    private_class_method :purl_link
   end
 end

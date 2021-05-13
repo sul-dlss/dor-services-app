@@ -32,7 +32,7 @@ module Cocina
         DescriptiveBuilder.build(title_builder: title_builder,
                                  resource_element: ng_xml.root,
                                  notifier: notifier,
-                                 purl: druid ? Purl.purl_for(druid) : nil)
+                                 purl: druid ? ::Purl.for(druid: druid) : nil)
       end
 
       private
@@ -73,10 +73,6 @@ module Cocina
       end
       # rubocop:enable Metrics/CyclomaticComplexity
       # rubocop:enable Metrics/PerceivedComplexity
-
-      def purl
-        "http://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-      end
 
       def check_version
         match = /MODS version (\d\.\d)/.match(ng_xml.root.at('//mods:recordInfo/mods:recordOrigin', mods: DESC_METADATA_NS)&.content)

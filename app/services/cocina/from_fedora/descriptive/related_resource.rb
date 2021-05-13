@@ -83,7 +83,7 @@ module Cocina
         end
 
         def related_purls
-          primary_purl_node = Purl.primary_purl_node(resource_element, purl)
+          primary_purl_node = Descriptive::Purl.primary_purl_node(resource_element, purl)
           purl_nodes = resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS).select { |url_node| Purl.purl?(url_node) && url_node != primary_purl_node }
           purl_nodes.map do |purl_node|
             {
