@@ -156,9 +156,9 @@ RSpec.describe Cocina::Mapper do
         item.descMetadata.abstract = 'de Kooning'
       end
 
-      it 'populates note of type summary in cocina model' do
+      it 'populates note of type abstract in cocina model' do
         expect(cocina_model.description.note.first.value).to eq('de Kooning')
-        expect(cocina_model.description.note.first.type).to eq('summary')
+        expect(cocina_model.description.note.first.type).to eq('abstract')
       end
     end
 

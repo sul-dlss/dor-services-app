@@ -770,28 +770,82 @@ RSpec.describe Cocina::Normalizers::ModsNormalizer do
       XML
     end
 
-    it 'removes attribute' do
+    it 'coverts to abstract and leaves type attribute' do
       expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
-          <abstract displayLabel="Summary">This is a note.</abstract>
+          <abstract type="summary" displayLabel="Summary">This is a note.</abstract>
         </mods>
       XML
     end
   end
 
-  context 'when normalizing abstract summary' do
+  context 'when normalizing abstract of type abstract' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <abstract type="abstract">This is a summary.</abstract>
+        </mods>
+      XML
+    end
+
+    it 'removes type attribute' do
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <abstract>This is a summary.</abstract>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing abstracts with upper cased types' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <abstract type="Summary">This is a summary.</abstract>
+        </mods>
+      XML
+    end
+
+    it 'lowercases the abstract type' do
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <abstract type="summary">This is a summary.</abstract>
         </mods>
       XML
     end
+  end
 
-    it 'removes attribute' do
+  context 'when normalizing abstracts with upper cased displayLabels' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <abstract displayLabel="Scope and Content">This is a summary.</abstract>
+        </mods>
+      XML
+    end
+
+    it 'capitalizes the first characeter of the display label' do
       expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
-          <abstract>This is a summary.</abstract>
+          <abstract displayLabel="Scope and content">This is a summary.</abstract>
+        </mods>
+      XML
+    end
+  end
+
+  context 'when normalizing abstracts with non upper cased displayLabels' do
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <abstract displayLabel="scope and content">This is a summary.</abstract>
+        </mods>
+      XML
+    end
+
+    it 'leaves the display label alone' do
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <abstract displayLabel="scope and content">This is a summary.</abstract>
         </mods>
       XML
     end

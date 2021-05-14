@@ -12,6 +12,16 @@ module Cocina
           new(xml: xml, notes: notes, id_generator: id_generator).write
         end
 
+        # notes with a displayLabel set to any of these values will produce an `abstract` XML node
+        def self.display_label_to_abstract_type
+          ['Content advice', 'Subject', 'Abstract', 'Review', 'Summary', 'Scope and content', 'Scope and Content', 'Content Advice']
+        end
+
+        # notes with these types will produce an `abstract` XML node
+        def self.note_type_to_abstract_type
+          ['summary', 'abstract', 'scope and content']
+        end
+
         def initialize(xml:, notes:, id_generator:)
           @xml = xml
           @notes = notes
@@ -34,10 +44,11 @@ module Cocina
 
         attr_reader :xml, :notes, :id_generator
 
-        def tag_name(type)
-          case type
-          when 'summary'
-            :abstract
+        def tag_name(note)
+          return :abstract if self.class.display_label_to_abstract_type.include? note.displayLabel
+          return :abstract if self.class.note_type_to_abstract_type.include? note.type&.downcase
+
+          case note.type&.downcase
           when 'table of contents'
             :tableOfContents
           when 'target audience'
@@ -48,7 +59,7 @@ module Cocina
         end
 
         def tag(note, tag_name, attributes)
-          attributes[:type] = note.type if note.type && [:abstract, :tableOfContents, :targetAudience].exclude?(tag_name)
+          attributes[:type] = note.type if note.type && note.type != 'abstract' && [:tableOfContents, :targetAudience].exclude?(tag_name)
           value = if note.structuredValue
                     note.structuredValue.map(&:value).join(' -- ')
                   else
@@ -58,7 +69,7 @@ module Cocina
         end
 
         def write_basic(note)
-          tag(note, tag_name(note.type), note_attributes(note))
+          tag(note, tag_name(note), note_attributes(note))
         end
 
         def write_parallel(note)
@@ -66,7 +77,7 @@ module Cocina
           note.parallelValue.each do |parallel_note|
             attributes = { altRepGroup: alt_rep_group }.merge(note_attributes(parallel_note))
 
-            tag(parallel_note, tag_name(note.type), attributes)
+            tag(parallel_note, tag_name(note), attributes)
           end
         end
 

@@ -141,7 +141,7 @@ RSpec.describe 'Create object' do
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "description":{
               "title":[{"value":"#{title}"}],
-              "note":[{"value":"coll abstract","type":"summary"}],
+              "note":[{"value":"coll abstract","type":"abstract"}],
                                        "purl": "http://purl.stanford.edu/gg777gg7777",
                                        "access": {
                                            "digitalRepository": [
@@ -162,7 +162,7 @@ RSpec.describe 'Create object' do
                                        },
                                        description: {
                                          title: [{ value: title }],
-                                         note: [{ value: 'coll abstract', type: 'summary' }],
+                                         note: [{ value: 'coll abstract', type: 'abstract' }],
                                          purl: 'http://purl.stanford.edu/gg777gg7777',
                                          access: {
                                            digitalRepository: [

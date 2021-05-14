@@ -44,6 +44,217 @@ RSpec.describe 'MODS note <--> cocina mappings' do
     end
   end
 
+  describe 'Note with type "abstract"' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note type="abstract">This is an abstract.</note>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <abstract>This is an abstract.</abstract>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'This is an abstract.',
+              type: 'abstract'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Note with other type associated with abstract' do
+    # other abstract type values: scope and content, summary
+    # these types round trip to abstract regardless of displayLabel value
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note type="summary">This is a note.</note>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <abstract type="summary">This is a note.</abstract>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'This is a note.',
+              type: 'summary'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Note with type associated with abstract, nonstandard capitalization' do
+    # abstract type values: abstract, scope and content, summary
+    # these types round trip to abstract regardless of displayLabel value
+    # TODO: these specific values should be downcased (but not note type in general)
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note type="Summary">This is a note.</note>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <abstract type="summary">This is a note.</abstract>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'This is a note.',
+              type: 'summary'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Note with type not associated with abstract, capitalization retained' do
+    # druid:rn086hc5967
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note type="Qualifications and Caveats">Attribution of Caracciolo as creator is probable but uncertain.</note>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'Attribution of Caracciolo as creator is probable but uncertain.',
+              type: 'Qualifications and Caveats'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Note with display label' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note displayLabel="Conservation note">This is a conservation note.</note>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'This is a conservation note.',
+              displayLabel: 'Conservation note'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Note with display label associated with abstract' do
+    # abstract display label values:
+    # Abstract, Content advice, Review, Scope and content, Subject, Summary
+    # these display labels round trip to to abstract regardless of type value
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note displayLabel="Scope and content">This is a scope and content note.</note>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <abstract displayLabel="Scope and content">This is a scope and content note.</abstract>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'This is a scope and content note.',
+              displayLabel: 'Scope and content'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Note with display label associated with abstract, nonstandard capitalization' do
+    # abstract display label values:
+    # Abstract, Content advice, Review, Scope and content, Subject, Summary
+    # TODO: these specific values should be downcased after the first letter (but not note displayLabel in general)
+    # these display labels round trip to to abstract regardless of type value
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note displayLabel="Scope and Content">This is a scope and content note.</note>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <abstract displayLabel="Scope and content">This is a scope and content note.</abstract>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'This is a scope and content note.',
+              displayLabel: 'Scope and content'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Note with display label not associated with abstract, capitalization retained' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note displayLabel="Qualifications and Caveats">Attribution of Caracciolo as creator is probable but uncertain.</note>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'Attribution of Caracciolo as creator is probable but uncertain.',
+              displayLabel: 'Qualifications and Caveats'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Multilingual note' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
@@ -84,6 +295,57 @@ RSpec.describe 'MODS note <--> cocina mappings' do
     end
   end
 
+  describe 'Multilingual note with type' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <note type="reproduction">Microfilm. 1 reel. (Chen Cheng colletion reel no. 14)</note>
+          <note type="statement of responsibility" altRepGroup="1" script="Latn">Zhong yang jun shi zheng zhi xue xiao bian.</note>
+          <note type="statement of responsibility" altRepGroup="1" script="Latn">中央軍事政治學校編.</note>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'Microfilm. 1 reel. (Chen Cheng colletion reel no. 14)',
+              type: 'reproduction'
+            },
+            {
+              parallelValue: [
+                {
+                  type: 'statement of responsibility',
+                  value: 'Zhong yang jun shi zheng zhi xue xiao bian.',
+                  valueLanguage: {
+                    valueScript: {
+                      code: 'Latn',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                },
+                {
+                  type: 'statement of responsibility',
+                  value: '中央軍事政治學校編.',
+                  valueLanguage: {
+                    valueScript: {
+                      code: 'Latn',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Link to external value only' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
@@ -97,55 +359,6 @@ RSpec.describe 'MODS note <--> cocina mappings' do
           note: [
             {
               valueAt: 'http://note.org/note'
-            }
-          ]
-        }
-      end
-    end
-  end
-
-  describe 'Note with display label' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <note displayLabel="Conservation note">This is a conservation note.</note>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          note: [
-            {
-              value: 'This is a conservation note.',
-              displayLabel: 'Conservation note'
-            }
-          ]
-        }
-      end
-    end
-  end
-
-  describe 'Note with type "summary"' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <note type="summary" displayLabel="Summary">This is a note.</note>
-        XML
-      end
-
-      let(:roundtrip_mods) do
-        <<~XML
-          <abstract displayLabel="Summary">This is a note.</abstract>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          note: [
-            {
-              value: 'This is a note.',
-              type: 'summary',
-              displayLabel: 'Summary'
             }
           ]
         }
@@ -325,7 +538,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
           note: [
             {
               value: 'This is a synopsis.',
-              type: 'summary'
+              type: 'abstract'
             }
           ]
         }

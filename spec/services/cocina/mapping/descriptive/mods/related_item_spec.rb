@@ -80,7 +80,7 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
               note: [
                 {
                   value: 'Additional data.',
-                  type: 'summary'
+                  type: 'abstract'
                 }
               ]
             }

@@ -28,22 +28,22 @@ module Cocina
         def abstracts
           all_abstract_nodes = resource_element.xpath('mods:abstract', mods: DESC_METADATA_NS).select { |node| note_present?(node) }
           altrepgroup_abstract_nodes, other_abstract_nodes = AltRepGroup.split(nodes: all_abstract_nodes)
-          other_abstract_nodes.map { |node| common_note_for(node).merge({ type: 'summary' }) } + \
+          other_abstract_nodes.map { |node| common_note_for(node).merge(abstract_type(node)) } + \
             altrepgroup_abstract_nodes.map { |parallel_nodes| parallel_abstract_for(parallel_nodes) }
         end
 
         def parallel_abstract_for(abstract_nodes)
           {
-            type: 'summary',
-            parallelValue: abstract_nodes.map { |node| common_note_for(node) }
+            type: 'abstract',
+            parallelValue: abstract_nodes.map { |node| common_note_for(node).merge(abstract_type(node, parallel: true)) }
           }
         end
 
         def common_note_for(node)
           {
             value: node.content.presence,
-            displayLabel: node[:displayLabel].presence,
-            type: node[:type],
+            displayLabel: display_label(node),
+            type: note_type(node),
             valueAt: node['xlink:href']
           }.tap do |attributes|
             value_language = LanguageScript.build(node: node)
@@ -57,6 +57,28 @@ module Cocina
               ]
             end
           end.compact
+        end
+
+        def note_type(node)
+          return node['type'].downcase if ToFedora::Descriptive::Note.note_type_to_abstract_type.include?(node['type']&.downcase)
+
+          node['type']
+        end
+
+        def display_label(node)
+          return node[:displayLabel].capitalize if ToFedora::Descriptive::Note.display_label_to_abstract_type.include? node[:displayLabel]
+
+          node[:displayLabel].presence
+        end
+
+        def abstract_type(node, parallel: false)
+          if node['type'].present?
+            { type: node['type'].downcase }
+          elsif ToFedora::Descriptive::Note.display_label_to_abstract_type.exclude?(node['displayLabel']) && !parallel
+            { type: 'abstract' }
+          else
+            {}
+          end
         end
 
         def notes

@@ -95,7 +95,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
           displayLabel: 'Original site'
         },
         {
-          type: 'summary',
+          type: 'abstract',
           value: 'Official site of opposition candidate Boulkheir, "the Mauritanian Obama," ' \
           'for the 2009 Mauritania presidential election. The election was held July 18, 2009. ' \
           'Boulkheir came in second place with 16.3 percent of the vote. Elected ' \
@@ -273,7 +273,6 @@ RSpec.describe Cocina::FromFedora::Descriptive do
     it 'has a url' do
       expect(descriptive[:note]).to match_array [
         {
-          type: 'summary',
           value: 'Blah blah blah, I believe in science!',
           displayLabel: 'Abstract'
         },
