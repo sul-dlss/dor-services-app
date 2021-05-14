@@ -140,14 +140,14 @@ module Cocina
       end
 
       def purl_nodes(base_node)
-        base_node.xpath('mods:location/mods:url', mods: MODS_NS).select { |url_node| Cocina::FromFedora::Descriptive::Purl.purl?(url_node) }
+        base_node.xpath('mods:location/mods:url', mods: MODS_NS).select { |url_node| ::Purl.purl?(url_node.text) }
       end
 
       def primary_url_node_for(base_node, purl)
         primary_purl_nodes, primary_url_nodes = base_node.xpath('mods:location/mods:url[@usage="primary display"]', mods: MODS_NS)
-                                                         .partition { |url_node| Cocina::FromFedora::Descriptive::Purl.purl?(url_node) }
+                                                         .partition { |url_node| ::Purl.purl?(url_node.text) }
         all_purl_nodes = base_node.xpath('mods:location/mods:url', mods: MODS_NS)
-                                  .select { |url_node| Cocina::FromFedora::Descriptive::Purl.purl?(url_node) }
+                                  .select { |url_node| ::Purl.purl?(url_node.text) }
 
         this_purl_node = purl ? all_purl_nodes.find { |purl_node| purl_node.content == purl } : nil
 

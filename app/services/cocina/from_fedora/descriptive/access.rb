@@ -107,7 +107,7 @@ module Cocina
         end
 
         def all_purl_nodes
-          @all_purl_nodes ||= all_url_nodes.select { |url_node| Purl.purl?(url_node) }
+          @all_purl_nodes ||= all_url_nodes.select { |url_node| ::Purl.purl?(url_node.text) }
         end
 
         def all_url_nodes
@@ -119,7 +119,7 @@ module Cocina
         end
 
         def url_nodes
-          @url_nodes ||= all_url_nodes.reject { |url_node| Purl.purl?(url_node) }
+          @url_nodes ||= all_url_nodes.reject { |url_node| ::Purl.purl?(url_node.text) }
         end
 
         def purl_note
