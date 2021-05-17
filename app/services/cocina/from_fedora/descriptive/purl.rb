@@ -5,14 +5,8 @@ module Cocina
     class Descriptive
       # Support for PURLs.
       class Purl
-        PURL_REGEX = %r{^https?://purl.stanford.edu/}.freeze
-
-        def self.purl?(node)
-          PURL_REGEX.match(node.text)
-        end
-
         def self.primary_purl_node(resource_element, purl)
-          purl_nodes = resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS).select { |url_node| purl?(url_node) }
+          purl_nodes = resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS).select { |url_node| ::Purl.purl?(url_node.text) }
 
           return purl_nodes.find { |purl_node| purl_node.content == purl } if purl
 
