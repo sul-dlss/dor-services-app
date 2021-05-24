@@ -337,7 +337,7 @@ GEM
       pry (~> 0.13.0)
     psych (3.3.2)
     public_suffix (4.0.6)
-    puma (4.3.8)
+    puma (5.3.2)
       nio4r (~> 2.0)
     racc (1.5.2)
     rack (2.2.3)
@@ -575,7 +575,7 @@ DEPENDENCIES
   preservation-client (>= 3.0)
   progressbar
   pry-byebug
-  puma (~> 4.3)
+  puma (~> 5.3)
   rack-console
   rails (~> 5.2.0)
   retries

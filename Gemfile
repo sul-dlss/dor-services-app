@@ -25,7 +25,7 @@ gem 'okcomputer'
 gem 'openapi_parser'
 gem 'pg'
 gem 'progressbar' # for the cleaner rake task
-gem 'puma', '~> 4.3' # app server
+gem 'puma', '~> 5.3' # app server
 gem 'rails', '~> 5.2.0'
 gem 'retries' # for ReleaseTags::PurlClient and Goobi
 gem 'ruby-cache', '~> 0.3.0'
