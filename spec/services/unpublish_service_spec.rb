@@ -3,8 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe UnpublishService do
-  let(:instance) { described_class.new }
-
   describe '#unpublish' do
     context 'with an object' do
       let(:druid) { 'druid:ab123cd4567' }
@@ -16,7 +14,7 @@ RSpec.describe UnpublishService do
       end
 
       it 'removes from purl' do
-        instance.unpublish(druid: druid)
+        described_class.unpublish(druid: druid)
         expect(WebMock).to have_requested(:delete, 'example.com/purl/purls/ab123cd4567')
       end
     end

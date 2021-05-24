@@ -2,7 +2,7 @@
 
 # Unpublishes Druid from PURL
 class UnpublishService
-  def unpublish(druid:)
+  def self.unpublish(druid:)
     raise 'You have not configured purl-fetcher (Settings.purl_services_url).' unless Settings.purl_services_url
 
     id = druid.gsub(/^druid:/, '')
