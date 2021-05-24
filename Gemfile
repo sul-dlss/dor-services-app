@@ -3,20 +3,6 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem 'rails', '~> 5.2.0'
-
-# Use Puma as the app server
-gem 'puma', '~> 3.12'
-
-group :development do
-  gem 'dor-services-client' # used by bin/validate-cocina-roundtrip
-  gem 'listen', '~> 3.0.5'
-  gem 'rubyzip', '>= 1.0.0'
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring'
-  gem 'spring-watcher-listen', '~> 2.0.0'
-end
-
 # Ruby general dependencies
 gem 'bunny', '~> 2.17' # Send messages to RabbitMQ
 gem 'committee' # validates Open API spec (OAS)
@@ -39,6 +25,8 @@ gem 'okcomputer'
 gem 'openapi_parser'
 gem 'pg'
 gem 'progressbar' # for the cleaner rake task
+gem 'puma', '~> 4.3' # app server
+gem 'rails', '~> 5.2.0'
 gem 'retries' # for ReleaseTags::PurlClient and Goobi
 gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq', '~> 6.0'
@@ -54,6 +42,15 @@ gem 'dor-workflow-client', '~> 3.17'
 gem 'marc'
 gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'
 gem 'preservation-client', '>= 3.0' # 3.x or greater is needed for token auth
+
+group :development do
+  gem 'dor-services-client' # used by bin/validate-cocina-roundtrip
+  gem 'listen', '~> 3.0.5'
+  gem 'rubyzip', '>= 1.0.0'
+  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
+  gem 'spring'
+  gem 'spring-watcher-listen', '~> 2.0.0'
+end
 
 group :test, :development do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
