@@ -9,6 +9,6 @@ class EventsController < ApplicationController
   end
 
   def index
-    @events = Event.where(druid: params[:object_id])
+    @events = Event.where(druid: params[:object_id]).order(created_at: :desc)
   end
 end
