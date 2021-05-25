@@ -111,8 +111,8 @@
             </machine>
           </access>
           <use>
-            <human type="creativecommons">Attribution Share Alike license</human>
-            <machine type="creativecommons">by-sa</machine>
+            <human type="creativeCommons">Attribution Share Alike license</human>
+            <machine type="creativeCommons">by-sa</machine>
           </use>
         </rightsMetadata>
       </foxml:xmlContent>
@@ -134,8 +134,8 @@
             </machine>
           </access>
           <use>
-            <human type="creativecommons">Attribution Share Alike license</human>
-            <machine type="creativecommons">by-sa</machine>
+            <human type="creativeCommons">Attribution Share Alike license</human>
+            <machine type="creativeCommons">by-sa</machine>
           </use>
         </rightsMetadata>
       </foxml:xmlContent>

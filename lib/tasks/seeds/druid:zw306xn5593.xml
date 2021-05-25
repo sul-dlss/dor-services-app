@@ -507,9 +507,9 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
             </machine>
           </access>
           <use>
-            <human type="creativecommons">Attribution Non-Commercial Share Alike
+            <human type="creativeCommons">Attribution Non-Commercial Share Alike
               license</human>
-            <machine type="creativecommons">by-nc-sa</machine>
+            <machine type="creativeCommons">by-nc-sa</machine>
           </use>
         </rightsMetadata>
 </foxml:xmlContent>
@@ -718,8 +718,8 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
     </machine>
   </access>
   <use>
-    <human type="creativecommons">Attribution Non-Commercial Share Alike license</human>
-    <machine type="creativecommons">by-nc-sa</machine>
+    <human type="creativeCommons">Attribution Non-Commercial Share Alike license</human>
+    <machine type="creativeCommons">by-nc-sa</machine>
   </use>
 </rightsMetadata>
 </foxml:xmlContent>
@@ -741,8 +741,8 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
     </machine>
   </access>
   <use>
-    <human type="creativecommons">Attribution Non-Commercial Share Alike license</human>
-    <machine type="creativecommons">by-nc-sa</machine>
+    <human type="creativeCommons">Attribution Non-Commercial Share Alike license</human>
+    <machine type="creativeCommons">by-nc-sa</machine>
   </use>
 </rightsMetadata>
 </foxml:xmlContent>
@@ -764,8 +764,8 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
     </machine>
   </access>
   <use>
-    <human type="creativecommons">Attribution Non-Commercial Share Alike license</human>
-    <machine type="creativecommons">by-nc-sa</machine>
+    <human type="creativeCommons">Attribution Non-Commercial Share Alike license</human>
+    <machine type="creativeCommons">by-nc-sa</machine>
   </use>
 </rightsMetadata>
 </foxml:xmlContent>
@@ -787,8 +787,8 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
     </machine>
   </access>
   <use>
-    <human type="creativecommons">Attribution Non-Commercial Share Alike license</human>
-    <machine type="creativecommons">by-nc-sa</machine>
+    <human type="creativeCommons">Attribution Non-Commercial Share Alike license</human>
+    <machine type="creativeCommons">by-nc-sa</machine>
   </use>
 </rightsMetadata>
 </foxml:xmlContent>
