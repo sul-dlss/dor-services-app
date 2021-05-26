@@ -223,7 +223,25 @@ RSpec.describe Publish::PublicDescMetadataService do
     it 'adds license accessCondtitions based on creativeCommons or openDataCommons statements' do
       expect(public_mods.xpath('//mods:accessCondition[@type="license"]').size).to eq 1
       expect(license_node.text).to match(/by-nc: Attribution-NonCommercial 3.0 Unported/)
+      expect(public_mods.root.namespaces).to include('xmlns:xlink')
       expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
+    end
+
+    context 'when source MODS does not have xlink namespace' do
+      let(:mods) do
+        <<~XML
+          <mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+            <mods:titleInfo>
+                <mods:title type="main">Slides, IA, Geodesic Domes [1 of 2]</mods:title>
+            </mods:titleInfo>
+          </mods:mods>
+        XML
+      end
+
+      it 'adds license accessCondtitions based on creativeCommons or openDataCommons statements' do
+        expect(public_mods.root.namespaces).to include('xmlns:xlink')
+        expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
+      end
     end
 
     context 'when a license node is present in rightsMetadata' do
