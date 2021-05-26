@@ -63,11 +63,17 @@ module Publish
       public_mods.root.add_namespace_definition 'xlink', 'http://www.w3.org/1999/xlink'
 
       last_element.add_next_sibling public_mods.create_element('accessCondition', license.description,
-                                                               type: 'license', 'xlink:href' => license_url)
+                                                               type: 'license', 'xlink:href' => license.uri)
     end
 
     def license
       @license ||= License.new(url: license_url)
+    rescue License::LegacyLicenseError
+      Honeybadger.notify("[DATA ERROR] #{license_url} is not a supported license")
+      if license_url.include?('creativecommons.org')
+        # Try to find a workable license:
+        @license = License.new(url: "#{license_url}legalcode")
+      end
     end
 
     def license?

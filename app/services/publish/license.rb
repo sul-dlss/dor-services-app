@@ -8,10 +8,16 @@ module Publish
   # See: https://github.com/sul-dlss/mods_display/blob/36e5bf7247fd7aa7892247af48033afaee2fd76b/lib/mods_display/fields/access_condition.rb#L79
   #
   class License
-    attr_reader :description
+    attr_reader :description, :uri
+
+    # Raised when the license provided is not valid
+    class LegacyLicenseError < StandardError; end
 
     def initialize(url:)
+      raise LegacyLicenseError unless LICENSES.key?(url)
+
       attrs = LICENSES.fetch(url)
+      @uri = url
       @description = attrs.fetch(:label)
     end
 

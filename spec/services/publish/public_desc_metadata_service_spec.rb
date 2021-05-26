@@ -261,6 +261,27 @@ RSpec.describe Publish::PublicDescMetadataService do
       end
     end
 
+    context 'when a license attribute (with a legacy URI) is present in rightsMetadata' do
+      before do
+        obj.rightsMetadata.content = <<~XML
+          <rightsMetadata>
+            <use>
+              <human type="creativeCommons">Attribution Non-Commercial, No Derivatives 3.0 Unported</human>
+              <machine type="creativeCommons" uri="https://creativecommons.org/licenses/by-nc-nd/3.0/">by-nc-nd</machine>
+              <human type="useAndReproduction">User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.</human>
+            </use>
+          </rightsMetadata>
+        XML
+        allow(Honeybadger).to receive(:notify)
+      end
+
+      it 'adds license accessConditions' do
+        expect(license_node.text).to eq 'CC by-nc-nd: Attribution-NonCommercial-No Derivative Works 3.0 Unported License'
+        expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] https://creativecommons.org/licenses/by-nc-nd/3.0/ is not a supported license')
+      end
+    end
+
     context 'when the machine node is odc-by' do
       before do
         obj.rightsMetadata.content = <<~XML
