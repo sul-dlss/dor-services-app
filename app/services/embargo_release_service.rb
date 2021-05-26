@@ -44,13 +44,15 @@ class EmbargoReleaseService
       Rails.logger.warn("Skipping #{druid} - object is already open")
       return
     end
-
     Rails.logger.info("Releasing embargo for #{druid}")
 
     VersionService.open(ei, event_factory: EventFactory)
     release_block.call(ei)
     ei.save!
     VersionService.close(ei, { description: 'embargo released', significance: 'admin' }, event_factory: EventFactory)
+
+    # Broadcast this action to a topic
+    Notifications::EmbargoLifted.publish(model: Cocina::Mapper.build(ei)) if Settings.rabbitmq.enabled
   rescue StandardError => e
     Rails.logger.error("!!! Unable to release embargo for: #{druid}\n#{e.inspect}\n#{e.backtrace.join("\n")}")
     Honeybadger.notify "Unable to release embargo for: #{druid}", backtrace: e.backtrace
