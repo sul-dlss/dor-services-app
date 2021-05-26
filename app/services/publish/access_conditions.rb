@@ -55,6 +55,13 @@ module Publish
     def add_license
       return unless license?
 
+      # Add the xlink namespace in case it doesn't exist.  Many items that were
+      # Registered via dor-services-app do not because this namespace was not
+      # configured here:
+      # https://github.com/sul-dlss/dor-services/blob/ef7cd8c8d787e4b9781e5d00282d1d112d0e1f4f/lib/dor/datastreams/desc_metadata_ds.rb#L9-L14
+      # We use this namespace when we add accessCondition
+      public_mods.root.add_namespace_definition 'xlink', 'http://www.w3.org/1999/xlink'
+
       last_element.add_next_sibling public_mods.create_element('accessCondition', license.description,
                                                                type: 'license', 'xlink:href' => license_url)
     end
