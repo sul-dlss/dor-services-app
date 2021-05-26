@@ -11,11 +11,12 @@ require 'diffy'
 require 'dor/services/client'
 require 'equivalent-xml'
 
-options = { random: false, druids: [], fast: false }
+options = { random: false, druids: [], fast: false, create: false }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-cocina-roundtrip [options]'
 
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
+  option_parser.on('-c', '--create', 'Run object create instead of object update.')
   option_parser.on('-r', '--random', 'Select random druids.')
   option_parser.on('-f', '--fast', 'Without content metadata.')
   option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
@@ -92,6 +93,8 @@ def norm_orig_datastream_ng_xml_for(dsid, orig_datastream_ng_xml, druid, label, 
     Cocina::Normalizers::ContentMetadataNormalizer.normalize(druid: druid, content_ng_xml: orig_datastream_ng_xml)
   when 'identityMetadata'
     Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: orig_datastream_ng_xml)
+  when 'embargoMetadata'
+    Cocina::Normalizers::EmbargoNormalizer.normalize(embargo_ng_xml: orig_datastream_ng_xml)
   else
     orig_datastream_ng_xml
   end
@@ -132,7 +135,11 @@ def diff_datatreams_for(druid, label, orig_datastreams, fedora_obj)
   diff_datastreams
 end
 
-def validate_druid(druid, loader, fast: false)
+# rubocop:disable Metrics/AbcSize
+# rubocop:disable Metrics/CyclomaticComplexity
+# rubocop:disable Metrics/MethodLength
+# rubocop:disable Metrics/PerceivedComplexity
+def validate_druid(druid, loader, fast: false, create: false)
   return :missing unless loader.cached?(druid)
 
   begin
@@ -144,7 +151,13 @@ def validate_druid(druid, loader, fast: false)
     return :unmapped
   end
 
-  fedora_obj.contentMetadata.content = "<contentMetadata type='#{fedora_obj.contentMetadata.contentType.first}' />" if fast && fedora_obj.datastreams.include?('contentMetadata')
+  if fast && fedora_obj.datastreams.include?('contentMetadata')
+    fedora_obj.contentMetadata.content = if create
+                                           "<contentMetadata type='#{fedora_obj.contentMetadata.contentType.first}' objectId='#{druid}'/>"
+                                         else
+                                           "<contentMetadata type='#{fedora_obj.contentMetadata.contentType.first}' />"
+                                         end
+  end
 
   orig_datastreams = {}
   FedoraCache::DATASTREAMS.each { |dsid| orig_datastreams[dsid] = fedora_obj.datastreams[dsid]&.content }
@@ -159,16 +172,28 @@ def validate_druid(druid, loader, fast: false)
 
   orig_cocina_hash = orig_cocina_obj.to_h
 
-  begin
-    roundtrip_cocina_obj = Cocina::ObjectUpdater.run(fedora_obj, orig_cocina_obj, trial: true, notifier: DataErrorNotifier.new)
-  rescue StandardError => e
-    write_error(druid, e)
-    return :update_error
+  if create
+    begin
+      roundtrip_fedora_obj, roundtrip_cocina_obj = Cocina::ObjectCreator.trial_create(orig_cocina_obj, notifier: DataErrorNotifier.new)
+    rescue StandardError => e
+      write_error(druid, e)
+      return :create_error
+    end
+    # RELS-EXT is not present in created Fedora object, so remove from orig_datastreams.
+    orig_datastreams.delete('RELS-EXT')
+  else
+    begin
+      roundtrip_cocina_obj = Cocina::ObjectUpdater.run(fedora_obj, orig_cocina_obj, trial: true, notifier: DataErrorNotifier.new)
+      roundtrip_fedora_obj = fedora_obj
+    rescue StandardError => e
+      write_error(druid, e)
+      return :update_error
+    end
   end
   roundtrip_cocina_hash = roundtrip_cocina_obj.to_h
 
   begin
-    diff_datastreams = diff_datatreams_for(druid, label, orig_datastreams, fedora_obj)
+    diff_datastreams = diff_datatreams_for(druid, label, orig_datastreams, roundtrip_fedora_obj)
   rescue StandardError => e
     write_error(druid, e)
     return :normalization_error
@@ -179,6 +204,10 @@ def validate_druid(druid, loader, fast: false)
   write_result(druid, orig_cocina_hash, roundtrip_cocina_hash, diff_datastreams)
   :different
 end
+# rubocop:enable Metrics/AbcSize
+# rubocop:enable Metrics/CyclomaticComplexity
+# rubocop:enable Metrics/MethodLength
+# rubocop:enable Metrics/PerceivedComplexity
 
 def normalize_external_identifiers(cocina_hash)
   # Remove file and fileSet externalIdentifiers, since usually regenerated.
@@ -209,9 +238,9 @@ else
 end
 
 results = Parallel.map(druids, progress: 'Testing') do |druid|
-  validate_druid(druid, loader, fast: options[:fast])
+  validate_druid(druid, loader, fast: options[:fast], create: options[:create])
 end
-counts = { different: 0, success: 0, mapping_error: 0, update_error: 0, normalization_error: 0, missing: 0, unmapped: 0, bad_cache: 0 }
+counts = { different: 0, success: 0, mapping_error: 0, update_error: 0, create_error: 0, normalization_error: 0, missing: 0, unmapped: 0, bad_cache: 0 }
 results.each { |result| counts[result] += 1 }
 
 denom = druids.size - counts[:missing] - counts[:unmapped] - counts[:bad_cache]
@@ -220,7 +249,11 @@ puts "Status (n=#{druids.size}; not using Missing for success/different/error st
 puts "  Success:   #{counts[:success]} (#{percentage(counts[:success], denom)}%)"
 puts "  Different: #{counts[:different]} (#{percentage(counts[:different], denom)}%)"
 puts "  Mapping error:     #{counts[:mapping_error]} (#{percentage(counts[:mapping_error], denom)}%)"
-puts "  Update error:     #{counts[:update_error]} (#{percentage(counts[:update_error], denom)}%)"
+if options[:create]
+  puts "  Create error:     #{counts[:create_error]} (#{percentage(counts[:create_error], denom)}%)"
+else
+  puts "  Update error:     #{counts[:update_error]} (#{percentage(counts[:update_error], denom)}%)"
+end
 puts "  Normalization error:     #{counts[:normalization_error]} (#{percentage(counts[:normalization_error], denom)}%)"
 puts "  Missing:     #{counts[:missing]} (#{(100 * counts[:missing].to_f / druids.size).round(3)}%)"
 puts "  Unmapped:     #{counts[:unmapped]} (#{(100 * counts[:unmapped].to_f / druids.size).round(3)}%)"
