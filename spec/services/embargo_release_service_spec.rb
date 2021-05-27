@@ -244,12 +244,21 @@ RSpec.describe EmbargoReleaseService do
       end
 
       context 'when it is openable' do
+        before do
+          allow(Notifications::EmbargoLifted).to receive(:publish)
+          allow(Settings.rabbitmq).to receive(:enabled).and_return(true)
+          allow(Cocina::Mapper).to receive(:build).and_return(model)
+        end
+
+        let(:model) { instance_double(Cocina::Models::DRO) }
+
         it 'is successful' do
           release_items
           expect(VersionService).to have_received(:can_open?).with(item)
           expect(VersionService).to have_received(:open).with(item, event_factory)
           expect(item).to have_received(:save!)
           expect(VersionService).to have_received(:close).with(item, close_params, event_factory)
+          expect(Notifications::EmbargoLifted).to have_received(:publish).with(model: model)
         end
       end
 
