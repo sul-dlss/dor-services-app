@@ -39,7 +39,7 @@ module Cocina
           # Is this a basic title or a title with parts
           return simple_value(title_info_element) if simple_title?(children)
 
-          structured_value(children, title_info_element['type'])
+          structured_value(children)
         end
 
         private
@@ -60,13 +60,13 @@ module Cocina
         def simple_value(node)
           value = node.xpath('./mods:title', mods: DESC_METADATA_NS).text
 
-          { value: clean_title(value, node['type'], node.name) }
+          { value: clean_title(value, node.name) }
         end
 
         # @param [Nokogiri::XML::NodeSet] child_nodes the children of the titleInfo
-        def structured_value(child_nodes, type)
+        def structured_value(child_nodes)
           values = child_nodes.map do |node|
-            { value: clean_title(node.text, type, node.name), type: Titles::TYPES[node.name] }
+            { value: clean_title(node.text, node.name), type: Titles::TYPES[node.name] }
           end
           {
             structuredValue: values,
@@ -74,13 +74,9 @@ module Cocina
           }.compact
         end
 
-        def clean_title(title, type, tag)
+        def clean_title(title, tag)
           if %w[title titleInfo].include?(tag)
-            if type == 'abbreviated'
-              title.delete_suffix(',')
-            else
-              title.delete_suffix(',').delete_suffix('.')
-            end
+            title.delete_suffix(',')
           elsif tag == 'nonSort'
             title.delete_suffix(' ')
           else
