@@ -19,6 +19,15 @@ RSpec.describe Cocina::FromFedora::Descriptive::ValueURI do
       end
     end
 
+    context 'with a blank uri' do
+      let(:uri) { '' }
+
+      it 'returns nil and does not warn' do
+        expect(described_class.sniff(uri, notifier)).to be_nil
+        expect(notifier).not_to have_received(:warn)
+      end
+    end
+
     context 'with a string uri that starts with supported prefix' do
       let(:uri) { 'http://foo.example.edu' }
 
