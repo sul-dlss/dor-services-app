@@ -90,14 +90,14 @@ RSpec.describe Cocina::Normalizers::Mods::TitleNormalizer do
       XML
     end
 
-    it 'removes trailing comma and period' do
+    it 'removes trailing comma' do
       expect(normalized_ng_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <titleInfo>
             <title>Syntactic Structures</title>
           </titleInfo>
           <titleInfo>
-            <title>Requiem for the American Dream</title>
+            <title>Requiem for the American Dream.</title>
           </titleInfo>
           <titleInfo type="abbreviated">
             <title>Refl. on Lang.</title>
