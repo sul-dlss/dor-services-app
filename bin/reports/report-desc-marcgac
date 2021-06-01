@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def bad_marcgac?(ng_xml)
+  bad_marcgac = []
+
+  # The target mods is subject/geographicCode with authority="marcgac" on either element.
+  ng_xml.root.xpath('//mods:subject/mods:geographicCode[@authority="marcgac"]', mods: MODS_NS).map do |geo_node|
+    code = code_for(geo_node)
+    bad_marcgac << code unless Marc::Vocab::GeographicArea.fetch(code, nil)
+  end
+  ng_xml.root.xpath('//mods:subject[@authority="marcgac"]/mods:geographicCode', mods: MODS_NS).map do |geo_node|
+    code = code_for(geo_node)
+    bad_marcgac << code unless Marc::Vocab::GeographicArea.fetch(code, nil)
+  end
+  bad_marcgac.present? ? bad_marcgac.join(', ') : nil
+end
+
+def code_for(geo_node)
+  # This matches the actual normalization in cocina mapping and indexing.
+  geo_node.text.sub(/-+$/, '').gsub(/[^\w-]/, '')
+end
+
+Report.new(name: 'desc-marcgac', dsid: 'descMetadata', report_func: method(:bad_marcgac?)).run
