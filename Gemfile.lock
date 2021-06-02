@@ -271,6 +271,7 @@ GEM
     marc (1.0.4)
       scrub_rb (>= 1.0.1, < 2)
       unf
+    marc-vocab (0.3.0)
     marcel (1.0.1)
     method_source (1.0.0)
     mime-types (3.3.1)
@@ -583,6 +584,7 @@ DEPENDENCIES
   listen (~> 3.0.5)
   lograge
   marc
+  marc-vocab
   moab-versioning (~> 4.0)
   okcomputer
   openapi_parser

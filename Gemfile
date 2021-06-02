@@ -46,6 +46,7 @@ gem 'preservation-client', '>= 3.0' # 3.x or greater is needed for token auth
 group :development do
   gem 'dor-services-client' # used by bin/validate-cocina-roundtrip
   gem 'listen', '~> 3.0.5'
+  gem 'marc-vocab' # used by bin/reports/report-desc-marcgac
   gem 'rubyzip', '>= 1.0.0'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
