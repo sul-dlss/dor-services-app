@@ -1418,6 +1418,7 @@ components:
       description: 'A barcode'
       oneOf:
         - $ref: '#/components/schemas/BusinessBarcode'
+        - $ref: '#/components/schemas/LaneMedicalBarcode'
         - $ref: '#/components/schemas/CatkeyBarcode'
         - $ref: '#/components/schemas/StandardBarcode'
     BusinessBarcode:
@@ -1425,6 +1426,11 @@ components:
       type: string
       pattern: '^2050[0-9]{7}$'
       example: 20503740296
+    LaneMedicalBarcode:
+      description: The barcode associated with a Lane Medical Library DRO object, prefixed with 245
+      type: string
+      pattern: '^245[0-9]{8}$'
+      example: 24503259768
     CatalogLink:
       type: object
       additionalProperties: false
