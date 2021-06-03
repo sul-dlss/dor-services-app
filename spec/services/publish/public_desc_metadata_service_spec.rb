@@ -5,7 +5,10 @@ require 'rails_helper'
 RSpec.describe Publish::PublicDescMetadataService do
   subject(:service) { described_class.new(obj) }
 
-  let(:obj) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
+  let(:pid) { 'druid:bc123df4567' }
+  let(:obj) { instantiate_fixture(pid, Dor::Item) }
+
+  before { allow(obj).to receive(:pid).and_return(pid) }
 
   describe '#ng_xml' do
     subject(:doc) { service.ng_xml }
@@ -278,7 +281,7 @@ RSpec.describe Publish::PublicDescMetadataService do
       it 'adds license accessConditions' do
         expect(license_node.text).to eq 'CC by-nc-nd: Attribution-NonCommercial-No Derivative Works 3.0 Unported License'
         expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] https://creativecommons.org/licenses/by-nc-nd/3.0/ is not a supported license')
+        expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] https://creativecommons.org/licenses/by-nc-nd/3.0/ is not a supported license in object #{pid}")
       end
     end
 
