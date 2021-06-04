@@ -281,7 +281,8 @@ RSpec.describe Publish::PublicDescMetadataService do
       it 'adds license accessConditions' do
         expect(license_node.text).to eq 'CC by-nc-nd: Attribution-NonCommercial-No Derivative Works 3.0 Unported License'
         expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
-        expect(Honeybadger).to have_received(:notify).with("[DATA ERROR] https://creativecommons.org/licenses/by-nc-nd/3.0/ is not a supported license in object #{pid}")
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] https://creativecommons.org/licenses/by-nc-nd/3.0/ is not a supported license',
+                                                           { context: { druid: 'druid:bc123df4567' } })
       end
     end
 
@@ -313,8 +314,9 @@ RSpec.describe Publish::PublicDescMetadataService do
         XML
       end
 
-      it 'does not add license accessConditions' do
+      it 'does not add license accessConditions and does not alert HB' do
         expect(license_node).to be_nil
+        expect(Honeybadger).not_to receive(:notify)
       end
     end
 

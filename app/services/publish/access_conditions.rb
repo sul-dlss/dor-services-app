@@ -68,9 +68,13 @@ module Publish
     end
 
     def license
+      # The "none" licnese URI is a valid value in SDR (for legacy ETDs), but we don't want to publish that to PURL.
+      return if license_url == Cocina::FromFedora::Access::License::NONE_LICENSE_URI
+
       @license ||= License.new(url: license_url)
     rescue License::LegacyLicenseError
-      Honeybadger.notify("[DATA ERROR] #{license_url} is not a supported license in object #{pid}")
+      Honeybadger.notify("[DATA ERROR] #{license_url} is not a supported license",
+                         context: { druid: pid })
       if license_url.include?('creativecommons.org')
         # Try to find a workable license:
         @license = License.new(url: "#{license_url}legalcode")
