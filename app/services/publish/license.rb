@@ -25,7 +25,7 @@ module Publish
       'https://www.gnu.org/licenses/agpl.txt' => {
         label: 'AGPL-3.0-only GNU Affero General Public License'
       },
-      'http://www.apache.org/licenses/LICENSE-2.0' => {
+      'https://www.apache.org/licenses/LICENSE-2.0' => {
         label: 'Apache-2.0'
       },
       'https://opensource.org/licenses/BSD-2-Clause' => {
@@ -73,7 +73,7 @@ module Publish
       'https://opensource.org/licenses/MIT' => {
         label: 'MIT License'
       },
-      'http://www.mozilla.org/MPL/2.0/' => {
+      'https://www.mozilla.org/MPL/2.0/' => {
         label: 'MPL-2.0 Mozilla Public License'
       },
       'https://opendatacommons.org/licenses/by/1-0/' => {
