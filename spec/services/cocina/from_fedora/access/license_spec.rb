@@ -48,7 +48,7 @@ RSpec.describe Cocina::FromFedora::Access::License do
     end
 
     it 'finds the license' do
-      expect(license).to eq 'http://opendatacommons.org/licenses/by/1.0/'
+      expect(license).to eq 'https://opendatacommons.org/licenses/by/1-0/'
     end
   end
 
@@ -63,7 +63,7 @@ RSpec.describe Cocina::FromFedora::Access::License do
     end
 
     it 'finds the license' do
-      expect(license).to eq 'https://creativecommons.org/licenses/by-sa/3.0/'
+      expect(license).to eq 'https://creativecommons.org/licenses/by-sa/3.0/legalcode'
     end
   end
 

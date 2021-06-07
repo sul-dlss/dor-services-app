@@ -149,7 +149,7 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
           <<~XML
             <rightsMetadata>
               <use>
-                <license>http://opendatacommons.org/licenses/by/1.0/</license>
+                <license>https://opendatacommons.org/licenses/by/1-0/</license>
               </use>
               <access type="discover">
                 <machine>
@@ -168,7 +168,7 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
         let(:cocina_access_props) do
           {
             access: 'dark',
-            license: 'http://opendatacommons.org/licenses/by/1.0/'
+            license: 'https://opendatacommons.org/licenses/by/1-0/'
           }
         end
       end
@@ -201,7 +201,7 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
           <<~XML
             <rightsMetadata>
               <use>
-                <license>https://creativecommons.org/licenses/by-nc-nd/3.0/</license>
+                <license>https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode</license>
               </use>
               <access type="discover">
                 <machine>
@@ -220,7 +220,7 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
         let(:cocina_access_props) do
           {
             access: 'world',
-            license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/'
+            license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
           }
         end
       end

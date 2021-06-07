@@ -58,7 +58,7 @@ RSpec.describe Cocina::FromFedora::DROAccess do
       end
 
       it 'builds the hash' do
-        expect(access).to eq(access: 'dark', download: 'none', license: 'http://opendatacommons.org/licenses/by/1.0/')
+        expect(access).to eq(access: 'dark', download: 'none', license: 'https://opendatacommons.org/licenses/by/1-0/')
       end
     end
 

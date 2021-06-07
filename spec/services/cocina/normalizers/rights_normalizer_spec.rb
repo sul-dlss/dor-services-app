@@ -39,7 +39,7 @@ RSpec.describe Cocina::Normalizers::RightsNormalizer do
         expect(normalized_original_ng_xml.root.xpath("//use/machine[@type='creativeCommons' and text()]").size).to eq(0)
         expect(normalized_original_ng_xml.root.xpath("//use/human[@type='creativeCommons' and text()]").size).to eq(0)
         expect(normalized_original_ng_xml.root.xpath('//use/license').size).to eq(1)
-        expect(normalized_original_ng_xml.root.xpath('//use/license').first.text).to eq('https://creativecommons.org/licenses/by-nc/3.0/')
+        expect(normalized_original_ng_xml.root.xpath('//use/license').first.text).to eq('https://creativecommons.org/licenses/by-nc/3.0/legalcode')
       end
 
       it 'leaves use and reproduction statement in all cases' do
@@ -74,7 +74,7 @@ RSpec.describe Cocina::Normalizers::RightsNormalizer do
         expect(normalized_original_ng_xml.root.xpath("//use/machine[@type='creativeCommons' and text()]").size).to eq(0)
         expect(normalized_original_ng_xml.root.xpath("//use/human[@type='creativeCommons' and text()]").size).to eq(0)
         expect(normalized_original_ng_xml.root.xpath('//use/license').size).to eq(1)
-        expect(normalized_original_ng_xml.root.xpath('//use/license').first.text).to eq('https://creativecommons.org/licenses/by-nc/3.0/')
+        expect(normalized_original_ng_xml.root.xpath('//use/license').first.text).to eq('https://creativecommons.org/licenses/by-nc/3.0/legalcode')
       end
     end
 

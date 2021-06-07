@@ -9,6 +9,21 @@ module Cocina
       class License
         # Only used in some legacy ETDs and not actually permitted per the Project Chimera docs.
         NONE_LICENSE_URI = 'http://cocina.sul.stanford.edu/licenses/none'
+        OPENDATA_URIS = {
+          'pddl' => 'https://opendatacommons.org/licenses/pddl/1-0/',
+          'odc-by' => 'https://opendatacommons.org/licenses/by/1-0/',
+          'odc-odbl' => 'https://opendatacommons.org/licenses/odbl/1-0/'
+        }.freeze
+
+        CREATIVECOMMONS_URIS = {
+          'by' => 'https://creativecommons.org/licenses/by/3.0/legalcode',
+          'by-sa' => 'https://creativecommons.org/licenses/by-sa/3.0/legalcode',
+          'by-nd' => 'https://creativecommons.org/licenses/by-nd/3.0/legalcode',
+          'by-nc' => 'https://creativecommons.org/licenses/by-nc/3.0/legalcode',
+          'by-nc-sa' => 'https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode',
+          'by-nc-nd' => 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode',
+          'pdm' => 'https://creativecommons.org/publicdomain/mark/1.0/'
+        }.freeze
 
         # @return [String] the URI of the license.
         def self.find(datastream)
@@ -22,9 +37,9 @@ module Cocina
           return uris.first if uris.present?
 
           if datastream.open_data_commons.first.present?
-            Dor::OpenDataLicenseService.property(datastream.open_data_commons.first).uri
+            OPENDATA_URIS.fetch(datastream.open_data_commons.first)
           elsif datastream.creative_commons.first.present?
-            Dor::CreativeCommonsLicenseService.property(datastream.creative_commons.first).uri
+            CREATIVECOMMONS_URIS.fetch(datastream.creative_commons.first)
           end
         end
         private_class_method :find_legacy_license

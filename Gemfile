@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 # Ruby general dependencies
+gem 'bootsnap', '>= 1.4.2', require: false
 gem 'bunny', '~> 2.17' # Send messages to RabbitMQ
 gem 'committee' # validates Open API spec (OAS)
 gem 'config'
@@ -35,7 +36,7 @@ gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
 
 # DLSS/domain-specific dependencies
-gem 'cocina-models', '~> 0.59.0'
+gem 'cocina-models', '~> 0.60.0'
 gem 'dor-rights-auth', '>= 1.5.0' # required for new CDL rights
 gem 'dor-services', '~> 9.6'
 gem 'dor-workflow-client', '~> 3.17'
@@ -44,7 +45,7 @@ gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'
 gem 'preservation-client', '>= 3.0' # 3.x or greater is needed for token auth
 
 group :development do
-  gem 'dor-services-client' # used by bin/validate-cocina-roundtrip
+  gem 'dor-services-client' # used by lib/fedora_cache.rb and lib/fedora_loader.rb
   gem 'listen', '~> 3.0.5'
   gem 'marc-vocab' # used by bin/reports/report-desc-marcgac
   gem 'rubyzip', '>= 1.0.0'
