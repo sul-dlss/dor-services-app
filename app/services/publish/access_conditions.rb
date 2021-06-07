@@ -5,14 +5,13 @@ module Publish
   # These are derived from the rightsMetadata and are consumed by the
   # Searchworks item view via the mods_display gem.
   class AccessConditions
-    def self.add(public_mods:, rights_md:, pid:)
-      new(public_mods: public_mods, rights_md: rights_md, pid: pid).add
+    def self.add(public_mods:, rights_md:)
+      new(public_mods: public_mods, rights_md: rights_md).add
     end
 
-    def initialize(public_mods:, rights_md:, pid:)
+    def initialize(public_mods:, rights_md:)
       @public_mods = public_mods
       @rights_md = rights_md
-      @pid = pid
     end
 
     def add
@@ -24,7 +23,7 @@ module Publish
 
     private
 
-    attr_reader :rights_md, :public_mods, :pid
+    attr_reader :rights_md, :public_mods
 
     def rights
       @rights ||= rights_md.ng_xml
@@ -73,8 +72,7 @@ module Publish
 
       @license ||= License.new(url: license_url)
     rescue License::LegacyLicenseError
-      Honeybadger.notify("[DATA ERROR] #{license_url} is not a supported license",
-                         context: { druid: pid })
+      Honeybadger.notify("[DATA ERROR] #{license_url} is not a supported license")
       if license_url.include?('creativecommons.org')
         # Try to find a workable license:
         @license = License.new(url: "#{license_url}legalcode")

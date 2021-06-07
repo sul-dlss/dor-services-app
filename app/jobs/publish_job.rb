@@ -13,6 +13,7 @@ class PublishJob < ApplicationJob
     workflow_process = workflow == 'releaseWF' ? 'release-publish' : 'publish'
     begin
       item = Dor.find(druid)
+      Honeybadger.context({ pid: druid }) # add the druid to any HB alerts having to do with publishing
 
       # Disabling validation until pre-assembly and WAS handle this correctly.
       # validator = validator_for?(item)

@@ -3,9 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe Publish::AccessConditions do
-  subject(:access) { described_class.new(public_mods: public_mods, rights_md: Dor::RightsMetadataDS.from_xml(rights_md), pid: pid) }
+  subject(:access) { described_class.new(public_mods: public_mods, rights_md: Dor::RightsMetadataDS.from_xml(rights_md)) }
 
-  let(:pid) { 'druid:bc123df4567' }
   let(:mods) do
     <<~XML
       <mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
