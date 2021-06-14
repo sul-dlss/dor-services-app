@@ -28,23 +28,23 @@ module Publish
     # https://github.com/sul-dlss/dor-services/blob/main/lib/dor/services/open_data_license_service.rb
     LICENSE_CODES = {
       Cocina::FromFedora::Access::License::NONE_LICENSE_URI => Resource.new('none', 'no Creative Commons (CC) license'), # Only used in some legacy ETDs.
-      'https://creativecommons.org/licenses/by/3.0/' => Resource.new('by', 'Attribution 3.0 Unported'),
-      'https://creativecommons.org/licenses/by-sa/3.0/' => Resource.new('by-sa', 'Attribution Share Alike 3.0 Unported'),
-      'https://creativecommons.org/licenses/by-nd/3.0/' => Resource.new('by-nd', 'Attribution No Derivatives 3.0 Unported'),
-      'https://creativecommons.org/licenses/by-nc/3.0/' => Resource.new('by-nc', 'Attribution Non-Commercial 3.0 Unported'),
-      'https://creativecommons.org/licenses/by-nc-sa/3.0/' => Resource.new('by-nc-sa', 'Attribution Non-Commercial Share Alike 3.0 Unported'),
-      'https://creativecommons.org/licenses/by-nc-nd/3.0/' => Resource.new('by-nc-nd', 'Attribution Non-Commercial, No Derivatives 3.0 Unported'),
-      'https://creativecommons.org/licenses/by/4.0/' => Resource.new('by', 'Attribution 4.0 International (CC BY 4.0)'),
-      'https://creativecommons.org/licenses/by-sa/4.0/' => Resource.new('by-sa', 'Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)'),
-      'https://creativecommons.org/licenses/by-nd/4.0/' => Resource.new('by-nd', 'Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)'),
-      'https://creativecommons.org/licenses/by-nc/4.0/' => Resource.new('by-nc', 'Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) '),
-      'https://creativecommons.org/licenses/by-nc-sa/4.0/' => Resource.new('by-nc-sa', 'Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)'),
-      'https://creativecommons.org/licenses/by-nc-nd/4.0/' => Resource.new('by-nc-nd', 'Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)'),
+      'https://creativecommons.org/licenses/by/3.0/legalcode' => Resource.new('by', 'Attribution 3.0 Unported'),
+      'https://creativecommons.org/licenses/by-sa/3.0/legalcode' => Resource.new('by-sa', 'Attribution Share Alike 3.0 Unported'),
+      'https://creativecommons.org/licenses/by-nd/3.0/legalcode' => Resource.new('by-nd', 'Attribution No Derivatives 3.0 Unported'),
+      'https://creativecommons.org/licenses/by-nc/3.0/legalcode' => Resource.new('by-nc', 'Attribution Non-Commercial 3.0 Unported'),
+      'https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode' => Resource.new('by-nc-sa', 'Attribution Non-Commercial Share Alike 3.0 Unported'),
+      'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode' => Resource.new('by-nc-nd', 'Attribution Non-Commercial, No Derivatives 3.0 Unported'),
+      'https://creativecommons.org/licenses/by/4.0/legalcode' => Resource.new('by', 'Attribution 4.0 International (CC BY 4.0)'),
+      'https://creativecommons.org/licenses/by-sa/4.0/legalcode' => Resource.new('by-sa', 'Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)'),
+      'https://creativecommons.org/licenses/by-nd/4.0/legalcode' => Resource.new('by-nd', 'Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)'),
+      'https://creativecommons.org/licenses/by-nc/4.0/legalcode' => Resource.new('by-nc', 'Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) '),
+      'https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode' => Resource.new('by-nc-sa', 'Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)'),
+      'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode' => Resource.new('by-nc-nd', 'Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)'),
       'https://creativecommons.org/publicdomain/mark/1.0/' => Resource.new('pdm', 'Public Domain Mark 1.0'),
-      'https://creativecommons.org/publicdomain/zero/1.0/' => Resource.new('cc0', 'No Rights Reserved'),
-      'http://opendatacommons.org/licenses/pddl/1.0/' => Resource.new('pddl', 'Open Data Commons Public Domain Dedication and License 1.0'),
-      'http://opendatacommons.org/licenses/by/1.0/' => Resource.new('odc-by', 'Open Data Commons Attribution License 1.0'),
-      'http://opendatacommons.org/licenses/odbl/1.0/' => Resource.new('odc-odbl', 'Open Data Commons Open Database License 1.0')
+      'https://creativecommons.org/publicdomain/zero/1.0/legalcode' => Resource.new('cc0', 'No Rights Reserved'),
+      'https://opendatacommons.org/licenses/pddl/1-0/' => Resource.new('pddl', 'Open Data Commons Public Domain Dedication and License 1.0'),
+      'https://opendatacommons.org/licenses/by/1-0/' => Resource.new('odc-by', 'Open Data Commons Attribution License 1.0'),
+      'https://opendatacommons.org/licenses/odbl/1-0/' => Resource.new('odc-odbl', 'Open Data Commons Open Database License 1.0')
     }.freeze
 
     def add_release_date

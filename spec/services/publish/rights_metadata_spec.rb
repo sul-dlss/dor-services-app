@@ -85,7 +85,7 @@ RSpec.describe Publish::RightsMetadata do
           <rightsMetadata>
             <use>
                <human type="openDataCommons">Open Data Commons Attribution License 1.0</human>
-               <machine type="openDataCommons" uri="http://opendatacommons.org/licenses/by/1.0/">odc-by</machine>
+               <machine type="openDataCommons" uri="https://opendatacommons.org/licenses/by/1-0/">odc-by</machine>
                <human type="useAndReproduction">Whatever makes you happy</human>
             </use>
           </rightsMetadata>
@@ -102,7 +102,7 @@ RSpec.describe Publish::RightsMetadata do
         <<~XML
           <rightsMetadata>
             <use>
-               <license>http://opendatacommons.org/licenses/by/1.0/</license>
+               <license>https://opendatacommons.org/licenses/by/1-0/</license>
                <human type="useAndReproduction">Whatever makes you happy</human>
             </use>
           </rightsMetadata>
@@ -113,9 +113,9 @@ RSpec.describe Publish::RightsMetadata do
         <<~XML
           <rightsMetadata>
             <use>
-               <license>http://opendatacommons.org/licenses/by/1.0/</license>
+               <license>https://opendatacommons.org/licenses/by/1-0/</license>
                <human type="openDataCommons">Open Data Commons Attribution License 1.0</human>
-               <machine type="openDataCommons" uri="http://opendatacommons.org/licenses/by/1.0/">odc-by</machine>
+               <machine type="openDataCommons" uri="https://opendatacommons.org/licenses/by/1-0/">odc-by</machine>
                <human type="useAndReproduction">Whatever makes you happy</human>
             </use>
           </rightsMetadata>
@@ -132,7 +132,7 @@ RSpec.describe Publish::RightsMetadata do
         <<~XML
           <rightsMetadata>
             <use>
-               <license>https://creativecommons.org/licenses/by-nd/4.0/</license>
+               <license>https://creativecommons.org/licenses/by-nd/4.0/legalcode</license>
                <human type="useAndReproduction">Whatever makes you happy</human>
             </use>
           </rightsMetadata>
@@ -143,9 +143,9 @@ RSpec.describe Publish::RightsMetadata do
         <<~XML
           <rightsMetadata>
             <use>
-               <license>https://creativecommons.org/licenses/by-nd/4.0/</license>
+               <license>https://creativecommons.org/licenses/by-nd/4.0/legalcode</license>
                <human type="creativeCommons">Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)</human>
-               <machine type="creativeCommons" uri="https://creativecommons.org/licenses/by-nd/4.0/">by-nd</machine>
+               <machine type="creativeCommons" uri="https://creativecommons.org/licenses/by-nd/4.0/legalcode">by-nd</machine>
                <human type="useAndReproduction">Whatever makes you happy</human>
             </use>
           </rightsMetadata>

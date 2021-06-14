@@ -48,7 +48,7 @@ RSpec.describe Cocina::ToFedora::CollectionAccess do
   #       the existing license, not merely setting it
   context 'with an existing (ODC) license of a different class than the new one (CC)' do
     let(:access) do
-      Cocina::Models::CollectionAccess.new(license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/')
+      Cocina::Models::CollectionAccess.new(license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode')
     end
 
     before do
@@ -67,7 +67,7 @@ RSpec.describe Cocina::ToFedora::CollectionAccess do
           </access>
           <use>
             <human type="useAndReproduction"/>
-            <license>http://opendatacommons.org/licenses/by/1.0/</license>
+            <license>https://opendatacommons.org/licenses/by/1-0/</license>
           </use>
           <copyright>
             <human/>
@@ -93,7 +93,7 @@ RSpec.describe Cocina::ToFedora::CollectionAccess do
           </access>
           <use>
             <human type="useAndReproduction"/>
-            <license>https://creativecommons.org/licenses/by-nc-nd/3.0/</license>
+            <license>https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode</license>
           </use>
           <copyright>
             <human/>

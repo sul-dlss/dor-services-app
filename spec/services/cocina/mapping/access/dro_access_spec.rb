@@ -291,7 +291,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
             </access>
             <use>
               <human type="useAndReproduction">blah blah</human>
-              <license>https://creativecommons.org/licenses/by-nc-nd/3.0/</license>
+              <license>https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode</license>
             </use>
             <copyright>
               <human>&#xA9;2021 Wingnut and Vinsky publishing</human>
@@ -306,7 +306,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           copyright: '©2021 Wingnut and Vinsky publishing',
           download: 'world',
           useAndReproductionStatement: 'blah blah',
-          license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/'
+          license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
         }
       end
 
@@ -406,7 +406,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
               </machine>
             </access>
             <use>
-              <license>https://creativecommons.org/licenses/by-nc-nd/3.0/</license>
+              <license>https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode</license>
             </use>
           </rightsMetadata>
         XML
@@ -416,7 +416,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
         {
           access: 'world',
           download: 'world',
-          license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/'
+          license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
         }
       end
 
@@ -686,7 +686,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           <<~XML
             <rightsMetadata>
               <use>
-                <license>http://opendatacommons.org/licenses/by/1.0/</license>
+                <license>https://opendatacommons.org/licenses/by/1-0/</license>
               </use>
               <access type="discover">
                 <machine>
@@ -706,7 +706,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           {
             access: 'dark',
             download: 'none',
-            license: 'http://opendatacommons.org/licenses/by/1.0/'
+            license: 'https://opendatacommons.org/licenses/by/1-0/'
           }
         end
 
@@ -746,7 +746,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           <<~XML
             <rightsMetadata>
               <use>
-                <license>https://creativecommons.org/licenses/by-nc-nd/3.0/</license>
+                <license>https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode</license>
               </use>
               <access type="discover">
                 <machine>
@@ -766,7 +766,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           {
             access: 'dark',
             download: 'none',
-            license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/'
+            license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
           }
         end
 
@@ -797,7 +797,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
               </access>
               <use>
                 <human type="creativeCommons">CC-BY SA 4.0</human>
-                <machine type="creativeCommons" uri="https://creativecommons.org/licenses/by-sa/4.0/">by-sa</machine>
+                <machine type="creativeCommons" uri="https://creativecommons.org/licenses/by-sa/4.0/legalcode">by-sa</machine>
                 <human type="useAndReproduction">we are all one</human>
               </use>
             </rightsMetadata>
@@ -818,7 +818,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
                 </machine>
               </access>
               <use>
-                <license>https://creativecommons.org/licenses/by-sa/4.0/</license>
+                <license>https://creativecommons.org/licenses/by-sa/4.0/legalcode</license>
                 <human type="useAndReproduction">we are all one</human>
               </use>
             </rightsMetadata>
@@ -830,7 +830,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
             access: 'world',
             download: 'world',
             useAndReproductionStatement: 'we are all one',
-            license: 'https://creativecommons.org/licenses/by-sa/4.0/'
+            license: 'https://creativecommons.org/licenses/by-sa/4.0/legalcode'
           }
         end
 
@@ -909,7 +909,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           <<~XML
             <rightsMetadata>
               <use>
-                <license>https://creativecommons.org/share-your-work/public-domain/cc0/</license>
+                <license>https://creativecommons.org/publicdomain/zero/1.0/legalcode</license>
               </use>
               <access type="discover">
                 <machine>
@@ -929,7 +929,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           <<~XML
             <rightsMetadata>
               <use>
-                <license>https://creativecommons.org/share-your-work/public-domain/cc0/</license>
+                <license>https://creativecommons.org/publicdomain/zero/1.0/legalcode</license>
               </use>
               <access type="discover">
                 <machine>
@@ -949,7 +949,7 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
           {
             access: 'dark',
             download: 'none',
-            license: 'https://creativecommons.org/share-your-work/public-domain/cc0/'
+            license: 'https://creativecommons.org/publicdomain/zero/1.0/legalcode'
           }
         end
 

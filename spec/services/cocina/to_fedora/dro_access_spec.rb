@@ -15,7 +15,7 @@ RSpec.describe Cocina::ToFedora::DROAccess do
     end
     let(:access) do
       Cocina::Models::DROAccess.new(
-        license: 'http://opendatacommons.org/licenses/by/1.0/',
+        license: 'https://opendatacommons.org/licenses/by/1-0/',
         copyright: 'New Copyright Statement',
         useAndReproductionStatement: 'New Use Statement'
       )
@@ -54,7 +54,7 @@ RSpec.describe Cocina::ToFedora::DROAccess do
           </access>
           <use>
             <human type="useAndReproduction">New Use Statement</human>
-            <license>http://opendatacommons.org/licenses/by/1.0/</license>
+            <license>https://opendatacommons.org/licenses/by/1-0/</license>
           </use>
           <copyright>
             <human>New Copyright Statement</human>

@@ -94,7 +94,7 @@ RSpec.describe Publish::PublicXmlService do
               </machine>
             </access>
             <use>
-              <license>https://creativecommons.org/licenses/by-nc/4.0/</license>
+              <license>https://creativecommons.org/licenses/by-nc/4.0/legalcode</license>
             </use>
           </rightsMetadata>
         XML
@@ -102,7 +102,7 @@ RSpec.describe Publish::PublicXmlService do
 
       it 'has the license' do
         expect(ng_xml.at_xpath('/publicObject/rightsMetadata/use/machine[@type="creativeCommons"]').text).to eq 'by-nc'
-        expect(ng_xml.at_xpath('/publicObject/rightsMetadata/use/license').text).to eq 'https://creativecommons.org/licenses/by-nc/4.0/'
+        expect(ng_xml.at_xpath('/publicObject/rightsMetadata/use/license').text).to eq 'https://creativecommons.org/licenses/by-nc/4.0/legalcode'
       end
     end
 
