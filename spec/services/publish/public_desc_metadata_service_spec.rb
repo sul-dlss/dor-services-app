@@ -131,7 +131,7 @@ RSpec.describe Publish::PublicDescMetadataService do
         end
         expect(doc.xpath('//mods:accessCondition[@type="useAndReproduction"]').text).to match(/yada/)
         expect(doc.xpath('//mods:accessCondition[@type="copyright"]').text).to match(/Property rights reside with/)
-        expect(doc.xpath('//mods:accessCondition[@type="license"]').text).to eq 'CC by-nc: Attribution-NonCommercial 3.0 Unported License'
+        expect(doc.xpath('//mods:accessCondition[@type="license"]').text).to eq 'This work is licensed under a Creative Commons Attribution Non Commercial 3.0 Unported license (CC BY-NC).'
       end
     end
 
@@ -160,7 +160,7 @@ RSpec.describe Publish::PublicDescMetadataService do
         end
         expect(doc.xpath('//xmlns:accessCondition[@type="useAndReproduction"]').text).to match(/yada/)
         expect(doc.xpath('//xmlns:accessCondition[@type="copyright"]').text).to match(/Property rights reside with/)
-        expect(doc.xpath('//xmlns:accessCondition[@type="license"]').text).to eq 'CC by-nc: Attribution-NonCommercial 3.0 Unported License'
+        expect(doc.xpath('//xmlns:accessCondition[@type="license"]').text).to eq 'This work is licensed under a Creative Commons Attribution Non Commercial 3.0 Unported license (CC BY-NC).'
       end
     end
   end
@@ -222,7 +222,7 @@ RSpec.describe Publish::PublicDescMetadataService do
 
     it 'adds license accessCondtitions based on creativeCommons or openDataCommons statements' do
       expect(public_mods.xpath('//mods:accessCondition[@type="license"]').size).to eq 1
-      expect(license_node.text).to match(/by-nc: Attribution-NonCommercial 3.0 Unported/)
+      expect(license_node.text).to eq 'This work is licensed under a Creative Commons Attribution Non Commercial 3.0 Unported license (CC BY-NC).'
       expect(public_mods.root.namespaces).to include('xmlns:xlink')
       expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
     end
@@ -256,7 +256,7 @@ RSpec.describe Publish::PublicDescMetadataService do
       end
 
       it 'adds license accessConditions' do
-        expect(license_node.text).to eq 'CC BY-ND: Attribution-No Derivatives International'
+        expect(license_node.text).to eq 'This work is licensed under a Creative Commons Attribution No Derivatives 4.0 International license (CC BY-ND).'
         expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nd/4.0/legalcode'
       end
     end
@@ -276,7 +276,7 @@ RSpec.describe Publish::PublicDescMetadataService do
       end
 
       it 'adds license accessConditions' do
-        expect(license_node.text).to eq 'CC by-nc-nd: Attribution-NonCommercial-No Derivative Works 3.0 Unported License'
+        expect(license_node.text).to eq 'This work is licensed under a Creative Commons Attribution Non Commercial No Derivatives 3.0 Unported license (CC BY-NC-ND).'
         expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
         expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] https://creativecommons.org/licenses/by-nc-nd/3.0/ is not a supported license')
       end
@@ -294,7 +294,7 @@ RSpec.describe Publish::PublicDescMetadataService do
       end
 
       it 'adds license accessConditions' do
-        expect(license_node.text).to eq 'ODC odc-by: ODC-By-1.0 Attribution License'
+        expect(license_node.text).to eq 'This work is licensed under an Open Data Commons Attribution License v1.0.'
         expect(license_node['xlink:href']).to eq 'https://opendatacommons.org/licenses/by/1-0/'
       end
     end
