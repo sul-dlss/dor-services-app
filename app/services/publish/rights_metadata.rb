@@ -34,12 +34,6 @@ module Publish
       'https://creativecommons.org/licenses/by-nc/3.0/legalcode' => Resource.new('by-nc', 'Attribution Non-Commercial 3.0 Unported'),
       'https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode' => Resource.new('by-nc-sa', 'Attribution Non-Commercial Share Alike 3.0 Unported'),
       'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode' => Resource.new('by-nc-nd', 'Attribution Non-Commercial, No Derivatives 3.0 Unported'),
-      'https://creativecommons.org/licenses/by/4.0/legalcode' => Resource.new('by', 'Attribution 4.0 International (CC BY 4.0)'),
-      'https://creativecommons.org/licenses/by-sa/4.0/legalcode' => Resource.new('by-sa', 'Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)'),
-      'https://creativecommons.org/licenses/by-nd/4.0/legalcode' => Resource.new('by-nd', 'Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)'),
-      'https://creativecommons.org/licenses/by-nc/4.0/legalcode' => Resource.new('by-nc', 'Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) '),
-      'https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode' => Resource.new('by-nc-sa', 'Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)'),
-      'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode' => Resource.new('by-nc-nd', 'Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)'),
       'https://creativecommons.org/publicdomain/mark/1.0/' => Resource.new('pdm', 'Public Domain Mark 1.0'),
       'https://creativecommons.org/publicdomain/zero/1.0/legalcode' => Resource.new('cc0', 'No Rights Reserved'),
       'https://opendatacommons.org/licenses/pddl/1-0/' => Resource.new('pddl', 'Open Data Commons Public Domain Dedication and License 1.0'),
@@ -66,7 +60,9 @@ module Publish
       when Cocina::FromFedora::Access::License::NONE_LICENSE_URI
         use_node.add_child("<machine type=\"creativeCommons\">#{license.code}</machine>")
         use_node.add_child("<human type=\"creativeCommons\">#{license.label}</human>")
-      when %r{://creativecommons.org/}
+      when %r{://creativecommons.org/.*3\.0}
+        byebug
+
         use_node.add_child("<machine type=\"creativeCommons\" uri=\"#{license_uri}\">#{license.code}</machine>")
         use_node.add_child("<human type=\"creativeCommons\">#{license.label}</human>")
       when %r{://opendatacommons.org/}

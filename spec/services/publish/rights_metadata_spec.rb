@@ -127,7 +127,37 @@ RSpec.describe Publish::RightsMetadata do
       end
     end
 
-    context 'when a creativecommons license node is present' do
+    context 'when a creativecommons license 3.0 node is present' do
+      let(:original) do
+        <<~XML
+          <rightsMetadata>
+            <use>
+               <license>https://creativecommons.org/licenses/by-nd/3.0/legalcode</license>
+               <human type="useAndReproduction">Whatever makes you happy</human>
+            </use>
+          </rightsMetadata>
+        XML
+      end
+
+      let(:expected) do
+        <<~XML
+          <rightsMetadata>
+            <use>
+               <license>https://creativecommons.org/licenses/by-nd/3.0/legalcode</license>
+               <human type="creativeCommons">Attribution No Derivatives 3.0 Unported</human>
+               <machine type="creativeCommons" uri="https://creativecommons.org/licenses/by-nd/3.0/legalcode">by-nd</machine>
+               <human type="useAndReproduction">Whatever makes you happy</human>
+            </use>
+          </rightsMetadata>
+        XML
+      end
+
+      it 'adds the human and machine nodes' do
+        expect(result).to be_equivalent_to(expected)
+      end
+    end
+
+    context 'when a creativecommons license 4.0 node is present' do
       let(:original) do
         <<~XML
           <rightsMetadata>
@@ -139,21 +169,8 @@ RSpec.describe Publish::RightsMetadata do
         XML
       end
 
-      let(:expected) do
-        <<~XML
-          <rightsMetadata>
-            <use>
-               <license>https://creativecommons.org/licenses/by-nd/4.0/legalcode</license>
-               <human type="creativeCommons">Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)</human>
-               <machine type="creativeCommons" uri="https://creativecommons.org/licenses/by-nd/4.0/legalcode">by-nd</machine>
-               <human type="useAndReproduction">Whatever makes you happy</human>
-            </use>
-          </rightsMetadata>
-        XML
-      end
-
-      it 'adds the human and machine nodes' do
-        expect(result).to be_equivalent_to(expected)
+      it 'returns the original value' do
+        expect(result).to be_equivalent_to(original)
       end
     end
 
