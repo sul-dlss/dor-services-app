@@ -16,13 +16,18 @@ class WorkspacesController < ApplicationController
 
   def destroy
     druid = params[:object_id]
-    CleanupService.cleanup_by_druid druid
 
+    result = BackgroundJobResult.create
     EventFactory.create(druid: druid,
-                        event_type: 'cleanup-workspace',
-                        data: { status: 'success' })
+      event_type: 'cleanup-workspace received',
+      data: { background_job_result_id: result.id })
 
-    head :no_content
+    queue = params['lane-id'] == 'low' ? :low : :default
+#    CleanupJob.set(queue: queue).perform_later(druid: druid, background_job_result: result)
+#    CleanupService.cleanup_by_druid druid
+
+    head :created, location: result
+
   rescue Errno::ENOENT, Errno::ENOTEMPTY => e
     EventFactory.create(druid: druid, event_type: 'cleanup-workspace',
                         data: { status: 'failure', message: e.message, backtrace: e.backtrace })
