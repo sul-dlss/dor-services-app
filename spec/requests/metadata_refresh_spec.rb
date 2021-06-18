@@ -86,11 +86,12 @@ RSpec.describe 'Refresh metadata' do
         stub_request(:get, format(marc_url, catkey: '666')).to_return(status: 404)
       end
 
-      it 'returns a 500 error' do
+      it 'returns a mk420bs7601 error' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.status).to eq(500)
-        expect(response.body).to eq('Record not found in Symphony. API call: https://sirsi.example.com/symws/catalog/bib/key/666?includeFields=bib')
+        expect(response).to have_http_status(:bad_request)
+        json = JSON.parse(response.body)
+        expect(json.dig('errors', 0, 'title')).to eq 'Catkey not found in Symphony'
       end
     end
 

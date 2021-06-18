@@ -55,11 +55,12 @@ RSpec.describe "Looking up an item's catkey by it's barcode" do
   context 'when barcode not found' do
     let(:bogus_value) { 'bogus' }
 
-    it 'returns a 500 error when looking up catkey by barcode' do
+    it 'returns a 400 error when looking up catkey by barcode' do
       stub_request(:get, format(barcode_url, barcode: bogus_value)).to_return(status: 404)
       get "/v1/catalog/catkey?barcode=#{bogus_value}", headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response.status).to eq(500)
-      expect(response.body).to eq("Record not found in Symphony. API call: https://sirsi.example.com/symws/catalog/item/barcode/#{bogus_value}")
+      expect(response).to have_http_status(:bad_request)
+      json = JSON.parse(response.body)
+      expect(json.dig('errors', 0, 'title')).to eq 'Catkey not found in Symphony'
     end
   end
 end
