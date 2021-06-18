@@ -75,37 +75,6 @@ RSpec.describe Publish::PublicXmlService do
       end
     end
 
-    context 'without a license node in the source (old way)' do
-      it 'has the license' do
-        expect(ng_xml.at_xpath('/publicObject/rightsMetadata/use/machine[@type="creativeCommons"]').text).to eq 'by-sa'
-      end
-    end
-
-    context 'with a licence node (new way)' do
-      let(:rights) do
-        <<~XML
-          <rightsMetadata objectId="druid:bc123df4567">
-            <copyright>
-              <human>(c) Copyright 2010 by Sebastian Jeremias Osterfeld</human>
-            </copyright>
-            <access type="read">
-              <machine>
-                <group>stanford:stanford</group>
-              </machine>
-            </access>
-            <use>
-              <license>https://creativecommons.org/licenses/by-nc/4.0/legalcode</license>
-            </use>
-          </rightsMetadata>
-        XML
-      end
-
-      it 'has the license' do
-        expect(ng_xml.at_xpath('/publicObject/rightsMetadata/use/machine[@type="creativeCommons"]').text).to eq 'by-nc'
-        expect(ng_xml.at_xpath('/publicObject/rightsMetadata/use/license').text).to eq 'https://creativecommons.org/licenses/by-nc/4.0/legalcode'
-      end
-    end
-
     context 'with an embargo' do
       let(:embargo) do
         <<~XML
