@@ -27,8 +27,11 @@ class ObjectsController < ApplicationController
     Notifications::ObjectCreated.publish(model: cocina_object) if Settings.rabbitmq.enabled
 
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
-  rescue SymphonyReader::ResponseError
+  rescue SymphonyReader::ResponseError => e
+    Honeybadger.notify(e)
     json_api_error(status: :bad_gateway, title: 'Catalog connection error', message: 'Unable to read descriptive metadata from the catalog')
+  rescue SymphonyReader::NotFound => e
+    json_api_error(status: :bad_request, title: 'Catkey not found in Symphony', message: e.message)
   rescue Cocina::RoundtripValidationError => e
     Honeybadger.notify(e)
     json_api_error(status: e.status, message: e.message)

@@ -4,6 +4,8 @@
 class SymphonyReader
   class ResponseError < StandardError; end
 
+  class NotFound < StandardError; end
+
   attr_reader :catkey, :barcode
 
   def self.client
@@ -72,9 +74,7 @@ class SymphonyReader
       validate_response(resp)
       return resp
     elsif resp.status == 404
-      # 404 received here is for the catkey, but this app cares about the druid
-      #   for the DOR object, hence raising 404 from here could be misleading
-      errmsg = "Record not found in Symphony. API call: #{url}"
+      raise NotFound, "Record not found in Symphony. Catkey: #{catkey}. API call: #{url}"
     else
       errmsg = "Got HTTP Status-Code #{resp.status} calling #{url}: #{resp.body}"
     end

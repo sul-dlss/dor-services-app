@@ -159,6 +159,21 @@ RSpec.describe 'Create object' do
           expect(response.status).to eq 502
         end
       end
+
+      context 'when symphony returns a 404' do
+        before do
+          allow(MetadataService).to receive(:fetch).and_raise(SymphonyReader::NotFound, 'unable to find catkey')
+        end
+
+        it 'draws an error message' do
+          post '/v1/objects',
+               params: data,
+               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+          expect(response.body).to eq '{"errors":[{"status":"400","title":"Catkey not found in Symphony",' \
+            '"detail":"unable to find catkey"}]}'
+          expect(response.status).to eq 400
+        end
+      end
     end
 
     context 'when catkey is not provided' do

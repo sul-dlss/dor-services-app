@@ -15,6 +15,8 @@ class MetadataRefreshController < ApplicationController
     return render status: :internal_server_error, plain: "#{@item.pid} descMetadata missing required fields (<title>)" if missing_required_fields?
 
     @item.save!
+  rescue SymphonyReader::NotFound => e
+    json_api_error(status: :bad_request, title: 'Catkey not found in Symphony', message: e.message)
   end
 
   private

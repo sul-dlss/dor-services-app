@@ -6,7 +6,7 @@ RSpec.describe SymphonyReader do
   let(:marc_reader) { described_class.new(catkey: catkey) }
   let(:barcode_reader) { described_class.new(barcode: barcode) }
 
-  let(:catkey) { 'catkey' }
+  let(:catkey) { '482660' }
   let(:barcode) { 'barcode' }
   let(:marc_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path }
   let(:barcode_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.barcode_path }
@@ -55,7 +55,7 @@ RSpec.describe SymphonyReader do
 
     it 'removes original 001 fields and puts catkey in 001 field' do
       expect(marc_reader.to_marc.fields('001').length).to eq 1
-      expect(marc_reader.to_marc.fields('001').first.value).to eq 'acatkey'
+      expect(marc_reader.to_marc.fields('001').first.value).to eq 'a482660'
     end
 
     it 'parses data fields' do
@@ -112,7 +112,7 @@ RSpec.describe SymphonyReader do
         let(:headers) { { 'Content-Length': 268 } }
 
         it 'raises ResponseError and notifies Honeybadger' do
-          msg = 'Incomplete response received from Symphony for catkey - expected 268 bytes but got 394'
+          msg = 'Incomplete response received from Symphony for 482660 - expected 268 bytes but got 394'
           allow(Honeybadger).to receive(:notify)
           expect { marc_reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg)
           expect(Honeybadger).to have_received(:notify).with(msg)
@@ -124,10 +124,10 @@ RSpec.describe SymphonyReader do
           stub_request(:get, format(marc_url, catkey: catkey)).to_return(status: 404)
         end
 
-        it 'raises ResponseError and does not notify Honeybadger' do
-          msg = 'Record not found in Symphony. API call: https://sirsi.example.com/symws/catalog/bib/key/catkey?includeFields=bib'
+        it 'raises NotFound and does not notify Honeybadger' do
+          msg = 'Record not found in Symphony. Catkey: 482660. API call: https://sirsi.example.com/symws/catalog/bib/key/482660?includeFields=bib'
           allow(Honeybadger).to receive(:notify)
-          expect { marc_reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg)
+          expect { marc_reader.to_marc }.to raise_error(SymphonyReader::NotFound, msg)
           expect(Honeybadger).not_to have_received(:notify).with(msg)
         end
       end
@@ -149,7 +149,7 @@ RSpec.describe SymphonyReader do
         end
 
         it 'raises ResponseError' do
-          msg_regex = %r{Got HTTP Status-Code 403 calling https://sirsi.example.com/symws/catalog/bib/key/catkey\?includeFields=bib:.*Something somewhere went wrong.}
+          msg_regex = %r{Got HTTP Status-Code 403 calling https://sirsi.example.com/symws/catalog/bib/key/482660\?includeFields=bib:.*Something somewhere went wrong.}
           expect { marc_reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
         end
       end
@@ -162,7 +162,7 @@ RSpec.describe SymphonyReader do
         end
 
         it 'raises ResponseError and notifies Honeybadger' do
-          msg_regex = %r{^Timeout for Symphony response for API call https://sirsi.example.com/symws/catalog/bib/key/catkey\?includeFields=bib: #{faraday_msg}}
+          msg_regex = %r{^Timeout for Symphony response for API call https://sirsi.example.com/symws/catalog/bib/key/482660\?includeFields=bib: #{faraday_msg}}
           allow(Honeybadger).to receive(:notify)
           expect { marc_reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
           expect(Honeybadger).to have_received(:notify).with(msg_regex)

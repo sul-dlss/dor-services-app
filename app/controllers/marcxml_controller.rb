@@ -7,9 +7,13 @@ class MarcxmlController < ApplicationController #:nodoc:
 
   def catkey
     render plain: SymphonyReader.new(barcode: params[:barcode]).fetch_catkey
+  rescue SymphonyReader::NotFound => e
+    json_api_error(status: :bad_request, title: 'Catkey not found in Symphony', message: e.message)
   end
 
   def marcxml
     render xml: MarcxmlResource.new(barcode: params[:barcode], catkey: params[:catkey]).marcxml
+  rescue SymphonyReader::NotFound => e
+    json_api_error(status: :bad_request, title: 'Catkey not found in Symphony', message: e.message)
   end
 end
