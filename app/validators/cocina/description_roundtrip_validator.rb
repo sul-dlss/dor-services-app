@@ -26,7 +26,7 @@ module Cocina
 
       # Compare original description against roundtripped Cocina.
       unless DeepEqual.match?(roundtrip_description, orig_description)
-        return Failure("Roundtripping of descriptive metadata unsuccessful. Expected #{cocina_object.description.to_h} but received #{roundtrip_description}.")
+        return Failure("Roundtripping of descriptive metadata unsuccessful. Expected #{JSON.generate(cocina_object.description.to_h)} but received #{JSON.generate(roundtrip_description)}.")
       end
 
       Success()
