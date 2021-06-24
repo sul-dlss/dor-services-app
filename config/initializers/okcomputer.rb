@@ -62,4 +62,12 @@ OkComputer::Registry.register 'external-symphony', SymphonyCheck.new(format(Sett
 OkComputer::Registry.register 'background_jobs', OkComputer::SidekiqLatencyCheck.new('default', 25)
 OkComputer::Registry.register 'feature-tables-have-data', TablesHaveDataCheck.new
 
+if Settings.rabbitmq.enabled
+  OkComputer::Registry.register 'rabbit',
+                                OkComputer::RabbitmqCheck.new(hostname: Settings.rabbitmq.hostname,
+                                                              vhost: Settings.rabbitmq.vhost,
+                                                              username: Settings.rabbitmq.username,
+                                                              password: Settings.rabbitmq.password)
+end
+
 OkComputer.make_optional %w(external-symphony)
