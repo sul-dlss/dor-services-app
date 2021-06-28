@@ -40,11 +40,14 @@ module Cocina
       def apply_release_tags(release_tags)
         return if release_tags.blank?
 
+        identity_md = fedora_object.identityMetadata
+        identity_md.ng_xml_will_change!
+        identity_md.ng_xml.xpath('//release').each(&:remove)
         release_tags.each do |release_tag|
           attrs = release_tag.to_h.except(:date)
           release = attrs.delete(:release)
           attrs[:when] = release_tag.date ? release_tag.date.utc.iso8601 : Time.now.utc.iso8601 # add the timestamp if necessary
-          fedora_object.identityMetadata.add_value(:release, release.to_s, attrs)
+          identity_md.add_value(:release, release.to_s, attrs)
         end
       end
 
