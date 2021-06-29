@@ -222,7 +222,7 @@ paths:
               - minor
               - major
               - admin
-            example: Admin
+            example: admin
         - name: description
           in: query
           description: the description of the version change (if versioning is needed)
