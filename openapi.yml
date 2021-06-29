@@ -1424,12 +1424,12 @@ components:
       description: The barcode associated with a business library DRO object, prefixed with 2050
       type: string
       pattern: '^2050[0-9]{7}$'
-      example: 20503740296
+      example: '20503740296'
     LaneMedicalBarcode:
       description: The barcode associated with a Lane Medical Library DRO object, prefixed with 245
       type: string
       pattern: '^245[0-9]{8}$'
-      example: 24503259768
+      example: '24503259768'
     CatalogLink:
       type: object
       additionalProperties: false
@@ -1444,12 +1444,12 @@ components:
         catalogRecordId:
           description: Record identifier that is unique within the context of the linked record's catalog.
           type: string
-          example: 11403803
+          example: '11403803'
     CatkeyBarcode:
       description: The barcode associated with a DRO object based on catkey, prefixed with 36105
       type: string
       pattern: '^[0-9]+-[0-9]+$'
-      example: 6772719-1001
+      example: '6772719-1001'
     CitationOnlyAccess:
       type: object
       properties:
@@ -2866,7 +2866,7 @@ components:
       description: The standard barcode associated with a DRO object, prefixed with 36105
       type: string
       pattern: '^36105[0-9]{9}$'
-      example: 36105010362304
+      example: '36105010362304'
     StanfordAccess:
       type: object
       properties:
