@@ -8,9 +8,9 @@ module Notifications
       # Skipping APOs because they don't (yet) have a partOfProject assertion.
       return if model.is_a? Cocina::Models::AdminPolicy
 
-      Rails.logger.debug "Publishing Rabbitmq Message for creating #{model.externalIdentifier}"
+      Rails.logger.debug { "Publishing Rabbitmq Message for creating #{model.externalIdentifier}" }
       new(model: model, channel: RabbitChannel.instance).publish
-      Rails.logger.debug "Published Rabbitmq Message for creating #{model.externalIdentifier}"
+      Rails.logger.debug { "Published Rabbitmq Message for creating #{model.externalIdentifier}" }
     end
 
     def initialize(model:, channel:)
