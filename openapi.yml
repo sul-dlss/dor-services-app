@@ -222,7 +222,7 @@ paths:
               - minor
               - major
               - admin
-            example: Admin
+            example: admin
         - name: description
           in: query
           description: the description of the version change (if versioning is needed)
@@ -1293,7 +1293,6 @@ components:
           type: string
           enum:
             - 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
-          example: item
         externalIdentifier:
           $ref: '#/components/schemas/Druid'
         label:
@@ -1425,12 +1424,12 @@ components:
       description: The barcode associated with a business library DRO object, prefixed with 2050
       type: string
       pattern: '^2050[0-9]{7}$'
-      example: 20503740296
+      example: '20503740296'
     LaneMedicalBarcode:
       description: The barcode associated with a Lane Medical Library DRO object, prefixed with 245
       type: string
       pattern: '^245[0-9]{8}$'
-      example: 24503259768
+      example: '24503259768'
     CatalogLink:
       type: object
       additionalProperties: false
@@ -1445,12 +1444,12 @@ components:
         catalogRecordId:
           description: Record identifier that is unique within the context of the linked record's catalog.
           type: string
-          example: 11403803
+          example: '11403803'
     CatkeyBarcode:
       description: The barcode associated with a DRO object based on catkey, prefixed with 36105
       type: string
       pattern: '^[0-9]+-[0-9]+$'
-      example: 6772719-1001
+      example: '6772719-1001'
     CitationOnlyAccess:
       type: object
       properties:
@@ -1492,7 +1491,6 @@ components:
             - 'http://cocina.sul.stanford.edu/models/user-collection.jsonld'
             - 'http://cocina.sul.stanford.edu/models/exhibit.jsonld'
             - 'http://cocina.sul.stanford.edu/models/series.jsonld'
-          example: item
         externalIdentifier:
           $ref: '#/components/schemas/Druid'
         label:
@@ -1980,7 +1978,6 @@ components:
             - 'http://cocina.sul.stanford.edu/models/track.jsonld'
             - 'http://cocina.sul.stanford.edu/models/webarchive-binary.jsonld'
             - 'http://cocina.sul.stanford.edu/models/webarchive-seed.jsonld'
-          example: item
         externalIdentifier:
           $ref: '#/components/schemas/Druid'
         label:
@@ -2029,36 +2026,36 @@ components:
               description: The license governing reuse of the DRO. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
               type: string
               enum:
-                - https://www.gnu.org/licenses/agpl.txt
-                - https://www.apache.org/licenses/LICENSE-2.0
-                - https://opensource.org/licenses/BSD-2-Clause
-                - https://opensource.org/licenses/BSD-3-Clause
-                - https://creativecommons.org/licenses/by/4.0/legalcode
-                - https://creativecommons.org/licenses/by-nc/4.0/legalcode
-                - https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
-                - https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-                - https://creativecommons.org/licenses/by-nd/4.0/legalcode
-                - https://creativecommons.org/licenses/by-sa/4.0/legalcode
-                - https://creativecommons.org/publicdomain/zero/1.0/legalcode
-                - https://opensource.org/licenses/cddl1
-                - https://www.eclipse.org/legal/epl-2.0
-                - https://www.gnu.org/licenses/gpl-3.0-standalone.html
-                - https://www.isc.org/downloads/software-support-policy/isc-license/
-                - https://www.gnu.org/licenses/lgpl-3.0-standalone.html
-                - https://opensource.org/licenses/MIT
-                - https://www.mozilla.org/MPL/2.0/
-                - https://opendatacommons.org/licenses/by/1-0/
-                - http://opendatacommons.org/licenses/odbl/1.0/ # Non cannonical, but in some of our data
-                - https://opendatacommons.org/licenses/odbl/1-0/
-                - https://creativecommons.org/publicdomain/mark/1.0/
-                - https://opendatacommons.org/licenses/pddl/1-0/
-                - https://creativecommons.org/licenses/by/3.0/legalcode
-                - https://creativecommons.org/licenses/by-sa/3.0/legalcode
-                - https://creativecommons.org/licenses/by-nd/3.0/legalcode
-                - https://creativecommons.org/licenses/by-nc/3.0/legalcode
-                - https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode
-                - https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode
-                - http://cocina.sul.stanford.edu/licenses/none # Only used in some legacy ETDs and not actually permitted per the Project Chimera docs.
+                - 'https://www.gnu.org/licenses/agpl.txt'
+                - 'https://www.apache.org/licenses/LICENSE-2.0'
+                - 'https://opensource.org/licenses/BSD-2-Clause'
+                - 'https://opensource.org/licenses/BSD-3-Clause'
+                - 'https://creativecommons.org/licenses/by/4.0/legalcode'
+                - 'https://creativecommons.org/licenses/by-nc/4.0/legalcode'
+                - 'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode'
+                - 'https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode'
+                - 'https://creativecommons.org/licenses/by-nd/4.0/legalcode'
+                - 'https://creativecommons.org/licenses/by-sa/4.0/legalcode'
+                - 'https://creativecommons.org/publicdomain/zero/1.0/legalcode'
+                - 'https://opensource.org/licenses/cddl1'
+                - 'https://www.eclipse.org/legal/epl-2.0'
+                - 'https://www.gnu.org/licenses/gpl-3.0-standalone.html'
+                - 'https://www.isc.org/downloads/software-support-policy/isc-license/'
+                - 'https://www.gnu.org/licenses/lgpl-3.0-standalone.html'
+                - 'https://opensource.org/licenses/MIT'
+                - 'https://www.mozilla.org/MPL/2.0/'
+                - 'https://opendatacommons.org/licenses/by/1-0/'
+                - 'http://opendatacommons.org/licenses/odbl/1.0/' # Non cannonical, but in some of our data
+                - 'https://opendatacommons.org/licenses/odbl/1-0/'
+                - 'https://creativecommons.org/publicdomain/mark/1.0/'
+                - 'https://opendatacommons.org/licenses/pddl/1-0/'
+                - 'https://creativecommons.org/licenses/by/3.0/legalcode'
+                - 'https://creativecommons.org/licenses/by-sa/3.0/legalcode'
+                - 'https://creativecommons.org/licenses/by-nd/3.0/legalcode'
+                - 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
+                - 'https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode'
+                - 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
+                - 'http://cocina.sul.stanford.edu/licenses/none' # Only used in some legacy ETDs and not actually permitted per the Project Chimera docs.
     DROStructural:
       description: Structural metadata
       type: object
@@ -2581,7 +2578,6 @@ components:
           type: string
           enum:
             - 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
-          example: item
         label:
           type: string
         version:
@@ -2608,7 +2604,6 @@ components:
             - 'http://cocina.sul.stanford.edu/models/user-collection.jsonld'
             - 'http://cocina.sul.stanford.edu/models/exhibit.jsonld'
             - 'http://cocina.sul.stanford.edu/models/series.jsonld'
-          example: item
         label:
           type: string
         version:
@@ -2650,7 +2645,6 @@ components:
             - 'http://cocina.sul.stanford.edu/models/track.jsonld'
             - 'http://cocina.sul.stanford.edu/models/webarchive-binary.jsonld'
             - 'http://cocina.sul.stanford.edu/models/webarchive-seed.jsonld'
-          example: item
         label:
           type: string
         version:
@@ -2872,7 +2866,7 @@ components:
       description: The standard barcode associated with a DRO object, prefixed with 36105
       type: string
       pattern: '^36105[0-9]{9}$'
-      example: 36105010362304
+      example: '36105010362304'
     StanfordAccess:
       type: object
       properties:
