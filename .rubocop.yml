@@ -58,10 +58,8 @@ Performance/CollectionLiteralInLoop:
     - 'app/services/cocina/to_fedora/descriptive/related_resource.rb'
     - 'app/services/cocina/to_fedora/descriptive/part_writer.rb'
 
-Rails/Output:
-  Exclude:
-    - 'lib/report.rb'
-    - 'lib/unique_report.rb'
+Rails/EagerEvaluationLogMessage: # (new in 2.11)
+  Enabled: false
 
 Rails/EnvironmentVariableAccess: # (new in 2.10)
   Enabled: true
@@ -69,6 +67,11 @@ Rails/EnvironmentVariableAccess: # (new in 2.10)
     - 'lib/fedora_cache.rb'
 
 Rails/Exit:
+  Exclude:
+    - 'lib/report.rb'
+    - 'lib/unique_report.rb'
+
+Rails/Output:
   Exclude:
     - 'lib/report.rb'
     - 'lib/unique_report.rb'
@@ -385,4 +388,25 @@ Performance/MapCompact: # (new in 1.11)
   Enabled: true
 
 Rails/TimeZoneAssignment: # (new in 2.10)
+  Enabled: true
+
+Lint/EmptyInPattern: # (new in 1.16)
+  Enabled: true
+Style/InPatternThen: # (new in 1.16)
+  Enabled: true
+Style/MultilineInPatternThen: # (new in 1.16)
+  Enabled: true
+Style/QuotedSymbols: # (new in 1.16)
+  Enabled: true
+RSpec/IdenticalEqualityAssertion: # (new in 2.4)
+  Enabled: true
+RSpec/Rails/AvoidSetupHook: # (new in 2.4)
+  Enabled: true
+Rails/AddColumnIndex: # (new in 2.11)
+  Enabled: true
+Rails/ExpandedDateRange: # (new in 2.11)
+  Enabled: true
+Rails/I18nLocaleAssignment: # (new in 2.11)
+  Enabled: true
+Rails/UnusedIgnoredColumns: # (new in 2.11)
   Enabled: true
