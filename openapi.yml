@@ -1694,9 +1694,7 @@ components:
           items:
             $ref: "#/components/schemas/DescriptiveValue"
         purl:
-          description: Stanford persistent URL associated with the resource.
-          type: string
-          format: uri
+          $ref: "#/components/schemas/Purl"
         access:
           $ref: "#/components/schemas/DescriptiveAccessMetadata"
         relatedResource:
@@ -1954,6 +1952,11 @@ components:
               $ref: '#/components/schemas/Standard'
               # description: An alphabet or other notation used to represent a
               #   language or other symbolic system of the descriptive element value.
+    DOI:
+      type: string
+      description: Digital Object Identifier (https://www.doi.org)
+      pattern: '^10\.25740\/druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$'
+      example: '10.25740/druid:bc123df4567'
     DRO:
       description: Domain-defined abstraction of a 'work'. Digital Repository Objects' abstraction is describable for our domain’s purposes, i.e. for management needs within our system.
       type: object
@@ -2291,14 +2294,16 @@ components:
       type: object
       additionalProperties: false
       properties:
-        sourceId:
-          $ref: '#/components/schemas/SourceId'
+        barcode:
+          $ref: '#/components/schemas/Barcode'
         catalogLinks:
           type: array
           items:
             $ref: '#/components/schemas/CatalogLink'
-        barcode:
-          $ref: '#/components/schemas/Barcode'
+        doi:
+          $ref: '#/components/schemas/DOI'
+        sourceId:
+          $ref: '#/components/schemas/SourceId'
     Language:
       description: Languages, scripts, symbolic systems, and notations used in all
         or part of a resource or its descriptive metadata.
@@ -2462,6 +2467,12 @@ components:
         width:
           description: Width in pixels
           type: integer
+    Purl:
+      description: Stanford persistent URL associated with the related resource. Note this is http, not https.
+      type: string
+      format: uri
+      # Canonical URI is http, even though this redirects to https.
+      pattern: '^http:\/\/'
     RelatedResource:
       description: Other resource associated with the described resource.
       type: object
@@ -2523,9 +2534,7 @@ components:
           items:
             $ref: "#/components/schemas/DescriptiveValue"
         purl:
-          description: Stanford persistent URL associated with the related resource.
-          type: string
-          format: uri
+          $ref: "#/components/schemas/Purl"
         access:
           $ref: "#/components/schemas/DescriptiveAccessMetadata"
         relatedResource:
@@ -2775,14 +2784,16 @@ components:
       type: object
       additionalProperties: false
       properties:
-        sourceId:
-          $ref: '#/components/schemas/SourceId'
+        barcode:
+          $ref: '#/components/schemas/Barcode'
         catalogLinks:
           type: array
           items:
             $ref: '#/components/schemas/CatalogLink'
-        barcode:
-          $ref: '#/components/schemas/Barcode'
+        doi:
+          $ref: '#/components/schemas/DOI'
+        sourceId:
+          $ref: '#/components/schemas/SourceId'
       required:
         - sourceId
     Sequence:
