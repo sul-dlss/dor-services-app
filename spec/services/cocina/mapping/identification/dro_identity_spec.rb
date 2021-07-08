@@ -71,6 +71,8 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
     Cocina::ToFedora::Identity.apply_label(fedora_item, label: cocina_dro.label)
     Cocina::ToFedora::Identity.apply_release_tags(fedora_item, release_tags: cocina_dro.administrative.releaseTags)
     fedora_item.identityMetadata.barcode = cocina_dro.identification.barcode
+    identity_updater = Cocina::ToFedora::Identity.new(fedora_item)
+    identity_updater.apply_doi(cocina_dro.identification.doi)
     fedora_item
   end
 
@@ -288,6 +290,56 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: [
+              {
+                catalog: 'symphony',
+                catalogRecordId: catkey
+              }
+            ]
+          },
+          administrative: {
+            hasAdminPolicy: admin_policy_id
+          },
+          structural: {},
+          access: access_props,
+          description: description_props
+        }
+      end
+    end
+  end
+
+  context 'with doi' do
+    it_behaves_like 'DRO Identification Fedora Cocina mapping' do
+      let(:item_id) { 'druid:bb010dx6027' }
+      let(:label) { 'The rite of spring' }
+      let(:catkey) { '8501137' }
+      let(:admin_policy_id) { 'druid:bz845pv2292' } # from RELS-EXT
+      let(:collection_ids) { [] } # not in RELS-EXT
+      let(:source_id_source) { 'sul' }
+      let(:source_id) { 'naxos_nac_8.557501' }
+
+      let(:identity_metadata_xml) do
+        <<~XML
+          <identityMetadata>
+            <sourceId source="#{source_id_source}">#{source_id}</sourceId>
+            <otherId name="catkey">#{catkey}</otherId>
+            <objectLabel>#{label}</objectLabel>
+            <objectId>#{item_id}</objectId>
+            <objectCreator>DOR</objectCreator>
+            <objectType>item</objectType>
+            <doi>10.25740/bb010dx6027</doi>
+          </identityMetadata>
+        XML
+      end
+      let(:cocina_props) do
+        {
+          externalIdentifier: item_id,
+          type: Cocina::Models::Vocab.object,
+          label: label,
+          version: 1,
+          identification: {
+            doi: '10.25740/bb010dx6027',
             sourceId: "#{source_id_source}:#{source_id}",
             catalogLinks: [
               {

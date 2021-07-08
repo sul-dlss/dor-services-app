@@ -17,8 +17,9 @@ module Cocina
 
       def props
         {
-          sourceId: source_id,
-          barcode: fedora_object.identityMetadata.barcode
+          barcode: fedora_object.identityMetadata.barcode,
+          doi: doi,
+          sourceId: source_id
         }.compact
       end
 
@@ -38,6 +39,18 @@ module Cocina
 
           dissertation
         end
+      end
+
+      def doi
+        # We began to record DOI names in identityMetadata in the Summer of 2021
+        value = fedora_object.identityMetadata.ng_xml.xpath('//doi').first
+        return value.text if value
+
+        # Prior to that we only had DOI links in the descMetadata
+        value = fedora_object.descMetadata.ng_xml.xpath('//identifier[@type="doi"]').first
+        return unless value
+
+        value.text.delete_prefix('https://doi.org/')
       end
     end
   end

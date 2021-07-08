@@ -116,13 +116,15 @@ module Cocina
         Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
       end
 
+      identity_updater = Cocina::ToFedora::Identity.new(fedora_object)
       if has_changed?(:identification)
+        identity_updater.apply_doi(cocina_object.identification.doi)
         fedora_object.source_id = cocina_object.identification.sourceId
         fedora_object.catkey = catkey_for(cocina_object)
         fedora_object.identityMetadata.barcode = cocina_object.identification.barcode
       end
 
-      Cocina::ToFedora::Identity.apply_release_tags(fedora_object, release_tags: cocina_object.administrative&.releaseTags) if has_changed?(:administrative)
+      identity_updater.apply_release_tags(cocina_object.administrative&.releaseTags) if has_changed?(:administrative)
 
       Cocina::ToFedora::DROAccess.apply(fedora_object, cocina_object.access, cocina_object.structural) if has_changed?(:access) || has_changed?(:structural)
       update_content_metadata(fedora_object, cocina_object) if has_changed?(:structural) || has_changed?(:type)
