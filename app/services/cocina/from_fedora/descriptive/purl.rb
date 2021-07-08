@@ -8,7 +8,7 @@ module Cocina
         def self.primary_purl_node(resource_element, purl)
           purl_nodes = resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS).select { |url_node| ::Purl.purl?(url_node.text) }
 
-          return purl_nodes.find { |purl_node| purl_node.content == purl } if purl
+          return purl_nodes.find { |purl_node| purl_value(purl_node) == purl } if purl
 
           # Prefer a primary PURL node
           primary_purl_node = purl_nodes.find { |purl_node| purl_node[:usage] == 'primary display' }
@@ -32,6 +32,15 @@ module Cocina
             }
           end
           notes
+        end
+
+        def self.primary_purl_value(resource_element, purl)
+          purl_value(primary_purl_node(resource_element, purl))
+        end
+
+        def self.purl_value(purl_node)
+          # Note that normalizing https to http
+          purl_node&.content&.sub(/^https/, 'http')&.presence
         end
       end
     end

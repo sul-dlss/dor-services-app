@@ -108,6 +108,11 @@ module Cocina
       end
 
       def normalize_purl_for(base_node, purl: nil)
+        # Normalize https to http
+        purl_nodes(base_node).each do |purl_node|
+          purl_node.content = purl_node.content.sub(/^https/, 'http')
+        end
+
         # If there is a purl, add a url node if there is not already one.
         if purl && purl_nodes(base_node).to_a.none? { |purl_node| purl_node.content == purl }
           new_location = Nokogiri::XML::Node.new('location', Nokogiri::XML(nil))

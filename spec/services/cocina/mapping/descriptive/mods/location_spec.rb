@@ -210,6 +210,40 @@ RSpec.describe 'MODS location <--> cocina mappings' do
     end
   end
 
+  describe 'PURL with https' do
+    # if purl is only url in record or no other url has usage="primary display", assign to purl
+    it_behaves_like 'MODS cocina mapping' do
+      let(:druid) { 'ys701qw6956' }
+
+      let(:mods) do
+        <<~XML
+          <location>
+            <url usage="primary display">https://purl.stanford.edu/ys701qw6956</url>
+          </location>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/ys701qw6956</url>
+          </location>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          purl: 'http://purl.stanford.edu/ys701qw6956',
+          access: {
+            digitalRepository: [
+              value: 'Stanford Digital Repository'
+            ]
+          }
+        }
+      end
+    end
+  end
+
   describe 'Web archive (with display label)' do
     it_behaves_like 'MODS cocina mapping' do
       let(:druid) { 'hf898mn6942' }

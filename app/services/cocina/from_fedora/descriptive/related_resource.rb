@@ -87,7 +87,7 @@ module Cocina
           purl_nodes = resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS).select { |url_node| ::Purl.purl?(url_node.text) && url_node != primary_purl_node }
           purl_nodes.map do |purl_node|
             {
-              purl: purl_node.content,
+              purl: Descriptive::Purl.purl_value(purl_node),
               access: {
                 note: Purl.purl_note(purl_node).presence,
                 digitalRepository: [{ value: 'Stanford Digital Repository' }]
