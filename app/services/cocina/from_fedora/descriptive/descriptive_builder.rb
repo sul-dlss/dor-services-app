@@ -41,7 +41,7 @@ module Cocina
           title_result = @title_builder.build(resource_element: resource_element, require_title: require_title, notifier: notifier)
           cocina_description[:title] = title_result if title_result.present?
 
-          purl_value = purl || Descriptive::Purl.primary_purl_node(resource_element, purl)&.content&.presence
+          purl_value = purl || Descriptive::Purl.primary_purl_value(resource_element, purl)
           cocina_description[:purl] = purl_value if purl_value
 
           BUILDERS.each do |descriptive_property, builder|

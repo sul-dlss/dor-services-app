@@ -110,6 +110,40 @@ RSpec.describe Cocina::Normalizers::ModsNormalizer do
     end
   end
 
+  context 'when normalizing PURL with https' do
+    let(:druid) { 'druid:bw502ns3302' }
+
+    let(:mods_ng_xml) do
+      Nokogiri::XML <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <location>
+            <url usage="primary display">https://purl.stanford.edu/bw502ns3302</url>
+          </location>
+          <relatedItem>
+            <location>
+              <url usage="primary display">https://purl.stanford.edu/vt726fn1198</url>
+            </location>
+          </relatedItem>
+        </mods>
+      XML
+    end
+
+    it 'changes to https' do
+      expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <location>
+            <url usage="primary display">http://purl.stanford.edu/bw502ns3302</url>
+          </location>
+          <relatedItem>
+            <location>
+              <url usage="primary display">http://purl.stanford.edu/vt726fn1198</url>
+            </location>
+          </relatedItem>
+        </mods>
+      XML
+    end
+  end
+
   context 'when normalizing PURL but existing primary display in same <location> node' do
     let(:druid) { 'druid:bw502ns3302' }
 
