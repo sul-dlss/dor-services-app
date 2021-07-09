@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def dois(ng_xml)
+  ng_xml.root.xpath('mods:identifier[@type="doi"]', mods: MODS_NS)
+        .map(&:content)
+        .select { |doi| doi.start_with?('http') && !doi.start_with?('https://doi.org/') }
+        .join(', ')
+        .presence
+end
+
+Report.new(name: 'desc-dois', dsid: 'descMetadata', report_func: method(:dois)).run
