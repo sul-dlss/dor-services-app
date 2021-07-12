@@ -23,8 +23,7 @@ module Cocina
           # access/rights.
           contains = FileSets.build(fedora_item.contentMetadata,
                                     rights_metadata: fedora_item.rightsMetadata,
-                                    version: fedora_item.current_version.to_i,
-                                    ignore_resource_type_errors: project_phoenix?)
+                                    version: fedora_item.current_version.to_i)
           structural[:contains] = contains if contains.present?
 
           begin
@@ -41,10 +40,6 @@ module Cocina
       private
 
       attr_reader :fedora_item, :type
-
-      def project_phoenix?
-        AdministrativeTags.for(pid: fedora_item.id).include?('Google Book : GBS VIEW_FULL')
-      end
 
       def build_has_member_orders
         member_orders = create_member_order if type == Cocina::Models::Vocab.book
