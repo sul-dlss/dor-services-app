@@ -22,7 +22,7 @@ RSpec.describe 'Cocina --> DataCite mappings for access (H2 specific)' do
       let(:datacite) do
         # no data generated
         <<~XML
-          XML
+        XML
       end
     end
   end

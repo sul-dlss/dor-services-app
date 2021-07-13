@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Cocina --> DataCite mappings for adminMetadata (H2 specific)' do
-
   describe 'New record' do
     let(:create_date) { '2018-10-25' }
 
@@ -27,7 +26,7 @@ RSpec.describe 'Cocina --> DataCite mappings for adminMetadata (H2 specific)' do
             ],
             note: [
               {
-                value: "Metadata created by user via Stanford self-deposit application",
+                value: 'Metadata created by user via Stanford self-deposit application',
                 type: 'record origin'
               }
             ]

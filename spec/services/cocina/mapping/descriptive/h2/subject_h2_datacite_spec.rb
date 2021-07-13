@@ -278,32 +278,32 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       end
     end
   end
-end
 
-describe 'Multiple terms' do
-  xit 'not implemented' do
-    let(:cocina) do
-      {
-        subject: [
-          {
-            value: 'Brooding sea stars',
-            type: 'topic'
-          },
-          {
-            value: 'Sea stars in motion',
-            type: 'topic'
-          }
-        ]
-      }
-    end
+  describe 'Multiple terms' do
+    xit 'not implemented' do
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Brooding sea stars',
+              type: 'topic'
+            },
+            {
+              value: 'Sea stars in motion',
+              type: 'topic'
+            }
+          ]
+        }
+      end
 
-    let(:datacite) do
-      <<~XML
-        <subjects>
-          <subject>Brooding sea stars</subject>
-          <subject>Sea stars in motion</subject>
-        </subjects>
-      XML
+      let(:datacite) do
+        <<~XML
+          <subjects>
+            <subject>Brooding sea stars</subject>
+            <subject>Sea stars in motion</subject>
+          </subjects>
+        XML
+      end
     end
   end
 end

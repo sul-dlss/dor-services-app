@@ -210,19 +210,20 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-    let(:datacite) do
-      <<~XML
-        <creators>
-          <creator>
-            <creatorName nameType="Personal">Stanford, Jane</creatorName>
-            <givenName>Jane</givenName>
-            <familyName>Stanford</familyName>
-          </creator>
-          <creator>
-            <creatorName nameType="Organizational">Stanford University</creatorName>
-          </creator>
-        </creators>
-      XML
+      let(:datacite) do
+        <<~XML
+          <creators>
+            <creator>
+              <creatorName nameType="Personal">Stanford, Jane</creatorName>
+              <givenName>Jane</givenName>
+              <familyName>Stanford</familyName>
+            </creator>
+            <creator>
+              <creatorName nameType="Organizational">Stanford University</creatorName>
+            </creator>
+          </creators>
+        XML
+      end
     end
   end
 
@@ -898,7 +899,6 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
     end
   end
 
-
   describe 'Cited contributor with Publisher role' do
     # Authors to include in citation
     ## Stanford University Press. Publisher.
@@ -1217,17 +1217,19 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      <<~XML
-        <creators>
-          <creator>
-            <creatorName nameType="Personal">Stanford, Jane</creatorName>
-            <givenName>Jane</givenName>
-            <familyName>Stanford</familyName>
-          </creator>
-        </creators>
-        <publisher>Stanford University Press</publisher>
-        <publicationYear>2020</publicationYear>
-      XML
+      let(:datacite) do
+        <<~XML
+          <creators>
+            <creator>
+              <creatorName nameType="Personal">Stanford, Jane</creatorName>
+              <givenName>Jane</givenName>
+              <familyName>Stanford</familyName>
+            </creator>
+          </creators>
+          <publisher>Stanford University Press</publisher>
+          <publicationYear>2020</publicationYear>
+        XML
+      end
     end
   end
 end

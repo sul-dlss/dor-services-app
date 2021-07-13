@@ -7,7 +7,7 @@ require 'rails_helper'
 # If neither available, cannot map to DataCite
 
 RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
-  describe 'Publication date: 2021-01-01' do
+  describe 'Publication date: 2021-01-01 OR No publication date or embargo, deposit finished 2021-01-01' do
     xit 'not implemented' do
       let(:cocina) do
         {
@@ -326,39 +326,6 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
               type: 'publication',
               date: [
                 {
-                  value: "2021-01-01",
-                  type: 'publication',
-                  encoding: {
-                    code: 'w3cdtf'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:datacite) do
-        <<~XML
-          <publicationYear>2021</publicationYear>
-          <dates>
-            <date dateType="Issued">2021-01-01</date>
-            <date dateType="Available">2022-01-01</date>
-          </dates>
-        XML
-      end
-    end
-  end
-
-  describe 'No publication date or embargo, deposit finished 2021-01-01' do
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              date: [
-                {
                   value: '2021-01-01',
                   type: 'publication',
                   encoding: {
@@ -376,6 +343,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
           <publicationYear>2021</publicationYear>
           <dates>
             <date dateType="Issued">2021-01-01</date>
+            <date dateType="Available">2022-01-01</date>
           </dates>
         XML
       end

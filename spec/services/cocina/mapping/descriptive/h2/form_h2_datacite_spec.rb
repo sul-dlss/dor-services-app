@@ -69,7 +69,7 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
     end
   end
 
-  describe 'type with subtype'
+  describe 'type with subtype' do
     # User enters type Text, subtype Documentation
     xit 'not implemented' do
       let(:cocina) do
