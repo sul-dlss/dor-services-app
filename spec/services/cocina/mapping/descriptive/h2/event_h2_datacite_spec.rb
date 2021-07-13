@@ -40,7 +40,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
   end
 
   describe 'Creation date: 2021-01-01' do
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -73,7 +73,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
   describe 'Creation date range: 2020-01-01 to 2021-01-01' do
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -113,7 +113,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
   end
 
   describe 'Approximate single creation date' do
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -147,7 +147,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
   describe 'Approximate creation start date: approx. 1900' do
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -190,7 +190,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
   describe 'Approximate creation end date: approx. 1900' do
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -232,8 +232,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
 
   describe 'Approximate creation date range: approx. 1900' do
     # Per Arcadia: "the pattern is for properties to be at the highest level to which they apply"
-
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
