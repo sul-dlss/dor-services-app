@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> DataCite mappings for access (H2 specific)' do
   describe 'Contact email' do
-    it_behaves_like 'cocina Datacite mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           access: {
