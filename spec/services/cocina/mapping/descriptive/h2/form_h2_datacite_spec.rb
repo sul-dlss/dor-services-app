@@ -117,54 +117,6 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
     end
   end
 
-  describe 'type with subtype mapping to narrower term' do
-    # User enters type: Text, subtype: Article
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          form: [
-            {
-              structuredValue: [
-                {
-                  value: 'Text',
-                  type: 'type'
-                },
-                {
-                  value: 'Article',
-                  type: 'subtype'
-                }
-              ],
-              source: {
-                value: 'Stanford self-deposit resource types'
-              },
-              type: 'resource type'
-            },
-            {
-              value: 'text',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            },
-            {
-              value: 'JournalArticle',
-              type: 'resource type',
-              source: {
-                value: 'DataCite resource types'
-              }
-            }
-          ]
-        }
-      end
-
-      let(:datacite) do
-        <<~XML
-          <resourceType resourceTypeGeneral="JournalArticle">Article</resourceType>
-        XML
-      end
-    end
-  end
-
   describe 'type with multiple subtypes' do
     # User enters type: Software/Code, subtype: Code, Documentation
     xit 'not implemented' do
