@@ -1232,4 +1232,126 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
       end
     end
   end
+
+  describe 'Creator with ORCID' do
+    # Authors to include in citation
+    ## Jane Stanford. Author.
+    xit 'not implemented' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ],
+              identifier: [
+                {
+                  value: '0000-0000-0000-0000',
+                  type: 'ORCID'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:datacite) do
+        <<~XML
+          <creators>
+            <creator>
+              <creatorName nameType="Personal">Stanford, Jane</creatorName>
+              <givenName>Jane</givenName>
+              <familyName>Stanford</familyName>
+              <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
+            </creator>
+          </creators>
+        XML
+      end
+    end
+  end
+
+  describe 'Contributor with ORCID' do
+    # Additional contributors
+    ## Jane Stanford. Contributing author.
+    xit 'not implemented' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'contributor',
+                  code: 'ctb',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ],
+              identifier: [
+                {
+                  value: '0000-0000-0000-0000',
+                  type: 'ORCID'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:datacite) do
+        <<~XML
+          <contributors>
+            <contributor contributorType="Other">
+              <contributorName nameType="Personal">Stanford, Jane</contributorName>
+              <givenName>Jane</givenName>
+              <familyName>Stanford</familyName>
+              <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
+            </contributor>
+          </contributors>
+        XML
+      end
+    end
+  end
 end
