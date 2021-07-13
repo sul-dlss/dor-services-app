@@ -6,7 +6,7 @@ RSpec.describe 'Cocina --> DataCite mappings for adminMetadata (H2 specific)' do
   describe 'New record' do
     let(:create_date) { '2018-10-25' }
 
-    it_behaves_like 'cocina DataCite mapping' do
+    xit 'not implemented' do
       # Adapted from druid:bc777tp9978.
       let(:cocina) do
         {
