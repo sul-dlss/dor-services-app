@@ -1955,8 +1955,8 @@ components:
     DOI:
       type: string
       description: Digital Object Identifier (https://www.doi.org)
-      pattern: '^10\.25740\/druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$'
-      example: '10.25740/druid:bc123df4567'
+      pattern: '^10\.(25740|80343)\/[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$'
+      example: '10.25740/bc123df4567'
     DRO:
       description: Domain-defined abstraction of a 'work'. Digital Repository Objects' abstraction is describable for our domain’s purposes, i.e. for management needs within our system.
       type: object

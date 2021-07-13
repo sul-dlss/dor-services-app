@@ -116,7 +116,8 @@ RSpec.describe 'Update object' do
   let(:identification) do
     {
       sourceId: 'googlebooks:999999',
-      barcode: '36105036289127'
+      barcode: '36105036289127',
+      doi: '10.25740/gg777gg7777'
     }
   end
 

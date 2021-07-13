@@ -40,7 +40,6 @@ module Cocina
       def apply_release_tags(release_tags)
         return if release_tags.blank?
 
-        identity_md = fedora_object.identityMetadata
         identity_md.ng_xml_will_change!
         identity_md.ng_xml.xpath('//release').each(&:remove)
         release_tags.each do |release_tag|
@@ -51,7 +50,19 @@ module Cocina
         end
       end
 
+      def apply_doi(doi)
+        return unless doi
+
+        identity_md.ng_xml_will_change!
+        identity_md.ng_xml.xpath('//doi').each(&:remove)
+        identity_md.add_value(:doi, doi)
+      end
+
       private
+
+      def identity_md
+        @identity_md ||= fedora_object.identityMetadata
+      end
 
       attr_reader :fedora_object
     end
