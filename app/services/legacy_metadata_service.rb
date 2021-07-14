@@ -43,8 +43,8 @@ class LegacyMetadataService
     return if AdministrativeTags.project(pid: @item.id).include?('Hydrus')
 
     Honeybadger.notify("Found #{datastream.pid}/#{datastream.dsid} that had a create " \
-      "date (#{datastream.createDate}) after the file was modified (#{updated}). " \
-      'Doing an experiment to see if this ever happens.')
+                       "date (#{datastream.createDate}) after the file was modified (#{updated}). " \
+                       'Doing an experiment to see if this ever happens.')
   end
   # rubocop:enable Metrics/AbcSize
 

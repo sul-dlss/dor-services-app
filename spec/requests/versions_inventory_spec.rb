@@ -30,7 +30,7 @@ RSpec.describe 'Release tags' do
 
     expect(response.status).to eq(200)
     expect(response.body).to eq '{"versions":[{"versionId":1,"tag":"1.0.0","message":"Initial Version"},' \
-      '{"versionId":2,"tag":"2.0.0","message":"pre-assembly re-accession"},' \
-      '{"versionId":3,"tag":"3.0.0","message":"pre-assembly re-accession"}]}'
+                                '{"versionId":2,"tag":"2.0.0","message":"pre-assembly re-accession"},' \
+                                '{"versionId":3,"tag":"3.0.0","message":"pre-assembly re-accession"}]}'
   end
 end

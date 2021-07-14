@@ -97,11 +97,11 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         {
           type: 'abstract',
           value: 'Official site of opposition candidate Boulkheir, "the Mauritanian Obama," ' \
-          'for the 2009 Mauritania presidential election. The election was held July 18, 2009. ' \
-          'Boulkheir came in second place with 16.3 percent of the vote. Elected ' \
-          '"Président de l’Assemblée Nationale" in 2007. Boulkheir also had 5 Facebook pages including ' \
-          '"SOUTENONS TOUS LE CANDIDAT OFFICIEL DU FNDD: MESS3OUD 0ULD BOULKHEIR" and ' \
-          '"mess3oud ould belkhier LE CANDIDAT DU FNDD ET LE NOTRE VOTONS POUR LUI".'
+                 'for the 2009 Mauritania presidential election. The election was held July 18, 2009. ' \
+                 'Boulkheir came in second place with 16.3 percent of the vote. Elected ' \
+                 '"Président de l’Assemblée Nationale" in 2007. Boulkheir also had 5 Facebook pages including ' \
+                 '"SOUTENONS TOUS LE CANDIDAT OFFICIEL DU FNDD: MESS3OUD 0ULD BOULKHEIR" and ' \
+                 '"mess3oud ould belkhier LE CANDIDAT DU FNDD ET LE NOTRE VOTONS POUR LUI".'
         },
         {
           value: 'Site closed after 2010.'

@@ -322,9 +322,9 @@ RSpec.describe ModsEquivalentService do
     it 'returns diff' do
       expect(result.failure.size).to eq(1)
       expect(result.failure.first.mods_node1.to_s).to eq("<relatedItem>\n    <note lang=\"eng\" altRepGroup=\"1\">This is not a related note.</note>\n    " \
-"<note lang=\"fre\" altRepGroup=\"1\">C'est une related note.</note>\n  </relatedItem>")
+                                                         "<note lang=\"fre\" altRepGroup=\"1\">C'est une related note.</note>\n  </relatedItem>")
       expect(result.failure.first.mods_node2.to_s).to eq("<relatedItem>\n    <note lang=\"eng\" altRepGroup=\"1\">This is a related note.</note>\n    " \
-"<note lang=\"fre\" altRepGroup=\"1\">C'est une related note.</note>\n  </relatedItem>")
+                                                         "<note lang=\"fre\" altRepGroup=\"1\">C'est une related note.</note>\n  </relatedItem>")
     end
 
     it 'returns false' do
@@ -574,9 +574,11 @@ RSpec.describe ModsEquivalentService do
     it 'returns diff' do
       expect(result.failure.size).to eq(1)
       expect(result.failure.first.mods_node1.to_s).to eq("<relatedItem>\n    <titleInfo nameTitleGroup=\"0\">\n      <title>Romeo and Juliet</title>\n    " \
-"</titleInfo>\n    <name nameTitleGroup=\"0\">\n      <namePart>Shakespeare, William, 1564-1616</namePart>\n    </name>\n  </relatedItem>")
+                                                         "</titleInfo>\n    <name nameTitleGroup=\"0\">\n      " \
+                                                         "<namePart>Shakespeare, William, 1564-1616</namePart>\n    </name>\n  </relatedItem>")
       expect(result.failure.first.mods_node2.to_s).to eq("<relatedItem>\n    <titleInfo nameTitleGroup=\"2\">\n      <title>Hamlet</title>\n    " \
-"</titleInfo>\n    <name nameTitleGroup=\"2\">\n      <namePart>Shakespeare, William, 1564-1616</namePart>\n    </name>\n  </relatedItem>")
+                                                         "</titleInfo>\n    <name nameTitleGroup=\"2\">\n      " \
+                                                         "<namePart>Shakespeare, William, 1564-1616</namePart>\n    </name>\n  </relatedItem>")
     end
   end
 

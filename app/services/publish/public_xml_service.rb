@@ -119,8 +119,8 @@ module Publish
 
       unless src_resource
         raise Dor::DataError, "The contentMetadata of #{object.pid} has an externalFile "\
-          "reference to #{src_druid}, #{src_resource_id}, but #{src_druid} doesn't have " \
-          'a matching resource node in its contentMetadata'
+                              "reference to #{src_druid}, #{src_resource_id}, but #{src_druid} doesn't have " \
+                              'a matching resource node in its contentMetadata'
       end
 
       src_file = src_resource.at_xpath("file[@id=\"#{src_file_id}\"]")
