@@ -140,6 +140,15 @@ class ObjectsController < ApplicationController
     head :created
   end
 
+  # Called by the robots.
+  def update_doi_metadata
+    # TODO:  this will call a background job to pull DOI and appropriate metadata from the repo and then
+    #   send an appropriate request to DataCite via its API
+    # The background job will not have a callback to update the workflow.
+    # The background job, if there is a failure, will log in HB, but then rely on the sidekiq mechanism to retry as necessary.
+    head :accepted
+  end
+
   def destroy
     DeleteService.destroy(@item.pid)
     head :no_content
