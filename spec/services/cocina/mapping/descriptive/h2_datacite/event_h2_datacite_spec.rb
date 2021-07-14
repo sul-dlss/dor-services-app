@@ -1149,6 +1149,18 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
                   ],
                   role: [
                     {
+                      value: 'Publisher',
+                      source: {
+                        value: 'H2 contributor role terms'
+                      },
+                      note: [
+                        {
+                          type: 'citation status',
+                          value: 'false'
+                        }
+                      ]
+                    },
+                    {
                       value: 'publisher',
                       code: 'pbl',
                       uri: 'http://id.loc.gov/vocabulary/relators/pbl',
@@ -1243,6 +1255,18 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
                     }
                   ],
                   role: [
+                    {
+                      value: 'Publisher',
+                      source: {
+                        value: 'H2 contributor role terms'
+                      },
+                      note: [
+                        {
+                          type: 'citation status',
+                          value: 'false'
+                        }
+                      ]
+                    },
                     {
                       value: 'publisher',
                       code: 'pbl',

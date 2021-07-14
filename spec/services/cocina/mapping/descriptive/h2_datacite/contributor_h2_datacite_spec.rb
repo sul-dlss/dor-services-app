@@ -36,6 +36,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'author',
                   code: 'aut',
                   uri: 'http://id.loc.gov/vocabulary/relators/aut',
@@ -113,6 +119,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'author',
                   code: 'aut',
                   uri: 'http://id.loc.gov/vocabulary/relators/aut',
@@ -144,6 +156,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               ],
               type: 'person',
               role: [
+                {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'author',
                   code: 'aut',
@@ -233,6 +251,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Data collector',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'compiler',
                   code: 'com',
                   uri: 'http://id.loc.gov/vocabulary/relators/com',
@@ -255,6 +279,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               ],
               type: 'organization',
               role: [
+                {
+                  value: 'Sponsor',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'sponsor',
                   code: 'spn',
@@ -330,6 +360,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Host institution',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'host institution',
                   code: 'his',
                   uri: 'http://id.loc.gov/vocabulary/relators/his',
@@ -394,6 +430,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Host institution',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'host institution',
                   code: 'his',
                   uri: 'http://id.loc.gov/vocabulary/relators/his',
@@ -417,7 +459,19 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               type: 'organization',
               role: [
                 {
-                  value: 'department'
+                  value: 'Department',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
+                  value: 'host institution',
+                  code: 'his',
+                  uri: 'http://id.loc.gov/vocabulary/relators/his',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
                 },
                 {
                   value: 'Creator',
@@ -489,6 +543,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'author',
                   code: 'aut',
                   uri: 'http://id.loc.gov/vocabulary/relators/aut',
@@ -520,6 +580,18 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               ],
               type: 'person',
               role: [
+                {
+                  value: 'Contributing author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
+                },
                 {
                   value: 'contributor',
                   code: 'ctb',
@@ -618,6 +690,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Data collector',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'compiler',
                   code: 'com',
                   uri: 'http://id.loc.gov/vocabulary/relators/com',
@@ -640,6 +718,18 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               ],
               type: 'organization',
               role: [
+                {
+                  value: 'Sponsor',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
+                },
                 {
                   value: 'sponsor',
                   code: 'spn',
@@ -722,7 +812,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
-                  value: 'event'
+                  value: 'Event',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
                 },
                 {
                   value: 'Creator',
@@ -790,6 +883,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Event organizer',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'organizer',
                   code: 'orm',
                   uri: 'http://id.loc.gov/vocabulary/relators/orm',
@@ -812,7 +911,16 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               ],
               role: [
                 {
-                  value: 'event'
+                  value: 'Event',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
                 },
                 {
                   value: 'Other',
@@ -888,7 +996,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
-                  value: 'conference'
+                  value: 'Conference',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
                 },
                 {
                   value: 'Creator',
@@ -956,6 +1067,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Speaker',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'speaker',
                   code: 'spk',
                   uri: 'http://id.loc.gov/vocabulary/relators/spk',
@@ -979,7 +1096,16 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               type: 'conference',
               role: [
                 {
-                  value: 'conference'
+                  value: 'Conference',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
                 },
                 {
                   value: 'Other',
@@ -1054,6 +1180,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               type: 'organization',
               status: 'primary',
               role: [
+                {
+                  value: 'Funder',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'funder',
                   code: 'fnd',
@@ -1143,6 +1275,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Data collector',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'compiler',
                   code: 'com',
                   uri: 'http://id.loc.gov/vocabulary/relators/com',
@@ -1165,6 +1303,18 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               ],
               type: 'organization',
               role: [
+                {
+                  value: 'Funder',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
+                },
                 {
                   value: 'funder',
                   code: 'fnd',
@@ -1246,6 +1396,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   ],
                   role: [
                     {
+                      value: 'Publisher',
+                      source: {
+                        value: 'H2 contributor role terms'
+                      }
+                    },
+                    {
                       value: 'publisher',
                       code: 'pbl',
                       uri: 'http://id.loc.gov/vocabulary/relators/pbl',
@@ -1326,6 +1482,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'author',
                   code: 'aut',
                   uri: 'http://id.loc.gov/vocabulary/relators/aut',
@@ -1352,6 +1514,18 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     }
                   ],
                   role: [
+                    {
+                      value: 'Publisher',
+                      source: {
+                        value: 'H2 contributor role terms'
+                      },
+                      note: [
+                        {
+                          type: 'citation status',
+                          value: 'false'
+                        }
+                      ]
+                    },
                     {
                       value: 'publisher',
                       code: 'pbl',
@@ -1449,6 +1623,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'author',
                   code: 'aut',
                   uri: 'http://id.loc.gov/vocabulary/relators/aut',
@@ -1541,6 +1721,18 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               type: 'person',
               status: 'primary',
               role: [
+                {
+                  value: 'Contributing author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
+                },
                 {
                   value: 'contributor',
                   code: 'ctb',
