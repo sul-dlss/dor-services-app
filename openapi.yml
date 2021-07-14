@@ -1056,6 +1056,11 @@ paths:
         Note that the 'source_id' property is required for items but not for
         collections.
       operationId: 'objects#create'
+      parameters:
+        - in: query
+          name: assign_doi
+          schema:
+            type: boolean
       requestBody:
         required: true
         content:
@@ -2634,7 +2639,10 @@ components:
     RequestDRO:
       description: A request to create a DRO.  This has the same general structure as a DRO but doesn't have externalIdentifier and doesn't require the access subschema. If no access subschema is provided, these values will be inherited from the AdminPolicy.
       type: object
-      additionalProperties: false
+      # There is a bug in Committee (https://github.com/interagent/committee/issues/328) that causes validation errors when
+      # validating a request that has query parameters and a request body.
+      # Since POST /v1/objects has both, setting additionalProperties to true.
+      additionalProperties: true
       properties:
         type:
           type: string

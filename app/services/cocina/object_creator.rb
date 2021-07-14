@@ -4,8 +4,8 @@ module Cocina
   # Given a Cocina model, create an ActiveFedora model.
   class ObjectCreator
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def self.create(cocina_object, event_factory: EventFactory, persister: ActiveFedoraPersister)
-      _fedora_object, cocina_object = new.create(cocina_object, event_factory: event_factory, persister: persister)
+    def self.create(cocina_object, event_factory: EventFactory, persister: ActiveFedoraPersister, assign_doi: false)
+      _fedora_object, cocina_object = new.create(cocina_object, event_factory: event_factory, persister: persister, assign_doi: assign_doi)
       cocina_object
     end
 
@@ -15,12 +15,13 @@ module Cocina
 
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def create(cocina_object, event_factory:, persister:, trial: false, notifier: nil)
+    # rubocop:disable Metrics/ParameterLists
+    def create(cocina_object, event_factory:, persister:, trial: false, notifier: nil, assign_doi: false)
       ensure_ur_admin_policy_exists if Settings.enabled_features.create_ur_admin_policy && cocina_object.administrative.hasAdminPolicy == Settings.ur_admin_policy.druid
 
       validate(cocina_object) unless trial
 
-      fedora_object = create_from_model(cocina_object, trial: trial)
+      fedora_object = create_from_model(cocina_object, trial: trial, assign_doi: assign_doi)
 
       unless trial
         persister.store(fedora_object)
@@ -37,6 +38,7 @@ module Cocina
 
       [fedora_object, roundtrip_cocina_object]
     end
+    # rubocop:enable Metrics/ParameterLists
 
     private
 
@@ -44,12 +46,12 @@ module Cocina
     #   Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
     # @return [Dor::Abstract] a persisted ActiveFedora model
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def create_from_model(cocina_object, trial:)
+    def create_from_model(cocina_object, trial:, assign_doi:)
       case cocina_object
       when Cocina::Models::RequestAdminPolicy, Cocina::Models::AdminPolicy
         create_apo(cocina_object, trial: trial)
       when Cocina::Models::RequestDRO, Cocina::Models::DRO
-        create_dro(cocina_object, trial: trial)
+        create_dro(cocina_object, trial: trial, assign_doi: assign_doi)
       when Cocina::Models::RequestCollection, Cocina::Models::Collection
         create_collection(cocina_object, trial: trial)
       else
@@ -83,10 +85,11 @@ module Cocina
     end
 
     # @param [Cocina::Models::RequestDRO,Cocina::Models::DRO] cocina_item
+    # @param [Boolean] assign_doi if true, a DOI is added to the model
     # @return [Dor::Item] a persisted Item model
     # @raises SymphonyReader::ResponseError if symphony connection failed
     # rubocop:disable Metrics/AbcSize
-    def create_dro(cocina_item, trial:)
+    def create_dro(cocina_item, trial:, assign_doi:)
       pid = trial ? cocina_item.externalIdentifier : Dor::SuriService.mint_id
       klass = cocina_item.type == Cocina::Models::Vocab.agreement ? Dor::Agreement : Dor::Item
       klass.new(pid: pid,
@@ -105,9 +108,11 @@ module Cocina
         Cocina::ToFedora::DROAccess.apply(fedora_item, cocina_item.access, cocina_item.structural) if cocina_item.access || cocina_item.structural
 
         fedora_item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: pid, object: cocina_item)
-        Cocina::ToFedora::Identity.initialize_identity(fedora_item)
-        Cocina::ToFedora::Identity.apply_label(fedora_item, label: cocina_item.label)
-        Cocina::ToFedora::Identity.apply_release_tags(fedora_item, release_tags: cocina_item.administrative&.releaseTags)
+        identity = Cocina::ToFedora::Identity.new(fedora_item)
+        identity.initialize_identity
+        identity.apply_label(cocina_item.label)
+        identity.apply_release_tags(cocina_item.administrative&.releaseTags)
+        identity.apply_doi(Doi.for(druid: pid)) if assign_doi
 
         fedora_item.identityMetadata.barcode = cocina_item.identification.barcode if cocina_item.identification.barcode
       end

@@ -3,11 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ObjectCreator do
-  subject(:result) { described_class.create(request, persister: persister) }
+  subject(:result) { described_class.create(request, persister: persister, assign_doi: assign_doi) }
 
   let(:apo) { 'druid:bz845pv2292' }
   let(:persister) { class_double(Cocina::ActiveFedoraPersister, store: nil) }
   let(:request) { Cocina::Models.build_request(params) }
+  let(:assign_doi) { false }
 
   before do
     allow(Dor::SearchService).to receive(:query_by_id).and_return([])
@@ -17,6 +18,7 @@ RSpec.describe Cocina::ObjectCreator do
       args[:fedora_object].descMetadata.mods_title = 'foo'
     end
     allow(SynchronousIndexer).to receive(:reindex_remotely)
+    allow(Settings).to receive(:doi_prefix).and_return('10.25740')
   end
 
   context 'when Cocina::Models::RequestDRO is received' do
@@ -244,6 +246,32 @@ RSpec.describe Cocina::ObjectCreator do
 
       it 'creates an agreement' do
         expect(result.type).to eq Cocina::Models::Vocab.agreement
+      end
+    end
+
+    context 'when assigning DOI' do
+      let(:assign_doi) { true }
+
+      let(:params) do
+        {
+          'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
+          'label' => ':auto',
+          'access' => {},
+          'version' => 1,
+          'structural' => {},
+          'administrative' => {
+            'partOfProject' => 'Naxos : 2009',
+            'hasAdminPolicy' => apo
+          },
+          'identification' => {
+            'sourceId' => 'sul:8.559351',
+            'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }]
+          }
+        }
+      end
+
+      it 'adds DOI' do
+        expect(result.identification.doi).to eq '10.25740/mb046vj7485'
       end
     end
   end

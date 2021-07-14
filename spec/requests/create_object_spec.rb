@@ -45,7 +45,7 @@ RSpec.describe 'Create object' do
                                 hasAdminPolicy: 'druid:dd999df4567',
                                 partOfProject: 'Google Books'
                               },
-                              identification: identification,
+                              identification: expected_identification,
                               externalIdentifier: druid,
                               structural: expected_structural)
     end
@@ -71,6 +71,8 @@ RSpec.describe 'Create object' do
         barcode: '36105036289127'
       }
     end
+    let(:expected_identification) { identification }
+
     let(:structural) { {} }
 
     context 'when the service is disabled' do
@@ -270,6 +272,41 @@ RSpec.describe 'Create object' do
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           expect(response.status).to eq(409)
           expect(Honeybadger).to have_received(:notify)
+        end
+      end
+
+      context 'when assigning DOI' do
+        let(:item) do
+          Dor::Item.new(pid: druid,
+                        admin_policy_object_id: 'druid:dd999df4567',
+                        source_id: 'googlebooks:999999',
+                        label: 'This is my label')
+        end
+
+        let(:expected_identification) do
+          {
+            sourceId: 'googlebooks:999999',
+            barcode: '36105036289127',
+            doi: '10.25740/gg777gg7777'
+          }
+        end
+
+        before do
+          allow(Dor::Item).to receive(:new).and_return(item)
+          allow(item).to receive(:collections).and_return([])
+          allow(item).to receive(:save!)
+          allow(Settings).to receive(:doi_prefix).and_return('10.25740')
+        end
+
+        it 'registers the object with a DOI' do
+          post '/v1/objects?assign_doi=true',
+               params: data,
+               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+          expect(response.body).to equal_cocina_model(expected)
+          expect(response.status).to eq(201)
+
+          # Identity metadata set correctly.
+          expect(item.identityMetadata.ng_xml.at('doi').text).to eq('10.25740/gg777gg7777')
         end
       end
     end
