@@ -285,6 +285,23 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+  '/v1/objects/{id}/update_doi_metadata':
+    post:
+      tags:
+        - integrations
+      summary: Update Datacite DOI metadata
+      description: 'Starts a background job to do this, from DOI and metadata in the repository'
+      operationId: 'objects#update_doi_metadata'
+      responses:
+        '202':
+          description: Accepted
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
   '/v1/objects/{id}/unpublish':
     post:
       tags:

@@ -39,6 +39,7 @@ Rails.application.routes.draw do
         post 'publish'
         post 'preserve'
         post 'update_marc_record'
+        post 'update_doi_metadata'
         post 'unpublish'
         post 'notify_goobi'
         post 'accession'
