@@ -20,16 +20,37 @@ RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <relatedItems>
+      #       <relatedItem relatedItemType="Other" relationType="References">
+      #         <titles>
+      #           <title>Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. Professor Maya Aguirre. Department of Earth Sciences, Stanford University.</title>
+      #         </titles>
+      #       </relatedItem>
+      #     </relatedItems>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <relatedItems>
-            <relatedItem relatedItemType="Other" relationType="References">
-              <titles>
-                <title>Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. Professor Maya Aguirre. Department of Earth Sciences, Stanford University.</title>
-              </titles>
-            </relatedItem>
-          </relatedItems>
-        XML
+        # relatedItem attribute new in schema v. 4.4 and not included in API docs
+        {
+          data: {
+            attributes: {
+              relatedItems: [
+                {
+                  relatedItemType: 'Other',
+                  relationType: 'References',
+                  titles: [
+                    {
+                      title: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. Professor Maya Aguirre. Department of Earth Sciences, Stanford University.'
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -57,17 +78,44 @@ RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <relatedItems>
+      #       <relatedItem relatedItemType="Other" relationType="References">
+      #         <titles>
+      #           <title>A paper</title>
+      #         </titles>
+      #         <relatedItemIdentifier relatedItemIdentifierType="URL">https://www.example.com/paper.html</relatedItemIdentifier>
+      #       </relatedItem>
+      #     </relatedItems>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <relatedItems>
-            <relatedItem relatedItemType="Other" relationType="References">
-              <titles>
-                <title>A paper</title>
-              </titles>
-              <relatedItemIdentifier relatedItemIdentifierType="URL">https://www.example.com/paper.html</relatedItemIdentifier>
-            </relatedItem>
-          </relatedItems>
-        XML
+        # relatedItem attribute new in schema v. 4.4 and not included in API docs
+        {
+          data: {
+            attributes: {
+              relatedItems: [
+                {
+                  relatedItemType: 'Other',
+                  relationType: 'References',
+                  titles: [
+                    {
+                      title: 'A paper'
+                    }
+                  ],
+                  relatedItemIdentifiers: [
+                    {
+                      relatedItemIdentifier: 'https://www.example.com/paper.html',
+                      relatedItemIdentifierType: 'URL'
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -90,14 +138,36 @@ RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <relatedItems>
+      #       <relatedItem relatedItemType="Other" relationType="References">
+      #         <relatedItemIdentifier relatedItemIdentifierType="URL">https://www.example.com/paper.html</relatedItemIdentifier>
+      #       </relatedItem>
+      #     </relatedItems>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <relatedItems>
-            <relatedItem relatedItemType="Other" relationType="References">
-              <relatedItemIdentifier relatedItemIdentifierType="URL">https://www.example.com/paper.html</relatedItemIdentifier>
-            </relatedItem>
-          </relatedItems>
-        XML
+        # relatedItem attribute new in schema v. 4.4 and not included in API docs
+        {
+          data: {
+            attributes: {
+              relatedItems: [
+                {
+                  relatedItemType: 'Other',
+                  relationType: 'References',
+                  relatedItemIdentifiers: [
+                    {
+                      relatedItemIdentifier: 'https://www.example.com/paper.html',
+                      relatedItemIdentifierType: 'URL'
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end

@@ -16,12 +16,27 @@ RSpec.describe 'Cocina --> DataCite mappings for note' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <descriptions>
+      #       <description descriptionType="Abstract">My paper is about dolphins.</description>
+      #     </descriptions>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <descriptions>
-            <description descriptionType="Abstract">My paper is about dolphins.</description>
-          </descriptions>
-        XML
+        {
+          data: {
+            attributes: {
+              descriptions: [
+                {
+                  description: 'My paper is about dolphins.',
+                  descriptionType: 'Abstract'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end

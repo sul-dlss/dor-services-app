@@ -69,15 +69,36 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <publicationYear>2022</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Issued">2021-01-01</date>
+      #       <date dateType="Submitted">2022-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <publicationYear>2022</publicationYear>
-          <publisher>Stanford Digital Repository</publisher>
-          <dates>
-            <date dateType="Issued">2021-01-01</date>
-            <date dateType="Submitted">2022-01-01</date>
-          </dates>
-        XML
+        {
+          data: {
+            attributes: {
+              publicationYear: '2022',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '2021-01-01',
+                  dateType: 'Issued'
+                },
+                {
+                  date: '2022-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -152,16 +173,41 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <publicationYear>2022</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Issued">2020-01-01</date>
+      #       <date dateType="Available">2022-01-01</date>
+      #       <date dateType="Submitted">2021-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <publicationYear>2022</publicationYear>
-          <publisher>Stanford Digital Repository</publisher>
-          <dates>
-            <date dateType="Issued">2020-01-01</date>
-            <date dateType="Available">2022-01-01</date>
-            <date dateType="Submitted">2021-01-01</date>
-          </dates>
-        XML
+        {
+          data: {
+            attributes: {
+              publicationYear: '2022',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '2020-01-01',
+                  dateType: 'Issued'
+                },
+                {
+                  date: '2022-01-01',
+                  dateType: 'Available'
+                },
+                {
+                  date: '2022-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -224,15 +270,36 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <publicationYear>2022</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Available">2022-01-01</date>
+      #       <date dateType="Submitted">2021-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <publicationYear>2022</publicationYear>
-          <publisher>Stanford Digital Repository</publisher>
-          <dates>
-            <date dateType="Available">2022-01-01</date>
-            <date dateType="Submitted">2021-01-01</date>
-          </dates>
-        XML
+        {
+          data: {
+            attributes: {
+              publicationYear: '2022',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '2022-01-01',
+                  dateType: 'Available'
+                },
+                {
+                  date: '2021-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -283,14 +350,31 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <publicationYear>2021</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Submitted">2021-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <publicationYear>2021</publicationYear>
-          <publisher>Stanford Digital Repository</publisher>
-          <dates>
-            <date dateType="Submitted">2021-01-01</date>
-          </dates>
-        XML
+        {
+          data: {
+            attributes: {
+              publicationYear: '2021',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '2021-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -353,15 +437,36 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <publicationYear>2022</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Created">2021-01-01</date>
+      #       <date dateType="Submitted">2022-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <publicationYear>2022</publicationYear>
-          <publisher>Stanford Digital Repository</publisher>
-          <dates>
-            <date dateType="Created">2021-01-01</date>
-            <date dateType="Submitted">2022-01-01</date>
-          </dates>
-        XML
+        {
+          data: {
+            attributes: {
+              publicationYear: '2022',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '2021-01-01',
+                  dateType: 'Created'
+                },
+                {
+                  date: '2022-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -433,15 +538,36 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <publicationYear>2022</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Created">2020-01-01/2021-01-01</date>
+      #       <date dateType="Submitted">2022-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <publicationYear>2022</publicationYear>
-          <publisher>Stanford Digital Repository</publisher>
-          <dates>
-            <date dateType="Created">2020-01-01/2021-01-01</date>
-            <date dateType="Submitted">2022-01-01</date>
-          </dates>
-        XML
+        {
+          data: {
+            attributes: {
+              publicationYear: '2022',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '2020-01-01/2021-01-01',
+                  dateType: 'Created'
+                },
+                {
+                  date: '2022-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -505,15 +631,37 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <publicationYear>2022</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Creation" dateInformation="Approximate">1900</date>
+      #       <date dateType="Submitted">2022-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <publicationYear>2022</publicationYear>
-          <publisher>Stanford Digital Repository</publisher>
-          <dates>
-            <date dateType="Creation" dateInformation="Approximate">1900</date>
-            <date dateType="Submitted">2022-01-01</date>
-          </dates>
-        XML
+        {
+          data: {
+            attributes: {
+              publicationYear: '2022',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '1900',
+                  dateType: 'Creation',
+                  dateInformation: 'Approximate'
+                },
+                {
+                  date: '2022-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -586,15 +734,37 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <publicationYear>2022</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Creation" dateInformation="Approximate">1900/1910</date>
+      #       <date dateType="Submitted">2022-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <publicationYear>2022</publicationYear>
-          <publisher>Stanford Digital Repository</publisher>
-          <dates>
-            <date dateType="Creation" dateInformation="Approximate">1900/1910</date>
-            <date dateType="Submitted">2022-01-01</date>
-          </dates>
-        XML
+        {
+          data: {
+            attributes: {
+              publicationYear: '2022',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '1900/1910',
+                  dateType: 'Creation',
+                  dateInformation: 'Approximate'
+                },
+                {
+                  date: '2022-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -667,15 +837,37 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <publicationYear>2022</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Creation" dateInformation="Approximate">1900/1910</date>
+      #       <date dateType="Submitted">2022-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <publicationYear>2022</publicationYear>
-          <publisher>Stanford Digital Repository</publisher>
-          <dates>
-            <date dateType="Creation" dateInformation="Approximate">1900/1910</date>
-            <date dateType="Submitted">2022-01-01</date>
-          </dates>
-        XML
+        {
+          data: {
+            attributes: {
+              publicationYear: '2022',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '1900/1910',
+                  dateType: 'Creation',
+                  dateInformation: 'Approximate'
+                },
+                {
+                  date: '2022-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -748,15 +940,37 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <publicationYear>2022</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Creation" dateInformation="Approximate">1900/1910</date>
+      #       <date dateType="Submitted">2022-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <publicationYear>2022</publicationYear>
-          <publisher>Stanford Digital Repository</publisher>
-          <dates>
-            <date dateType="Creation" dateInformation="Approximate">1900/1910</date>
-            <date dateType="Submitted">2022-01-01</date>
-          </dates>
-        XML
+        {
+          data: {
+            attributes: {
+              publicationYear: '2022',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '1900/1910',
+                  dateType: 'Creation',
+                  dateInformation: 'Approximate'
+                },
+                {
+                  date: '2022-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -831,16 +1045,41 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <publicationYear>2023</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Creation">2021-01-01</date>
+      #       <date dateType="Available">2023-01-01</date>
+      #       <date dateType="Submitted">2022-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <publicationYear>2023</publicationYear>
-          <publisher>Stanford Digital Repository</publisher>
-          <dates>
-            <date dateType="Creation">2021-01-01</date>
-            <date dateType="Available">2023-01-01</date>
-            <date dateType="Submitted">2022-01-01</date>
-          </dates>
-        XML
+        {
+          data: {
+            attributes: {
+              publicationYear: '2022',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '2021-01-01',
+                  dateType: 'Creation'
+                },
+                {
+                  date: '2023-01-01',
+                  dateType: 'Available'
+                },
+                {
+                  date: '2022-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -934,20 +1173,48 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <contributors>
+      #       <contributor contributorType="Distributor">
+      #         <contributorName nameType="Organizational">Stanford University Press</contributorName>
+      #       </contributor>
+      #     </contributors>
+      #     <publicationYear>2022</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Creation">2021-01-01</date>
+      #       <date dateType="Submitted">2022-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <contributors>
-            <contributor contributorType="Distributor">
-              <contributorName nameType="Organizational">Stanford University Press</contributorName>
-            </contributor>
-          </contributors>
-          <publicationYear>2022</publicationYear>
-          <publisher>Stanford Digital Repository</publisher>
-          <dates>
-            <date dateType="Creation">2021-01-01</date>
-            <date dateType="Submitted">2022-01-01</date>
-          </dates>
-        XML
+        {
+          data: {
+            attributes: {
+              contributors: [
+                {
+                  name: 'Stanford University Press',
+                  nameType: 'Organizational',
+                  contributorType: 'Distributor'
+                }
+              ],
+              publicationYear: '2022',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '2021-01-01',
+                  dateType: 'Creation'
+                },
+                {
+                  date: '2022-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -1038,20 +1305,48 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <contributors>
+      #       <contributor contributorType="Distributor">
+      #         <contributorName nameType="Organizational">Stanford University Press</contributorName>
+      #       </contributor>
+      #     </contributors>
+      #     <publicationYear>2022</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Issued">2021-01-01</date>
+      #       <date dateType="Submitted">2022-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <contributors>
-            <contributor contributorType="Distributor">
-              <contributorName nameType="Organizational">Stanford University Press</contributorName>
-            </contributor>
-          </contributors>
-          <publicationYear>2022</publicationYear>
-          <publisher>Stanford Digital Repository</publisher>
-          <dates>
-            <date dateType="Issued">2021-01-01</date>
-            <date dateType="Submitted">2022-01-01</date>
-          </dates>
-        XML
+        {
+          data: {
+            attributes: {
+              contributors: [
+                {
+                  name: 'Stanford University Press',
+                  nameType: 'Organizational',
+                  contributorType: 'Distributor'
+                }
+              ],
+              publicationYear: '2022',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '2021-01-01',
+                  dateType: 'Issued'
+                },
+                {
+                  date: '2022-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end

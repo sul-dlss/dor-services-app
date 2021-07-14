@@ -21,12 +21,29 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <subjects>
+      #       <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009447">Marine biology</subject>
+      #     </subjects>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <subjects>
-            <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009447">Marine biology</subject>
-          </subjects>
-        XML
+        {
+          data: {
+            attributes: {
+              subjects: [
+                {
+                  subject: 'Marine biology',
+                  subjectScheme: 'fast',
+                  schemeURI: 'http://id.worldcat.org/fast/1009447',
+                  valueURI: 'http://id.worldcat.org/fast/'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -49,12 +66,29 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <subjects>
+      #       <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/270223">Anning, Mary, 1799-1847</subject>
+      #     </subjects>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <subjects>
-            <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/270223">Anning, Mary, 1799-1847</subject>
-          </subjects>
-        XML
+        {
+          data: {
+            attributes: {
+              subjects: [
+                {
+                  subject: 'Anning, Mary, 1799-1847',
+                  subjectScheme: 'fast',
+                  schemeURI: 'http://id.worldcat.org/fast/',
+                  valueURI: 'http://id.worldcat.org/fast/270223'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -77,12 +111,29 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <subjects>
+      #       <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/529308">United States. National Oceanic and Atmospheric Administration</subject>
+      #     </subjects>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <subjects>
-            <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/529308">United States. National Oceanic and Atmospheric Administration</subject>
-          </subjects>
-        XML
+        {
+          data: {
+            attributes: {
+              subjects: [
+                {
+                  subject: 'United States. National Oceanic and Atmospheric Administration',
+                  subjectScheme: 'fast',
+                  schemeURI: 'http://id.worldcat.org/fast/',
+                  valueURI: 'http://id.worldcat.org/fast/529308'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -105,12 +156,29 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <subjects>
+      #       <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1405317">International Conference on Port and Ocean Engineering Under Arctic Conditions</subject>
+      #     </subjects>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <subjects>
-            <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1405317">International Conference on Port and Ocean Engineering Under Arctic Conditions</subject>
-          </subjects>
-        XML
+        {
+          data: {
+            attributes: {
+              subjects: [
+                {
+                  subject: 'International Conference on Port and Ocean Engineering Under Arctic Conditions',
+                  subjectScheme: 'fast',
+                  schemeURI: 'http://id.worldcat.org/fast/',
+                  valueURI: 'http://id.worldcat.org/fast/1405317'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -133,12 +201,29 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <subjects>
+      #       <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1243528">Pacific Ocean</subject>
+      #     </subjects>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <subjects>
-            <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1243528">Pacific Ocean</subject>
-          </subjects>
-        XML
+        {
+          data: {
+            attributes: {
+              subjects: [
+                {
+                  subject: 'Pacific Ocean',
+                  subjectScheme: 'fast',
+                  schemeURI: 'http://id.worldcat.org/fast/',
+                  valueURI: 'http://id.worldcat.org/fast/1243528'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -162,12 +247,29 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <subjects>
+      #       <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/976704">International Year of the Ocean</subject>
+      #     </subjects>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <subjects>
-            <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/976704">International Year of the Ocean</subject>
-          </subjects>
-        XML
+        {
+          data: {
+            attributes: {
+              subjects: [
+                {
+                  subject: 'International Year of the Ocean (1998)',
+                  subjectScheme: 'fast',
+                  schemeURI: 'http://id.worldcat.org/fast/',
+                  valueURI: 'http://id.worldcat.org/fast/976704'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -190,12 +292,29 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <subjects>
+      #       <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1399391">Missa Ave Maris Stella (Josquin, des Prez)</subject>
+      #     </subjects>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <subjects>
-            <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1399391">Missa Ave Maris Stella (Josquin, des Prez)</subject>
-          </subjects>
-        XML
+        {
+          data: {
+            attributes: {
+              subjects: [
+                {
+                  subject: 'Missa Ave Maris Stella (Josquin, des Prez)',
+                  subjectScheme: 'fast',
+                  schemeURI: 'http://id.worldcat.org/fast/',
+                  valueURI: 'http://id.worldcat.org/fast/1399391'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -218,12 +337,29 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <subjects>
+      #       <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1355694">1689-1725</subject>
+      #     </subjects>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <subjects>
-            <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1355694">1689-1725</subject>
-          </subjects>
-        XML
+        {
+          data: {
+            attributes: {
+              subjects: [
+                {
+                  subject: '1689-1725',
+                  subjectScheme: 'fast',
+                  schemeURI: 'http://id.worldcat.org/fast/',
+                  valueURI: 'http://id.worldcat.org/fast/1355694'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -246,12 +382,29 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <subjects>
+      #       <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1986272">Watercolors</subject>
+      #     </subjects>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <subjects>
-            <subject subjectScheme="fast" schemeURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1986272">Watercolors</subject>
-          </subjects>
-        XML
+        {
+          data: {
+            attributes: {
+              subjects: [
+                {
+                  subject: 'Watercolors',
+                  subjectScheme: 'fast',
+                  schemeURI: 'http://id.worldcat.org/fast/',
+                  valueURI: 'http://id.worldcat.org/fast/1986272'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -269,12 +422,26 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <subjects>
+      #       <subject>Brooding sea stars</subject>
+      #     </subjects>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <subjects>
-            <subject>Brooding sea stars</subject>
-          </subjects>
-        XML
+        {
+          data: {
+            attributes: {
+              subjects: [
+                {
+                  subject: 'Brooding sea stars'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -296,13 +463,30 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
         }
       end
 
-      let(:datacite) do
+      let(:datacite_xml) do
         <<~XML
           <subjects>
             <subject>Brooding sea stars</subject>
             <subject>Sea stars in motion</subject>
           </subjects>
         XML
+      end
+
+      let(:datacite) do
+        {
+          data: {
+            attributes: {
+              subjects: [
+                {
+                  subject: 'Brooding sea stars'
+                },
+                {
+                  subject: 'Sea stars in motion'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end

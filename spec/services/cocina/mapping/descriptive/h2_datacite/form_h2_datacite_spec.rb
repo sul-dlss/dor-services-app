@@ -61,10 +61,25 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <resourceType resourceTypeGeneral="Dataset">Data</resourceType>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <resourceType resourceTypeGeneral="Dataset">Data</resourceType>
-        XML
+        {
+          data: {
+            attributes: {
+              types: [
+                {
+                  resourceTypeGeneral: 'Dataset',
+                  resourceType: 'Data'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -109,10 +124,25 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <resourceType resourceTypeGeneral="Text">Documentation</resourceType>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <resourceType resourceTypeGeneral="Text">Documentation</resourceType>
-        XML
+        {
+          data: {
+            attributes: {
+              types: [
+                {
+                  resourceTypeGeneral: 'Text',
+                  resourceType: 'Documentation'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -175,10 +205,25 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <resourceType resourceTypeGeneral="Software">Code; Documentation</resourceType>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <resourceType resourceTypeGeneral="Software">Code; Documentation</resourceType>
-        XML
+        {
+          data: {
+            attributes: {
+              types: [
+                {
+                  resourceTypeGeneral: 'Software',
+                  resourceType: 'Code; Documentation'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end
@@ -216,10 +261,25 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
         }
       end
 
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <resourceType resourceTypeGeneral="Other">Dance notation</resourceType>
+      #   XML
+      # end
+
       let(:datacite) do
-        <<~XML
-          <resourceType resourceTypeGeneral="Other">Dance notation</resourceType>
-        XML
+        {
+          data: {
+            attributes: {
+              types: [
+                {
+                  resourceTypeGeneral: 'Other',
+                  resourceType: 'Dance notation'
+                }
+              ]
+            }
+          }
+        }
       end
     end
   end

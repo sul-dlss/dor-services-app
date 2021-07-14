@@ -36,8 +36,7 @@ RSpec.describe 'Cocina --> DataCite mappings for adminMetadata (H2 specific)' do
 
       let(:datacite) do
         # no data generated
-        <<~XML
-        XML
+        {}
       end
     end
   end
