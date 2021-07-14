@@ -4,6 +4,10 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
   # Full role mapping: https://docs.google.com/spreadsheets/d/1CvEd_NODprNhM2D9VfvJBFs1jfAMEUr0kDxXHe2HkL4/edit?usp=sharing
+  # Authors to include in citation > cocina role type: DataCite role, value: Creator > DataCite creator element
+  # Additional contributors > cocina role type: DataCite role, value: [mapped role] > DataCite contributor element with contributorType [mapped role]
+  # EXCEPTION:
+  # H2 funder role > cocina role type: DataCite role, value: Funder > DataCite fundingReference element
 
   describe 'Cited contributor with author role' do
     # Authors to include in citation
@@ -39,6 +43,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -95,6 +103,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -123,6 +135,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -184,6 +200,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -203,6 +223,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -252,6 +276,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -297,6 +325,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -310,6 +342,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               role: [
                 {
                   value: 'department'
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -369,6 +405,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -396,6 +436,13 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Other',
+                  type: 'DataCite role',
+                  source: {
+                    value: 'DataCite contributor types'
                   }
                 }
               ]
@@ -430,7 +477,6 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
     ## Jane Stanford. Data collector.
     # Additional contributors
     ## Stanford University. Sponsor.
-    # Add contributor role to names in Additional contributors section.
 
     xit 'not implemented' do
       let(:cocina) do
@@ -462,6 +508,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -483,12 +533,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   }
                 },
                 {
-                  value: 'contributor',
-                  code: 'ctb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
+                  value: 'Sponsor',
+                  type: 'DataCite role',
                   source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                    value: 'DataCite contributor types'
                   }
                 }
               ]
@@ -534,6 +582,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               role: [
                 {
                   value: 'event'
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -589,6 +641,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -603,12 +659,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   value: 'event'
                 },
                 {
-                  value: 'contributor',
-                  code: 'ctb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
+                  value: 'Other',
+                  type: 'DataCite role',
                   source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                    value: 'DataCite contributor types'
                   }
                 }
               ]
@@ -655,6 +709,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               role: [
                 {
                   value: 'conference'
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -710,6 +768,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -725,12 +787,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   value: 'conference'
                 },
                 {
-                  value: 'contributor',
-                  code: 'ctb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
+                  value: 'Other',
+                  type: 'DataCite role',
                   source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                    value: 'DataCite contributor types'
                   }
                 }
               ]
@@ -783,6 +843,14 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
+                },
+                {
+                  value: 'Funder',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -791,7 +859,6 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
       end
 
       let(:datacite) do
-        # maps to creator and fundingReferences if included in citation
         <<~XML
           <creators>
             <creator>
@@ -844,6 +911,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -865,13 +936,8 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   }
                 },
                 {
-                  value: 'contributor',
-                  code: 'ctb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
+                  value: 'Funder',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -880,7 +946,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
       end
 
       let(:datacite) do
-        # maps to fundingReferences if not included in citation
+        # maps to fundingReferences if DataCite Funder
         <<~XML
           <creators>
             <creator>
@@ -902,33 +968,11 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
   describe 'Cited contributor with Publisher role' do
     # Authors to include in citation
     ## Stanford University Press. Publisher.
-    # Cited publisher maps to both creator and publisher.
+    # For DataCite output, publisher is always Stanford Digital Repository.
 
     xit 'not implemented' do
       let(:cocina) do
         {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford University Press'
-                }
-              ],
-              type: 'organization',
-              status: 'primary',
-              role: [
-                {
-                  value: 'publisher',
-                  code: 'pbl',
-                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            }
-          ],
           event: [
             {
               type: 'publication',
@@ -948,6 +992,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
+                    },
+                    {
+                      value: 'Creator',
+                      type: 'DataCite role'
                     }
                   ]
                 }
@@ -964,7 +1012,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               <creatorName nameType="Organizational">Stanford University Press</creatorName>
             </creator>
           </creators>
-          <publisher>Stanford University Press</publisher>
+          <publisher>Stanford Digital Repository</publisher>
         XML
       end
     end
@@ -975,7 +1023,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
     ## Jane Stanford. Author.
     # Additional contributors
     ## Stanford University Press. Publisher.
-    # Uncited publisher maps to publisher only.
+    # For DataCite output, publisher is always Stanford Digital Repository.
 
     xit 'not implemented' do
       let(:cocina) do
@@ -1007,6 +1055,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -1030,186 +1082,15 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:datacite) do
-        <<~XML
-          <creators>
-            <creator>
-              <creatorName nameType="Personal">Stanford, Jane</creatorName>
-              <givenName>Jane</givenName>
-              <familyName>Stanford</familyName>
-            </creator>
-          </creators>
-          <publisher>Stanford University Press</publisher>
-        XML
-      end
-    end
-  end
-
-  describe 'Cited contributor with Publisher role and publication date' do
-    # Authors to include in citation
-    ## Stanford University Press. Publisher.
-    # Publication date
-    ## 2020-02-02
-
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford University Press'
-                }
-              ],
-              type: 'organization',
-              status: 'primary',
-              role: [
-                {
-                  value: 'publisher',
-                  code: 'pbl',
-                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            }
-          ],
-          event: [
-            {
-              type: 'publication',
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: 'Stanford University Press'
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  encoding: {
-                    code: 'w3cdtf'
-                  },
-                  value: '2020-02-02',
-                  status: 'primary',
-                  type: 'publication'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:datacite) do
-        <<~XML
-          <creators>
-            <creator>
-              <creatorName nameType="Organizational">Stanford University Press</creatorName>
-            </creator>
-          </creators>
-          <publisher>Stanford University Press</publisher>
-          <publicationYear>2020</publicationYear>
-        XML
-      end
-    end
-  end
-
-  describe 'Cited contributor and uncited contributor with Publisher role and publication date' do
-    # Authors to include in citation
-    ## Jane Stanford. Author.
-    # Additional contributors
-    ## Stanford University Press. Publisher.
-    # Publication date
-    ## 2020-02-02
-
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  structuredValue: [
-                    {
-                      value: 'Jane',
-                      type: 'forename'
                     },
                     {
-                      value: 'Stanford',
-                      type: 'surname'
-                    }
-                  ]
-                }
-              ],
-              type: 'person',
-              status: 'primary',
-              role: [
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            }
-          ],
-          event: [
-            {
-              type: 'publication',
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: 'Stanford University Press'
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      value: 'Distributor',
+                      type: 'DataCite role',
                       source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                        value: 'DataCite contributor types'
                       }
                     }
                   ]
-                }
-              ],
-              date: [
-                {
-                  encoding: {
-                    code: 'w3cdtf'
-                  },
-                  value: '2020-02-02',
-                  status: 'primary',
-                  type: 'publication'
                 }
               ]
             }
@@ -1226,8 +1107,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               <familyName>Stanford</familyName>
             </creator>
           </creators>
-          <publisher>Stanford University Press</publisher>
-          <publicationYear>2020</publicationYear>
+          <contributors>
+            <contributor contributorType="Distributor">
+              <contributorName nameType="Organizational">Stanford University Press</contributorName>
+            </contributor>
+          </contributors>
+          <publisher>Stanford Digital Repository</publisher>
         XML
       end
     end
@@ -1236,6 +1121,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
   describe 'Creator with ORCID' do
     # Authors to include in citation
     ## Jane Stanford. Author.
+    ## ORCID: 0000-0000-0000-0000
     xit 'not implemented' do
       let(:cocina) do
         {
@@ -1266,12 +1152,19 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ],
               identifier: [
                 {
                   value: '0000-0000-0000-0000',
-                  type: 'ORCID'
+                  type: 'ORCID',
+                  source: {
+                    uri: 'https://orcid.org'
+                  }
                 }
               ]
             }
@@ -1297,6 +1190,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
   describe 'Contributor with ORCID' do
     # Additional contributors
     ## Jane Stanford. Contributing author.
+    ## ORCID: 0000-0000-0000-0000
     xit 'not implemented' do
       let(:cocina) do
         {
@@ -1327,12 +1221,22 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Other',
+                  type: 'DataCite role',
+                  source: {
+                    value: 'DataCite contributor types'
+                  }
                 }
               ],
               identifier: [
                 {
                   value: '0000-0000-0000-0000',
-                  type: 'ORCID'
+                  type: 'ORCID',
+                  source: {
+                    uri: 'https://orcid.org'
+                  }
                 }
               ]
             }
