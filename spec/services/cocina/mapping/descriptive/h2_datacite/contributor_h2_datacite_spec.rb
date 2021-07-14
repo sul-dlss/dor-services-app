@@ -997,7 +997,8 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                       value: 'Creator',
                       type: 'DataCite role'
                     }
-                  ]
+                  ],
+                  type: 'organization'
                 }
               ]
             }
@@ -1090,7 +1091,8 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                         value: 'DataCite contributor types'
                       }
                     }
-                  ]
+                  ],
+                  type: 'organization'
                 }
               ]
             }
