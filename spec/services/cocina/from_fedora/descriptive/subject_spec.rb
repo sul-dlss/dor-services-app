@@ -566,7 +566,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       ]
       expect(notifier).to have_received(:warn).with('Subject has text',
                                                     { subject: '<subject authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects" ' \
-'valueURI="http://id.loc.gov/authorities/subjects/sh2002009897">authority="" authorityURI="" valueURI=""&gt;Improvisation (Acting)</subject>' })
+                                                               'valueURI="http://id.loc.gov/authorities/subjects/sh2002009897">authority="" ' \
+                                                               'authorityURI="" valueURI=""&gt;Improvisation (Acting)</subject>' })
     end
   end
 end

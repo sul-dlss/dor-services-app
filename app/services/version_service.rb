@@ -135,7 +135,7 @@ class VersionService
     Preservation::Client.objects.current_version(work.pid)
   rescue Preservation::Client::NotFoundError
     raise Dor::Exception, 'Preservation (SDR) is not yet answering queries about this object. ' \
-      "When an object has just been transferred, Preservation isn't immediately ready to answer queries."
+                          "When an object has just been transferred, Preservation isn't immediately ready to answer queries."
   end
 
   # Checks if current version has any incomplete wf steps and there is a versionWF

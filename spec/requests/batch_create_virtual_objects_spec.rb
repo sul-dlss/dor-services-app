@@ -47,7 +47,7 @@ RSpec.describe 'Batch creation of virtual objects' do
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
       expect(body['errors'][0]['detail']).to eq('#/paths/~1v1~1virtual_objects/post/requestBody/content/application~1json/schema/properties/virtual_objects ' \
-        "expected array, but received String: \"#{child1_id}\"")
+                                                "expected array, but received String: \"#{child1_id}\"")
     end
   end
 

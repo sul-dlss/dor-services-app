@@ -26,7 +26,7 @@ RSpec.describe 'Datastreams' do
 
       expect(response.status).to eq(200)
       expect(response.body).to eq '[{"label":"Version Metadata","dsid":"versionMetadata","pid":"druid:mx123qw2323","size":null,"mimeType":"text/xml","versionId":"v0"},' \
-        '{"label":"Content Metadata","dsid":"contentMetadata","pid":"druid:mx123qw2323","size":null,"mimeType":"text/xml","versionId":"v5"}]'
+                                  '{"label":"Content Metadata","dsid":"contentMetadata","pid":"druid:mx123qw2323","size":null,"mimeType":"text/xml","versionId":"v5"}]'
     end
   end
 

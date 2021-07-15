@@ -9,7 +9,7 @@ class WorkspaceService
     return mkdir_with_final_link(druid: druid, source: source) if source
 
     Honeybadger.notify('Source was not provided to WorkspaceService.create. ' \
-      "I'm pretty sure that source is always supplied and ought to be required")
+                       "I'm pretty sure that source is always supplied and ought to be required")
     druid.mkdir
   end
 

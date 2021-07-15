@@ -410,3 +410,8 @@ Rails/I18nLocaleAssignment: # (new in 2.11)
   Enabled: true
 Rails/UnusedIgnoredColumns: # (new in 2.11)
   Enabled: true
+
+Layout/LineEndStringConcatenationIndentation: # (new in 1.18)
+  Enabled: true
+Naming/InclusiveLanguage: # (new in 1.18)
+  Enabled: true
