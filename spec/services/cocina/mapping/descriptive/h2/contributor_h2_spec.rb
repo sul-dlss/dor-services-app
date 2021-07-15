@@ -4,8 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
   # Full role mapping: https://docs.google.com/spreadsheets/d/1CvEd_NODprNhM2D9VfvJBFs1jfAMEUr0kDxXHe2HkL4/edit?usp=sharing
-  # First entry in "Authors to include in citation" receives "status": "primary",
-  # which maps to "usage=primary" in MODS.
+  # First entry in "Authors to include in citation" receives "status": "primary", which maps to "usage=primary" in MODS.
 
   describe 'Cited contributor with author role' do
     # Authors to include in citation
@@ -397,7 +396,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           <name type="corporate">
             <namePart>Department of English</namePart>
             <role>
-              <roleTerm type="text">department</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/his">host institution</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/his">his</roleTerm>
             </role>
           </name>
         XML
@@ -410,7 +410,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Author.
     # Additional contributors
     ## Leland Stanford. Contributing author.
-    # Contributing author role maps to contributor.
 
     xit 'not implemented' do
       let(:cocina) do
@@ -523,7 +522,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Data collector.
     # Additional contributors
     ## Stanford University. Sponsor.
-    # Add contributor role to names in Additional contributors section.
 
     xit 'not implemented' do
       let(:cocina) do
@@ -615,10 +613,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spn">sponsor</roleTerm>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
             </role>
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">contributor</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
-            </role>
           </name>
         XML
       end
@@ -656,11 +650,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
       end
 
       let(:mods) do
+        # No marcrelator role, so fall back to H2 role
         <<~XML
           <name usage="primary">
             <namePart>San Francisco Symphony Concert</namePart>
             <role>
-              <roleTerm type="text">event</roleTerm>
+              <roleTerm type="text" authority="H2 contributor role terms">Event</roleTerm>
             </role>
           </name>
         XML
@@ -751,11 +746,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           <name>
             <namePart>San Francisco Symphony Concert</namePart>
             <role>
-              <roleTerm type="text">event</roleTerm>
-            </role>
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">contributor</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
+              <roleTerm type="text" authority="H2 contributor role terms">Event</roleTerm>
             </role>
           </name>
         XML
@@ -797,7 +788,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           <name type="conference" usage="primary">
             <namePart>LDCX</namePart>
             <role>
-              <roleTerm type="text">conference</roleTerm>
+              <roleTerm type="text" authority="H2 contributor role terms">Conference</roleTerm>
             </role>
           </name>
         XML
@@ -889,11 +880,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           <name type="conference">
             <namePart>LDCX</namePart>
             <role>
-              <roleTerm type="text">conference</roleTerm>
-            </role>
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">contributor</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
+              <roleTerm type="text" authority="H2 contributor role terms">Conference</roleTerm>
             </role>
           </name>
         XML
@@ -1052,10 +1039,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                 valueURI="http://id.loc.gov/vocabulary/relators/fnd">fnd</roleTerm>
               <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
                 valueURI="http://id.loc.gov/vocabulary/relators/fnd">funder</roleTerm>
-            </role>
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">contributor</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
             </role>
           </name>
         XML
