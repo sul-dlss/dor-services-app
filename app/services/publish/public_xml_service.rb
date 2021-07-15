@@ -43,7 +43,7 @@ module Publish
 
     attr_reader :released_for
 
-    # Generate XML structure for inclusion to Purl
+    # Generate XML structure for inclusion to Purl. This data is read by purl-fetcher.
     # @return [String] The XML release node as a string, with ReleaseDigest as the root document
     def release_xml
       @release_xml ||= begin

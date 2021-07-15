@@ -359,50 +359,6 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
-  '/v1/objects/{object_id}/release_tags':
-    get:
-      tags:
-        - tags
-      summary: Show release tags for an object and for all the collections that it belongs to.
-      description: ''
-      operationId: 'release_tags#show'
-      responses:
-        '200':
-          description: OK
-        '404':
-          description: Object not found
-      parameters:
-        - name: object_id
-          in: path
-          description: ID of object
-          required: true
-          schema:
-            $ref: '#/components/schemas/Druid'
-    post:
-      tags:
-        - tags
-      summary: Assign the release tags
-      description: ''
-      operationId: 'release_tags#create'
-      responses:
-        '201':
-          description: Created
-        '400':
-          description: Bad request
-      parameters:
-        - name: object_id
-          in: path
-          description: ID of object
-          required: true
-          schema:
-            $ref: '#/components/schemas/Druid'
-      requestBody:
-        description: a release tag for an object
-        content:
-          application/json:
-            schema:
-              # Note that additionalProperties needs to be set to true to allow object_id parameter.
-              $ref: '#/components/schemas/ReleaseTag'
   '/v1/objects/{object_id}/administrative_tags':
     get:
       tags:
