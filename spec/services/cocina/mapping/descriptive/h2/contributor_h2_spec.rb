@@ -34,6 +34,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'author',
                   code: 'aut',
                   uri: 'http://id.loc.gov/vocabulary/relators/aut',
@@ -91,6 +97,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'author',
                   code: 'aut',
                   uri: 'http://id.loc.gov/vocabulary/relators/aut',
@@ -118,6 +130,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               ],
               type: 'person',
               role: [
+                {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'author',
                   code: 'aut',
@@ -184,6 +202,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Data collector',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'compiler',
                   code: 'com',
                   uri: 'http://id.loc.gov/vocabulary/relators/com',
@@ -202,6 +226,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               ],
               type: 'organization',
               role: [
+                {
+                  value: 'Sponsor',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'sponsor',
                   code: 'spn',
@@ -257,6 +287,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Host institution',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'host institution',
                   code: 'his',
                   uri: 'http://id.loc.gov/vocabulary/relators/his',
@@ -304,6 +340,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Host institution',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'host institution',
                   code: 'his',
                   uri: 'http://id.loc.gov/vocabulary/relators/his',
@@ -323,7 +365,19 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'organization',
               role: [
                 {
-                  value: 'department'
+                  value: 'Department',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
+                  value: 'host institution',
+                  code: 'his',
+                  uri: 'http://id.loc.gov/vocabulary/relators/his',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
                 }
               ]
             }
@@ -381,6 +435,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'author',
                   code: 'aut',
                   uri: 'http://id.loc.gov/vocabulary/relators/aut',
@@ -408,6 +468,18 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               ],
               type: 'person',
               role: [
+                {
+                  value: 'Contributing author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
+                },
                 {
                   value: 'contributor',
                   code: 'ctb',
@@ -476,6 +548,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Data collector',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'compiler',
                   code: 'com',
                   uri: 'http://id.loc.gov/vocabulary/relators/com',
@@ -495,18 +573,21 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'organization',
               role: [
                 {
+                  value: 'Sponsor',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
+                },
+                {
                   value: 'sponsor',
                   code: 'spn',
                   uri: 'http://id.loc.gov/vocabulary/relators/spn',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'contributor',
-                  code: 'ctb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
@@ -563,7 +644,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
-                  value: 'event'
+                  value: 'Event',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
                 }
               ]
             }
@@ -613,6 +697,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Event organizer',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'organizer',
                   code: 'orm',
                   uri: 'http://id.loc.gov/vocabulary/relators/orm',
@@ -631,16 +721,16 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               ],
               role: [
                 {
-                  value: 'event'
-                },
-                {
-                  value: 'contributor',
-                  code: 'ctb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
+                  value: 'Event',
                   source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
                 }
               ]
             }
@@ -691,7 +781,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
-                  value: 'conference'
+                  value: 'Conference',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
                 }
               ]
             }
@@ -741,6 +834,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Speaker',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'speaker',
                   code: 'spk',
                   uri: 'http://id.loc.gov/vocabulary/relators/spk',
@@ -760,16 +859,16 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'conference',
               role: [
                 {
-                  value: 'conference'
-                },
-                {
-                  value: 'contributor',
-                  code: 'ctb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
+                  value: 'Conference',
                   source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
                 }
               ]
             }
@@ -819,6 +918,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'organization',
               status: 'primary',
               role: [
+                {
+                  value: 'Funder',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'funder',
                   code: 'fnd',
@@ -879,6 +984,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Data collector',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'compiler',
                   code: 'com',
                   uri: 'http://id.loc.gov/vocabulary/relators/com',
@@ -898,18 +1009,21 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'organization',
               role: [
                 {
+                  value: 'Funder',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
+                },
+                {
                   value: 'funder',
                   code: 'fnd',
                   uri: 'http://id.loc.gov/vocabulary/relators/fnd',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'contributor',
-                  code: 'ctb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
@@ -968,6 +1082,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Publisher',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'publisher',
                   code: 'pbl',
                   uri: 'http://id.loc.gov/vocabulary/relators/pbl',
@@ -989,6 +1109,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
+                  type: 'organization',
                   role: [
                     {
                       value: 'publisher',
@@ -1054,6 +1175,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'author',
                   code: 'aut',
                   uri: 'http://id.loc.gov/vocabulary/relators/aut',
@@ -1075,183 +1202,21 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
+                  type: 'organization',
                   role: [
                     {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      value: 'Publisher',
                       source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <name type="personal" usage="primary">
-            <namePart type="given">Jane</namePart>
-            <namePart type="family">Stanford</namePart>
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-            </role>
-          </name>
-          <originInfo eventType="publication">
-            <publisher>Stanford University Press</publisher>
-          </originInfo>
-        XML
-      end
-    end
-  end
-
-  describe 'Cited contributor with Publisher role and publication date' do
-    # Authors to include in citation
-    ## Stanford University Press. Publisher.
-    # Publication date
-    ## 2020-02-02
-
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford University Press'
-                }
-              ],
-              type: 'organization',
-              status: 'primary',
-              role: [
-                {
-                  value: 'publisher',
-                  code: 'pbl',
-                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            }
-          ],
-          event: [
-            {
-              type: 'publication',
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: 'Stanford University Press'
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  encoding: {
-                    code: 'w3cdtf'
-                  },
-                  value: '2020-02-02',
-                  status: 'primary',
-                  type: 'publication'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <name type="corporate" usage="primary">
-            <namePart>Stanford University Press</namePart>
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">publisher</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">pbl</roleTerm>
-            </role>
-          </name>
-          <originInfo eventType="publication">
-            <publisher>Stanford University Press</publisher>
-            <dateIssued keyDate="yes" encoding="w3cdtf">2020-02-02</dateIssued>
-          </originInfo>
-        XML
-      end
-    end
-  end
-
-  describe 'Cited contributor and uncited contributor with Publisher role and publication date' do
-    # Authors to include in citation
-    ## Jane Stanford. Author.
-    # Additional contributors
-    ## Stanford University Press. Publisher.
-    # Publication date
-    ## 2020-02-02
-
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  structuredValue: [
-                    {
-                      value: 'Jane',
-                      type: 'forename'
+                        value: 'H2 contributor role terms'
+                      },
+                      note: [
+                        {
+                          type: 'citation status',
+                          value: 'false'
+                        }
+                      ]
                     },
                     {
-                      value: 'Stanford',
-                      type: 'surname'
-                    }
-                  ]
-                }
-              ],
-              type: 'person',
-              status: 'primary',
-              role: [
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            }
-          ],
-          event: [
-            {
-              type: 'publication',
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: 'Stanford University Press'
-                    }
-                  ],
-                  role: [
-                    {
                       value: 'publisher',
                       code: 'pbl',
                       uri: 'http://id.loc.gov/vocabulary/relators/pbl',
@@ -1261,16 +1226,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       }
                     }
                   ]
-                }
-              ],
-              date: [
-                {
-                  encoding: {
-                    code: 'w3cdtf'
-                  },
-                  value: '2020-02-02',
-                  status: 'primary',
-                  type: 'publication'
                 }
               ]
             }
@@ -1290,7 +1245,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           </name>
           <originInfo eventType="publication">
             <publisher>Stanford University Press</publisher>
-            <dateIssued keyDate="yes" encoding="w3cdtf">2020-02-02</dateIssued>
           </originInfo>
         XML
       end
