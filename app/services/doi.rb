@@ -9,6 +9,6 @@ class Doi
   end
 
   def self.prefix
-    Settings.doi_prefix
+    Settings.datacite.prefix
   end
 end
