@@ -295,7 +295,7 @@ RSpec.describe 'Create object' do
           allow(Dor::Item).to receive(:new).and_return(item)
           allow(item).to receive(:collections).and_return([])
           allow(item).to receive(:save!)
-          allow(Settings).to receive(:doi_prefix).and_return('10.25740')
+          allow(Settings.datacite).to receive(:prefix).and_return('10.25740')
         end
 
         it 'registers the object with a DOI' do

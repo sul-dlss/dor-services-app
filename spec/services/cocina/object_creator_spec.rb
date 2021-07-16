@@ -18,7 +18,7 @@ RSpec.describe Cocina::ObjectCreator do
       args[:fedora_object].descMetadata.mods_title = 'foo'
     end
     allow(SynchronousIndexer).to receive(:reindex_remotely)
-    allow(Settings).to receive(:doi_prefix).and_return('10.25740')
+    allow(Settings.datacite).to receive(:prefix).and_return('10.25740')
   end
 
   context 'when Cocina::Models::RequestDRO is received' do

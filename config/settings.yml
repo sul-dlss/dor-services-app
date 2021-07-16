@@ -102,4 +102,5 @@ from_fedora_data_errors:
   notify_warn: true
   notify_error: true
 
-doi_prefix: '10.80343'
+datacite:
+  prefix: '10.80343'
