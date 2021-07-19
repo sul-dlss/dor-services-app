@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'form'
+
 module Cocina
   module ToDatacite
     # Transform the Cocina::Models::DRO schema to DataCite attributes
@@ -23,18 +25,19 @@ module Cocina
 
         {
           doi: doi,
-          prefix: doi_prefix,
-          identifiers: [], # needs mapping
-          creators: [], # to be implemented from contributors_h2 mapping
-          dates: [], # to be implemented from event_h2 mapping
-          descriptions: [], # needs mapping
-          publisher: 'to be implemented', # to be implemented from event_h2 mapping
-          publicationYear: 1964, # to be implemented from event_h2 mapping,
-          relatedItems: [], # to be implemented from related_item_h2 mapping
-          subjects: [], # to be implemented from subject_h2 mapping
-          titles: [], # to be implemented
-          types: {} # to be implemented from form_h2 mapping
-        }
+          prefix: doi_prefix
+        }.tap do |attribs|
+          attribs[:identifiers] = [] # needs mapping
+          attribs[:creators] = [] # to be implemented from contributors_h2 mapping
+          attribs[:dates] = [] # to be implemented from event_h2 mapping
+          attribs[:descriptions] = [] # needs mapping
+          attribs[:publisher] = 'to be implemented' # to be implemented from event_h2 mapping
+          attribs[:publicationYear] = 1964 # to be implemented from event_h2 mapping,
+          attribs[:relatedItems] = [] # to be implemented from related_item_h2 mapping
+          attribs[:subjects] = [] # to be implemented from subject_h2 mapping
+          attribs[:titles] = [] # to be implemented
+          attribs[:types] = Form.type_attributes(cocina_dro.description) if Form.type_attributes(cocina_dro.description).present?
+        end
       end
 
       private
