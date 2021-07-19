@@ -43,8 +43,93 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           publicationYear: 1964,
           relatedItems: [],
           subjects: [],
+          titles: []
+        }
+      )
+    end
+  end
+
+  context 'with cocina form values' do
+    let(:cocina_dro) do
+      Cocina::Models::DRO.new(externalIdentifier: druid,
+                              type: Cocina::Models::Vocab.object,
+                              label: label,
+                              version: 1,
+                              description: {
+                                title: [{ value: title }],
+                                form: [
+                                  {
+                                    structuredValue: [
+                                      {
+                                        value: 'Data',
+                                        type: 'type'
+                                      }
+                                    ],
+                                    source: {
+                                      value: 'Stanford self-deposit resource types'
+                                    },
+                                    type: 'resource type'
+                                  },
+                                  {
+                                    value: 'Dataset',
+                                    type: 'resource type',
+                                    uri: 'http://id.loc.gov/vocabulary/resourceTypes/dat',
+                                    source: {
+                                      uri: 'http://id.loc.gov/vocabulary/resourceTypes/'
+                                    }
+                                  },
+                                  {
+                                    value: 'Data sets',
+                                    type: 'genre',
+                                    uri: 'https://id.loc.gov/authorities/genreForms/gf2018026119',
+                                    source: {
+                                      code: 'lcgft'
+                                    }
+                                  },
+                                  {
+                                    value: 'dataset',
+                                    type: 'genre',
+                                    source: {
+                                      code: 'local'
+                                    }
+                                  },
+                                  {
+                                    value: 'Dataset',
+                                    type: 'resource type',
+                                    source: {
+                                      value: 'DataCite resource types'
+                                    }
+                                  }
+                                ]
+                              },
+                              identification: {
+                                sourceId: 'sul:8.559351',
+                                doi: doi
+                              },
+                              access: {},
+                              administrative: {
+                                hasAdminPolicy: apo_druid
+                              })
+    end
+
+    it 'populates types in the attributes hash' do
+      expect(attributes).to eq(
+        {
+          doi: doi,
+          prefix: '10.25740',
+          identifiers: [],
+          creators: [],
+          dates: [],
+          descriptions: [],
+          publisher: 'to be implemented',
+          publicationYear: 1964,
+          relatedItems: [],
+          subjects: [],
           titles: [],
-          types: {}
+          types: {
+            resourceTypeGeneral: 'Dataset',
+            resourceType: 'Data'
+          }
         }
       )
     end
