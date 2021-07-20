@@ -4,14 +4,13 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
   # Full role mapping: https://docs.google.com/spreadsheets/d/1CvEd_NODprNhM2D9VfvJBFs1jfAMEUr0kDxXHe2HkL4/edit?usp=sharing
-  # First entry in "Authors to include in citation" receives "status": "primary",
-  # which maps to "usage=primary" in MODS.
+  # First entry in "Authors to include in citation" receives "status": "primary", which maps to "usage=primary" in MODS.
 
   describe 'Cited contributor with author role' do
     # Authors to include in citation
     ## Jane Stanford. Author.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -33,6 +32,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'person',
               status: 'primary',
               role: [
+                {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'author',
                   code: 'aut',
@@ -68,7 +73,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Author.
     ## Leland Stanford. Author.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -90,6 +95,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'person',
               status: 'primary',
               role: [
+                {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'author',
                   code: 'aut',
@@ -118,6 +129,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               ],
               type: 'person',
               role: [
+                {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'author',
                   code: 'aut',
@@ -161,7 +178,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Data collector.
     ## Stanford University. Sponsor.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -184,6 +201,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Data collector',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'compiler',
                   code: 'com',
                   uri: 'http://id.loc.gov/vocabulary/relators/com',
@@ -202,6 +225,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               ],
               type: 'organization',
               role: [
+                {
+                  value: 'Sponsor',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'sponsor',
                   code: 'spn',
@@ -243,7 +272,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Stanford University. Host institution.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -256,6 +285,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'organization',
               status: 'primary',
               role: [
+                {
+                  value: 'Host institution',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'host institution',
                   code: 'his',
@@ -290,7 +325,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University. Host institution.
     ## Department of English. Department.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -303,6 +338,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'organization',
               status: 'primary',
               role: [
+                {
+                  value: 'Host institution',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'host institution',
                   code: 'his',
@@ -323,7 +364,19 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'organization',
               role: [
                 {
-                  value: 'department'
+                  value: 'Department',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
+                  value: 'host institution',
+                  code: 'his',
+                  uri: 'http://id.loc.gov/vocabulary/relators/his',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
                 }
               ]
             }
@@ -343,7 +396,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           <name type="corporate">
             <namePart>Department of English</namePart>
             <role>
-              <roleTerm type="text">department</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/his">host institution</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/his">his</roleTerm>
             </role>
           </name>
         XML
@@ -356,9 +410,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Author.
     # Additional contributors
     ## Leland Stanford. Contributing author.
-    # Contributing author role maps to contributor.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -380,6 +433,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'person',
               status: 'primary',
               role: [
+                {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'author',
                   code: 'aut',
@@ -409,6 +468,18 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'person',
               role: [
                 {
+                  value: 'Contributing author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
+                },
+                {
                   value: 'contributor',
                   code: 'ctb',
                   uri: 'http://id.loc.gov/vocabulary/relators/ctb',
@@ -436,6 +507,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           <name type="personal">
             <namePart type="given">Leland</namePart>
             <namePart type="family">Stanford</namePart>
+            <description>not included in citation</description>
             <role>
               <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">contributor</roleTerm>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
@@ -451,9 +523,8 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Data collector.
     # Additional contributors
     ## Stanford University. Sponsor.
-    # Add contributor role to names in Additional contributors section.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -476,6 +547,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Data collector',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'compiler',
                   code: 'com',
                   uri: 'http://id.loc.gov/vocabulary/relators/com',
@@ -495,18 +572,21 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'organization',
               role: [
                 {
+                  value: 'Sponsor',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
+                },
+                {
                   value: 'sponsor',
                   code: 'spn',
                   uri: 'http://id.loc.gov/vocabulary/relators/spn',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'contributor',
-                  code: 'ctb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
@@ -530,13 +610,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           </name>
           <name type="corporate">
             <namePart>Stanford University</namePart>
+            <description>not included in citation</description>
             <role>
               <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spn">sponsor</roleTerm>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
-            </role>
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">contributor</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
             </role>
           </name>
         XML
@@ -550,7 +627,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## San Francisco Symphony Concert. Event.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -563,7 +640,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
-                  value: 'event'
+                  value: 'Event',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
                 }
               ]
             }
@@ -572,11 +652,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
       end
 
       let(:mods) do
+        # No marcrelator role, so fall back to H2 role
         <<~XML
           <name usage="primary">
             <namePart>San Francisco Symphony Concert</namePart>
             <role>
-              <roleTerm type="text">event</roleTerm>
+              <roleTerm type="text" authority="H2 contributor role terms">Event</roleTerm>
             </role>
           </name>
         XML
@@ -590,7 +671,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## San Francisco Symphony Concert. Event.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -612,6 +693,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'person',
               status: 'primary',
               role: [
+                {
+                  value: 'Event organizer',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'organizer',
                   code: 'orm',
@@ -631,16 +718,16 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               ],
               role: [
                 {
-                  value: 'event'
-                },
-                {
-                  value: 'contributor',
-                  code: 'ctb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
+                  value: 'Event',
                   source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
                 }
               ]
             }
@@ -660,12 +747,9 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           </name>
           <name>
             <namePart>San Francisco Symphony Concert</namePart>
+            <description>not included in citation</description>
             <role>
-              <roleTerm type="text">event</roleTerm>
-            </role>
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">contributor</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
+              <roleTerm type="text" authority="H2 contributor role terms">Event</roleTerm>
             </role>
           </name>
         XML
@@ -677,7 +761,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## LDCX. Conference.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -691,7 +775,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
-                  value: 'conference'
+                  value: 'Conference',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
                 }
               ]
             }
@@ -704,7 +791,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           <name type="conference" usage="primary">
             <namePart>LDCX</namePart>
             <role>
-              <roleTerm type="text">conference</roleTerm>
+              <roleTerm type="text" authority="H2 contributor role terms">Conference</roleTerm>
             </role>
           </name>
         XML
@@ -718,7 +805,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## LDCX. Conference.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -740,6 +827,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'person',
               status: 'primary',
               role: [
+                {
+                  value: 'Speaker',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'speaker',
                   code: 'spk',
@@ -760,16 +853,16 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'conference',
               role: [
                 {
-                  value: 'conference'
-                },
-                {
-                  value: 'contributor',
-                  code: 'ctb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
+                  value: 'Conference',
                   source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
                 }
               ]
             }
@@ -789,12 +882,9 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           </name>
           <name type="conference">
             <namePart>LDCX</namePart>
+            <description>not included in citation</description>
             <role>
-              <roleTerm type="text">conference</roleTerm>
-            </role>
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">contributor</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
+              <roleTerm type="text" authority="H2 contributor role terms">Conference</roleTerm>
             </role>
           </name>
         XML
@@ -806,7 +896,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Stanford University. Funder.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -819,6 +909,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'organization',
               status: 'primary',
               role: [
+                {
+                  value: 'Funder',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'funder',
                   code: 'fnd',
@@ -856,7 +952,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Stanford University. Funder.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -879,6 +975,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Data collector',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'compiler',
                   code: 'com',
                   uri: 'http://id.loc.gov/vocabulary/relators/com',
@@ -898,18 +1000,21 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'organization',
               role: [
                 {
+                  value: 'Funder',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
+                },
+                {
                   value: 'funder',
                   code: 'fnd',
                   uri: 'http://id.loc.gov/vocabulary/relators/fnd',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                },
-                {
-                  value: 'contributor',
-                  code: 'ctb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
@@ -933,15 +1038,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           </name>
           <name type="corporate">
             <namePart>Stanford University</namePart>
+            <description>not included in citation</description>
             <role>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
                 valueURI="http://id.loc.gov/vocabulary/relators/fnd">fnd</roleTerm>
               <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/"
                 valueURI="http://id.loc.gov/vocabulary/relators/fnd">funder</roleTerm>
-            </role>
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">contributor</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
             </role>
           </name>
         XML
@@ -954,7 +1056,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University Press. Publisher.
     # Cited publisher goes into both contributor and event.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -967,6 +1069,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               type: 'organization',
               status: 'primary',
               role: [
+                {
+                  value: 'Publisher',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
                 {
                   value: 'publisher',
                   code: 'pbl',
@@ -989,6 +1097,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
+                  type: 'organization',
                   role: [
                     {
                       value: 'publisher',
@@ -1031,7 +1140,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University Press. Publisher.
     # Uncited publisher goes into event only.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -1054,6 +1163,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               status: 'primary',
               role: [
                 {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
                   value: 'author',
                   code: 'aut',
                   uri: 'http://id.loc.gov/vocabulary/relators/aut',
@@ -1075,7 +1190,20 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
+                  type: 'organization',
                   role: [
+                    {
+                      value: 'Publisher',
+                      source: {
+                        value: 'H2 contributor role terms'
+                      },
+                      note: [
+                        {
+                          type: 'citation status',
+                          value: 'false'
+                        }
+                      ]
+                    },
                     {
                       value: 'publisher',
                       code: 'pbl',
@@ -1105,192 +1233,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           </name>
           <originInfo eventType="publication">
             <publisher>Stanford University Press</publisher>
-          </originInfo>
-        XML
-      end
-    end
-  end
-
-  describe 'Cited contributor with Publisher role and publication date' do
-    # Authors to include in citation
-    ## Stanford University Press. Publisher.
-    # Publication date
-    ## 2020-02-02
-
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  value: 'Stanford University Press'
-                }
-              ],
-              type: 'organization',
-              status: 'primary',
-              role: [
-                {
-                  value: 'publisher',
-                  code: 'pbl',
-                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            }
-          ],
-          event: [
-            {
-              type: 'publication',
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: 'Stanford University Press'
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  encoding: {
-                    code: 'w3cdtf'
-                  },
-                  value: '2020-02-02',
-                  status: 'primary',
-                  type: 'publication'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <name type="corporate" usage="primary">
-            <namePart>Stanford University Press</namePart>
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">publisher</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">pbl</roleTerm>
-            </role>
-          </name>
-          <originInfo eventType="publication">
-            <publisher>Stanford University Press</publisher>
-            <dateIssued keyDate="yes" encoding="w3cdtf">2020-02-02</dateIssued>
-          </originInfo>
-        XML
-      end
-    end
-  end
-
-  describe 'Cited contributor and uncited contributor with Publisher role and publication date' do
-    # Authors to include in citation
-    ## Jane Stanford. Author.
-    # Additional contributors
-    ## Stanford University Press. Publisher.
-    # Publication date
-    ## 2020-02-02
-
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          contributor: [
-            {
-              name: [
-                {
-                  structuredValue: [
-                    {
-                      value: 'Jane',
-                      type: 'forename'
-                    },
-                    {
-                      value: 'Stanford',
-                      type: 'surname'
-                    }
-                  ]
-                }
-              ],
-              type: 'person',
-              status: 'primary',
-              role: [
-                {
-                  value: 'author',
-                  code: 'aut',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
-                  source: {
-                    code: 'marcrelator',
-                    uri: 'http://id.loc.gov/vocabulary/relators/'
-                  }
-                }
-              ]
-            }
-          ],
-          event: [
-            {
-              type: 'publication',
-              contributor: [
-                {
-                  name: [
-                    {
-                      value: 'Stanford University Press'
-                    }
-                  ],
-                  role: [
-                    {
-                      value: 'publisher',
-                      code: 'pbl',
-                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
-                      source: {
-                        code: 'marcrelator',
-                        uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    }
-                  ]
-                }
-              ],
-              date: [
-                {
-                  encoding: {
-                    code: 'w3cdtf'
-                  },
-                  value: '2020-02-02',
-                  status: 'primary',
-                  type: 'publication'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <name type="personal" usage="primary">
-            <namePart type="given">Jane</namePart>
-            <namePart type="family">Stanford</namePart>
-            <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
-            </role>
-          </name>
-          <originInfo eventType="publication">
-            <publisher>Stanford University Press</publisher>
-            <dateIssued keyDate="yes" encoding="w3cdtf">2020-02-02</dateIssued>
           </originInfo>
         XML
       end
