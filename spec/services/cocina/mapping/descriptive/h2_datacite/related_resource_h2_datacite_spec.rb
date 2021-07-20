@@ -40,7 +40,7 @@ RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
         {
           relatedItemType: 'Other',
           relationType: 'References',
-          Title: [
+          titles: [
             {
               title: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. Professor Maya Aguirre. Department of Earth Sciences, Stanford University.'
             }
@@ -72,7 +72,7 @@ RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
       }
     end
 
-    it 'populates related_item_attributes correctly' do
+    xit 'populates related_item_attributes correctly' do
       # let(:datacite_xml) do
       #   <<~XML
       #     <relatedItems>
@@ -89,17 +89,13 @@ RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
         {
           relatedItemType: 'Other',
           relationType: 'References',
-          Title: [
+          titles: [
             {
               title: 'A paper'
             }
           ],
-          relatedItemIdentifier: [
-            {
-              relatedItemIdentifier: 'https://www.example.com/paper.html',
-              relatedItemIdentifierType: 'URL'
-            }
-          ]
+          relatedItemIdentifier: 'https://www.example.com/paper.html',
+          relatedItemIdentifierType: 'URL'
         }
       )
     end
@@ -122,7 +118,7 @@ RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
       }
     end
 
-    it 'populates related_item_attributes correctly' do
+    xit 'populates related_item_attributes correctly' do
       # let(:datacite_xml) do
       #   <<~XML
       #     <relatedItems>
@@ -136,12 +132,8 @@ RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
         {
           relatedItemType: 'Other',
           relationType: 'References',
-          relatedItemIdentifier: [
-            {
-              relatedItemIdentifier: 'https://www.example.com/paper.html',
-              relatedItemIdentifierType: 'URL'
-            }
-          ]
+          relatedItemIdentifier: 'https://www.example.com/paper.html',
+          relatedItemIdentifierType: 'URL'
         }
       )
     end
