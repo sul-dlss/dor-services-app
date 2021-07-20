@@ -4,7 +4,7 @@ require 'rails_helper'
 
 # relatedItem attribute new in DataCite schema v. 4.4 and not included in API docs as of 2021-07
 RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
-  # Note that this instantiation of Description does NOT validate against OpenAPI due to title validation issues.
+  # NOTE: Because we haven't set a title in this Cocina::Models::Description, it will not validate against the openapi.
   let(:cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
   let(:related_item_attributes) { Cocina::ToDatacite::RelatedResource.related_item_attributes(cocina_description) }
 
