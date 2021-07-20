@@ -35,7 +35,7 @@ RSpec.shared_examples 'MODS cocina mapping' do
   # Required: mods, cocina
   # Optional: druid, roundtrip_mods, warnings, errors, mods_attributes, skip_normalization, label
 
-  # Note that this instantiation of Description does NOT validate against OpenAPI due to title validation issues.
+  # NOTE: Because we haven't necessarily set a title in this Cocina::Models::Description, it may not validate against the openapi.
   let(:orig_cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
 
   let(:orig_mods_ng) { ng_mods_for(mods, mods_attributes) }
@@ -167,7 +167,7 @@ RSpec.shared_examples 'cocina MODS mapping' do
   # Required: mods, cocina
   # Optional: druid, roundtrip_cocina, warnings, errors, mods_attributes, label
 
-  # Note that this instantiation of Description does NOT validate against OpenAPI due to title validation issues.
+  # NOTE: Because we haven't necessarily set a title in this Cocina::Models::Description, it may not validate against the openapi.
   let(:orig_cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
 
   let(:mods_attributes) { MODS_ATTRIBUTES }
