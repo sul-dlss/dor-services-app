@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'form'
+require_relative 'related_resource'
 
 module Cocina
   module ToDatacite
@@ -33,7 +34,7 @@ module Cocina
           attribs[:descriptions] = [] # needs mapping
           attribs[:publisher] = 'to be implemented' # to be implemented from event_h2 mapping
           attribs[:publicationYear] = 1964 # to be implemented from event_h2 mapping,
-          attribs[:relatedItems] = [] # to be implemented from related_item_h2 mapping
+          attribs[:relatedItems] = [RelatedResource.related_item_attributes(cocina_dro.description)].compact if RelatedResource.related_item_attributes(cocina_dro.description).present?
           attribs[:subjects] = [] # to be implemented from subject_h2 mapping
           attribs[:titles] = [] # to be implemented
           attribs[:types] = Form.type_attributes(cocina_dro.description) if Form.type_attributes(cocina_dro.description).present?
