@@ -41,7 +41,6 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           descriptions: [],
           publisher: 'to be implemented',
           publicationYear: 1964,
-          relatedItems: [],
           subjects: [],
           titles: []
         }
@@ -49,7 +48,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     end
   end
 
-  context 'with cocina form values' do
+  context 'with cocina form and relatedResource values' do
     let(:cocina_dro) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::Vocab.object,
@@ -100,6 +99,16 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                       value: 'DataCite resource types'
                                     }
                                   }
+                                ],
+                                relatedResource: [
+                                  {
+                                    note: [
+                                      {
+                                        value: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. yadda yadda.',
+                                        type: 'preferred citation'
+                                      }
+                                    ]
+                                  }
                                 ]
                               },
                               identification: {
@@ -123,7 +132,17 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           descriptions: [],
           publisher: 'to be implemented',
           publicationYear: 1964,
-          relatedItems: [],
+          relatedItems: [
+            {
+              relatedItemType: 'Other',
+              relationType: 'References',
+              titles: [
+                {
+                  title: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. yadda yadda.'
+                }
+              ]
+            }
+          ],
           subjects: [],
           titles: [],
           types: {
