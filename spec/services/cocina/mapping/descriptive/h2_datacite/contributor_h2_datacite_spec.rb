@@ -804,6 +804,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         {
           contributor: [
             {
+              type: 'event',
               name: [
                 {
                   value: 'San Francisco Symphony Concert'
@@ -904,6 +905,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               ]
             },
             {
+              type: 'event',
               name: [
                 {
                   value: 'San Francisco Symphony Concert'
