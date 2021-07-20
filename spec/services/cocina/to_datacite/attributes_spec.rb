@@ -41,7 +41,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           publicationYear: 1964,
           publisher: 'to be implemented',
           subjects: [],
-          titles: []
+          titles: [{ title: title }]
         }
       )
     end
@@ -154,7 +154,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
             }
           ],
           subjects: [],
-          titles: [],
+          titles: [{ title: title }],
           types: {
             resourceTypeGeneral: 'Dataset',
             resourceType: 'Data'
