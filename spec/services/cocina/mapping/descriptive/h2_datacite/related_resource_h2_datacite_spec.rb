@@ -24,7 +24,7 @@ RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
       }
     end
 
-    it 'populates related_item_attributes correctly' do
+    xit 'populates related_item_attributes correctly' do
       # let(:datacite_xml) do
       #   <<~XML
       #     <relatedItems>
