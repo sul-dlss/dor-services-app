@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'form'
-require_relative 'note'
-require_relative 'related_resource'
-
 module Cocina
   module ToDatacite
     # Transform the Cocina::Models::DRO schema to DataCite attributes
