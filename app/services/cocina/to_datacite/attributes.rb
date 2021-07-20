@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'form'
+require_relative 'note'
 require_relative 'related_resource'
 
 module Cocina
@@ -28,16 +29,16 @@ module Cocina
           doi: doi,
           prefix: doi_prefix
         }.tap do |attribs|
-          attribs[:identifiers] = [] # needs mapping
           attribs[:creators] = [] # to be implemented from contributors_h2 mapping
           attribs[:dates] = [] # to be implemented from event_h2 mapping
-          attribs[:descriptions] = [] # needs mapping
-          attribs[:publisher] = 'to be implemented' # to be implemented from event_h2 mapping
+          attribs[:descriptions] = [description].compact if description
+          attribs[:identifiers] = [] # needs mapping
           attribs[:publicationYear] = 1964 # to be implemented from event_h2 mapping,
-          attribs[:relatedItems] = [RelatedResource.related_item_attributes(cocina_dro.description)].compact if RelatedResource.related_item_attributes(cocina_dro.description).present?
+          attribs[:publisher] = 'to be implemented' # to be implemented from event_h2 mapping
+          attribs[:relatedItems] = [related_item].compact if related_item
           attribs[:subjects] = [] # to be implemented from subject_h2 mapping
           attribs[:titles] = [] # to be implemented
-          attribs[:types] = Form.type_attributes(cocina_dro.description) if Form.type_attributes(cocina_dro.description).present?
+          attribs[:types] = types_attributes if types_attributes
         end
       end
 
@@ -56,6 +57,21 @@ module Cocina
         return unless doi
 
         doi.split('/').first
+      end
+
+      def description
+        @description ||= Note.descriptions_attributes(cocina_dro.description)
+        @description.presence
+      end
+
+      def related_item
+        @related_item ||= RelatedResource.related_item_attributes(cocina_dro.description)
+        @related_item.presence
+      end
+
+      def types_attributes
+        @types_attributes ||= Form.type_attributes(cocina_dro.description)
+        @types_attributes.presence
       end
     end
   end

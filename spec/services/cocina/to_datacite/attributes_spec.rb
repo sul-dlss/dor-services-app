@@ -35,12 +35,11 @@ RSpec.describe Cocina::ToDatacite::Attributes do
         {
           doi: doi,
           prefix: '10.25740',
-          identifiers: [],
           creators: [],
           dates: [],
-          descriptions: [],
-          publisher: 'to be implemented',
+          identifiers: [],
           publicationYear: 1964,
+          publisher: 'to be implemented',
           subjects: [],
           titles: []
         }
@@ -48,7 +47,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     end
   end
 
-  context 'with cocina form and relatedResource values' do
+  context 'with cocina description form, note and relatedResource values' do
     let(:cocina_dro) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::Vocab.object,
@@ -100,6 +99,12 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                     }
                                   }
                                 ],
+                                note: [
+                                  {
+                                    type: 'abstract',
+                                    value: 'My paper is about dolphins.'
+                                  }
+                                ],
                                 relatedResource: [
                                   {
                                     note: [
@@ -126,12 +131,17 @@ RSpec.describe Cocina::ToDatacite::Attributes do
         {
           doi: doi,
           prefix: '10.25740',
-          identifiers: [],
           creators: [],
           dates: [],
-          descriptions: [],
-          publisher: 'to be implemented',
+          descriptions: [
+            {
+              description: 'My paper is about dolphins.',
+              descriptionType: 'Abstract'
+            }
+          ],
+          identifiers: [],
           publicationYear: 1964,
+          publisher: 'to be implemented',
           relatedItems: [
             {
               relatedItemType: 'Other',
