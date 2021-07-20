@@ -19,7 +19,6 @@ Layout/LineLength:
   Exclude:
     - 'bin/remediate-stanford-placeTerm'
     - 'spec/services/cocina/mapping/descriptive/h2_datacite/subject_h2_datacite_spec.rb'
-    - 'spec/services/cocina/mapping/descriptive/h2_datacite/related_item_h2_datacite_spec.rb'
 
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
