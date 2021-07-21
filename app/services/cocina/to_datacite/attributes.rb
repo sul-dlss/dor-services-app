@@ -5,21 +5,21 @@ module Cocina
     # Transform the Cocina::Models::DRO schema to DataCite attributes
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
     class Attributes
-      # @param [Cocina::Models::DRO] cocina_dro
+      # @param [Cocina::Models::DRO] cocina_item
       # @return [Hash] Hash of DataCite attributes, conforming to the expectations of HTTP PUT request to DataCite
-      def self.mapped_from_cocina(cocina_dro)
-        return unless cocina_dro&.dro?
+      def self.mapped_from_cocina(cocina_item)
+        return unless cocina_item&.dro?
 
-        new(cocina_dro).mapped_from_cocina
+        new(cocina_item).mapped_from_cocina
       end
 
-      def initialize(cocina_dro)
-        @cocina_dro = cocina_dro
+      def initialize(cocina_item)
+        @cocina_item = cocina_item
       end
 
       # @return [Hash] Hash of DataCite attributes, conforming to the expectations of HTTP PUT request to DataCite
       def mapped_from_cocina
-        return if !cocina_dro&.dro? || doi.nil?
+        return if !cocina_item&.dro? || doi.nil?
 
         {
           doi: doi,
@@ -41,12 +41,12 @@ module Cocina
 
       private
 
-      attr :cocina_dro
+      attr :cocina_item
 
       #  example: '10.25740/bc123df4567'
       # @return [String] DOI of object or nil
       def doi
-        cocina_dro.identification.doi
+        cocina_item.identification.doi
       end
 
       # @return [String] DOI prefix, e.g. '10.25740' for '10.25740/bc123df4567'
@@ -57,32 +57,32 @@ module Cocina
       end
 
       def alternate_identifier
-        @alternate_identifier ||= Identifier.alternate_identifier_attributes(cocina_dro.description)
+        @alternate_identifier ||= Identifier.alternate_identifier_attributes(cocina_item.description)
         @alternate_identifier.presence
       end
 
       def description
-        @description ||= Note.descriptions_attributes(cocina_dro.description)
+        @description ||= Note.descriptions_attributes(cocina_item.description)
         @description.presence
       end
 
       def identifier
-        @identifier ||= Identifier.identifier_attributes(cocina_dro.description)
+        @identifier ||= Identifier.identifier_attributes(cocina_item.description)
         @identifier.presence
       end
 
       def related_item
-        @related_item ||= RelatedResource.related_item_attributes(cocina_dro.description)
+        @related_item ||= RelatedResource.related_item_attributes(cocina_item.description)
         @related_item.presence
       end
 
       def title
-        @title ||= Title.title_attributes(cocina_dro.description)
+        @title ||= Title.title_attributes(cocina_item.description)
         @title.presence
       end
 
       def types_attributes
-        @types_attributes ||= Form.type_attributes(cocina_dro.description)
+        @types_attributes ||= Form.type_attributes(cocina_item.description)
         @types_attributes.presence
       end
     end

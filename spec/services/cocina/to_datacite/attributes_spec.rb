@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ToDatacite::Attributes do
-  let(:attributes) { described_class.mapped_from_cocina(cocina_dro) }
+  let(:attributes) { described_class.mapped_from_cocina(cocina_item) }
 
   let(:druid) { 'druid:bb666bb1234' }
   let(:doi) { "10.25740/#{druid.split(':').last}" }
@@ -13,7 +13,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   let(:apo_druid) { 'druid:pp000pp0000' }
 
   context 'with a minimal description' do
-    let(:cocina_dro) do
+    let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::Vocab.object,
                               label: label,
@@ -48,7 +48,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   end
 
   context 'with cocina description form, identifier, note, purl, relatedResource values' do
-    let(:cocina_dro) do
+    let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::Vocab.object,
                               label: label,
@@ -182,8 +182,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     end
   end
 
-  context 'when cocina_dro is nil' do
-    let(:cocina_dro) { nil }
+  context 'when cocina_item is nil' do
+    let(:cocina_item) { nil }
 
     it 'attributes retuns nil' do
       expect(attributes).to be_nil
@@ -191,7 +191,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   end
 
   context 'when cocina type is collection' do
-    let(:cocina_dro) do
+    let(:cocina_item) do
       Cocina::Models::Collection.new(externalIdentifier: druid,
                                      type: Cocina::Models::Vocab.collection,
                                      label: label,
@@ -212,7 +212,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   end
 
   context 'when cocina type is APO' do
-    let(:cocina_dro) do
+    let(:cocina_item) do
       Cocina::Models::AdminPolicy.new(externalIdentifier: druid,
                                       type: Cocina::Models::Vocab.admin_policy,
                                       label: label,
