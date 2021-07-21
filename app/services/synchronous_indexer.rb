@@ -4,7 +4,12 @@
 # When we can't have latency in the indexing, we can use this class to directly call dor-indexing-app
 class SynchronousIndexer
   def self.reindex_remotely(pid)
-    connection.post("reindex/#{pid}")
+    result = connection.post("reindex/#{pid}")
+    return if result.success?
+
+    error_message = "Response for reindexing was an error. #{result.status}: #{result.body}"
+    Honeybadger.notify(error_message, { druid: pid })
+    Rails.logger.error(error_message)
   end
 
   def self.connection
