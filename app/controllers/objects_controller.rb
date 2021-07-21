@@ -142,10 +142,11 @@ class ObjectsController < ApplicationController
 
   # Called by the robots.
   def update_doi_metadata
-    # TODO:  this will call a background job to pull DOI and appropriate metadata from the repo and then
-    #   send an appropriate request to DataCite via its API
-    # The background job will not have a callback to update the workflow.
-    # The background job, if there is a failure, will log in HB, but then rely on the sidekiq mechanism to retry as necessary.
+    cocina_item = Cocina::Mapper.build(@item)
+    return head :no_content unless cocina_item.identification.doi && Settings.enabled_features.datacite_update
+
+    UpdateDoiMetadataJob.perform_later(cocina_item)
+
     head :accepted
   end
 

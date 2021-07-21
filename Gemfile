@@ -8,6 +8,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 gem 'bunny', '~> 2.17' # Send messages to RabbitMQ
 gem 'committee' # validates Open API spec (OAS)
 gem 'config'
+gem 'datacite', '~> 0.2.0'
 gem 'deprecation'
 gem 'dry-monads'
 gem 'dry-schema', '~> 1.4'
