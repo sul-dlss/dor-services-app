@@ -27,13 +27,13 @@ module Cocina
         }.tap do |attribs|
           attribs[:creators] = [] # to be implemented from contributors_h2 mapping
           attribs[:dates] = [] # to be implemented from event_h2 mapping
-          attribs[:descriptions] = [description].compact if description
+          attribs[:descriptions] = [description] if description
           attribs[:identifiers] = [] # needs mapping
           attribs[:publicationYear] = 1964 # to be implemented from event_h2 mapping,
           attribs[:publisher] = 'to be implemented' # to be implemented from event_h2 mapping
-          attribs[:relatedItems] = [related_item].compact if related_item
+          attribs[:relatedItems] = [related_item] if related_item
           attribs[:subjects] = [] # to be implemented from subject_h2 mapping
-          attribs[:titles] = [] # to be implemented
+          attribs[:titles] = [title] if title
           attribs[:types] = types_attributes if types_attributes
         end
       end
@@ -63,6 +63,11 @@ module Cocina
       def related_item
         @related_item ||= RelatedResource.related_item_attributes(cocina_dro.description)
         @related_item.presence
+      end
+
+      def title
+        @title ||= Title.title_attributes(cocina_dro.description)
+        @title.presence
       end
 
       def types_attributes
