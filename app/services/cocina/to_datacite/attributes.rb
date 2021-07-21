@@ -25,10 +25,11 @@ module Cocina
           doi: doi,
           prefix: doi_prefix
         }.tap do |attribs|
+          attribs[:alternateIdentifiers] = [alternate_identifier] if alternate_identifier
           attribs[:creators] = [] # to be implemented from contributors_h2 mapping
           attribs[:dates] = [] # to be implemented from event_h2 mapping
           attribs[:descriptions] = [description] if description
-          attribs[:identifiers] = [] # needs mapping
+          attribs[:identifiers] = [identifier] if identifier
           attribs[:publicationYear] = 1964 # to be implemented from event_h2 mapping,
           attribs[:publisher] = 'to be implemented' # to be implemented from event_h2 mapping
           attribs[:relatedItems] = [related_item] if related_item
@@ -55,9 +56,19 @@ module Cocina
         doi.split('/').first
       end
 
+      def alternate_identifier
+        @alternate_identifier ||= Identifier.alternate_identifier_attributes(cocina_dro.description)
+        @alternate_identifier.presence
+      end
+
       def description
         @description ||= Note.descriptions_attributes(cocina_dro.description)
         @description.presence
+      end
+
+      def identifier
+        @identifier ||= Identifier.identifier_attributes(cocina_dro.description)
+        @identifier.presence
       end
 
       def related_item

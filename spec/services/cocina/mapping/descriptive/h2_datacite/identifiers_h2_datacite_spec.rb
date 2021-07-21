@@ -3,56 +3,114 @@
 require 'rails_helper'
 
 RSpec.describe 'Cocina --> DataCite mappings for identifier and alternateIdentifier (H2 specific)' do
+  # NOTE: Because we haven't set a title in this Cocina::Models::Description, it will not validate against the openapi.
+  let(:cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
+  let(:identifier_attributes) { Cocina::ToDatacite::Identifier.identifier_attributes(cocina_description) }
+  let(:alternate_identifier_attributes) { Cocina::ToDatacite::Identifier.alternate_identifier_attributes(cocina_description) }
+
   describe 'DOI' do
     # DOI: 10.5072/example
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          identifier: [
-            {
-              value: '10.5072/example',
-              type: 'DOI'
-            }
-          ]
-        }
-      end
-
-      let(:datacite) do
-        {
-          data: {
-            attributes: {
-              identifier: '10.5072/example',
-              identifierType: 'DOI'
-            }
+    let(:cocina) do
+      {
+        identifier: [
+          {
+            value: '10.5072/example',
+            type: 'DOI'
           }
+        ]
+      }
+    end
+
+    it 'populates identifier_attributes correctly' do
+      expect(identifier_attributes).to eq(
+        {
+          identifier: '10.5072/example',
+          identifierType: 'DOI'
         }
-      end
+      )
     end
   end
 
   describe 'purl' do
     # purl: http://purl.stanford.edu/gz708sf9862
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          purl: 'http://purl.stanford.edu/gz708sf9862'
-        }
-      end
+    let(:cocina) do
+      {
+        purl: 'http://purl.stanford.edu/gz708sf9862'
+      }
+    end
 
-      let(:datacite) do
+    it 'populates alternate_identifier_attributes correctly' do
+      expect(alternate_identifier_attributes).to eq(
         {
-          data: {
-            attributes: {
-              alternateIdentifiers: [
-                {
-                  alternateIdentifier: 'http://purl.stanford.edu/gz708sf9862',
-                  alternateIdentifierType: 'PURL'
-                }
-              ]
-            }
-          }
+          alternateIdentifier: 'http://purl.stanford.edu/gz708sf9862',
+          alternateIdentifierType: 'PURL'
         }
-      end
+      )
+    end
+  end
+
+  ### --------------- specs below added by developers ---------------
+
+  context 'when cocina identifier array has empty hash' do
+    let(:cocina) do
+      {
+        identifier: [
+          {
+          }
+        ]
+      }
+    end
+
+    it 'identifier_attributes is nil' do
+      expect(identifier_attributes).to eq nil
+    end
+  end
+
+  context 'when cocina identifier is empty array' do
+    let(:cocina) do
+      {
+        identifier: []
+      }
+    end
+
+    it 'identifier_attributes is nil' do
+      expect(identifier_attributes).to eq nil
+    end
+  end
+
+  context 'when cocina has no identifier' do
+    let(:cocina) do
+      {
+      }
+    end
+
+    it 'identifier_attributes is nil' do
+      expect(identifier_attributes).to eq nil
+    end
+  end
+
+  # NOTE: purl in cocina-model openapi is a String of format uri, so it cannot be nil
+
+  context 'when cocina purl is empty string' do
+    let(:cocina) do
+      {
+        purl: ''
+      }
+    end
+
+    it 'alternate_identifier_attributes is nil' do
+      expect(alternate_identifier_attributes).to eq nil
+    end
+  end
+
+  context 'when cocina has no purl' do
+    let(:cocina) do
+      {
+      }
+    end
+
+    it 'alternate_identifier_attributes is nil' do
+      expect(alternate_identifier_attributes).to eq nil
     end
   end
 end
