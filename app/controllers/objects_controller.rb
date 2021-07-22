@@ -145,7 +145,9 @@ class ObjectsController < ApplicationController
     cocina_item = Cocina::Mapper.build(@item)
     return head :no_content unless cocina_item.identification.doi && Settings.enabled_features.datacite_update
 
-    UpdateDoiMetadataJob.perform_later(cocina_item)
+    # We can remove this line when we upgrade to Rails 6 and just pass cocina_item.
+    serialized_item = Cocina::Serializer.new.serialize(cocina_item)
+    UpdateDoiMetadataJob.perform_later(serialized_item)
 
     head :accepted
   end

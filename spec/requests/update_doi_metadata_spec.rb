@@ -5,8 +5,28 @@ require 'rails_helper'
 RSpec.describe 'Update DOI metadata' do
   let(:druid) { 'druid:mx123qw2323' }
   let(:object) { Dor::Item.new(pid: druid) }
+
   let(:cocina_item) do
-    instance_double Cocina::Models::DRO, identification: instance_double(Cocina::Models::Identification, doi: '10.0001/mx123qw2323')
+    Cocina::Models.build(
+      'externalIdentifier' => 'druid:bc123df4567',
+      'type' => Cocina::Models::Vocab.image,
+      'version' => 1,
+      'label' => 'testing',
+      'access' => {},
+      'administrative' => {
+        'hasAdminPolicy' => 'druid:xx123xx4567'
+      },
+      'description' => {
+        'title' => [{ 'value' => 'Test obj' }],
+        'subject' => [{ 'type' => 'topic', 'value' => 'word' }]
+      },
+      'structural' => {
+        'contains' => []
+      },
+      'identification' => {
+        'doi' => '10.80343/bc123df4567'
+      }
+    )
   end
 
   before do

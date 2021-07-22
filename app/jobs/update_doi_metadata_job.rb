@@ -4,7 +4,9 @@
 class UpdateDoiMetadataJob < ApplicationJob
   queue_as :default
 
-  def perform(cocina_item)
+  def perform(serialized_item)
+    # We can remove this next line when we upgrade to Rails 6. It will automatically be deserialized.
+    cocina_item = Cocina::Serializer.new.deserialize(serialized_item)
     attributes = Cocina::ToDatacite::Attributes.mapped_from_cocina(cocina_item)
     result = client.update(id: cocina_item.identification.doi, attributes: attributes.deep_stringify_keys)
     return if result.success?
