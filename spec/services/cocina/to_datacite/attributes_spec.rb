@@ -34,11 +34,9 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     it 'creates the attributes hash' do
       expect(attributes).to eq(
         {
-          doi: doi,
-          prefix: '10.25740',
-          creators: [],
+          creators: [{ name: 'TBD' }],
           dates: [],
-          publicationYear: 1964,
+          publicationYear: '1964',
           publisher: 'to be implemented',
           subjects: [],
           titles: [{ title: title }]
@@ -138,15 +136,13 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     it 'populates types in the attributes hash' do
       expect(attributes).to eq(
         {
-          doi: doi,
-          prefix: '10.25740',
           alternateIdentifiers: [
             {
               alternateIdentifier: purl,
               alternateIdentifierType: 'PURL'
             }
           ],
-          creators: [],
+          creators: [{ name: 'TBD' }],
           dates: [],
           descriptions: [
             {
@@ -160,7 +156,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               identifierType: 'DOI'
             }
           ],
-          publicationYear: 1964,
+          publicationYear: '1964',
           publisher: 'to be implemented',
           relatedItems: [
             {
