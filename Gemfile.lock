@@ -95,7 +95,7 @@ GEM
       capistrano-bundler (>= 1.1, < 3)
     capistrano-shared_configs (0.2.2)
     chronic (0.10.2)
-    cocina-models (0.61.2)
+    cocina-models (0.61.3)
       activesupport
       dry-struct (~> 1.0)
       dry-types (~> 1.1)
