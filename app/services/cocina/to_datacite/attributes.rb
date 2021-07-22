@@ -31,7 +31,7 @@ module Cocina
           # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
           # attribs[:relatedItems] = [related_item] if related_item
           attribs[:rightsList] = [rights] if rights
-          attribs[:subjects] = [] # to be implemented from subject_h2 mapping
+          attribs[:subjects] = subjects if subjects
           attribs[:titles] = [title] if title
           attribs[:types] = types_attributes if types_attributes
         end
@@ -66,6 +66,11 @@ module Cocina
       def rights
         @rights ||= DROAccess.rights_list_attributes(cocina_item.access)
         @rights.presence
+      end
+
+      def subjects
+        @subjects ||= Subject.subjects_attributes(cocina_item.description)
+        @subjects.presence
       end
 
       def title

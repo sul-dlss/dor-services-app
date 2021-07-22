@@ -3,24 +3,28 @@
 require 'rails_helper'
 
 RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
-  describe 'FAST topic' do
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          subject: [
-            {
-              value: 'Marine biology',
-              type: 'topic',
-              uri: 'http://id.worldcat.org/fast/1009447',
-              source: {
-                code: 'fast',
-                uri: 'http://id.worldcat.org/fast/'
-              }
-            }
-          ]
-        }
-      end
+  # NOTE: Because we haven't set a title in this Cocina::Models::Description, it will not validate against the openapi.
+  let(:cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
+  let(:subjects_attributes) { Cocina::ToDatacite::Subject.subjects_attributes(cocina_description) }
 
+  describe 'FAST topic' do
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'Marine biology',
+            type: 'topic',
+            uri: 'http://id.worldcat.org/fast/1009447',
+            source: {
+              code: 'fast',
+              uri: 'http://id.worldcat.org/fast/'
+            }
+          }
+        ]
+      }
+    end
+
+    it 'populates subjects_attributes correctly' do
       # let(:datacite_xml) do
       #   <<~XML
       #     <subjects>
@@ -28,44 +32,37 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       #     </subjects>
       #   XML
       # end
-
-      let(:datacite) do
-        {
-          data: {
-            attributes: {
-              subjects: [
-                {
-                  subject: 'Marine biology',
-                  subjectScheme: 'fast',
-                  schemeURI: 'http://id.worldcat.org/fast/1009447',
-                  valueURI: 'http://id.worldcat.org/fast/'
-                }
-              ]
-            }
+      expect(subjects_attributes).to eq(
+        [
+          {
+            subject: 'Marine biology',
+            subjectScheme: 'fast',
+            valueURI: 'http://id.worldcat.org/fast/1009447',
+            schemeURI: 'http://id.worldcat.org/fast/'
           }
-        }
-      end
+        ]
+      )
     end
   end
 
   describe 'FAST personal name' do
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          subject: [
-            {
-              value: 'Anning, Mary, 1799-1847',
-              type: 'person',
-              uri: 'http://id.worldcat.org/fast/270223',
-              source: {
-                code: 'fast',
-                uri: 'http://id.worldcat.org/fast/'
-              }
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'Anning, Mary, 1799-1847',
+            type: 'person',
+            uri: 'http://id.worldcat.org/fast/270223',
+            source: {
+              code: 'fast',
+              uri: 'http://id.worldcat.org/fast/'
             }
-          ]
-        }
-      end
+          }
+        ]
+      }
+    end
 
+    it 'populates subjects_attributes correctly' do
       # let(:datacite_xml) do
       #   <<~XML
       #     <subjects>
@@ -73,44 +70,37 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       #     </subjects>
       #   XML
       # end
-
-      let(:datacite) do
-        {
-          data: {
-            attributes: {
-              subjects: [
-                {
-                  subject: 'Anning, Mary, 1799-1847',
-                  subjectScheme: 'fast',
-                  schemeURI: 'http://id.worldcat.org/fast/',
-                  valueURI: 'http://id.worldcat.org/fast/270223'
-                }
-              ]
-            }
+      expect(subjects_attributes).to eq(
+        [
+          {
+            subject: 'Anning, Mary, 1799-1847',
+            subjectScheme: 'fast',
+            schemeURI: 'http://id.worldcat.org/fast/',
+            valueURI: 'http://id.worldcat.org/fast/270223'
           }
-        }
-      end
+        ]
+      )
     end
   end
 
   describe 'FAST corporate name' do
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          subject: [
-            {
-              value: 'United States. National Oceanic and Atmospheric Administration',
-              type: 'organization',
-              uri: 'http://id.worldcat.org/fast/529308',
-              source: {
-                code: 'fast',
-                uri: 'http://id.worldcat.org/fast/'
-              }
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'United States. National Oceanic and Atmospheric Administration',
+            type: 'organization',
+            uri: 'http://id.worldcat.org/fast/529308',
+            source: {
+              code: 'fast',
+              uri: 'http://id.worldcat.org/fast/'
             }
-          ]
-        }
-      end
+          }
+        ]
+      }
+    end
 
+    it 'populates subjects_attributes correctly' do
       # let(:datacite_xml) do
       #   <<~XML
       #     <subjects>
@@ -118,44 +108,37 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       #     </subjects>
       #   XML
       # end
-
-      let(:datacite) do
-        {
-          data: {
-            attributes: {
-              subjects: [
-                {
-                  subject: 'United States. National Oceanic and Atmospheric Administration',
-                  subjectScheme: 'fast',
-                  schemeURI: 'http://id.worldcat.org/fast/',
-                  valueURI: 'http://id.worldcat.org/fast/529308'
-                }
-              ]
-            }
+      expect(subjects_attributes).to eq(
+        [
+          {
+            subject: 'United States. National Oceanic and Atmospheric Administration',
+            subjectScheme: 'fast',
+            schemeURI: 'http://id.worldcat.org/fast/',
+            valueURI: 'http://id.worldcat.org/fast/529308'
           }
-        }
-      end
+        ]
+      )
     end
   end
 
   describe 'FAST meeting name' do
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          subject: [
-            {
-              value: 'International Conference on Port and Ocean Engineering Under Arctic Conditions',
-              type: 'conference',
-              uri: 'http://id.worldcat.org/fast/1405317',
-              source: {
-                code: 'fast',
-                uri: 'http://id.worldcat.org/fast/'
-              }
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'International Conference on Port and Ocean Engineering Under Arctic Conditions',
+            type: 'conference',
+            uri: 'http://id.worldcat.org/fast/1405317',
+            source: {
+              code: 'fast',
+              uri: 'http://id.worldcat.org/fast/'
             }
-          ]
-        }
-      end
+          }
+        ]
+      }
+    end
 
+    it 'populates subjects_attributes correctly' do
       # let(:datacite_xml) do
       #   <<~XML
       #     <subjects>
@@ -163,44 +146,37 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       #     </subjects>
       #   XML
       # end
-
-      let(:datacite) do
-        {
-          data: {
-            attributes: {
-              subjects: [
-                {
-                  subject: 'International Conference on Port and Ocean Engineering Under Arctic Conditions',
-                  subjectScheme: 'fast',
-                  schemeURI: 'http://id.worldcat.org/fast/',
-                  valueURI: 'http://id.worldcat.org/fast/1405317'
-                }
-              ]
-            }
+      expect(subjects_attributes).to eq(
+        [
+          {
+            subject: 'International Conference on Port and Ocean Engineering Under Arctic Conditions',
+            subjectScheme: 'fast',
+            schemeURI: 'http://id.worldcat.org/fast/',
+            valueURI: 'http://id.worldcat.org/fast/1405317'
           }
-        }
-      end
+        ]
+      )
     end
   end
 
   describe 'FAST geographic name' do
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          subject: [
-            {
-              value: 'Pacific Ocean',
-              type: 'place',
-              uri: 'http://id.worldcat.org/fast/1243528',
-              source: {
-                code: 'fast',
-                uri: 'http://id.worldcat.org/fast/'
-              }
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'Pacific Ocean',
+            type: 'place',
+            uri: 'http://id.worldcat.org/fast/1243528',
+            source: {
+              code: 'fast',
+              uri: 'http://id.worldcat.org/fast/'
             }
-          ]
-        }
-      end
+          }
+        ]
+      }
+    end
 
+    it 'populates subjects_attributes correctly' do
       # let(:datacite_xml) do
       #   <<~XML
       #     <subjects>
@@ -208,45 +184,38 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       #     </subjects>
       #   XML
       # end
-
-      let(:datacite) do
-        {
-          data: {
-            attributes: {
-              subjects: [
-                {
-                  subject: 'Pacific Ocean',
-                  subjectScheme: 'fast',
-                  schemeURI: 'http://id.worldcat.org/fast/',
-                  valueURI: 'http://id.worldcat.org/fast/1243528'
-                }
-              ]
-            }
+      expect(subjects_attributes).to eq(
+        [
+          {
+            subject: 'Pacific Ocean',
+            subjectScheme: 'fast',
+            schemeURI: 'http://id.worldcat.org/fast/',
+            valueURI: 'http://id.worldcat.org/fast/1243528'
           }
-        }
-      end
+        ]
+      )
     end
   end
 
   describe 'FAST event' do
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          subject: [
-            {
-              value: 'International Year of the Ocean (1998)',
-              type: 'event',
-              uri: 'http://id.worldcat.org/fast/976704',
-              source: {
-                code: 'fast',
-                uri: 'http://id.worldcat.org/fast/'
-              },
-              displayLabel: 'Event'
-            }
-          ]
-        }
-      end
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'International Year of the Ocean (1998)',
+            type: 'event',
+            uri: 'http://id.worldcat.org/fast/976704',
+            source: {
+              code: 'fast',
+              uri: 'http://id.worldcat.org/fast/'
+            },
+            displayLabel: 'Event'
+          }
+        ]
+      }
+    end
 
+    it 'populates subjects_attributes correctly' do
       # let(:datacite_xml) do
       #   <<~XML
       #     <subjects>
@@ -254,44 +223,37 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       #     </subjects>
       #   XML
       # end
-
-      let(:datacite) do
-        {
-          data: {
-            attributes: {
-              subjects: [
-                {
-                  subject: 'International Year of the Ocean (1998)',
-                  subjectScheme: 'fast',
-                  schemeURI: 'http://id.worldcat.org/fast/',
-                  valueURI: 'http://id.worldcat.org/fast/976704'
-                }
-              ]
-            }
+      expect(subjects_attributes).to eq(
+        [
+          {
+            subject: 'International Year of the Ocean (1998)',
+            subjectScheme: 'fast',
+            schemeURI: 'http://id.worldcat.org/fast/',
+            valueURI: 'http://id.worldcat.org/fast/976704'
           }
-        }
-      end
+        ]
+      )
     end
   end
 
   describe 'FAST title' do
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          subject: [
-            {
-              value: 'Missa Ave Maris Stella (Josquin, des Prez)',
-              type: 'title',
-              uri: 'http://id.worldcat.org/fast/1399391',
-              source: {
-                code: 'fast',
-                uri: 'http://id.worldcat.org/fast/'
-              }
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'Missa Ave Maris Stella (Josquin, des Prez)',
+            type: 'title',
+            uri: 'http://id.worldcat.org/fast/1399391',
+            source: {
+              code: 'fast',
+              uri: 'http://id.worldcat.org/fast/'
             }
-          ]
-        }
-      end
+          }
+        ]
+      }
+    end
 
+    it 'populates subjects_attributes correctly' do
       # let(:datacite_xml) do
       #   <<~XML
       #     <subjects>
@@ -299,44 +261,37 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       #     </subjects>
       #   XML
       # end
-
-      let(:datacite) do
-        {
-          data: {
-            attributes: {
-              subjects: [
-                {
-                  subject: 'Missa Ave Maris Stella (Josquin, des Prez)',
-                  subjectScheme: 'fast',
-                  schemeURI: 'http://id.worldcat.org/fast/',
-                  valueURI: 'http://id.worldcat.org/fast/1399391'
-                }
-              ]
-            }
+      expect(subjects_attributes).to eq(
+        [
+          {
+            subject: 'Missa Ave Maris Stella (Josquin, des Prez)',
+            subjectScheme: 'fast',
+            schemeURI: 'http://id.worldcat.org/fast/',
+            valueURI: 'http://id.worldcat.org/fast/1399391'
           }
-        }
-      end
+        ]
+      )
     end
   end
 
   describe 'FAST time period' do
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          subject: [
-            {
-              value: '1689-1725',
-              type: 'time',
-              uri: 'http://id.worldcat.org/fast/1355694',
-              source: {
-                code: 'fast',
-                uri: 'http://id.worldcat.org/fast/'
-              }
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: '1689-1725',
+            type: 'time',
+            uri: 'http://id.worldcat.org/fast/1355694',
+            source: {
+              code: 'fast',
+              uri: 'http://id.worldcat.org/fast/'
             }
-          ]
-        }
-      end
+          }
+        ]
+      }
+    end
 
+    it 'populates subjects_attributes correctly' do
       # let(:datacite_xml) do
       #   <<~XML
       #     <subjects>
@@ -344,44 +299,37 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       #     </subjects>
       #   XML
       # end
-
-      let(:datacite) do
-        {
-          data: {
-            attributes: {
-              subjects: [
-                {
-                  subject: '1689-1725',
-                  subjectScheme: 'fast',
-                  schemeURI: 'http://id.worldcat.org/fast/',
-                  valueURI: 'http://id.worldcat.org/fast/1355694'
-                }
-              ]
-            }
+      expect(subjects_attributes).to eq(
+        [
+          {
+            subject: '1689-1725',
+            subjectScheme: 'fast',
+            schemeURI: 'http://id.worldcat.org/fast/',
+            valueURI: 'http://id.worldcat.org/fast/1355694'
           }
-        }
-      end
+        ]
+      )
     end
   end
 
   describe 'FAST form/genre' do
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          subject: [
-            {
-              value: 'Watercolors',
-              type: 'genre',
-              uri: 'http://id.worldcat.org/fast/1986272',
-              source: {
-                code: 'fast',
-                uri: 'http://id.worldcat.org/fast/'
-              }
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'Watercolors',
+            type: 'genre',
+            uri: 'http://id.worldcat.org/fast/1986272',
+            source: {
+              code: 'fast',
+              uri: 'http://id.worldcat.org/fast/'
             }
-          ]
-        }
-      end
+          }
+        ]
+      }
+    end
 
+    it 'populates subjects_attributes correctly' do
       # let(:datacite_xml) do
       #   <<~XML
       #     <subjects>
@@ -389,39 +337,32 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       #     </subjects>
       #   XML
       # end
-
-      let(:datacite) do
-        {
-          data: {
-            attributes: {
-              subjects: [
-                {
-                  subject: 'Watercolors',
-                  subjectScheme: 'fast',
-                  schemeURI: 'http://id.worldcat.org/fast/',
-                  valueURI: 'http://id.worldcat.org/fast/1986272'
-                }
-              ]
-            }
+      expect(subjects_attributes).to eq(
+        [
+          {
+            subject: 'Watercolors',
+            subjectScheme: 'fast',
+            schemeURI: 'http://id.worldcat.org/fast/',
+            valueURI: 'http://id.worldcat.org/fast/1986272'
           }
-        }
-      end
+        ]
+      )
     end
   end
 
   describe 'Non-FAST term' do
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          subject: [
-            {
-              value: 'Brooding sea stars',
-              type: 'topic'
-            }
-          ]
-        }
-      end
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'Brooding sea stars',
+            type: 'topic'
+          }
+        ]
+      }
+    end
 
+    it 'populates subjects_attributes correctly' do
       # let(:datacite_xml) do
       #   <<~XML
       #     <subjects>
@@ -429,65 +370,121 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       #     </subjects>
       #   XML
       # end
-
-      let(:datacite) do
-        {
-          data: {
-            attributes: {
-              subjects: [
-                {
-                  subject: 'Brooding sea stars'
-                }
-              ]
-            }
+      expect(subjects_attributes).to eq(
+        [
+          {
+            subject: 'Brooding sea stars'
           }
-        }
-      end
+        ]
+      )
     end
   end
 
   describe 'Multiple terms' do
-    xit 'not implemented' do
-      let(:cocina) do
-        {
-          subject: [
-            {
-              value: 'Brooding sea stars',
-              type: 'topic'
-            },
-            {
-              value: 'Sea stars in motion',
-              type: 'topic'
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'Marine biology',
+            type: 'topic',
+            uri: 'http://id.worldcat.org/fast/1009447',
+            source: {
+              code: 'fast',
+              uri: 'http://id.worldcat.org/fast/'
             }
-          ]
-        }
-      end
-
-      let(:datacite_xml) do
-        <<~XML
-          <subjects>
-            <subject>Brooding sea stars</subject>
-            <subject>Sea stars in motion</subject>
-          </subjects>
-        XML
-      end
-
-      let(:datacite) do
-        {
-          data: {
-            attributes: {
-              subjects: [
-                {
-                  subject: 'Brooding sea stars'
-                },
-                {
-                  subject: 'Sea stars in motion'
-                }
-              ]
+          },
+          {
+            value: 'Pacific Ocean',
+            type: 'place',
+            uri: 'http://id.worldcat.org/fast/1243528',
+            source: {
+              code: 'fast',
+              uri: 'http://id.worldcat.org/fast/'
             }
+          },
+          {
+            value: 'Brooding sea stars',
+            type: 'topic'
+          },
+          {
+            value: 'Sea stars in motion',
+            type: 'topic'
           }
-        }
-      end
+        ]
+      }
+    end
+
+    it 'populates subjects_attributes correctly' do
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <subjects>
+      #       <subject>Brooding sea stars</subject>
+      #       <subject>Sea stars in motion</subject>
+      #     </subjects>
+      #   XML
+      # end
+      expect(subjects_attributes).to eq(
+        [
+          {
+            subject: 'Marine biology',
+            subjectScheme: 'fast',
+            valueURI: 'http://id.worldcat.org/fast/1009447',
+            schemeURI: 'http://id.worldcat.org/fast/'
+          },
+          {
+            subject: 'Pacific Ocean',
+            subjectScheme: 'fast',
+            schemeURI: 'http://id.worldcat.org/fast/',
+            valueURI: 'http://id.worldcat.org/fast/1243528'
+          },
+          {
+            subject: 'Brooding sea stars'
+          },
+          {
+            subject: 'Sea stars in motion'
+          }
+        ]
+      )
+    end
+  end
+
+  ### --------------- specs below added by developers ---------------
+
+  context 'when cocina subject array has empty hash' do
+    let(:cocina) do
+      {
+        subject: [
+          {
+          }
+        ]
+      }
+    end
+
+    it 'subjects_attributes is empty hash' do
+      expect(subjects_attributes).to eq([])
+    end
+  end
+
+  context 'when cocina subject is empty array' do
+    let(:cocina) do
+      {
+        subject: []
+      }
+    end
+
+    it 'subjects_attributes is empty hash' do
+      expect(subjects_attributes).to eq([])
+    end
+  end
+
+  context 'when cocina has no subject' do
+    let(:cocina) do
+      {
+      }
+    end
+
+    it 'subjects_attributes is empty hash' do
+      expect(subjects_attributes).to eq([])
     end
   end
 end
