@@ -32,20 +32,18 @@ Metrics/BlockLength:
 
 Metrics/ClassLength:
   Exclude:
-    - 'app/services/cocina/to_fedora/descriptive/event.rb'
-    - 'app/services/cocina/from_fedora/descriptive/admin_metadata.rb'
-    - 'app/services/cocina/to_fedora/descriptive/title.rb'
-    - 'app/services/cocina/from_fedora/descriptive/titles.rb'
-    - 'app/services/cocina/normalizers/mods_normalizer.rb'
-    - 'app/services/mods_equivalent_service.rb'
-    - 'app/services/cocina/from_fedora/descriptive/identifier_type.rb'
-    - 'app/services/cocina/to_fedora/descriptive/contributor_writer.rb'
-    - 'app/services/cocina/to_fedora/descriptive/form.rb'
-    - 'app/services/cocina/normalizers/mods/subject_normalizer.rb'
     - 'app/services/cocina/from_fedora/descriptive/access.rb'
-    - 'app/services/cocina/to_fedora/descriptive/related_resource.rb'
-    - 'app/services/cocina/object_updater.rb'
+    - 'app/services/cocina/from_fedora/descriptive/admin_metadata.rb'
+    - 'app/services/cocina/from_fedora/descriptive/identifier_type.rb'
+    - 'app/services/cocina/normalizers/mods/subject_normalizer.rb'
+    - 'app/services/cocina/normalizers/mods_normalizer.rb'
     - 'app/services/cocina/object_creator.rb'
+    - 'app/services/cocina/object_updater.rb'
+    - 'app/services/cocina/to_fedora/descriptive/contributor_writer.rb'
+    - 'app/services/cocina/to_fedora/descriptive/event.rb'
+    - 'app/services/cocina/to_fedora/descriptive/form.rb'
+    - 'app/services/cocina/to_fedora/descriptive/title.rb'
+    - 'app/services/mods_equivalent_service.rb'
 
 Performance/CollectionLiteralInLoop:
   Enabled: true
@@ -56,8 +54,6 @@ Performance/CollectionLiteralInLoop:
     - 'app/services/cocina/from_fedora/descriptive/form.rb'
     - 'app/services/cocina/from_fedora/descriptive/title_builder.rb'
     - 'app/services/cocina/to_fedora/descriptive/access.rb'
-    - 'app/services/cocina/to_fedora/descriptive/related_resource.rb'
-    - 'app/services/cocina/to_fedora/descriptive/part_writer.rb'
 
 Rails/EagerEvaluationLogMessage: # (new in 2.11)
   Enabled: false
