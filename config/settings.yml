@@ -8,6 +8,7 @@ enabled_features:
     legacy: true
     refresh: true
   create_ur_admin_policy: false
+  datacite_update: false
 
 # Ur Admin Policy
 ur_admin_policy:
@@ -104,3 +105,4 @@ from_fedora_data_errors:
 
 datacite:
   prefix: '10.80343'
+  host: fake.datacite.example.com
