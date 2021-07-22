@@ -33,6 +33,7 @@ module Cocina
           attribs[:publicationYear] = 1964 # to be implemented from event_h2 mapping,
           attribs[:publisher] = 'to be implemented' # to be implemented from event_h2 mapping
           attribs[:relatedItems] = [related_item] if related_item
+          attribs[:rightsList] = [rights] if rights
           attribs[:subjects] = [] # to be implemented from subject_h2 mapping
           attribs[:titles] = [title] if title
           attribs[:types] = types_attributes if types_attributes
@@ -74,6 +75,11 @@ module Cocina
       def related_item
         @related_item ||= RelatedResource.related_item_attributes(cocina_item.description)
         @related_item.presence
+      end
+
+      def rights
+        @rights ||= DROAccess.rights_list_attributes(cocina_item.access)
+        @rights.presence
       end
 
       def title
