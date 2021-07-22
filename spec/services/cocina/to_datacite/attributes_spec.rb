@@ -47,7 +47,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     end
   end
 
-  context 'with cocina description form, identifier, note, purl, relatedResource values' do
+  context 'with cocina description form, identifier, note, purl, relatedResource values and cocina_dro.access' do
     let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::Vocab.object,
@@ -127,7 +127,9 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                 sourceId: 'sul:8.559351',
                                 doi: doi
                               },
-                              access: {},
+                              access: {
+                                license: 'https://creativecommons.org/publicdomain/mark/1.0/'
+                              },
                               administrative: {
                                 hasAdminPolicy: apo_druid
                               })
@@ -169,6 +171,11 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                   title: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. yadda yadda.'
                 }
               ]
+            }
+          ],
+          rightsList: [
+            {
+              rights: 'https://creativecommons.org/publicdomain/mark/1.0/'
             }
           ],
           subjects: [],
