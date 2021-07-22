@@ -133,7 +133,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                               })
     end
 
-    it 'populates types in the attributes hash' do
+    it 'populates the attributes hash correctly' do
       expect(attributes).to eq(
         {
           alternateIdentifiers: [
@@ -158,17 +158,19 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           ],
           publicationYear: '1964',
           publisher: 'to be implemented',
-          relatedItems: [
-            {
-              relatedItemType: 'Other',
-              relationType: 'References',
-              titles: [
-                {
-                  title: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. yadda yadda.'
-                }
-              ]
-            }
-          ],
+          # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
+          # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
+          # relatedItems: [
+          #   {
+          #     relatedItemType: 'Other',
+          #     relationType: 'References',
+          #     titles: [
+          #       {
+          #         title: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. yadda yadda.'
+          #       }
+          #     ]
+          #   }
+          # ],
           rightsList: [
             {
               rights: 'https://creativecommons.org/publicdomain/mark/1.0/'

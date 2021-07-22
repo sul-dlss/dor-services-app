@@ -2,6 +2,9 @@
 
 module Cocina
   module ToDatacite
+    # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
+    # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
+
     # Transform the Cocina::Models::Description relatedResource attributes to the DataCite relatedItem attributes
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
     # relatedItem attribute new in DataCite schema v. 4.4 and not included in API docs as of 2021-07

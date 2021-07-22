@@ -27,7 +27,9 @@ module Cocina
           attribs[:identifiers] = [identifier] if identifier
           attribs[:publicationYear] = '1964' # to be implemented from event_h2 mapping,
           attribs[:publisher] = 'to be implemented' # to be implemented from event_h2 mapping
-          attribs[:relatedItems] = [related_item] if related_item
+          # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
+          # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
+          # attribs[:relatedItems] = [related_item] if related_item
           attribs[:rightsList] = [rights] if rights
           attribs[:subjects] = [] # to be implemented from subject_h2 mapping
           attribs[:titles] = [title] if title
@@ -54,10 +56,12 @@ module Cocina
         @identifier.presence
       end
 
-      def related_item
-        @related_item ||= RelatedResource.related_item_attributes(cocina_item.description)
-        @related_item.presence
-      end
+      # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
+      # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
+      # def related_item
+      #   @related_item ||= RelatedResource.related_item_attributes(cocina_item.description)
+      #   @related_item.presence
+      # end
 
       def rights
         @rights ||= DROAccess.rights_list_attributes(cocina_item.access)
