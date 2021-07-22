@@ -38,7 +38,6 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           dates: [],
           publicationYear: '1964',
           publisher: 'to be implemented',
-          subjects: [],
           titles: [{ title: title }]
         }
       )
@@ -119,6 +118,17 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                     ]
                                   }
                                 ],
+                                subject: [
+                                  {
+                                    value: 'Marine biology',
+                                    type: 'topic',
+                                    uri: 'http://id.worldcat.org/fast/1009447',
+                                    source: {
+                                      code: 'fast',
+                                      uri: 'http://id.worldcat.org/fast/'
+                                    }
+                                  }
+                                ],
                                 title: [{ value: title }]
                               },
                               identification: {
@@ -176,7 +186,14 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               rights: 'https://creativecommons.org/publicdomain/mark/1.0/'
             }
           ],
-          subjects: [],
+          subjects: [
+            {
+              subject: 'Marine biology',
+              subjectScheme: 'fast',
+              valueURI: 'http://id.worldcat.org/fast/1009447',
+              schemeURI: 'http://id.worldcat.org/fast/'
+            }
+          ],
           titles: [{ title: title }],
           types: {
             resourceTypeGeneral: 'Dataset',
