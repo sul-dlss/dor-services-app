@@ -1238,4 +1238,155 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
       end
     end
   end
+
+  describe 'Creator with ORCID' do
+    # Authors to include in citation
+    ## Jane Stanford. Author.
+    ## ORCID: 0000-0000-0000-0000
+    xit 'not implemented' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'Author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
+                  value: 'author',
+                  code: 'aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ],
+              identifier: [
+                {
+                  value: '0000-0000-0000-0000',
+                  type: 'ORCID',
+                  source: {
+                    uri: 'https://orcid.org'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <name type="personal" status="primary">
+            <namePart type="given">Jane</namePart>
+            <namePart type="family">Stanford</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+            </role>
+            <nameIdentifier type="orcid" typeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
+          </name>
+        XML
+      end
+    end
+  end
+
+  describe 'Contributor with ORCID' do
+    # Additional contributors
+    ## Jane Stanford. Contributing author.
+    ## ORCID: 0000-0000-0000-0000
+    xit 'not implemented' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Stanford',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'Contributing author',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  },
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
+                },
+                {
+                  value: 'contributor',
+                  code: 'ctb',
+                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ],
+              identifier: [
+                {
+                  value: '0000-0000-0000-0000',
+                  type: 'ORCID',
+                  source: {
+                    uri: 'https://orcid.org'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <name type="personal" status="primary">
+            <namePart type="given">Jane</namePart>
+            <namePart type="family">Stanford</namePart>
+            <description>not included in citation</description>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+            </role>
+            <nameIdentifier type="orcid" typeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
+          </name>
+        XML
+      end
+    end
+  end
 end
