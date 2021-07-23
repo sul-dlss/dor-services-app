@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Create virtual objects in the background.
+# Publish metadata for an object as a background job
 # Both accessionWF and releaseWF use this step.
 class PublishJob < ApplicationJob
   queue_as :default
