@@ -39,6 +39,7 @@ Metrics/ClassLength:
     - 'app/services/cocina/normalizers/mods_normalizer.rb'
     - 'app/services/cocina/object_creator.rb'
     - 'app/services/cocina/object_updater.rb'
+    - 'app/services/cocina/to_datacite/event.rb'
     - 'app/services/cocina/to_fedora/descriptive/contributor_writer.rb'
     - 'app/services/cocina/to_fedora/descriptive/event.rb'
     - 'app/services/cocina/to_fedora/descriptive/form.rb'
