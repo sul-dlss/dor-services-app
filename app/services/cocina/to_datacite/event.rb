@@ -23,7 +23,12 @@ module Cocina
         end
       end
 
+      # H2 publisher role > same cocina event as publication date > see DataCite contributor mappings
       # Add Stanford Digital Repository as publisher to cocina release event if present, otherwise deposit event
+      #
+      # sdr is the publisher for the event where the content becomes public via purl -- deposit if no embargo, release if embargo present.
+      # if it's not public via purl, sdr should not be the publisher;
+      #   the user may enter someone with the publisher role in h2, referring to publication in another venue, regardless of the purl status.
       def publisher
         # TODO: implement this
       end
