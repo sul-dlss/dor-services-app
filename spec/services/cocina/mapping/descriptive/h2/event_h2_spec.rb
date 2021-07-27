@@ -920,13 +920,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                       value: 'Publisher',
                       source: {
                         value: 'H2 contributor role terms'
-                      },
-                      note: [
-                        {
-                          type: 'citation status',
-                          value: 'false'
-                        }
-                      ]
+                      }
                     },
                     {
                       value: 'publisher',
@@ -943,6 +937,12 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                       source: {
                         value: 'DataCite contributor types'
                       }
+                    }
+                  ],
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
                     }
                   ],
                   type: 'organization'
@@ -999,12 +999,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                       source: {
                         value: 'H2 contributor role terms'
                       },
-                      note: [
-                        {
-                          type: 'citation status',
-                          value: 'false'
-                        }
-                      ]
                     },
                     {
                       value: 'publisher',
@@ -1021,6 +1015,12 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                       source: {
                         value: 'DataCite contributor types'
                       }
+                    }
+                  ],
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
                     }
                   ],
                   type: 'organization'

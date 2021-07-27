@@ -471,13 +471,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                   value: 'Contributing author',
                   source: {
                     value: 'H2 contributor role terms'
-                  },
-                  note: [
-                    {
-                      type: 'citation status',
-                      value: 'false'
-                    }
-                  ]
+                  }
                 },
                 {
                   value: 'contributor',
@@ -487,6 +481,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                }
+              ],
+              note: [
+                {
+                  type: 'citation status',
+                  value: 'false'
                 }
               ]
             }
@@ -575,13 +575,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                   value: 'Sponsor',
                   source: {
                     value: 'H2 contributor role terms'
-                  },
-                  note: [
-                    {
-                      type: 'citation status',
-                      value: 'false'
-                    }
-                  ]
+                  }
                 },
                 {
                   value: 'sponsor',
@@ -591,6 +585,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                }
+              ],
+              note: [
+                {
+                  type: 'citation status',
+                  value: 'false'
                 }
               ]
             }
@@ -721,13 +721,13 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                   value: 'Event',
                   source: {
                     value: 'H2 contributor role terms'
-                  },
-                  note: [
-                    {
-                      type: 'citation status',
-                      value: 'false'
-                    }
-                  ]
+                  }
+                }
+              ],
+              note: [
+                {
+                  type: 'citation status',
+                  value: 'false'
                 }
               ]
             }
@@ -856,13 +856,13 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                   value: 'Conference',
                   source: {
                     value: 'H2 contributor role terms'
-                  },
-                  note: [
-                    {
-                      type: 'citation status',
-                      value: 'false'
-                    }
-                  ]
+                  }
+                }
+              ],
+              note: [
+                {
+                  type: 'citation status',
+                  value: 'false'
                 }
               ]
             }
@@ -1003,13 +1003,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                   value: 'Funder',
                   source: {
                     value: 'H2 contributor role terms'
-                  },
-                  note: [
-                    {
-                      type: 'citation status',
-                      value: 'false'
-                    }
-                  ]
+                  }
                 },
                 {
                   value: 'funder',
@@ -1019,6 +1013,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                }
+              ],
+              note: [
+                {
+                  type: 'citation status',
+                  value: 'false'
                 }
               ]
             }
@@ -1196,13 +1196,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                       value: 'Publisher',
                       source: {
                         value: 'H2 contributor role terms'
-                      },
-                      note: [
-                        {
-                          type: 'citation status',
-                          value: 'false'
-                        }
-                      ]
+                      }
                     },
                     {
                       value: 'publisher',
@@ -1212,6 +1206,12 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
+                    }
+                  ],
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
                     }
                   ]
                 }
