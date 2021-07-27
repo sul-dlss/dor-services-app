@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   describe 'Publication date: 2021-01-01, Embargo: none, Deposited: 2022-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -74,7 +74,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Publication date entered as: 2020-01-01, Embargo: until 2022-01-01, Deposited: 2021-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -161,7 +161,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'No publication date provided, Embargo: until 2022-01-01, Deposited: 2021-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -233,7 +233,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'No publication date provided, Embargo: none, Deposited: 2021-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -290,7 +290,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Creation date: 2021-01-01, Deposited: 2022-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -362,7 +362,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Creation date range: 2020-01-01 to 2021-01-01, Deposited: 2022-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -444,7 +444,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Approximate single creation date, Deposited: 2022-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -517,7 +517,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Approximate creation start date: approx. 1900, Deposited: 2022-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -600,7 +600,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Approximate creation end date: approx. 1900, Deposited: 2022-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -683,7 +683,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Approximate creation date range: approx. 1900, Deposited: 2022-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -766,7 +766,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Creation date: 2021-01-01, Embargo: until 2023-01-01, Deposited: 2022-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -853,7 +853,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Creation date: 2021-01-01, Deposited: 2022-01-01, Uncited publisher: Stanford University Press' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -971,7 +971,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Publication date: 2021-01-01, Deposited: 2022-01-01, Uncited publisher: Stanford University Press' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [

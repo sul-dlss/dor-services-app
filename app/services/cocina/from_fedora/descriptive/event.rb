@@ -26,6 +26,7 @@ module Cocina
           'copyright',
           'creation',
           'degree conferral',
+          'deposit',
           'development',
           'distribution',
           'generation',
@@ -366,8 +367,19 @@ module Cocina
           return if publisher_nodes.empty?
 
           event[:contributor] ||= []
+          # rubocop:disable Metrics/BlockLength
           publisher_nodes.each do |publisher_node|
             next if publisher_node.text.blank?
+
+            contrib_type = nil
+            roles = [role_for(event)]
+            if origin_info_node['eventType'] == 'deposit' || origin_info_node['eventType'] == 'release'
+              roles << {
+                value: 'Publisher',
+                type: 'DataCite role'
+              }
+              contrib_type = 'organization'
+            end
 
             event[:contributor] << {
               name: [
@@ -385,9 +397,11 @@ module Cocina
                   end
                 end.compact
               ],
-              role: [role_for(event)]
+              role: roles,
+              type: contrib_type
             }.compact
           end
+          # rubocop:enable Metrics/BlockLength
 
           event.delete(:contributor) if event[:contributor].empty?
         end
