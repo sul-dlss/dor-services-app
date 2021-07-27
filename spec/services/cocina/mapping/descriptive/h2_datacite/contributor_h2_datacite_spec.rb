@@ -4,10 +4,20 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
   # Full role mapping: https://docs.google.com/spreadsheets/d/1CvEd_NODprNhM2D9VfvJBFs1jfAMEUr0kDxXHe2HkL4/edit?usp=sharing
-  # Authors to include in citation > cocina role type: DataCite role, value: Creator > DataCite creator element
-  # Additional contributors > cocina role type: DataCite role, value: [mapped role] > DataCite contributor element with contributorType [mapped role]
-  # EXCEPTION:
-  # H2 funder role > cocina role type: DataCite role, value: Funder > DataCite fundingReference element
+  # H2 Authors to include in citation
+  ## Identified in cocina by:
+  ### Role with type 'DataCite role' and value 'Creator' OR
+  ### Role with type 'DataCite role' and a value other than 'Creator', plus NOT having contributor.role.note with type 'citation status' and value 'false'
+  ## Map contributor.name to DataCite creators.name, no role
+  # H2 Additional contributors
+  ## Identified in cocina by:
+  ### Having contributor.role.note with type 'citation status' and value 'false'
+  ## Map name to DataCite contributors.name
+  ## Map role with type 'DataCite role' to DataCite contributorType
+  ## TODO: Implement updated H2-cocina mappings that include DataCite role and citation status note
+  # EXCEPTION: if DataCite role is 'Funder'
+  ## Do not map to DataCite contributors.name
+  ## Instead map to DataCite fundingReference.funderName
 
   describe 'Cited contributor with author role' do
     # Authors to include in citation
@@ -645,7 +655,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   familyName: 'Stanford'
                 }
               ],
-              contributorws: [
+              contributors: [
                 {
                   name: 'Stanford, Leland',
                   nameType: 'Personal',
