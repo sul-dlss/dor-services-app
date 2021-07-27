@@ -998,7 +998,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                       value: 'Publisher',
                       source: {
                         value: 'H2 contributor role terms'
-                      },
+                      }
                     },
                     {
                       value: 'publisher',

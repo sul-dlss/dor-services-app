@@ -45,11 +45,11 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
-                  },
-                  {
-                    value: 'Creator',
-                    type: 'DataCite role'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -935,7 +935,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                   source: {
                     value: 'H2 contributor role terms'
                   }
-                }
+                },
                 {
                   value: 'Other',
                   type: 'DataCite role',
@@ -1523,5 +1523,4 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
       end
     end
   end
-
 end
