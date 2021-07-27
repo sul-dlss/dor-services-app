@@ -9,8 +9,9 @@ module Cocina
         @cocina_item = cocina_item
       end
 
-      # For DataCite publicationYear, use year embargo lifted if present,
-      #  otherwise use deposit year, regardless of publication date entered
+      # DataCite publicationYear is the year (YYYY) the object is published to purl, and is either:
+      ## The embargo end date, if present (cocina event type release, date type publication)
+      ## The deposit date (cocina event type deposit, date type publication)
       #
       # @return [String] publication year, conforming to the expectations of HTTP PUT request to DataCite
       def pub_year

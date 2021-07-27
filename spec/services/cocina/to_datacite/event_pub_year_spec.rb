@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-# Unit tests for Cocina::ToDatacite::Event.pub_year (which will become DataCite pub_year)
+# Unit tests for Cocina::ToDatacite::Event.pub_year (which will become DataCite publicationYear)
 RSpec.describe Cocina::ToDatacite::Event do
   let(:cocina_description) do
     cocina[:title] = [{ value: 'title' }]
@@ -23,8 +23,9 @@ RSpec.describe Cocina::ToDatacite::Event do
   let(:pub_year) { mapped_event_instance.pub_year }
 
   describe '#pub_year' do
-    # For DataCite publication year, use year embargo lifted if present,
-    #  otherwise use deposit year, regardless of publication date entered
+    # DataCite publicationYear is the year (YYYY) the object is published to purl, and is either:
+    ## The embargo end date, if present (cocina event type release, date type publication)
+    ## The deposit date (cocina event type deposit, date type publication)
 
     describe 'Publication date: 2021-01-01, Embargo: none, Deposited: 2022-01-01' do
       let(:cocina) do
