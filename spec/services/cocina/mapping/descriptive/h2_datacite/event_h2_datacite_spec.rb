@@ -2,15 +2,18 @@
 
 require 'rails_helper'
 
-# For DataCite publication year, use year embargo lifted if present, otherwise use deposit year, regardless of publication date entered
-# H2 publication date > cocina event/date type publication > DataCite date type Issued
-# H2 deposit date > cocina event type deposit > DataCite date type Submitted
-## If no embargo, > cocina date type publication
-## If embargo, > cocina date type deposit
-# H2 embargo end date > cocina event type release and date type publication > DataCite date type Available
-# H2 creation date > cocina event/date type creation > DataCite date type Creation
-# H2 publisher role > same cocina event as publication date > see DataCite contributor mappings
-# Add Stanford Digital Repository as publisher to cocina release event if present, otherwise deposit event
+# DataCite publicationYear is the year (YYYY) the object is published to purl, and is either:
+## The embargo end date, if present (cocina event type release, date type publication)
+## The deposit date (cocina event type deposit, date type publication)
+#
+# DataCite date (YYYY-MM-DD) is repeatable and has an associated type attribute:
+# Cocina event type publication, date type publication maps to DataCite date type Issued
+# Cocina event type deposit, date type deposit maps to DataCite date type Submitted
+# Cocina event type deposit, date type publication maps to DataCite date type Submitted
+# Cocina event type release, date type publication maps to DataCite date type Available
+# Cocina event type creation, date type creation maps to DataCite date type Created
+#
+# DataCite publisher is always Stanford Digital Repository
 
 RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
   describe 'Publication date: 2021-01-01, Embargo: none, Deposited: 2022-01-01' do
@@ -201,7 +204,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
                   dateType: 'Available'
                 },
                 {
-                  date: '2022-01-01',
+                  date: '2021-01-01',
                   dateType: 'Submitted'
                 }
               ]
@@ -572,7 +575,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
     end
   end
 
-  describe 'Approximate single creation date, Deposited: 2022-01-01' do
+  describe 'Approximate single creation date: 1900, Deposited: 2022-01-01' do
     xit 'not implemented' do
       let(:cocina) do
         {
@@ -651,8 +654,8 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
               dates: [
                 {
                   date: '1900',
-                  dateType: 'Creation',
-                  dateInformation: 'Approximate'
+                  dateType: 'Created',
+                  dateInformation: 'approximate'
                 },
                 {
                   date: '2022-01-01',
@@ -666,7 +669,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
     end
   end
 
-  describe 'Approximate creation start date: approx. 1900, Deposited: 2022-01-01' do
+  describe 'Approximate creation start date: approx. 1900-1910, Deposited: 2022-01-01' do
     xit 'not implemented' do
       let(:cocina) do
         {
@@ -754,8 +757,8 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
               dates: [
                 {
                   date: '1900/1910',
-                  dateType: 'Creation',
-                  dateInformation: 'Approximate'
+                  dateType: 'Created',
+                  dateInformation: 'approximate'
                 },
                 {
                   date: '2022-01-01',
@@ -769,7 +772,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
     end
   end
 
-  describe 'Approximate creation end date: approx. 1900, Deposited: 2022-01-01' do
+  describe 'Approximate creation end date: 1900-approx. 1910, Deposited: 2022-01-01' do
     xit 'not implemented' do
       let(:cocina) do
         {
@@ -857,8 +860,8 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
               dates: [
                 {
                   date: '1900/1910',
-                  dateType: 'Creation',
-                  dateInformation: 'Approximate'
+                  dateType: 'Created',
+                  dateInformation: 'approximate'
                 },
                 {
                   date: '2022-01-01',
@@ -872,7 +875,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
     end
   end
 
-  describe 'Approximate creation date range: approx. 1900, Deposited: 2022-01-01' do
+  describe 'Approximate creation date range: approx. 1900-approx. 1910, Deposited: 2022-01-01' do
     xit 'not implemented' do
       let(:cocina) do
         {
@@ -961,7 +964,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
                 {
                   date: '1900/1910',
                   dateType: 'Creation',
-                  dateInformation: 'Approximate'
+                  dateInformation: 'approximate'
                 },
                 {
                   date: '2022-01-01',
@@ -1061,7 +1064,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
         {
           data: {
             attributes: {
-              publicationYear: '2022',
+              publicationYear: '2023',
               publisher: 'Stanford Digital Repository',
               dates: [
                 {
