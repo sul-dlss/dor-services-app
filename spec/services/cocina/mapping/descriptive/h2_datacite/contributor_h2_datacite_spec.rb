@@ -4,10 +4,20 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
   # Full role mapping: https://docs.google.com/spreadsheets/d/1CvEd_NODprNhM2D9VfvJBFs1jfAMEUr0kDxXHe2HkL4/edit?usp=sharing
-  # Authors to include in citation > cocina role type: DataCite role, value: Creator > DataCite creator element
-  # Additional contributors > cocina role type: DataCite role, value: [mapped role] > DataCite contributor element with contributorType [mapped role]
-  # EXCEPTION:
-  # H2 funder role > cocina role type: DataCite role, value: Funder > DataCite fundingReference element
+  # H2 Authors to include in citation
+  ## Identified in cocina by:
+  ### Role with type 'DataCite role' and value 'Creator' OR
+  ### Role with type 'DataCite role' and a value other than 'Creator', plus NOT having contributor.note with type 'citation status' and value 'false'
+  ## Map contributor.name to DataCite creators.name, no role
+  # H2 Additional contributors
+  ## Identified in cocina by:
+  ### Having contributor.note with type 'citation status' and value 'false'
+  ## Map name to DataCite contributors.name
+  ## Map role with type 'DataCite role' to DataCite contributorType
+  ## TODO: Implement updated H2-cocina mappings that include DataCite role and citation status note
+  # EXCEPTION: if DataCite role is 'Funder'
+  ## Do not map to DataCite contributors.name
+  ## Instead map to DataCite fundingReference.funderName
 
   describe 'Cited contributor with author role' do
     # Authors to include in citation
@@ -504,6 +514,10 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                 {
                   name: 'Stanford University',
                   nameType: 'Organizational'
+                },
+                {
+                  name: 'Department of English',
+                  nameType: 'Organizational'
                 }
               ]
             }
@@ -584,13 +598,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   value: 'Contributing author',
                   source: {
                     value: 'H2 contributor role terms'
-                  },
-                  note: [
-                    {
-                      type: 'citation status',
-                      value: 'false'
-                    }
-                  ]
+                  }
                 },
                 {
                   value: 'contributor',
@@ -607,6 +615,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   source: {
                     value: 'DataCite contributor types'
                   }
+                }
+              ],
+              note: [
+                {
+                  type: 'citation status',
+                  value: 'false'
                 }
               ]
             }
@@ -645,7 +659,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   familyName: 'Stanford'
                 }
               ],
-              contributorws: [
+              contributors: [
                 {
                   name: 'Stanford, Leland',
                   nameType: 'Personal',
@@ -722,13 +736,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   value: 'Sponsor',
                   source: {
                     value: 'H2 contributor role terms'
-                  },
-                  note: [
-                    {
-                      type: 'citation status',
-                      value: 'false'
-                    }
-                  ]
+                  }
                 },
                 {
                   value: 'sponsor',
@@ -745,6 +753,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   source: {
                     value: 'DataCite contributor types'
                   }
+                }
+              ],
+              note: [
+                {
+                  type: 'citation status',
+                  value: 'false'
                 }
               ]
             }
@@ -916,13 +930,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   value: 'Event',
                   source: {
                     value: 'H2 contributor role terms'
-                  },
-                  note: [
-                    {
-                      type: 'citation status',
-                      value: 'false'
-                    }
-                  ]
+                  }
                 },
                 {
                   value: 'Other',
@@ -930,6 +938,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   source: {
                     value: 'DataCite contributor types'
                   }
+                }
+              ],
+              note: [
+                {
+                  type: 'citation status',
+                  value: 'false'
                 }
               ]
             }
@@ -1101,13 +1115,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   value: 'Conference',
                   source: {
                     value: 'H2 contributor role terms'
-                  },
-                  note: [
-                    {
-                      type: 'citation status',
-                      value: 'false'
-                    }
-                  ]
+                  }
                 },
                 {
                   value: 'Other',
@@ -1115,6 +1123,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   source: {
                     value: 'DataCite contributor types'
                   }
+                }
+              ],
+              note: [
+                {
+                  type: 'citation status',
+                  value: 'false'
                 }
               ]
             }
@@ -1309,13 +1323,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   value: 'Funder',
                   source: {
                     value: 'H2 contributor role terms'
-                  },
-                  note: [
-                    {
-                      type: 'citation status',
-                      value: 'false'
-                    }
-                  ]
+                  }
                 },
                 {
                   value: 'funder',
@@ -1329,6 +1337,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                 {
                   value: 'Funder',
                   type: 'DataCite role'
+                }
+              ],
+              note: [
+                {
+                  type: 'citation status',
+                  value: 'false'
                 }
               ]
             }
@@ -1386,6 +1400,38 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
     xit 'not implemented' do
       let(:cocina) do
         {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Stanford University Press'
+                }
+              ],
+              type: 'organization',
+              status: 'primary',
+              role: [
+                {
+                  value: 'Publisher',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
+                  value: 'publisher',
+                  code: 'pbl',
+                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
+                }
+              ]
+            }
+          ],
           event: [
             {
               type: 'publication',
@@ -1396,13 +1442,8 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
+                  type: 'organization',
                   role: [
-                    {
-                      value: 'Publisher',
-                      source: {
-                        value: 'H2 contributor role terms'
-                      }
-                    },
                     {
                       value: 'publisher',
                       code: 'pbl',
@@ -1413,11 +1454,13 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                       }
                     },
                     {
-                      value: 'Creator',
-                      type: 'DataCite role'
+                      value: 'Distributor',
+                      type: 'DataCite role',
+                      source: {
+                        value: 'DataCite contributor types'
+                      }
                     }
-                  ],
-                  type: 'organization'
+                  ]
                 }
               ]
             }
@@ -1515,18 +1558,13 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                       value: 'Stanford University Press'
                     }
                   ],
+                  type: 'organization',
                   role: [
                     {
                       value: 'Publisher',
                       source: {
                         value: 'H2 contributor role terms'
-                      },
-                      note: [
-                        {
-                          type: 'citation status',
-                          value: 'false'
-                        }
-                      ]
+                      }
                     },
                     {
                       value: 'publisher',
@@ -1545,7 +1583,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                       }
                     }
                   ],
-                  type: 'organization'
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ]
                 }
               ]
             }
@@ -1727,13 +1770,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   value: 'Contributing author',
                   source: {
                     value: 'H2 contributor role terms'
-                  },
-                  note: [
-                    {
-                      type: 'citation status',
-                      value: 'false'
-                    }
-                  ]
+                  }
                 },
                 {
                   value: 'contributor',
@@ -1750,6 +1787,12 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   source: {
                     value: 'DataCite contributor types'
                   }
+                }
+              ],
+              note: [
+                {
+                  type: 'citation status',
+                  value: 'false'
                 }
               ],
               identifier: [
