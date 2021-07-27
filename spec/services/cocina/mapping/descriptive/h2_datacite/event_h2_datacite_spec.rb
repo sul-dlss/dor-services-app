@@ -963,7 +963,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
               dates: [
                 {
                   date: '1900/1910',
-                  dateType: 'Creation',
+                  dateType: 'Created',
                   dateInformation: 'approximate'
                 },
                 {
@@ -1069,7 +1069,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
               dates: [
                 {
                   date: '2021-01-01',
-                  dateType: 'Creation'
+                  dateType: 'Created'
                 },
                 {
                   date: '2023-01-01',
@@ -1220,7 +1220,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
               dates: [
                 {
                   date: '2021-01-01',
-                  dateType: 'Creation'
+                  dateType: 'Created'
                 },
                 {
                   date: '2022-01-01',
