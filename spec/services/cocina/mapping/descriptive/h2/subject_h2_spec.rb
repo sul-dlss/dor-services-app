@@ -286,4 +286,56 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
       end
     end
   end
+
+  describe 'Multiple terms' do
+    let(:cocina) do
+      {
+        subject: [
+          {
+            value: 'Marine biology',
+            type: 'topic',
+            uri: 'http://id.worldcat.org/fast/1009447',
+            source: {
+              code: 'fast',
+              uri: 'http://id.worldcat.org/fast/'
+            }
+          },
+          {
+            value: 'Pacific Ocean',
+            type: 'place',
+            uri: 'http://id.worldcat.org/fast/1243528',
+            source: {
+              code: 'fast',
+              uri: 'http://id.worldcat.org/fast/'
+            }
+          },
+          {
+            value: 'Brooding sea stars',
+            type: 'topic'
+          },
+          {
+            value: 'Sea stars in motion',
+            type: 'topic'
+          }
+        ]
+      }
+    end
+
+    let(:mods) do
+      <<~XML
+        <subject authority="fast">
+          <topic authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1009447">Marine biology</topic>
+        </subject>
+        <subject authority="fast">
+          <geographic authority="fast" authorityURI="http://id.worldcat.org/fast/" valueURI="http://id.worldcat.org/fast/1243528">Pacific Ocean</geographic>
+        </subject>
+        <subject>
+          <topic>Brooding sea stars</topic>
+        </subject>
+        <subject>
+          <topic>Sea stars in motion</topic>
+        </subject>
+      XML
+    end
+  end
 end
