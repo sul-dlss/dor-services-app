@@ -191,7 +191,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
 
   describe 'type with user-entered subtype' do
     # User enters type: Other, subtype: Dance notation
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           form: [
