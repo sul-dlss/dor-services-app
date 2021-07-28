@@ -6,6 +6,8 @@ module Cocina
     class Descriptive
       # Maps a name
       class NameBuilder
+        UNCITED_DESCRIPTION = ToFedora::Descriptive::ContributorWriter::UNCITED_DESCRIPTION
+
         # @param [Array<Nokogiri::XML::Element>] name_elements (multiple if parallel)
         # @param [Cocina::FromFedora::DataErrorNotifier] notifier
         # @return [Hash] a hash that can be mapped to a cocina model
@@ -197,7 +199,13 @@ module Cocina
             end
 
             description = name_node.xpath('mods:description', mods: DESC_METADATA_NS).first
-            parts << { value: description.text, type: 'description' } if description
+            if description
+              parts << if description.text == UNCITED_DESCRIPTION
+                         { value: 'false', type: 'citation status' }
+                       else
+                         { value: description.text, type: 'description' }
+                       end
+            end
           end.presence
         end
 

@@ -9,6 +9,8 @@ module Cocina
         NAME_TYPE = Cocina::FromFedora::Descriptive::Contributor::ROLES.invert.merge('event' => 'corporate').freeze
         NAME_PART = FromFedora::Descriptive::Contributor::NAME_PART.invert.merge('activity dates' => 'date').freeze
 
+        UNCITED_DESCRIPTION = 'not included in citation'
+
         # @params [Nokogiri::XML::Builder] xml
         # @params [Cocina::Models::Contributor] contributor
         # @params [IdGenerator] id_generator
@@ -163,6 +165,8 @@ module Cocina
               xml.affiliation note.value
             when 'description'
               xml.description note.value
+            when 'citation status'
+              xml.description UNCITED_DESCRIPTION if note.value == 'false'
             end
           end
         end
