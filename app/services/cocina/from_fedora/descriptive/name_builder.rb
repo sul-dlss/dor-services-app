@@ -228,10 +228,14 @@ module Cocina
           check_role_code(code, authority)
 
           {}.tap do |role|
-            source = {
-              code: Authority.normalize_code(authority, notifier),
-              uri: Authority.normalize_uri(authority_uri)
-            }.compact
+            source = if authority == ToFedora::Descriptive::ContributorWriter::H2_ROLE_AUTHORITY
+                       { value: authority }
+                     else
+                       {
+                         code: Authority.normalize_code(authority, notifier),
+                         uri: Authority.normalize_uri(authority_uri)
+                       }.compact
+                     end
             role[:source] = source if source.present?
 
             role[:uri] = ValueURI.sniff(authority_value, notifier)

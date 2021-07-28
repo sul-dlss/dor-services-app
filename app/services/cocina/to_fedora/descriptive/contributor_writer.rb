@@ -8,8 +8,9 @@ module Cocina
         # one way mapping:  MODS 'corporate' already maps to Cocina 'organization'
         NAME_TYPE = Cocina::FromFedora::Descriptive::Contributor::ROLES.invert.merge('event' => 'corporate').freeze
         NAME_PART = FromFedora::Descriptive::Contributor::NAME_PART.invert.merge('activity dates' => 'date').freeze
-
         UNCITED_DESCRIPTION = 'not included in citation'
+        H2_ROLE_AUTHORITY = 'H2 contributor role terms'
+        MARC_RELATORS_URI_REGEX = %r{^http://id.loc.gov/vocabulary/relators/}.freeze
 
         # @params [Nokogiri::XML::Builder] xml
         # @params [Cocina::Models::Contributor] contributor
@@ -123,9 +124,29 @@ module Cocina
         end
 
         def write_roles(contributor)
-          Array(contributor.role).each do |role|
-            RoleWriter.write(xml: xml, role: role)
+          if marc_relator_roles(contributor).present?
+            marc_relator_roles(contributor).each do |role|
+              RoleWriter.write(xml: xml, role: role)
+            end
+          else
+            h2_roles(contributor).each do |role|
+              # kludgy way to ensure MODS roleTerm output includes the "authority"
+              role.source.attributes[:code] = H2_ROLE_AUTHORITY
+              RoleWriter.write(xml: xml, role: role)
+            end
           end
+        end
+
+        def marc_relator_roles(contributor)
+          Array(contributor.role).select do |role|
+            role.source&.code == 'marcrelator' ||
+              role.source&.uri&.match?(MARC_RELATORS_URI_REGEX) ||
+              role.uri&.match?(MARC_RELATORS_URI_REGEX)
+          end
+        end
+
+        def h2_roles(contributor)
+          Array(contributor.role).select { |role| role.source&.value == H2_ROLE_AUTHORITY }
         end
 
         def write_basic(name)
