@@ -682,7 +682,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
     end
   end
 
-  describe 'Approximate creation date range: approx. 1900, Deposited: 2022-01-01' do
+  describe 'Approximate creation date range: approx. 1900-1910, Deposited: 2022-01-01' do
     xit 'not implemented' do
       let(:cocina) do
         {
@@ -1017,10 +1017,142 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                       }
                     }
                   ],
-                  note: [
+                  type: 'organization'
+                }
+              ]
+            },
+            {
+              type: 'deposit',
+              date: [
+                {
+                  value: '2022-01-01',
+                  type: 'publication',
+                  encoding: {
+                    code: 'w3cdtf'
+                  }
+                }
+              ],
+              contributor: [
+                {
+                  name: [
                     {
-                      type: 'citation status',
-                      value: 'false'
+                      value: 'Stanford Digital Repository'
+                    }
+                  ],
+                  role: [
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    },
+                    {
+                      value: 'Publisher',
+                      type: 'DataCite role'
+                    }
+                  ],
+                  type: 'organization'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="publication">
+            <dateIssued encoding="w3cdtf">2021-01-01</dateIssued>
+            <publisher>Stanford University Press</publisher>
+          </originInfo>
+          <originInfo eventType="deposit">
+            <dateIssued encoding="w3cdtf">2022-01-01</dateIssued>
+            <publisher>Stanford Digital Repository</publisher>
+          </originInfo>
+        XML
+      end
+    end
+  end
+
+  describe 'Publication date: 2021-01-01, Deposited: 2022-01-01, Cited publisher: Stanford University Press' do
+    xit 'not implemented' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Stanford University Press'
+                }
+              ],
+              role: [
+                {
+                  value: 'Publisher',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
+                  value: 'publisher',
+                  code: 'pbl',
+                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
+                }
+              ],
+              type: 'organization'
+            }
+          ],
+          event: [
+            {
+              type: 'publication',
+              date: [
+                {
+                  value: '2021-01-01',
+                  type: 'publication',
+                  encoding: {
+                    code: 'w3cdtf'
+                  }
+                }
+              ],
+              contributor: [
+                {
+                  name: [
+                    {
+                      value: 'Stanford University Press'
+                    }
+                  ],
+                  role: [
+                    {
+                      value: 'Publisher',
+                      source: {
+                        value: 'H2 contributor role terms'
+                      }
+                    },
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    },
+                    {
+                      value: 'Distributor',
+                      type: 'DataCite role',
+                      source: {
+                        value: 'DataCite contributor types'
+                      }
                     }
                   ],
                   type: 'organization'
@@ -1070,6 +1202,13 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
 
       let(:mods) do
         <<~XML
+          <name type="corporate">
+            <namePart>Stanford University Press</namePart>
+            <role>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">publisher</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">pbl</roleTerm>
+            </role>
+          </name>
           <originInfo eventType="publication">
             <dateIssued encoding="w3cdtf">2021-01-01</dateIssued>
             <publisher>Stanford University Press</publisher>

@@ -872,7 +872,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
     end
   end
 
-  describe 'Approximate creation date range: approx. 1900, Deposited: 2022-01-01' do
+  describe 'Approximate creation date range: approx. 1900-1910, Deposited: 2022-01-01' do
     xit 'not implemented' do
       let(:cocina) do
         {
@@ -1152,13 +1152,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
                       value: 'Publisher',
                       source: {
                         value: 'H2 contributor role terms'
-                      },
-                      note: [
-                        {
-                          type: 'citation status',
-                          value: 'false'
-                        }
-                      ]
+                      }
                     },
                     {
                       value: 'publisher',
@@ -1175,6 +1169,12 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
                       source: {
                         value: 'DataCite contributor types'
                       }
+                    }
+                  ],
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
                     }
                   ],
                   type: 'organization'
@@ -1259,13 +1259,7 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
                       value: 'Publisher',
                       source: {
                         value: 'H2 contributor role terms'
-                      },
-                      note: [
-                        {
-                          type: 'citation status',
-                          value: 'false'
-                        }
-                      ]
+                      }
                     },
                     {
                       value: 'publisher',
@@ -1354,6 +1348,174 @@ RSpec.describe 'Cocina --> DataCite mappings for event (h2 specific)' do
                   name: 'Stanford University Press',
                   nameType: 'Organizational',
                   contributorType: 'Distributor'
+                }
+              ],
+              publicationYear: '2022',
+              publisher: 'Stanford Digital Repository',
+              dates: [
+                {
+                  date: '2021-01-01',
+                  dateType: 'Issued'
+                },
+                {
+                  date: '2022-01-01',
+                  dateType: 'Submitted'
+                }
+              ]
+            }
+          }
+        }
+      end
+    end
+  end
+
+  describe 'Publication date: 2021-01-01, Deposited: 2022-01-01, Cited publisher: Stanford University Press' do
+    xit 'not implemented' do
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Stanford University Press'
+                }
+              ],
+              role: [
+                {
+                  value: 'Publisher',
+                  source: {
+                    value: 'H2 contributor role terms'
+                  }
+                },
+                {
+                  value: 'publisher',
+                  code: 'pbl',
+                  uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
+                }
+              ],
+              type: 'organization'
+            }
+          ],
+          event: [
+            {
+              type: 'publication',
+              date: [
+                {
+                  value: '2021-01-01',
+                  type: 'publication',
+                  encoding: {
+                    code: 'w3cdtf'
+                  }
+                }
+              ],
+              contributor: [
+                {
+                  name: [
+                    {
+                      value: 'Stanford University Press'
+                    }
+                  ],
+                  role: [
+                    {
+                      value: 'Publisher',
+                      source: {
+                        value: 'H2 contributor role terms'
+                      }
+                    },
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    },
+                    {
+                      value: 'Distributor',
+                      type: 'DataCite role',
+                      source: {
+                        value: 'DataCite contributor types'
+                      }
+                    }
+                  ],
+                  type: 'organization'
+                }
+              ]
+            },
+            {
+              type: 'deposit',
+              date: [
+                {
+                  value: '2022-01-01',
+                  type: 'publication',
+                  encoding: {
+                    code: 'w3cdtf'
+                  }
+                }
+              ],
+              contributor: [
+                {
+                  name: [
+                    {
+                      value: 'Stanford Digital Repository'
+                    }
+                  ],
+                  role: [
+                    {
+                      value: 'publisher',
+                      code: 'pbl',
+                      uri: 'http://id.loc.gov/vocabulary/relators/pbl',
+                      source: {
+                        code: 'marcrelator',
+                        uri: 'http://id.loc.gov/vocabulary/relators/'
+                      }
+                    },
+                    {
+                      value: 'Publisher',
+                      type: 'DataCite role'
+                    }
+                  ],
+                  type: 'organization'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      # let(:datacite_xml) do
+      #   <<~XML
+      #     <contributors>
+      #       <contributor contributorType="Distributor">
+      #         <contributorName nameType="Organizational">Stanford University Press</contributorName>
+      #       </contributor>
+      #     </contributors>
+      #     <publicationYear>2022</publicationYear>
+      #     <publisher>Stanford Digital Repository</publisher>
+      #     <dates>
+      #       <date dateType="Issued">2021-01-01</date>
+      #       <date dateType="Submitted">2022-01-01</date>
+      #     </dates>
+      #   XML
+      # end
+
+      let(:datacite) do
+        {
+          data: {
+            attributes: {
+              creators: [
+                {
+                  name: 'Stanford University Press',
+                  nameType: 'Organizational'
                 }
               ],
               publicationYear: '2022',
