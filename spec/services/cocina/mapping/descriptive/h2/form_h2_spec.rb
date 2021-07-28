@@ -45,6 +45,13 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               source: {
                 code: 'local'
               }
+            },
+            {
+              value: 'Dataset',
+              type: 'resource type',
+              source: {
+                value: 'DataCite resource types'
+              }
             }
           ]
         }
@@ -62,7 +69,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
   end
 
   describe 'type with subtype' do
-    # User enters type: Text, subtype: Article
+    # User enters type: Text, subtype: Documentation
     xit 'not implemented' do
       let(:cocina) do
         {
@@ -74,7 +81,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
                   type: 'type'
                 },
                 {
-                  value: 'Article',
+                  value: 'Documentation',
                   type: 'subtype'
                 }
               ],
@@ -89,6 +96,13 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               source: {
                 value: 'MODS resource types'
               }
+            },
+            {
+              value: 'Text',
+              type: 'resource type',
+              source: {
+                value: 'DataCite resource types'
+              }
             }
           ]
         }
@@ -97,7 +111,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
       let(:mods) do
         <<~XML
           <genre type="H2 type">Text</genre>
-          <genre type="H2 subtype">Article</genre>
+          <genre type="H2 subtype">Documentation</genre>
           <typeOfResource>text</typeOfResource>
         XML
       end
@@ -150,6 +164,13 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               source: {
                 value: 'MODS resource types'
               }
+            },
+            {
+              value: 'Software',
+              type: 'resource type',
+              source: {
+                value: 'DataCite resource types'
+              }
             }
           ]
         }
@@ -189,6 +210,13 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
                 value: 'Stanford self-deposit resource types'
               },
               type: 'resource type'
+            },
+            {
+              value: 'Other',
+              type: 'resource type',
+              source: {
+                value: 'DataCite resource types'
+              }
             }
           ]
         }
