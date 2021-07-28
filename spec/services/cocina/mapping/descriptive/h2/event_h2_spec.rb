@@ -953,6 +953,11 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
         }
       end
 
+      # how do I know when (an event) publisher is uncited from the MODS?
+      #   if the publisher also appears in name with marcrelator role publisher, it is cited. if it does not, it is uncited.
+      #   in h2, the user has entered an author or contributor with the publisher role,
+      #     so there is a user-supplied publisher for an additional publication event,
+      #     in addition to the "Stanford Digital Repository" publisher entry that is automatically generated.
       let(:mods) do
         <<~XML
           <originInfo eventType="creation">
@@ -1068,6 +1073,11 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
         }
       end
 
+      # how do I know when (an event) publisher is uncited from the MODS?
+      #   if the publisher also appears in name with marcrelator role publisher, it is cited. if it does not, it is uncited.
+      #   in h2, the user has entered an author or contributor with the publisher role,
+      #     so there is a user-supplied publisher for an additional publication event,
+      #     in addition to the "Stanford Digital Repository" publisher entry that is automatically generated.
       let(:mods) do
         <<~XML
           <originInfo eventType="publication">
@@ -1082,4 +1092,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
       end
     end
   end
+
+  # FIXME: Arcadia to add spec for a cited publisher
 end
