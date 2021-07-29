@@ -1068,12 +1068,6 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
-                  ],
-                  note: [
-                    {
-                      type: 'citation status',
-                      value: 'false'
-                    }
                   ]
                 }
               ]
