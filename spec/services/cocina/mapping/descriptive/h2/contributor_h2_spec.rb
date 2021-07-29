@@ -1189,7 +1189,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                 {
                   value: 'contributor',
                   code: 'ctb',
-                  uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                  uri: 'http://id.loc.gov/vocabulary/relators/ctb',
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
@@ -1222,10 +1222,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
             <namePart type="given">Jane</namePart>
             <namePart type="family">Stanford</namePart>
             <description>not included in citation</description>
-            <nameIdentifier type="ORCID" typeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
+            <nameIdentifier type="orcid" typeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
             <role>
-              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
-              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">contributor</roleTerm>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
             </role>
           </name>
         XML
