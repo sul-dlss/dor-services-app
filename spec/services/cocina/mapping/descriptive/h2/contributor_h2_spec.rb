@@ -1149,7 +1149,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           <name type="personal" usage="primary">
             <namePart type="given">Jane</namePart>
             <namePart type="family">Stanford</namePart>
-            <nameIdentifier type="ORCID" typeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
+            <nameIdentifier type="orcid" typeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
             <role>
               <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">author</roleTerm>
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
