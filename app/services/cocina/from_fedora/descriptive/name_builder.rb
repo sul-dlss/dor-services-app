@@ -7,6 +7,7 @@ module Cocina
       # Maps a name
       class NameBuilder
         UNCITED_DESCRIPTION = ToFedora::Descriptive::ContributorWriter::UNCITED_DESCRIPTION
+        TYPE_FOR_ROLES = FromFedora::Descriptive::Contributor::ROLES.merge('event' => 'event').freeze
 
         # @param [Array<Nokogiri::XML::Element>] name_elements (multiple if parallel)
         # @param [Cocina::FromFedora::DataErrorNotifier] notifier
@@ -65,9 +66,10 @@ module Cocina
             notifier.warn('Missing name/namePart element')
             return {}
           end
+
           {
             name: name_parts,
-            type: type_for(name_node['type']),
+            type: name_type(name_node),
             status: name_node['usage']
           }.compact.merge(common_name(name_node, name_parts))
         end
@@ -155,6 +157,17 @@ module Cocina
           elsif default_type && type.blank?
             'name'
           end
+        end
+
+        def name_type(name_node)
+          name_type = type_for(name_node['type'])
+          return name_type if name_type.present?
+
+          role_nodes = name_node.xpath('mods:role', mods: DESC_METADATA_NS)
+          cocina_roles = role_nodes.filter_map { |role_node| role_for(role_node) }.presence
+          return if cocina_roles.blank?
+
+          return 'event' if cocina_roles.first[:value] == 'event'
         end
 
         def activity_date?(name_part_node)
@@ -249,13 +262,13 @@ module Cocina
         def type_for(type)
           return nil if type.blank?
 
-          unless Contributor::ROLES.key?(type.downcase)
+          unless TYPE_FOR_ROLES.key?(type.downcase)
             notifier.warn('Name type unrecognized', type: type)
             return
           end
           notifier.warn('Name type incorrectly capitalized', type: type) if type.downcase != type
 
-          Contributor::ROLES.fetch(type.downcase)
+          TYPE_FOR_ROLES.fetch(type.downcase)
         end
 
         def check_role_code(role_code, role_authority)
