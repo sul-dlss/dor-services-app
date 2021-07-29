@@ -174,6 +174,7 @@ module Cocina
           contributor.identifier.each do |identifier|
             id_attributes = {
               displayLabel: identifier.displayLabel,
+              typeURI: identifier.source&.uri,
               type: FromFedora::Descriptive::IdentifierType.mods_type_for_cocina_type(identifier.type)
             }.tap do |attrs|
               attrs[:invalid] = 'yes' if identifier.status == 'invalid'
