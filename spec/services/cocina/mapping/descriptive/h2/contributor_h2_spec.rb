@@ -10,7 +10,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Jane Stanford. Author.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -67,7 +67,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Author.
     ## Leland Stanford. Author.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -160,7 +160,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Data collector.
     ## Stanford University. Sponsor.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -242,7 +242,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Stanford University. Host institution.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -289,7 +289,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University. Host institution.
     ## Department of English. Department.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -356,7 +356,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Leland Stanford. Contributing author.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -457,7 +457,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Stanford University. Sponsor.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -546,7 +546,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## San Francisco Symphony Concert. Event.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -588,7 +588,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## San Francisco Symphony Concert. Event.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -670,7 +670,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## LDCX. Conference.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -711,7 +711,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## LDCX. Conference.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -793,7 +793,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Stanford University. Funder.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -843,7 +843,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Stanford University. Funder.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -935,7 +935,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University Press. Publisher.
     # Cited publisher goes into both contributor and event in cocina.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1013,7 +1013,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University Press. Publisher.
     # Uncited publisher goes into event only.
 
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1098,7 +1098,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Jane Stanford. Author.
     ## ORCID: 0000-0000-0000-0000
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -1164,7 +1164,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Jane Stanford. Contributing author.
     ## ORCID: 0000-0000-0000-0000
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
