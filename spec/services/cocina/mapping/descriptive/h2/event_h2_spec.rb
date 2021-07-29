@@ -15,7 +15,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                   value: '2021-01-01',
                   type: 'publication',
                   encoding: {
-                    code: 'w3cdtf'
+                    code: 'edtf'
                   }
                 }
               ]
@@ -27,7 +27,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
       let(:mods) do
         <<~XML
           <originInfo eventType="publication">
-            <dateIssued encoding="w3cdtf">2021-01-01</dateIssued>
+            <dateIssued encoding="edtf">2021-01-01</dateIssued>
           </originInfo>
         XML
       end
@@ -46,7 +46,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                   value: '2021-01-01',
                   type: 'creation',
                   encoding: {
-                    code: 'w3cdtf'
+                    code: 'edtf'
                   }
                 }
               ]
@@ -58,7 +58,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
       let(:mods) do
         <<~XML
           <originInfo eventType="creation">
-            <dateCreated encoding="w3cdtf">2021-01-01</dateCreated>
+            <dateCreated encoding="edtf">2021-01-01</dateCreated>
           </originInfo>
         XML
       end
@@ -86,7 +86,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                   ],
                   type: 'creation',
                   encoding: {
-                    code: 'w3cdtf'
+                    code: 'edtf'
                   }
                 }
               ]
@@ -98,8 +98,8 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
       let(:mods) do
         <<~XML
           <originInfo eventType="creation">
-            <dateCreated encoding="w3cdtf" point="start">2020-01-01</dateCreated>
-            <dateCreated encoding="w3cdtf" point="end">2021-01-01</dateCreated>
+            <dateCreated encoding="edtf" point="start">2020-01-01</dateCreated>
+            <dateCreated encoding="edtf" point="end">2021-01-01</dateCreated>
           </originInfo>
         XML
       end
@@ -119,7 +119,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                   type: 'creation',
                   qualifier: 'approximate',
                   encoding: {
-                    code: 'w3cdtf'
+                    code: 'edtf'
                   }
                 }
               ]
@@ -131,7 +131,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
       let(:mods) do
         <<~XML
           <originInfo eventType="creation">
-            <dateCreated encoding="w3cdtf" qualifier="approximate">1900</dateCreated>
+            <dateCreated encoding="edtf" qualifier="approximate">1900</dateCreated>
           </originInfo>
         XML
       end
@@ -160,11 +160,11 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                   ],
                   type: 'creation',
                   encoding: {
-                    code: 'w3cdtf'
+                    code: 'edtf'
                   }
                 }
               ]
-            },
+            }
           ]
         }
       end
@@ -172,8 +172,8 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
       let(:mods) do
         <<~XML
           <originInfo eventType="creation">
-            <dateCreated encoding="w3cdtf" point="start" qualifier="approximate">1900</dateCreated>
-            <dateCreated encoding="w3cdtf" point="end">1910</dateCreated>
+            <dateCreated encoding="edtf" point="start" qualifier="approximate">1900</dateCreated>
+            <dateCreated encoding="edtf" point="end">1910</dateCreated>
           </originInfo>
         XML
       end
@@ -202,7 +202,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                   ],
                   type: 'creation',
                   encoding: {
-                    code: 'w3cdtf'
+                    code: 'edtf'
                   }
                 }
               ]
@@ -214,8 +214,8 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
       let(:mods) do
         <<~XML
           <originInfo eventType="creation">
-            <dateCreated encoding="w3cdtf" point="start">1900</dateCreated>
-            <dateCreated encoding="w3cdtf" point="end" qualifier="approximate">1910</dateCreated>
+            <dateCreated encoding="edtf" point="start">1900</dateCreated>
+            <dateCreated encoding="edtf" point="end" qualifier="approximate">1910</dateCreated>
           </originInfo>
         XML
       end
@@ -244,7 +244,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                   type: 'creation',
                   qualifier: 'approximate',
                   encoding: {
-                    code: 'w3cdtf'
+                    code: 'edtf'
                   }
                 }
               ]
@@ -256,8 +256,8 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
       let(:mods) do
         <<~XML
           <originInfo eventType="creation">
-            <dateCreated encoding="w3cdtf" point="start" qualifier="approximate">1900</dateCreated>
-            <dateCreated encoding="w3cdtf" point="end" qualifier="approximate">1910</dateCreated>
+            <dateCreated encoding="edtf" point="start" qualifier="approximate">1900</dateCreated>
+            <dateCreated encoding="edtf" point="end" qualifier="approximate">1910</dateCreated>
           </originInfo>
         XML
       end
@@ -277,7 +277,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                   value: '2021-01-01',
                   type: 'creation',
                   encoding: {
-                    code: 'w3cdtf'
+                    code: 'edtf'
                   }
                 }
               ]
@@ -313,7 +313,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
       let(:mods) do
         <<~XML
           <originInfo eventType="creation">
-            <dateCreated encoding="w3cdtf">2021-01-01</dateCreated>
+            <dateCreated encoding="edtf">2021-01-01</dateCreated>
           </originInfo>
           <originInfo eventType="publication">
             <publisher>Stanford University Press</publisher>
@@ -336,7 +336,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                   value: '2021-01-01',
                   type: 'publication',
                   encoding: {
-                    code: 'w3cdtf'
+                    code: 'edtf'
                   }
                 }
               ],
@@ -369,7 +369,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
       let(:mods) do
         <<~XML
           <originInfo eventType="publication">
-            <dateIssued encoding="w3cdtf">2021-01-01</dateIssued>
+            <dateIssued encoding="edtf">2021-01-01</dateIssued>
             <publisher>Stanford University Press</publisher>
           </originInfo>
         XML
@@ -402,7 +402,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
               ],
               type: 'organization'
             }
-          ]
+          ],
           event: [
             {
               type: 'publication',
@@ -411,7 +411,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                   value: '2021-01-01',
                   type: 'publication',
                   encoding: {
-                    code: 'w3cdtf'
+                    code: 'edtf'
                   }
                 }
               ],
@@ -444,7 +444,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
       let(:mods) do
         <<~XML
           <originInfo eventType="publication">
-            <dateIssued encoding="w3cdtf">2021-01-01</dateIssued>
+            <dateIssued encoding="edtf">2021-01-01</dateIssued>
             <publisher>Stanford University Press</publisher>
           </originInfo>
         XML
