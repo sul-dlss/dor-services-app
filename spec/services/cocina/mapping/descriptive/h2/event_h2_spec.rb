@@ -45,10 +45,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -117,10 +113,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -192,10 +184,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -264,10 +252,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -333,10 +317,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -414,10 +394,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -488,10 +464,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -570,10 +542,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -653,10 +621,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -736,10 +700,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -809,10 +769,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -896,10 +852,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -917,25 +869,12 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                   ],
                   role: [
                     {
-                      value: 'Publisher',
-                      source: {
-                        value: 'H2 contributor role terms'
-                      }
-                    },
-                    {
                       value: 'publisher',
                       code: 'pbl',
                       uri: 'http://id.loc.gov/vocabulary/relators/pbl',
                       source: {
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    },
-                    {
-                      value: 'Distributor',
-                      type: 'DataCite role',
-                      source: {
-                        value: 'DataCite contributor types'
                       }
                     }
                   ],
@@ -995,25 +934,12 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                   ],
                   role: [
                     {
-                      value: 'Publisher',
-                      source: {
-                        value: 'H2 contributor role terms'
-                      }
-                    },
-                    {
                       value: 'publisher',
                       code: 'pbl',
                       uri: 'http://id.loc.gov/vocabulary/relators/pbl',
                       source: {
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    },
-                    {
-                      value: 'Distributor',
-                      type: 'DataCite role',
-                      source: {
-                        value: 'DataCite contributor types'
                       }
                     }
                   ],
@@ -1054,10 +980,6 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
