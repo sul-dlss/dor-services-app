@@ -288,7 +288,7 @@ RSpec.describe 'Cocina --> MODS mappings for FAST subjects' do
   end
 
   describe 'Multiple terms' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           subject: [
