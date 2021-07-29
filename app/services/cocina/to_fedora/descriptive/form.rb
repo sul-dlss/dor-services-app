@@ -187,7 +187,7 @@ module Cocina
           when 'map scale', 'map projection'
             # do nothing, these end up in subject/cartographics
           else # genre
-            xml.genre form.value, attributes.merge({ type: genre_type_for(form) }.compact).merge(uri_attrs(form))
+            xml.genre form.value, attributes.merge({ type: genre_type_for(form) }.compact)
           end
         end
 
@@ -206,7 +206,7 @@ module Cocina
             usage: form.status,
             lang: form.valueLanguage&.code,
             script: form.valueLanguage&.valueScript&.code
-          }.compact
+          }.merge(uri_attrs(form)).compact
         end
 
         def write_attributes_only(is_manuscript, is_collection)

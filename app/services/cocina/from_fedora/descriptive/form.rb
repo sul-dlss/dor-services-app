@@ -160,14 +160,22 @@ module Cocina
           {
             value: type.text,
             type: 'resource type',
-            source: {
-              value: 'MODS resource types'
-            },
+            uri: type['valueURI'],
+            source: resource_type_form_source(type),
             displayLabel: type[:displayLabel].presence
-
           }.tap do |attrs|
             attrs[:status] = 'primary' if type['usage'] == 'primary'
           end.compact
+        end
+
+        def resource_type_form_source(type)
+          {}.tap do |attrs|
+            if type['authorityURI']
+              attrs[:uri] = type['authorityURI']
+            else
+              attrs[:value] = 'MODS resource types'
+            end
+          end
         end
 
         def manuscript_form

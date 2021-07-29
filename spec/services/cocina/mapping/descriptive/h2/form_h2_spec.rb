@@ -7,7 +7,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
   # https://docs.google.com/spreadsheets/d/1EiGgVqtb6PUJE2cI_jhqnAoiQkiwZtar4tF7NHwSMz8/edit?usp=sharing
   describe 'type only, resource type with URI' do
     # User enters type: Data, subtype: nil
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           form: [
@@ -24,14 +24,6 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               type: 'resource type'
             },
             {
-              value: 'Dataset',
-              type: 'resource type',
-              uri: 'http://id.loc.gov/vocabulary/resourceTypes/dat',
-              source: {
-                uri: 'http://id.loc.gov/vocabulary/resourceTypes/'
-              }
-            },
-            {
               value: 'Data sets',
               type: 'genre',
               uri: 'https://id.loc.gov/authorities/genreForms/gf2018026119',
@@ -44,6 +36,14 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               type: 'genre',
               source: {
                 code: 'local'
+              }
+            },
+            {
+              value: 'Dataset',
+              type: 'resource type',
+              uri: 'http://id.loc.gov/vocabulary/resourceTypes/dat',
+              source: {
+                uri: 'http://id.loc.gov/vocabulary/resourceTypes/'
               }
             }
           ]
@@ -63,7 +63,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
 
   describe 'type with subtype' do
     # User enters type: Text, subtype: Article
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           form: [
@@ -106,7 +106,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
 
   describe 'type with multiple subtypes' do
     # User enters type: Software/Code, subtype: Code, Documentation
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           form: [
@@ -131,17 +131,18 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               type: 'resource type'
             },
             {
+              value: 'computer program',
+              type: 'genre',
+              uri: 'http://id.loc.gov/vocabulary/marcgt/com',
+              source: {
+                code: 'marcgt'
+              }
+            },
+            {
               value: 'software, multimedia',
               type: 'resource type',
               source: {
                 value: 'MODS resource types'
-              }
-            },
-            {
-              value: 'computer program',
-              uri: 'http://id.loc.gov/vocabulary/marcgt/com',
-              source: {
-                code: 'marcgt'
               }
             },
             {
