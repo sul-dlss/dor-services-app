@@ -489,6 +489,13 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
 
       let(:mods) do
         <<~XML
+          <name type="corporate">
+            <namePart>Stanford University Press</namePart>
+            <role>
+              <roleText type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">publisher</roleText>
+              <roleText type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">publisher</roleText>
+            </role>
+          </name>
           <originInfo eventType="publication">
             <dateIssued encoding="edtf">2021-01-01</dateIssued>
             <publisher>Stanford University Press</publisher>
