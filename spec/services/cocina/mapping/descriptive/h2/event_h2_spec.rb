@@ -66,7 +66,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Publication date: 2021-01-01, Creation date: 2020-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -102,6 +102,9 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
         <<~XML
           <originInfo eventType="publication">
             <dateIssued encoding="edtf">2021-01-01</dateIssued>
+          </originInfo>
+          <originInfo eventType="creation">
+            <dateCreated encoding="edtf">2020-01-01</dateCreated>
           </originInfo>
         XML
       end
