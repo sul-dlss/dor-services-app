@@ -312,7 +312,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
 
   describe 'Creation date: 2021-01-01, Uncited publisher: Stanford University Press' do
     # Uncited publisher appears in event only
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -371,7 +371,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
 
   describe 'Publication date: 2021-01-01, Uncited publisher: Stanford University Press' do
     # Uncited publisher appears in event only
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [

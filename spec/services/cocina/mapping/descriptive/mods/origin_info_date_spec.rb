@@ -1117,7 +1117,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
-                  ]
+                  ],
+                  type: 'organization'
                 }
               ],
               location: [
@@ -2471,7 +2472,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
-                  ]
+                  ],
+                  type: 'organization'
                 }
               ],
               location: [
@@ -2675,7 +2677,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
-                  ]
+                  ],
+                  type: 'organization'
                 }
               ]
             }
@@ -2895,7 +2898,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
-                  ]
+                  ],
+                  type: 'organization'
                 }
               ],
               location: [
@@ -2965,7 +2969,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
-                  ]
+                  ],
+                  type: 'organization'
                 }
               ],
               location: [
@@ -3117,7 +3122,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
-                  ]
+                  ],
+                  type: 'organization'
                 }
               ],
               note: [

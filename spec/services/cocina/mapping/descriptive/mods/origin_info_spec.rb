@@ -302,7 +302,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
-                  ]
+                  ],
+                  type: 'organization'
                 }
               ],
               date: [
@@ -425,7 +426,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                             uri: 'http://id.loc.gov/vocabulary/relators/'
                           }
                         }
-                      ]
+                      ],
+                      type: 'organization'
                     }
                   ],
                   date: [
@@ -482,7 +484,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                             uri: 'http://id.loc.gov/vocabulary/relators/'
                           }
                         }
-                      ]
+                      ],
+                      type: 'organization'
                     }
                   ],
                   date: [
@@ -813,7 +816,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                             uri: 'http://id.loc.gov/vocabulary/relators/'
                           }
                         }
-                      ]
+                      ],
+                      type: 'organization'
                     }
                   ],
                   date: [
@@ -859,7 +863,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                             uri: 'http://id.loc.gov/vocabulary/relators/'
                           }
                         }
-                      ]
+                      ],
+                      type: 'organization'
                     }
                   ],
                   date: [
@@ -1136,7 +1141,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                             uri: 'http://id.loc.gov/vocabulary/relators/'
                           }
                         }
-                      ]
+                      ],
+                      type: 'organization'
                     }
                   ],
                   date: [
@@ -1164,7 +1170,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                             uri: 'http://id.loc.gov/vocabulary/relators/'
                           }
                         }
-                      ]
+                      ],
+                      type: 'organization'
                     }
                   ],
                   date: [
@@ -1236,7 +1243,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                             uri: 'http://id.loc.gov/vocabulary/relators/'
                           }
                         }
-                      ]
+                      ],
+                      type: 'organization'
                     }
                   ],
                   date: [
@@ -1293,7 +1301,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                             uri: 'http://id.loc.gov/vocabulary/relators/'
                           }
                         }
-                      ]
+                      ],
+                      type: 'organization'
                     }
                   ],
                   date: [
@@ -1620,7 +1629,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
-                  ]
+                  ],
+                  type: 'organization'
                 }
               ],
               date: [
@@ -1695,7 +1705,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
-                  ]
+                  ],
+                  type: 'organization'
                 }
               ]
             }

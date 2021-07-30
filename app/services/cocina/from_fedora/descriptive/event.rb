@@ -385,7 +385,8 @@ module Cocina
                   end
                 end.compact
               ],
-              role: [role_for(event)]
+              role: [role_for(event)],
+              type: 'organization'
             }.compact
           end
 
