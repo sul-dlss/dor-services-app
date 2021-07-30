@@ -40,6 +40,7 @@ module Cocina
             else
               attrs[:type] = cocina_type
               attrs[:value] = identifier_element.text
+              attrs[:source] = { uri: identifier_element['typeURI'] } if identifier_element['typeURI']
             end
             attrs[:status] = 'invalid' if identifier_element['invalid'] == 'yes'
             attrs[:note] = build_note if mods_type && with_note

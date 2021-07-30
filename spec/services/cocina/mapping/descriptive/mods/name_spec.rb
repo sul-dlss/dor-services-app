@@ -796,7 +796,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
       let(:warnings) do
         [
-          Notification.new(msg: 'Contributor role code is missing authority')
+          Notification.new(msg: 'Contributor role code is missing authority', times: 2)
         ]
       end
     end
@@ -2634,7 +2634,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
         let(:errors) do
           [
-            Notification.new(msg: 'Contributor role code has unexpected value', context: { role: 'isbx' })
+            Notification.new(msg: 'Contributor role code has unexpected value', context: { role: 'isbx' }, times: 2)
           ]
         end
       end

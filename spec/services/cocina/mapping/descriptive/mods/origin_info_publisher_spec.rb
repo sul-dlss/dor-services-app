@@ -645,7 +645,8 @@ RSpec.describe 'MODS originInfo publisher <--> cocina mappings' do
                       value: 'Publisher',
                       source: { value: 'Stanford self-deposit contributor types' }
                     }
-                  ]
+                  ],
+                  type: 'organization'
                 }
               ]
             }

@@ -6,8 +6,9 @@ module Cocina
       # Maps contributor from cocina to MODS XML
       class ContributorWriter
         # one way mapping:  MODS 'corporate' already maps to Cocina 'organization'
-        NAME_TYPE = Cocina::FromFedora::Descriptive::Contributor::ROLES.invert.merge('event' => 'corporate').freeze
+        NAME_TYPE = Cocina::FromFedora::Descriptive::Contributor::ROLES.invert.freeze
         NAME_PART = FromFedora::Descriptive::Contributor::NAME_PART.invert.merge('activity dates' => 'date').freeze
+        UNCITED_DESCRIPTION = 'not included in citation'
 
         # @params [Nokogiri::XML::Builder] xml
         # @params [Cocina::Models::Contributor] contributor
@@ -163,6 +164,8 @@ module Cocina
               xml.affiliation note.value
             when 'description'
               xml.description note.value
+            when 'citation status'
+              xml.description UNCITED_DESCRIPTION if note.value == 'false'
             end
           end
         end
@@ -171,6 +174,7 @@ module Cocina
           contributor.identifier.each do |identifier|
             id_attributes = {
               displayLabel: identifier.displayLabel,
+              typeURI: identifier.source&.uri,
               type: FromFedora::Descriptive::IdentifierType.mods_type_for_cocina_type(identifier.type)
             }.tap do |attrs|
               attrs[:invalid] = 'yes' if identifier.status == 'invalid'
