@@ -19,9 +19,8 @@ module Cocina
       def subjects_attributes
         return [] if cocina_desc&.subject.blank?
 
-        results = []
-        cocina_desc&.subject&.each do |cocina_subject|
-          results << subject(cocina_subject) if subject(cocina_subject).present?
+        results = cocina_desc.subject.map do |cocina_subject|
+          subject(cocina_subject)
         end
         results.compact
       end
@@ -52,9 +51,9 @@ module Cocina
       end
 
       def non_fast_subject(cocina_subject)
-        {}.tap do |attribs|
-          attribs[:subject] = cocina_subject.value if cocina_subject.value.present?
-        end
+        return if cocina_subject.value.blank?
+
+        { subject: cocina_subject.value }
       end
 
       def fast?(cocina_subject)
