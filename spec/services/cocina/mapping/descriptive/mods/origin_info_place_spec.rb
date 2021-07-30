@@ -479,7 +479,8 @@ RSpec.describe 'MODS originInfo place <--> cocina mappings' do
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
                     }
-                  ]
+                  ],
+                  type: 'organization'
                 }
               ]
             }

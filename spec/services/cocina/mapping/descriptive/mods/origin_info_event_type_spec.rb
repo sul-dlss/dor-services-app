@@ -135,7 +135,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
                           uri: 'http://id.loc.gov/vocabulary/relators/'
                         }
                       }
-                    ]
+                    ],
+                    type: 'organization'
                   }
                 ],
                 location: [
@@ -197,7 +198,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
                           uri: 'http://id.loc.gov/vocabulary/relators/'
                         }
                       }
-                    ]
+                    ],
+                    type: 'organization'
                   }
                 ],
                 location: [
@@ -247,7 +249,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
                           uri: 'http://id.loc.gov/vocabulary/relators/'
                         }
                       }
-                    ]
+                    ],
+                    type: 'organization'
                   }
                 ],
                 location: [
@@ -447,7 +450,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
                           uri: 'http://id.loc.gov/vocabulary/relators/'
                         }
                       }
-                    ]
+                    ],
+                    type: 'organization'
                   }
                 ],
                 location: [
@@ -508,7 +512,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
                           uri: 'http://id.loc.gov/vocabulary/relators/'
                         }
                       }
-                    ]
+                    ],
+                    type: 'organization'
                   }
                 ],
                 location: [
@@ -557,7 +562,8 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
                           uri: 'http://id.loc.gov/vocabulary/relators/'
                         }
                       }
-                    ]
+                    ],
+                    type: 'organization'
                   }
                 ],
                 location: [
