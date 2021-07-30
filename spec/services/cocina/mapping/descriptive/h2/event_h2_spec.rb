@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   describe 'Publication date: 2021-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -35,7 +35,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Creation date: 2021-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -109,7 +109,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Creation date range: 2020-01-01 to 2021-01-01' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -150,7 +150,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Approximate single creation date: approx. 1900' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -182,7 +182,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Creation date range with approximate start date: approx. 1900-1910' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -224,7 +224,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Creation date range with approximate end date: 1900-approx. 1910' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
@@ -266,7 +266,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
   end
 
   describe 'Approximate creation date range: approx. 1900-approx. 1910' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           event: [
