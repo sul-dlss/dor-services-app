@@ -425,7 +425,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
 
   describe 'Publication date: 2021-01-01, Cited publisher: Stanford University Press' do
     # Cited publisher appears in contributor and event
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           contributor: [
@@ -492,8 +492,8 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
           <name type="corporate">
             <namePart>Stanford University Press</namePart>
             <role>
-              <roleText type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">publisher</roleText>
-              <roleText type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/pbl">publisher</roleText>
+              <roleTerm valueURI="http://id.loc.gov/vocabulary/relators/pbl" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" type="text">publisher</roleTerm>
+              <roleTerm valueURI="http://id.loc.gov/vocabulary/relators/pbl" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" type="code">pbl</roleTerm>
             </role>
           </name>
           <originInfo eventType="publication">
