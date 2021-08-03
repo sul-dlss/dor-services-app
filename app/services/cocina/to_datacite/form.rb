@@ -20,8 +20,9 @@ module Cocina
         return {} if cocina_desc&.form.blank?
 
         {}.tap do |attribs|
-          attribs[:resourceTypeGeneral] = resource_type_general if resource_type_general
-          attribs[:resourceType] = resource_type if resource_type
+          # FIXME: the following were coded without Arcadia's mappings as a stopgap to be able to debug update_doi_metadata
+          attribs[:resourceTypeGeneral] = resource_type_general || 'Text'
+          attribs[:resourceType] = resource_type || 'Testing'
         end
       end
 
