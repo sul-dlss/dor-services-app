@@ -20,8 +20,12 @@ module Cocina
         return {} if cocina_desc&.form.blank?
 
         {}.tap do |attribs|
-          attribs[:resourceTypeGeneral] = resource_type_general if resource_type_general
-          attribs[:resourceType] = resource_type if resource_type
+          # FIXME: the following were coded without Arcadia's mappings as a stopgap to be able to debug update_doi_metadata
+          warning_msg = 'DataCite mappings result in empty resourceTypeGeneral and/or empty resourceType; using hardcoded default values'
+          Honeybadger.notify(warning_msg) if resource_type_general.blank? || resource_type.blank?
+
+          attribs[:resourceTypeGeneral] = resource_type_general || 'Text'
+          attribs[:resourceType] = resource_type || 'Testing'
         end
       end
 
