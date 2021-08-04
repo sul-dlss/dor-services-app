@@ -257,6 +257,12 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
 
   # FIXME: the following were coded without Arcadia's mappings as a stopgap to be able to debug update_doi_metadata
   context 'without DataCite term' do
+    let(:honeybadger_msg) { 'DataCite mappings result in empty resourceTypeGeneral and/or empty resourceType; using hardcoded default values' }
+
+    before do
+      allow(Honeybadger).to receive(:notify).with(honeybadger_msg)
+    end
+
     context 'with type only (no subtype)' do
       let(:cocina) do
         {
@@ -277,13 +283,14 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
         }
       end
 
-      it 'populates type_attributes correctly' do
+      it 'populates type_attributes correctly and notifies Honeybadger' do
         expect(type_attributes).to eq(
           {
             resourceTypeGeneral: 'Text',
             resourceType: 'whatever'
           }
         )
+        expect(Honeybadger).to have_received(:notify).with(honeybadger_msg)
       end
     end
 
@@ -318,13 +325,14 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
         }
       end
 
-      it 'populates type_attributes correctly' do
+      it 'populates type_attributes correctly and notifies Honeybadger' do
         expect(type_attributes).to eq(
           {
             resourceTypeGeneral: 'Text',
             resourceType: 'whatever'
           }
         )
+        expect(Honeybadger).to have_received(:notify).with(honeybadger_msg)
       end
     end
   end
