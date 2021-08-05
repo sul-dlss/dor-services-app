@@ -70,6 +70,37 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
         expect(result.success?).to be true
       end
     end
+
+    context 'when purl in relatedResource' do
+      let(:related_resource) do
+        [
+          {
+            title: [
+              {
+                value: 'Software Carpentry Workshop recordings from August 14, 2014'
+              }
+            ],
+            purl: 'http://purl.stanford.edu/tx853fp2857',
+            access: {
+              digitalRepository: [
+                {
+                  value: 'Stanford Digital Repository'
+                }
+              ]
+            }
+          }
+        ]
+      end
+      let(:cocina_object) do
+        new_cocina_hash = cocina_hash.dup
+        new_cocina_hash[:description][:relatedResource] = related_resource
+        Cocina::Models::DRO.new(new_cocina_hash)
+      end
+
+      it 'returns success' do
+        expect(result.success?).to be true
+      end
+    end
   end
 
   describe '.valid_from_fedora?' do
@@ -107,6 +138,32 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
 
       it 'returns failure' do
         expect(result.failure?).to be true
+      end
+    end
+
+    context 'when purl in related item' do
+      let(:mods) do
+        <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.7">
+            <titleInfo>
+              <title>Chi Running</title>
+            </titleInfo>
+            <relatedItem>
+              <location>
+                <url>http://purl.stanford.edu/zz599zz9959</url>
+              </location>
+            </relatedItem>
+            <relatedItem>
+              <location>
+                <url usage="primary display">http://purl.stanford.edu/ng599nr9959</url>
+              </location>
+            </relatedItem>
+          </mods>
+        XML
+      end
+
+      it 'returns success' do
+        expect(result.success?).to be true
       end
     end
   end
