@@ -197,19 +197,21 @@ module Cocina
       return if trial
       raise "Must provide a #{prefix} tag for #{pid}" unless new_tag
 
-      existing_tag = tag_starting_with(pid, prefix)
-      if existing_tag.nil?
+      existing_tags = tags_starting_with(pid, prefix)
+      if existing_tags.empty?
         AdministrativeTags.create(pid: pid, tags: [new_tag])
-      elsif existing_tag != new_tag
-        AdministrativeTags.update(pid: pid, current: existing_tag, new: new_tag)
+      elsif existing_tags.size > 1
+        raise "Too many tags for prefix #{prefix}. Expected one."
+      elsif existing_tags.first != new_tag
+        AdministrativeTags.update(pid: pid, current: existing_tags.first, new: new_tag)
       end
     end
 
-    def tag_starting_with(pid, prefix)
-      AdministrativeTags.for(pid: pid).each do |tag|
-        return tag if tag.start_with?(prefix)
+    def tags_starting_with(pid, prefix)
+      prefix_count = prefix.count(':') + 1
+      AdministrativeTags.for(pid: pid).select do |tag|
+        tag.start_with?(prefix) && tag.count(':') == prefix_count
       end
-      nil
     end
 
     # TODO: duplicate from ObjectCreator
