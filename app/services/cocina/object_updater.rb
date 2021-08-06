@@ -208,6 +208,7 @@ module Cocina
     end
 
     def tags_starting_with(pid, prefix)
+      # This lets us find tags like "Project : Hydrus" when "Project" is the prefix, but will not match on tags like "Project : Hydrus : IR : data"
       prefix_count = prefix.count(':') + 1
       AdministrativeTags.for(pid: pid).select do |tag|
         tag.start_with?(prefix) && tag.count(':') == prefix_count
