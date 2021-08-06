@@ -93,6 +93,9 @@ RSpec/ExpectActual:
   Exclude:
     - 'spec/routing/**'
 
+RSpec/NestedGroups:
+  Max: 5
+
 Style/AsciiComments:
   Exclude:
     - 'spec/services/cocina/from_fedora/descriptive/contributor_spec.rb'

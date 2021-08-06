@@ -387,10 +387,34 @@ RSpec.describe Cocina::ObjectUpdater do
           end
         end
 
-        it 'updates administrative' do
-          update
-          expect(item).to have_received(:admin_policy_object_id=).with('druid:ff000df4567')
-          expect(AdministrativeTags).to have_received(:create)
+        context 'when creating a new project tag' do
+          it 'updates administrative' do
+            update
+            expect(item).to have_received(:admin_policy_object_id=).with('druid:ff000df4567')
+            expect(AdministrativeTags).to have_received(:create)
+          end
+        end
+
+        context 'when multiple project tags already exists' do
+          before do
+            allow(AdministrativeTags).to receive(:for).and_return(['Project : Phoenix', 'Project : Google Books'])
+          end
+
+          it 'updates administrative' do
+            expect { update }.to raise_error(/Too many tags for prefix/)
+          end
+        end
+
+        context 'when creating a new project tag with an existing project subtag' do
+          before do
+            allow(AdministrativeTags).to receive(:for).and_return(['Project : Google Books : Special'])
+          end
+
+          it 'updates administrative' do
+            update
+            expect(item).to have_received(:admin_policy_object_id=).with('druid:ff000df4567')
+            expect(AdministrativeTags).to have_received(:create)
+          end
         end
       end
 
