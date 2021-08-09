@@ -70,17 +70,19 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Personal">Stanford, Jane</creatorName>
-      #         <givenName>Jane</givenName>
-      #         <familyName>Stanford</familyName>
-      #       </creator>
-      #     </creators>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -191,22 +193,24 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Personal">Stanford, Jane</creatorName>
-      #         <givenName>Jane</givenName>
-      #         <familyName>Stanford</familyName>
-      #       </creator>
-      #       <creator>
-      #         <creatorName nameType="Personal">Stanford, Leland</creatorName>
-      #         <givenName>Leland</givenName>
-      #         <familyName>Stanford</familyName>
-      #       </creator>
-      #     </creators>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Leland</creatorName>
+                <givenName>Leland</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -314,20 +318,22 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Personal">Stanford, Jane</creatorName>
-      #         <givenName>Jane</givenName>
-      #         <familyName>Stanford</familyName>
-      #       </creator>
-      #       <creator>
-      #         <creatorName nameType="Organizational">Stanford University</creatorName>
-      #       </creator>
-      #     </creators>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+              <creator>
+                <creatorName nameType="Organizational">Stanford University</creatorName>
+              </creator>
+            </creators>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -394,15 +400,17 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Organizational">Stanford University</creatorName>
-      #       </creator>
-      #     </creators>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Organizational">Stanford University</creatorName>
+              </creator>
+            </creators>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -493,18 +501,20 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Organizational">Stanford University</creatorName>
-      #       </creator>
-      #       <creator>
-      #         <creatorName nameType="Organizational">Department of English</creatorName>
-      #       </creator>
-      #     </creators>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Organizational">Stanford University</creatorName>
+              </creator>
+              <creator>
+                <creatorName nameType="Organizational">Department of English</creatorName>
+              </creator>
+            </creators>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -628,24 +638,26 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Personal">Stanford, Jane</creatorName>
-      #         <givenName>Jane</givenName>
-      #         <familyName>Stanford</familyName>
-      #       </creator>
-      #     </creators>
-      #     <contributors>
-      #       <contributor contributorType="Other">
-      #         <contributorName nameType="Personal">Stanford, Leland</contributorName>
-      #         <givenName>Leland</givenName>
-      #         <familyName>Stanford</familyName>
-      #       </contributor>
-      #     </contributors>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+            <contributors>
+              <contributor contributorType="Other">
+                <contributorName nameType="Personal">Stanford, Leland</contributorName>
+                <givenName>Leland</givenName>
+                <familyName>Stanford</familyName>
+              </contributor>
+            </contributors>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -766,22 +778,24 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Personal">Stanford, Jane</creatorName>
-      #         <givenName>Jane</givenName>
-      #         <familyName>Stanford</familyName>
-      #       </creator>
-      #     </creators>
-      #     <contributors>
-      #       <contributor contributorType="Sponsor">
-      #         <contributorName nameType="Organizational">Stanford University</contributorName>
-      #       </contributor>
-      #     </contributors>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+            <contributors>
+              <contributor contributorType="Sponsor">
+                <contributorName nameType="Organizational">Stanford University</contributorName>
+              </contributor>
+            </contributors>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -842,15 +856,17 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Organizational">San Francisco Symphony Concert</creatorName>
-      #       </creator>
-      #     </creators>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Organizational">San Francisco Symphony Concert</creatorName>
+              </creator>
+            </creators>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -951,22 +967,24 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Personal">Stanford, Jane</creatorName>
-      #         <givenName>Jane</givenName>
-      #         <familyName>Stanford</familyName>
-      #       </creator>
-      #     </creators>
-      #     <contributors>
-      #       <contributor contributorType="Other">
-      #         <contributorName nameType="Organizational">San Francisco Symphony Concert</contributorName>
-      #       </contributor>
-      #     </contributors>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+            <contributors>
+              <contributor contributorType="Other">
+                <contributorName nameType="Organizational">San Francisco Symphony Concert</contributorName>
+              </contributor>
+            </contributors>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -1027,15 +1045,17 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Organizational">LDCX</creatorName>
-      #       </creator>
-      #     </creator>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Organizational">LDCX</creatorName>
+              </creator>
+            </creator>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -1136,22 +1156,24 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Personal">Stanford, Jane</creatorName>
-      #         <givenName>Jane</givenName>
-      #         <familyName>Stanford</familyName>
-      #       </creator>
-      #     </creators>
-      #     <contributors>
-      #       <contributor contributorType="Other">
-      #         <contributorName nameType="Organizational">LDCX</contributorName>
-      #       </contributor>
-      #     </contributors>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+            <contributors>
+              <contributor contributorType="Other">
+                <contributorName nameType="Organizational">LDCX</contributorName>
+              </contributor>
+            </contributors>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -1225,20 +1247,22 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Organizational">Stanford University</creatorName>
-      #       </creator>
-      #     </creators>
-      #     <fundingReferences>
-      #       <fundingReference>
-      #         <funderName>Stanford University</funderName>
-      #       </fundingReference>
-      #     <fundingReferences>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Organizational">Stanford University</creatorName>
+              </creator>
+            </creators>
+            <fundingReferences>
+              <fundingReference>
+                <funderName>Stanford University</funderName>
+              </fundingReference>
+            <fundingReferences>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -1350,23 +1374,25 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   # maps to fundingReferences if DataCite Funder
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Personal">Stanford, Jane</creatorName>
-      #         <givenName>Jane</givenName>
-      #         <familyName>Stanford</familyName>
-      #       </creator>
-      #     </creators>
-      #     <fundingReferences>
-      #       <fundingReference>
-      #         <funderName>Stanford University</funderName>
-      #       </fundingReference>
-      #     <fundingReferences>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        # maps to fundingReferences if DataCite Funder
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+            <fundingReferences>
+              <fundingReference>
+                <funderName>Stanford University</funderName>
+              </fundingReference>
+            <fundingReferences>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -1468,16 +1494,18 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Organizational">Stanford University Press</creatorName>
-      #       </creator>
-      #     </creators>
-      #     <publisher>Stanford Digital Repository</publisher>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Organizational">Stanford University Press</creatorName>
+              </creator>
+            </creators>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -1596,23 +1624,25 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Personal">Stanford, Jane</creatorName>
-      #         <givenName>Jane</givenName>
-      #         <familyName>Stanford</familyName>
-      #       </creator>
-      #     </creators>
-      #     <contributors>
-      #       <contributor contributorType="Distributor">
-      #         <contributorName nameType="Organizational">Stanford University Press</contributorName>
-      #       </contributor>
-      #     </contributors>
-      #     <publisher>Stanford Digital Repository</publisher>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+            <contributors>
+              <contributor contributorType="Distributor">
+                <contributorName nameType="Organizational">Stanford University Press</contributorName>
+              </contributor>
+            </contributors>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -1701,18 +1731,20 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <creators>
-      #       <creator>
-      #         <creatorName nameType="Personal">Stanford, Jane</creatorName>
-      #         <givenName>Jane</givenName>
-      #         <familyName>Stanford</familyName>
-      #         <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
-      #       </creator>
-      #     </creators>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+                <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
+              </creator>
+            </creators>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
@@ -1809,18 +1841,20 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
         }
       end
 
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <contributors>
-      #       <contributor contributorType="Other">
-      #         <contributorName nameType="Personal">Stanford, Jane</contributorName>
-      #         <givenName>Jane</givenName>
-      #         <familyName>Stanford</familyName>
-      #         <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
-      #       </contributor>
-      #     </contributors>
-      #   XML
-      # end
+      let(:datacite_modsxml) do
+        <<~XML
+          <extension displayLabel="datacite">
+            <contributors>
+              <contributor contributorType="Other">
+                <contributorName nameType="Personal">Stanford, Jane</contributorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+                <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
+              </contributor>
+            </contributors>
+          </extension>
+        XML
+      end
 
       let(:datacite) do
         {
