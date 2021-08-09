@@ -433,8 +433,9 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
     end
   end
 
-  describe 'Creation date: 2021-01-01, Uncited publisher: Stanford University Press' do
-    # Uncited publisher appears in event only
+  describe 'Creation date: 2021-01-01, current year: 2022, uncited publisher: Stanford University Press' do
+    # cocina does not include :embargo
+    # uncited publisher appears in event only
     xit 'not implemented' do
       let(:cocina) do
         {
@@ -487,13 +488,18 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
           <originInfo eventType="publication">
             <publisher>Stanford University Press</publisher>
           </originInfo>
+          <extension displayLabel="datacite">
+            <publicationYear>2022</publicationYear>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
         XML
       end
     end
   end
 
-  describe 'Publication date: 2021-01-01, Uncited publisher: Stanford University Press' do
-    # Uncited publisher appears in event only
+  describe 'Publication date: 2021-01-01, current year: 2022, uncited publisher: Stanford University Press' do
+    # cocina does not include :embargo
+    # uncited publisher appears in event only
     xit 'not implemented' do
       let(:cocina) do
         {
@@ -541,13 +547,18 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
             <dateIssued encoding="edtf">2021-01-01</dateIssued>
             <publisher>Stanford University Press</publisher>
           </originInfo>
+          <extension displayLabel="datacite">
+            <publicationYear>2022</publicationYear>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
         XML
       end
     end
   end
 
-  describe 'Publication date: 2021-01-01, Cited publisher: Stanford University Press' do
-    # Cited publisher appears in contributor and event
+  describe 'Publication date: 2021-01-01, current year: 2022, cited publisher: Stanford University Press' do
+    # cocina does not include :embargo
+    # cited publisher appears in contributor and event
     xit 'not implemented' do
       let(:cocina) do
         {
@@ -567,6 +578,10 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ],
               type: 'organization'
@@ -623,6 +638,15 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
             <dateIssued encoding="edtf">2021-01-01</dateIssued>
             <publisher>Stanford University Press</publisher>
           </originInfo>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Organizational">Stanford University Press</creatorName>
+              </creator>
+            </creators>
+            <publicationYear>2022</publicationYear>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
         XML
       end
     end
