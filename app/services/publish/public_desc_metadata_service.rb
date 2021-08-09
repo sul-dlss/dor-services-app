@@ -6,6 +6,7 @@ module Publish
     attr_reader :object
 
     NOKOGIRI_DEEP_COPY = 1
+    MODS_NS = 'http://www.loc.gov/mods/v3'
 
     def initialize(object)
       @object = object
@@ -50,20 +51,20 @@ module Publish
         parent_item = Dor.find(druid)
 
         # create the MODS relation
-        relatedItem = doc.create_element 'relatedItem'
+        relatedItem = doc.create_element('relatedItem', xmlns: MODS_NS)
         relatedItem['type'] = 'host'
         relatedItem['displayLabel'] = 'Appears in'
 
         # load the title from the parent's DC.title
-        titleInfo = doc.create_element 'titleInfo'
-        title = doc.create_element 'title'
+        titleInfo = doc.create_element('titleInfo', xmlns: MODS_NS)
+        title = doc.create_element('title', xmlns: MODS_NS)
         title.content = parent_item.full_title
         titleInfo << title
         relatedItem << titleInfo
 
         # point to the PURL for the parent
-        location = doc.create_element 'location'
-        url = doc.create_element 'url'
+        location = doc.create_element('location', xmlns: MODS_NS)
+        url = doc.create_element('url', xmlns: MODS_NS)
         url.content = "http://#{Settings.stacks.document_cache_host}/#{druid.split(':').last}"
         location << url
         relatedItem << location
@@ -112,15 +113,15 @@ module Publish
       #   <location>
       #     <url>http://purl.stanford.edu/rh056sr3313</url>
       #   </location>
-      loc_node = doc.create_element('location')
-      url_node = doc.create_element('url')
+      loc_node = doc.create_element('location', xmlns: MODS_NS)
+      url_node = doc.create_element('url', xmlns: MODS_NS)
       url_node.content = "https://#{Settings.stacks.document_cache_host}/#{collection_druid.split(':').last}"
       loc_node << url_node
 
-      type_node = Nokogiri::XML::Node.new('typeOfResource', doc)
+      type_node = doc.create_element('typeOfResource', xmlns: MODS_NS)
       type_node['collection'] = 'yes'
 
-      related_item_node = Nokogiri::XML::Node.new('relatedItem', doc)
+      related_item_node = doc.create_element('relatedItem', xmlns: MODS_NS)
       related_item_node['type'] = 'host'
 
       related_item_node.add_child(title_info_node)

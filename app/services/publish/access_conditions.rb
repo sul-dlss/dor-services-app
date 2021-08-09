@@ -31,7 +31,7 @@ module Publish
 
     # clear out any existing accessConditions
     def clear_existing_access_conditions
-      public_mods.xpath('//mods:accessCondition', 'mods' => 'http://www.loc.gov/mods/v3').each(&:remove)
+      public_mods.xpath('//mods:accessCondition', 'mods' => PublicDescMetadataService::MODS_NS).each(&:remove)
     end
 
     def add_use_statement
@@ -63,7 +63,7 @@ module Publish
       public_mods.root.add_namespace_definition 'xlink', 'http://www.w3.org/1999/xlink'
 
       last_element.add_next_sibling public_mods.create_element('accessCondition', license.description,
-                                                               type: 'license', 'xlink:href' => license.uri)
+                                                               type: 'license', 'xlink:href' => license.uri, xmlns: PublicDescMetadataService::MODS_NS)
     end
 
     def license
@@ -132,7 +132,7 @@ module Publish
     end
 
     def add_access_condition(text, type)
-      last_element.add_next_sibling public_mods.create_element('accessCondition', text, type: type)
+      last_element.add_next_sibling public_mods.create_element('accessCondition', text, type: type, xmlns: PublicDescMetadataService::MODS_NS)
     end
 
     def last_element
