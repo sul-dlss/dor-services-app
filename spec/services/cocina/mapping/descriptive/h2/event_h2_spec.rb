@@ -3,8 +3,20 @@
 require 'rails_helper'
 
 RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
-  describe 'Publication date: 2021-01-01' do
-    it_behaves_like 'cocina MODS mapping' do
+  # Embargo year pulled from cocina access stanza
+  let(:embargo) do
+    {
+      access: {
+        embargo: {
+          releaseDate: '2023-01-01T00:00:00.000+00:00'
+        }
+      }
+    }
+  end
+
+  describe 'Publication date: 2021-01-01, current year: 2022' do
+    # cocina does not include :embargo
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -29,13 +41,54 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
           <originInfo eventType="publication">
             <dateIssued encoding="edtf">2021-01-01</dateIssued>
           </originInfo>
+          <extension displayLabel="datacite">
+            <publicationYear>2022</publicationYear>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
         XML
       end
     end
   end
 
-  describe 'Creation date: 2021-01-01' do
-    it_behaves_like 'cocina MODS mapping' do
+  describe 'Publication date: 2021-01-01, current year: 2022, embargo year: 2023' do
+    # cocina includes :embargo
+    xit 'not implemented' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'publication',
+              date: [
+                {
+                  value: '2021-01-01',
+                  type: 'publication',
+                  encoding: {
+                    code: 'edtf'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="publication">
+            <dateIssued encoding="edtf">2021-01-01</dateIssued>
+          </originInfo>
+          <extension displayLabel="datacite">
+            <publicationYear>2023</publicationYear>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
+        XML
+      end
+    end
+  end
+
+  describe 'Creation date: 2021-01-01, current year: 2022' do
+    # cocina does not include :embargo
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -60,13 +113,18 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
           <originInfo eventType="creation">
             <dateCreated encoding="edtf">2021-01-01</dateCreated>
           </originInfo>
+          <extension displayLabel="datacite">
+            <publicationYear>2022</publicationYear>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
         XML
       end
     end
   end
 
-  describe 'Publication date: 2021-01-01, Creation date: 2020-01-01' do
-    it_behaves_like 'cocina MODS mapping' do
+  describe 'Publication date: 2021-01-01, Creation date: 2020-01-01, current year: 2022' do
+    # cocina does not include :embargo
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -106,13 +164,18 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
           <originInfo eventType="creation">
             <dateCreated encoding="edtf">2020-01-01</dateCreated>
           </originInfo>
+          <extension displayLabel="datacite">
+            <publicationYear>2022</publicationYear>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
         XML
       end
     end
   end
 
-  describe 'Creation date range: 2020-01-01 to 2021-01-01' do
-    it_behaves_like 'cocina MODS mapping' do
+  describe 'Creation date range: 2020-01-01 to 2021-01-01, current year: 2022' do
+    # cocina does not include :embargo
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -147,13 +210,18 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
             <dateCreated encoding="edtf" point="start">2020-01-01</dateCreated>
             <dateCreated encoding="edtf" point="end">2021-01-01</dateCreated>
           </originInfo>
+          <extension displayLabel="datacite">
+            <publicationYear>2022</publicationYear>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
         XML
       end
     end
   end
 
-  describe 'Approximate single creation date: approx. 1900' do
-    it_behaves_like 'cocina MODS mapping' do
+  describe 'Approximate single creation date: approx. 1900, current year: 2022' do
+    # cocina does not include :embargo
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -179,13 +247,18 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
           <originInfo eventType="creation">
             <dateCreated encoding="edtf" qualifier="approximate">1900</dateCreated>
           </originInfo>
+          <extension displayLabel="datacite">
+            <publicationYear>2022</publicationYear>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
         XML
       end
     end
   end
 
-  describe 'Creation date range with approximate start date: approx. 1900-1910' do
-    it_behaves_like 'cocina MODS mapping' do
+  describe 'Creation date range with approximate start date: approx. 1900-1910, current year: 2022' do
+    # cocina does not include :embargo
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -221,13 +294,18 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
             <dateCreated encoding="edtf" point="start" qualifier="approximate">1900</dateCreated>
             <dateCreated encoding="edtf" point="end">1910</dateCreated>
           </originInfo>
+          <extension displayLabel="datacite">
+            <publicationYear>2022</publicationYear>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
         XML
       end
     end
   end
 
-  describe 'Creation date range with approximate end date: 1900-approx. 1910' do
-    it_behaves_like 'cocina MODS mapping' do
+  describe 'Creation date range with approximate end date: 1900-approx. 1910, current year: 2022' do
+    # cocina does not include :embargo
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -263,13 +341,18 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
             <dateCreated encoding="edtf" point="start">1900</dateCreated>
             <dateCreated encoding="edtf" point="end" qualifier="approximate">1910</dateCreated>
           </originInfo>
+          <extension displayLabel="datacite">
+            <publicationYear>2022</publicationYear>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
         XML
       end
     end
   end
 
-  describe 'Approximate creation date range: approx. 1900-approx. 1910' do
-    it_behaves_like 'cocina MODS mapping' do
+  describe 'Approximate creation date range: approx. 1900-approx. 1910, current year: 2022' do
+    # cocina does not include :embargo
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -305,6 +388,46 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
             <dateCreated encoding="edtf" point="start" qualifier="approximate">1900</dateCreated>
             <dateCreated encoding="edtf" point="end" qualifier="approximate">1910</dateCreated>
           </originInfo>
+          <extension displayLabel="datacite">
+            <publicationYear>2022</publicationYear>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
+        XML
+      end
+    end
+  end
+
+  describe 'Creation date: 2021-01-01, current year: 2022, embargo year: 2023' do
+    # cocina includes :embargo
+    xit 'not implemented' do
+      let(:cocina) do
+        {
+          event: [
+            {
+              type: 'creation',
+              date: [
+                {
+                  value: '2021-01-01',
+                  type: 'creation',
+                  encoding: {
+                    code: 'edtf'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:mods) do
+        <<~XML
+          <originInfo eventType="creation">
+            <dateCreated encoding="edtf">2021-01-01</dateCreated>
+          </originInfo>
+          <extension displayLabel="datacite">
+            <publicationYear>2023</publicationYear>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
         XML
       end
     end
@@ -312,7 +435,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
 
   describe 'Creation date: 2021-01-01, Uncited publisher: Stanford University Press' do
     # Uncited publisher appears in event only
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -371,7 +494,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
 
   describe 'Publication date: 2021-01-01, Uncited publisher: Stanford University Press' do
     # Uncited publisher appears in event only
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           event: [
@@ -425,7 +548,7 @@ RSpec.describe 'Cocina --> MODS mappings for event (h2 specific)' do
 
   describe 'Publication date: 2021-01-01, Cited publisher: Stanford University Press' do
     # Cited publisher appears in contributor and event
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
