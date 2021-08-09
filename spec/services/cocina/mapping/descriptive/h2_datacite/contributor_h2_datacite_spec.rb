@@ -589,7 +589,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
     end
   end
 
-  describe 'Cited contributor with Publisher role' do
+  describe 'Cited contributor with Publisher role, current year: 2022' do
     # Authors to include in citation
     ## Stanford University Press. Publisher.
     # For DataCite output, publisher is always Stanford Digital Repository.
@@ -604,6 +604,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
               </creator>
             </creators>
             <publisher>Stanford Digital Repository</publisher>
+            <publicationYear>2022</publicationYear>
           </extension>
         XML
       end
@@ -618,7 +619,8 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   nameType: 'Organizational'
                 }
               ],
-              publisher: 'Stanford Digital Repository'
+              publisher: 'Stanford Digital Repository',
+              publicationYear: '2022'
             }
           }
         }
@@ -626,7 +628,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
     end
   end
 
-  describe 'Cited contributor and uncited contributor with Publisher role' do
+  describe 'Cited contributor and uncited contributor with Publisher role, current year: 2022' do
     # Authors to include in citation
     ## Jane Stanford. Author.
     # Additional contributors
@@ -644,12 +646,8 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                 <familyName>Stanford</familyName>
               </creator>
             </creators>
-            <contributors>
-              <contributor contributorType="Distributor">
-                <contributorName nameType="Organizational">Stanford University Press</contributorName>
-              </contributor>
-            </contributors>
             <publisher>Stanford Digital Repository</publisher>
+            <publicationYear>2022</publicationYear>
           </extension>
         XML
       end
@@ -666,14 +664,8 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
                   familyName: 'Stanford'
                 }
               ],
-              contributors: [
-                {
-                  name: 'Stanford University Press',
-                  nameType: 'Organizational',
-                  contributorType: 'Distributor'
-                }
-              ],
-              publisher: 'Stanford Digital Repository'
+              publisher: 'Stanford Digital Repository',
+              publicationYear: '2022'
             }
           }
         }
