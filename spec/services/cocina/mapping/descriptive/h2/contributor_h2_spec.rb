@@ -5,12 +5,25 @@ require 'rails_helper'
 RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
   # Full role mapping: https://docs.google.com/spreadsheets/d/1CvEd_NODprNhM2D9VfvJBFs1jfAMEUr0kDxXHe2HkL4/edit?usp=sharing
   # First entry in "Authors to include in citation" receives "status": "primary", which maps to "usage=primary" in MODS.
+  # H2 Authors to include in citation
+  ## Identified in cocina by:
+  ### Role with type 'DataCite role' and value 'Creator' OR
+  ### Role with type 'DataCite role' and a value other than 'Creator', plus NOT having contributor.note with type 'citation status' and value 'false'
+  ## Map contributor.name to DataCite creators.name, no role
+  # H2 Additional contributors
+  ## Identified in cocina by:
+  ### Having contributor.note with type 'citation status' and value 'false'
+  ## Map name to DataCite contributors.name
+  ## Map role with type 'DataCite role' to DataCite contributorType
+  # EXCEPTION: if DataCite role is 'Funder'
+  ## Do not map to DataCite contributors.name
+  ## Instead map to DataCite fundingReference.funderName
 
   describe 'Cited contributor with author role' do
     # Authors to include in citation
     ## Jane Stanford. Author.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -40,6 +53,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -57,6 +74,15 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+          </extension>
         XML
       end
     end
@@ -67,7 +93,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Author.
     ## Leland Stanford. Author.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -97,6 +123,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -125,6 +155,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -150,6 +184,20 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Leland</creatorName>
+                <givenName>Leland</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+          </extension>
         XML
       end
     end
@@ -160,7 +208,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Jane Stanford. Data collector.
     ## Stanford University. Sponsor.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -190,6 +238,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -209,6 +261,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -233,6 +289,18 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+              <creator>
+                <creatorName nameType="Organizational">Stanford University</creatorName>
+              </creator>
+            </creators>
+          </extension>
         XML
       end
     end
@@ -242,7 +310,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Stanford University. Host institution.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -263,6 +331,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -279,6 +351,13 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/his">his</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Organizational">Stanford University</creatorName>
+              </creator>
+            </creators>
+          </extension>
         XML
       end
     end
@@ -289,7 +368,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University. Host institution.
     ## Department of English. Department.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -310,6 +389,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -323,6 +406,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               role: [
                 {
                   value: 'department'
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -345,6 +432,16 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="text">department</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Organizational">Stanford University</creatorName>
+              </creator>
+              <creator>
+                <creatorName nameType="Organizational">Department of English</creatorName>
+              </creator>
+            </creators>
+          </extension>
         XML
       end
     end
@@ -356,7 +453,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Leland Stanford. Contributing author.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -386,6 +483,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -413,6 +514,13 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Other',
+                  type: 'DataCite role',
+                  source: {
+                    value: 'DataCite contributor types'
                   }
                 }
               ],
@@ -446,6 +554,22 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+            <contributors>
+              <contributor contributorType="Other">
+                <contributorName nameType="Personal">Stanford, Leland</contributorName>
+                <givenName>Leland</givenName>
+                <familyName>Stanford</familyName>
+              </contributor>
+            </contributors>
+          </extension>
         XML
       end
     end
@@ -457,7 +581,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Stanford University. Sponsor.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -487,6 +611,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -505,6 +633,13 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Sponsor',
+                  type: 'DataCite role',
+                  source: {
+                    value: 'DataCite contributor types'
                   }
                 }
               ],
@@ -537,6 +672,20 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/spn">spn</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+            <contributors>
+              <contributor contributorType="Sponsor">
+                <contributorName nameType="Organizational">Stanford University</contributorName>
+              </contributor>
+            </contributors>
+          </extension>
         XML
       end
     end
@@ -546,7 +695,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## San Francisco Symphony Concert. Event.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -561,6 +710,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               role: [
                 {
                   value: 'event'
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -577,6 +730,13 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="text">event</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Organizational">San Francisco Symphony Concert</creatorName>
+              </creator>
+            </creators>
+          </extension>
         XML
       end
     end
@@ -588,7 +748,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## San Francisco Symphony Concert. Event.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -618,6 +778,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -631,6 +795,13 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               role: [
                 {
                   value: 'event'
+                },
+                {
+                  value: 'Other',
+                  type: 'DataCite role',
+                  source: {
+                    value: 'DataCite contributor types'
+                  }
                 }
               ],
               note: [
@@ -661,6 +832,20 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="text">event</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+            <contributors>
+              <contributor contributorType="Other">
+                <contributorName nameType="Organizational">San Francisco Symphony Concert</contributorName>
+              </contributor>
+            </contributors>
+          </extension>
         XML
       end
     end
@@ -670,7 +855,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## LDCX. Conference.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -685,6 +870,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               role: [
                 {
                   value: 'conference'
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -700,6 +889,13 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="text">conference</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Organizational">LDCX</creatorName>
+              </creator>
+            </creator>
+          </extension>
         XML
       end
     end
@@ -711,7 +907,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## LDCX. Conference.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -741,6 +937,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -754,6 +954,13 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               role: [
                 {
                   value: 'conference'
+                },
+                {
+                  value: 'Other',
+                  type: 'DataCite role',
+                  source: {
+                    value: 'DataCite contributor types'
+                  }
                 }
               ],
               note: [
@@ -784,6 +991,20 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="text">conference</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+            <contributors>
+              <contributor contributorType="Other">
+                <contributorName nameType="Organizational">LDCX</contributorName>
+              </contributor>
+            </contributors>
+          </extension>
         XML
       end
     end
@@ -793,7 +1014,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Stanford University. Funder.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -814,6 +1035,14 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
+                },
+                {
+                  value: 'Funder',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -832,6 +1061,18 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                 valueURI="http://id.loc.gov/vocabulary/relators/fnd">funder</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Organizational">Stanford University</creatorName>
+              </creator>
+            </creators>
+            <fundingReferences>
+              <fundingReference>
+                <funderName>Stanford University</funderName>
+              </fundingReference>
+            <fundingReferences>
+          </extension>
         XML
       end
     end
@@ -843,7 +1084,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Stanford University. Funder.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -873,6 +1114,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             },
@@ -892,6 +1137,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Funder',
+                  type: 'DataCite role'
                 }
               ],
               note: [
@@ -925,6 +1174,20 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                 valueURI="http://id.loc.gov/vocabulary/relators/fnd">funder</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+            <fundingReferences>
+              <fundingReference>
+                <funderName>Stanford University</funderName>
+              </fundingReference>
+            <fundingReferences>
+          </extension>
         XML
       end
     end
@@ -935,7 +1198,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University Press. Publisher.
     # Cited publisher goes into both contributor and event in cocina.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -956,6 +1219,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -1001,6 +1268,14 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           <originInfo eventType="publication">
             <publisher>Stanford University Press</publisher>
           </originInfo>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Organizational">Stanford University Press</creatorName>
+              </creator>
+            </creators>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
         XML
       end
     end
@@ -1013,7 +1288,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     ## Stanford University Press. Publisher.
     # Uncited publisher goes into event only.
 
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -1043,6 +1318,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ]
             }
@@ -1067,6 +1346,13 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
+                    },
+                    {
+                      value: 'Distributor',
+                      type: 'DataCite role',
+                      source: {
+                        value: 'DataCite contributor types'
+                      }
                     }
                   ]
                 }
@@ -1089,6 +1375,21 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
           <originInfo eventType="publication">
             <publisher>Stanford University Press</publisher>
           </originInfo>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+              </creator>
+            </creators>
+            <contributors>
+              <contributor contributorType="Distributor">
+                <contributorName nameType="Organizational">Stanford University Press</contributorName>
+              </contributor>
+            </contributors>
+            <publisher>Stanford Digital Repository</publisher>
+          </extension>
         XML
       end
     end
@@ -1098,7 +1399,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Authors to include in citation
     ## Jane Stanford. Author.
     ## ORCID: 0000-0000-0000-0000
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -1128,6 +1429,10 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
                   }
+                },
+                {
+                  value: 'Creator',
+                  type: 'DataCite role'
                 }
               ],
               identifier: [
@@ -1155,6 +1460,16 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/aut">aut</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <creators>
+              <creator>
+                <creatorName nameType="Personal">Stanford, Jane</creatorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+                <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
+              </creator>
+            </creators>
+          </extension>
         XML
       end
     end
@@ -1164,7 +1479,7 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
     # Additional contributors
     ## Jane Stanford. Contributing author.
     ## ORCID: 0000-0000-0000-0000
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           contributor: [
@@ -1193,6 +1508,13 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
                   source: {
                     code: 'marcrelator',
                     uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                },
+                {
+                  value: 'Other',
+                  type: 'DataCite role',
+                  source: {
+                    value: 'DataCite contributor types'
                   }
                 }
               ],
@@ -1228,6 +1550,16 @@ RSpec.describe 'Cocina --> MODS contributor mappings (H2 specific)' do
               <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/ctb">ctb</roleTerm>
             </role>
           </name>
+          <extension displayLabel="datacite">
+            <contributors>
+              <contributor contributorType="Other">
+                <contributorName nameType="Personal">Stanford, Jane</contributorName>
+                <givenName>Jane</givenName>
+                <familyName>Stanford</familyName>
+                <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org">0000-0000-0000-0000</nameIdentifier>
+              </contributor>
+            </contributors>
+          </extension>
         XML
       end
     end
