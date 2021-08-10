@@ -5,9 +5,15 @@ require 'rails_helper'
 RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
   # Mapping of H2 types and subtypes to genre and MODS type of resource:
   # https://docs.google.com/spreadsheets/d/1EiGgVqtb6PUJE2cI_jhqnAoiQkiwZtar4tF7NHwSMz8/edit?usp=sharing
+  # H2>DataCite mapping: Data>Dataset, Image>Image, Mixed Materials>Collection, Music>Other,
+  # Other>Other, Software/Code>Software, Sound>Sound, Text>Text, Video>Video
+  # DataCite term always maps to resourceTypeGeneral
+  # H2 subtype maps to resourceType
+  # If multiple H2 subtypes, concatenate with semicolon space
+  # If no H2 subtype, map H2 type to resourceType
   describe 'type only, resource type with URI' do
     # User enters type: Data, subtype: nil
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           form: [
@@ -45,6 +51,13 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               source: {
                 uri: 'http://id.loc.gov/vocabulary/resourceTypes/'
               }
+            },
+            {
+              value: 'Dataset',
+              type: 'resource type',
+              source: {
+                value: 'DataCite resource types'
+              }
             }
           ]
         }
@@ -56,6 +69,9 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
           <typeOfResource authorityURI="http://id.loc.gov/vocabulary/resourceTypes/" valueURI="http://id.loc.gov/vocabulary/resourceTypes/dat">Dataset</typeOfResource>
           <genre authority="lcgft" valueURI="https://id.loc.gov/authorities/genreForms/gf2018026119">Data sets</genre>
           <genre authority="local">dataset</genre>
+          <extension displayLabel="datacite">
+            <resourceType resourceTypeGeneral="Dataset">Data</resourceType>
+          </extension>
         XML
       end
     end
@@ -63,7 +79,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
 
   describe 'type with subtype' do
     # User enters type: Text, subtype: Article
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           form: [
@@ -89,6 +105,13 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               source: {
                 value: 'MODS resource types'
               }
+            },
+            {
+              value: 'Text',
+              type: 'resource type',
+              source: {
+                value: 'DataCite resource types'
+              }
             }
           ]
         }
@@ -99,6 +122,9 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
           <genre type="H2 type">Text</genre>
           <genre type="H2 subtype">Article</genre>
           <typeOfResource>text</typeOfResource>
+          <extension displayLabel="datacite">
+            <resourceType resourceTypeGeneral="Text">Article</resourceType>
+          </extension>
         XML
       end
     end
@@ -106,7 +132,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
 
   describe 'type with multiple subtypes' do
     # User enters type: Software/Code, subtype: Code, Documentation
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           form: [
@@ -151,6 +177,13 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
               source: {
                 value: 'MODS resource types'
               }
+            },
+            {
+              value: 'Software',
+              type: 'resource type',
+              source: {
+                value: 'DataCite resource types'
+              }
             }
           ]
         }
@@ -164,6 +197,9 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
           <typeOfResource>software, multimedia</typeOfResource>
           <genre authority="marcgt" valueURI="http://id.loc.gov/vocabulary/marcgt/com">computer program</genre>
           <typeOfResource>text</typeOfResource>
+          <extension displayLabel="datacite">
+            <resourceType resourceTypeGeneral="Software">Code; Documentation</resourceType>
+          </extension>
         XML
       end
     end
@@ -171,7 +207,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
 
   describe 'type with user-entered subtype' do
     # User enters type: Other, subtype: Dance notation
-    it_behaves_like 'cocina MODS mapping' do
+    xit 'not implemented' do
       let(:cocina) do
         {
           form: [
@@ -190,6 +226,13 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
                 value: 'Stanford self-deposit resource types'
               },
               type: 'resource type'
+            },
+            {
+              value: 'Other',
+              type: 'resource type',
+              source: {
+                value: 'DataCite resource types'
+              }
             }
           ]
         }
@@ -199,6 +242,9 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
         <<~XML
           <genre type="H2 type">Other</genre>
           <genre type="H2 subtype">Dance notation</genre>
+          <extension displayLabel="datacite">
+            <resourceType resourceTypeGeneral="Other">Dance notation</resourceType>
+          </extension>
         XML
       end
     end
