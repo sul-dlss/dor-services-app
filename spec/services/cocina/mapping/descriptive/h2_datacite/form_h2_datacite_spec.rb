@@ -28,7 +28,7 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
       XML
     end
 
-    it 'populates type_attributes correctly' do
+    xit 'not implemented' do
       expect(type_attributes).to eq(
         {
           resourceTypeGeneral: 'Dataset',
@@ -51,7 +51,7 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
       XML
     end
 
-    it 'populates type_attributes correctly' do
+    xit 'not implemented' do
       expect(type_attributes).to eq(
         {
           resourceTypeGeneral: 'Text',
@@ -77,7 +77,7 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
       XML
     end
 
-    it 'populates type_attributes correctly' do
+    xit 'not implemented' do
       expect(type_attributes).to eq(
         {
           resourceTypeGeneral: 'Software',
@@ -99,7 +99,7 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
       XML
     end
 
-    it 'populates type_attributes correctly' do
+    xit 'not implemented' do
       expect(type_attributes).to eq(
         {
           resourceTypeGeneral: 'Other',
