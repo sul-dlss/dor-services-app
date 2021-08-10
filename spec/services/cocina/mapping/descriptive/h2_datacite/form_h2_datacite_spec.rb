@@ -16,61 +16,19 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
 
   describe 'type only (no subtype)' do
     # User enters type: Data, subtype: nil
-    let(:cocina) do
-      {
-        form: [
-          {
-            structuredValue: [
-              {
-                value: 'Data',
-                type: 'type'
-              }
-            ],
-            source: {
-              value: 'Stanford self-deposit resource types'
-            },
-            type: 'resource type'
-          },
-          {
-            value: 'Dataset',
-            type: 'resource type',
-            uri: 'http://id.loc.gov/vocabulary/resourceTypes/dat',
-            source: {
-              uri: 'http://id.loc.gov/vocabulary/resourceTypes/'
-            }
-          },
-          {
-            value: 'Data sets',
-            type: 'genre',
-            uri: 'https://id.loc.gov/authorities/genreForms/gf2018026119',
-            source: {
-              code: 'lcgft'
-            }
-          },
-          {
-            value: 'dataset',
-            type: 'genre',
-            source: {
-              code: 'local'
-            }
-          },
-          {
-            value: 'Dataset',
-            type: 'resource type',
-            source: {
-              value: 'DataCite resource types'
-            }
-          }
-        ]
-      }
+    let(:mods) do
+      <<~XML
+        <genre type="H2 type">Data</genre>
+        <typeOfResource authorityURI="http://id.loc.gov/vocabulary/resourceTypes/" valueURI="http://id.loc.gov/vocabulary/resourceTypes/dat">Dataset</typeOfResource>
+        <genre authority="lcgft" valueURI="https://id.loc.gov/authorities/genreForms/gf2018026119">Data sets</genre>
+        <genre authority="local">dataset</genre>
+        <extension displayLabel="datacite">
+          <resourceType resourceTypeGeneral="Dataset">Data</resourceType>
+        </extension>
+      XML
     end
 
     it 'populates type_attributes correctly' do
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <resourceType resourceTypeGeneral="Dataset">Data</resourceType>
-      #   XML
-      # end
       expect(type_attributes).to eq(
         {
           resourceTypeGeneral: 'Dataset',
@@ -81,54 +39,23 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
   end
 
   describe 'type with subtype' do
-    # User enters type Text, subtype Documentation
-    let(:cocina) do
-      {
-        form: [
-          {
-            structuredValue: [
-              {
-                value: 'Text',
-                type: 'type'
-              },
-              {
-                value: 'Documentation',
-                type: 'subtype'
-              }
-            ],
-            source: {
-              value: 'Stanford self-deposit resource types'
-            },
-            type: 'resource type'
-          },
-          {
-            value: 'text',
-            type: 'resource type',
-            source: {
-              value: 'MODS resource types'
-            }
-          },
-          {
-            value: 'Text',
-            type: 'resource type',
-            source: {
-              value: 'DataCite resource types'
-            }
-          }
-        ]
-      }
+    # User enters type Text, subtype Article
+    let(:mods) do
+      <<~XML
+        <genre type="H2 type">Text</genre>
+        <genre type="H2 subtype">Article</genre>
+        <typeOfResource>text</typeOfResource>
+        <extension displayLabel="datacite">
+          <resourceType resourceTypeGeneral="Text">Article</resourceType>
+        </extension>
+      XML
     end
 
     it 'populates type_attributes correctly' do
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <resourceType resourceTypeGeneral="Text">Documentation</resourceType>
-      #   XML
-      # end
       expect(type_attributes).to eq(
         {
           resourceTypeGeneral: 'Text',
-          resourceType: 'Documentation'
+          resourceType: 'Article'
         }
       )
     end
@@ -136,67 +63,21 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
 
   describe 'type with multiple subtypes' do
     # User enters type: Software/Code, subtype: Code, Documentation
-    let(:cocina) do
-      {
-        form: [
-          {
-            structuredValue: [
-              {
-                value: 'Software/Code',
-                type: 'type'
-              },
-              {
-                value: 'Code',
-                type: 'subtype'
-              },
-              {
-                value: 'Documentation',
-                type: 'subtype'
-              }
-            ],
-            source: {
-              value: 'Stanford self-deposit resource types'
-            },
-            type: 'resource type'
-          },
-          {
-            value: 'software, multimedia',
-            type: 'resource type',
-            source: {
-              value: 'MODS resource types'
-            }
-          },
-          {
-            value: 'computer program',
-            uri: 'http://id.loc.gov/vocabulary/marcgt/com',
-            source: {
-              code: 'marcgt'
-            }
-          },
-          {
-            value: 'text',
-            type: 'resource type',
-            source: {
-              value: 'MODS resource types'
-            }
-          },
-          {
-            value: 'Software',
-            type: 'resource type',
-            source: {
-              value: 'DataCite resource types'
-            }
-          }
-        ]
-      }
+    let(:mods) do
+      <<~XML
+        <genre type="H2 type">Software/Code</genre>
+        <genre type="H2 subtype">Code</genre>
+        <genre type="H2 subtype">Documentation</genre>
+        <typeOfResource>software, multimedia</typeOfResource>
+        <genre authority="marcgt" valueURI="http://id.loc.gov/vocabulary/marcgt/com">computer program</genre>
+        <typeOfResource>text</typeOfResource>
+        <extension displayLabel="datacite">
+          <resourceType resourceTypeGeneral="Software">Code; Documentation</resourceType>
+        </extension>
+      XML
     end
 
     it 'populates type_attributes correctly' do
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <resourceType resourceTypeGeneral="Software">Code; Documentation</resourceType>
-      #   XML
-      # end
       expect(type_attributes).to eq(
         {
           resourceTypeGeneral: 'Software',
@@ -208,170 +89,23 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
 
   describe 'type Other with user-entered subtype' do
     # User enters type: Other, subtype: Dance notation
-    let(:cocina) do
-      {
-        form: [
-          {
-            structuredValue: [
-              {
-                value: 'Other',
-                type: 'type'
-              },
-              {
-                value: 'Dance notation',
-                type: 'subtype'
-              }
-            ],
-            source: {
-              value: 'Stanford self-deposit resource types'
-            },
-            type: 'resource type'
-          },
-          {
-            value: 'Other',
-            type: 'resource type',
-            source: {
-              value: 'DataCite resource types'
-            }
-          }
-        ]
-      }
+    let(:mods) do
+      <<~XML
+        <genre type="H2 type">Other</genre>
+        <genre type="H2 subtype">Dance notation</genre>
+        <extension displayLabel="datacite">
+          <resourceType resourceTypeGeneral="Other">Dance notation</resourceType>
+        </extension>
+      XML
     end
 
     it 'populates type_attributes correctly' do
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <resourceType resourceTypeGeneral="Other">Dance notation</resourceType>
-      #   XML
-      # end
       expect(type_attributes).to eq(
         {
           resourceTypeGeneral: 'Other',
           resourceType: 'Dance notation'
         }
       )
-    end
-  end
-
-  ### --------------- specs below added by developers ---------------
-
-  # FIXME: the following were coded without Arcadia's mappings as a stopgap to be able to debug update_doi_metadata
-  context 'without DataCite term' do
-    let(:honeybadger_msg) { 'DataCite mappings result in empty resourceTypeGeneral and/or empty resourceType; using hardcoded default values' }
-
-    before do
-      allow(Honeybadger).to receive(:notify).with(honeybadger_msg)
-    end
-
-    context 'with type only (no subtype)' do
-      let(:cocina) do
-        {
-          form: [
-            {
-              structuredValue: [
-                {
-                  value: 'whatever',
-                  type: 'type'
-                }
-              ],
-              source: {
-                value: 'Stanford self-deposit resource types'
-              },
-              type: 'resource type'
-            }
-          ]
-        }
-      end
-
-      it 'populates type_attributes correctly and notifies Honeybadger' do
-        expect(type_attributes).to eq(
-          {
-            resourceTypeGeneral: 'Text',
-            resourceType: 'whatever'
-          }
-        )
-        expect(Honeybadger).to have_received(:notify).with(honeybadger_msg)
-      end
-    end
-
-    context 'with subtype' do
-      let(:cocina) do
-        {
-          form: [
-            {
-              structuredValue: [
-                {
-                  value: 'Mixed Materials',
-                  type: 'type'
-                },
-                {
-                  value: 'whatever',
-                  type: 'subtype'
-                }
-              ],
-              source: {
-                value: 'Stanford self-deposit resource types'
-              },
-              type: 'resource type'
-            },
-            {
-              value: 'text',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            }
-          ]
-        }
-      end
-
-      it 'populates type_attributes correctly and notifies Honeybadger' do
-        expect(type_attributes).to eq(
-          {
-            resourceTypeGeneral: 'Text',
-            resourceType: 'whatever'
-          }
-        )
-        expect(Honeybadger).to have_received(:notify).with(honeybadger_msg)
-      end
-    end
-  end
-
-  context 'when cocina form array has empty hash' do
-    let(:cocina) do
-      {
-        form: [
-          {
-          }
-        ]
-      }
-    end
-
-    xit 'to be mapped/implemented: type_attributes cannot be empty hash' do
-      expect(type_attributes).to eq({})
-    end
-  end
-
-  context 'when cocina form is empty array' do
-    let(:cocina) do
-      {
-        form: []
-      }
-    end
-
-    xit 'to be mapped/implemented: type_attributes cannot be empty hash' do
-      expect(type_attributes).to eq({})
-    end
-  end
-
-  context 'when cocina has no form' do
-    let(:cocina) do
-      {
-      }
-    end
-
-    xit 'to be mapped/implemented: type_attributes cannot be empty hash' do
-      expect(type_attributes).to eq({})
     end
   end
 end
