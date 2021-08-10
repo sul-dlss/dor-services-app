@@ -80,8 +80,8 @@ module Cocina
         def build_ungrouped_origin_infos(origin_infos)
           origin_infos.filter_map do |origin_info|
             next if origin_info.content.blank? &&
-                    origin_info.xpath('//*[@valueURI]').empty? &&
-                    origin_info.xpath('//*[@xlink:href]', xlink: XLINK_NS).empty?
+                    origin_info.xpath('.//*[@valueURI]').empty? &&
+                    origin_info.xpath('.//*[@xlink:href]', xlink: XLINK_NS).empty?
 
             event = build_event_for_origin_info(origin_info)
             event.compact

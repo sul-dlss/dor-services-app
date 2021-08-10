@@ -39,8 +39,8 @@ module Cocina
         def remove_empty_child_elements
           ng_xml.root.xpath('//mods:originInfo/mods:*', mods: ModsNormalizer::MODS_NS).each do |child_node|
             # if a node has either of these 2 attributes, it could have meaning even without any content
-            next if child_node.xpath('//*[@valueURI]').present?
-            next if child_node.xpath('//*[@xlink:href]', xlink: ModsNormalizer::XLINK_NS).present?
+            next if child_node.xpath('.//*[@valueURI]').present?
+            next if child_node.xpath('.//*[@xlink:href]', xlink: ModsNormalizer::XLINK_NS).present?
 
             child_node.remove if child_node.content.blank?
           end
