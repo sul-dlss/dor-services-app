@@ -83,8 +83,7 @@ module Cocina
                     origin_info.xpath('.//*[@valueURI]').empty? &&
                     origin_info.xpath('.//*[@xlink:href]', xlink: XLINK_NS).empty?
 
-            event = build_event_for_origin_info(origin_info)
-            event.compact
+            build_event_for_origin_info(origin_info)
           end
         end
 
