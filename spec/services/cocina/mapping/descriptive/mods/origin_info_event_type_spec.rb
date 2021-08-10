@@ -60,6 +60,48 @@ RSpec.describe 'MODS originInfo <--> cocina mappings TEST' do
       end
     end
 
+    describe 'empty copyright data' do
+      # From kt699vd2377
+      # An empty copyrightDate is bad data. The name is included to test the xpaths that check for presence of
+      # valueURI/xlink:href in originInfo. (Previously, they were looking anywhere in the document.)
+      it_behaves_like 'MODS cocina mapping' do
+        let(:mods) do
+          <<~XML
+            <name type="corporate" valueURI="http://id.loc.gov/authorities/names/n2005043549">
+              <namePart>Automobile Club of Southern California</namePart>
+            </name>
+            <originInfo eventType="copyright notice">
+              <copyrightDate />
+            </originInfo>
+          XML
+        end
+
+        let(:roundtrip_mods) do
+          <<~XML
+            <name type="corporate" valueURI="http://id.loc.gov/authorities/names/n2005043549">
+              <namePart>Automobile Club of Southern California</namePart>
+            </name>
+          XML
+        end
+
+        let(:cocina) do
+          {
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'Automobile Club of Southern California',
+                    uri: 'http://id.loc.gov/authorities/names/n2005043549'
+                  }
+                ],
+                type: 'organization'
+              }
+            ]
+          }
+        end
+      end
+    end
+
     describe 'multiple date types' do
       it_behaves_like 'MODS cocina mapping' do
         let(:mods) do
