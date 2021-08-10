@@ -13,7 +13,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
   # If no H2 subtype, map H2 type to resourceType
   describe 'type only, resource type with URI' do
     # User enters type: Data, subtype: nil
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           form: [
@@ -79,7 +79,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
 
   describe 'type with subtype' do
     # User enters type: Text, subtype: Article
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           form: [
@@ -132,7 +132,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
 
   describe 'type with multiple subtypes' do
     # User enters type: Software/Code, subtype: Code, Documentation
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           form: [
@@ -207,7 +207,7 @@ RSpec.describe 'Cocina --> MODS mappings for form (H2 specific)' do
 
   describe 'type with user-entered subtype' do
     # User enters type: Other, subtype: Dance notation
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:cocina) do
         {
           form: [
