@@ -13,6 +13,17 @@ module Cocina
         new(cocina_item).mapped_from_cocina
       end
 
+      # @param [Cocina::Models::DRO] cocina_item
+      # To be exportable an item must have a creator, and resourceTypeGeneral.
+      # @return [Boolean] is this item exportable to datacite
+      def self.exportable?(cocina_item)
+        new(cocina_item).exportable?
+      end
+
+      def exportable?
+        types_attributes&.fetch(:resourceTypeGeneral).present? && creators.present?
+      end
+
       def initialize(cocina_item)
         @access = cocina_item.access
         @description = cocina_item.description

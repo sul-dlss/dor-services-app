@@ -6,7 +6,7 @@ module Cocina
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
     class Form
       # @param [Cocina::Models::Description] cocina_desc
-      # @return [Hash] the DataCite types attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [NilClass, Hash] the DataCite types attributes, conforming to the expectations of HTTP PUT request to DataCite
       def self.type_attributes(cocina_desc)
         new(cocina_desc).type_attributes
       end
@@ -15,18 +15,13 @@ module Cocina
         @cocina_desc = cocina_desc
       end
 
-      # @return [Hash] the DataCite types attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [NilClass, Hash] the DataCite types attributes, conforming to the expectations of HTTP PUT request to DataCite
       def type_attributes
-        # TODO: Remove this check, because an object should not be able to be exported to Datacite if it doesn't have a form.
         return if cocina_desc&.form.blank?
 
-        # FIXME: the following were coded without Arcadia's mappings as a stopgap to be able to debug update_doi_metadata
-        warning_msg = 'DataCite mappings result in empty resourceTypeGeneral and/or empty resourceType; using hardcoded default values'
-        Honeybadger.notify(warning_msg) if resource_type_general.blank? || resource_type.blank?
-
         {
-          resourceTypeGeneral: resource_type_general || 'Text',
-          resourceType: resource_type || 'Testing'
+          resourceTypeGeneral: resource_type_general,
+          resourceType: resource_type
         }
       end
 
