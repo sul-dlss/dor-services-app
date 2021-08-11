@@ -36,8 +36,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
         {
           creators: [{ name: 'TBD' }],
           dates: [],
-          publicationYear: '1964',
-          publisher: 'to be implemented',
+          # publicationYear: '1964',
+          # publisher: 'to be implemented',
           titles: [{ title: title }]
         }
       )
@@ -166,8 +166,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               identifierType: 'DOI'
             }
           ],
-          publicationYear: '1964',
-          publisher: 'to be implemented',
+          # publicationYear: '1964',
+          # publisher: 'to be implemented',
           # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
           # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
           # relatedItems: [
