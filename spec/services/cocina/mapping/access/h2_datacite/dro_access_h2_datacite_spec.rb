@@ -17,24 +17,23 @@ RSpec.describe 'Cocina --> DataCite mappings for DROAccess (H2 specific)' do
     end
 
     it 'populates rights_list_attributes correctly' do
-      expect(rights_list_attributes).to eq(
+      expect(rights_list_attributes).to eq [
         {
           rights: 'https://creativecommons.org/publicdomain/mark/1.0/'
         }
-      )
+      ]
     end
   end
 
   ### --------------- specs below added by developers ---------------
 
-  context 'when cocina DROAccess has empty hash' do
+  context 'when cocina DROAccess does not have a license' do
     let(:cocina_access) do
-      {
-      }
+      {}
     end
 
-    it 'rights_list_attributes is empty hash' do
-      expect(rights_list_attributes).to eq({})
+    it 'rights_list_attributes is nil' do
+      expect(rights_list_attributes).to be_nil
     end
   end
 end

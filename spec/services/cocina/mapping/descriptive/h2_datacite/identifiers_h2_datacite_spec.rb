@@ -22,12 +22,12 @@ RSpec.describe 'Cocina --> DataCite mappings for identifier and alternateIdentif
     end
 
     it 'populates identifier_attributes correctly' do
-      expect(identifier_attributes).to eq(
+      expect(identifier_attributes).to eq [
         {
           identifier: '10.5072/example',
           identifierType: 'DOI'
         }
-      )
+      ]
     end
   end
 
@@ -40,12 +40,12 @@ RSpec.describe 'Cocina --> DataCite mappings for identifier and alternateIdentif
     end
 
     it 'populates alternate_identifier_attributes correctly' do
-      expect(alternate_identifier_attributes).to eq(
+      expect(alternate_identifier_attributes).to eq [
         {
           alternateIdentifier: 'http://purl.stanford.edu/gz708sf9862',
           alternateIdentifierType: 'PURL'
         }
-      )
+      ]
     end
   end
 
