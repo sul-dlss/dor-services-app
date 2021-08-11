@@ -175,7 +175,7 @@ module Cocina
         end
 
         def write_basic(form, is_manuscript: false, is_collection: false, alt_rep_group: nil)
-          return nil if form.source&.value&.match?(/DataCite/i)
+          return write_datacite(form) if form.source&.value == 'DataCite resource types'
 
           attributes = form_attributes(form, alt_rep_group)
 
@@ -188,6 +188,16 @@ module Cocina
             # do nothing, these end up in subject/cartographics
           else # genre
             xml.genre form.value, attributes.merge({ type: genre_type_for(form) }.compact)
+          end
+        end
+
+        def write_datacite(form)
+          self_deposit_types = forms.find { |candidate| candidate.source.value == 'Stanford self-deposit resource types' }
+          parts = self_deposit_types.structuredValue.select { |val| val.type == 'subtype' }.presence || self_deposit_types.structuredValue
+          resource_type = parts.map(&:value).join('; ')
+
+          xml.extension displayLabel: 'datacite' do
+            xml.resourceType(resource_type, resourceTypeGeneral: form.value)
           end
         end
 

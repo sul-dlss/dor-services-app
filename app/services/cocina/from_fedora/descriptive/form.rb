@@ -154,6 +154,9 @@ module Cocina
 
             forms << collection_form if type[:collection] == 'yes'
           end
+
+          datacite_form = datacite_resource_type
+          forms << datacite_form if datacite_form
         end
 
         def resource_type_form(type)
@@ -331,6 +334,13 @@ module Cocina
 
         def type_of_resource
           resource_element.xpath('mods:typeOfResource', mods: DESC_METADATA_NS)
+        end
+
+        def datacite_resource_type
+          node = resource_element.xpath('mods:extension[@displayLabel="datacite"]/mods:resourceType', mods: DESC_METADATA_NS).first
+          return unless node
+
+          { value: node[:resourceTypeGeneral], type: 'resource type', source: { value: 'DataCite resource types' } }
         end
 
         # returns genre at the root and inside subjects excluding structured genres
