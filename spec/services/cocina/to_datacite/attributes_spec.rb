@@ -34,7 +34,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     it 'creates the attributes hash' do
       expect(attributes).to eq(
         {
-          creators: [{ name: 'TBD' }],
+          creators: [],
           dates: [],
           # publicationYear: '1964',
           # publisher: 'to be implemented',
@@ -51,6 +51,47 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                               label: label,
                               version: 1,
                               description: {
+                                contributor: [
+                                  {
+                                    name: [
+                                      {
+                                        structuredValue: [
+                                          {
+                                            value: 'Jane',
+                                            type: 'forename'
+                                          },
+                                          {
+                                            value: 'Stanford',
+                                            type: 'surname'
+                                          }
+                                        ]
+                                      }
+                                    ],
+                                    type: 'person',
+                                    status: 'primary',
+                                    role: [
+                                      {
+                                        value: 'Author',
+                                        source: {
+                                          value: 'H2 contributor role terms'
+                                        }
+                                      },
+                                      {
+                                        value: 'author',
+                                        code: 'aut',
+                                        uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                                        source: {
+                                          code: 'marcrelator',
+                                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                                        }
+                                      },
+                                      {
+                                        value: 'Creator',
+                                        type: 'DataCite role'
+                                      }
+                                    ]
+                                  }
+                                ],
                                 form: [
                                   {
                                     structuredValue: [
@@ -152,7 +193,12 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               alternateIdentifierType: 'PURL'
             }
           ],
-          creators: [{ name: 'TBD' }],
+          creators: [{
+            name: 'Stanford, Jane',
+            givenName: 'Jane',
+            familyName: 'Stanford',
+            nameType: 'Personal'
+          }],
           dates: [],
           descriptions: [
             {
