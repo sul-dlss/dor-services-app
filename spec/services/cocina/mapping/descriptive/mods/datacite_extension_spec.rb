@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
   describe 'DataCite resourceTypeGeneral' do
-    xit 'not implemented' do
+    it_behaves_like 'cocina MODS mapping' do
       let(:mods) do
         <<~XML
           <extension displayLabel="datacite">
