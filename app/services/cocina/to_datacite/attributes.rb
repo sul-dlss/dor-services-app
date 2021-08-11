@@ -25,8 +25,8 @@ module Cocina
           attribs[:dates] = [] # to be implemented from event_h2 mapping
           attribs[:descriptions] = [description] if description
           attribs[:identifiers] = [identifier] if identifier
-          attribs[:publicationYear] = '1964' # to be implemented from event_h2 mapping,
-          attribs[:publisher] = 'to be implemented' # to be implemented from event_h2 mapping
+          # attribs[:publicationYear] = '1964' # to be implemented from event_h2 mapping,
+          # attribs[:publisher] = 'to be implemented' # to be implemented from event_h2 mapping
           # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
           # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
           # attribs[:relatedItems] = [related_item] if related_item
