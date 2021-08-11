@@ -460,8 +460,8 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       }
     end
 
-    it 'subjects_attributes is empty hash' do
-      expect(subjects_attributes).to eq([])
+    it 'subjects_attributes is nil' do
+      expect(subjects_attributes).to be_nil
     end
   end
 
@@ -472,8 +472,8 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       }
     end
 
-    it 'subjects_attributes is empty hash' do
-      expect(subjects_attributes).to eq([])
+    it 'subjects_attributes is nil' do
+      expect(subjects_attributes).to be_nil
     end
   end
 
@@ -483,8 +483,8 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
       }
     end
 
-    it 'subjects_attributes is empty hash' do
-      expect(subjects_attributes).to eq([])
+    it 'subjects_attributes is nil' do
+      expect(subjects_attributes).to be_nil
     end
   end
 end

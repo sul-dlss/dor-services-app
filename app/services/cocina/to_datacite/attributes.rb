@@ -19,68 +19,60 @@ module Cocina
 
       # @return [Hash] Hash of DataCite attributes, conforming to the expectations of HTTP PUT request to DataCite
       def mapped_from_cocina
-        {}.tap do |attribs|
-          attribs[:alternateIdentifiers] = [alternate_identifier] if alternate_identifier
-          attribs[:creators] = [{ name: 'TBD' }] # to be implemented from contributors_h2 mapping
-          attribs[:dates] = [] # to be implemented from event_h2 mapping
-          attribs[:descriptions] = [description] if description
-          attribs[:identifiers] = [identifier] if identifier
-          # attribs[:publicationYear] = '1964' # to be implemented from event_h2 mapping,
-          # attribs[:publisher] = 'to be implemented' # to be implemented from event_h2 mapping
+        {
+          descriptions: descriptions,
+          alternateIdentifiers: alternate_identifiers,
+          dates: [], # to be implemented from event_h2 mapping
+          identifiers: identifiers,
+          subjects: subjects,
+          titles: titles,
+          rightsList: rights_list,
+          types: types_attributes,
+          # publicationYear: '1964' # to be implemented from event_h2 mapping,
+          # publisher: 'to be implemented' # to be implemented from event_h2 mapping
           # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
           # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
-          # attribs[:relatedItems] = [related_item] if related_item
-          attribs[:rightsList] = [rights] if rights
-          attribs[:subjects] = subjects if subjects
-          attribs[:titles] = [title] if title
-          attribs[:types] = types_attributes if types_attributes
-        end
+          # relatedItems: related_item
+          creators: [{ name: 'TBD' }]
+        }.compact
       end
 
       private
 
       attr :cocina_item
 
-      def alternate_identifier
-        @alternate_identifier ||= Identifier.alternate_identifier_attributes(cocina_item.description)
-        @alternate_identifier.presence
+      def alternate_identifiers
+        Identifier.alternate_identifier_attributes(cocina_item.description)
       end
 
-      def description
-        @description ||= Note.descriptions_attributes(cocina_item.description)
-        @description.presence
+      def descriptions
+        Note.descriptions_attributes(cocina_item.description)
       end
 
-      def identifier
-        @identifier ||= Identifier.identifier_attributes(cocina_item.description)
-        @identifier.presence
+      def identifiers
+        Identifier.identifier_attributes(cocina_item.description)
       end
 
       # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
       # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
-      # def related_item
-      #   @related_item ||= RelatedResource.related_item_attributes(cocina_item.description)
-      #   @related_item.presence
+      # def related_items
+      #   RelatedResource.related_item_attributes(cocina_item.description)
       # end
 
-      def rights
-        @rights ||= DROAccess.rights_list_attributes(cocina_item.access)
-        @rights.presence
+      def rights_list
+        DROAccess.rights_list_attributes(cocina_item.access)
       end
 
       def subjects
-        @subjects ||= Subject.subjects_attributes(cocina_item.description)
-        @subjects.presence
+        Subject.subjects_attributes(cocina_item.description)
       end
 
-      def title
-        @title ||= Title.title_attributes(cocina_item.description)
-        @title.presence
+      def titles
+        Title.title_attributes(cocina_item.description)
       end
 
       def types_attributes
-        @types_attributes ||= Form.type_attributes(cocina_item.description)
-        @types_attributes.presence
+        Form.type_attributes(cocina_item.description)
       end
     end
   end

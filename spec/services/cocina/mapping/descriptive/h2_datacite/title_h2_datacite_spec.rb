@@ -20,56 +20,11 @@ RSpec.describe 'Cocina --> DataCite mappings for title (H2 specific)' do
     end
 
     it 'populates title_attributes correctly' do
-      # let(:datacite_xml) do
-      #   <<~XML
-      #     <resourceType resourceTypeGeneral="Dataset">Data</resourceType>
-      #   XML
-      # end
-      expect(title_attributes).to eq(
+      expect(title_attributes).to eq [
         {
           title: 'Tales of a brooding sea star'
         }
-      )
-    end
-  end
-
-  ### --------------- specs below added by developers ---------------
-
-  context 'when cocina title array has empty hash' do
-    let(:cocina) do
-      {
-        title: [
-          {
-          }
-        ]
-      }
-    end
-
-    it 'title_attributes is empty hash' do
-      expect(title_attributes).to eq({})
-    end
-  end
-
-  context 'when cocina title is empty array' do
-    let(:cocina) do
-      {
-        title: []
-      }
-    end
-
-    it 'title_attributes is empty hash' do
-      expect(title_attributes).to eq({})
-    end
-  end
-
-  context 'when cocina has no title' do
-    let(:cocina) do
-      {
-      }
-    end
-
-    it 'title_attributes is empty hash' do
-      expect(title_attributes).to eq({})
+      ]
     end
   end
 end

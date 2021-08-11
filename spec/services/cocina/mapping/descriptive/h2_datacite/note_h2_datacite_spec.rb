@@ -27,12 +27,12 @@ RSpec.describe 'Cocina --> DataCite mappings for note' do
       #     </descriptions>
       #   XML
       # end
-      expect(descriptions_attributes).to eq(
+      expect(descriptions_attributes).to eq [
         {
           description: 'My paper is about dolphins.',
           descriptionType: 'Abstract'
         }
-      )
+      ]
     end
   end
 
@@ -48,8 +48,8 @@ RSpec.describe 'Cocina --> DataCite mappings for note' do
       }
     end
 
-    it 'descriptions_attributes is empty hash' do
-      expect(descriptions_attributes).to eq({})
+    it 'descriptions_attributes is nil' do
+      expect(descriptions_attributes).to be_nil
     end
   end
 
@@ -60,8 +60,8 @@ RSpec.describe 'Cocina --> DataCite mappings for note' do
       }
     end
 
-    it 'descriptions_attributes is empty hash' do
-      expect(descriptions_attributes).to eq({})
+    it 'descriptions_attributes is nil' do
+      expect(descriptions_attributes).to be_nil
     end
   end
 
@@ -71,8 +71,8 @@ RSpec.describe 'Cocina --> DataCite mappings for note' do
       }
     end
 
-    it 'descriptions_attributes is empty hash' do
-      expect(descriptions_attributes).to eq({})
+    it 'descriptions_attributes is nil' do
+      expect(descriptions_attributes).to be_nil
     end
   end
 end
