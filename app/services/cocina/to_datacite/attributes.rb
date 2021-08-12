@@ -14,7 +14,8 @@ module Cocina
       end
 
       def initialize(cocina_item)
-        @cocina_item = cocina_item
+        @access = cocina_item.access
+        @description = cocina_item.description
       end
 
       # @return [Hash] Hash of DataCite attributes, conforming to the expectations of HTTP PUT request to DataCite
@@ -33,24 +34,28 @@ module Cocina
           # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
           # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
           # relatedItems: related_item
-          creators: [{ name: 'TBD' }]
+          creators: creators
         }.compact
       end
 
       private
 
-      attr :cocina_item
+      attr :access, :description
+
+      def creators
+        Creator.attributes(description)
+      end
 
       def alternate_identifiers
-        Identifier.alternate_identifier_attributes(cocina_item.description)
+        Identifier.alternate_identifier_attributes(description)
       end
 
       def descriptions
-        Note.descriptions_attributes(cocina_item.description)
+        Note.descriptions_attributes(description)
       end
 
       def identifiers
-        Identifier.identifier_attributes(cocina_item.description)
+        Identifier.identifier_attributes(description)
       end
 
       # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
@@ -60,19 +65,19 @@ module Cocina
       # end
 
       def rights_list
-        DROAccess.rights_list_attributes(cocina_item.access)
+        DROAccess.rights_list_attributes(access)
       end
 
       def subjects
-        Subject.subjects_attributes(cocina_item.description)
+        Subject.subjects_attributes(description)
       end
 
       def titles
-        Title.title_attributes(cocina_item.description)
+        Title.title_attributes(description)
       end
 
       def types_attributes
-        Form.type_attributes(cocina_item.description)
+        Form.type_attributes(description)
       end
     end
   end
