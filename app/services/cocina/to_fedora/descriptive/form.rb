@@ -192,13 +192,17 @@ module Cocina
         end
 
         def write_datacite(form)
-          self_deposit_types = forms.find { |candidate| candidate.source.value == 'Stanford self-deposit resource types' }
-          parts = self_deposit_types.structuredValue.select { |val| val.type == 'subtype' }.presence || self_deposit_types.structuredValue
-          resource_type = parts.map(&:value).join('; ')
-
           xml.extension displayLabel: 'datacite' do
-            xml.resourceType(resource_type, resourceTypeGeneral: form.value)
+            xml.resourceType(datacite_resource_type, resourceTypeGeneral: form.value)
           end
+        end
+
+        def datacite_resource_type
+          self_deposit_types = forms.find { |candidate| candidate.source.value == 'Stanford self-deposit resource types' }
+          return unless self_deposit_types
+
+          parts = self_deposit_types.structuredValue.select { |val| val.type == 'subtype' }.presence || self_deposit_types.structuredValue
+          parts.map(&:value).join('; ')
         end
 
         def unit_for(form)
