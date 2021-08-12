@@ -165,6 +165,34 @@ RSpec.describe Publish::PublicDescMetadataService do
     end
   end
 
+  describe '#add_doi' do
+    let(:identity_metadata) do
+      <<-XML
+      <identityMetadata>
+        <doi>10.80343/ty606df5808</doi>
+      </identityMetadata>
+      XML
+    end
+
+    let(:mods) { read_fixture('ex2_related_mods.xml') }
+    let(:obj) do
+      b = Dor::Item.new
+      b.descMetadata.content = mods
+      b.identityMetadata.content = identity_metadata
+      b
+    end
+
+    let(:public_mods) do
+      service.ng_xml
+    end
+
+    it 'adds the doi in identityMetadata' do
+      expect(public_mods.xpath('//mods:identifier[@type="doi"]').to_xml).to eq(
+        '<mods:identifier type="doi" displayLabel="DOI">https://doi.org/10.80343/ty606df5808</mods:identifier>'
+      )
+    end
+  end
+
   describe '#add_access_conditions' do
     let(:rights_xml) do
       <<-XML

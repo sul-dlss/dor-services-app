@@ -28,6 +28,7 @@ module Publish
         add_collection_reference!
         AccessConditions.add(public_mods: doc, rights_md: object.rightsMetadata) if include_access_conditions
         add_constituent_relations!
+        add_doi
         strip_comments!
 
         new_doc = Nokogiri::XML(doc.to_xml, &:noblanks)
@@ -40,6 +41,20 @@ module Publish
 
     def strip_comments!
       doc.xpath('//comment()').remove
+    end
+
+    # We began to record DOI names in identityMetadata in the Summer of 2021
+    # So we need to export this into the public descMetadata in order to allow
+    # PURL to display the DOI
+    def add_doi
+      value = object.identityMetadata.ng_xml.xpath('//doi').first
+      return unless value
+
+      identifier = doc.create_element('mods:identifier')
+      identifier.content = "https://doi.org/#{value.text}"
+      identifier['type'] = 'doi'
+      identifier['displayLabel'] = 'DOI'
+      doc.root << identifier
     end
 
     # expand constituent relations into relatedItem references -- see JUMBO-18
