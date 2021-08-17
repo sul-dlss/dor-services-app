@@ -17,7 +17,7 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
         },
         description: {
           title: [{ value: 'Born to Run' }],
-          purl: 'http://purl.stanford.edu/ff111df4567',
+          purl: 'https://purl.stanford.edu/ff111df4567',
           access: {
             digitalRepository: [
               { value: 'Stanford Digital Repository' }
@@ -80,7 +80,7 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
                 value: 'Software Carpentry Workshop recordings from August 14, 2014'
               }
             ],
-            purl: 'http://purl.stanford.edu/tx853fp2857',
+            purl: 'https://purl.stanford.edu/tx853fp2857',
             access: {
               digitalRepository: [
                 {

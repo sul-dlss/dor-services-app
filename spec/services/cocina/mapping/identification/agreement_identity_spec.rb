@@ -188,7 +188,7 @@ RSpec.describe 'Fedora Agreement Object identityMetadata <--> Cocina Identificat
       title: [
         value: 'agreement title'
       ],
-      purl: "http://purl.stanford.edu/#{agreement_id.split(':').last}",
+      purl: "https://purl.stanford.edu/#{agreement_id.split(':').last}",
       access: {
         digitalRepository: [
           {

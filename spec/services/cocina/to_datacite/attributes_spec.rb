@@ -7,7 +7,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
 
   let(:druid) { 'druid:bb666bb1234' }
   let(:doi) { "10.25740/#{druid.split(':').last}" }
-  let(:purl) { "http://purl.stanford.edu/#{druid.split(':').last}" }
+  let(:purl) { "https://purl.stanford.edu/#{druid.split(':').last}" }
   let(:label) { 'label' }
   let(:title) { 'title' }
   let(:apo_druid) { 'druid:pp000pp0000' }

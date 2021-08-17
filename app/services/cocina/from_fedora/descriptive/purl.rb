@@ -39,8 +39,8 @@ module Cocina
         end
 
         def self.purl_value(purl_node)
-          # Note that normalizing https to http
-          purl_node&.content&.sub(/^https/, 'http')&.presence
+          # Note that normalizing http to https
+          purl_node&.content&.sub(/^https?/, 'https')&.presence
         end
       end
     end

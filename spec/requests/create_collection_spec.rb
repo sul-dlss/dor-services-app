@@ -24,7 +24,7 @@ RSpec.describe 'Create object' do
                                      version: 1,
                                      description: {
                                        title: [{ value: title }],
-                                       purl: 'http://purl.stanford.edu/gg777gg7777',
+                                       purl: 'https://purl.stanford.edu/gg777gg7777',
                                        access: {
                                          digitalRepository: [
                                            { value: 'Stanford Digital Repository' }
@@ -47,7 +47,7 @@ RSpec.describe 'Create object' do
           "label":"#{label}","version":1,"access":{},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
           "identification":{"sourceId":"hydrus:collection-456"},
-          "description":{"title":[{"value":"#{title}"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}}}
+          "description":{"title":[{"value":"#{title}"}],"purl":"https://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}}}
       JSON
     end
 
@@ -69,7 +69,7 @@ RSpec.describe 'Create object' do
                                        version: 1,
                                        description: {
                                          title: [{ value: title }],
-                                         purl: 'http://purl.stanford.edu/gg777gg7777',
+                                         purl: 'https://purl.stanford.edu/gg777gg7777',
                                          access: {
                                            digitalRepository: [
                                              { value: 'Stanford Digital Repository' }
@@ -142,7 +142,7 @@ RSpec.describe 'Create object' do
             "description":{
               "title":[{"value":"#{title}"}],
               "note":[{"value":"coll abstract","type":"abstract"}],
-                                       "purl": "http://purl.stanford.edu/gg777gg7777",
+                                       "purl": "https://purl.stanford.edu/gg777gg7777",
                                        "access": {
                                            "digitalRepository": [
                                                { "value": "Stanford Digital Repository" }
@@ -163,7 +163,7 @@ RSpec.describe 'Create object' do
                                        description: {
                                          title: [{ value: title }],
                                          note: [{ value: 'coll abstract', type: 'abstract' }],
-                                         purl: 'http://purl.stanford.edu/gg777gg7777',
+                                         purl: 'https://purl.stanford.edu/gg777gg7777',
                                          access: {
                                            digitalRepository: [
                                              { value: 'Stanford Digital Repository' }
@@ -204,7 +204,7 @@ RSpec.describe 'Create object' do
                                        },
                                        description: {
                                          title: [{ value: expected_label }],
-                                         purl: 'http://purl.stanford.edu/gg777gg7777',
+                                         purl: 'https://purl.stanford.edu/gg777gg7777',
                                          access: {
                                            digitalRepository: [
                                              { value: 'Stanford Digital Repository' }

@@ -98,11 +98,11 @@ RSpec.describe Cocina::Normalizers::ModsNormalizer do
       expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <location>
-            <url usage="primary display">http://purl.stanford.edu/bw502ns3302</url>
+            <url usage="primary display">https://purl.stanford.edu/bw502ns3302</url>
           </location>
           <relatedItem>
             <location>
-              <url usage="primary display">http://purl.stanford.edu/vt726fn1198</url>
+              <url usage="primary display">https://purl.stanford.edu/vt726fn1198</url>
             </location>
           </relatedItem>
         </mods>
@@ -132,11 +132,11 @@ RSpec.describe Cocina::Normalizers::ModsNormalizer do
       expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <location>
-            <url usage="primary display">http://purl.stanford.edu/bw502ns3302</url>
+            <url usage="primary display">https://purl.stanford.edu/bw502ns3302</url>
           </location>
           <relatedItem>
             <location>
-              <url usage="primary display">http://purl.stanford.edu/vt726fn1198</url>
+              <url usage="primary display">https://purl.stanford.edu/vt726fn1198</url>
             </location>
           </relatedItem>
         </mods>
@@ -162,7 +162,7 @@ RSpec.describe Cocina::Normalizers::ModsNormalizer do
       expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <location>
-            <url>http://purl.stanford.edu/bw502ns3302</url>
+            <url>https://purl.stanford.edu/bw502ns3302</url>
           </location>
           <location>
             <url usage="primary display">http://www.stanford.edu</url>
@@ -192,7 +192,7 @@ RSpec.describe Cocina::Normalizers::ModsNormalizer do
       expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <location>
-            <url>http://purl.stanford.edu/bw502ns3302</url>
+            <url>https://purl.stanford.edu/bw502ns3302</url>
           </location>
           <location>
             <url usage="primary display" note="Available to Stanford-affiliated users at READEX:">http://infoweb.newsbank.com/?db=SERIAL</url>
@@ -698,7 +698,7 @@ RSpec.describe Cocina::Normalizers::ModsNormalizer do
       expect(normalized_ng_xml.to_xml).to be_equivalent_to <<~XML
         <mods #{MODS_ATTRIBUTES}>
           <location>
-            <url usage="primary display">http://purl.stanford.edu/cy979mw6316</url>
+            <url usage="primary display">https://purl.stanford.edu/cy979mw6316</url>
           </location>
           <location>
             <physicalLocation>Stanford University Libraries</physicalLocation>
@@ -708,7 +708,7 @@ RSpec.describe Cocina::Normalizers::ModsNormalizer do
           </location>
           <relatedItem>
             <location>
-              <url usage="primary display">http://purl.stanford.edu/fy479mw7313</url>
+              <url usage="primary display">https://purl.stanford.edu/fy479mw7313</url>
             </location>
             <location>
               <physicalLocation>Palo Alto Public Library</physicalLocation>

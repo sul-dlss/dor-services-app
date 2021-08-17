@@ -2449,8 +2449,8 @@ components:
       description: Stanford persistent URL associated with the related resource. Note this is http, not https.
       type: string
       format: uri
-      # Canonical URI is http, even though this redirects to https.
-      pattern: '^http:\/\/'
+      # Canonical URI is https
+      pattern: '^https:\/\/'
     RelatedResource:
       description: Other resource associated with the described resource.
       type: object

@@ -108,9 +108,8 @@ module Cocina
       end
 
       def normalize_purl_for(base_node, purl: nil)
-        # Normalize https to http
         purl_nodes(base_node).each do |purl_node|
-          purl_node.content = purl_node.content.sub(/^https/, 'http')
+          purl_node.content = FromFedora::Descriptive::Purl.purl_value(purl_node)
         end
 
         # If there is a purl, add a url node if there is not already one.

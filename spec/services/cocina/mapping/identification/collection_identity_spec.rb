@@ -163,7 +163,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
       title: [
         value: 'collection title'
       ],
-      purl: "http://purl.stanford.edu/#{collection_id.split(':').last}",
+      purl: "https://purl.stanford.edu/#{collection_id.split(':').last}",
       access: {
         digitalRepository: [
           {

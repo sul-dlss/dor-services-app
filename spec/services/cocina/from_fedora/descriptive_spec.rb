@@ -87,7 +87,7 @@ RSpec.describe Cocina::FromFedora::Descriptive do
     end
 
     it 'has a url' do
-      expect(descriptive[:purl]).to eq('http://purl.stanford.edu/bb196dd3409')
+      expect(descriptive[:purl]).to eq('https://purl.stanford.edu/bb196dd3409')
       expect(descriptive[:note]).to match_array [
         {
           value: 'http://ennejah.info/',
