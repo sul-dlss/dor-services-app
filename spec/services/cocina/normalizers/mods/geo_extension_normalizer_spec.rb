@@ -36,7 +36,7 @@ RSpec.describe Cocina::Normalizers::Mods::GeoExtensionNormalizer do
             </rdf:RDF>
           </extension>
           <location>
-            <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+            <url usage="primary display">https://purl.stanford.edu/pf694bk4862</url>
           </location>
         </mods>
       XML
@@ -74,7 +74,7 @@ RSpec.describe Cocina::Normalizers::Mods::GeoExtensionNormalizer do
             </rdf:RDF>
           </extension>
           <location>
-           <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+           <url usage="primary display">https://purl.stanford.edu/pf694bk4862</url>
          </location>
         </mods>
       XML
@@ -113,7 +113,7 @@ RSpec.describe Cocina::Normalizers::Mods::GeoExtensionNormalizer do
               </rdf:RDF>
             </extension>
             <location>
-              <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+              <url usage="primary display">https://purl.stanford.edu/pf694bk4862</url>
             </location>
           </mods>
         XML
@@ -151,7 +151,7 @@ RSpec.describe Cocina::Normalizers::Mods::GeoExtensionNormalizer do
               </rdf:RDF>
             </extension>
             <location>
-              <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+              <url usage="primary display">https://purl.stanford.edu/pf694bk4862</url>
             </location>
           </mods>
         XML
@@ -200,7 +200,7 @@ RSpec.describe Cocina::Normalizers::Mods::GeoExtensionNormalizer do
             </rdf:RDF>
           </extension>
           <location>
-            <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+            <url usage="primary display">https://purl.stanford.edu/pf694bk4862</url>
           </location>
         </mods>
       XML
@@ -236,7 +236,7 @@ RSpec.describe Cocina::Normalizers::Mods::GeoExtensionNormalizer do
             </rdf:RDF>
           </extension>
           <location>
-            <url usage="primary display">http://purl.stanford.edu/pf694bk4862</url>
+            <url usage="primary display">https://purl.stanford.edu/pf694bk4862</url>
           </location>
         </mods>
       XML

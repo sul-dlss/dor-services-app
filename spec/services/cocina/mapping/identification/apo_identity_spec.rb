@@ -149,7 +149,7 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
       title: [
         value: 'APO title'
       ],
-      purl: "http://purl.stanford.edu/#{pid.split(':').last}",
+      purl: "https://purl.stanford.edu/#{pid.split(':').last}",
       access: {
         digitalRepository: [
           {

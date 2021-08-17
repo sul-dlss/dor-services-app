@@ -136,7 +136,7 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
         <<~XML
           <relatedItem>
             <location>
-              <url usage="primary display">http://purl.stanford.edu/ng599nr9959</url>
+              <url usage="primary display">https://purl.stanford.edu/ng599nr9959</url>
             </location>
           </relatedItem>
         XML
@@ -146,7 +146,7 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
         {
           relatedResource: [
             {
-              purl: 'http://purl.stanford.edu/ng599nr9959',
+              purl: 'https://purl.stanford.edu/ng599nr9959',
               access: {
 
                 digitalRepository: [

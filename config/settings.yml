@@ -79,7 +79,7 @@ dor:
 release:
   symphony_path: './'
   write_marc_script: 'bin/write_marc_record'
-  purl_base_url: 'http://purl.stanford.edu'
+  purl_base_url: 'https://purl.stanford.edu'
 
 goobi:
   url: 'https://goobi-env.stanford.edu:9292/goobi/api/process/stanfordcreate?token=faketoken'

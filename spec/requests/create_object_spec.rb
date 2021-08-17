@@ -34,7 +34,7 @@ RSpec.describe 'Create object' do
                               },
                               description: {
                                 title: [{ value: title }],
-                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                purl: 'https://purl.stanford.edu/gg777gg7777',
                                 access: {
                                   digitalRepository: [
                                     { value: 'Stanford Digital Repository' }
@@ -60,7 +60,7 @@ RSpec.describe 'Create object' do
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-          "description":{"title":[{"value":"#{title}"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
+          "description":{"title":[{"value":"#{title}"}],"purl":"https://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
           "identification":#{identification.to_json},
           "structural":#{structural.to_json}}
       JSON
@@ -256,7 +256,7 @@ RSpec.describe 'Create object' do
         let(:changed_description) do
           {
             title: [{ value: 'changed title' }],
-            purl: 'http://purl.stanford.edu/gg777gg7777',
+            purl: 'https://purl.stanford.edu/gg777gg7777',
             access: { digitalRepository: [{ value: 'Stanford Digital Repository' }] }
           }
         end
@@ -599,7 +599,7 @@ RSpec.describe 'Create object' do
                               },
                               description: {
                                 title: [{ value: title }],
-                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                purl: 'https://purl.stanford.edu/gg777gg7777',
                                 access: {
                                   digitalRepository: [
                                     { value: 'Stanford Digital Repository' }
@@ -625,7 +625,7 @@ RSpec.describe 'Create object' do
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"value":"#{title}"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
+          "description":{"title":[{"value":"#{title}"}],"purl":"https://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
           "identification":{"sourceId":"googlebooks:999999"}}
       JSON
     end
@@ -740,7 +740,7 @@ RSpec.describe 'Create object' do
                               version: 1,
                               description: {
                                 title: [{ value: title }],
-                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                purl: 'https://purl.stanford.edu/gg777gg7777',
                                 access: {
                                   digitalRepository: [
                                     { value: 'Stanford Digital Repository' }
@@ -794,7 +794,7 @@ RSpec.describe 'Create object' do
                                       version: 1,
                                       description: {
                                         title: [{ value: 'This is my title' }],
-                                        purl: 'http://purl.stanford.edu/gg777gg7777',
+                                        purl: 'https://purl.stanford.edu/gg777gg7777',
                                         access: {
                                           digitalRepository: [
                                             { value: 'Stanford Digital Repository' }
@@ -903,7 +903,7 @@ RSpec.describe 'Create object' do
             "hasAdminPolicy":"druid:dd999df4567",
             "roles":[{"name":"dor-apo-manager","members":[{"type":"workgroup","identifier":"sdr:psm-staff"}]}]
           },
-          "description":{"title":[{"value":"This is my title"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}}}
+          "description":{"title":[{"value":"This is my title"}],"purl":"https://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}}}
       JSON
     end
 
@@ -954,7 +954,7 @@ RSpec.describe 'Create object' do
                                       version: 1,
                                       description: {
                                         title: [{ value: 'Hydrus' }],
-                                        purl: 'http://purl.stanford.edu/gg777gg7777',
+                                        purl: 'https://purl.stanford.edu/gg777gg7777',
                                         access: {
                                           digitalRepository: [
                                             { value: 'Stanford Digital Repository' }
@@ -1011,7 +1011,7 @@ RSpec.describe 'Create object' do
                               version: 1,
                               description: {
                                 title: [{ value: 'This is my title' }],
-                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                purl: 'https://purl.stanford.edu/gg777gg7777',
                                 access: {
                                   digitalRepository: [
                                     { value: 'Stanford Digital Repository' }
@@ -1041,7 +1041,7 @@ RSpec.describe 'Create object' do
           "label":"This is my label","version":1,"access":{"access":"stanford","download":"none","controlledDigitalLending":false,
           "embargo":{"access":"world","download":"world","releaseDate":"2020-02-29"}},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"value":"This is my title"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
+          "description":{"title":[{"value":"This is my title"}],"purl":"https://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
@@ -1068,7 +1068,7 @@ RSpec.describe 'Create object' do
                               version: 1,
                               description: {
                                 title: [{ value: 'This is my title' }],
-                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                purl: 'https://purl.stanford.edu/gg777gg7777',
                                 access: {
                                   digitalRepository: [
                                     { value: 'Stanford Digital Repository' }
@@ -1097,7 +1097,7 @@ RSpec.describe 'Create object' do
           "label":"This is my label","version":1,
           "access":{"access":"location-based","download":"location-based","readLocation":"m&m"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"value":"This is my title"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
+          "description":{"title":[{"value":"This is my title"}],"purl":"https://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
@@ -1124,7 +1124,7 @@ RSpec.describe 'Create object' do
                               version: 1,
                               description: {
                                 title: [{ value: 'This is my title' }],
-                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                purl: 'https://purl.stanford.edu/gg777gg7777',
                                 access: {
                                   digitalRepository: [
                                     { value: 'Stanford Digital Repository' }
@@ -1152,7 +1152,7 @@ RSpec.describe 'Create object' do
           "label":"This is my label","version":1,
           "access":{"access":"world","download":"none"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"value":"This is my title"}],"purl":"http://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
+          "description":{"title":[{"value":"This is my title"}],"purl":"https://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
@@ -1188,7 +1188,7 @@ RSpec.describe 'Create object' do
                                   title: [
                                     { value: 'This is my label' }
                                   ],
-                                  purl: 'http://purl.stanford.edu/gg777gg7777',
+                                  purl: 'https://purl.stanford.edu/gg777gg7777',
                                   access: {
                                     digitalRepository: [
                                       { value: 'Stanford Digital Repository' }
@@ -1230,7 +1230,7 @@ RSpec.describe 'Create object' do
                                   title: [
                                     { value: 'This is my label' }
                                   ],
-                                  purl: 'http://purl.stanford.edu/gg777gg7777',
+                                  purl: 'https://purl.stanford.edu/gg777gg7777',
                                   access: {
                                     digitalRepository: [
                                       { value: 'Stanford Digital Repository' }
@@ -1280,7 +1280,7 @@ RSpec.describe 'Create object' do
                                   title: [
                                     { value: 'This is my label' }
                                   ],
-                                  purl: 'http://purl.stanford.edu/gg777gg7777',
+                                  purl: 'https://purl.stanford.edu/gg777gg7777',
                                   access: {
                                     digitalRepository: [
                                       { value: 'Stanford Digital Repository' }
@@ -1348,7 +1348,7 @@ RSpec.describe 'Create object' do
                                 title: [
                                   { value: 'This is my label' }
                                 ],
-                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                purl: 'https://purl.stanford.edu/gg777gg7777',
                                 access: {
                                   digitalRepository: [
                                     { value: 'Stanford Digital Repository' }
@@ -1396,7 +1396,7 @@ RSpec.describe 'Create object' do
                                 title: [
                                   { value: 'This is my label' }
                                 ],
-                                purl: 'http://purl.stanford.edu/gg777gg7777',
+                                purl: 'https://purl.stanford.edu/gg777gg7777',
                                 access: {
                                   digitalRepository: [
                                     { value: 'Stanford Digital Repository' }

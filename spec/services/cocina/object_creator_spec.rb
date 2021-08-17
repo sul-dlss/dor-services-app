@@ -171,7 +171,7 @@ RSpec.describe Cocina::ObjectCreator do
 
       it 'preferred citation is set with the link placeholder replaced' do
         contact_note = result.description.note.find { |note| note.type == 'preferred citation' }
-        expect(contact_note.value).to eq 'Zappa, F. (2013) http://purl.stanford.edu/mb046vj7485'
+        expect(contact_note.value).to eq 'Zappa, F. (2013) https://purl.stanford.edu/mb046vj7485'
       end
     end
 

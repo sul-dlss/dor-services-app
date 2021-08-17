@@ -192,14 +192,14 @@ RSpec.describe 'MODS location <--> cocina mappings' do
       let(:mods) do
         <<~XML
           <location>
-            <url usage="primary display">http://purl.stanford.edu/ys701qw6956</url>
+            <url usage="primary display">https://purl.stanford.edu/ys701qw6956</url>
           </location>
         XML
       end
 
       let(:cocina) do
         {
-          purl: 'http://purl.stanford.edu/ys701qw6956',
+          purl: 'https://purl.stanford.edu/ys701qw6956',
           access: {
             digitalRepository: [
               value: 'Stanford Digital Repository'
@@ -210,7 +210,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
     end
   end
 
-  describe 'PURL with https' do
+  describe 'PURL with http' do
     # if purl is only url in record or no other url has usage="primary display", assign to purl
     it_behaves_like 'MODS cocina mapping' do
       let(:druid) { 'ys701qw6956' }
@@ -218,7 +218,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
       let(:mods) do
         <<~XML
           <location>
-            <url usage="primary display">https://purl.stanford.edu/ys701qw6956</url>
+            <url usage="primary display">http://purl.stanford.edu/ys701qw6956</url>
           </location>
         XML
       end
@@ -226,14 +226,14 @@ RSpec.describe 'MODS location <--> cocina mappings' do
       let(:roundtrip_mods) do
         <<~XML
           <location>
-            <url usage="primary display">http://purl.stanford.edu/ys701qw6956</url>
+            <url usage="primary display">https://purl.stanford.edu/ys701qw6956</url>
           </location>
         XML
       end
 
       let(:cocina) do
         {
-          purl: 'http://purl.stanford.edu/ys701qw6956',
+          purl: 'https://purl.stanford.edu/ys701qw6956',
           access: {
             digitalRepository: [
               value: 'Stanford Digital Repository'
@@ -268,7 +268,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
               valueURI="http://id.loc.gov/authorities/names/n81070667">Stanford University. Libraries</physicalLocation>
           </location>
           <location>
-            <url usage="primary display">http://purl.stanford.edu/hf898mn6942</url>
+            <url usage="primary display">https://purl.stanford.edu/hf898mn6942</url>
           </location>
           <location>
             <url displayLabel="Archived website"
@@ -279,7 +279,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
 
       let(:cocina) do
         {
-          purl: 'http://purl.stanford.edu/hf898mn6942',
+          purl: 'https://purl.stanford.edu/hf898mn6942',
           access: {
             accessContact: [
               {
@@ -465,14 +465,14 @@ RSpec.describe 'MODS location <--> cocina mappings' do
             <physicalLocation type="discovery">VICTOR\PLUS_PHOTOS_DAN\PLUS_TARD_PHOTOS_DAN_20071017\IMG_0852.JPG</physicalLocation>
           </location>
           <location>
-            <url usage="primary display">http://purl.stanford.edu/hn970dy7259</url>
+            <url usage="primary display">https://purl.stanford.edu/hn970dy7259</url>
           </location>
         XML
       end
 
       let(:cocina) do
         {
-          purl: 'http://purl.stanford.edu/hn970dy7259',
+          purl: 'https://purl.stanford.edu/hn970dy7259',
           access: {
             accessContact: [
               {
@@ -592,7 +592,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
             <url>http://purl.access.gpo.gov/GPO/LPS839</url>
           </location>
           <location>
-            <url>http://purl.stanford.edu/cy979mw6316</url>
+            <url>https://purl.stanford.edu/cy979mw6316</url>
           </location>
           <location>
             <physicalLocation>Stanford University Libraries</physicalLocation>
@@ -602,7 +602,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
 
       let(:cocina) do
         {
-          purl: 'http://purl.stanford.edu/cy979mw6316',
+          purl: 'https://purl.stanford.edu/cy979mw6316',
           access: {
             url: [
               {
@@ -705,14 +705,14 @@ RSpec.describe 'MODS location <--> cocina mappings' do
         <<~XML
           <location>
             <url displayLabel="electronic resource" usage="primary display"
-              note="Available to Stanford-affiliated users.">http://purl.stanford.edu/nd782fm8171</url>
+              note="Available to Stanford-affiliated users.">https://purl.stanford.edu/nd782fm8171</url>
           </location>
         XML
       end
 
       let(:cocina) do
         {
-          purl: 'http://purl.stanford.edu/nd782fm8171',
+          purl: 'https://purl.stanford.edu/nd782fm8171',
           access: {
             note: [
               {
@@ -761,11 +761,11 @@ RSpec.describe 'MODS location <--> cocina mappings' do
       let(:roundtrip_mods) do
         <<~XML
           <location>
-            <url displayLabel="electronic resource" usage="primary display" note="Available to Stanford-affiliated users.">http://purl.stanford.edu/nd782fm8171</url>
+            <url displayLabel="electronic resource" usage="primary display" note="Available to Stanford-affiliated users.">https://purl.stanford.edu/nd782fm8171</url>
           </location>
           <relatedItem>
             <location>
-              <url displayLabel="electronic resource" note="Available to Stanford-affiliated users." usage="primary display">http://purl.stanford.edu/qm814cd3342</url>
+              <url displayLabel="electronic resource" note="Available to Stanford-affiliated users." usage="primary display">https://purl.stanford.edu/qm814cd3342</url>
             </location>
           </relatedItem>
         XML
@@ -773,7 +773,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
 
       let(:cocina) do
         {
-          purl: 'http://purl.stanford.edu/nd782fm8171',
+          purl: 'https://purl.stanford.edu/nd782fm8171',
           access: {
             note: [
               {
@@ -800,7 +800,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
           },
           relatedResource: [
             {
-              purl: 'http://purl.stanford.edu/qm814cd3342',
+              purl: 'https://purl.stanford.edu/qm814cd3342',
               access: {
                 note: [
                   {
@@ -853,21 +853,21 @@ RSpec.describe 'MODS location <--> cocina mappings' do
       let(:roundtrip_mods) do
         <<~XML
           <location>
-            <url usage="primary display">http://purl.stanford.edu/bq367mn3764</url>
+            <url usage="primary display">https://purl.stanford.edu/bq367mn3764</url>
           </location>
           <relatedItem>
             <location>
-              <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/cj288sh2297</url>
+              <url displayLabel="electronic resource" usage="primary display">https://purl.stanford.edu/cj288sh2297</url>
             </location>
           </relatedItem>
           <relatedItem>
             <location>
-              <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/dj754bp2797</url>
+              <url displayLabel="electronic resource" usage="primary display">https://purl.stanford.edu/dj754bp2797</url>
             </location>
           </relatedItem>
           <relatedItem>
             <location>
-              <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/fn061xz3249</url>
+              <url displayLabel="electronic resource" usage="primary display">https://purl.stanford.edu/fn061xz3249</url>
             </location>
           </relatedItem>
         XML
@@ -875,7 +875,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
 
       let(:cocina) do
         {
-          purl: 'http://purl.stanford.edu/bq367mn3764',
+          purl: 'https://purl.stanford.edu/bq367mn3764',
           access: {
             digitalRepository: [
               value: 'Stanford Digital Repository'
@@ -883,7 +883,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
           },
           relatedResource: [
             {
-              purl: 'http://purl.stanford.edu/cj288sh2297',
+              purl: 'https://purl.stanford.edu/cj288sh2297',
               access: {
                 note: [
                   {
@@ -902,7 +902,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
               }
             },
             {
-              purl: 'http://purl.stanford.edu/dj754bp2797',
+              purl: 'https://purl.stanford.edu/dj754bp2797',
               access: {
                 note: [
                   {
@@ -921,7 +921,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
               }
             },
             {
-              purl: 'http://purl.stanford.edu/fn061xz3249',
+              purl: 'https://purl.stanford.edu/fn061xz3249',
               access: {
                 note: [
                   {
@@ -967,19 +967,19 @@ RSpec.describe 'MODS location <--> cocina mappings' do
       let(:roundtrip_mods) do
         <<~XML
           <location>
-            <url>http://purl.stanford.edu/gr134wb6457</url>
+            <url>https://purl.stanford.edu/gr134wb6457</url>
           </location>
           <location>
             <url displayLabel="electronic resource" usage="primary display">http://clerk.assembly.ca.gov/archive-list</url>
           </location>
           <relatedItem>
             <location>
-              <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/bf606ht0878</url>
+              <url displayLabel="electronic resource" usage="primary display">https://purl.stanford.edu/bf606ht0878</url>
             </location>
           </relatedItem>
           <relatedItem>
             <location>
-              <url displayLabel="electronic resource" usage="primary display">http://purl.stanford.edu/bg702cf3724</url>
+              <url displayLabel="electronic resource" usage="primary display">https://purl.stanford.edu/bg702cf3724</url>
             </location>
           </relatedItem>
         XML
@@ -987,7 +987,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
 
       let(:cocina) do
         {
-          purl: 'http://purl.stanford.edu/gr134wb6457',
+          purl: 'https://purl.stanford.edu/gr134wb6457',
           access: {
             digitalRepository: [
               {
@@ -1004,7 +1004,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
           },
           relatedResource: [
             {
-              purl: 'http://purl.stanford.edu/bf606ht0878',
+              purl: 'https://purl.stanford.edu/bf606ht0878',
               access: {
                 note: [
                   {
@@ -1023,7 +1023,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
               }
             },
             {
-              purl: 'http://purl.stanford.edu/bg702cf3724',
+              purl: 'https://purl.stanford.edu/bg702cf3724',
               access: {
                 note: [
                   {

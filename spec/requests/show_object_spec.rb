@@ -45,7 +45,7 @@ RSpec.describe 'Get the object' do
             title: [
               { value: 'Hello' }
             ],
-            purl: 'http://purl.stanford.edu/bc123df4567',
+            purl: 'https://purl.stanford.edu/bc123df4567',
             access: {
               digitalRepository: [
                 { value: 'Stanford Digital Repository' }
@@ -116,7 +116,7 @@ RSpec.describe 'Get the object' do
             title: [
               { value: 'Hello' }
             ],
-            purl: 'http://purl.stanford.edu/bc123df4567',
+            purl: 'https://purl.stanford.edu/bc123df4567',
             access: {
               digitalRepository: [
                 { value: 'Stanford Digital Repository' }
@@ -166,7 +166,7 @@ RSpec.describe 'Get the object' do
             title: [
               { value: 'Hello' }
             ],
-            purl: 'http://purl.stanford.edu/bc123df4567',
+            purl: 'https://purl.stanford.edu/bc123df4567',
             access: {
               digitalRepository: [
                 { value: 'Stanford Digital Repository' }
@@ -261,7 +261,7 @@ RSpec.describe 'Get the object' do
             title: [
               { value: 'Hello' }
             ],
-            purl: 'http://purl.stanford.edu/bc123df4567',
+            purl: 'https://purl.stanford.edu/bc123df4567',
             access: {
               digitalRepository: [
                 { value: 'Stanford Digital Repository' }
@@ -424,7 +424,7 @@ RSpec.describe 'Get the object' do
           title: [
             { value: 'Hello' }
           ],
-          purl: 'http://purl.stanford.edu/bc123df4567',
+          purl: 'https://purl.stanford.edu/bc123df4567',
           access: {
             digitalRepository: [
               { value: 'Stanford Digital Repository' }

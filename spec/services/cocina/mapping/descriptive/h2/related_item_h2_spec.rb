@@ -140,7 +140,7 @@ RSpec.describe 'Cocina --> MODS mappings for relatedItem' do
                   value: 'Software Carpentry Workshop recordings from August 14, 2014'
                 }
               ],
-              purl:	'http://purl.stanford.edu/tx853fp2857',
+              purl:	'https://purl.stanford.edu/tx853fp2857',
               access: {
                 digitalRepository: [
                   {
@@ -176,7 +176,7 @@ RSpec.describe 'Cocina --> MODS mappings for relatedItem' do
               <title>Software Carpentry Workshop recordings from August 14, 2014</title>
             </titleInfo>
             <location>
-              <url usage="primary display">http://purl.stanford.edu/tx853fp2857</url>
+              <url usage="primary display">https://purl.stanford.edu/tx853fp2857</url>
             </location>
           </relatedItem>
         XML

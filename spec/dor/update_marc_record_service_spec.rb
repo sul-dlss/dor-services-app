@@ -11,7 +11,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
   before do
     allow(ReleaseTags::IdentityMetadata).to receive(:for).and_return(release_service)
     Settings.release.symphony_path = './spec/fixtures/sdr-purl'
-    Settings.release.purl_base_url = 'http://purl.stanford.edu'
   end
 
   context 'for a druid without a catkey' do
@@ -102,7 +101,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       it 'generates a single symphony record' do
         # rubocop:disable Layout/LineLength
         expect(generate_symphony_records).to eq [
-          "8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character|xrights:world"
+          "8832162\taa111aa1111\t.856. 41|uhttps://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character|xrights:world"
         ]
       end
     end
@@ -121,7 +120,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
       it 'generates symphony record with a z subfield' do
         expect(generate_symphony_records).to match_array [
-          "8832162\taa111aa1111\t.856. 41|zAvailable to Stanford-affiliated users.|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character|xrights:group=stanford"
+          "8832162\taa111aa1111\t.856. 41|zAvailable to Stanford-affiliated users.|uhttps://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character|xrights:group=stanford"
         ]
       end
     end
@@ -143,7 +142,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
         expect(generate_symphony_records).to match_array [
           "123\taa111aa1111\t",
           "456\taa111aa1111\t",
-          "8832162\taa111aa1111\t.856. 41|uhttp://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character|xrights:world"
+          "8832162\taa111aa1111\t.856. 41|uhttps://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character|xrights:world"
         ]
       end
     end
@@ -177,7 +176,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       let(:umrs) { described_class.new(collection) }
 
       it 'generates a single symphony record' do
-        expect(generate_symphony_records).to match_array ["8832162\tcc111cc1111\t.856. 41|uhttp://purl.stanford.edu/cc111cc1111|xSDR-PURL|xcollection|xrights:world"]
+        expect(generate_symphony_records).to match_array ["8832162\tcc111cc1111\t.856. 41|uhttps://purl.stanford.edu/cc111cc1111|xSDR-PURL|xcollection|xrights:world"]
       end
     end
   end
@@ -328,8 +327,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     let(:dor_item) { Dor::Item.new(pid: 'druid:aa111aa1111') }
 
     it 'returns valid purl url' do
-      Settings.release.purl_base_url = 'http://purl.stanford.edu'
-      expect(umrs.get_u_field).to eq('|uhttp://purl.stanford.edu/aa111aa1111')
+      expect(umrs.get_u_field).to eq('|uhttps://purl.stanford.edu/aa111aa1111')
     end
   end
 
