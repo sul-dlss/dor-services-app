@@ -142,8 +142,14 @@ class ObjectsController < ApplicationController
 
   # Called by the robots.
   def update_doi_metadata
-    cocina_item = Cocina::Mapper.build(@item)
-    return head :no_content unless cocina_item.identification.doi && Settings.enabled_features.datacite_update
+    return head :no_content unless Settings.enabled_features.datacite_update && cocina_item.identification.doi
+
+    # Check to see if these meet the conditions necessary to export to datacite
+    unless Cocina::ToDatacite::Attributes.exportable?(cocina_item)
+      return json_api_error(status: :conflict,
+                            message: "Item requested a DOI be updated, but it doesn't meet all the preconditions. " \
+                                     'Datacite requires that this object have creators and a datacite extension with resourceTypeGeneral')
+    end
 
     # We can remove this line when we upgrade to Rails 6 and just pass cocina_item.
     serialized_item = Cocina::Serializer.new.serialize(cocina_item)
@@ -172,6 +178,10 @@ class ObjectsController < ApplicationController
   end
 
   private
+
+  def cocina_item
+    @cocina_item ||= Cocina::Mapper.build(@item)
+  end
 
   def workflow_client
     WorkflowClientFactory.build
