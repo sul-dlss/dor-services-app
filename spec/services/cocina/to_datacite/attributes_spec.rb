@@ -34,6 +34,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     it 'creates the attributes hash' do
       expect(attributes).to eq(
         {
+          event: 'publish',
           creators: [],
           dates: [],
           # publicationYear: '1964',
@@ -187,6 +188,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     it 'populates the attributes hash correctly' do
       expect(attributes).to eq(
         {
+          event: 'publish',
           alternateIdentifiers: [
             {
               alternateIdentifier: purl,
