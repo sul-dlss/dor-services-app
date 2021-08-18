@@ -12,6 +12,10 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   let(:title) { 'title' }
   let(:apo_druid) { 'druid:pp000pp0000' }
 
+  before do
+    allow(Time.zone).to receive(:today).and_return(instance_double(Date, year: 2011))
+  end
+
   context 'with a minimal description' do
     let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
@@ -37,7 +41,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           event: 'publish',
           creators: [],
           dates: [],
-          # publicationYear: '1964',
+          publicationYear: '2011',
           publisher: 'Stanford Digital Repository',
           titles: [{ title: title }]
         }
@@ -45,7 +49,44 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     end
   end
 
-  context 'with cocina description form, identifier, note, purl, relatedResource values and cocina_dro.access' do
+  context 'with an embargo' do
+    let(:cocina_item) do
+      Cocina::Models::DRO.new(externalIdentifier: druid,
+                              type: Cocina::Models::Vocab.object,
+                              label: label,
+                              version: 1,
+                              description: {
+                                title: [{ value: title }]
+                              },
+                              identification: {
+                                sourceId: 'sul:8.559351',
+                                doi: doi
+                              },
+                              access: {
+                                embargo: {
+                                  releaseDate: '2031-07-01T00:00:00.000+00:00'
+                                }
+                              },
+                              administrative: {
+                                hasAdminPolicy: apo_druid
+                              })
+    end
+
+    it 'creates the attributes hash' do
+      expect(attributes).to eq(
+        {
+          event: 'publish',
+          creators: [],
+          dates: [],
+          publicationYear: '2031',
+          publisher: 'Stanford Digital Repository',
+          titles: [{ title: title }]
+        }
+      )
+    end
+  end
+
+  context 'with a fully described object' do
     let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::Vocab.object,
@@ -214,7 +255,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               identifierType: 'DOI'
             }
           ],
-          # publicationYear: '1964',
+          publicationYear: '2011',
           publisher: 'Stanford Digital Repository',
           # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
           # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.

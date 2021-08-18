@@ -41,7 +41,7 @@ module Cocina
           titles: titles,
           rightsList: rights_list,
           types: types_attributes,
-          # publicationYear: '1964' # to be implemented from event_h2 mapping,
+          publicationYear: publication_year,
           publisher: 'Stanford Digital Repository',
           # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
           # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
@@ -53,6 +53,15 @@ module Cocina
       private
 
       attr :access, :description
+
+      def publication_year
+        date = if access.embargo
+                 access.embargo.releaseDate.to_datetime
+               else
+                 Time.zone.today
+               end
+        date.year.to_s
+      end
 
       def creators
         Creator.attributes(description)
