@@ -21,6 +21,7 @@ module Cocina
       # @return [Hash] Hash of DataCite attributes, conforming to the expectations of HTTP PUT request to DataCite
       def mapped_from_cocina
         {
+          event: 'publish', # Makes a findable DOI
           descriptions: descriptions,
           alternateIdentifiers: alternate_identifiers,
           dates: [], # to be implemented from event_h2 mapping
