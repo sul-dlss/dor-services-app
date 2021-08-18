@@ -13,7 +13,7 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
   ## Map name to DataCite contributors.name
   ## Map role with source 'marcrelator' to DataCite contributorType following the mapping linked above
   ## TODO: Implement updated H2-cocina mappings that include DataCite role and citation status note
-  # EXCEPTION: if DataCite role is 'Funder'
+  # EXCEPTION: if marcrelator role is 'funder'
   ## Do not map to DataCite contributors.name
   ## Instead map to DataCite fundingReference.funderName
 
