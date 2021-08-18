@@ -4,18 +4,16 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
   # Full role mapping: https://docs.google.com/spreadsheets/d/1CvEd_NODprNhM2D9VfvJBFs1jfAMEUr0kDxXHe2HkL4/edit?usp=sharing
-  # H2 Authors to include in citation
-  ## Identified in cocina by:
-  ### Role with type 'DataCite role' and value 'Creator' OR
-  ### Role with type 'DataCite role' and a value other than 'Creator', plus NOT having contributor.note with type 'citation status' and value 'false'
+  # H2 Authors to include in citation map to DataCite creators
+  ## Identified in cocina by absence of contributor.note with type 'citation status' and value 'false'
   ## Map contributor.name to DataCite creators.name, no role
-  # H2 Additional contributors
+  # H2 Additional contributors map to DataCite contributors
   ## Identified in cocina by:
   ### Having contributor.note with type 'citation status' and value 'false'
   ## Map name to DataCite contributors.name
-  ## Map role with type 'DataCite role' to DataCite contributorType
+  ## Map role with source 'marcrelator' to DataCite contributorType following the mapping linked above
   ## TODO: Implement updated H2-cocina mappings that include DataCite role and citation status note
-  # EXCEPTION: if DataCite role is 'Funder'
+  # EXCEPTION: if marcrelator role is 'funder'
   ## Do not map to DataCite contributors.name
   ## Instead map to DataCite fundingReference.funderName
 
