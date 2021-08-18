@@ -37,7 +37,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           creators: [],
           dates: [],
           # publicationYear: '1964',
-          # publisher: 'to be implemented',
+          publisher: 'Stanford Digital Repository',
           titles: [{ title: title }]
         }
       )
@@ -213,7 +213,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
             }
           ],
           # publicationYear: '1964',
-          # publisher: 'to be implemented',
+          publisher: 'Stanford Digital Repository',
           # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
           # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
           # relatedItems: [

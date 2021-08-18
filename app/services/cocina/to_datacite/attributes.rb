@@ -30,7 +30,7 @@ module Cocina
           rightsList: rights_list,
           types: types_attributes,
           # publicationYear: '1964' # to be implemented from event_h2 mapping,
-          # publisher: 'to be implemented' # to be implemented from event_h2 mapping
+          publisher: 'Stanford Digital Repository',
           # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
           # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
           # relatedItems: related_item
