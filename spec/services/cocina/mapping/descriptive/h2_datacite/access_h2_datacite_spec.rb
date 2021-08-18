@@ -22,11 +22,8 @@ RSpec.describe 'Cocina --> DataCite mappings for description.access (H2 specific
       }
     end
 
-    xit 'not implemented' do
-      let(:datacite) do
-        # no data generated
-        {}
-      end
+    it 'does not map' do
+      expect(descriptions_attributes).to be nil
     end
   end
 
@@ -35,9 +32,12 @@ RSpec.describe 'Cocina --> DataCite mappings for description.access (H2 specific
   context 'when description.access is empty hash' do
     let(:cocina) do
       {
+        access: {}
       }
     end
 
-    xit 'not implemented'
+    it 'does not map' do
+      expect(descriptions_attributes).to be nil
+    end
   end
 end
