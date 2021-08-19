@@ -11,7 +11,10 @@ class UpdateDoiMetadataJob < ApplicationJob
     result = client.update(id: cocina_item.identification.doi, attributes: attributes.deep_stringify_keys)
     return if result.success?
 
-    raise("Error connecting to datacite (#{cocina_item.externalIdentifier}) #{result.failure.status}: #{result.failure.body}")
+    message = "Error connecting to datacite (#{cocina_item.externalIdentifier}) " \
+              "response: #{result.failure.status}: #{result.failure.body}\n" \
+              "request: #{result.failure.env.request_body}"
+    raise message
   end
 
   def client
