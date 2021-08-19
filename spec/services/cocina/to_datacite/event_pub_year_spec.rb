@@ -68,10 +68,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -131,10 +127,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -204,10 +196,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -277,10 +265,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -340,10 +324,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -412,10 +392,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -476,10 +452,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -549,10 +521,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -622,10 +590,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -695,10 +659,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -758,10 +718,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -843,10 +799,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
@@ -882,13 +834,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                       source: {
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
-                      }
-                    },
-                    {
-                      value: 'Distributor',
-                      type: 'DataCite role',
-                      source: {
-                        value: 'DataCite contributor types'
                       }
                     }
                   ],
@@ -949,13 +894,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Distributor',
-                      type: 'DataCite role',
-                      source: {
-                        value: 'DataCite contributor types'
-                      }
                     }
                   ],
                   type: 'organization'
@@ -989,10 +927,6 @@ RSpec.describe Cocina::ToDatacite::Event do
                         code: 'marcrelator',
                         uri: 'http://id.loc.gov/vocabulary/relators/'
                       }
-                    },
-                    {
-                      value: 'Publisher',
-                      type: 'DataCite role'
                     }
                   ],
                   type: 'organization'
