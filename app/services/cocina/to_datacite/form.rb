@@ -17,10 +17,12 @@ module Cocina
 
       # @return [NilClass, Hash] the DataCite types attributes, conforming to the expectations of HTTP PUT request to DataCite
       def type_attributes
+        return unless resource_type_general || resource_type
+
         {
           resourceTypeGeneral: resource_type_general,
           resourceType: resource_type
-        }.compact.presence
+        }
       end
 
       private
