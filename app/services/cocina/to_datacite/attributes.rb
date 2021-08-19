@@ -27,12 +27,14 @@ module Cocina
       def initialize(cocina_item)
         @access = cocina_item.access
         @description = cocina_item.description
+        @purl = Purl.for(druid: cocina_item.externalIdentifier)
       end
 
       # @return [Hash] Hash of DataCite attributes, conforming to the expectations of HTTP PUT request to DataCite
       def mapped_from_cocina
         {
           event: 'publish', # Makes a findable DOI
+          url: purl,
           descriptions: descriptions,
           alternateIdentifiers: alternate_identifiers,
           dates: [], # to be implemented from event_h2 mapping
@@ -51,7 +53,7 @@ module Cocina
 
       private
 
-      attr :access, :description
+      attr :access, :description, :purl
 
       def publication_year
         date = if access.embargo
