@@ -174,7 +174,7 @@ RSpec.describe Publish::PublicDescMetadataService do
       XML
     end
 
-    let(:mods) { read_fixture('ex2_related_mods.xml') }
+    let(:mods) { read_fixture('mods_default_ns.xml') }
     let(:obj) do
       b = Dor::Item.new
       b.descMetadata.content = mods
@@ -187,8 +187,8 @@ RSpec.describe Publish::PublicDescMetadataService do
     end
 
     it 'adds the doi in identityMetadata' do
-      expect(public_mods.xpath('//mods:identifier[@type="doi"]').to_xml).to eq(
-        '<mods:identifier type="doi" displayLabel="DOI">https://doi.org/10.80343/ty606df5808</mods:identifier>'
+      expect(public_mods.xpath('//mods:identifier[@type="doi"]', mods: Publish::PublicDescMetadataService::MODS_NS).to_xml).to eq(
+        '<identifier type="doi" displayLabel="DOI">https://doi.org/10.80343/ty606df5808</identifier>'
       )
     end
   end
