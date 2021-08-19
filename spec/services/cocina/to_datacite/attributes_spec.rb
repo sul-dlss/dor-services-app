@@ -39,6 +39,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
       expect(attributes).to eq(
         {
           event: 'publish',
+          url: 'https://purl.stanford.edu/bb666bb1234',
           creators: [],
           contributors: [],
           fundingReferences: [],
@@ -78,6 +79,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
       expect(attributes).to eq(
         {
           event: 'publish',
+          url: 'https://purl.stanford.edu/bb666bb1234',
           creators: [],
           contributors: [],
           fundingReferences: [],
@@ -261,6 +263,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
       expect(attributes).to eq(
         {
           event: 'publish',
+          url: 'https://purl.stanford.edu/bb666bb1234',
           alternateIdentifiers: [
             {
               alternateIdentifier: purl,
