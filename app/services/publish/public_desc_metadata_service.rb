@@ -50,7 +50,7 @@ module Publish
       value = object.identityMetadata.ng_xml.xpath('//doi').first
       return unless value
 
-      identifier = doc.create_element('mods:identifier')
+      identifier = doc.create_element('identifier', xmlns: MODS_NS)
       identifier.content = "https://doi.org/#{value.text}"
       identifier['type'] = 'doi'
       identifier['displayLabel'] = 'DOI'
