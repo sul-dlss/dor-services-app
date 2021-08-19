@@ -265,8 +265,8 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
       }
     end
 
-    xit 'to be mapped/implemented: type_attributes cannot be empty hash' do
-      expect(type_attributes).to eq({})
+    it 'returns nil' do
+      expect(type_attributes).to be nil
     end
   end
 
@@ -277,8 +277,8 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
       }
     end
 
-    xit 'to be mapped/implemented: type_attributes cannot be empty hash' do
-      expect(type_attributes).to eq({})
+    it 'returns nil' do
+      expect(type_attributes).to be nil
     end
   end
 
@@ -288,8 +288,8 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
       }
     end
 
-    xit 'to be mapped/implemented: type_attributes cannot be empty hash' do
-      expect(type_attributes).to eq({})
+    it 'returns nil' do
+      expect(type_attributes).to be nil
     end
   end
 end

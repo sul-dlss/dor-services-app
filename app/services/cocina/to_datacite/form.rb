@@ -17,12 +17,10 @@ module Cocina
 
       # @return [NilClass, Hash] the DataCite types attributes, conforming to the expectations of HTTP PUT request to DataCite
       def type_attributes
-        return if cocina_desc&.form.blank?
-
         {
           resourceTypeGeneral: resource_type_general,
           resourceType: resource_type
-        }
+        }.compact.presence
       end
 
       private
@@ -31,13 +29,13 @@ module Cocina
 
       # @return String DataCite resourceTypeGeneral value
       def resource_type_general
-        @resource_type_general ||= cocina_desc.form&.find { |cocina_form| datacite_resource_types_form?(cocina_form) }&.value
+        @resource_type_general ||= Array(cocina_desc.form).find { |cocina_form| datacite_resource_types_form?(cocina_form) }&.value
       end
 
       # @return [String] DataCite resourceType value
       def resource_type
         @resource_type ||= begin
-          self_deposit_form = cocina_desc.form&.find { |cocina_form| self_deposit_form?(cocina_form) }
+          self_deposit_form = Array(cocina_desc.form).find { |cocina_form| self_deposit_form?(cocina_form) }
 
           subtypes = self_deposit_subtypes(self_deposit_form)
           if subtypes.blank?
