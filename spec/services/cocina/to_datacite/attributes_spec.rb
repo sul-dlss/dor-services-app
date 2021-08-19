@@ -40,6 +40,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
         {
           event: 'publish',
           creators: [],
+          contributors: [],
+          fundingReferences: [],
           dates: [],
           publicationYear: '2011',
           publisher: 'Stanford Digital Repository',
@@ -77,6 +79,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
         {
           event: 'publish',
           creators: [],
+          contributors: [],
+          fundingReferences: [],
           dates: [],
           publicationYear: '2031',
           publisher: 'Stanford Digital Repository',
@@ -97,6 +101,32 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                   {
                                     name: [
                                       {
+                                        value: 'Stanford University'
+                                      }
+                                    ],
+                                    type: 'organization',
+                                    status: 'primary',
+                                    role: [
+                                      {
+                                        value: 'Funder',
+                                        source: {
+                                          value: 'H2 contributor role terms'
+                                        }
+                                      },
+                                      {
+                                        value: 'funder',
+                                        code: 'fnd',
+                                        uri: 'http://id.loc.gov/vocabulary/relators/fnd',
+                                        source: {
+                                          code: 'marcrelator',
+                                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    name: [
+                                      {
                                         structuredValue: [
                                           {
                                             value: 'Jane',
@@ -110,7 +140,6 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                       }
                                     ],
                                     type: 'person',
-                                    status: 'primary',
                                     role: [
                                       {
                                         value: 'Author',
@@ -126,10 +155,12 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                           code: 'marcrelator',
                                           uri: 'http://id.loc.gov/vocabulary/relators/'
                                         }
-                                      },
+                                      }
+                                    ],
+                                    note: [
                                       {
-                                        value: 'Creator',
-                                        type: 'DataCite role'
+                                        type: 'citation status',
+                                        value: 'false'
                                       }
                                     ]
                                   }
@@ -236,12 +267,24 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               alternateIdentifierType: 'PURL'
             }
           ],
-          creators: [{
+          creators: [
+            {
+              name: 'Stanford University',
+              nameType: 'Organizational'
+            }
+          ],
+          contributors: [{
             name: 'Stanford, Jane',
             givenName: 'Jane',
             familyName: 'Stanford',
-            nameType: 'Personal'
+            nameType: 'Personal',
+            contributorType: 'Other'
           }],
+          fundingReferences: [
+            {
+              funderName: 'Stanford University'
+            }
+          ],
           dates: [],
           descriptions: [
             {

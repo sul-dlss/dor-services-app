@@ -7,7 +7,7 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
   # H2 Authors to include in citation
 
   let(:cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
-  let(:attributes) { Cocina::ToDatacite::Creator.attributes(cocina_description) }
+  let(:attributes) { Cocina::ToDatacite::CreatorContributorFunder.attributes(cocina_description)[:creators] }
 
   describe 'Cited contributor with author role' do
     # Authors to include in citation
