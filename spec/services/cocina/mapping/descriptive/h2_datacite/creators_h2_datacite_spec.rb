@@ -48,10 +48,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           }
@@ -122,10 +118,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           },
@@ -160,10 +152,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           }
@@ -248,10 +236,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           },
@@ -277,10 +261,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           }
@@ -351,10 +331,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           }
@@ -415,10 +391,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           },
@@ -444,10 +416,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           }
@@ -526,10 +494,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           },
@@ -563,13 +527,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                 source: {
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
-                }
-              },
-              {
-                value: 'Other',
-                type: 'DataCite role',
-                source: {
-                  value: 'DataCite contributor types'
                 }
               }
             ],
@@ -639,10 +596,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           },
@@ -667,13 +620,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                 source: {
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
-                }
-              },
-              {
-                value: 'Sponsor',
-                type: 'DataCite role',
-                source: {
-                  value: 'DataCite contributor types'
                 }
               }
             ],
@@ -740,10 +686,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                 source: {
                   value: 'H2 contributor role terms'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           }
@@ -814,10 +756,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           },
@@ -833,13 +771,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                 value: 'Event',
                 source: {
                   value: 'H2 contributor role terms'
-                }
-              },
-              {
-                value: 'Other',
-                type: 'DataCite role',
-                source: {
-                  value: 'DataCite contributor types'
                 }
               }
             ],
@@ -906,10 +837,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                 source: {
                   value: 'H2 contributor role terms'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           }
@@ -980,10 +907,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           },
@@ -999,13 +922,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                 value: 'Conference',
                 source: {
                   value: 'H2 contributor role terms'
-                }
-              },
-              {
-                value: 'Other',
-                type: 'DataCite role',
-                source: {
-                  value: 'DataCite contributor types'
                 }
               }
             ],
@@ -1081,14 +997,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
-              },
-              {
-                value: 'Funder',
-                type: 'DataCite role'
               }
             ]
           }
@@ -1164,10 +1072,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           },
@@ -1193,10 +1097,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Funder',
-                type: 'DataCite role'
               }
             ],
             note: [
@@ -1273,10 +1173,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           }
@@ -1300,13 +1196,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                     source: {
                       code: 'marcrelator',
                       uri: 'http://id.loc.gov/vocabulary/relators/'
-                    }
-                  },
-                  {
-                    value: 'Distributor',
-                    type: 'DataCite role',
-                    source: {
-                      value: 'DataCite contributor types'
                     }
                   }
                 ]
@@ -1382,10 +1271,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ]
           }
@@ -1415,13 +1300,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                     source: {
                       code: 'marcrelator',
                       uri: 'http://id.loc.gov/vocabulary/relators/'
-                    }
-                  },
-                  {
-                    value: 'Distributor',
-                    type: 'DataCite role',
-                    source: {
-                      value: 'DataCite contributor types'
                     }
                   }
                 ],
@@ -1509,10 +1387,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
                 }
-              },
-              {
-                value: 'Creator',
-                type: 'DataCite role'
               }
             ],
             identifier: [
@@ -1601,13 +1475,6 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
                 source: {
                   code: 'marcrelator',
                   uri: 'http://id.loc.gov/vocabulary/relators/'
-                }
-              },
-              {
-                value: 'Other',
-                type: 'DataCite role',
-                source: {
-                  value: 'DataCite contributor types'
                 }
               }
             ],
