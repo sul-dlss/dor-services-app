@@ -88,8 +88,8 @@ class ObjectsController < ApplicationController
 
     # if this object is currently already in accessioning, we cannot start it again
     if VersionService.in_accessioning?(@item)
-      head :not_acceptable
-      return
+      return json_api_error(status: :conflict,
+                            message: 'This object is already in accessioning, it can not be accessioned again until the workflow is complete')
     end
 
     # if this is an existing versionable object, open and close it without starting accessionWF

@@ -102,7 +102,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
       expect(workflow_client).not_to have_received(:create_workflow_by_name)
       expect(VersionService).not_to have_received(:open)
       expect(VersionService).not_to have_received(:close)
-      expect(response).to have_http_status(:not_acceptable)
+      expect(response).to have_http_status(:conflict)
     end
   end
 end
