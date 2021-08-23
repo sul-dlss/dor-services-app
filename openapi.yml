@@ -194,6 +194,8 @@ paths:
       responses:
         '201':
           description: Accessioning/re-accessioning started
+        '409':
+          description: Unable to start accessioning because accessioning has already been started.
       parameters:
         - name: id
           in: path
