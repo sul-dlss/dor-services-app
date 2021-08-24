@@ -13,6 +13,12 @@ RSpec.describe Publish::MetadataTransferService do
         </identityMetadata>
       XML
       i.rels_ext.content = rels
+      i.objectLabel = 'google download barcode 36105049267078'
+      i.source_id = 'STANFORD:342837261527'
+      i.barcode = '36105049267078'
+      i.catkey = '129483625'
+      i.admin_policy_object_id = 'druid:fg890hx1234'
+      i.descMetadata.mods_title = 'Fixture title'
     end
   end
   let(:service) { described_class.new(item) }
@@ -21,7 +27,7 @@ RSpec.describe Publish::MetadataTransferService do
     <<-EOXML
       <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:hydra="http://projecthydra.org/ns/relations#">
         <rdf:Description rdf:about="info:fedora/druid:bc123df4567">
-          <hydra:isGovernedBy rdf:resource="info:fedora/druid:789012"></hydra:isGovernedBy>
+          <hydra:isGovernedBy rdf:resource="info:fedora/druid:fg890hx1234"></hydra:isGovernedBy>
           <fedora-model:hasModel rdf:resource="info:fedora/hydra:commonMetadata"></fedora-model:hasModel>
           <fedora:isMemberOf rdf:resource="info:fedora/druid:xh235dd9059"></fedora:isMemberOf>
           <fedora:isMemberOfCollection rdf:resource="info:fedora/druid:xh235dd9059"></fedora:isMemberOfCollection>
@@ -102,6 +108,7 @@ RSpec.describe Publish::MetadataTransferService do
 
       context 'with an item' do
         before do
+          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"type"/, 'cocina.json')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<mods:mods/, 'mods')
           expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(no_args)
@@ -126,7 +133,13 @@ RSpec.describe Publish::MetadataTransferService do
       end
 
       context 'with a collection object' do
-        let(:item) { Dor::Collection.new }
+        let(:item) do
+          Dor::Collection.new(pid: 'druid:wz243fg4151',
+                              label: 'Simple collection',
+                              admin_policy_object_id: 'druid:fg890hx1234').tap do |coll|
+                                coll.descMetadata.mods_title = 'Grand collection'
+                              end
+        end
 
         before do
           item.rightsMetadata.content = "<rightsMetadata><access type='discover'><machine><world/></machine></access></rightsMetadata>"
@@ -134,6 +147,7 @@ RSpec.describe Publish::MetadataTransferService do
         end
 
         before do
+          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"type"/, 'cocina.json')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<mods:mods/, 'mods')
           expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(no_args)
