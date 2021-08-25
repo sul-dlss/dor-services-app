@@ -10,11 +10,16 @@ module Cocina
     end
 
     def serialize(cocina_item)
-      cocina_item.to_h  # call super() on this value when we are in rails 6
+      # For Rails 6:
+      # super(cocina_item.to_h)
+
+      cocina_item.to_json
     end
 
-    def deserialize(hash)
-      Cocina::Models.build(hash.stringify_keys)
+    def deserialize(json)
+      # For Rails 6:
+      # Cocina::Models.build(hash.stringify_keys)
+      Cocina::Models.build(JSON.parse(json))
     end
   end
 end
