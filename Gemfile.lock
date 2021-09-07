@@ -547,7 +547,8 @@ GEM
     websocket-extensions (0.1.5)
     whenever (1.0.0)
       chronic (>= 0.6.3)
-    xml-simple (1.1.8)
+    xml-simple (1.1.9)
+      rexml
     zeitwerk (2.4.2)
 
 PLATFORMS
