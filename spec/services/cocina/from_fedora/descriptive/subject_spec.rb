@@ -19,6 +19,29 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
     XML
   end
 
+  context 'with invalid subelement <titleInfo>' do
+    # See https://github.com/sul-dlss/dor-services-app/issues/3043
+    # Example record: https://argo.stanford.edu/view/druid:zv163zq1258
+    let(:xml) do
+      <<~XML
+        <subject>
+          <titleInfo>
+            <title/>
+          </titleInfo>
+        </subject>
+      XML
+    end
+
+    before do
+      allow(notifier).to receive(:warn)
+    end
+
+    it 'skips the subject and warns' do
+      expect(build).to eq []
+      expect(notifier).to have_received(:warn).with('<subject> found with an empty <titleInfo>; Skipping')
+    end
+  end
+
   context 'with invalid subelement <Topic>' do
     let(:xml) do
       <<~XML

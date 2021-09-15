@@ -283,6 +283,11 @@ module Cocina
 
         def title(node, attrs, orig_attrs)
           title_attrs = TitleBuilder.build(title_info_element: node, notifier: notifier)
+          unless title_attrs
+            notifier.warn('<subject> found with an empty <titleInfo>; Skipping')
+            return
+          end
+
           if node['type'] == 'uniform'
             title_attrs[:type] = 'uniform'
             attrs[:groupedValue] = [title_attrs]
