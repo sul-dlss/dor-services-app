@@ -60,6 +60,7 @@ class AdministrativeTags
   # @param pid [String] the item identifier to list administrative tags for
   def initialize(pid:)
     @pid = pid
+    @retry_count = 0
   end
 
   # @return [Array<String>] an array of tags (strings), possibly empty
@@ -104,7 +105,13 @@ class AdministrativeTags
     # If two threads are creating the same tag, one will get an exception.
     # We must catch this outside the transaction block, because once a constraint
     # is violated, PG will permit no more statements in that transaction.
+    # When we go to rails 6 we can replace find_or_create_by with create_or_find_by: https://sikac.hu/use-create-or-find-by-to-avoid-race-condition-in-rails-6-0-f44fca97d16b
 
+    @retry_count += 1
+    raise if @retry_count > 5
+
+    Rails.logger.warn("Possible race condition creating tags: #{tags}.  This should only happen one time, otherwise this might be an error")
+    sleep(@retry_count)
     retry
   end
 
@@ -127,7 +134,13 @@ class AdministrativeTags
     # If two threads are creating the same tag, one will get an exception.
     # We must catch this outside the transaction block, because once a constraint
     # is violated, PG will permit no more statements in that transaction.
+    # When we go to rails 6 we can replace find_or_create_by with create_or_find_by: https://sikac.hu/use-create-or-find-by-to-avoid-race-condition-in-rails-6-0-f44fca97d16b
 
+    @retry_count += 1
+    raise if @retry_count > 5
+
+    Rails.logger.warn("Possible race condition updating tag: #{current} with #{new}.  This should only happen one time, otherwise this might be an error")
+    sleep(@retry_count)
     retry
   end
 
