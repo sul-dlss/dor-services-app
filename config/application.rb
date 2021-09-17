@@ -43,13 +43,13 @@ module DorServices
       query_hash_key: 'action_dispatch.request.query_parameters'
     )
 
-    # TODO: we can uncomment this at a later date to ensure we are passing back valid responses
-    # config.middleware.use(
-    #   Committee::Middleware::ResponseValidation,
-    #   schema_path: 'openapi.yml',
-    #   parse_response_by_content_type: true,
-    #   raise: true
-    # )
+    # Ensure we are passing back valid responses
+    config.middleware.use(
+      Committee::Middleware::ResponseValidation,
+      schema_path: 'openapi.yml',
+      parse_response_by_content_type: true,
+      raise: true
+    ) if Rails.env.test?
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
