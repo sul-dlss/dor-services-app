@@ -395,10 +395,22 @@ paths:
           description: Created
         '400':
           description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Object not found
+          content:
+            text/plain:
+              schema:
+                type: string
         '409':
           description: Request would result in a duplicate tag
+          content:
+            text/plain:
+              schema:
+                type: string
       parameters:
         - name: object_id
           in: path
@@ -458,8 +470,16 @@ paths:
           description: Deleted
         '400':
           description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Object or tag not found
+          content:
+            text/plain:
+              schema:
+                type: string
       parameters:
         - name: object_id
           in: path
@@ -484,10 +504,22 @@ paths:
           description: Updated
         '400':
           description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Object or tag not found
+          content:
+            text/plain:
+              schema:
+                type: string
         '409':
           description: Request would result in a duplicate tag
+          content:
+            text/plain:
+              schema:
+                type: string
       parameters:
         - name: object_id
           in: path
@@ -523,6 +555,10 @@ paths:
           description: Updated
         '400':
           description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Object or tag not found
         '409':
@@ -1117,6 +1153,10 @@ paths:
           description: OK
         '400':
           description: Invalid DOR parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Object not found in DOR
         '409':

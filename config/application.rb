@@ -44,7 +44,12 @@ module DorServices
     )
 
     # TODO: we can uncomment this at a later date to ensure we are passing back valid responses
-    # config.middleware.use Committee::Middleware::ResponseValidation, schema: schema
+    # config.middleware.use(
+    #   Committee::Middleware::ResponseValidation,
+    #   schema_path: 'openapi.yml',
+    #   parse_response_by_content_type: true,
+    #   raise: true
+    # )
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
