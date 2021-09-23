@@ -669,8 +669,8 @@ paths:
                         externalIdentifier:
                           $ref: '#/components/schemas/Druid'
                         type:
-
                           type: string
+                          nullable: true
                           enum:
                             - 'item'
                             - 'collection'
@@ -3001,8 +3001,6 @@ components:
         message:
           type: string
           description: a message that explans what changed
-      required:
-        - number
     VersionLog:
       type: object
       description: 'Similar to the version inventory specified by OCFL: https://ocfl.io/draft/spec/#version-inventory'
