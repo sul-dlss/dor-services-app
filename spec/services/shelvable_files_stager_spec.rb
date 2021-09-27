@@ -37,7 +37,7 @@ RSpec.describe ShelvableFilesStager do
       end
     end
 
-    context 'when the file is in preservation ' do
+    context 'when the file is in preservation' do
       let(:file_deltas) { { added: [] } }
 
       before do

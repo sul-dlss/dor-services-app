@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class MarcxmlController < ApplicationController #:nodoc:
+class MarcxmlController < ApplicationController # :nodoc:
   rescue_from(SymphonyReader::ResponseError) do |e|
     render status: :internal_server_error, plain: e.message
   end
