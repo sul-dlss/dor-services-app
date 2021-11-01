@@ -210,7 +210,7 @@ RSpec.describe Publish::MetadataTransferService do
       service.send(:transfer_to_document_store, '<xml/>', 'someMd')
       file_path = dr.find(:content, 'someMd')
       expect(file_path).to match(%r{4567/someMd$})
-      expect(IO.read(file_path)).to eq('<xml/>')
+      expect(File.read(file_path)).to eq('<xml/>')
     end
   end
 end
