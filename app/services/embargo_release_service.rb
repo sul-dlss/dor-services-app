@@ -33,7 +33,7 @@ class EmbargoReleaseService
     Rails.logger.info("Done! Processed #{count} objects out of #{num_found}")
   end
 
-  def self.release_item(druid, &release_block)
+  def self.release_item(druid)
     ei = Dor.find(druid)
     unless WorkflowClientFactory.build.lifecycle(druid: druid, milestone_name: 'accessioned')
       Rails.logger.warn("Skipping #{druid} - not yet accessioned")
@@ -47,7 +47,7 @@ class EmbargoReleaseService
     Rails.logger.info("Releasing embargo for #{druid}")
 
     VersionService.open(ei, event_factory: EventFactory)
-    release_block.call(ei)
+    yield ei if block_given?
     ei.save!
     VersionService.close(ei, { description: 'embargo released', significance: 'admin' }, event_factory: EventFactory)
 

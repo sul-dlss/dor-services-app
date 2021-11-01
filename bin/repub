@@ -3,7 +3,7 @@
 
 require_relative '../config/environment'
 
-IO.readlines('repub.txt').each do |druid|
+File.readlines('repub.txt').each do |druid|
   puts "Republishing #{druid}"
   object = Dor.find(druid)
   Publish::MetadataTransferService.publish(object)

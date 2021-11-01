@@ -420,3 +420,24 @@ Lint/AmbiguousRange: # (new in 1.19)
   Enabled: true
 Style/RedundantSelfAssignmentBranch: # (new in 1.19)
   Enabled: true
+
+Lint/AmbiguousOperatorPrecedence: # new in 1.21
+  Enabled: true
+Lint/IncompatibleIoSelectWithFiberScheduler: # new in 1.21
+  Enabled: true
+Lint/RequireRelativeSelfPath: # new in 1.22
+  Enabled: true
+Security/IoMethods: # new in 1.22
+  Enabled: true
+Style/NumberedParameters: # new in 1.22
+  Enabled: true
+Style/NumberedParametersLimit: # new in 1.22
+  Enabled: true
+Style/SelectByRegexp: # new in 1.22
+  Enabled: true
+RSpec/ExcessiveDocstringSpacing: # new in 2.5
+  Enabled: true
+RSpec/SubjectDeclaration: # new in 2.5
+  Enabled: true
+Rails/RedundantTravelBack: # new in 2.12
+  Enabled: true
