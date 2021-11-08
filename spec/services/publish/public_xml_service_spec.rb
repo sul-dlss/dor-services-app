@@ -383,5 +383,22 @@ RSpec.describe Publish::PublicXmlService do
         end
       end
     end
+
+    context 'with a cocina-originating object' do
+      before do
+        item.contentMetadata.content = <<-XML
+          <?xml version="1.0"?>
+          <contentMetadata objectId="druid:bc123df4567" type="file">
+            <resource id="http://cocina.sul.stanford.edu/fileSet/7bf4cfb1-7e29-4f27-b865-79e10a77f29e" sequence="1" type="file">
+              <file id="some_file.pdf" mimetype="file/pdf" publish="yes"/>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+
+      it 'cleans up the resource id to be XML-valid' do
+        expect(ng_xml.at_xpath('/publicObject/contentMetadata/resource[1]')['id']).to eq 'cocina-fileSet-7bf4cfb1-7e29-4f27-b865-79e10a77f29e'
+      end
+    end
   end
 end
