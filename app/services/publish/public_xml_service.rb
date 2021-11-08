@@ -89,6 +89,10 @@ module Publish
         result = object.datastreams['contentMetadata'].ng_xml.clone
 
         # remove any resources or attributes that are not destined for the public XML
+        result.xpath('/contentMetadata/resource').each do |resource|
+          resource['id'] = resource['id'].sub('http://cocina.sul.stanford.edu/fileSet/', 'cocina-fileSet-')
+        end
+
         result.xpath('/contentMetadata/resource[not(file[(@deliver="yes" or @publish="yes")]|externalFile)]').each(&:remove)
         result.xpath('/contentMetadata/resource/file[not(@deliver="yes" or @publish="yes")]').each(&:remove)
         result.xpath('/contentMetadata/resource/file').xpath('@preserve|@shelve|@publish|@deliver').each(&:remove)
@@ -133,6 +137,7 @@ module Publish
       src_label.content = src_item.full_title
 
       # add the extracted label and imageData
+      external_file['resourceId'] = external_file['resourceId'].sub('http://cocina.sul.stanford.edu/fileSet/', 'cocina-fileSet-')
       external_file.add_previous_sibling(src_label)
       external_file << src_image_data unless src_image_data.nil?
     end
