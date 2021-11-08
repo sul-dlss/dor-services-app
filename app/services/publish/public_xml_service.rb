@@ -88,11 +88,15 @@ module Publish
       @public_content_metadata ||= begin
         result = object.datastreams['contentMetadata'].ng_xml.clone
 
-        # remove any resources or attributes that are not destined for the public XML
         result.xpath('/contentMetadata/resource').each do |resource|
+          # PURL uses these resource identifiers to generate IIIF Manifests.
+          # Each of these identifiers represents a IIIF Canvas and would look like:
+          #   https://purl.stanford.edu/vq627fg9932/iiif/canvas/cocina-fileSet-UUID
+          # We're removing the protocol://host/path/ part of this so these Canvas URIs don't have a URI embeded in a URI.
           resource['id'] = resource['id'].sub('http://cocina.sul.stanford.edu/fileSet/', 'cocina-fileSet-')
         end
 
+        # remove any resources or attributes that are not destined for the public XML
         result.xpath('/contentMetadata/resource[not(file[(@deliver="yes" or @publish="yes")]|externalFile)]').each(&:remove)
         result.xpath('/contentMetadata/resource/file[not(@deliver="yes" or @publish="yes")]').each(&:remove)
         result.xpath('/contentMetadata/resource/file').xpath('@preserve|@shelve|@publish|@deliver').each(&:remove)
@@ -136,8 +140,12 @@ module Publish
       src_label = doc.create_element('label')
       src_label.content = src_item.full_title
 
-      # add the extracted label and imageData
+      # PURL uses these resource identifiers to generate IIIF Manifests.
+      # Each of these identifiers represents a IIIF Canvas and would look like:
+      #   https://purl.stanford.edu/vq627fg9932/iiif/canvas/cocina-fileSet-UUID
       external_file['resourceId'] = external_file['resourceId'].sub('http://cocina.sul.stanford.edu/fileSet/', 'cocina-fileSet-')
+
+      # add the extracted label and imageData
       external_file.add_previous_sibling(src_label)
       external_file << src_image_data unless src_image_data.nil?
     end
