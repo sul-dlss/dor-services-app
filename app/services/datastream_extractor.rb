@@ -44,7 +44,7 @@ class DatastreamExtractor
       events: false,
       embargoMetadata: false,
       identityMetadata: true,
-      provenanceMetadata: true,
+      provenanceMetadata: false,
       relationshipMetadata: true,
       rightsMetadata: false,
       roleMetadata: false,

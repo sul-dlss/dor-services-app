@@ -32,7 +32,7 @@ RSpec.describe DatastreamExtractor do
       expect(instance).to have_received(:datastream_content).with(:geoMetadata, false)
       expect(instance).to have_received(:datastream_content).with(:embargoMetadata, false)
       expect(instance).to have_received(:datastream_content).with(:identityMetadata, true)
-      expect(instance).to have_received(:datastream_content).with(:provenanceMetadata, true)
+      expect(instance).to have_received(:datastream_content).with(:provenanceMetadata, false)
       expect(instance).to have_received(:datastream_content).with(:relationshipMetadata, true)
       expect(instance).to have_received(:datastream_content).with(:roleMetadata, false)
       expect(instance).to have_received(:datastream_content).with(:sourceMetadata, false)
