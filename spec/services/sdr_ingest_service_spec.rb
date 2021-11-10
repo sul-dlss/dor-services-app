@@ -80,7 +80,7 @@ RSpec.describe SdrIngestService do
 
     specify 'with no change in content' do
       v1_content_metadata = fixtures.join('sdr_repo/dd116zh0343/v0001/data/metadata/contentMetadata.xml')
-      expect(described_class).to receive(:content_metadata).with(metadata_dir).and_return(v1_content_metadata.read)
+      allow_any_instance_of(Preserve::FileInventoryBuilder).to receive(:content_metadata).and_return(v1_content_metadata.read)
       described_class.transfer(dor_item)
       files = []
       fixtures.join('export/dd116zh0343').find { |f| files << f.relative_path_from(fixtures).to_s }
@@ -138,59 +138,6 @@ RSpec.describe SdrIngestService do
         expect(sig_cat.entries).to eq []
       end
     end
-  end
-
-  specify '.version_inventory' do
-    metadata_dir = instance_double(Pathname)
-    druid = 'druid:ab123cd4567'
-    version_id = 2
-    version_inventory = Moab::FileInventory.new
-    version_inventory.groups << Moab::FileGroup.new(group_id: 'content')
-    metadata_group = Moab::FileGroup.new(group_id: 'metadata')
-    expect(described_class).to receive(:content_inventory).with(metadata_dir, druid, version_id).and_return(version_inventory)
-    expect(described_class).to receive(:metadata_file_group).with(metadata_dir).and_return(metadata_group)
-    result = described_class.version_inventory(metadata_dir, druid, version_id)
-    expect(result).to be_instance_of Moab::FileInventory
-    expect(result.groups.size).to eq 2
-  end
-
-  specify '.content_inventory' do
-    metadata_dir = fixtures.join('workspace/ab/123/cd/4567/ab123cd4567/metadata')
-    druid = 'druid:ab123cd4567'
-    version_id = 2
-
-    version_inventory = described_class.content_inventory(metadata_dir, druid, version_id)
-    expect(version_inventory).to be_instance_of Moab::FileInventory
-    expect(version_inventory.version_id).to eq 2
-    content_group = version_inventory.groups[0]
-    expect(content_group.group_id).to eq 'content'
-    expect(content_group.files.size).to eq 2
-    # files in the 2nd resource are copied from the first resource
-    expect(content_group.files[0].instances.size).to eq 2
-
-    # if no content metadata
-    metadata_dir = fixtures.join('workspace/ab/123/cd/4567/ab123cd4567')
-    version_inventory = described_class.content_inventory(metadata_dir, druid, version_id)
-    expect(version_inventory.groups.size).to eq 0
-  end
-
-  specify '.content_metadata' do
-    metadata_dir = fixtures.join('workspace/ab/123/cd/4567/ab123cd4567/metadata')
-    content_metadata = described_class.content_metadata(metadata_dir)
-    expect(content_metadata).to match(/<contentMetadata /)
-
-    # if no content metadata
-    metadata_dir = fixtures.join('workspace/ab/123/cd/4567/ab123cd4567')
-    content_metadata = described_class.content_metadata(metadata_dir)
-    expect(content_metadata).to be_nil
-  end
-
-  specify '.metadata_file_group' do
-    metadata_dir = instance_double(Pathname)
-    file_group = instance_double(Moab::FileGroup)
-    expect(Moab::FileGroup).to receive(:new).with(group_id: 'metadata').and_return(file_group)
-    expect(file_group).to receive(:group_from_directory).with(metadata_dir)
-    described_class.metadata_file_group(metadata_dir)
   end
 
   specify '.verify_version_id' do
