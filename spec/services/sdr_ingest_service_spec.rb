@@ -150,13 +150,4 @@ RSpec.describe SdrIngestService do
     vmfile = metadata_dir.join('versionMetadata.xml')
     expect(described_class.vmfile_version_id(vmfile)).to eq 2
   end
-
-  specify '.verify_pathname' do
-    metadata_dir = fixtures.join('workspace/dd/116/zh/0343/dd116zh0343/metadata')
-    expect(described_class.verify_pathname(metadata_dir)).to be_truthy
-    vmfile = metadata_dir.join('versionMetadata.xml')
-    expect(described_class.verify_pathname(vmfile)).to be_truthy
-    badfile = metadata_dir.join('badfile.xml')
-    expect { described_class.verify_pathname(badfile) }.to raise_exception(/badfile.xml not found/)
-  end
 end

@@ -38,7 +38,7 @@ class SdrIngestService
     bagger.deposit_group('content', content_dir)
     bagger.deposit_group('metadata', metadata_dir)
     bagger.create_tagfiles
-    verify_bag_structure(bag_dir)
+    Preserve::BagVerifier.verify(directory: bag_dir)
   end
 
   # NOTE: the following methods should probably all be private
@@ -73,33 +73,11 @@ class SdrIngestService
   # @param [Pathname] pathname the location of the versionMetadata file
   # @return [Integer] the versionId found in the last version element, or nil if missing
   def self.vmfile_version_id(pathname)
-    verify_pathname(pathname)
+    raise "#{pathname.basename} not found at #{pathname}" unless pathname.exist?
+
     doc = Nokogiri::XML(File.read(pathname.to_s))
     nodeset = doc.xpath('/versionMetadata/version')
     version_id = nodeset.last['versionId']
     version_id.nil? ? nil : version_id.to_i
-  end
-
-  # @param [Pathname] bag_dir the location of the bag to be verified
-  # @return [Boolean] true if all required files exist, raises exception if not
-  def self.verify_bag_structure(bag_dir)
-    verify_pathname(bag_dir)
-    verify_pathname(bag_dir.join('data'))
-    verify_pathname(bag_dir.join('bagit.txt'))
-    verify_pathname(bag_dir.join('bag-info.txt'))
-    verify_pathname(bag_dir.join('manifest-sha256.txt'))
-    verify_pathname(bag_dir.join('tagmanifest-sha256.txt'))
-    verify_pathname(bag_dir.join('versionAdditions.xml'))
-    verify_pathname(bag_dir.join('versionInventory.xml'))
-    verify_pathname(bag_dir.join('data', 'metadata', 'versionMetadata.xml'))
-    true
-  end
-
-  # @param [Pathname] pathname The file whose existence should be verified
-  # @return [Boolean] true if file exists, raises exception if not
-  def self.verify_pathname(pathname)
-    raise "#{pathname.basename} not found at #{pathname}" unless pathname.exist?
-
-    true
   end
 end
