@@ -17,7 +17,7 @@ class SdrIngestService
     new_version_id = signature_catalog.version_id + 1
     metadata_dir = DatastreamExtractor.extract_datastreams(item: dor_item, workspace: workspace)
     verify_version_metadata(metadata_dir, new_version_id)
-    version_inventory = get_version_inventory(metadata_dir, druid, new_version_id)
+    version_inventory = version_inventory(metadata_dir, druid, new_version_id)
     version_additions = signature_catalog.version_additions(version_inventory)
     content_additions = version_additions.group('content')
     if content_additions.nil? || content_additions.files.empty?
@@ -82,9 +82,9 @@ class SdrIngestService
   # @param [String] druid The object identifier
   # @param [Integer] version_id The version number
   # @return [Moab::FileInventory] Generate and return a version inventory for the object
-  def self.get_version_inventory(metadata_dir, druid, version_id)
-    version_inventory = get_content_inventory(metadata_dir, druid, version_id)
-    version_inventory.groups << get_metadata_file_group(metadata_dir)
+  def self.version_inventory(metadata_dir, druid, version_id)
+    version_inventory = content_inventory(metadata_dir, druid, version_id)
+    version_inventory.groups << metadata_file_group(metadata_dir)
     version_inventory
   end
 
@@ -93,8 +93,8 @@ class SdrIngestService
   # @param [Integer] version_id The version number
   # @return [Moab::FileInventory] Parse the contentMetadata
   #   and generate a new version inventory object containing a content group
-  def self.get_content_inventory(metadata_dir, druid, version_id)
-    content_metadata = get_content_metadata(metadata_dir)
+  def self.content_inventory(metadata_dir, druid, version_id)
+    content_metadata = content_metadata(metadata_dir)
     if content_metadata
       Stanford::ContentInventory.new.inventory_from_cm(content_metadata, druid, 'preserve', version_id)
     else
@@ -104,14 +104,14 @@ class SdrIngestService
 
   # @param [Pathname] metadata_dir The location of the the object's metadata files
   # @return [String] Return the contents of the contentMetadata.xml file from the content directory
-  def self.get_content_metadata(metadata_dir)
+  def self.content_metadata(metadata_dir)
     content_metadata_pathname = metadata_dir.join('contentMetadata.xml')
     content_metadata_pathname.read if content_metadata_pathname.exist?
   end
 
   # @param [Pathname] metadata_dir The location of the the object's metadata files
   # @return [Moab::FileGroup] Traverse the metadata directory and generate a metadata group
-  def self.get_metadata_file_group(metadata_dir)
+  def self.metadata_file_group(metadata_dir)
     Moab::FileGroup.new(group_id: 'metadata').group_from_directory(metadata_dir)
   end
 
