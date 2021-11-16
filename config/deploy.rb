@@ -46,8 +46,6 @@ set :rails_env, 'production'
 set :sidekiq_systemd_role, :worker
 set :sidekiq_systemd_use_hooks, true
 
-set :bundler2_config_use_hook, true
-
 # Run db migrations on app servers, not db server
 set :migration_role, :app
 
