@@ -189,7 +189,12 @@ module Cocina
     end
 
     def add_tags(pid, cocina_object)
-      add_tag(pid, ToFedora::ProcessTag.map(cocina_object.type, cocina_object.structural&.hasMemberOrders&.first&.viewingDirection), 'Process : Content Type') if has_changed?(:structural)
+      if has_changed?(:structural)
+        # This is necessary so that the content type tag for a book can get updated
+        # to reflect the new direction if the direction hash changed in the structural metadata.
+        tag = ToFedora::ProcessTag.map(cocina_object.type, cocina_object.structural&.hasMemberOrders&.first&.viewingDirection)
+        add_tag(pid, tag, 'Process : Content Type') if tag
+      end
       add_tag(pid, "Project : #{cocina_object.administrative.partOfProject}", 'Project') if cocina_object.administrative.partOfProject && has_changed?(:administrative)
     end
 
