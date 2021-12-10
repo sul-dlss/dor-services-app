@@ -5,12 +5,13 @@ require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
 require 'optparse'
 
-options = { unique_filename: false }
+options = { unique_filename: false, input: 'druids.txt' }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-to-mods [options]'
 
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
   option_parser.on('-u', '--unique-filename', 'Result file named for branch and runtime') { options[:unique_filename] = true }
+  option_parser.on('-iFILENAME', '--input FILENAME', String, 'File containing list of druids (instead of druids.txt).')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -95,7 +96,7 @@ def results_file_name(use_unique_filename)
   "results_to-fedora_#{now_str}_#{branch_name}_#{short_commit_hash}.txt"
 end
 
-druids = File.read('druids.txt').split
+druids = File.read(options[:input]).split
 druids = druids.take(options[:sample]) if options[:sample]
 @sample_size = druids.size
 

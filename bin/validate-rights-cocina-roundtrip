@@ -9,13 +9,14 @@ require 'set'
 require 'optparse'
 require 'diffy'
 
-options = { random: false, druids: [], fast: false }
+options = { random: false, druids: [], fast: false, input: 'druids.txt' }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-rights-cocina-roundtrip [options]'
 
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
   option_parser.on('-r', '--random', 'Select random druids.')
   option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
+  option_parser.on('-iFILENAME', '--input FILENAME', String, 'File containing list of druids (instead of druids.txt).')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -131,7 +132,7 @@ FileUtils.rm_rf('results')
 FileUtils.mkdir_p('results')
 
 if options[:druids].empty?
-  druids = File.read('druids.txt').split
+  druids = File.read(options[:input]).split
   druids.shuffle! if options[:random]
   druids = druids.take(options[:sample]) if options[:sample]
 else
