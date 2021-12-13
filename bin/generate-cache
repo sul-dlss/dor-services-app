@@ -5,7 +5,7 @@ require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
 require 'optparse'
 
-options = { overwrite: false, random: false, auto: false, druids: [], input: 'druids.txt', quiet: false }
+options = { overwrite: false, random: false, auto: false, druids: [], input: 'druids.txt', quiet: false, skip: 0 }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/generate-cache [options]'
 
@@ -15,6 +15,7 @@ parser = OptionParser.new do |option_parser|
   option_parser.on('-a', '--auto', 'Automatically choose sample based on 14 day cycle.')
   option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
   option_parser.on('-iINPUT', '--input INPUT', 'Input filename, otherwise druids.txt.')
+  option_parser.on('-kSKIP', '--skip SKIP', Integer, 'Number of druids to skip.')
   option_parser.on('-q', '--quiet', 'Do not write logging to STDOUT.')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
@@ -28,6 +29,7 @@ cache = FedoraCache.new(overwrite: options[:overwrite])
 Dor::Services::Client.configure(url: Settings.dor_services.url,
                                 token: Settings.dor_services.token)
 
+offset = 1
 if options[:druids].empty?
   druids = File.read(options[:input]).split
   if options[:auto]
@@ -39,12 +41,16 @@ if options[:druids].empty?
   else
     druids.shuffle! if options[:random]
     druids = druids.take(options[:sample]) if options[:sample]
+    if options[:skip] != 0
+      druids = druids.slice(options[:skip]..-1)
+      offset += options[:skip]
+    end
   end
 else
   druids = options[:druids]
 end
 
 druids.each_with_index do |druid, index|
-  puts "#{druid} (#{index + 1})\n" unless options[:quiet]
+  puts "#{druid} (#{index + offset})\n" unless options[:quiet]
   cache.cache(druid)
 end

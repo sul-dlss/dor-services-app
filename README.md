@@ -149,6 +149,7 @@ Usage: bin/generate-cache [options]
     -a, --auto                       Automatically choose sample based on 14 day cycle.
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
     -i, --input INPUT                Input filename, otherwise druids.txt.
+    -k, --skip SKIP                  Number of druids to skip.    
     -h, --help                       Displays help.
 
 $ bin/generate-cache
