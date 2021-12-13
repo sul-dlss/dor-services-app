@@ -11,7 +11,7 @@ require 'diffy'
 require 'dor/services/client'
 require 'equivalent-xml'
 
-options = { random: false, druids: [], fast: false, create: false }
+options = { random: false, druids: [], fast: false, create: false, input: 'druids.txt' }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-cocina-roundtrip [options]'
 
@@ -20,6 +20,7 @@ parser = OptionParser.new do |option_parser|
   option_parser.on('-r', '--random', 'Select random druids.')
   option_parser.on('-f', '--fast', 'Without content metadata.')
   option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
+  option_parser.on('-iFILENAME', '--input FILENAME', String, 'File containing list of druids (instead of druids.txt).')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -230,7 +231,7 @@ FileUtils.rm_rf('results')
 FileUtils.mkdir_p('results')
 
 if options[:druids].empty?
-  druids = File.read('druids.txt').split
+  druids = File.read(options[:input]).split
   druids.shuffle! if options[:random]
   druids = druids.take(options[:sample]) if options[:sample]
 else

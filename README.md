@@ -149,6 +149,7 @@ Usage: bin/generate-cache [options]
     -a, --auto                       Automatically choose sample based on 14 day cycle.
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
     -i, --input INPUT                Input filename, otherwise druids.txt.
+    -k, --skip SKIP                  Number of druids to skip.    
     -h, --help                       Displays help.
 
 $ bin/generate-cache
@@ -172,8 +173,11 @@ This script can be run from a cron job to keep the cache up to date.
 $ bin/validate-cocina-roundtrip -h
 Usage: bin/validate-cocina-roundtrip [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
+    -c, --create                     Run object create instead of object update.
     -r, --random                     Select random druids.
+    -f, --fast                       Without content metadata.
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
+    -i, --input FILENAME             File containing list of druids (instead of druids.txt).
     -h, --help                       Displays help.
 
 $ bin/validate-cocina-roundtrip -s 100
@@ -225,6 +229,7 @@ $ bin/validate-to-mods -h
 Usage: bin/validate-to-mods [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -u, --unique-filename            Result file named for branch and runtime
+    -i, --input FILENAME             File containing list of druids (instead of druids.txt).    
     -h, --help                       Displays help.
 
 $ bin/validate-to-mods
@@ -247,6 +252,7 @@ Usage: bin/validate-desc-cocina-roundtrip [options]
     -r, --random                     Select random druids.
     -f, --fast                       Do not write results files.
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
+    -i, --input FILENAME             File containing list of druids (instead of druids.txt).    
     -h, --help                       Displays help.
 
 $ bin/validate-desc-cocina-roundtrip -s 10 -r
@@ -280,6 +286,7 @@ Usage: bin/validate-rights-cocina-roundtrip [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -r, --random                     Select random druids.
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
+    -i, --input FILENAME             File containing list of druids (instead of druids.txt).
     -h, --help                       Displays help.
 
 $ bin/validate-rights-cocina-roundtrip -s 10
