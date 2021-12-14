@@ -68,16 +68,16 @@ def validate_druid(druid, loader)
   begin
     fedora_obj = loader.load(druid)
   rescue FedoraLoader::BadCache
-    return :bad_cache
+    return [druid, :bad_cache]
   rescue FedoraLoader::Unmapped
-    return :missing
+    return [druid, :missing]
   end
   # TODO: Also handle collections.
-  return :not_dro unless fedora_obj.is_a?(Dor::Item) || fedora_obj.is_a?(Hydrus::Item)
+  return [druid, :not_dro] unless fedora_obj.is_a?(Dor::Item) || fedora_obj.is_a?(Hydrus::Item)
 
   orig_datastreams = {}
   FedoraCache::DATASTREAMS.each { |dsid| orig_datastreams[dsid] = fedora_obj.datastreams[dsid]&.content }
-  return :missing unless orig_datastreams['rightsMetadata']
+  return [druid, :missing] unless orig_datastreams['rightsMetadata']
 
   original_ng_xml = Nokogiri::XML(orig_datastreams['rightsMetadata'])
 
@@ -89,31 +89,31 @@ def validate_druid(druid, loader)
     cocina_structural = Cocina::Models::DROStructural.new(cocina_structural_props)
   rescue StandardError => e
     write_error(druid, original_ng_xml, cocina_access_props, e)
-    return :to_cocina_error
+    return [druid, :to_cocina_error]
   end
 
   begin
     roundtrip_ng_xml = roundtripped_ng_xml(fedora_obj, cocina_access, cocina_structural)
   rescue StandardError => e
     write_error(druid, original_ng_xml, cocina_access_props, e)
-    return :to_fedora_error
+    return [druid, :to_fedora_error]
   end
 
   begin
     normalized_original_ng_xml = Cocina::Normalizers::RightsNormalizer.normalize(datastream: fedora_obj.datastreams['rightsMetadata'])
   rescue StandardError => e
     write_error(druid, original_ng_xml, cocina_access_props, e)
-    return :rights_normalizer_error
+    return [druid, :rights_normalizer_error]
   end
 
-  return :success if EquivalentXml.equivalent?(normalized_original_ng_xml, roundtrip_ng_xml)
+  return [druid, :success] if EquivalentXml.equivalent?(normalized_original_ng_xml, roundtrip_ng_xml)
 
   write_result(druid,
                original_ng_xml,
                normalized_original_ng_xml,
                roundtrip_ng_xml,
                cocina_access_props)
-  :different
+  [druid, :different]
 end
 
 def percentage(raw_num, denom)
@@ -144,7 +144,12 @@ results = Parallel.map(druids, progress: 'Testing') do |druid|
   validate_druid(druid, loader)
 end
 counts = { different: 0, success: 0, to_cocina_error: 0, to_fedora_error: 0, rights_normalizer_error: 0, missing: 0, not_dro: 0, bad_cache: 0 }
-results.each { |result| counts[result] += 1 }
+File.open('results/results.txt', 'w') do |file|
+  results.each do |druid, result|
+    counts[result] += 1
+    file.write("#{druid}=#{result}\n")
+  end
+end
 
 denom = druids.size - counts[:missing] - counts[:not_dro] - counts[:bad_cache]
 

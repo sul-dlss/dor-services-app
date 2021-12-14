@@ -119,7 +119,7 @@ end
 # rubocop:disable Metrics/CyclomaticComplexity
 def validate_druid(druid, cache, fast: false)
   result = cache.label_and_desc_metadata(druid)
-  return :missing if result.failure?
+  return [druid, :missing] if result.failure?
 
   label, original_xml = result.value!
   original_ng_xml = Nokogiri::XML(original_xml)
@@ -130,7 +130,7 @@ def validate_druid(druid, cache, fast: false)
     cocina = Cocina::Models::Description.new(cocina_props)
   rescue StandardError => e
     write_error(druid, original_ng_xml, cocina_props, e) unless fast
-    return :to_cocina_error
+    return [druid, :to_cocina_error]
   end
 
   begin
@@ -138,23 +138,23 @@ def validate_druid(druid, cache, fast: false)
     norm_original_ng_xml = Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: original_ng_xml, druid: druid, label: label)
   rescue StandardError => e
     write_error(druid, original_ng_xml, cocina_props, e) unless fast
-    return :mods_normalizer_error
+    return [druid, :mods_normalizer_error]
   end
 
   begin
     roundtrip_ng_xml = round_tripped_ng_xml(cocina, druid)
   rescue StandardError => e
     write_error(druid, original_ng_xml, cocina_props, e) unless fast
-    return :to_fedora_error
+    return [druid, :to_fedora_error]
   end
 
   if fast
-    return ModsEquivalentService.equivalent?(norm_original_ng_xml, roundtrip_ng_xml) ? :success : :different
+    return [druid, ModsEquivalentService.equivalent?(norm_original_ng_xml, roundtrip_ng_xml) ? :success : :different]
   end
 
   equiv = ModsEquivalentService.equivalent_with_result?(norm_original_ng_xml, roundtrip_ng_xml)
 
-  return :success if equiv.success?
+  return [druid, :success] if equiv.success?
 
   # If not equivalent, but no diffs reported, then try in reverse.
   reverse_equiv = ModsEquivalentService.equivalent_with_result?(roundtrip_ng_xml, norm_original_ng_xml) if equiv.failure.empty?
@@ -167,7 +167,7 @@ def validate_druid(druid, cache, fast: false)
                Array(reverse_equiv&.failure),
                notifier.data_errors,
                validate_mods(original_ng_xml))
-  :different
+  [druid, :different]
 end
 # rubocop:enable Metrics/CyclomaticComplexity
 
@@ -201,7 +201,12 @@ results = Parallel.map(druids, progress: 'Testing') do |druid|
   validate_druid(druid, cache, fast: options[:fast])
 end
 counts = { different: 0, success: 0, to_cocina_error: 0, to_fedora_error: 0, missing: 0, mods_normalizer_error: 0 }
-results.each { |result| counts[result] += 1 }
+File.open('results/results.txt', 'w') do |file|
+  results.each do |druid, result|
+    counts[result] += 1
+    file.write("#{druid}=#{result}\n")
+  end
+end
 
 denom = druids.size - counts[:missing]
 
