@@ -141,15 +141,15 @@ end
 # rubocop:disable Metrics/MethodLength
 # rubocop:disable Metrics/PerceivedComplexity
 def validate_druid(druid, loader, fast: false, create: false)
-  return :missing unless loader.cached?(druid)
+  return [druid, :missing] unless loader.cached?(druid)
 
   begin
     fedora_obj = loader.load(druid)
   rescue FedoraLoader::BadCache => e
     write_error(druid, e)
-    return :bad_cache
+    return [druid, :bad_cache]
   rescue FedoraLoader::Unmapped
-    return :unmapped
+    return [druid, :unmapped]
   end
 
   if fast && fedora_obj.datastreams.include?('contentMetadata')
@@ -168,7 +168,7 @@ def validate_druid(druid, loader, fast: false, create: false)
     orig_cocina_obj = Cocina::Mapper.build(fedora_obj, notifier: DataErrorNotifier.new)
   rescue StandardError => e
     write_error(druid, e)
-    return :mapping_error
+    return [druid, :mapping_error]
   end
 
   orig_cocina_hash = orig_cocina_obj.to_h
@@ -178,7 +178,7 @@ def validate_druid(druid, loader, fast: false, create: false)
       roundtrip_fedora_obj, roundtrip_cocina_obj = Cocina::ObjectCreator.trial_create(orig_cocina_obj, notifier: DataErrorNotifier.new)
     rescue StandardError => e
       write_error(druid, e)
-      return :create_error
+      return [druid, :create_error]
     end
     # RELS-EXT is not present in created Fedora object, so remove from orig_datastreams.
     orig_datastreams.delete('RELS-EXT')
@@ -188,7 +188,7 @@ def validate_druid(druid, loader, fast: false, create: false)
       roundtrip_fedora_obj = fedora_obj
     rescue StandardError => e
       write_error(druid, e)
-      return :update_error
+      return [druid, :update_error]
     end
   end
   roundtrip_cocina_hash = roundtrip_cocina_obj.to_h
@@ -197,13 +197,13 @@ def validate_druid(druid, loader, fast: false, create: false)
     diff_datastreams = diff_datatreams_for(druid, label, orig_datastreams, roundtrip_fedora_obj)
   rescue StandardError => e
     write_error(druid, e)
-    return :normalization_error
+    return [druid, :normalization_error]
   end
 
-  return :success if DeepEqual.match?(normalize_cocina(orig_cocina_hash), normalize_cocina(roundtrip_cocina_hash)) && diff_datastreams.empty?
+  return [druid, :success] if DeepEqual.match?(normalize_cocina(orig_cocina_hash), normalize_cocina(roundtrip_cocina_hash)) && diff_datastreams.empty?
 
   write_result(druid, orig_cocina_hash, roundtrip_cocina_hash, diff_datastreams)
-  :different
+  [druid, :different]
 end
 # rubocop:enable Metrics/AbcSize
 # rubocop:enable Metrics/CyclomaticComplexity
@@ -242,7 +242,12 @@ results = Parallel.map(druids, progress: 'Testing') do |druid|
   validate_druid(druid, loader, fast: options[:fast], create: options[:create])
 end
 counts = { different: 0, success: 0, mapping_error: 0, update_error: 0, create_error: 0, normalization_error: 0, missing: 0, unmapped: 0, bad_cache: 0 }
-results.each { |result| counts[result] += 1 }
+File.open('results/results.txt', 'w') do |file|
+  results.each do |druid, result|
+    counts[result] += 1
+    file.write("#{druid}=#{result}\n")
+  end
+end
 
 denom = druids.size - counts[:missing] - counts[:unmapped] - counts[:bad_cache]
 
