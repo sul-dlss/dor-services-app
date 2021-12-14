@@ -110,6 +110,7 @@ class FedoraLoader
     return Dor::Item if models.include?('info:fedora/afmodel:Etd')
     return Dor::Item if models.include?('info:fedora/afmodel:Eems')
     return Dor::Item if models.include?('info:fedora/afmodel:Eem')
+    return Dor::Item if models.include?('info:fedora/afmodel:Dor_Agreement')
 
     # Expected unmapped
     raise ExpectedUnmapped if models.include?('info:fedora/afmodel:Part')
@@ -122,7 +123,11 @@ class FedoraLoader
   # rubocop:enable Metrics/PerceivedComplexity
 
   def models_for(rels_ext_ng_xml)
-    has_model_nodes = rels_ext_ng_xml.root.xpath('//fedora-model:hasModel', 'fedora-model' => 'info:fedora/fedora-system:def/model#')
+    # Some items have incorrect RELS-EXT, no also checking info:fedora/fedora-system:def/relations-external#
+    has_model_nodes = rels_ext_ng_xml.root.xpath('//fedora-model:hasModel',
+                                                 'fedora-model' => 'info:fedora/fedora-system:def/model#') + \
+                      rels_ext_ng_xml.root.xpath('//fedora-model:hasModel',
+                                                 'fedora-model' => 'info:fedora/fedora-system:def/relations-external#')
 
     has_model_nodes.map do |has_model_node|
       has_model_node['rdf:resource']
