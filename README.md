@@ -189,7 +189,7 @@ rsync --files-from=cache-files.txt deploy@sdr-deploy.stanford.edu:/opt/app/deplo
 $ bin/validate-cocina-roundtrip -h
 Usage: bin/validate-cocina-roundtrip [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
-    -c, --create                     Run object create instead of object update.
+    -u, --update                     Run object update instead of object create.
     -r, --random                     Select random druids.
     -f, --fast                       Without content metadata.
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
@@ -206,7 +206,7 @@ Status (n=100; not using Missing for success/different/error stats):
   Missing:     0 (0.0%)
 ```
 
-Using the druids from `druids.txt` and the cache, this will create a Fedora item, map the Fedora item to the Cocina model, update the Fedora item from the Cocina object, map the changed Fedora item to the Cocina model, and compare the original Cocina object against the changed Cocina object and the original Fedora item against the changed Fedora item.
+Using the druids from `druids.txt` and the cache, this will create a Fedora item, map the Fedora item to the Cocina model, create a new Fedora item from the Cocina object, map the new Fedora item to the Cocina model, and compare the original Cocina object against the new Cocina object and the original Fedora item against the new Fedora item.
 
 ### Validate mapping to Cocina from MODS (descriptive metadata only)
 ```
