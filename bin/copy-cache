@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+require_relative '../lib/fedora_cache'
+require 'optparse'
+
+options = { druids: [], input: 'druids.txt' }
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/copy-cache [options]'
+
+  option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
+  option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
+  option_parser.on('-iINPUT', '--input INPUT', 'Input filename, otherwise druids.txt.')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+parser.parse!(into: options)
+
+cache = FedoraCache.new
+
+if options[:druids].empty?
+  druids = File.read(options[:input]).split
+  druids = druids.take(options[:sample]) if options[:sample]
+else
+  druids = options[:druids]
+end
+
+File.open('cache-files.txt', 'w') do |file|
+  druids.each do |druid|
+    file.write("#{cache.zip_path_for(druid)}\n")
+  end
+end
+
+puts 'To copy cache:'
+puts 'rsync --files-from=cache-files.txt deploy@sdr-deploy.stanford.edu:/opt/app/deploy/dor-services-app .'

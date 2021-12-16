@@ -166,7 +166,23 @@ druid:bh164hd2167 (1)
 ### Keep the cache up to date.
 `bin/cache-o-matic.sh` will query Solr to find objects that have been updated in the last day, update the cache, and add the items to `druids.txt`.
 
-This script can be run from a cron job to keep the cache up to date.
+This script can be run from a cron job to keep the cache up to date. It is currently being run on sdr-deploy.
+
+### Copy cache
+Rather than generating a local cache (which is slow), cache files can be copied from the cache on sdr-deploy (which is fast).
+
+```
+$ bin/copy-cache -h
+Usage: bin/copy-cache [options]
+    -s, --sample SAMPLE              Sample size, otherwise all druids.
+    -d, --druids DRUIDS              List of druids (instead of druids.txt).
+    -i, --input INPUT                Input filename, otherwise druids.txt.
+    -h, --help                       Displays help.
+
+$ bin/copy-cache -i druids.testbed.txt -s 1000
+To copy cache:
+rsync --files-from=cache-files.txt deploy@sdr-deploy.stanford.edu:/opt/app/deploy/dor-services-app .
+```
 
 ### Validate mapping to Cocina from Fedora
 ```

@@ -92,6 +92,11 @@ class FedoraCache
     Success(contents[dsid])
   end
 
+  def zip_path_for(druid)
+    id = druid.delete_prefix('druid:')
+    "#{cache_dir}/#{id[0..2]}/#{id[3..5]}/#{id}.zip"
+  end
+
   private
 
   attr_reader :overwrite, :cache_dir
@@ -112,11 +117,6 @@ class FedoraCache
     raise "Getting #{dsid} for #{druid} returned #{resp.status}" if resp.status != 200
 
     resp.body
-  end
-
-  def zip_path_for(druid)
-    id = druid.delete_prefix('druid:')
-    "#{cache_dir}/#{id[0..2]}/#{id[3..5]}/#{id}.zip"
   end
 
   def get_cache(druid, only: nil)
