@@ -11,12 +11,12 @@ require 'diffy'
 require 'dor/services/client'
 require 'equivalent-xml'
 
-options = { random: false, druids: [], fast: false, create: false, input: 'druids.txt' }
+options = { random: false, druids: [], fast: false, update: false, input: 'druids.txt' }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-cocina-roundtrip [options]'
 
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
-  option_parser.on('-c', '--create', 'Run object create instead of object update.')
+  option_parser.on('-u', '--update', 'Run object update instead of object create.')
   option_parser.on('-r', '--random', 'Select random druids.')
   option_parser.on('-f', '--fast', 'Without content metadata.')
   option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
@@ -241,7 +241,7 @@ else
 end
 
 results = Parallel.map(druids, progress: 'Testing') do |druid|
-  validate_druid(druid, loader, fast: options[:fast], create: options[:create])
+  validate_druid(druid, loader, fast: options[:fast], create: !options[:update])
 end
 counts = { different: 0, success: 0, mapping_error: 0, update_error: 0, create_error: 0, normalization_error: 0, missing: 0, unmapped: 0, expected_unmapped: 0, bad_cache: 0 }
 File.open('results/results.txt', 'w') do |file|
@@ -257,10 +257,10 @@ puts "Status (n=#{druids.size}; not using Missing for success/different/error st
 puts "  Success:   #{counts[:success]} (#{percentage(counts[:success], denom)}%)"
 puts "  Different: #{counts[:different]} (#{percentage(counts[:different], denom)}%)"
 puts "  Mapping error:     #{counts[:mapping_error]} (#{percentage(counts[:mapping_error], denom)}%)"
-if options[:create]
-  puts "  Create error:     #{counts[:create_error]} (#{percentage(counts[:create_error], denom)}%)"
-else
+if options[:update]
   puts "  Update error:     #{counts[:update_error]} (#{percentage(counts[:update_error], denom)}%)"
+else
+  puts "  Create error:     #{counts[:create_error]} (#{percentage(counts[:create_error], denom)}%)"
 end
 puts "  Normalization error:     #{counts[:normalization_error]} (#{percentage(counts[:normalization_error], denom)}%)"
 puts "  Missing:     #{counts[:missing]} (#{(100 * counts[:missing].to_f / druids.size).round(3)}%)"
