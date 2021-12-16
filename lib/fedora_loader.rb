@@ -56,6 +56,7 @@ end
 class FedoraLoader
   class BadCache < StandardError; end
 
+  class ExpectedUnmapped < StandardError; end
   class Unmapped < StandardError; end
 
   delegate :cached?, to: :@cache
@@ -87,26 +88,49 @@ class FedoraLoader
 
   attr_reader :cache
 
+  # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/PerceivedComplexity
   def fedora_class(rels_ext)
     rels_ext_ng_xml = Nokogiri::XML(rels_ext)
 
-    raise Unmapped if rels_ext_ng_xml.root.xpath('//fedora:conformsTo[@rdf:resource="info:fedora/afmodel:Part"]',
-                                                 'fedora' => 'info:fedora/fedora-system:def/relations-external#',
-                                                 'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#').present?
+    raise ExpectedUnmapped if rels_ext_ng_xml.root.xpath('//fedora:conformsTo[@rdf:resource="info:fedora/afmodel:Part"]',
+                                                         'fedora' => 'info:fedora/fedora-system:def/relations-external#',
+                                                         'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#').present?
 
-    has_model_nodes = rels_ext_ng_xml.root.xpath('//fedora-model:hasModel', 'fedora-model' => 'info:fedora/fedora-system:def/model#')
-    raise Unmapped if has_model_nodes.empty?
+    models = models_for(rels_ext_ng_xml)
 
-    model = has_model_nodes.first['rdf:resource']
-    case model
-    when 'info:fedora/afmodel:Dor_Collection'
-      Dor::Collection
-    when 'info:fedora/afmodel:Dor_AdminPolicyObject'
-      Dor::AdminPolicyObject
-    when 'info:fedora/afmodel:Dor_Item', 'info:fedora/dor:googleScannedBook', 'info:fedora/afmodel:Hydrus_Item'
-      Dor::Item
-    else
-      raise Unmapped
+    # Mappings
+    return Dor::Collection if models.include?('info:fedora/afmodel:Dor_Collection')
+    return Dor::Collection if models.include?('info:fedora/afmodel:Hydrus_Collection')
+    return Dor::AdminPolicyObject if models.include?('info:fedora/afmodel:Dor_AdminPolicyObject')
+    return Dor::AdminPolicyObject if models.include?('info:fedora/afmodel:Hydrus_AdminPolicyObject')
+    return Dor::Item if models.include?('info:fedora/afmodel:Dor_Item')
+    return Dor::Item if models.include?('info:fedora/dor:googleScannedBook')
+    return Dor::Item if models.include?('info:fedora/afmodel:Hydrus_Item')
+    return Dor::Item if models.include?('info:fedora/afmodel:Etd')
+    return Dor::Item if models.include?('info:fedora/afmodel:Eems')
+    return Dor::Item if models.include?('info:fedora/afmodel:Eem')
+    return Dor::Item if models.include?('info:fedora/afmodel:Dor_Agreement')
+
+    # Expected unmapped
+    raise ExpectedUnmapped if models.include?('info:fedora/afmodel:Part')
+    raise ExpectedUnmapped if models.include?('info:fedora/afmodel:PermissionFile')
+
+    # Otherwise unexpected unmapped
+    raise Unmapped
+  end
+  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/PerceivedComplexity
+
+  def models_for(rels_ext_ng_xml)
+    # Some items have incorrect RELS-EXT, no also checking info:fedora/fedora-system:def/relations-external#
+    has_model_nodes = rels_ext_ng_xml.root.xpath('//fedora-model:hasModel',
+                                                 'fedora-model' => 'info:fedora/fedora-system:def/model#') + \
+                      rels_ext_ng_xml.root.xpath('//fedora-model:hasModel',
+                                                 'fedora-model' => 'info:fedora/fedora-system:def/relations-external#')
+
+    has_model_nodes.map do |has_model_node|
+      has_model_node['rdf:resource']
     end
   end
 end

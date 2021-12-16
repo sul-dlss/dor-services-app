@@ -148,6 +148,8 @@ def validate_druid(druid, loader, fast: false, create: false)
   rescue FedoraLoader::BadCache => e
     write_error(druid, e)
     return [druid, :bad_cache]
+  rescue FedoraLoader::ExpectedUnmapped
+    return [druid, :expected_unmapped]
   rescue FedoraLoader::Unmapped
     return [druid, :unmapped]
   end
@@ -241,7 +243,7 @@ end
 results = Parallel.map(druids, progress: 'Testing') do |druid|
   validate_druid(druid, loader, fast: options[:fast], create: options[:create])
 end
-counts = { different: 0, success: 0, mapping_error: 0, update_error: 0, create_error: 0, normalization_error: 0, missing: 0, unmapped: 0, bad_cache: 0 }
+counts = { different: 0, success: 0, mapping_error: 0, update_error: 0, create_error: 0, normalization_error: 0, missing: 0, unmapped: 0, expected_unmapped: 0, bad_cache: 0 }
 File.open('results/results.txt', 'w') do |file|
   results.each do |druid, result|
     counts[result] += 1
@@ -249,7 +251,7 @@ File.open('results/results.txt', 'w') do |file|
   end
 end
 
-denom = druids.size - counts[:missing] - counts[:unmapped] - counts[:bad_cache]
+denom = druids.size - counts[:missing] - counts[:unmapped] - counts[:expected_unmapped] - counts[:bad_cache]
 
 puts "Status (n=#{druids.size}; not using Missing for success/different/error stats):"
 puts "  Success:   #{counts[:success]} (#{percentage(counts[:success], denom)}%)"
@@ -263,4 +265,5 @@ end
 puts "  Normalization error:     #{counts[:normalization_error]} (#{percentage(counts[:normalization_error], denom)}%)"
 puts "  Missing:     #{counts[:missing]} (#{(100 * counts[:missing].to_f / druids.size).round(3)}%)"
 puts "  Unmapped:     #{counts[:unmapped]} (#{(100 * counts[:unmapped].to_f / druids.size).round(3)}%)"
+puts "  Expected unmapped:     #{counts[:expected_unmapped]} (#{(100 * counts[:expected_unmapped].to_f / druids.size).round(3)}%)"
 puts "  Bad cache:     #{counts[:bad_cache]} (#{(100 * counts[:bad_cache].to_f / druids.size).round(3)}%)"
