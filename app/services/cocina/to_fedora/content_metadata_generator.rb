@@ -63,7 +63,7 @@ module Cocina
           Array(cocina_file.hasMessageDigests).each do |message_digest|
             file_node.add_child(create_checksum_node(message_digest.type, message_digest.digest))
           end
-          file_node.add_child("\n      <imageData height=\"#{cocina_file.presentation.height}\" width=\"#{cocina_file.presentation.width}\" />\n") if cocina_file.presentation
+          file_node.add_child(create_image_data_node(cocina_file.presentation.height, cocina_file.presentation.width)) if cocina_file.presentation
         end
       end
 
@@ -83,6 +83,13 @@ module Cocina
         Nokogiri::XML::Node.new('checksum', @xml_doc).tap do |checksum_node|
           checksum_node['type'] = algorithm
           checksum_node.content = digest
+        end
+      end
+
+      def create_image_data_node(height, width)
+        Nokogiri::XML::Node.new('imageData', @xml_doc).tap do |image_data_node|
+          image_data_node['height'] = height if height
+          image_data_node['width'] = width if width
         end
       end
 
