@@ -23,7 +23,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     let(:expected_xml) do
       <<~XML
         <contentMetadata objectId="druid:bk689jd2364" type="file">
-          <resource sequence="1" type="file">
+          <resource type="file">
             <file id="Decision.Record_6-30-03_signed.pdf" preserve="yes" publish="yes" shelve="yes" mimetype="application/pdf" size="102937">
               <checksum type="md5">50d5fc2730503a98bc2dda643064ae5b</checksum>
               <checksum type="sha1">df31b2f415d8e0806fa283db4e2c7fda690d1b02</checksum>
@@ -119,7 +119,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
           <<~XML
             <contentMetadata objectId="druid:bb035tg0974" type="book">
               <bookData readingOrder="ltr"/>
-              <resource sequence="1" type="page" />
+              <resource type="page" />
             </contentMetadata>
           XML
         )
@@ -150,7 +150,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         expect(normalized_ng_xml).to be_equivalent_to(
           <<~XML
             <contentMetadata objectId="druid:bk689jd2364" type="file">
-              <resource type="page" sequence="268">
+              <resource type="page">
                 <file preserve="yes" mimetype="image/jp2" format="JPEG2000" size="92631" shelve="no" id="00000268.jp2" deliver="no">
                   <imageData width="1310" height="2071"/>
                   <checksum type="SHA-1">50d77a392ba30dcbbf4ada379e09ded02f9658f2</checksum>
