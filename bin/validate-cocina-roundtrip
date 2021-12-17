@@ -263,7 +263,7 @@ else
   puts "  Create error:     #{counts[:create_error]} (#{percentage(counts[:create_error], denom)}%)"
 end
 puts "  Normalization error:     #{counts[:normalization_error]} (#{percentage(counts[:normalization_error], denom)}%)"
-puts "  Missing:     #{counts[:missing]} (#{(100 * counts[:missing].to_f / druids.size).round(3)}%)"
+puts "  Missing from cache:     #{counts[:missing]} (#{(100 * counts[:missing].to_f / druids.size).round(3)}%)"
 puts "  Unmapped:     #{counts[:unmapped]} (#{(100 * counts[:unmapped].to_f / druids.size).round(3)}%)"
 puts "  Expected unmapped:     #{counts[:expected_unmapped]} (#{(100 * counts[:expected_unmapped].to_f / druids.size).round(3)}%)"
 puts "  Bad cache:     #{counts[:bad_cache]} (#{(100 * counts[:bad_cache].to_f / druids.size).round(3)}%)"
