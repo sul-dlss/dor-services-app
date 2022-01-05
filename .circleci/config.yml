@@ -28,13 +28,20 @@ orbs:
             default: '2.7.1'
             description: The `cimg/ruby` Docker image version tag.
             type: string
+          api-only:
+            default: false
+            description: True if this is an API only Rails app.
+            type: boolean
         docker:
           - image: 'cimg/ruby:<< parameters.tag >>-node'
         steps:
           - checkout
           - ruby/install-deps
-          - node/install-packages:
-              pkg-manager: yarn
+          - unless:
+              condition: << parameters.api-only >>
+              steps:
+                - node/install-packages:
+                    pkg-manager: yarn
       lint:
         parameters:
           tag:
