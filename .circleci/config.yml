@@ -149,6 +149,7 @@ workflows:
     jobs:
       - ruby-rails/build:
           name: build
+          api-only: true
       - ruby-rails/validate-api:
           name: validate
       - ruby-rails/lint:
