@@ -83,6 +83,12 @@ orbs:
               steps:
                 - node/install-packages:
                     pkg-manager: yarn
+          # Need `psql` command when you store the app schema as SQL instead of as Ruby
+          - run:
+              name: Install postgresql client
+              command: |
+                sudo apt update -y
+                sudo apt install -y postgresql-client || true
           - run:
               command: 'dockerize -wait tcp://localhost:5432 -timeout 1m'
               name: Wait for DB
@@ -163,7 +169,7 @@ workflows:
           filters:
             branches:
               only:
-                - circle
+                - master
 # executors:
 #   docker-publisher:
 #     environment:
