@@ -63,10 +63,11 @@ orbs:
             type: boolean
         docker:
           - image: 'cimg/ruby:<< parameters.tag >>-node'
-          - image: 'circleci/postgres:11'
+          - image: 'cimg/postgres:<< parameters.postgres-tag >>'
             environment:
               POSTGRES_USER: postgres
               POSTGRES_PASSWORD: sekret
+              POSTGRES_DB: dor_services_test
         environment:
           BUNDLE_JOBS: '3'
           BUNDLE_RETRY: '3'
