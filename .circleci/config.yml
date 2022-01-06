@@ -28,20 +28,13 @@ orbs:
             default: '2.7.1'
             description: The `cimg/ruby` Docker image version tag.
             type: string
-          api-only:
-            default: false
-            description: True if this is an API only Rails app.
-            type: boolean
         docker:
           - image: 'cimg/ruby:<< parameters.tag >>-node'
         steps:
           - checkout
           - ruby/install-deps
-          - unless:
-              condition: << parameters.api-only >>
-              steps:
-                - node/install-packages:
-                    pkg-manager: yarn
+          - node/install-packages:
+              pkg-manager: yarn
       lint:
         parameters:
           tag:
@@ -53,9 +46,7 @@ orbs:
         steps:
           - checkout
           - ruby/install-deps
-          - ruby/rubocop-check:
-              format: progress
-              label: Inspecting with Rubocop
+          - ruby/rubocop-check
       test:
         parameters:
           tag:
@@ -66,6 +57,10 @@ orbs:
             default: '11.13'
             description: The `cimg/postgres` Docker image version tag.
             type: string
+          api-only:
+            default: false
+            description: True if this is an API only Rails app.
+            type: boolean
         docker:
           - image: 'cimg/ruby:<< parameters.tag >>-node'
           - image: 'cimg/postgres:<< parameters.postgres-tag >>'
@@ -83,8 +78,11 @@ orbs:
         steps:
           - checkout
           - ruby/install-deps
-          - node/install-packages:
-              pkg-manager: yarn
+          - unless:
+              condition: << parameters.api-only >>
+              steps:
+                - node/install-packages:
+                    pkg-manager: yarn
           - run:
               command: 'dockerize -wait tcp://localhost:5432 -timeout 1m'
               name: Wait for DB
@@ -147,19 +145,13 @@ orbs:
 workflows:
   build:
     jobs:
-      - ruby-rails/build:
-          name: build
-          api-only: true
       - ruby-rails/validate-api:
           name: validate
       - ruby-rails/lint:
           name: lint
-          requires:
-            - build
       - ruby-rails/test:
           name: test
-          requires:
-            - build
+          api-only: true
       - ruby-rails/docker-publish:
           context: dlss
           name: publish-latest
