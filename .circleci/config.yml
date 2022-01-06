@@ -63,7 +63,7 @@ orbs:
             type: boolean
         docker:
           - image: 'cimg/ruby:<< parameters.tag >>-node'
-          - image: 'cimg/postgres:<< parameters.postgres-tag >>'
+          - image: 'circleci/postgres:11'
             environment:
               POSTGRES_USER: postgres
               POSTGRES_PASSWORD: sekret
