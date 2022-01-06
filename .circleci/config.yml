@@ -81,7 +81,7 @@ orbs:
               name: Wait for DB
           - run:
               name: Test prepare
-              command: bin/rails db:test:prepare
+              command: bin/rails db:create db:migrate
           - run:
               name: Setup Code Climate test-reporter
               command: |
