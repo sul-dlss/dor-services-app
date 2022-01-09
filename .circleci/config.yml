@@ -14,16 +14,16 @@ orbs:
         environment:
           BUNDLE_JOBS: '3'
           BUNDLE_RETRY: '3'
-          PGHOST: 127.0.0.1
-          PGPASSWORD: sekret
-          PGUSER: circleci
+          # PGHOST: 127.0.0.1
+          # PGPASSWORD: sekret
+          # PGUSER: circleci
           RAILS_ENV: test
           PAGER: cat
           TZ: "America/Los_Angeles"
       postgres-executor-refs: &postgres-executor-refs
         image: 'cimg/postgres:<< parameters.postgres-tag >>'
         environment:
-          POSTGRES_USER: circleci
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: sekret
       ruby-tag-parameter-ref: &ruby-tag-parameter-ref
         default: *ruby-version-ref
