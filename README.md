@@ -13,7 +13,7 @@ API in [openapi.yml](openapi.yml).  You can browse the generated documentation a
 
 ## Authentication
 
-To generate an authentication token run `rake generate_token` on the prod server.
+To generate an authentication token run `RAILS_ENV=production bin/rails generate_token` on the prod server.
 This will use the HMAC secret to sign the token. It will ask you to submit a value for "Account".  This should be the name of the calling service, or a username if this is to be used by a specific individual.  This value is used for traceability of errors and can be seen in the "Context" section of a Honeybadger error.  For example:
 
 ```
