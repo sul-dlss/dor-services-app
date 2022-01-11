@@ -1,193 +1,33 @@
 version: 2.1
-executors:
-  docker-publisher:
-    environment:
-      IMAGE_NAME: suldlss/dor-services-app
-    docker:
-    - image: circleci/buildpack-deps:stretch
-jobs:
-  test:
-    docker:
-    - image: circleci/ruby:2.7.2-node
-      environment:
-        BUNDLE_JOBS: 3
-        BUNDLE_RETRY: 3
-        BUNDLE_PATH: vendor/bundle
-        PGHOST: 127.0.0.1
-        PGUSER: circleci-demo-ruby
-        PGPASSWORD: sekret
-        RAILS_ENV: test
-        NOKOGIRI_USE_SYSTEM_LIBRARIES: true
-    - image: circleci/postgres:11
-      environment:
-        POSTGRES_USER: postgres
-        POSTGRES_DB: dor_services_test
-        POSTGRES_PASSWORD: sekret
-    steps:
-    - checkout
-
-    # Upgrade bundler
-    - run:
-        name: Install Bundler
-        command: gem install bundler
-
-    # Which version of bundler?
-    - run:
-        name: Which bundler?
-        command: bundle -v
-
-    # Restore bundle cache
-    - restore_cache:
-        keys:
-        - dor-services-app-bundle-v2-{{ checksum "Gemfile.lock" }}
-        - dor-services-app--bundle-v2-
-
-    - run:
-        name: Bundle Install
-        command: bundle check || bundle install
-
-    # Store bundle cache
-    - save_cache:
-        key: dor-services-app-bundle-v2-{{ checksum "Gemfile.lock" }}
-        paths:
-        - vendor/bundle
-
-    # Need `psql` command when you store the app schema as SQL instead of as Ruby
-    - run:
-        name: Install postgresql client
-        command: |
-          sudo apt update -y
-          sudo apt install -y postgresql-client || true
-
-    - run:
-        name: Wait for DB
-        command: dockerize -wait tcp://localhost:5432 -timeout 1m
-
-    - run:
-        name: Test prepare
-        command: bin/rails db:test:prepare
-
-    - run:
-        name: Check styles using rubocop
-        command: bundle exec rubocop
-
-    - run:
-        name: Setup Code Climate test-reporter
-        command: |
-          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-          chmod +x ./cc-test-reporter
-          ./cc-test-reporter before-build
-
-    # Run rspec in parallel
-    - run:
-        name: Run rspec in parallel
-        command: |
-          bundle exec rspec --profile 10 \
-                            --format RspecJunitFormatter \
-                            --out test_results/rspec.xml \
-                            --format progress \
-                            $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
-
-    - run:
-        name: upload test coverage report to Code Climate
-        command: ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $?
-
-    - run:
-        name: Validate API specification
-        command: |
-          sudo npm install -g openapi-enforcer-cli
-          result=$(openapi-enforcer validate openapi.yml)
-          [[ $result =~ "Document is valid" ]] && {
-          echo "Validation good"
-          exit 0
-          } || {
-          echo $result
-          exit 1
-          }
-    # Save test results for timing analysis
-    - store_test_results:
-        path: test_results
-
-  build-image:
-    executor: docker-publisher
-    steps:
-    - checkout
-    - setup_remote_docker
-    - run:
-        name: Build Docker image
-        command: |
-          docker build -t $IMAGE_NAME:latest .
-    - run:
-        name: Archive Docker image
-        command: |
-          docker save -o app_image.tar $IMAGE_NAME
-    - persist_to_workspace:
-        root: .
-        paths:
-        - ./app_image.tar
-  publish-latest:
-    executor: docker-publisher
-    steps:
-    - attach_workspace:
-        at: /tmp/workspace
-    - setup_remote_docker
-    - run:
-        name: Load archived Docker image
-        command: |
-          docker load -i /tmp/workspace/app_image.tar
-    - run:
-        name: Publish Docker Image to Docker Hub
-        command: |
-          echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-          docker push $IMAGE_NAME:latest
-  publish-tag:
-    executor: docker-publisher
-    steps:
-    - attach_workspace:
-        at: /tmp/workspace
-    - setup_remote_docker
-    - run:
-        name: Load archived Docker image
-        command: |
-          docker load -i /tmp/workspace/app_image.tar
-    - run:
-        name: Publish Docker Image to Docker Hub
-        command: |
-          echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-          docker tag $IMAGE_NAME:latest $IMAGE_NAME:$CIRCLE_TAG
-          docker push $IMAGE_NAME:$CIRCLE_TAG
+orbs:
+  ruby-rails: sul-dlss/ruby-rails@1.1.0
 workflows:
-  version: 2
-
-  test:
-    jobs:
-    - test
-
   build:
     jobs:
-    - build-image:
-        filters:
-          branches:
-            only: main
-    - publish-latest:
-        requires:
-        - build-image
-        filters:
-          branches:
-            only: main
-  build-tags:
-    jobs:
-    - build-image:
-        filters:
-          tags:
-            only: /^[0-9]+\.[0-9]+\.[0-9]+/
-          branches:
-            ignore: /.*/
-    - publish-tag:
-        requires:
-        - build-image
-        filters:
-          tags:
-            only: /^[0-9]+\.[0-9]+\.[0-9]+/
-          branches:
-            ignore: /.*/
+      - ruby-rails/validate-api:
+          name: validate
+      - ruby-rails/lint:
+          name: lint
+          # Remove this once app is using Ruby3
+          executor:
+            name: ruby-rails/ruby-postgres
+            ruby-tag: '2.7.5'
+      - ruby-rails/test-rails:
+          name: test
+          api-only: true
+          # Remove this once app is using Ruby3
+          executor:
+            name: ruby-rails/ruby-postgres
+            ruby-tag: '2.7.5'
+      - ruby-rails/docker-publish:
+          context: dlss
+          name: publish-latest
+          image: suldlss/dor-services-app
+          requires:
+            - validate
+            - lint
+            - test
+          filters:
+            branches:
+              only:
+                - main
