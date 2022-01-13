@@ -8,7 +8,7 @@ RSpec.describe SdrIngestService do
   let(:export_dir) { Pathname(Settings.sdr.local_export_home) }
   let(:fixture_sig_cat_obj) do
     Moab::SignatureCatalog.parse(
-      File.open(fixtures.join('sdr_repo/dd116zh0343/v0001/manifests/signatureCatalog.xml')).read
+      File.read(fixtures.join('sdr_repo/dd116zh0343/v0001/manifests/signatureCatalog.xml'))
     )
   end
 

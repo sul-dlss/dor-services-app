@@ -222,7 +222,7 @@ RSpec.describe EmbargoReleaseService do
         allow(item).to receive(:save!)
         allow(Honeybadger).to receive(:notify)
         allow(WorkflowClientFactory).to receive(:build).and_return(client)
-        allow(client).to receive(:lifecycle).with(druid: 'druid:999', milestone_name: 'accessioned').and_return(Time.zone.now - 1.day)
+        allow(client).to receive(:lifecycle).with(druid: 'druid:999', milestone_name: 'accessioned').and_return(1.day.ago)
       end
 
       it 'skips release if not accessioned' do

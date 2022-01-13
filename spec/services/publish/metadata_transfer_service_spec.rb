@@ -78,7 +78,7 @@ RSpec.describe Publish::MetadataTransferService do
         # create druid tree and dummy content in purl root
         druid1 = DruidTools::Druid.new item.pid, purl_root
         druid1.mkdir
-        File.open(File.join(druid1.path, 'tmpfile'), 'w') { |f| f.write 'junk' }
+        File.write(File.join(druid1.path, 'tmpfile'), 'junk')
         service.publish
         expect(File).not_to exist(druid1.path) # it should now be gone
         expect(WebMock).to have_requested(:delete, 'example.com/purl/purls/bc123df4567')

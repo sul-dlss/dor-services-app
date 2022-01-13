@@ -136,9 +136,7 @@ RSpec.describe CleanupService do
     end
 
     def create_tempfile(path)
-      File.open(File.join(path, 'tempfile'), 'w') do |tf1|
-        tf1.write 'junk'
-      end
+      File.write(File.join(path, 'tempfile'), 'junk')
     end
 
     describe '.cleanup_by_druid' do
@@ -166,7 +164,7 @@ RSpec.describe CleanupService do
         #        {export_dir}/druid1.tar
         FileUtils.mkdir export_prefix
         create_tempfile export_prefix
-        File.open(export_prefix + '.tar', 'w') { |f| f.write 'fake tar junk' }
+        File.write(export_prefix + '.tar', 'fake tar junk')
 
         expect(File).to exist(dr1_wspace.path)
         expect(File).to exist(dr1_assembly.path)

@@ -32,9 +32,7 @@ RSpec.describe DeleteService do
 
       stacks_druid.mkdir
 
-      File.open(File.join(stacks_druid.path, 'tempfile'), 'w') do |tf1|
-        tf1.write 'junk'
-      end
+      File.write(File.join(stacks_druid.path, 'tempfile'), 'junk')
     end
 
     after do
