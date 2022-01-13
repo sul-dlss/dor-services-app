@@ -100,7 +100,7 @@ module Cocina
             machine_node.add_child(read_access_level_node)
           end
         end
-        # rubocop:disable Metrics/AbcSize
+        # rubocop:enable Metrics/AbcSize
 
         def download_machine_node(file_access)
           return unless (location_based_download?(file_access) && (stanford_read_access?(file_access) || world_read_access?(file_access))) ||
