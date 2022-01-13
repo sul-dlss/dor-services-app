@@ -71,7 +71,7 @@ module Cocina
         reading_direction = Cocina::FromFedora::ViewingDirectionHelper.viewing_direction(druid: druid, content_ng_xml: ng_xml)
         return unless reading_direction
 
-        book_data_node = Nokogiri::XML::Node.new('bookData', ng_xml.root)
+        book_data_node = Nokogiri::XML::Node.new('bookData', ng_xml)
         book_data_node['readingOrder'] = reading_direction == 'left-to-right' ? 'ltr' : 'rtl'
         ng_xml.root << book_data_node
       end

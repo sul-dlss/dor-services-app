@@ -30,9 +30,9 @@ module Cocina
               file_set.structural.contains.each do |file|
                 next unless file_access_different_than_item_access?(file.access)
 
-                read_access_node = Nokogiri::XML::Node.new('access', root).tap do |access_node|
+                read_access_node = Nokogiri::XML::Node.new('access', document).tap do |access_node|
                   access_node.set_attribute('type', 'read')
-                  file_node = Nokogiri::XML::Node.new('file', root)
+                  file_node = Nokogiri::XML::Node.new('file', document)
                   file_node.content = file.filename
                   access_node.add_child(file_node)
                 end
@@ -69,49 +69,51 @@ module Cocina
           %i[access controlledDigitalLending download readLocation]
         end
 
+        # rubocop:disable Metrics/AbcSize
         def read_machine_node(file_access)
-          Nokogiri::XML::Node.new('machine', root).tap do |machine_node| # rubocop:disable Metrics/BlockLength
+          Nokogiri::XML::Node.new('machine', document).tap do |machine_node| # rubocop:disable Metrics/BlockLength
             read_access_level_node =
               if cdl_access?(file_access)
-                cdl_node = Nokogiri::XML::Node.new('cdl', root)
-                group_node = Nokogiri::XML::Node.new('group', cdl_node)
+                cdl_node = Nokogiri::XML::Node.new('cdl', document)
+                group_node = Nokogiri::XML::Node.new('group', document)
                 group_node.content = 'stanford'
                 group_node.set_attribute('rule', 'no-download')
                 cdl_node.add_child(group_node)
                 cdl_node
               elsif world_read_access?(file_access)
-                world_node = Nokogiri::XML::Node.new('world', root)
+                world_node = Nokogiri::XML::Node.new('world', document)
                 world_node.set_attribute('rule', 'no-download') if no_download?(file_access) || location_based_download?(file_access) || stanford_download?(file_access)
                 world_node
               elsif stanford_read_access?(file_access)
-                group_node = Nokogiri::XML::Node.new('group', root)
+                group_node = Nokogiri::XML::Node.new('group', document)
                 group_node.content = 'stanford'
                 group_node.set_attribute('rule', 'no-download') if no_download?(file_access) || location_based_download?(file_access)
                 group_node
               elsif location_based_access?(file_access)
-                loc_node = Nokogiri::XML::Node.new('location', root)
+                loc_node = Nokogiri::XML::Node.new('location', document)
                 loc_node.content = file_access.readLocation
                 loc_node.set_attribute('rule', 'no-download') if no_download?(file_access)
                 loc_node
               else # we know it is citation-only or dark at this point
-                Nokogiri::XML::Node.new('none', root)
+                Nokogiri::XML::Node.new('none', document)
               end
             machine_node.add_child(read_access_level_node)
           end
         end
+        # rubocop:disable Metrics/AbcSize
 
         def download_machine_node(file_access)
           return unless (location_based_download?(file_access) && (stanford_read_access?(file_access) || world_read_access?(file_access))) ||
                         (stanford_download?(file_access) && world_read_access?(file_access))
 
-          Nokogiri::XML::Node.new('machine', root).tap do |machine_node|
+          Nokogiri::XML::Node.new('machine', document).tap do |machine_node|
             download_access_level_node =
               if location_based_download?(file_access)
-                loc_node = Nokogiri::XML::Node.new('location', root)
+                loc_node = Nokogiri::XML::Node.new('location', document)
                 loc_node.content = file_access.readLocation
                 loc_node
               elsif stanford_download?(file_access)
-                group_node = Nokogiri::XML::Node.new('group', root)
+                group_node = Nokogiri::XML::Node.new('group', document)
                 group_node.content = 'stanford'
                 group_node
               end
@@ -146,6 +148,10 @@ module Cocina
 
         def location_based_download?(file_access)
           file_access.try(:download) == 'location-based' && file_access.try(:readLocation)
+        end
+
+        def document
+          root.document
         end
       end
     end
