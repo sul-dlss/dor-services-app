@@ -53,7 +53,7 @@ module Publish
     def transfer_to_document_store(content, filename)
       new_file = File.join(purl_druid.content_dir, filename)
       Rails.logger.debug("[Publish][#{item.pid}] Writing #{new_file}")
-      File.open(new_file, 'w') { |f| f.write content }
+      File.write(new_file, content)
     end
 
     def purl_druid
