@@ -13,7 +13,7 @@ RSpec.describe CleanupService do
   let(:workitem_pathname) { Pathname(DruidTools::Druid.new(druid, workspace_root_pathname.to_s).path) }
   let(:export_pathname) { Pathname(Settings.cleanup.local_export_home) }
   let(:bag_pathname) { export_pathname.join(druid.split(':').last) }
-  let(:tarfile_pathname) { export_pathname.join(bag_pathname + '.tar') }
+  let(:tarfile_pathname) { export_pathname.join("#{bag_pathname}.tar") }
 
   before do
     allow(Settings.cleanup).to receive_messages(
@@ -25,7 +25,7 @@ RSpec.describe CleanupService do
     export_pathname = Pathname(Settings.cleanup.local_export_home)
     export_pathname.rmtree if export_pathname.exist?
     bag_pathname = export_pathname.join(druid.split(':').last)
-    tarfile_pathname = export_pathname.join(bag_pathname + '.tar')
+    tarfile_pathname = export_pathname.join("#{bag_pathname}.tar")
 
     workitem_pathname.join('content').mkpath
     workitem_pathname.join('temp').mkpath
@@ -164,7 +164,7 @@ RSpec.describe CleanupService do
         #        {export_dir}/druid1.tar
         FileUtils.mkdir export_prefix
         create_tempfile export_prefix
-        File.write(export_prefix + '.tar', 'fake tar junk')
+        File.write("#{export_prefix}.tar", 'fake tar junk')
 
         expect(File).to exist(dr1_wspace.path)
         expect(File).to exist(dr1_assembly.path)
@@ -174,7 +174,7 @@ RSpec.describe CleanupService do
         expect(File).not_to exist(dr1_wspace.path)
         expect(File).not_to exist(dr1_assembly.path)
         expect(File).not_to exist(export_prefix)
-        expect(File).not_to exist(export_prefix + '.tar')
+        expect(File).not_to exist("#{export_prefix}.tar")
 
         # But not druid_2
         expect(File).to exist(dr2_wspace.path)

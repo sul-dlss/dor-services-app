@@ -21,13 +21,13 @@ RSpec.describe ResetWorkspaceService do
     before do
       # To make sure the directory name is as expected am111am1111
 
-      FileUtils.mv(druid_tree_path + '_v2', druid_tree_path) if File.exist?(druid_tree_path + '_v2')
+      FileUtils.mv("#{druid_tree_path}_v2", druid_tree_path) if File.exist?("#{druid_tree_path}_v2")
     end
 
     after do
       # To reset the environment to its original format
-      FileUtils.mv(druid_tree_path + '_v2', druid_tree_path) if File.exist?(druid_tree_path + '_v2')
-      FileUtils.mv("#{archived_druid_tree_path}_v3", archived_druid_tree_path) if File.exist?(archived_druid_tree_path + '_v3')
+      FileUtils.mv("#{druid_tree_path}_v2", druid_tree_path) if File.exist?("#{druid_tree_path}_v2")
+      FileUtils.mv("#{archived_druid_tree_path}_v3", archived_druid_tree_path) if File.exist?("#{archived_druid_tree_path}_v3")
     end
 
     it 'renames the directory tree with the directory not empty' do
@@ -68,8 +68,8 @@ RSpec.describe ResetWorkspaceService do
     end
 
     after do
-      FileUtils.mv("#{bag_path}_v2", bag_path) if File.exist?(bag_path + '_v2')
-      FileUtils.mv("#{bag_path}_v2.tar", bag_path + '.tar') if File.exist?(bag_path + '_v2.tar')
+      FileUtils.mv("#{bag_path}_v2", bag_path) if File.exist?("#{bag_path}_v2")
+      FileUtils.mv("#{bag_path}_v2.tar", "#{bag_path}.tar") if File.exist?("#{bag_path}_v2.tar")
     end
 
     it 'renames the export bags directory and tar files' do
@@ -85,14 +85,14 @@ RSpec.describe ResetWorkspaceService do
       existent_druid = "druid:#{existent_id}"
       create_bag_dir(existent_id)
       bag_path = "#{export_root}/#{existent_id}"
-      FileUtils.mv(bag_path, "#{bag_path}_v2") unless File.exist?(bag_path + '_v2')
+      FileUtils.mv(bag_path, "#{bag_path}_v2") unless File.exist?("#{bag_path}_v2")
       expect { described_class.reset_export_bag(druid: existent_druid, version: '2', export_root: export_root) }
         .to raise_error(ResetWorkspaceService::BagAlreadyExists)
     end
   end
 
   def create_bag_tar(file_name)
-    tarfile_pathname = export_pathname.join(file_name + '.tar')
+    tarfile_pathname = export_pathname.join("#{file_name}.tar")
     tarfile_pathname.open('w') { |file| file.write("test tar\n") }
   end
 

@@ -16,9 +16,7 @@ class CustomAppVersionCheck < OkComputer::AppVersionCheck
   private
 
   def version_from_version_file
-    if File.exist?(Rails.root.join("VERSION"))
-      File.read(Rails.root.join("VERSION")).chomp
-    end
+    File.read(Rails.root.join('VERSION')).chomp if File.exist?(Rails.root.join('VERSION'))
   end
 end
 

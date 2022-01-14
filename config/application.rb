@@ -2,9 +2,9 @@
 
 require_relative 'boot'
 
-require "rails"
+require 'rails'
 # Pick the frameworks you want:
-require "action_controller/railtie"
+require 'action_controller/railtie'
 require 'active_job/railtie'
 require 'active_record/railtie'
 
@@ -24,7 +24,7 @@ class JSONAPIError < Committee::ValidationError
   def render
     [
       status,
-      { "Content-Type" => "application/vnd.api+json" },
+      { 'Content-Type' => 'application/vnd.api+json' },
       [JSON.generate(error_body)]
     ]
   end
@@ -63,7 +63,7 @@ module DorServices
     config.api_only = true
 
     # If an object isn't found in DOR, return a 404
-    config.action_dispatch.rescue_responses["ActiveFedora::ObjectNotFoundError"] = :not_found
+    config.action_dispatch.rescue_responses['ActiveFedora::ObjectNotFoundError'] = :not_found
 
     # This makes sure our Postgres enums function are persisted to the schema
     config.active_record.schema_format = :sql

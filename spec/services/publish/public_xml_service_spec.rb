@@ -25,6 +25,7 @@ RSpec.describe Publish::PublicXmlService do
             </rdf:RDF>
       EOXML
     end
+    let(:ng_xml) { Nokogiri::XML(xml) }
 
     let(:rights) do
       <<~XML
@@ -63,8 +64,6 @@ RSpec.describe Publish::PublicXmlService do
       allow(OpenURI).to receive(:open_uri).with('https://purl-test.stanford.edu/bc123df4567.xml').and_return('<xml/>')
       WebMock.disable_net_connect!
     end
-
-    let(:ng_xml) { Nokogiri::XML(xml) }
 
     context 'when there are no release tags' do
       let(:release_tags) { {} }
@@ -132,7 +131,7 @@ RSpec.describe Publish::PublicXmlService do
       end
 
       it 'a published version' do
-        expect(ng_xml.at_xpath('/publicObject/@publishVersion').value).to eq('dor-services/' + Dor::VERSION)
+        expect(ng_xml.at_xpath('/publicObject/@publishVersion').value).to eq("dor-services/#{Dor::VERSION}")
       end
 
       it 'identityMetadata' do

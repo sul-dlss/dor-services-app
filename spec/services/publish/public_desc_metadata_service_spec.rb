@@ -127,7 +127,7 @@ RSpec.describe Publish::PublicDescMetadataService do
         expect(collection_title.first.content).to eq 'The complete works of Henry George'
         expect(collection_uri.first.content).to eq 'https://purl.stanford.edu/zb871zd0767'
         %w[useAndReproduction copyright license].each do |term|
-          expect(doc.xpath('//mods:accessCondition[@type="' + term + '"]').size).to eq 1
+          expect(doc.xpath("//mods:accessCondition[@type=\"#{term}\"]").size).to eq 1
         end
         expect(doc.xpath('//mods:accessCondition[@type="useAndReproduction"]').text).to match(/yada/)
         expect(doc.xpath('//mods:accessCondition[@type="copyright"]').text).to match(/Property rights reside with/)
@@ -156,7 +156,7 @@ RSpec.describe Publish::PublicDescMetadataService do
         expect(collection_title.first.content).to eq 'The complete works of Henry George'
         expect(collection_uri.first.content).to eq 'https://purl.stanford.edu/zb871zd0767'
         %w[useAndReproduction copyright license].each do |term|
-          expect(doc.xpath('//xmlns:accessCondition[@type="' + term + '"]').size).to eq 1
+          expect(doc.xpath("//xmlns:accessCondition[@type=\"#{term}\"]").size).to eq 1
         end
         expect(doc.xpath('//xmlns:accessCondition[@type="useAndReproduction"]').text).to match(/yada/)
         expect(doc.xpath('//xmlns:accessCondition[@type="copyright"]').text).to match(/Property rights reside with/)
@@ -413,14 +413,13 @@ RSpec.describe Publish::PublicDescMetadataService do
 
     describe 'relatedItem' do
       let(:mods) { read_fixture('ex2_related_mods.xml') }
+      let(:public_mods) { service.ng_xml }
       let(:collection_mods) { read_fixture('ex1_mods.xml') }
 
       before do
         obj.descMetadata.content = mods
         collection.descMetadata.content = collection_mods
       end
-
-      let(:public_mods) { service.ng_xml }
 
       context 'if the item is a member of a collection' do
         before do

@@ -26,14 +26,14 @@ RSpec.describe 'Creating a workspace' do
     post '/v1/objects/druid:mx123qw2323/workspace',
          headers: { 'Authorization' => "Bearer #{jwt}" }
     expect(response).to be_successful
-    expect(File).to be_directory(TEST_WORKSPACE + '/mx/123/qw/2323')
+    expect(File).to be_directory("#{TEST_WORKSPACE}/mx/123/qw/2323")
   end
 
   it 'creates a link in the dor workspace to the path passed in as source' do
     post '/v1/objects/druid:mx123qw2323/workspace',
          params: { source: '/some/path' },
          headers: { 'Authorization' => "Bearer #{jwt}" }
-    expect(File).to be_symlink(TEST_WORKSPACE + '/mx/123/qw/2323/mx123qw2323')
+    expect(File).to be_symlink("#{TEST_WORKSPACE}/mx/123/qw/2323/mx123qw2323")
   end
 
   context 'when the link/directory already exists' do
