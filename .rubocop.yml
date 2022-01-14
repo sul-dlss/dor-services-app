@@ -77,10 +77,7 @@ Rails/Output:
 RSpec/DescribeClass:
   Exclude:
     - 'spec/requests/**/*'
-    - 'spec/services/cocina/mapping/access/**/*'
-    - 'spec/services/cocina/mapping/administrative/**/*'
-    - 'spec/services/cocina/mapping/descriptive/**/*'
-    - 'spec/services/cocina/mapping/identification/**/*'
+    - 'spec/services/cocina/mapping/**/*'
 
 RSpec/ExampleLength:
   Max: 8

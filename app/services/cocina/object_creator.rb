@@ -107,7 +107,7 @@ module Cocina
 
         Cocina::ToFedora::DROAccess.apply(fedora_item, cocina_item.access, cocina_item.structural) if cocina_item.access || cocina_item.structural
 
-        fedora_item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: pid, object: cocina_item)
+        fedora_item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: pid, type: cocina_item.type, structural: cocina_item.structural)
         identity = Cocina::ToFedora::Identity.new(fedora_item)
         identity.initialize_identity
         identity.apply_label(cocina_item.label)
