@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def missing_mime_type?(ng_xml)
+  ng_xml.root.xpath('//file[not(@mimetype)]').present?
+end
+
+Report.new(name: 'content-missing_mimeType', dsid: 'contentMetadata', report_func: method(:missing_mime_type?)).run

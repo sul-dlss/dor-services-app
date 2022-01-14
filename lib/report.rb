@@ -63,11 +63,12 @@ class Report
   end
 
   def build_options
-    options = { fast: false }
+    options = { fast: false, input: 'druids.txt' }
     parser = OptionParser.new do |option_parser|
       option_parser.banner = "Usage: bin/reports/report-#{name} [options]"
       option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids in druids.txt.')
       option_parser.on('-f', '--fast', 'Do not retrieve additional object metadata for report.')
+      option_parser.on('-iFILENAME', '--input FILENAME', String, 'File containing list of druids (instead of druids.txt).')
       option_parser.on('-h', '--help', 'Displays help.') do
         puts option_parser
         exit
@@ -87,7 +88,7 @@ class Report
 
   def druids
     @druids ||= begin
-      druids = File.read('druids.txt').split
+      druids = File.read(options[:input]).split
       druids = druids.take(options[:sample]) if options[:sample]
       druids
     end
