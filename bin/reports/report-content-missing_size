@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def missing_size?(ng_xml)
+  ng_xml.root.xpath('//file[not(@size)]').present?
+end
+
+Report.new(name: 'content-missing_size', dsid: 'contentMetadata', report_func: method(:missing_size?)).run
