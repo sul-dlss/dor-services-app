@@ -2,7 +2,7 @@
 
 module Publish
   class DublinCoreService
-    MODS_TO_DC_XSLT = Nokogiri::XSLT(File.new(File.expand_path(File.dirname(__FILE__) + '/mods2dc.xslt')))
+    MODS_TO_DC_XSLT = Nokogiri::XSLT(File.new(File.expand_path("#{File.dirname(__FILE__)}/mods2dc.xslt")))
     XMLNS_OAI_DC = 'http://www.openarchives.org/OAI/2.0/oai_dc/'
     class CrosswalkError < Dor::DataError; end
 

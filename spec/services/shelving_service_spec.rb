@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe ShelvingService do
   let(:service) { described_class.new(work) }
+  let(:work) { shelvable_item.new(pid: druid) }
 
   let(:shelvable_item) do
     Dor::Item
@@ -20,8 +21,6 @@ RSpec.describe ShelvingService do
     FileUtils.remove_entry stacks_root
     FileUtils.remove_entry workspace_root
   end
-
-  let(:work) { shelvable_item.new(pid: druid) }
 
   describe '.shelve' do
     let(:druid) { 'druid:ng782rw8378' }

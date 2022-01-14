@@ -2,7 +2,7 @@
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
-require File.expand_path('../../config/environment', __FILE__)
+require File.expand_path('../config/environment', __dir__)
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'spec_helper'
@@ -66,7 +66,7 @@ end
 TEST_WORKSPACE = (Settings.stacks.local_workspace_root = 'tmp/dor/workspace')
 
 def clean_workspace
-  FileUtils.rm_rf Dir.glob(TEST_WORKSPACE + '/*')
+  FileUtils.rm_rf Dir.glob("#{TEST_WORKSPACE}/*")
 end
 
 def fixture_dir

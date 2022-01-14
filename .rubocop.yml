@@ -8,6 +8,9 @@ require:
 AllCops:
   TargetRubyVersion: 2.7
   Exclude:
+    - 'bin/console'
+    - 'bin/rails'
+    - 'bin/rake'
     - db/migrate/**
     - db/schema.rb
     - vendor/**/*
