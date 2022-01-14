@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   subject(:generate) do
-    described_class.generate(druid: 'druid:bc123df5678', object: model)
+    described_class.generate(druid: 'druid:bc123df5678', type: model.type, structural: model.structural)
   end
 
   let(:model) do

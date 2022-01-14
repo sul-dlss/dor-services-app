@@ -5,17 +5,18 @@ module Cocina
     # Builds the contentMetadata xml from cocina filesets
     class ContentMetadataGenerator
       # @param [String] druid the identifier of the item
-      # @param [Cocina::Model::RequestDRO] object the cocina model
-      def self.generate(druid:, object:)
-        new(druid: druid, object: object).generate
+      # @param [Cocina::Models::DROStructural] structural structural metadata in Cocina
+      # @param [String] type object type
+      def self.generate(druid:, structural:, type:)
+        new(druid: druid, structural: structural, type: type).generate
       end
 
-      def initialize(druid:, object:)
+      def initialize(druid:, structural:, type:)
         @druid = druid
-        @object_type = object.type
+        @object_type = type
         # NOTE: structural is an optional element, so we need to guard for nil.
-        @resources = object.structural&.contains || []
-        @orders = object.structural&.hasMemberOrders
+        @resources = structural&.contains || []
+        @orders = structural&.hasMemberOrders
       end
 
       def generate
