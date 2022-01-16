@@ -166,5 +166,38 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         )
       end
     end
+
+    context 'when normalizing location' do
+      let(:original_xml) do
+        <<~XML
+          <contentMetadata type="file" objectId="druid:tt395zz8686">
+            <resource objectId="druid:tt395zz8686" id="content" type="file">
+              <label>Using xSearch for Accelerating Research-Review of Deep Web Technologies Federated Search Service</label>
+              <file preserve="yes" deliver="yes" size="4333001" mimetype="application/pdf" id="xSearch_Review_Charleston_Advisor.pdf" shelve="yes" publish="yes">
+                <location type="url">https://stacks.stanford.edu/file/druid:tt395zz8686/xSearch_Review_Charleston_Advisor.pdf</location>
+                <checksum type="md5">c22b3d0fd5569fc1039901bf22dad4f0</checksum>
+                <checksum type="sha1">50b90a7ef7937b048db6f6d4b41637f59a2a57cf</checksum>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+
+      it 'removes location' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+              <contentMetadata type="file" objectId="druid:tt395zz8686">
+              <resource objectId="druid:tt395zz8686" type="file">
+                <label>Using xSearch for Accelerating Research-Review of Deep Web Technologies Federated Search Service</label>
+                <file preserve="yes" deliver="yes" size="4333001" mimetype="application/pdf" id="xSearch_Review_Charleston_Advisor.pdf" shelve="yes" publish="yes">
+                  <checksum type="md5">c22b3d0fd5569fc1039901bf22dad4f0</checksum>
+                  <checksum type="sha1">50b90a7ef7937b048db6f6d4b41637f59a2a57cf</checksum>
+                </file>
+              </resource>
+            </contentMetadata>
+          XML
+        )
+      end
+    end
   end
 end
