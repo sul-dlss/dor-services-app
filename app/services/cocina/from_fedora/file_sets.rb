@@ -88,8 +88,8 @@ module Cocina
               shelve: node['shelve'] == 'yes'
             }
           }.tap do |attrs|
-            # Files from Goobi and Hydrus don't have mimetype until they hit exif-collect in the assemblyWF
-            attrs[:hasMimeType] = node['mimetype'] if node['mimetype']
+            # Files from Goobi don't have mimetype until they hit exif-collect in the assemblyWF
+            attrs[:hasMimeType] = node['mimetype'] if node['mimetype'].present?
             attrs[:presentation] = { height: height, width: width } if height && width
             attrs[:use] = use if use
           end
