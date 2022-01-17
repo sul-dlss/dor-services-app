@@ -89,6 +89,7 @@ module Cocina
     # @return [Dor::Item] a persisted Item model
     # @raises SymphonyReader::ResponseError if symphony connection failed
     # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity
     def create_dro(cocina_item, trial:, assign_doi:)
       pid = trial ? cocina_item.externalIdentifier : Dor::SuriService.mint_id
       klass = cocina_item.type == Cocina::Models::Vocab.agreement ? Dor::Agreement : Dor::Item
@@ -115,9 +116,12 @@ module Cocina
         identity.apply_doi(Doi.for(druid: pid)) if assign_doi
 
         fedora_item.identityMetadata.barcode = cocina_item.identification.barcode if cocina_item.identification.barcode
+
+        fedora_item.geoMetadata.content = cocina_item.geographic.iso19139 if cocina_item&.geographic&.iso19139
       end
     end
     # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     # @param [Cocina::Models::RequestCollection,Cocina::Models::Collection] cocina_collection
     # @return [Dor::Collection] a persisted Collection model
