@@ -107,6 +107,8 @@ module Cocina
     end
 
     # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
     def update_dro
       fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy if has_changed?(:administrative)
       fedora_object.collection_ids = Array.wrap(cocina_object.structural&.isMemberOf).compact if has_changed?(:structural)
@@ -129,10 +131,14 @@ module Cocina
       Cocina::ToFedora::DROAccess.apply(fedora_object, cocina_object.access, cocina_object.structural) if has_changed?(:access) || has_changed?(:structural)
       update_content_metadata(fedora_object, cocina_object) if has_changed?(:structural) || has_changed?(:type)
 
+      fedora_object.geoMetadata.content = cocina_object.geographic.iso19139 if cocina_object&.geographic&.iso19139 && has_changed?(:geographic)
+
       add_tags(fedora_object.pid, cocina_object)
     end
-
     # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
+
     def update_content_metadata(fedora_object, cocina_object)
       # We don't want to overwrite contentMetadata unless they provided structural.contains
       # Note that a change to a book content type will generate completely new structural metadata, and

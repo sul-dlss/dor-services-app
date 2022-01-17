@@ -320,4 +320,38 @@ RSpec.describe Cocina::ObjectCreator do
       end
     end
   end
+
+  context 'when geographic is supplied' do
+    let(:geo_xml) { '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>' }
+
+    let(:params) do
+      {
+        'type' => Cocina::Models::Vocab.geo,
+        'label' => ':auto',
+        'access' => {},
+        'version' => 1,
+        'structural' => {},
+        'administrative' => {
+          'hasAdminPolicy' => apo
+        },
+        'identification' => {
+          'sourceId' => 'sul:8.559351'
+        },
+        description: {
+          title: [
+            {
+              value: 'a map'
+            }
+          ]
+        },
+        'geographic' => {
+          'iso19139' => geo_xml
+        }
+      }
+    end
+
+    it 'geoMetadata content is set' do
+      expect(result.geographic.iso19139).to eq geo_xml
+    end
+  end
 end

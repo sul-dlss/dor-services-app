@@ -295,7 +295,8 @@ RSpec.describe Cocina::ObjectUpdater do
                                  label: 'orig label',
                                  contentMetadata: content_metadata,
                                  descMetadata: desc_metadata,
-                                 identityMetadata: identity_metadata)
+                                 identityMetadata: identity_metadata,
+                                 geoMetadata: geo_metadata)
     end
 
     let(:content_metadata) { double }
@@ -307,6 +308,8 @@ RSpec.describe Cocina::ObjectUpdater do
     let(:desc_metadata) { double }
 
     let(:identity_metadata) { double }
+
+    let(:geo_metadata) { double }
 
     let(:orig_cocina_attrs) do
       {
@@ -459,6 +462,36 @@ RSpec.describe Cocina::ObjectUpdater do
           expect(item).not_to have_received(:source_id=)
           expect(item).not_to have_received(:catkey=)
           expect(identity_metadata).not_to have_received(:barcode=)
+        end
+      end
+    end
+
+    context 'when updating geo' do
+      let(:geo_xml) { '<?xml version="1.0"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" />' }
+
+      before do
+        allow(geo_metadata).to receive(:content=)
+      end
+
+      context 'when geo has changed' do
+        let(:cocina_attrs) do
+          orig_cocina_attrs.tap do |attrs|
+            attrs[:geographic] = {
+              iso19139: geo_xml
+            }
+          end
+        end
+
+        it 'updates geo' do
+          update
+          expect(geo_metadata).to have_received(:content=).with(geo_xml)
+        end
+      end
+
+      context 'when geo has not changed' do
+        it 'does not update geo' do
+          update
+          expect(geo_metadata).not_to have_received(:content=)
         end
       end
     end
