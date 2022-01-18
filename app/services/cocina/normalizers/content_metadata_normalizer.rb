@@ -28,6 +28,7 @@ module Cocina
       def normalize(druid:)
         remove_resource_id
         remove_sequence
+        remove_location
         normalize_object_id
         normalize_reading_order(druid)
         normalize_label_attr
@@ -55,6 +56,10 @@ module Cocina
         # Some original content metadata does not have sequence for all resource nodes.
         # However, sequence is assigned to all resource nodes when mapping to fedora.
         ng_xml.root.xpath('//resource[@sequence]').each { |resource_node| resource_node.delete('sequence') }
+      end
+
+      def remove_location
+        ng_xml.root.xpath('//location[@type="url"]').each(&:remove)
       end
 
       def normalize_object_id
