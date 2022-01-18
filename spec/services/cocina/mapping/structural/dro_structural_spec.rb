@@ -256,4 +256,56 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
       end
     end
   end
+
+  context 'when content metadata with label attr (e.g., legacy ETD)' do
+    it_behaves_like 'DRO Structural Fedora Cocina mapping' do
+      # See druid:bb164pj1759
+      let(:content_xml) do
+        <<~XML
+          <contentMetadata type="book" objectId="#{druid}">
+            <resource sequence="1" type="file" id="folder1PuSu">
+              <attr type="label">Folder 1</attr>
+              <file mimetype="text/plain" shelve="yes" publish="yes" size="7888" preserve="no" id="folder1PuSu/story1u.txt">
+                <checksum type="md5">e2837b9f02e0b0b76f526eeb81c7aa7b</checksum>
+                <checksum type="sha1">61dfac472b7904e1413e0cbf4de432bda2a97627</checksum>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+
+      let(:roundtrip_content_xml) do
+        <<~XML
+          <contentMetadata type="book" objectId="#{druid}">
+            <resource sequence="1" type="file" id="folder1PuSu">
+              <label>Folder 1</label>
+              <file mimetype="text/plain" shelve="yes" publish="yes" size="7888" preserve="no" id="folder1PuSu/story1u.txt">
+                <checksum type="md5">e2837b9f02e0b0b76f526eeb81c7aa7b</checksum>
+                <checksum type="sha1">61dfac472b7904e1413e0cbf4de432bda2a97627</checksum>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+
+      let(:cocina_structural_props) do
+        { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
+                       type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                       version: 1,
+                       structural: { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                                                  type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                                                  label: 'folder1PuSu/story1u.txt',
+                                                  filename: 'folder1PuSu/story1u.txt',
+                                                  size: 7888,
+                                                  version: 1,
+                                                  hasMessageDigests: [{ type: 'sha1',
+                                                                        digest: '61dfac472b7904e1413e0cbf4de432bda2a97627' },
+                                                                      { type: 'md5', digest: 'e2837b9f02e0b0b76f526eeb81c7aa7b' }],
+                                                  access: { access: 'world', download: 'world' },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true },
+                                                  hasMimeType: 'text/plain' }] },
+                       label: 'Folder 1' }] }
+      end
+    end
+  end
 end
