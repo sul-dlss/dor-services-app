@@ -98,8 +98,7 @@ module Cocina
       end
 
       def normalize_attr
-        # Pending https://github.com/sul-dlss/dor-services-app/issues/2808
-        ng_xml.root.xpath('//attr').each(&:remove)
+        ng_xml.root.xpath('//attr[@name="mergedFromResource" or @name="mergedFromPid"]').each(&:remove)
       end
     end
   end
