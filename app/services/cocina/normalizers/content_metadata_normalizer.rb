@@ -29,6 +29,7 @@ module Cocina
         remove_resource_id
         remove_sequence
         remove_location
+        remove_format
         normalize_object_id
         normalize_reading_order(druid)
         normalize_label_attr
@@ -67,6 +68,10 @@ module Cocina
         return if object_id.nil? || object_id.start_with?('druid:')
 
         ng_xml.root['objectId'] = "druid:#{object_id}"
+      end
+
+      def remove_format
+        ng_xml.root.xpath('//file[@format]').each { |file_node| file_node.delete('format') }
       end
 
       def normalize_reading_order(druid)
