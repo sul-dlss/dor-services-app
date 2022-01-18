@@ -97,6 +97,7 @@ RSpec/AnyInstance:
     - 'spec/requests/notify_goobi_spec.rb'
     - 'spec/services/publish/metadata_transfer_service_spec.rb'
     - 'spec/services/publish/public_xml_service_spec.rb'
+    - 'spec/services/sdr_ingest_service_spec.rb'
 
 # Offense count: 20
 RSpec/Be:
@@ -136,7 +137,7 @@ RSpec/InstanceVariable:
   Exclude:
     - 'spec/services/digital_stacks_service_spec.rb'
 
-# Offense count: 61
+# Offense count: 56
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: have_received, receive
 RSpec/MessageSpies:
@@ -173,7 +174,7 @@ RSpec/ScatteredSetup:
     - 'spec/services/publish/metadata_transfer_service_spec.rb'
     - 'spec/services/publish/public_desc_metadata_service_spec.rb'
 
-# Offense count: 25
+# Offense count: 21
 RSpec/StubbedMock:
   Exclude:
     - 'spec/dor/update_marc_record_service_spec.rb'
