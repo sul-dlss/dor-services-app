@@ -126,12 +126,11 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       end
     end
 
-    context 'when normalizing project phoenix' do
+    context 'when normalizing format' do
       let(:original_xml) do
         <<~XML
           <contentMetadata objectId="druid:bk689jd2364" type="file">
             <resource type="page" sequence="268" id="page268">
-              <attr name="pageLabel">256</attr>
               <file preserve="yes" mimetype="image/jp2" format="JPEG2000" size="92631" shelve="no" id="00000268.jp2" deliver="no">
                 <imageData width="1310" height="2071"/>
                 <checksum type="SHA-1">50d77a392ba30dcbbf4ada379e09ded02f9658f2</checksum>
@@ -146,7 +145,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         XML
       end
 
-      it 'removes attrs and format' do
+      it 'removes format' do
         expect(normalized_ng_xml).to be_equivalent_to(
           <<~XML
             <contentMetadata objectId="druid:bk689jd2364" type="file">
@@ -198,6 +197,52 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
           XML
         )
       end
+    end
+  end
+
+  context 'when normalizing attr mergedFromResource and mergedFromPid' do
+    let(:original_xml) do
+      <<~XML
+          <contentMetadata type="image" objectId="druid:vv119cy9094">
+            <resource type="image" sequence="2">
+              <attr name="mergedFromResource">rh008rn6156_1</attr>
+              <attr name="mergedFromPid">druid:rh008rn6156</attr>
+              <label>Image 2</label>
+              <file preserve="yes" shelve="no" publish="no" id="IMG_08673_2.JPG" mimetype="image/jpeg" size="141335">
+                <checksum type="md5">53b3d300e4f03dd122c4eba604bf6750</checksum>
+                <checksum type="sha1">f8cfabf0d7b60040b7c881f69612715a565efcb3</checksum>
+                <imageData width="720" height="576"/>
+              </file>
+              <file id="IMG_08673_2.jp2" mimetype="image/jp2" size="78198" preserve="no" publish="yes" shelve="yes">
+                <checksum type="md5">6e1deb86a3560b5dff0dfc2e37a00f53</checksum>
+                <checksum type="sha1">bc8790cf29fd47e873ebf702f954d3ba8e242694</checksum>
+                <imageData width="720" height="576"/>
+              </file>
+            </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'removes attr' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+              <contentMetadata type="image" objectId="druid:vv119cy9094">
+              <resource type="image">
+                <label>Image 2</label>
+                <file preserve="yes" shelve="no" publish="no" id="IMG_08673_2.JPG" mimetype="image/jpeg" size="141335">
+                  <checksum type="md5">53b3d300e4f03dd122c4eba604bf6750</checksum>
+                  <checksum type="sha1">f8cfabf0d7b60040b7c881f69612715a565efcb3</checksum>
+                  <imageData width="720" height="576"/>
+                </file>
+                <file id="IMG_08673_2.jp2" mimetype="image/jp2" size="78198" preserve="no" publish="yes" shelve="yes">
+                  <checksum type="md5">6e1deb86a3560b5dff0dfc2e37a00f53</checksum>
+                  <checksum type="sha1">bc8790cf29fd47e873ebf702f954d3ba8e242694</checksum>
+                  <imageData width="720" height="576"/>
+                </file>
+              </resource>
+          </contentMetadata>
+        XML
+      )
     end
   end
 end
