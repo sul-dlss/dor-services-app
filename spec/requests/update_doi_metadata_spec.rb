@@ -6,104 +6,104 @@ RSpec.describe 'Update DOI metadata' do
   let(:druid) { 'druid:mx123qw2323' }
   let(:object) { Dor::Item.new(pid: druid) }
 
+  let(:cocina_item) do
+    Cocina::Models.build(
+      'externalIdentifier' => 'druid:bc123df4567',
+      'type' => Cocina::Models::Vocab.image,
+      'version' => 1,
+      'label' => 'testing',
+      'access' => {},
+      'administrative' => {
+        'hasAdminPolicy' => 'druid:xx123xx4567'
+      },
+      'description' => {
+        'title' => [{ 'value' => 'Test obj' }],
+        'subject' => [{ 'type' => 'topic', 'value' => 'word' }],
+        contributor: [
+          {
+            name: [
+              {
+                structuredValue: [
+                  {
+                    value: 'Jane',
+                    type: 'forename'
+                  },
+                  {
+                    value: 'Stanford',
+                    type: 'surname'
+                  }
+                ]
+              }
+            ],
+            type: 'person'
+          }
+        ],
+        form: [
+          {
+            structuredValue: [
+              {
+                value: 'Data',
+                type: 'type'
+              }
+            ],
+            source: {
+              value: 'Stanford self-deposit resource types'
+            },
+            type: 'resource type'
+          },
+          {
+            value: 'Dataset',
+            type: 'resource type',
+            uri: 'http://id.loc.gov/vocabulary/resourceTypes/dat',
+            source: {
+              uri: 'http://id.loc.gov/vocabulary/resourceTypes/'
+            }
+          },
+          {
+            value: 'Data sets',
+            type: 'genre',
+            uri: 'https://id.loc.gov/authorities/genreForms/gf2018026119',
+            source: {
+              code: 'lcgft'
+            }
+          },
+          {
+            value: 'dataset',
+            type: 'genre',
+            source: {
+              code: 'local'
+            }
+          },
+          {
+            value: 'Dataset',
+            type: 'resource type',
+            source: {
+              value: 'DataCite resource types'
+            }
+          }
+        ]
+      },
+      'structural' => {
+        'contains' => []
+      },
+      'identification' => {
+        'doi' => '10.80343/bc123df4567'
+      }
+    )
+  end
+
   before do
     allow(Dor).to receive(:find).and_return(object)
+    allow(Cocina::Mapper).to receive(:build).and_return(cocina_item)
     allow(UpdateDoiMetadataJob).to receive(:perform_later)
   end
 
   context 'when enabled' do
     before do
-      allow(Cocina::Mapper).to receive(:build).and_return(cocina_item)
       allow(Settings.enabled_features).to receive(:datacite_update).and_return(true)
     end
 
     context 'when the item meets the required preconditions' do
-      let(:cocina_item) do
-        Cocina::Models.build(
-          'externalIdentifier' => 'druid:bc123df4567',
-          'type' => Cocina::Models::Vocab.image,
-          'version' => 1,
-          'label' => 'testing',
-          'access' => {},
-          'administrative' => {
-            'hasAdminPolicy' => 'druid:xx123xx4567'
-          },
-          'description' => {
-            'title' => [{ 'value' => 'Test obj' }],
-            'subject' => [{ 'type' => 'topic', 'value' => 'word' }],
-            contributor: [
-              {
-                name: [
-                  {
-                    structuredValue: [
-                      {
-                        value: 'Jane',
-                        type: 'forename'
-                      },
-                      {
-                        value: 'Stanford',
-                        type: 'surname'
-                      }
-                    ]
-                  }
-                ],
-                type: 'person'
-              }
-            ],
-            form: [
-              {
-                structuredValue: [
-                  {
-                    value: 'Data',
-                    type: 'type'
-                  }
-                ],
-                source: {
-                  value: 'Stanford self-deposit resource types'
-                },
-                type: 'resource type'
-              },
-              {
-                value: 'Dataset',
-                type: 'resource type',
-                uri: 'http://id.loc.gov/vocabulary/resourceTypes/dat',
-                source: {
-                  uri: 'http://id.loc.gov/vocabulary/resourceTypes/'
-                }
-              },
-              {
-                value: 'Data sets',
-                type: 'genre',
-                uri: 'https://id.loc.gov/authorities/genreForms/gf2018026119',
-                source: {
-                  code: 'lcgft'
-                }
-              },
-              {
-                value: 'dataset',
-                type: 'genre',
-                source: {
-                  code: 'local'
-                }
-              },
-              {
-                value: 'Dataset',
-                type: 'resource type',
-                source: {
-                  value: 'DataCite resource types'
-                }
-              }
-            ]
-          },
-          'structural' => {
-            'contains' => []
-          },
-          'identification' => {
-            'doi' => '10.80343/bc123df4567'
-          }
-        )
-      end
-
       it 'responds to the request with 202 ("accepted")' do
         post "/v1/objects/#{druid}/update_doi_metadata", headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:accepted)

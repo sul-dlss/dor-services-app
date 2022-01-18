@@ -61,4 +61,8 @@ class ApplicationController < ActionController::API
   def load_item
     @item = Dor.find(params[:object_id] || params[:id])
   end
+
+  def load_cocina_object
+    @cocina_object = CocinaObjectStore.find(params[:object_id] || params[:id])
+  end
 end

@@ -317,8 +317,7 @@ RSpec.describe 'Get the object' do
           errors: [
             a_hash_including(
               detail: 'unable to resolve a sourceId for druid:bc123df4567',
-              meta: { backtrace: include(match("app/services/cocina/mapper.rb:[0-9]+:in `build'$"),
-                                         match("app/controllers/objects_controller.rb:[0-9]+:in `show'$")) },
+              meta: { backtrace: include(match("app/services/cocina/mapper.rb:[0-9]+:in `build'$")) },
               status: '422',
               title: 'Unexpected Cocina::Mapper.build error'
             )
@@ -359,8 +358,7 @@ RSpec.describe 'Get the object' do
         {
           errors: [
             a_hash_including({ detail: 'key not found: nil',
-                               meta: { backtrace: include(match("app/services/cocina/mapper.rb:[0-9]+:in `build'$"),
-                                                          match("app/controllers/objects_controller.rb:[0-9]+:in `show'$")) },
+                               meta: { backtrace: include(match("app/services/cocina/mapper.rb:[0-9]+:in `build'$")) },
                                status: '422',
                                title: 'Unexpected Cocina::Mapper.build error' })
           ]

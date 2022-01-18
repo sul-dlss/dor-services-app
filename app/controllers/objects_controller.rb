@@ -2,19 +2,41 @@
 
 # rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
-  before_action :load_item, except: [:create]
+  before_action :load_cocina_object, only: %i[show update_doi_metadata]
+  before_action :load_item, only: %i[show accession update_marc_record destroy notify_goobi]
 
+  # No longer be necessary when remove Fedora.
   rescue_from(Cocina::ObjectUpdater::NotImplemented) do |e|
     json_api_error(status: :unprocessable_entity, message: e.message)
   end
 
-  rescue_from(ActiveFedora::ObjectNotFoundError) do |e|
+  rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
     json_api_error(status: :not_found, message: e.message)
   end
 
   rescue_from(Dry::Struct::Error) do |e|
     json_api_error(status: :internal_server_error, message: e.message)
     raise e
+  end
+
+  # No longer be necessary when remove Fedora.
+  rescue_from(Cocina::Mapper::UnexpectedBuildError) do |e|
+    json_api_error(status: :unprocessable_entity,
+                   title: 'Unexpected Cocina::Mapper.build error',
+                   message: e.cause,
+                   meta: { backtrace: e.cause.backtrace })
+  end
+
+  # No longer be necessary when remove Fedora.
+  rescue_from(SolrConnectionError) do |e|
+    json_api_error(status: :internal_server_error,
+                   title: 'Unable to reach Solr',
+                   message: e.message)
+  end
+
+  # No longer be necessary when remove Fedora.
+  rescue_from(ActiveFedora::ObjectNotFoundError) do |e|
+    json_api_error(status: :not_found, message: e.message)
   end
 
   def create
@@ -40,14 +62,11 @@ class ObjectsController < ApplicationController
   end
 
   def update
-    fedora_object = Dor.find(params[:id])
-    update_request = Cocina::Models.build(params.except(:action, :controller, :id).to_unsafe_h)
-    persisted_cocina_object = Cocina::ObjectUpdater.run(fedora_object, update_request)
+    cocina_object = Cocina::Models.build(params.except(:action, :controller, :id).to_unsafe_h)
+    updated_cocina_object = CocinaObjectStore.save(cocina_object)
 
-    # Broadcast this update action to a topic
-    Notifications::ObjectUpdated.publish(model: persisted_cocina_object) if Settings.rabbitmq.enabled
-
-    render json: persisted_cocina_object
+    render json: updated_cocina_object
+  # This rescue will no longer be necessary when remove Fedora.
   rescue Cocina::RoundtripValidationError => e
     Honeybadger.notify(e)
     json_api_error(status: e.status, message: e.message)
@@ -56,21 +75,8 @@ class ObjectsController < ApplicationController
   end
 
   def show
-    # Etds are not mapping to Etd by default (see adapt_to_cmodel in Dor::Abstract)
-    # This hack overrides that behavior and ensures Etds can be mapped to Cocina.
-    models = ActiveFedora::ContentModel.models_asserted_by(@item)
-    @item = @item.adapt_to(Etd) if models.include?('info:fedora/afmodel:Etd')
     headers['Last-Modified'] = @item.modified_date.to_datetime.httpdate
-    render json: Cocina::Mapper.build(@item)
-  rescue SolrConnectionError => e
-    json_api_error(status: :internal_server_error,
-                   title: 'Unable to reach Solr',
-                   message: e.message)
-  rescue Cocina::Mapper::UnexpectedBuildError => e
-    json_api_error(status: :unprocessable_entity,
-                   title: 'Unexpected Cocina::Mapper.build error',
-                   message: e.cause,
-                   meta: { backtrace: e.cause.backtrace })
+    render json: @cocina_object
   end
 
   # Initialize specified workflow (assemblyWF by default), and also version if needed
@@ -142,17 +148,17 @@ class ObjectsController < ApplicationController
 
   # Called by the robots.
   def update_doi_metadata
-    return head :no_content unless Settings.enabled_features.datacite_update && cocina_item.identification.doi
+    return head :no_content unless Settings.enabled_features.datacite_update && @cocina_object.identification.doi
 
     # Check to see if these meet the conditions necessary to export to datacite
-    unless Cocina::ToDatacite::Attributes.exportable?(cocina_item)
+    unless Cocina::ToDatacite::Attributes.exportable?(@cocina_object)
       return json_api_error(status: :conflict,
                             message: "Item requested a DOI be updated, but it doesn't meet all the preconditions. " \
                                      'Datacite requires that this object have creators and a datacite extension with resourceTypeGeneral')
     end
 
-    # We can remove this line when we upgrade to Rails 6 and just pass cocina_item.
-    serialized_item = Cocina::Serializer.new.serialize(cocina_item)
+    # We can remove this line when we upgrade to Rails 6 and just pass cocina_object.
+    serialized_item = Cocina::Serializer.new.serialize(@cocina_object)
     UpdateDoiMetadataJob.perform_later(serialized_item)
 
     head :accepted
@@ -178,10 +184,6 @@ class ObjectsController < ApplicationController
   end
 
   private
-
-  def cocina_item
-    @cocina_item ||= Cocina::Mapper.build(@item)
-  end
 
   def workflow_client
     WorkflowClientFactory.build
