@@ -106,8 +106,7 @@ RSpec.describe 'Update object' do
         "identification":#{identification.to_json},
         "structural":{
           "hasMemberOrders":[{"viewingDirection":"right-to-left"}],
-          "isMemberOf":["druid:xx888xx7777"],
-          "hasAgreement":"druid:cd777df7777"
+          "isMemberOf":["druid:xx888xx7777"]
         }
       }
     JSON
@@ -131,7 +130,6 @@ RSpec.describe 'Update object' do
     expect(item).to have_received(:admin_policy_object_id=).with(apo_druid)
 
     # Tags are created.
-    expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Process : Content Type : Book (rtl)'])
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
     expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
   end
@@ -402,8 +400,11 @@ RSpec.describe 'Update object' do
   end
 
   context 'when tags change' do
+    # In other tests, viewing direction starts at and remains right-to-left.
+    # For this test, starting at left-to-right and changing to right-to-left.
     before do
       allow(AdministrativeTags).to receive(:for).and_return(['Project : Tom Swift', 'Process : Content Type : Book (ltr)'])
+      allow(AdministrativeTags).to receive(:content_type).and_return(['Book (ltr)'], ['Book (rtl)'])
       allow(AdministrativeTags).to receive(:update)
     end
 
