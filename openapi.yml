@@ -1128,6 +1128,8 @@ paths:
       description: |-
         Replace the object metadata with the provided metadata.
 
+        The returned Cocina object may differ from the provided Cocina object due to normalization.
+
         Since we don't presently have a full mapping between cocina JSON and MODS,
         only the title can be updated in the descriptive metadata.
       operationId: 'objects#update'
