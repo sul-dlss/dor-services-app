@@ -24,6 +24,33 @@ RSpec.describe 'MODS abstract <--> cocina mappings' do
     end
   end
 
+  describe 'Single abstract with CDATA' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <abstract>This is an <![CDATA[<i>]]>abstract<![CDATA[</i>]]>.</abstract>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <abstract>This is an <![CDATA[<i>]]>abstract<![CDATA[</i>]]>.</abstract>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          note: [
+            {
+              value: 'This is an <i>abstract</i>.',
+              type: 'abstract'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Multilingual abstract' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do

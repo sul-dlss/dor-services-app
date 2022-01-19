@@ -5,6 +5,8 @@ module Cocina
     class Descriptive
       # Maps notes from cocina to MODS XML
       class Note
+        ITALIC_TAG_NAMES = %i[abstract].freeze
+
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::DescriptiveValue>] notes
         # @params [IdGenerator] id_generator
@@ -65,7 +67,22 @@ module Cocina
                   else
                     note.value
                   end
-          xml.public_send tag_name, value, attributes
+
+          xml.public_send tag_name, attributes do
+            if ITALIC_TAG_NAMES.include?(tag_name) && value&.match?('<i>')
+              create_text_cdata_structure(value, xml)
+            else
+              xml.text value
+            end
+          end
+        end
+
+        def create_text_cdata_structure(value, xml)
+          segments = value.split(%r{</?i>})
+          segments.each.with_index(1) do |segment, i|
+            xml.text segment
+            xml.cdata i.odd? ? '<i>' : '</i>' unless i == segments.size # avoid creating <i> for the trailing segment
+          end
         end
 
         def write_basic(note)
