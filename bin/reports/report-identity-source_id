@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+# Records where <otherId> has name="dissertationid" and also <sourceId> has source that's not "dissertation"
+def has_sourceid_notdissid?(ng_xml)
+  ng_xml.root.xpath('//otherId[@name="dissertationid"]').present? &&
+    ng_xml.root.xpath('//sourceId[@source!="dissertation"]').present?
+end
+
+Report.new(name: 'no-sourceid-dissid', dsid: 'identityMetadata', report_func: method(:has_sourceid_notdissid?)).run
