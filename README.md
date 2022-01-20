@@ -111,7 +111,7 @@ These tools are best run on a server within the network. (Currently installed on
 
 ### Setup
 1. Create a `settings.local.yml` containing:
-    ```
+```
 ssl:
   cert_file: "tls/certs/dor-services-prod-dor-prod.crt"
   key_file: "tls/private/dor-services-prod-dor-prod.key"
@@ -124,7 +124,7 @@ solr:
 dor_services:
   url: 'https://dor-services-prod.stanford.edu'
   token: '<create a token>'
-    ```
+```
   
 2. Copy certificates locally via `scp -r <user from puppet>@<dor services production host>:/etc/pki/tls .`
 
