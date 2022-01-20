@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def has_resource_thumb?(ng_xml)
+  ng_xml.root.xpath('//resource/@thumb').present?
+end
+
+Report.new(name: 'content-resource-thumb', dsid: 'contentMetadata', report_func: method(:has_resource_thumb?)).run
