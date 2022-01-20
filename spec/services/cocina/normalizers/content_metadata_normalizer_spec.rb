@@ -42,6 +42,28 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     end
   end
 
+  context 'when normalizing resource objectids' do
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata objectId="druid:bb035tg0974" type="file">
+          <resource objectId="druid:bb035tg0974" id="content" type="file" />
+        </contentMetadata>
+      XML
+    end
+
+    let(:expected_xml) do
+      <<~XML
+        <contentMetadata objectId="druid:bb035tg0974" type="file">
+          <resource type="file" />
+        </contentMetadata>
+      XML
+    end
+
+    it 'removes resource objectids' do
+      expect(normalized_ng_xml).to be_equivalent_to(expected_xml)
+    end
+  end
+
   context 'when normalizing objectId' do
     let(:original_xml) do
       <<~XML
@@ -186,7 +208,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         expect(normalized_ng_xml).to be_equivalent_to(
           <<~XML
               <contentMetadata type="file" objectId="druid:tt395zz8686">
-              <resource objectId="druid:tt395zz8686" type="file">
+              <resource type="file">
                 <label>Using xSearch for Accelerating Research-Review of Deep Web Technologies Federated Search Service</label>
                 <file preserve="yes" deliver="yes" size="4333001" mimetype="application/pdf" id="xSearch_Review_Charleston_Advisor.pdf" shelve="yes" publish="yes">
                   <checksum type="md5">c22b3d0fd5569fc1039901bf22dad4f0</checksum>
