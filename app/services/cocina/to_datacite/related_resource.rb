@@ -24,8 +24,7 @@ module Cocina
       # @return [Hash] Hash of DataCite relatedItem attributes, conforming to the expectations of HTTP PUT request to DataCite
       #  see https://support.datacite.org/reference/dois-2#put_dois-id
       def related_item_attributes
-        return {} if cocina_desc&.relatedResource.blank?
-        return {} if cocina_desc&.relatedResource&.all? { |rr| rr.to_h.blank? }
+        return {} if related_resource_blank?
 
         {
           relatedItemType: 'Other',
@@ -40,6 +39,15 @@ module Cocina
       private
 
       attr :cocina_desc
+
+      def related_resource_blank?
+        return true if cocina_desc&.relatedResource.blank?
+
+        cocina_desc.relatedResource.all? do |related_resource|
+          related_resource_hash = related_resource.to_h
+          related_resource_hash.blank? || related_resource_hash.each_value.all?(&:blank?)
+        end
+      end
 
       def related_item_title
         @related_item_title ||= preferred_citation || other_title

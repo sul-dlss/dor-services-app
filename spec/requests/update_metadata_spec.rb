@@ -101,7 +101,7 @@ RSpec.describe 'Update object' do
           "copyright":"All rights reserved unless otherwise indicated.",
           "useAndReproductionStatement":"Property rights reside with the repository..."
         },
-        "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
+        "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"EEMS"},
         "description":#{description.to_json},
         "identification":#{identification.to_json},
         "structural":{
@@ -130,7 +130,7 @@ RSpec.describe 'Update object' do
     expect(item).to have_received(:admin_policy_object_id=).with(apo_druid)
 
     # Tags are created.
-    expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
+    expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : EEMS'])
     expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
   end
 
@@ -419,13 +419,13 @@ RSpec.describe 'Update object' do
       # Tags are updated.
       expect(AdministrativeTags).not_to have_received(:create)
       expect(AdministrativeTags).to have_received(:update).with(pid: druid, current: 'Process : Content Type : Book (ltr)', new: 'Process : Content Type : Book (rtl)')
-      expect(AdministrativeTags).to have_received(:update).with(pid: druid, current: 'Project : Tom Swift', new: 'Project : Google Books')
+      expect(AdministrativeTags).to have_received(:update).with(pid: druid, current: 'Project : Tom Swift', new: 'Project : EEMS')
     end
   end
 
   context 'when tags do not change' do
     before do
-      allow(AdministrativeTags).to receive(:for).and_return(['Project : Google Books', 'Process : Content Type : Book (rtl)'])
+      allow(AdministrativeTags).to receive(:for).and_return(['Project : EEMS', 'Process : Content Type : Book (rtl)'])
     end
 
     it 'updates the object but not the tags' do

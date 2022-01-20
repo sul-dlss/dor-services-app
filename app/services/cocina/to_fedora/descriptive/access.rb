@@ -80,7 +80,7 @@ module Cocina
           url_attrs = {}.tap do |attrs|
             attrs[:usage] = 'primary display' if url.status == 'primary'
             attrs[:displayLabel] = url.displayLabel
-            attrs[:note] = url.note.first.value unless url.note.nil?
+            attrs[:note] = url.note.first.value if url.note.present?
           end.compact
           xml.url url.value, url_attrs
         end

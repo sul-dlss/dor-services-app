@@ -59,16 +59,16 @@ module Cocina
         end
 
         def manuscript?(form)
-          form.to_h == { value: 'manuscript', source: { value: 'MODS resource types' } }
+          form.value == 'manuscript' && form.source&.value == 'MODS resource types'
         end
 
         def collection?(form)
-          form.to_h == { value: 'collection', source: { value: 'MODS resource types' } }
+          form.value == 'collection' && form.source&.value == 'MODS resource types'
         end
 
         def write_other_forms(forms, is_manuscript, is_collection)
           forms.each do |form|
-            if form.parallelValue
+            if form.parallelValue.present?
               write_parallel_forms(form, is_manuscript, is_collection)
             else
               write_form(form, is_manuscript, is_collection)
@@ -82,7 +82,7 @@ module Cocina
         end
 
         def write_form(form, is_manuscript, is_collection, alt_rep_group: nil)
-          if form.structuredValue
+          if form.structuredValue.present?
             write_structured(form)
           elsif form.value
             write_basic(form, is_manuscript: is_manuscript, is_collection: is_collection, alt_rep_group: alt_rep_group)
@@ -90,7 +90,7 @@ module Cocina
         end
 
         def write_physical_descriptions
-          parallel_physical_descr_forms, other_physical_descr_forms = Array(forms).select { |form| physical_description?(form) }.partition(&:parallelValue)
+          parallel_physical_descr_forms, other_physical_descr_forms = Array(forms).select { |form| physical_description?(form) }.partition { |form| form.parallelValue.present? }
           write_physical_description(other_physical_descr_forms)
 
           parallel_physical_descr_forms.each do |parallel_physical_descr_form|
@@ -100,6 +100,8 @@ module Cocina
           end
         end
 
+        # rubocop:disable Metrics/CyclomaticComplexity
+        # rubocop:disable Metrics/PerceivedComplexity
         def write_physical_description(physical_descr_forms, alt_rep_group: nil, display_label: nil, form: nil)
           grouped_forms = []
           # Each of these are its own physicalDescription
@@ -108,20 +110,26 @@ module Cocina
           other_forms = []
           other_notes = []
           Array(physical_descr_forms).select { |physical_descr_form| physical_description?(physical_descr_form, type: form&.type) }.each do |physical_descr_form|
-            if physical_descr_form.groupedValue
+            if physical_descr_form.groupedValue.present?
               grouped_forms << physical_descr_form
             elsif merge_form?(physical_descr_form, display_label) || alt_rep_group
               simple_forms << physical_descr_form
             else
-              other_notes << physical_descr_form if physical_descr_form.note
+              other_notes << physical_descr_form if physical_descr_form.note.present?
               other_forms << physical_descr_form if physical_descr_form.value
             end
           end
 
-          write_basic_physical_description(other_forms, other_notes, alt_rep_group: alt_rep_group, form: form) unless other_forms.empty?
+          if other_forms.present?
+            write_basic_physical_description(other_forms, other_notes, alt_rep_group: alt_rep_group, form: form)
+          else
+            other_notes.each { |other_note| write_basic_physical_description([], [other_note], alt_rep_group: alt_rep_group, form: form) }
+          end
           simple_forms.each { |simple_form| write_basic_physical_description([simple_form], [simple_form], alt_rep_group: alt_rep_group, form: form) }
           grouped_forms.each { |grouped_form| write_grouped_physical_description(grouped_form, alt_rep_group: alt_rep_group, form: form) }
         end
+        # rubocop:enable Metrics/CyclomaticComplexity
+        # rubocop:enable Metrics/PerceivedComplexity
 
         def merge_form?(form, display_label)
           form.value && (Array(form.note).any? { |note| note.type != 'unit' } || form.displayLabel || display_label)
@@ -129,13 +137,13 @@ module Cocina
 
         def write_basic_physical_description(forms, note_forms, alt_rep_group: nil, form: nil)
           physical_description_attrs = {
-            displayLabel: forms.first.displayLabel || form&.displayLabel,
+            displayLabel: forms.first&.displayLabel || form&.displayLabel,
             altRepGroup: alt_rep_group
           }.compact
 
           xml.physicalDescription physical_description_attrs do
             write_physical_description_form_values(forms, form: form)
-            note_forms.each { |note_form| write_notes(note_form) if note_form.note }
+            note_forms.each { |note_form| write_notes(note_form) if note_form.present? }
           end
         end
 

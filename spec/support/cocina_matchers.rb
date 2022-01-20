@@ -17,7 +17,7 @@ module CocinaMatchers
   # that differ. This is easier to scan than two giant JSON strings.
   matcher :equal_cocina_model do |expected|
     match do |actual|
-      actual == expected.to_json
+      Cocina::Models.build(JSON.parse(actual)).to_json == expected.to_json
     rescue NoMethodError
       warn "Could not match cocina models because expected is not a valid JSON string: #{expected}"
       false

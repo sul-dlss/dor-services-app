@@ -14,7 +14,7 @@ module Cocina
 
           Array(contributors).each do |contributor|
             Array(contributor.name).each_with_index do |contributor_name, name_index|
-              if contributor_name.parallelValue
+              if contributor_name.parallelValue.present?
                 contributor_name.parallelValue.each_with_index do |parallel_contributor_name, parallel_index|
                   return [contributor, name_index, parallel_index] if contributor_name_matches?(parallel_contributor_name, title_name_parts)
                 end
@@ -37,7 +37,7 @@ module Cocina
         end
 
         def self.title_name_parts_for(title)
-          if title.parallelValue
+          if title.parallelValue.present?
             title.parallelValue.map { |value| title_name_parts_for_structured_value(value) }.flatten.compact.presence
           else
             title_name_parts_for_structured_value(title)
@@ -46,12 +46,12 @@ module Cocina
         private_class_method :title_name_parts_for
 
         def self.title_name_parts_for_structured_value(title)
-          return nil unless title.structuredValue
+          return nil if title.structuredValue.blank?
 
           structured_title = title.structuredValue.find { |check_structured_title| check_structured_title.type == 'name' }
           if structured_title.nil?
             nil
-          elsif structured_title.structuredValue
+          elsif structured_title.structuredValue.present?
             structured_title.structuredValue
           else
             [structured_title]
@@ -60,7 +60,7 @@ module Cocina
         private_class_method :title_name_parts_for_structured_value
 
         def self.contributor_name_matches?(contributor_name, title_name_parts)
-          if contributor_name.structuredValue
+          if contributor_name.structuredValue.present?
             name_matches?(contributor_name.structuredValue, title_name_parts)
           else
             name_matches?([contributor_name], title_name_parts)

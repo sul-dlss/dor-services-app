@@ -18,7 +18,7 @@ module Cocina
         end
 
         def write
-          if note.groupedValue
+          if note.groupedValue.present?
             write_grouped_value
           else
             write_structured_value
@@ -67,7 +67,7 @@ module Cocina
 
         def write_extent_for(note_value)
           list_value = find_value(note_value.groupedValue, 'list')
-          structured_values = note_value.groupedValue&.find { |value| value.structuredValue }&.structuredValue
+          structured_values = note_value.groupedValue&.find { |value| value.structuredValue.present? }&.structuredValue
           if structured_values
             start_value = find_value(structured_values, 'start')
             end_value = find_value(structured_values, 'end')

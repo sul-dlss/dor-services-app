@@ -30,15 +30,15 @@ module Cocina
           titles.each do |title|
             if title.valueAt
               write_xlink(title: title)
-            elsif title.parallelValue
+            elsif title.parallelValue.present?
               write_parallel(title: title, title_info_attrs: additional_attrs)
-            elsif title.groupedValue
+            elsif title.groupedValue.present?
               write_grouped(title: title, title_info_attrs: additional_attrs)
             else
               title_info_attrs = {
                 nameTitleGroup: name_title_group_for(title)
               }.compact.merge(additional_attrs)
-              if title.structuredValue
+              if title.structuredValue.present?
                 write_structured(title: title, title_info_attrs: title_info_attrs)
               elsif title.value
                 write_basic(title: title, title_info_attrs: title_info_attrs)
@@ -91,7 +91,7 @@ module Cocina
             end
             parallel_attrs[:nameTitleGroup] = name_title_group_for(parallel_title)
 
-            if parallel_title.structuredValue
+            if parallel_title.structuredValue.present?
               write_structured(title: parallel_title, title_info_attrs: parallel_attrs.compact)
             elsif parallel_title.value
               write_basic(title: parallel_title, title_info_attrs: parallel_attrs.compact)
@@ -132,7 +132,7 @@ module Cocina
 
             title_parts_without_names.each do |title_part|
               title_type = tag_name_for(title_part)
-              xml.public_send(title_type, title_part.value) unless title_part.note
+              xml.public_send(title_type, title_part.value) if title_part.note.blank?
             end
           end
         end

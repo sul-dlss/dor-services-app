@@ -28,9 +28,9 @@ module Cocina
         def write
           if contributor.type == 'unspecified others'
             write_etal
-          elsif contributor.name
+          elsif contributor.name.present?
             parallel_values = contributor.name.first.parallelValue
-            if parallel_values
+            if parallel_values.present?
               altrepgroup_id = id_generator.next_altrepgroup
               parallel_values.each_with_index do |parallel_value, index|
                 name_title_group = name_title_group_indexes.dig(0, index)
@@ -57,7 +57,7 @@ module Cocina
             contributor.name.each do |name|
               write_name(name)
             end
-            write_identifier(contributor) if contributor.identifier
+            write_identifier(contributor) if contributor.identifier.present?
             write_note(contributor)
             write_roles(contributor)
             xml.etal if contributor.type == 'unspecified others'
@@ -65,9 +65,9 @@ module Cocina
         end
 
         def write_name(name)
-          if name.structuredValue
+          if name.structuredValue.present?
             write_structured(name)
-          elsif name.groupedValue
+          elsif name.groupedValue.present?
             write_grouped(name)
           elsif name.value
             name.type == 'display' ? write_display_form(name) : write_basic(name)
@@ -77,12 +77,12 @@ module Cocina
         def write_parallel_contributor(contributor, name, parallel_name, name_title_group, altrepgroup_id)
           attributes = parallel_name_attributes(name, parallel_name, name_title_group, altrepgroup_id)
           xml.name attributes do
-            if parallel_name.structuredValue
+            if parallel_name.structuredValue.present?
               write_structured(parallel_name)
             else
               write_basic(parallel_name)
             end
-            write_identifier(contributor) if contributor.identifier
+            write_identifier(contributor) if contributor.identifier.present?
             write_note(contributor)
             write_roles(contributor)
           end
