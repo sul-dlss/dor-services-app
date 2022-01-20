@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+RDF_NS = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+HYDRA_NS = 'http://projecthydra.org/ns/relations#'
+FEDORA_NS = 'info:fedora/fedora-system:def/model#'
+
+def check(ng_xml)
+  ng_xml.root.xpath('//fedora:hasModel/@rdf:resource="info:fedora/afmodel:Hydrus_AdminPolicyObject" and not(//hydra:referencesAgreement)', hydra: HYDRA_NS, fedora: FEDORA_NS, rdf: RDF_NS)
+end
+
+Report.new(name: 'rels_apo_without_agreement_ids', dsid: 'RELS-EXT', report_func: method(:check)).run
