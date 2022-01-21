@@ -5,10 +5,6 @@ require 'rails_helper'
 RSpec.describe 'Get the object' do
   before do
     allow(Dor).to receive(:find).and_return(object)
-    # When an AF object comes from persistence, then modified_date is a string.  If it's new it's a date.
-    # So by mocking this as a string it looks like the real use case:
-    allow(object).to receive(:createdDate).and_return('2022-01-20T14:50:08.107Z')
-    allow(object).to receive(:modified_date).and_return('2021-03-04T14:50:08.107Z')
     allow(object).to receive(:admin_policy_object_id).and_return('druid:df123cd4567')
   end
 
