@@ -108,6 +108,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
       let(:content_xml) do
         <<~XML
           <contentMetadata type="book" objectId="#{druid}">
+            <bookData readingOrder="ltr"/>
             <resource sequence="1" type="file" id="folder1PuSu">
               <label>Folder 1</label>
               <file mimetype="text/plain" shelve="yes" publish="yes" size="7888" preserve="no" id="folder1PuSu/story1u.txt">
@@ -253,7 +254,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                   access: { access: 'world', download: 'world' },
                                                   administrative: { publish: true, sdrPreserve: true, shelve: false },
                                                   hasMimeType: 'text/plain' }] },
-                       label: '' }] }
+                       label: '' }], hasMemberOrders: [{ viewingDirection: 'left-to-right' }] }
       end
     end
   end
@@ -264,6 +265,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
       let(:content_xml) do
         <<~XML
           <contentMetadata type="book" objectId="#{druid}">
+            <bookData readingOrder="ltr"/>
             <resource sequence="1" type="file" id="folder1PuSu">
               <attr type="label">Folder 1</attr>
               <file mimetype="text/plain" shelve="yes" publish="yes" size="7888" preserve="no" id="folder1PuSu/story1u.txt">
@@ -278,6 +280,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
       let(:roundtrip_content_xml) do
         <<~XML
           <contentMetadata type="book" objectId="#{druid}">
+            <bookData readingOrder="ltr"/>
             <resource sequence="1" type="file" id="folder1PuSu">
               <label>Folder 1</label>
               <file mimetype="text/plain" shelve="yes" publish="yes" size="7888" preserve="no" id="folder1PuSu/story1u.txt">
@@ -305,7 +308,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                   access: { access: 'world', download: 'world' },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true },
                                                   hasMimeType: 'text/plain' }] },
-                       label: 'Folder 1' }] }
+                       label: 'Folder 1' }], hasMemberOrders: [{ viewingDirection: 'left-to-right' }] }
       end
     end
   end
@@ -315,6 +318,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
       let(:content_xml) do
         <<~XML
           <contentMetadata type="book" objectId="#{druid}">
+            <bookData readingOrder="ltr"/>
             <resource sequence="1" type="file" id="folder1PuSu">
               <label>Folder 1</label>
               <file mimetype="" shelve="yes" publish="yes" size="7888" preserve="no" id="folder1PuSu/story1u.txt">
@@ -341,7 +345,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                                       { type: 'md5', digest: 'e2837b9f02e0b0b76f526eeb81c7aa7b' }],
                                                   access: { access: 'world', download: 'world' },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } }] },
-                       label: 'Folder 1' }] }
+                       label: 'Folder 1' }], hasMemberOrders: [{ viewingDirection: 'left-to-right' }] }
       end
     end
   end

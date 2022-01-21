@@ -180,6 +180,31 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       end
     end
 
+    context 'when reading missing and book right-to-left' do
+      let(:original_xml) do
+        <<~XML
+          <contentMetadata objectId="druid:bb035tg0974" type="book">
+            <resource sequence="1" type="page" />
+          </contentMetadata>
+        XML
+      end
+
+      before do
+        allow(AdministrativeTags).to receive(:content_type).and_return(['Book (rtl)'])
+      end
+
+      it 'adds a "rtl" reading order' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <contentMetadata objectId="druid:bb035tg0974" type="book">
+              <bookData readingOrder="rtl"/>
+              <resource type="page" />
+            </contentMetadata>
+          XML
+        )
+      end
+    end
+
     context 'when normalizing imageData' do
       # adapted from druid:bb101rd7954
       let(:original_xml) do
@@ -209,7 +234,6 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
                 <imageData/>
               </file>
             </resource>
-          </contentMetadata>
         XML
       end
 
@@ -239,7 +263,6 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
                   <checksum type="sha1">f73a49b173c741b540170a4f3aa64b87988d4db7</checksum>
                 </file>
               </resource>
-            </contentMetadata>
           XML
         )
       end

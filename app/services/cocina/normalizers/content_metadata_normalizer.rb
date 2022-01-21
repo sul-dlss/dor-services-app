@@ -115,13 +115,17 @@ module Cocina
       def normalize_reading_order(druid)
         return if ng_xml.root['type'] != 'book'
         return if ng_xml.root.xpath('//bookData[@readingOrder]').present?
-        return if ng_xml.root.xpath('//resource').empty?
 
         reading_direction = Cocina::FromFedora::ViewingDirectionHelper.viewing_direction(druid: druid, content_ng_xml: ng_xml)
-        return unless reading_direction
+        fedora_reading_direction = case reading_direction
+                                   when nil, 'left-to-right'
+                                     'ltr'
+                                   else
+                                     'rtl'
+                                   end
 
         book_data_node = Nokogiri::XML::Node.new('bookData', ng_xml)
-        book_data_node['readingOrder'] = reading_direction == 'left-to-right' ? 'ltr' : 'rtl'
+        book_data_node['readingOrder'] = fedora_reading_direction
         ng_xml.root << book_data_node
       end
 
