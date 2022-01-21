@@ -119,10 +119,11 @@ def equivalent?(dsid, orig_datastream_ng_xml, roundtrip_ng_xml)
   end
 end
 
-def diff_datatreams_for(druid, label, orig_datastreams, fedora_obj)
+def diff_datatreams_for(druid, label, orig_datastreams, fedora_obj, apo)
   diff_datastreams = {}
   orig_datastreams.each_pair do |dsid, orig_datastream|
     next if orig_datastream.nil?
+    next if apo && dsid == 'rightsMetadata' # ignoring rightsMetadata for APOs
 
     orig_datastream_ng_xml = ng_xml_for(orig_datastream)
     norm_orig_datastream_ng_xml = norm_orig_datastream_ng_xml_for(dsid, orig_datastream_ng_xml, druid, label, fedora_obj)
@@ -196,7 +197,7 @@ def validate_druid(druid, loader, fast: false, create: false)
   roundtrip_cocina_hash = roundtrip_cocina_obj.to_h
 
   begin
-    diff_datastreams = diff_datatreams_for(druid, label, orig_datastreams, roundtrip_fedora_obj)
+    diff_datastreams = diff_datatreams_for(druid, label, orig_datastreams, roundtrip_fedora_obj, orig_cocina_obj.is_a?(Cocina::Models::AdminPolicy))
   rescue StandardError => e
     write_error(druid, e)
     return [druid, :normalization_error]
