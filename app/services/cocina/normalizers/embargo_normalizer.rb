@@ -28,7 +28,7 @@ module Cocina
       attr_reader :ng_xml
 
       def normalize_empty
-        ng_xml.root.xpath('*[count(*) = 0]').each(&:remove)
+        ng_xml.root.xpath('*[not(text())][not(@*)]').each(&:remove)
         ng_xml.root.remove if ng_xml.root.xpath('*').empty?
       end
     end
