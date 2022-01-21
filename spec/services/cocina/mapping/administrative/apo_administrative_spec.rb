@@ -82,8 +82,12 @@ RSpec.shared_examples 'APO Fedora Cocina mapping' do
         roundtrip_fedora_apo.defaultObjectRights.to_xml
       end
 
+      let(:expected_default_object_rights_xml) do
+        defined?(roundtrip_default_object_rights_xml) ? roundtrip_default_object_rights_xml : default_object_rights_xml
+      end
+
       it 'AdminPolicyAdministrative cocina model roundtrips to original defaultObjectRights.xml' do
-        expect(actual_default_rights_xml).to be_equivalent_to(default_object_rights_xml)
+        expect(actual_default_rights_xml).to be_equivalent_to(expected_default_object_rights_xml)
       end
     end
 
@@ -93,8 +97,12 @@ RSpec.shared_examples 'APO Fedora Cocina mapping' do
         roundtrip_fedora_apo.roleMetadata.to_xml
       end
 
+      let(:expected_role_metadata_xml) do
+        defined?(roundtrip_role_metadata_xml) ? roundtrip_role_metadata_xml : role_metadata_xml
+      end
+
       it 'AdminPolicyAdministrative cocina model roundtrips to original roleMetadata.xml' do
-        expect(actual_role_xml).to be_equivalent_to(role_metadata_xml)
+        expect(actual_role_xml).to be_equivalent_to(expected_role_metadata_xml)
       end
     end
 
@@ -118,9 +126,6 @@ RSpec.shared_examples 'APO Fedora Cocina mapping' do
     let(:my_roundtrip_admin_metadata_xml) do
       defined?(roundtrip_admin_metadata_xml) ? roundtrip_admin_metadata_xml : admin_metadata_xml
     end
-    let(:my_roundtrip_default_object_rights_xml) do
-      defined?(roundtrip_default_object_rights_xml) ? roundtrip_default_object_rights_xml : default_object_rights_xml
-    end
     let(:my_roundtrip_role_metadata_xml) do
       defined?(roundtrip_role_metadata_xml) ? roundtrip_role_metadata_xml : role_metadata_xml
     end
@@ -136,7 +141,7 @@ RSpec.shared_examples 'APO Fedora Cocina mapping' do
         administrativeMetadata: Dor::AdministrativeMetadataDS.from_xml(my_roundtrip_admin_metadata_xml),
         descMetadata: Dor::DescMetadataDS.from_xml('<mods/>'),
         # NOTE: DefaultObjectRights doesn't work with :from_xml
-        defaultObjectRights: instance_double(Dor::DefaultObjectRightsDS, content: my_roundtrip_default_object_rights_xml),
+        defaultObjectRights: instance_double(Dor::DefaultObjectRightsDS, content: default_object_rights_xml),
         roleMetadata: Dor::RoleMetadataDS.from_xml(my_roundtrip_role_metadata_xml)
       )
     end
@@ -440,6 +445,26 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
           </rightsMetadata>
         XML
       end
+      let(:roundtrip_default_object_rights_xml) do
+        <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <world rule="no-download"/>
+              </machine>
+            </access>
+            <use>
+              <license>https://creativecommons.org/licenses/by-nc/3.0/legalcode</license>
+              <human type="useAndReproduction">Use at will.</human>
+            </use>
+          </rightsMetadata>
+        XML
+      end
       let(:role_metadata_xml) do
         <<~XML
           <roleMetadata>
@@ -457,6 +482,33 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
               <person>
                 <identifier type="sunetid">dhartwig</identifier>
                 <name/>
+              </person>
+            </role>
+            <role type="dor-apo-manager">
+              <group>
+                <identifier type="workgroup">sdr:psm-staff</identifier>
+              </group>
+              <group>
+                <identifier type="workgroup">sdr:developer</identifier>
+              </group>
+            </role>
+          </roleMetadata>
+        XML
+      end
+      let(:roundtrip_role_metadata_xml) do
+        <<~XML
+          <roleMetadata>
+            <role type="hydrus-collection-manager">
+              <person>
+                <identifier type="sunetid">dhartwig</identifier>
+              </person>
+              <person>
+                <identifier type="sunetid">jschne</identifier>
+              </person>
+            </role>
+            <role type="hydrus-collection-depositor">
+              <person>
+                <identifier type="sunetid">dhartwig</identifier>
               </person>
             </role>
             <role type="dor-apo-manager">
