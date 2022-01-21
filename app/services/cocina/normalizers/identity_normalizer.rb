@@ -30,6 +30,7 @@ module Cocina
         normalize_out_citation_elements
         normalize_out_call_sequence_ids
         normalize_out_empty_other_ids
+        normalize_out_catkeys
         normalize_source_id_whitespace
         normalize_release_tags
 
@@ -111,6 +112,15 @@ module Cocina
       def normalize_out_call_sequence_ids
         ng_xml.root.xpath('//otherId[@name="callseq"]').each(&:remove)
         ng_xml.root.xpath('//otherId[@name="shelfseq"]').each(&:remove)
+      end
+
+      def normalize_out_catkeys
+        # remove duplicate catkeys
+        seen = Set[]
+        ng_xml.root.xpath('//otherId[@name="catkey"]').each do |id|
+          id.remove if seen.include? id.text
+          seen.add id.text
+        end
       end
 
       def normalize_release_tags

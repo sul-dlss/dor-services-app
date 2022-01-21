@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def check(ng_xml)
+  ng_xml.root.xpath('//otherId[@name="catkey"]').map(&:text).uniq.length > 1
+end
+
+Report.new(name: 'identity-multi_catkeys', dsid: 'identityMetadata', report_func: method(:check)).run

@@ -469,4 +469,25 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
       end
     end
   end
+
+  context 'when there are duplicate catkeys' do
+    let(:original_xml) do
+      <<~XML
+        <identityMetadata>
+          <otherId name="catkey">90125</otherId>
+          <otherId name="catkey">90125</otherId>
+        </identityMetadata>
+      XML
+    end
+
+    it 'collapses them' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <identityMetadata>
+            <otherId name="catkey">90125</otherId>
+          </identityMetadata>
+        XML
+      )
+    end
+  end
 end
