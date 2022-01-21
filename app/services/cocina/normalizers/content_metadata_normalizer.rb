@@ -103,7 +103,7 @@ module Cocina
       end
 
       def normalize_attr
-        ng_xml.root.xpath('//attr[@name="mergedFromResource" or @name="mergedFromPid"]').each(&:remove)
+        ng_xml.root.xpath('//attr[@name="mergedFromResource" or @name="mergedFromPid" or @name="representation"]').each(&:remove)
       end
     end
   end

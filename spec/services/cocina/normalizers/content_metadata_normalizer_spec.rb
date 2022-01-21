@@ -229,6 +229,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
             <resource type="image" sequence="2">
               <attr name="mergedFromResource">rh008rn6156_1</attr>
               <attr name="mergedFromPid">druid:rh008rn6156</attr>
+              <attr name="representation">uncropped</attr>
               <label>Image 2</label>
               <file preserve="yes" shelve="no" publish="no" id="IMG_08673_2.JPG" mimetype="image/jpeg" size="141335">
                 <checksum type="md5">53b3d300e4f03dd122c4eba604bf6750</checksum>
