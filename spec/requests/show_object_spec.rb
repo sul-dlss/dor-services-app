@@ -28,36 +28,38 @@ RSpec.describe 'Get the object' do
 
     context 'when the object exists with minimal metadata' do
       let(:expected) do
-        {
-          externalIdentifier: 'druid:bc123df4567',
-          type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
-          label: 'foo',
-          version: 1,
-          access: {
-            access: 'world',
-            copyright: 'All rights reserved unless otherwise indicated.',
-            download: 'world',
-            useAndReproductionStatement: 'Property rights reside with the repository...'
-          },
-          administrative: {
-            hasAdminPolicy: 'druid:df123cd4567'
-          },
-          description: {
-            title: [
-              { value: 'Hello' }
-            ],
-            purl: 'https://purl.stanford.edu/bc123df4567',
+        Cocina::Models::DRO.new(
+          {
+            externalIdentifier: 'druid:bc123df4567',
+            type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
+            label: 'foo',
+            version: 1,
             access: {
-              digitalRepository: [
-                { value: 'Stanford Digital Repository' }
-              ]
-            }
-          },
-          identification: {
-            sourceId: 'src:99999'
-          },
-          structural: {}
-        }
+              access: 'world',
+              copyright: 'All rights reserved unless otherwise indicated.',
+              download: 'world',
+              useAndReproductionStatement: 'Property rights reside with the repository...'
+            },
+            administrative: {
+              hasAdminPolicy: 'druid:df123cd4567'
+            },
+            description: {
+              title: [
+                { value: 'Hello' }
+              ],
+              purl: 'https://purl.stanford.edu/bc123df4567',
+              access: {
+                digitalRepository: [
+                  { value: 'Stanford Digital Repository' }
+                ]
+              }
+            },
+            identification: {
+              sourceId: 'src:99999'
+            },
+            structural: {}
+          }
+        )
       end
 
       it 'returns the object' do
@@ -66,7 +68,7 @@ RSpec.describe 'Get the object' do
         expect(response).to have_http_status(:ok)
         expect(response.headers['Last-Modified']).to end_with 'GMT'
         expect(response.headers['X-Created-At']).to end_with 'GMT'
-        expect(response_model).to eq expected
+        expect(response.body).to equal_cocina_model(expected)
       end
     end
 
@@ -86,59 +88,61 @@ RSpec.describe 'Get the object' do
       let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
 
       let(:expected) do
-        {
-          externalIdentifier: 'druid:bc123df4567',
-          type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
-          label: 'foo',
-          version: 1,
-          access: {
-            access: 'world',
-            copyright: 'All rights reserved unless otherwise indicated.',
-            download: 'world',
-            embargo: {
-              releaseDate: '2019-09-26T07:00:00.000+00:00',
-              access: 'world',
-              download: 'world'
-            },
-            useAndReproductionStatement: 'Property rights reside with the repository...'
-          },
-          administrative: {
-            hasAdminPolicy: 'druid:df123cd4567',
-            releaseTags: [
-              {
-                to: 'Searchworks',
-                what: 'self',
-                date: '2014-08-30T01:06:28.000+00:00',
-                who: 'petucket',
-                release: true
-              }
-            ]
-          },
-          description: {
-            title: [
-              { value: 'Hello' }
-            ],
-            purl: 'https://purl.stanford.edu/bc123df4567',
+        Cocina::Models::DRO.new(
+          {
+            externalIdentifier: 'druid:bc123df4567',
+            type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
+            label: 'foo',
+            version: 1,
             access: {
-              digitalRepository: [
-                { value: 'Stanford Digital Repository' }
+              access: 'world',
+              copyright: 'All rights reserved unless otherwise indicated.',
+              download: 'world',
+              embargo: {
+                releaseDate: '2019-09-26T07:00:00.000+00:00',
+                access: 'world',
+                download: 'world'
+              },
+              useAndReproductionStatement: 'Property rights reside with the repository...'
+            },
+            administrative: {
+              hasAdminPolicy: 'druid:df123cd4567',
+              releaseTags: [
+                {
+                  to: 'Searchworks',
+                  what: 'self',
+                  date: '2014-08-30T01:06:28.000+00:00',
+                  who: 'petucket',
+                  release: true
+                }
               ]
+            },
+            description: {
+              title: [
+                { value: 'Hello' }
+              ],
+              purl: 'https://purl.stanford.edu/bc123df4567',
+              access: {
+                digitalRepository: [
+                  { value: 'Stanford Digital Repository' }
+                ]
+              }
+            },
+            identification: {
+              sourceId: 'src:99999'
+            },
+            structural: {
+              isMemberOf: ['druid:xx888xx7777']
             }
-          },
-          identification: {
-            sourceId: 'src:99999'
-          },
-          structural: {
-            isMemberOf: ['druid:xx888xx7777']
           }
-        }
+        )
       end
 
       it 'returns the object' do
         get '/v1/objects/druid:bc123df4567',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:ok)
-        expect(response_model).to eq expected
+        expect(response.body).to equal_cocina_model(expected)
       end
     end
 
@@ -150,43 +154,43 @@ RSpec.describe 'Get the object' do
       end
 
       let(:expected) do
-        {
-          externalIdentifier: 'druid:bc123df4567',
-          type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
-          label: 'foo',
-          version: 1,
-          access: {
-            access: 'world',
-            copyright: 'All rights reserved unless otherwise indicated.',
-            download: 'world',
-            useAndReproductionStatement: 'Property rights reside with the repository...'
-          },
-          administrative: {
-            hasAdminPolicy: 'druid:df123cd4567'
-          },
-          description: {
-            title: [
-              { value: 'Hello' }
-            ],
-            purl: 'https://purl.stanford.edu/bc123df4567',
-            access: {
-              digitalRepository: [
-                { value: 'Stanford Digital Repository' }
-              ]
-            }
-          },
-          identification: {
-            sourceId: 'src:99999'
-          },
-          structural: {}
-        }
+        Cocina::Models::DRO.new({
+                                  externalIdentifier: 'druid:bc123df4567',
+                                  type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
+                                  label: 'foo',
+                                  version: 1,
+                                  access: {
+                                    access: 'world',
+                                    copyright: 'All rights reserved unless otherwise indicated.',
+                                    download: 'world',
+                                    useAndReproductionStatement: 'Property rights reside with the repository...'
+                                  },
+                                  administrative: {
+                                    hasAdminPolicy: 'druid:df123cd4567'
+                                  },
+                                  description: {
+                                    title: [
+                                      { value: 'Hello' }
+                                    ],
+                                    purl: 'https://purl.stanford.edu/bc123df4567',
+                                    access: {
+                                      digitalRepository: [
+                                        { value: 'Stanford Digital Repository' }
+                                      ]
+                                    }
+                                  },
+                                  identification: {
+                                    sourceId: 'src:99999'
+                                  },
+                                  structural: {}
+                                })
       end
 
       it 'returns the object without the embargo' do
         get '/v1/objects/druid:bc123df4567',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:ok)
-        expect(response_model).to eq expected
+        expect(response.body).to equal_cocina_model(expected)
       end
     end
 
@@ -245,61 +249,61 @@ RSpec.describe 'Get the object' do
       end
 
       let(:expected) do
-        {
-          externalIdentifier: 'druid:bc123df4567',
-          type: 'http://cocina.sul.stanford.edu/models/image.jsonld',
-          label: 'foo',
-          version: 1,
-          access: {
-            access: 'world',
-            copyright: 'All rights reserved unless otherwise indicated.',
-            download: 'world',
-            useAndReproductionStatement: 'Property rights reside with the repository...'
-          },
-          administrative: {
-            hasAdminPolicy: 'druid:df123cd4567'
-          },
-          description: {
-            title: [
-              { value: 'Hello' }
-            ],
-            purl: 'https://purl.stanford.edu/bc123df4567',
-            access: {
-              digitalRepository: [
-                { value: 'Stanford Digital Repository' }
-              ]
-            }
-          },
-          identification: {
-            sourceId: 'src:99999'
-          },
-          structural: {
-            hasMemberOrders: [
-              {
-                members: [
-                  'kq126jw7402_1/1592A.jp2',
-                  'cv761kr7119_1/1592B.jp2',
-                  'kn300wd1779_1/1592c.jp2',
-                  'rz617vr4473_1/1592001.jp2',
-                  'sd322dt2118_1/1592002.jp2',
-                  'hp623ch4433_1/1592003.jp2',
-                  'sq217qj5005_1/1592004.jp2',
-                  'vd823mb5658_1/1592005.jp2',
-                  'zp230ft8517_1/1592006.jp2',
-                  'xx933wk5286_1/1592007.jp2',
-                  'qf828rv2163_1/1592008.jp2'
-                ]
-              }
-            ]
-          }
-        }
+        Cocina::Models::DRO.new({
+                                  externalIdentifier: 'druid:bc123df4567',
+                                  type: 'http://cocina.sul.stanford.edu/models/image.jsonld',
+                                  label: 'foo',
+                                  version: 1,
+                                  access: {
+                                    access: 'world',
+                                    copyright: 'All rights reserved unless otherwise indicated.',
+                                    download: 'world',
+                                    useAndReproductionStatement: 'Property rights reside with the repository...'
+                                  },
+                                  administrative: {
+                                    hasAdminPolicy: 'druid:df123cd4567'
+                                  },
+                                  description: {
+                                    title: [
+                                      { value: 'Hello' }
+                                    ],
+                                    purl: 'https://purl.stanford.edu/bc123df4567',
+                                    access: {
+                                      digitalRepository: [
+                                        { value: 'Stanford Digital Repository' }
+                                      ]
+                                    }
+                                  },
+                                  identification: {
+                                    sourceId: 'src:99999'
+                                  },
+                                  structural: {
+                                    hasMemberOrders: [
+                                      {
+                                        members: [
+                                          'kq126jw7402_1/1592A.jp2',
+                                          'cv761kr7119_1/1592B.jp2',
+                                          'kn300wd1779_1/1592c.jp2',
+                                          'rz617vr4473_1/1592001.jp2',
+                                          'sd322dt2118_1/1592002.jp2',
+                                          'hp623ch4433_1/1592003.jp2',
+                                          'sq217qj5005_1/1592004.jp2',
+                                          'vd823mb5658_1/1592005.jp2',
+                                          'zp230ft8517_1/1592006.jp2',
+                                          'xx933wk5286_1/1592007.jp2',
+                                          'qf828rv2163_1/1592008.jp2'
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                })
       end
 
       it 'returns the object' do
         get '/v1/objects/druid:bc123df4567',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:ok)
-        expect(response_model).to eq expected
+        expect(response.body).to equal_cocina_model(expected)
       end
     end
 
@@ -409,7 +413,7 @@ RSpec.describe 'Get the object' do
     end
 
     let(:expected) do
-      {
+      Cocina::Models::Collection.new(
         externalIdentifier: 'druid:bc123df4567',
         type: 'http://cocina.sul.stanford.edu/models/collection.jsonld',
         label: 'foo',
@@ -431,16 +435,14 @@ RSpec.describe 'Get the object' do
             ]
           }
         }
-      }
+      )
     end
-
-    let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
 
     it 'returns the object' do
       get '/v1/objects/druid:bc123df4567',
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:ok)
-      expect(response_model).to eq expected
+      expect(response.body).to equal_cocina_model(expected)
     end
   end
 
@@ -464,7 +466,7 @@ RSpec.describe 'Get the object' do
         expect(json['label']).to eq 'foo'
         expect(json['version']).to eq 1
         expect(json['administrative']['defaultObjectRights']).to match '<rightsMetadata>'
-        expect(json['administrative']['registrationWorkflow']).to be_nil
+        expect(json['administrative']['registrationWorkflow']).to eq []
         expect(json['administrative']['hasAdminPolicy']).to eq 'druid:df123cd4567'
         expect(json['administrative']['roles']).to eq []
       end
@@ -566,8 +568,8 @@ RSpec.describe 'Get the object' do
       expect(json['label']).to eq 'foo'
       expect(json['version']).to eq 1
       expect(json['access']).to eq('access' => 'dark', 'download' => 'none')
-      expect(json['identification']).to eq('sourceId' => 'dissertationid:00000123')
-      expect(json['structural']).to eq({})
+      expect(json['identification']).to eq({ 'catalogLinks' => [], 'sourceId' => 'dissertationid:00000123' })
+      expect(json['structural']).to eq({ 'contains' => [], 'hasMemberOrders' => [], 'isMemberOf' => [] })
     end
   end
 end

@@ -32,7 +32,7 @@ module Cocina
           Array(notes).each do |note|
             if note.type == 'part'
               PartWriter.write(xml: xml, part_note: note)
-            elsif note.parallelValue
+            elsif note.parallelValue.present?
               write_parallel(note)
             else
               write_basic(note)
@@ -60,7 +60,7 @@ module Cocina
 
         def tag(note, tag_name, attributes)
           attributes[:type] = note.type if note.type && note.type != 'abstract' && [:tableOfContents, :targetAudience].exclude?(tag_name)
-          value = if note.structuredValue
+          value = if note.structuredValue.present?
                     note.structuredValue.map(&:value).join(' -- ')
                   else
                     note.value

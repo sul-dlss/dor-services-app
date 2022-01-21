@@ -117,7 +117,7 @@ module Cocina
         end
 
         def write_basic_date(date, cocina_event_type)
-          if date.structuredValue
+          if date.structuredValue.present?
             structured_val_attribs = {
               encoding: date.encoding,
               qualifier: date.qualifier,

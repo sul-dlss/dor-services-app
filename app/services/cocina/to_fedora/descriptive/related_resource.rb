@@ -95,7 +95,7 @@ module Cocina
         end
 
         def other_type_note_for(related)
-          return nil if related.note.nil?
+          return nil if related.note.blank?
 
           related.note.find { |note| note.type == 'other relation type' }
         end

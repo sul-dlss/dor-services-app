@@ -20,7 +20,7 @@ module Cocina
 
         def write
           Array(identifiers).each do |identifier|
-            if identifier.parallelValue
+            if identifier.parallelValue.present?
               write_parallel(identifier)
             else
               write_identifier(identifier)

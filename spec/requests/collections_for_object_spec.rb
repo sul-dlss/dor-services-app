@@ -19,29 +19,29 @@ RSpec.describe 'Get the object' do
   let(:expected) do
     {
       collections: [
-        {
-          externalIdentifier: 'druid:bc123df4567',
-          type: 'http://cocina.sul.stanford.edu/models/collection.jsonld',
-          label: 'collection #1',
-          version: 1,
-          access: {
-            access: 'dark'
-          },
-          administrative: {
-            hasAdminPolicy: 'druid:df123cd4567'
-          },
-          description: {
-            title: [
-              { value: 'Hello' }
-            ],
-            purl: 'https://purl.stanford.edu/bc123df4567',
-            access: {
-              digitalRepository: [
-                { value: 'Stanford Digital Repository' }
-              ]
-            }
-          }
-        }
+        Cocina::Models::Collection.new({
+                                         externalIdentifier: 'druid:bc123df4567',
+                                         type: 'http://cocina.sul.stanford.edu/models/collection.jsonld',
+                                         label: 'collection #1',
+                                         version: 1,
+                                         access: {
+                                           access: 'dark'
+                                         },
+                                         administrative: {
+                                           hasAdminPolicy: 'druid:df123cd4567'
+                                         },
+                                         description: {
+                                           title: [
+                                             { value: 'Hello' }
+                                           ],
+                                           purl: 'https://purl.stanford.edu/bc123df4567',
+                                           access: {
+                                             digitalRepository: [
+                                               { value: 'Stanford Digital Repository' }
+                                             ]
+                                           }
+                                         }
+                                       }).to_h
       ]
     }
   end

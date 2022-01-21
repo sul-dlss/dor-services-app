@@ -555,7 +555,34 @@ RSpec.describe Cocina::ObjectUpdater do
       let(:cocina_attrs) do
         orig_cocina_attrs.tap do |attrs|
           attrs[:structural] = {
-            contains: []
+            contains: [
+              {
+                'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                'externalIdentifier' => 'http://cocina.sul.stanford.edu/fileSet/e4c2b834-90ce-4be8-b9fa-445df89f5f10',
+                'label' => '', 'version' => 1,
+                'structural' => {
+                  'contains' => [
+                    {
+                      'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                      'externalIdentifier' => 'http://cocina.sul.stanford.edu/file/8ee2d21b-9183-4df6-9813-c0a104b329ce',
+                      'label' => 'sul-logo.png',
+                      'filename' => 'sul-logo.png',
+                      'size' => 19823,
+                      'version' => 1,
+                      'hasMimeType' => 'image/png',
+                      'hasMessageDigests' => [{ 'type' => 'sha1', 'digest' => 'b5f3221455c8994afb85214576bc2905d6b15418' },
+                                              { 'type' => 'md5', 'digest' => '7142ce948827c16120cc9e19b05acd49' }],
+                      'access' => { 'access' => 'dark', 'download' => 'none' },
+                      'administrative' => {
+                        'publish' => true,
+                        'sdrPreserve' => true,
+                        'shelve' => false
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         end
       end

@@ -60,7 +60,7 @@ module Cocina
         attr_reader :xml, :subjects, :forms, :id_generator
 
         def write_subject(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
-          if subject_value.structuredValue || subject_value.groupedValue
+          if subject_value.structuredValue.present? || subject_value.groupedValue.present?
             write_structured_or_grouped(subject, subject_value, alt_rep_group: alt_rep_group, type: type, display_values: display_values)
           else
             write_basic(subject, subject_value, alt_rep_group: alt_rep_group, type: type, display_values: display_values)
@@ -92,7 +92,7 @@ module Cocina
         def write_structured_or_grouped(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
           type ||= subject_value.type || subject.type
           xml.subject(structured_attributes_for(subject_value, type, alt_rep_group: alt_rep_group)) do
-            if type == 'place' && subject_value.structuredValue
+            if type == 'place' && subject_value.structuredValue.present?
               hierarchical_geographic(subject_value)
             elsif type == 'time'
               time_range(subject_value)
@@ -101,10 +101,10 @@ module Cocina
             elsif FromFedora::Descriptive::Contributor::ROLES.value?(type)
               write_structured_person(subject, subject_value, type: type, display_values: display_values)
             else
-              values = Array(subject_value.structuredValue || subject_value.groupedValue)
+              values = subject_value.structuredValue.presence || subject_value.groupedValue
               values.each do |value|
                 if FromFedora::Descriptive::Contributor::ROLES.value?(value.type)
-                  if value.structuredValue
+                  if value.structuredValue.present?
                     write_structured_person(subject, value, display_values: display_values)
                   else
                     write_person(subject, value, display_values: display_values)
@@ -129,7 +129,7 @@ module Cocina
 
         # rubocop:disable Metrics/PerceivedComplexity
         def structured_attributes_for(subject_value, type, alt_rep_group: nil)
-          values = subject_value.structuredValue || subject_value.groupedValue
+          values = subject_value.structuredValue.presence || subject_value.groupedValue
           {
             altRepGroup: alt_rep_group,
             displayLabel: subject_value.displayLabel,
@@ -289,7 +289,7 @@ module Cocina
         # rubocop:disable Metrics/CyclomaticComplexity
         def write_cartographic_without_authority
           # With all subject/forms without authorities.
-          scale_forms = forms.select { |form| form.type == 'map scale' }.flat_map { |form| form.groupedValue || form }
+          scale_forms = forms.select { |form| form.type == 'map scale' }.flat_map { |form| form.groupedValue.presence || form }
           projection_forms = forms.select { |form| form.type == 'map projection' && form.source.nil? }
           carto_subjects = subjects.select { |subject| subject.type == 'map coordinates' }
           return unless scale_forms.present? || projection_forms.present? || carto_subjects.present?
