@@ -80,6 +80,22 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     end
   end
 
+  context 'when normalizing missing objectId' do
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata type="image" />
+      XML
+    end
+
+    it 'adds druid as objectId' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata objectId="druid:bb035tg0974" type="image" />
+        XML
+      )
+    end
+  end
+
   context 'when normalizing reading order' do
     context 'when not a book' do
       let(:original_xml) do

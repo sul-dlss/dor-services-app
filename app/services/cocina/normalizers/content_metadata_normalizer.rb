@@ -31,7 +31,7 @@ module Cocina
         remove_sequence
         remove_location
         remove_format
-        normalize_object_id
+        normalize_object_id(druid)
         normalize_reading_order(druid)
         normalize_label_attr
         normalize_attr
@@ -69,11 +69,16 @@ module Cocina
         ng_xml.root.xpath('//location[@type="url"]').each(&:remove)
       end
 
-      def normalize_object_id
+      def normalize_object_id(druid)
         object_id = ng_xml.root['objectId']
-        return if object_id.nil? || object_id.start_with?('druid:')
 
-        ng_xml.root['objectId'] = "druid:#{object_id}"
+        if object_id
+          return if object_id.start_with?('druid:')
+
+          ng_xml.root['objectId'] = "druid:#{object_id}"
+        else
+          ng_xml.root['objectId'] = druid
+        end
       end
 
       def remove_format
