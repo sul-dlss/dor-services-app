@@ -76,7 +76,7 @@ class ObjectsController < ApplicationController
 
   def show
     headers['Last-Modified'] = @item.modified_date.to_datetime.httpdate
-    headers['X-Created-At'] = @item.createdDate.to_datetime.httpdate
+    headers['X-Created-At'] = @item.create_date.to_datetime.httpdate
     render json: @cocina_object
   end
 
