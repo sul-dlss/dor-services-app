@@ -8,3 +8,5 @@ solr_conf
 # Required for puma to have a place to put the pid file
 !tmp/pids/.keep
 cache-files.txt
+cache
+results
