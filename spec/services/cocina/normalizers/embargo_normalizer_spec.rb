@@ -5,6 +5,33 @@ require 'rails_helper'
 RSpec.describe Cocina::Normalizers::EmbargoNormalizer do
   let(:normalized_ng_xml) { described_class.normalize(embargo_ng_xml: Nokogiri::XML(original_xml)) }
 
+  context 'when released embargo' do
+    let(:original_xml) do
+      <<~XML
+        <embargoMetadata>
+          <status>released</status>
+          <releaseDate>2018-06-02T07:00:00Z</releaseDate>
+          <twentyPctVisibilityStatus/>
+          <twentyPctVisibilityReleaseDate/>
+          <releaseAccess>
+            <access type="read">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+          </releaseAccess>
+        </embargoMetadata>
+      XML
+    end
+
+    it 'removes embargo' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+        XML
+      )
+    end
+  end
+
   context 'when #normalize_empty' do
     let(:original_xml) do
       <<~XML
