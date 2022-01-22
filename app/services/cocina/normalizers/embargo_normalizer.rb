@@ -18,7 +18,7 @@ module Cocina
       end
 
       def normalize
-        return regenerate_ng_xml(ng_xml.to_xml) if normalize_released
+        return regenerate_ng_xml(ng_xml.to_xml) if normalize_released?
 
         normalize_empty
 
@@ -34,7 +34,7 @@ module Cocina
         ng_xml.root.remove if ng_xml.root.xpath('*').empty?
       end
 
-      def normalize_released
+      def normalize_released?
         return false if ng_xml.root.xpath('//status[text() = "released"]').blank?
 
         ng_xml.root.remove
