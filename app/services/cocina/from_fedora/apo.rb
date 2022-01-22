@@ -56,7 +56,10 @@ module Cocina
       def build_roles
         # rubocop:disable Rails/DynamicFindBy  false positive
         fedora_apo.roleMetadata.find_by_xpath('/roleMetadata/role').map do |role|
-          members = role.xpath('group/identifier').map { |ident| { type: ident['type'], identifier: ident.text } }
+          group_roles = role.xpath('group/identifier')
+          sunet_roles = role.xpath('person/identifier')
+          members = (group_roles + sunet_roles).map { |ident| { type: ident['type'], identifier: ident.text } }
+
           { name: role['type'], members: members }
         end
         # rubocop:enable Rails/DynamicFindBy
