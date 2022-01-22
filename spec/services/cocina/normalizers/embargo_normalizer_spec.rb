@@ -57,8 +57,7 @@ RSpec.describe Cocina::Normalizers::EmbargoNormalizer do
     let(:original_xml) do
       <<~XML
         <embargoMetadata>
-          <status>released</status>
-          <releaseDate>2018-06-02T07:00:00Z</releaseDate>
+          <releaseDate>2021-06-02T07:00:00Z</releaseDate>
           <releaseAccess/>
           <twentyPctVisibilityStatus/>
           <twentyPctVisibilityReleaseDate/>
@@ -70,8 +69,7 @@ RSpec.describe Cocina::Normalizers::EmbargoNormalizer do
       expect(normalized_ng_xml).to be_equivalent_to(
         <<~XML
           <embargoMetadata>
-            <status>released</status>
-            <releaseDate>2018-06-02T07:00:00Z</releaseDate>
+            <releaseDate>2021-06-02T07:00:00Z</releaseDate>
           </embargoMetadata>
         XML
       )
