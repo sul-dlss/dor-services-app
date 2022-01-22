@@ -137,6 +137,13 @@ def diff_datatreams_for(druid, label, orig_datastreams, fedora_obj, apo)
   diff_datastreams
 end
 
+def fast_content_metadata(fedora_obj, druid, create)
+  content_type = fedora_obj.contentMetadata.contentType.first
+  object_id = create ? "objectId='#{druid}'" : ''
+  book_data = content_type&.include?('book') || content_type&.include?('manuscript') ? '<bookData readingOrder="ltr"/>' : ''
+  "<contentMetadata type='#{content_type}' #{object_id}>#{book_data}</contentMetadata>"
+end
+
 # rubocop:disable Metrics/AbcSize
 # rubocop:disable Metrics/CyclomaticComplexity
 # rubocop:disable Metrics/MethodLength
@@ -155,13 +162,7 @@ def validate_druid(druid, loader, fast: false, create: false)
     return [druid, :unmapped]
   end
 
-  if fast && fedora_obj.datastreams.include?('contentMetadata')
-    fedora_obj.contentMetadata.content = if create
-                                           "<contentMetadata type='#{fedora_obj.contentMetadata.contentType.first}' objectId='#{druid}'/>"
-                                         else
-                                           "<contentMetadata type='#{fedora_obj.contentMetadata.contentType.first}' />"
-                                         end
-  end
+  fedora_obj.contentMetadata.content = fast_content_metadata(fedora_obj, druid, create) if fast && fedora_obj.datastreams.include?('contentMetadata')
 
   orig_datastreams = {}
   FedoraCache::DATASTREAMS.each { |dsid| orig_datastreams[dsid] = fedora_obj.datastreams[dsid]&.content }
