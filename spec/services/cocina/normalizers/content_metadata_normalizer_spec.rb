@@ -268,4 +268,37 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       )
     end
   end
+
+  context 'when normalizing resource nodes with data attributes' do
+    # Adapted from zn580kw6428
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata type="file" objectId="druid:zn580kw6428">
+          <resource data="content">
+            <label>Experimental Evidence on the Disposition Effect</label>
+            <file preserve="yes" shelve="yes" deliver="yes" size="919405" mimetype="application/pdf" id="v212299_pdf.pdf">
+              <checksum type="md5">174a44a8406b14949de14853612e4eb6</checksum>
+              <checksum type="sha1">258881e0f2293b90779cbc35e7f463882cc2bbf3</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'removes data attributes' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata type="file" objectId="druid:zn580kw6428">
+            <resource>
+              <label>Experimental Evidence on the Disposition Effect</label>
+              <file preserve="yes" shelve="yes" publish="yes" size="919405" mimetype="application/pdf" id="v212299_pdf.pdf">
+                <checksum type="md5">174a44a8406b14949de14853612e4eb6</checksum>
+                <checksum type="sha1">258881e0f2293b90779cbc35e7f463882cc2bbf3</checksum>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      )
+    end
+  end
 end
