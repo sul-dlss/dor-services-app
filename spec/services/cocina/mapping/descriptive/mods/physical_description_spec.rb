@@ -600,7 +600,7 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
 
   describe 'Extent with unit and note sibling' do
     # druid:gx952gd8699
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <physicalDescription>
