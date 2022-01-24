@@ -177,7 +177,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     # NOTE: name identifiers that are uris, for mods mapping purposes are 'value' rather than uri
     #  in identifier and nameIdentifier mods doesn't distinguish between a uri and other non-uri identifiers
 
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated mapping' do
       let(:mods) do
         <<~XML
           <name type="personal" usage="primary">
@@ -199,28 +199,32 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  structuredValue: [
+                  parallelValue: [
                     {
-                      value: 'Dr.',
-                      type: 'term of address'
+                      structuredValue: [
+                        {
+                          value: 'Dr.',
+                          type: 'term of address'
+                        },
+                        {
+                          value: 'Terry',
+                          type: 'forename'
+                        },
+                        {
+                          value: 'Castle',
+                          type: 'surname'
+                        },
+                        {
+                          value: '1953-',
+                          type: 'life dates'
+                        }
+                      ]
                     },
                     {
-                      value: 'Terry',
-                      type: 'forename'
-                    },
-                    {
-                      value: 'Castle',
-                      type: 'surname'
-                    },
-                    {
-                      value: '1953-',
-                      type: 'life dates'
+                      value: 'Castle, Terry',
+                      type: 'display'
                     }
                   ]
-                },
-                {
-                  value: 'Castle, Terry',
-                  type: 'display'
                 }
               ],
               status: 'primary',
