@@ -3,8 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Dor::Goobi do
-  subject(:goobi) { described_class.new(item) }
-
+  let(:goobi) { described_class.new(item) }
   let(:pid) { 'druid:aa123bb4567' }
   let(:item) do
     Dor::Item.new(pid: pid, barcode: 'barcode_12345', catkey: 'ckey_12345',
