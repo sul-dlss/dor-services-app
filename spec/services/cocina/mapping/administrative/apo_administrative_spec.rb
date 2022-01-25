@@ -101,7 +101,7 @@ RSpec.shared_examples 'APO Fedora Cocina mapping' do
         defined?(roundtrip_role_metadata_xml) ? roundtrip_role_metadata_xml : role_metadata_xml
       end
 
-      it 'AdminPolicyAdministrative cocina model roundtrips to original roleMetadata.xml' do
+      it 'AdminPolicyAdministrative cocina model roundtrips to expected roundtrip roleMetadata.xml' do
         expect(actual_role_xml).to be_equivalent_to(expected_role_metadata_xml)
       end
     end
@@ -412,6 +412,132 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
     end
   end
 
+  describe 'no collections, has license, roles with type person' do
+    # based on kt538yv1733 combined with default_obj_rights and roles from qv549bf9093
+    it_behaves_like 'APO Fedora Cocina mapping' do
+      let(:admin_metadata_xml) do
+        <<~XML
+          <administrativeMetadata>
+            <registration>
+              <workflow id="registrationWF"/>
+            </registration>
+          </administrativeMetadata>
+        XML
+      end
+      let(:default_object_rights_xml) do
+        <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <world rule="no-download"/>
+              </machine>
+            </access>
+            <use>
+              <human type="useAndReproduction">Use at will.</human>
+              <human type="creativeCommons">CC BY-NC Attribution-NonCommercial</human>
+              <machine type="creativeCommons">by-nc</machine>
+            </use>
+          </rightsMetadata>
+        XML
+      end
+      let(:roundtrip_default_object_rights_xml) do
+        <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <world rule="no-download"/>
+              </machine>
+            </access>
+            <use>
+              <license>https://creativecommons.org/licenses/by-nc/3.0/legalcode</license>
+              <human type="useAndReproduction">Use at will.</human>
+            </use>
+          </rightsMetadata>
+        XML
+      end
+      let(:role_metadata_xml) do
+        <<~XML
+          <roleMetadata>
+            <role type="dor-apo-manager">
+              <group>
+                <identifier type="workgroup">sdr:psm-staff</identifier>
+              </group>
+              <group>
+                <identifier type="workgroup">sdr:developer</identifier>
+              </group>
+              <person>
+                <identifier type="person">sunetid:petucket</identifier>
+              </person>
+            </role>
+          </roleMetadata>
+        XML
+      end
+      let(:roundtrip_role_metadata_xml) do
+        <<~XML
+          <roleMetadata>
+            <role type="dor-apo-manager">
+              <group>
+                <identifier type="workgroup">sdr:psm-staff</identifier>
+              </group>
+              <group>
+                <identifier type="workgroup">sdr:developer</identifier>
+              </group>
+              <person>
+                <identifier type="sunetid">petucket</identifier>
+              </person>
+            </role>
+          </roleMetadata>
+        XML
+      end
+      let(:agreement_druid) { 'druid:xf765cv5573' }
+      let(:cocina) do
+        {
+          defaultObjectRights: default_object_rights_xml,
+          defaultAccess: {
+            access: 'world',
+            download: 'none',
+            license: 'https://creativecommons.org/licenses/by-nc/3.0/legalcode',
+            useAndReproductionStatement: 'Use at will.'
+          },
+          registrationWorkflow: [
+            'registrationWF'
+          ],
+          hasAdminPolicy: ur_apo_druid,
+          referencesAgreement: agreement_druid,
+          roles: [
+            {
+              name: 'dor-apo-manager',
+              members: [
+                {
+                  type: 'workgroup',
+                  identifier: 'sdr:psm-staff'
+                },
+                {
+                  type: 'workgroup',
+                  identifier: 'sdr:developer'
+                },
+                {
+                  type: 'sunetid',
+                  identifier: 'petucket'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'no collections, has license, roles with type sunetid' do
     # based on kt538yv1733 combined with default_obj_rights and roles from qv549bf9093
     it_behaves_like 'APO Fedora Cocina mapping' do
@@ -578,11 +704,4 @@ RSpec.describe 'Fedora APO objects <--> cocina administrative mappings' do
       end
     end
   end
-
-  # TODO: add specs for additional data wrinkles surfaced via prod data roundtrip validation
-  #   and from thinking about possible situations such as:
-  # - defaultAccess:  readLocation; controlleddigitallending
-  # - test without registrationWF ?
-  # - test without admin policy (? - should throw error?)
-  # - test without roles ?
 end
