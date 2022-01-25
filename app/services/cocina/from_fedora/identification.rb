@@ -19,7 +19,8 @@ module Cocina
         {
           barcode: fedora_object.identityMetadata.barcode,
           doi: doi,
-          sourceId: source_id
+          sourceId: source_id,
+          catalogLinks: catalog_links
         }.compact
       end
 
@@ -51,6 +52,15 @@ module Cocina
         return unless value
 
         value.text.delete_prefix('https://doi.org/')
+      end
+
+      def catalog_links
+        fedora_object.identityMetadata.ng_xml.xpath('//otherId[@name="catkey"]').map do |id|
+          {
+            catalog: 'symphony',
+            catalogRecordId: id.text
+          }
+        end
       end
     end
   end
