@@ -112,7 +112,7 @@ RSpec.shared_examples 'MODS cocina mapping' do
   context 'when mapping to MODS (from cocina)' do
     let(:expected_mods_ng) { roundtrip_mods_ng || orig_mods_ng }
 
-    let(:actual_mods_ng) { Cocina::ToFedora::Descriptive.transform(orig_cocina_description, local_druid).doc }
+    let(:actual_mods_ng) { Cocina::ToFedora::Descriptive.transform(orig_cocina_description, local_druid) }
 
     let(:actual_xml) { actual_mods_ng.to_xml }
 
@@ -185,7 +185,7 @@ RSpec.shared_examples 'cocina MODS mapping' do
   let(:label) { nil }
 
   context 'when mapping from cocina (to MODS)' do
-    let(:actual_mods_ng) { Cocina::ToFedora::Descriptive.transform(orig_cocina_description, local_druid).doc }
+    let(:actual_mods_ng) { Cocina::ToFedora::Descriptive.transform(orig_cocina_description, local_druid) }
 
     let(:actual_xml) { actual_mods_ng.to_xml }
 
@@ -257,7 +257,7 @@ RSpec.shared_examples 'cocina MODS mapping' do
 
     let(:roundtrip_cocina_description) { Cocina::Models::Description.new(my_roundtrip_cocina, false, false) }
 
-    let(:roundtrip_mods_ng) { Cocina::ToFedora::Descriptive.transform(roundtrip_cocina_description, local_druid).doc }
+    let(:roundtrip_mods_ng) { Cocina::ToFedora::Descriptive.transform(roundtrip_cocina_description, local_druid) }
 
     let(:roundtrip_mods_xml) { roundtrip_mods_ng.to_xml }
 

@@ -23,7 +23,7 @@ module Cocina
           xml.mods(mods_attributes) do
             Descriptive::DescriptiveWriter.write(xml: xml, descriptive: descriptive, druid: druid)
           end
-        end
+        end.doc
       end
 
       private

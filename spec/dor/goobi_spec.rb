@@ -3,28 +3,53 @@
 require 'rails_helper'
 
 RSpec.describe Dor::Goobi do
-  let(:goobi) { described_class.new(item) }
-  let(:pid) { 'druid:aa123bb4567' }
-  let(:item) do
-    Dor::Item.new(pid: pid, barcode: 'barcode_12345', catkey: 'ckey_12345',
-                  label: 'Object Title & A Special character',
-                  source_id: 'some:source_id', object_type: 'item')
+  let(:goobi) { described_class.new(dro) }
+  let(:druid) { 'druid:jp670nd1791' }
+  let(:barcode) { '6772719-1001' }
+  let(:dro_props) do
+    {
+      externalIdentifier: druid,
+      version: 1,
+      type: Cocina::Models::Vocab.document,
+      label: 'Object Title & A Special character',
+      identification: {
+        barcode: barcode,
+        catalogLinks: [
+          {
+            catalog: 'symphony',
+            catalogRecordId: 'ckey_12345'
+          }
+        ],
+        sourceId: 'some:source_id'
+      },
+      access: {},
+      administrative: {
+        hasAdminPolicy: 'druid:dd999df4567'
+      }
+    }.tap do |props|
+      props[:description] = description if description
+    end
   end
+  let(:dro) { Cocina::Models::DRO.new(dro_props) }
+
+  let(:description) { nil }
 
   before do
-    # all of the methods we are stubbing out below are tested elsewhere,
-    #  this just lets us test the methods in goobi.rb without doing a lot of setup
-    allow(Dor::Item).to receive(:find).and_return(item)
-
-    allow(AdministrativeTags).to receive(:content_type).with(pid: pid).and_return(['book'])
+    allow(AdministrativeTags).to receive(:content_type).with(pid: druid).and_return(['book'])
   end
 
   describe '#title_or_label' do
     subject(:title_or_label) { Nokogiri::XML(goobi.send(:xml_request)).xpath('//title').first.content }
 
     context 'when MODS title is present' do
-      before do
-        item.descMetadata.ng_xml = build_desc_metadata_1
+      let(:description) do
+        {
+          title: [
+            {
+              value: 'Constituent label & A Special character'
+            }
+          ]
+        }
       end
 
       it 'returns title text' do
@@ -40,17 +65,35 @@ RSpec.describe Dor::Goobi do
   end
 
   describe '#collection_name and id' do
-    it 'returns collection name and id from a valid identityMetadata' do
-      collection = Dor::Collection.new(pid: 'druid:cc111cc1111', label: 'Collection label')
-      allow(item).to receive(:collections).and_return([collection])
-      expect(goobi.send(:collection_name)).to eq('Collection label')
-      expect(goobi.send(:collection_id)).to eq('druid:cc111cc1111')
+    let(:collection_druid) { 'druid:dd999df4567' }
+
+    let(:collection) do
+      Cocina::Models::Collection.new({
+                                       externalIdentifier: collection_druid,
+                                       version: 1,
+                                       type: Cocina::Models::Vocab.collection,
+                                       label: 'Collection label',
+                                       access: {}
+                                     })
     end
 
-    it 'returns blank for collection name and id if there are none' do
-      allow(item).to receive(:collections).and_return([])
-      expect(goobi.send(:collection_name)).to eq('')
-      expect(goobi.send(:collection_id)).to eq('')
+    context 'when part of collection' do
+      before do
+        dro_props[:structural] = { isMemberOf: [collection_druid] }
+        allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
+      end
+
+      it 'returns collection name and id from a valid identityMetadata' do
+        expect(goobi.send(:collection_name)).to eq('Collection label')
+        expect(goobi.send(:collection_id)).to eq(collection_druid)
+      end
+    end
+
+    context 'when not part of collection' do
+      it 'returns blank for collection name and id' do
+        expect(goobi.send(:collection_name)).to eq('')
+        expect(goobi.send(:collection_id)).to eq('')
+      end
     end
   end
 
@@ -162,14 +205,14 @@ RSpec.describe Dor::Goobi do
       it 'creates the correct xml request' do
         expect(xml_request).to be_equivalent_to <<-END
           <stanfordCreationRequest>
-            <objectId>#{pid}</objectId>
+            <objectId>#{druid}</objectId>
             <objectType>item</objectType>
             <sourceID>some:source_id</sourceID>
             <title>Object Title &amp; A Special character</title>
             <contentType>book</contentType>
             <project>Project Name</project>
             <catkey>ckey_12345</catkey>
-            <barcode>barcode_12345</barcode>
+            <barcode>#{barcode}</barcode>
             <collectionId>druid:oo000oo0001</collectionId>
             <collectionName>collection name</collectionName>
             <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
@@ -191,14 +234,14 @@ RSpec.describe Dor::Goobi do
       it 'creates the correct xml request' do
         expect(xml_request).to be_equivalent_to <<-END
           <stanfordCreationRequest>
-            <objectId>#{pid}</objectId>
+            <objectId>#{druid}</objectId>
             <objectType>item</objectType>
             <sourceID>some:source_id</sourceID>
             <title>Object Title &amp; A Special character</title>
             <contentType>book</contentType>
             <project>Project Name</project>
             <catkey>ckey_12345</catkey>
-            <barcode>barcode_12345</barcode>
+            <barcode>#{barcode}</barcode>
             <collectionId>druid:oo000oo0001</collectionId>
             <collectionName>collection name</collectionName>
             <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
@@ -216,18 +259,27 @@ RSpec.describe Dor::Goobi do
     context 'with no tags present' do
       let(:tags) { [] }
 
+      let(:description) do
+        {
+          title: [
+            {
+              value: 'Constituent label & A Special character'
+            }
+          ]
+        }
+      end
+
       it 'creates the correct xml request when MODs title exists with a special character' do
-        item.descMetadata.ng_xml = build_desc_metadata_1
         expect(xml_request).to be_equivalent_to <<-END
           <stanfordCreationRequest>
-            <objectId>#{pid}</objectId>
+            <objectId>#{druid}</objectId>
             <objectType>item</objectType>
             <sourceID>some:source_id</sourceID>
             <title>Constituent label &amp; A Special character</title>
             <contentType>book</contentType>
             <project>Project Name</project>
             <catkey>ckey_12345</catkey>
-            <barcode>barcode_12345</barcode>
+            <barcode>#{barcode}</barcode>
             <collectionId>druid:oo000oo0001</collectionId>
             <collectionName>collection name</collectionName>
             <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
@@ -275,22 +327,14 @@ RSpec.describe Dor::Goobi do
   describe '#content_type' do
     subject(:content_type) { goobi.send :content_type }
 
-    let(:item) { Dor::Item.new }
-
-    before do
-      # We swap these two lines after https://github.com/sul-dlss/dor-services/pull/706
-      # item.contentMetadata.contentType = ['map']
-      item.contentMetadata.content = '<contentMetadata type="map" />'
-    end
-
     it 'returns the content_type_tag from tag service if the value exists' do
       allow(AdministrativeTags).to receive(:content_type).and_return(['Process Value'])
       expect(content_type).to eq 'Process Value'
     end
 
-    it 'returns the type from contentMetadata if content_type from tag service does not have a value' do
+    it 'returns the type from cocina if content_type from tag service does not have a value' do
       allow(AdministrativeTags).to receive(:content_type).and_return([])
-      expect(content_type).to eq 'map'
+      expect(content_type).to eq 'document'
     end
   end
 
