@@ -33,6 +33,7 @@ module Cocina
         normalize_out_catkeys
         normalize_source_id_whitespace
         normalize_release_tags
+        normalize_object_creator
 
         regenerate_ng_xml(ng_xml.to_xml)
       end
@@ -128,6 +129,14 @@ module Cocina
           release_node.delete('displayType')
           release_node.delete('release')
         end
+      end
+
+      def normalize_object_creator
+        return if ng_xml.root.xpath('//objectCreator').present?
+
+        object_creator_node = Nokogiri::XML::Node.new('objectCreator', ng_xml)
+        object_creator_node.content = 'DOR'
+        ng_xml.root << object_creator_node
       end
     end
   end

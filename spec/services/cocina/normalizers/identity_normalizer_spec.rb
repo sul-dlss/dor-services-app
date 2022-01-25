@@ -19,6 +19,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
         <<~XML
           <identityMetadata>
              <sourceId source="sul">M0443_S2_D-K_B9_F33_011</sourceId>
+             <objectCreator>DOR</objectCreator>
           </identityMetadata>
         XML
       )
@@ -42,6 +43,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
             <identityMetadata>
               <sourceId source="foo">bar</sourceId>
               <otherId name="dissertationid">0000000666</otherId>
+              <objectCreator>DOR</objectCreator>
             </identityMetadata>
           XML
         )
@@ -62,6 +64,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
           <<~XML
             <identityMetadata>
               <sourceId source="dissertationid">0000000666</sourceId>
+              <objectCreator>DOR</objectCreator>
             </identityMetadata>
           XML
         )
@@ -116,6 +119,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
           <<~XML
             <identityMetadata>
               <otherId name="catkey">666</otherId>
+              <objectCreator>DOR</objectCreator>
             </identityMetadata>
           XML
         )
@@ -141,6 +145,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
             <identityMetadata>
               <objectId>foo</objectId>
               <otherId name="catkey">666</otherId>
+              <objectCreator>DOR</objectCreator>
             </identityMetadata>
           XML
         )
@@ -166,6 +171,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
             <identityMetadata>
               <objectId>foo</objectId>
               <otherId name="catkey">666</otherId>
+              <objectCreator>DOR</objectCreator>
             </identityMetadata>
           XML
         )
@@ -191,6 +197,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
             <identityMetadata>
               <objectId>foo</objectId>
               <otherId name="catkey">666</otherId>
+              <objectCreator>DOR</objectCreator>
             </identityMetadata>
           XML
         )
@@ -215,6 +222,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
             <identityMetadata>
               <objectId>foo</objectId>
               <otherId name="catkey">666</otherId>
+              <objectCreator>DOR</objectCreator>
             </identityMetadata>
           XML
         )
@@ -485,6 +493,28 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
         <<~XML
           <identityMetadata>
             <otherId name="catkey">90125</otherId>
+            <objectCreator>DOR</objectCreator>
+          </identityMetadata>
+        XML
+      )
+    end
+  end
+
+  context 'when there is no objectCreator' do
+    let(:original_xml) do
+      <<~XML
+        <identityMetadata>
+          <objectLabel>foo</objectLabel>
+        </identityMetadata>
+      XML
+    end
+
+    it 'adds it' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <identityMetadata>
+            <objectCreator>DOR</objectCreator>
+            <objectLabel>foo</objectLabel>
           </identityMetadata>
         XML
       )
