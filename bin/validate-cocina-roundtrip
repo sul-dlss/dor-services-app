@@ -86,6 +86,8 @@ end
 def norm_orig_datastream_ng_xml_for(dsid, orig_datastream_ng_xml, druid, label, fedora_obj)
   case dsid
   # Additional normalizers to go here.
+  when 'administrativeMetadata'
+    Cocina::Normalizers::AdminNormalizer.normalize(admin_ng_xml: orig_datastream_ng_xml)
   when 'descMetadata'
     Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: orig_datastream_ng_xml, druid: druid, label: label)
   when 'rightsMetadata'
