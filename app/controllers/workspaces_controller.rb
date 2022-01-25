@@ -33,7 +33,7 @@ class WorkspacesController < ApplicationController
   # Once an object has been transferred to preservation, reset the workspace by
   # renaming the druid-tree to a versioned directory.
   def reset
-    ResetWorkspaceService.reset(druid: params[:object_id], version: @item.current_version)
+    ResetWorkspaceService.reset(druid: params[:object_id], version: @item.version)
     head :no_content
   rescue ResetWorkspaceService::DirectoryAlreadyExists, ResetWorkspaceService::BagAlreadyExists
     # We're trapping errors and doing nothing, because the belief is that these indicate
