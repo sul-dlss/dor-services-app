@@ -35,6 +35,7 @@ module Cocina
         normalize_reading_order(druid)
         normalize_label_attr
         normalize_attr
+        normalize_publish
 
         regenerate_ng_xml(ng_xml.to_s)
       end
@@ -104,6 +105,13 @@ module Cocina
 
       def normalize_attr
         ng_xml.root.xpath('//attr[@name="mergedFromResource" or @name="mergedFromPid" or @name="representation"]').each(&:remove)
+      end
+
+      def normalize_publish
+        ng_xml.root.xpath('//file').each do |file|
+          file['publish'] ||= file['deliver']
+          file.delete('deliver')
+        end
       end
     end
   end

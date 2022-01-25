@@ -83,7 +83,7 @@ module Cocina
             hasMessageDigests: digests(node),
             access: access(node['id']),
             administrative: {
-              publish: node['publish'] == 'yes',
+              publish: node['publish'] == 'yes' || node['deliver'] == 'yes',
               sdrPreserve: node['preserve'] == 'yes',
               shelve: node['shelve'] == 'yes'
             }

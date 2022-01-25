@@ -172,12 +172,12 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
           <<~XML
             <contentMetadata objectId="druid:bk689jd2364" type="file">
               <resource type="page">
-                <file preserve="yes" mimetype="image/jp2" size="92631" shelve="no" id="00000268.jp2" deliver="no">
+                <file preserve="yes" mimetype="image/jp2" size="92631" shelve="no" id="00000268.jp2" publish="no">
                   <imageData width="1310" height="2071"/>
                   <checksum type="SHA-1">50d77a392ba30dcbbf4ada379e09ded02f9658f2</checksum>
                   <checksum type="MD5">dcea2fd8ed01b2ef978093cf45ea3ce9</checksum>
                 </file>
-                <file preserve="yes" mimetype="text/html" size="19144" dataType="hocr" shelve="yes" id="00000268.html" deliver="no">
+                <file preserve="yes" mimetype="text/html" size="19144" dataType="hocr" shelve="yes" id="00000268.html" publish="no">
                   <checksum type="SHA-1">335c75c2e2a13f024f73b0dd7dc5fc35fc47e7ce</checksum>
                   <checksum type="MD5">42d8261046c449230a7c3809a246b353</checksum>
                 </file>
@@ -210,7 +210,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
               <contentMetadata type="file" objectId="druid:tt395zz8686">
               <resource type="file">
                 <label>Using xSearch for Accelerating Research-Review of Deep Web Technologies Federated Search Service</label>
-                <file preserve="yes" deliver="yes" size="4333001" mimetype="application/pdf" id="xSearch_Review_Charleston_Advisor.pdf" shelve="yes" publish="yes">
+                <file preserve="yes" size="4333001" mimetype="application/pdf" id="xSearch_Review_Charleston_Advisor.pdf" shelve="yes" publish="yes">
                   <checksum type="md5">c22b3d0fd5569fc1039901bf22dad4f0</checksum>
                   <checksum type="sha1">50b90a7ef7937b048db6f6d4b41637f59a2a57cf</checksum>
                 </file>
