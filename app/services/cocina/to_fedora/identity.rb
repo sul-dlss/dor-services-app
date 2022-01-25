@@ -21,6 +21,10 @@ module Cocina
         new(fedora_object).apply_release_tags(release_tags)
       end
 
+      def self.apply_catalog_links(fedora_object, catalog_links:)
+        new(fedora_object).apply_catalog_links(catalog_links)
+      end
+
       def initialize(fedora_object)
         @fedora_object = fedora_object
       end
@@ -56,6 +60,14 @@ module Cocina
         identity_md.ng_xml_will_change!
         identity_md.ng_xml.xpath('//doi').each(&:remove)
         identity_md.add_value(:doi, doi)
+      end
+
+      def apply_catalog_links(catalog_links)
+        return unless catalog_links
+
+        catalog_links.filter { |l| l.catalog == 'symphony' }.each do |link|
+          identity_md.add_value(:otherId, link.catalogRecordId, { name: 'catkey' })
+        end
       end
 
       private

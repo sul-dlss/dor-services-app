@@ -29,7 +29,6 @@ module Cocina
           description = FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_collection.descMetadata.ng_xml, druid: fedora_collection.pid, notifier: notifier)
           props[:description] = description unless description.nil?
           identification = FromFedora::Identification.props(fedora_collection)
-          identification[:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: fedora_collection.catkey }] if fedora_collection.catkey
           props[:identification] = identification unless identification.empty?
         end
       end

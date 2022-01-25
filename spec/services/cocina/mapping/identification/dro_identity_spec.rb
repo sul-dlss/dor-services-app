@@ -65,11 +65,11 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
     cocina_dro = Cocina::Models::DRO.new(mapped_cocina_props)
     fedora_item = Dor::Item.new(pid: cocina_dro.externalIdentifier,
                                 source_id: cocina_dro.identification.sourceId,
-                                catkey: Cocina::ObjectCreator.new.send(:catkey_for, cocina_dro),
                                 label: Cocina::ObjectCreator.new.send(:truncate_label, cocina_dro.label))
     Cocina::ToFedora::Identity.initialize_identity(fedora_item)
     Cocina::ToFedora::Identity.apply_label(fedora_item, label: cocina_dro.label)
     Cocina::ToFedora::Identity.apply_release_tags(fedora_item, release_tags: cocina_dro.administrative.releaseTags)
+    Cocina::ToFedora::Identity.apply_catalog_links(fedora_item, catalog_links: cocina_dro.identification&.catalogLinks)
     fedora_item.identityMetadata.barcode = cocina_dro.identification.barcode
     identity_updater = Cocina::ToFedora::Identity.new(fedora_item)
     identity_updater.apply_doi(cocina_dro.identification.doi)
@@ -172,7 +172,6 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
                       current_version: '1',
                       admin_policy_object_id: defined?(admin_policy_id) ? admin_policy_id : nil,
                       collections: collection_ids.map { |id| Dor::Collection.new(pid: id) },
-                      catkey: defined?(catkey) ? catkey : nil,
                       source_id: namespaced_source_id,
                       otherId: roundtrip_namespaced_other_ids, # see app/services/cocina/from_fedora/identification.rb:36
                       identityMetadata: Dor::IdentityMetadataDS.from_xml(normalized_orig_identity_xml),
@@ -247,7 +246,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
@@ -295,6 +295,59 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
               {
                 catalog: 'symphony',
                 catalogRecordId: catkey
+              }
+            ]
+          },
+          administrative: {
+            hasAdminPolicy: admin_policy_id
+          },
+          structural: {},
+          access: access_props,
+          description: description_props
+        }
+      end
+    end
+  end
+
+  context 'with multiple catkeys' do
+    it_behaves_like 'DRO Identification Fedora Cocina mapping' do
+      let(:item_id) { 'druid:bb010dx6027' }
+      let(:label) { 'The rite of spring' }
+      let(:catkey1) { '8501137' }
+      let(:catkey2) { '8675309' }
+      let(:admin_policy_id) { 'druid:bz845pv2292' } # from RELS-EXT
+      let(:collection_ids) { [] } # not in RELS-EXT
+      let(:source_id_source) { 'sul' }
+      let(:source_id) { 'naxos_nac_8.557501' }
+      let(:identity_metadata_xml) do
+        <<~XML
+          <identityMetadata>
+            <sourceId source="#{source_id_source}">#{source_id}</sourceId>
+            <otherId name="catkey">#{catkey1}</otherId>
+            <otherId name="catkey">#{catkey2}</otherId>
+            <objectLabel>#{label}</objectLabel>
+            <objectId>#{item_id}</objectId>
+            <objectCreator>DOR</objectCreator>
+            <objectType>item</objectType>
+          </identityMetadata>
+        XML
+      end
+      let(:cocina_props) do
+        {
+          externalIdentifier: item_id,
+          type: Cocina::Models::Vocab.object,
+          label: label,
+          version: 1,
+          identification: {
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: [
+              {
+                catalog: 'symphony',
+                catalogRecordId: catkey1
+              },
+              {
+                catalog: 'symphony',
+                catalogRecordId: catkey2
               }
             ]
           },
@@ -401,7 +454,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
@@ -635,104 +689,6 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     end
   end
 
-  context 'with ETD with 2 catkeys' do
-    # it_behaves_like 'DRO Identification Fedora Cocina mapping' do
-    xit 'to be implemented: what to do with 2 catkeys' do
-      let(:item_id) { 'druid:zw844wz5427' }
-      let(:label) { '' }
-      let(:catkey) { '8652337' }
-      let(:admin_policy_id) { 'druid:bx911tp9024' } # from RELS-EXT
-      let(:collection_ids) { [] } # not in RELS-EXT
-      let(:identity_metadata_xml) do
-        <<~XML
-          <identityMetadata>
-            <objectId>#{item_id}</objectId>
-            <objectType>item</objectType>
-            <objectLabel/>
-            <objectCreator>DOR</objectCreator>
-            <citationTitle>Multiphoton interactions with transparent tissues: applications to imaging and surgery</citationTitle>
-            <citationCreator>Toytman, Ilya</citationCreator>
-            <otherId name="dissertationid">0000000296</otherId>
-            <otherId name="catkey">#{catkey}</otherId>
-            <otherId name="uuid">bb8e629e-6328-11e1-9378-022c4a816c60</otherId>
-            <tag>ETD : Term 1106</tag>
-            <tag>ETD : Dissertation</tag>
-            <tag>Remediated By : 4.20.1</tag>
-            <release to="Searchworks" who="blalbrit" what="self" when="2017-02-07T11:07:41Z">true</release>
-            <release to="Searchworks" who="blalbrit" what="self" when="2017-02-07T15:15:41Z">true</release>
-            <otherId name="catkey">12303517</otherId>
-            <release to="Searchworks" who="cebraj" what="self" when="2018-05-14T23:26:59Z">true</release>
-          </identityMetadata>
-        XML
-      end
-      # NOTE: dissertationid becomes sourceId
-      let(:roundtrip_identity_metadata_xml) do
-        <<~XML
-          <identityMetadata>
-            <objectId>#{item_id}</objectId>
-            <objectType>item</objectType>
-            <objectLabel/>
-            <objectCreator>DOR</objectCreator>
-            <sourceId source="dissertationid">0000000296</sourceId>
-            <otherId name="catkey">#{catkey}</otherId>
-            <release to="Searchworks" who="blalbrit" what="self" when="2017-02-07T11:07:41Z">true</release>
-            <release to="Searchworks" who="blalbrit" what="self" when="2017-02-07T15:15:41Z">true</release>
-            <otherId name="catkey">12303517</otherId>
-            <release to="Searchworks" who="cebraj" what="self" when="2018-05-14T23:26:59Z">true</release>
-          </identityMetadata>
-        XML
-      end
-      let(:cocina_props) do
-        {
-          externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
-          label: '',
-          version: 1,
-          identification: {
-            sourceId: 'dissertationid:0000000296',
-            catalogLinks: [
-              {
-                catalog: 'symphony',
-                catalogRecordId: catkey
-              }
-            ]
-          },
-          administrative: {
-            hasAdminPolicy: admin_policy_id,
-            releaseTags: [
-              {
-                who: 'blalbrit',
-                what: 'self',
-                date: '2017-02-07T11:07:41Z',
-                to: 'Searchworks',
-                release: true
-              },
-              {
-                who: 'blalbrit',
-                what: 'self',
-                date: '2017-02-07T15:15:41Z',
-                to: 'Searchworks',
-                release: true
-              },
-              {
-                who: 'cebraj',
-                what: 'self',
-                date: '2018-05-14T23:26:59Z',
-                to: 'Searchworks',
-                release: true
-              }
-            ]
-          },
-          structural: {
-            hasAgreement: 'druid:ct692vv3660'
-          },
-          access: access_props,
-          description: description_props
-        }
-      end
-    end
-  end
-
   context 'with ETD with empty citation elements' do
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:mr401cc4586' }
@@ -927,7 +883,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
@@ -988,7 +945,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
@@ -1049,7 +1007,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source.strip}:#{source_id.strip}"
+            sourceId: "#{source_id_source.strip}:#{source_id.strip}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
@@ -1108,7 +1067,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id,
@@ -1175,7 +1135,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id,
@@ -1233,7 +1194,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id,
@@ -1299,7 +1261,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
@@ -1454,7 +1417,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
