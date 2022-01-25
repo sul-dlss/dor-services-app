@@ -56,13 +56,29 @@ module Cocina
       def build_roles
         # rubocop:disable Rails/DynamicFindBy  false positive
         fedora_apo.roleMetadata.find_by_xpath('/roleMetadata/role').map do |role|
-          group_roles = role.xpath('group/identifier')
-          sunet_roles = role.xpath('person/identifier')
-          members = (group_roles + sunet_roles).map { |ident| { type: ident['type'], identifier: ident.text } }
-
-          { name: role['type'], members: members }
+          { name: role['type'], members: workgroup_members(role) + person_members(role) + sunetid_members(role) }
         end
         # rubocop:enable Rails/DynamicFindBy
+      end
+
+      def workgroup_members(role)
+        role.xpath('group/identifier[@type="workgroup"]').map do |identifier_node|
+          { type: 'workgroup', identifier: identifier_node.text }
+        end
+      end
+
+      def sunetid_members(role)
+        role.xpath('person/identifier[@type="sunetid"]').map do |identifier_node|
+          { type: 'sunetid', identifier: identifier_node.text }
+        end
+      end
+
+      def person_members(role)
+        role.xpath('person/identifier[@type="person"]')
+            .select { |identifier_node| identifier_node.text&.start_with?('sunetid:') }
+            .map do |identifier_node|
+          { type: 'sunetid', identifier: identifier_node.text.delete_prefix('sunetid:') }
+        end
       end
     end
   end
