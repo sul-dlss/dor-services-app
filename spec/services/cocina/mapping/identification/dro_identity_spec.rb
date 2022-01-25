@@ -242,7 +242,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
@@ -449,7 +450,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
@@ -877,7 +879,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
@@ -938,7 +941,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
@@ -999,7 +1003,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source.strip}:#{source_id.strip}"
+            sourceId: "#{source_id_source.strip}:#{source_id.strip}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
@@ -1058,7 +1063,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id,
@@ -1125,7 +1131,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id,
@@ -1183,7 +1190,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id,
@@ -1249,7 +1257,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
@@ -1404,7 +1413,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id

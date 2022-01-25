@@ -97,7 +97,6 @@ module Cocina
                 admin_policy_object_id: cocina_item.administrative.hasAdminPolicy,
                 source_id: cocina_item.identification.sourceId,
                 collection_ids: Array.wrap(cocina_item.structural&.isMemberOf).compact,
-                catkey: catkey_for(cocina_item),
                 label: truncate_label(cocina_item.label)).tap do |fedora_item|
         add_description(fedora_item, cocina_item, trial: trial)
 
@@ -131,7 +130,6 @@ module Cocina
       Dor::Collection.new(pid: pid,
                           admin_policy_object_id: cocina_collection.administrative.hasAdminPolicy,
                           source_id: cocina_collection.identification&.sourceId,
-                          catkey: catkey_for(cocina_collection),
                           label: truncate_label(cocina_collection.label)).tap do |fedora_collection|
         add_description(fedora_collection, cocina_collection, trial: trial)
         add_collection_tags(pid, cocina_collection) unless trial
