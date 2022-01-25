@@ -28,6 +28,7 @@ module Cocina
       def normalize(druid:)
         remove_resource_id
         remove_resource_objectid
+        remove_resource_data
         remove_sequence
         remove_location
         remove_format
@@ -57,6 +58,10 @@ module Cocina
 
       def remove_resource_objectid
         ng_xml.root.xpath('//resource[@objectId]').each { |resource_node| resource_node.delete('objectId') }
+      end
+
+      def remove_resource_data
+        ng_xml.root.xpath('//resource[@data]').each { |resource_node| resource_node.delete('data') }
       end
 
       def remove_sequence
