@@ -17,8 +17,8 @@ RSpec.describe WorkspaceService do
     end
 
     let(:temp_workspace) { '/tmp/dor_ws' }
-    let(:druid_path) { File.join(temp_workspace, 'aa', '123', 'bb', '7890', 'aa123bb7890') }
-    let(:work) { Dor::Item.new(pid: 'druid:aa123bb7890') }
+    let(:druid_path) { File.join(temp_workspace, 'mx', '123', 'qw', '2323', 'mx123qw2323') }
+    let(:work) { instance_double(Cocina::Models::DRO, externalIdentifier: 'druid:mx123qw2323') }
 
     it 'creates a plain directory in the workspace when passed no source directory' do
       described_class.create(work, nil)
@@ -37,8 +37,8 @@ RSpec.describe WorkspaceService do
   end
 
   describe '.mkdir_with_final_link' do
-    let(:strictly_valid_druid_str) { 'druid:cd456gh1234' }
-    let(:tree) { File.join(fixture_dir, 'cd/456/gh/1234/cd456gh1234') }
+    let(:strictly_valid_druid_str) { 'druid:mx123qw2323' }
+    let(:tree) { File.join(fixture_dir, 'mx/123/qw/2323/mx123qw2323') }
     let(:source_dir) { '/tmp/content_dir' }
     let(:druid_obj) { DruidTools::Druid.new(strictly_valid_druid_str, fixture_dir) }
 
@@ -47,7 +47,7 @@ RSpec.describe WorkspaceService do
     end
 
     after do
-      FileUtils.rm_rf(File.join(fixture_dir, 'cd'))
+      FileUtils.rm_rf(File.join(fixture_dir, 'mx'))
     end
 
     it 'creates a druid tree in the workspace with the final directory being a link to the passed in source' do
