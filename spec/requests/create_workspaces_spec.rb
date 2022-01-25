@@ -3,17 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe 'Creating a workspace' do
-  let(:item) { Dor::Item.new(pid: 'druid:mx123qw2323') }
+  let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: 'druid:mx123qw2323') }
 
   before do
-    allow(Dor).to receive(:find).and_return(item)
+    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
     rights_metadata_xml = Dor::RightsMetadataDS.new
     allow(rights_metadata_xml).to receive_messages(ng_xml: Nokogiri::XML('<xml/>'))
-    allow(item).to receive_messages(
-      id: 'druid:mx123qw2323',
-      datastreams: { 'rightsMetadata' => rights_metadata_xml },
-      rightsMetadata: rights_metadata_xml
-    )
     allow(rights_metadata_xml).to receive(:dra_object).and_return(Dor::RightsAuth.parse(Nokogiri::XML('<xml/>'), true))
     clean_workspace
   end
@@ -38,7 +33,7 @@ RSpec.describe 'Creating a workspace' do
 
   context 'when the link/directory already exists' do
     before do
-      druid = DruidTools::Druid.new(item.pid, TEST_WORKSPACE)
+      druid = DruidTools::Druid.new(cocina_object.externalIdentifier, TEST_WORKSPACE)
       druid.mkdir
     end
 
@@ -52,7 +47,7 @@ RSpec.describe 'Creating a workspace' do
 
   context 'when the workspace already exists with different content' do
     before do
-      druid = DruidTools::Druid.new(item.pid, TEST_WORKSPACE)
+      druid = DruidTools::Druid.new(cocina_object.externalIdentifier, TEST_WORKSPACE)
       druid.mkdir
     end
 
