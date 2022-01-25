@@ -3,11 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe 'Reset workspace' do
-  let(:item) { instance_double(Dor::Item, current_version: 2) }
+  let(:cocina_object) { instance_double(Cocina::Models::DRO, version: 2) }
   let(:druid) { 'druid:bb222cc3333' }
 
   before do
-    allow(Dor).to receive(:find).and_return(item)
+    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
   end
 
   context 'when the request is succcessful' do

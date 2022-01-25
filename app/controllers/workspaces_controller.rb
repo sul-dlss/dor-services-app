@@ -2,7 +2,7 @@
 
 # Handles API routes for managing the DOR workspace
 class WorkspacesController < ApplicationController
-  before_action :load_item, only: [:create, :reset]
+  before_action :load_cocina_object, only: [:create, :reset]
 
   rescue_from(DruidTools::SameContentExistsError, DruidTools::DifferentContentExistsError) do |e|
     render status: :conflict, plain: e.message
@@ -10,7 +10,7 @@ class WorkspacesController < ApplicationController
 
   # POST /v1/objects/:druid/workspace
   def create
-    WorkspaceService.create(@item, params[:source])
+    WorkspaceService.create(@cocina_object, params[:source])
     head :created
   end
 
@@ -33,7 +33,7 @@ class WorkspacesController < ApplicationController
   # Once an object has been transferred to preservation, reset the workspace by
   # renaming the druid-tree to a versioned directory.
   def reset
-    ResetWorkspaceService.reset(druid: params[:object_id], version: @item.current_version)
+    ResetWorkspaceService.reset(druid: params[:object_id], version: @cocina_object.version)
     head :no_content
   rescue ResetWorkspaceService::DirectoryAlreadyExists, ResetWorkspaceService::BagAlreadyExists
     # We're trapping errors and doing nothing, because the belief is that these indicate
