@@ -92,15 +92,11 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
     end
 
     it 'identityMetadata roundtrips thru cocina model to expected roundtrip identityMetadata.xml' do
-      # for some reason, fedora_item.identityMetadata.ng_xml.to_xml fails here, but fedora_item.identityMetadata.to_xml passes.
-      #   ? Maybe some encoding assumptions baked in to active fedora.  Likewise, the opposite is true for the test below.
-      expect(roundtrip_fedora_item.identityMetadata.to_xml).to be_equivalent_to(roundtrip_identity_md_xml)
+      expect(roundtrip_fedora_item.identityMetadata.ng_xml).to be_equivalent_to(roundtrip_identity_md_xml)
     end
 
     it 'identityMetadata roundtrips thru cocina maps to normalized original identityMetadata.xml' do
-      # for some reason, fedora_item.identityMetadata.to_xml fails here, but fedora_item.identityMetadata.ng_xml.to_xml passes.
-      #    ? Maybe some encoding assumptions baked in to active fedora.  Likewise, the opposite is true for the test above.
-      expect(roundtrip_fedora_item.identityMetadata.ng_xml.to_xml).to be_equivalent_to normalized_orig_identity_xml
+      expect(roundtrip_fedora_item.identityMetadata.ng_xml).to be_equivalent_to normalized_orig_identity_xml
     end
   end
 

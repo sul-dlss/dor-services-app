@@ -90,8 +90,8 @@ def norm_orig_datastream_ng_xml_for(dsid, orig_datastream_ng_xml, druid, label, 
     Cocina::Normalizers::AdminNormalizer.normalize(admin_ng_xml: orig_datastream_ng_xml)
   when 'descMetadata'
     Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: orig_datastream_ng_xml, druid: druid, label: label)
-  when 'rightsMetadata'
-    Cocina::Normalizers::RightsNormalizer.normalize(datastream: fedora_obj.datastreams['rightsMetadata'])
+  when 'rightsMetadata', 'defaultObjectRights'
+    Cocina::Normalizers::RightsNormalizer.normalize(datastream: fedora_obj.datastreams[dsid])
   when 'contentMetadata'
     Cocina::Normalizers::ContentMetadataNormalizer.normalize(druid: druid, content_ng_xml: orig_datastream_ng_xml)
   when 'identityMetadata'
@@ -165,6 +165,11 @@ def validate_druid(druid, loader, fast: false, create: false)
   end
 
   fedora_obj.contentMetadata.content = fast_content_metadata(fedora_obj, druid, create) if fast && fedora_obj.datastreams.include?('contentMetadata')
+
+  # defaultObjectRights has to be normalized before mapping
+  if fedora_obj.datastreams.include?('defaultObjectRights')
+    fedora_obj.defaultObjectRights.content = Cocina::Normalizers::RightsNormalizer.normalize(datastream: fedora_obj.defaultObjectRights).to_xml
+  end
 
   orig_datastreams = {}
   FedoraCache::DATASTREAMS.each { |dsid| orig_datastreams[dsid] = fedora_obj.datastreams[dsid]&.content }

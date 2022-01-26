@@ -24,4 +24,8 @@ RSpec.describe DeepEqual do
     expect(described_class.match?({ a: 'foo', b: ['foo', 'bar'] }, { a: 'foo', b: ['bar', 'foo'] })).to be true
     expect(described_class.match?({ a: 'foo', b: ['foo', 'bar'] }, { a: 'foo', b: ['bar'] })).to be false
   end
+
+  it 'compares xml strings' do
+    expect(described_class.match?({ defaultObjectRights: '<xml>foo!</xml>' }, { defaultObjectRights: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<xml>foo!</xml>" })).to be true
+  end
 end

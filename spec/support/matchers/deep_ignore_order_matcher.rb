@@ -4,7 +4,7 @@
 RSpec::Matchers.define :be_deep_equal do |expected|
   match { |actual| DeepEqual.match?(actual, expected) }
 
-  # Added diffable because it is helpful for troubleshooting, even if it mistakingly adds spurious diffs.
+  # Added diffable because it is helpful for troubleshooting, even if it mistakenly adds spurious diffs.
   diffable
 
   failure_message do |actual|
