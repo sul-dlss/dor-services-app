@@ -76,10 +76,15 @@ module Cocina
               value: record_origin.text
             }
           end
-          if record_info_note
-            notes << {
-              valueAt: record_info_note['xlink:href']
-            }
+          record_info_notes.each do |info_note|
+            notes << if info_note['xlink:href']
+                       { valueAt: info_note['xlink:href'] }
+                     else
+                       {
+                         type: 'record information',
+                         value: info_note.text
+                       }
+                     end
           end
           notes.presence
         end
@@ -186,8 +191,8 @@ module Cocina
           @record_origins ||= record_info.xpath('mods:recordOrigin', mods: DESC_METADATA_NS)
         end
 
-        def record_info_note
-          @record_info_note ||= record_info.xpath('mods:recordInfoNote[@xlink:href]', mods: DESC_METADATA_NS, xlink: XLINK_NS).first
+        def record_info_notes
+          @record_info_notes ||= record_info.xpath('mods:recordInfoNote', mods: DESC_METADATA_NS)
         end
 
         def creation_event
