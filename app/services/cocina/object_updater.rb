@@ -189,6 +189,11 @@ module Cocina
       cocina_object.description.title != descriptive.fetch(:title).map { |value| Cocina::Models::Title.new(value) }
     end
 
+    # TODO: duplicate from ObjectCreator
+    def catkey_for(cocina_object)
+      cocina_object.identification&.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
+    end
+
     def add_tags(pid, cocina_object)
       if has_changed?(:structural)
         # This is necessary so that the content type tag for a book can get updated
