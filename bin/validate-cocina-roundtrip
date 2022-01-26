@@ -166,6 +166,11 @@ def validate_druid(druid, loader, fast: false, create: false)
 
   fedora_obj.contentMetadata.content = fast_content_metadata(fedora_obj, druid, create) if fast && fedora_obj.datastreams.include?('contentMetadata')
 
+  # defaultObjectRights has to be normalized before mapping
+  if fedora_obj.datastreams.include?('defaultObjectRights')
+    fedora_obj.defaultObjectRights.content = Cocina::Normalizers::RightsNormalizer.normalize(datastream: fedora_obj.defaultObjectRights).to_xml
+  end
+
   orig_datastreams = {}
   FedoraCache::DATASTREAMS.each { |dsid| orig_datastreams[dsid] = fedora_obj.datastreams[dsid]&.content }
   label = fedora_obj.label

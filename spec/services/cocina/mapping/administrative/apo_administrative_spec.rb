@@ -50,7 +50,7 @@ RSpec.shared_examples 'valid APO mappings' do
     }
   end
 
-  context 'when mapping Fedora to Cocina' do
+  context 'when mapping from Fedora to Cocina' do
     it 'produces valid AdminPolicyAdministrative' do
       expect { Cocina::Models::AdminPolicyAdministrative.new(cocina) }.not_to raise_error
     end
@@ -60,7 +60,7 @@ RSpec.shared_examples 'valid APO mappings' do
     end
   end
 
-  context 'when mapping Cocina to Fedora' do
+  context 'when mapping from Cocina to Fedora' do
     let(:actual_cocina_apo_admin) { Cocina::Models::AdminPolicyAdministrative.new(cocina) }
     let(:roundtrip_fedora_apo) do
       Dor::AdminPolicyObject.new(pid: actual_cocina_props[:externalIdentifier],
@@ -69,7 +69,7 @@ RSpec.shared_examples 'valid APO mappings' do
                                  label: actual_cocina_props[:label])
     end
 
-    describe 'AdministrativeMetadata' do
+    describe 'Cocina::ToFedora::AdministrativeMetadata' do
       let(:actual_admin_metadata_xml) do
         Cocina::ToFedora::AdministrativeMetadata.write(roundtrip_fedora_apo.administrativeMetadata, actual_cocina_apo_admin)
         roundtrip_fedora_apo.administrativeMetadata.to_xml
@@ -79,12 +79,12 @@ RSpec.shared_examples 'valid APO mappings' do
         expect(actual_admin_metadata_xml).to be_equivalent_to(admin_metadata_xml)
       end
 
-      it 'AdministrativeMetadata roundtrips thru cocina maps to normalized original administrativeMetadata.xml' do
+      it 'roundtrips to normalized original administrativeMetadata.xml' do
         expect(actual_admin_metadata_xml).to be_equivalent_to normalized_orig_admin_xml
       end
     end
 
-    describe 'DefaultRights' do
+    describe 'Cocina::ToFedora::DefaultRights' do
       let(:roundtrip_rights_metadata_xml) { defined?(roundtrip_default_object_rights_xml) ? roundtrip_default_object_rights_xml : default_object_rights_xml }
 
       let(:normalized_orig_rights_xml) do
@@ -95,16 +95,16 @@ RSpec.shared_examples 'valid APO mappings' do
         Cocina::ToFedora::DefaultRights.write(orig_fedora_apo_mock.defaultObjectRights, actual_cocina_apo_admin.defaultAccess)
       end
 
-      it 'roundtrips to expected defaultObjectRights xml' do
+      it 'roundtrips to expected defaultObjectRights.xml' do
         expect(orig_fedora_apo_mock.defaultObjectRights.ng_xml).to be_equivalent_to(roundtrip_rights_metadata_xml)
       end
 
-      it 'roundtrips to normalized original defaultObjectRights xml' do
+      it 'roundtrips to normalized original defaultObjectRights.xml' do
         expect(orig_fedora_apo_mock.defaultObjectRights.ng_xml).to be_equivalent_to(normalized_orig_rights_xml)
       end
     end
 
-    describe 'Roles' do
+    describe 'Cocina::ToFedora::Roles' do
       let(:actual_role_xml) do
         Cocina::ToFedora::Roles.write(roundtrip_fedora_apo, actual_cocina_apo_admin.roles)
         roundtrip_fedora_apo.roleMetadata.to_xml
@@ -114,12 +114,12 @@ RSpec.shared_examples 'valid APO mappings' do
         defined?(roundtrip_role_metadata_xml) ? roundtrip_role_metadata_xml : role_metadata_xml
       end
 
-      it 'AdminPolicyAdministrative cocina model roundtrips to expected roundtrip roleMetadata.xml' do
+      it 'roundtrips to expected roleMetadata.xml' do
         expect(actual_role_xml).to be_equivalent_to(expected_role_metadata_xml)
       end
     end
 
-    describe 'object relations' do
+    describe 'object relationships (RELS-EXT)' do
       let(:rels_ext_ng_xml) do
         ng = Nokogiri::XML(roundtrip_fedora_apo.datastreams['RELS-EXT'].to_rels_ext)
         ng.remove_namespaces!
@@ -135,7 +135,7 @@ RSpec.shared_examples 'valid APO mappings' do
     end
   end
 
-  context 'when mapping roundtripped Fedora to Cocina' do
+  context 'when mapping from roundtripped Fedora to Cocina' do
     let(:my_roundtrip_admin_metadata_xml) do
       defined?(roundtrip_admin_metadata_xml) ? roundtrip_admin_metadata_xml : admin_metadata_xml
     end
@@ -427,7 +427,7 @@ RSpec.describe 'APO administrative mappings' do
 
   describe 'no collections, has license, roles with type person' do
     # based on kt538yv1733 combined with default_obj_rights and roles from qv549bf9093
-    it_behaves_like 'APO Fedora Cocina mapping' do
+    it_behaves_like 'valid APO mappings' do
       let(:admin_metadata_xml) do
         <<~XML
           <administrativeMetadata>
@@ -598,8 +598,8 @@ RSpec.describe 'APO administrative mappings' do
               </machine>
             </access>
             <use>
-              <human type="useAndReproduction">Use at will.</human>
               <license>https://creativecommons.org/licenses/by-nc/3.0/legalcode</license>
+              <human type="useAndReproduction">Use at will.</human>
             </use>
           </rightsMetadata>
         XML
