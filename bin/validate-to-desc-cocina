@@ -6,7 +6,7 @@ require_relative '../lib/fedora_cache'
 require_relative '../lib/data_error_notifier'
 require 'optparse'
 
-options = { unique_filename: false, input: 'druids.txt' }
+options = { unique_filename: false, input: 'druids.txt', druids: [] }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-to-desc-cocina [options]'
 
@@ -14,6 +14,7 @@ parser = OptionParser.new do |option_parser|
   option_parser.on('-u', '--unique-filename', 'Result file named for branch and runtime') { options[:unique_filename] = true }
   option_parser.on('-a', '--apo', 'Include APO in report (slower).') { options[:apo] = true }
   option_parser.on('-iFILENAME', '--input FILENAME', String, 'File containing list of druids (instead of druids.txt).')
+  option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -48,6 +49,8 @@ end
 def apo_for(druid)
   puts "Fetching #{druid}"
   Dor.find(druid).admin_policy_object_id
+rescue ActiveFedora::ObjectNotFoundError
+  'Not found'
 end
 
 def write_results(file, aggregated_error_results, label, with_apo)
@@ -83,8 +86,13 @@ def results_file_name(use_unique_filename)
   "results_to-cocina_#{now_str}_#{branch_name}_#{short_commit_hash}.txt"
 end
 
-druids = File.read(options[:input]).split
-druids = druids.take(options[:sample]) if options[:sample]
+if options[:druids].empty?
+  druids = File.read(options[:input]).split
+  druids = druids.take(options[:sample]) if options[:sample]
+else
+  druids = options[:druids]
+end
+
 @sample_size = druids.size
 
 Result = Struct.new(:druid, :msg, :error_type)
