@@ -51,7 +51,8 @@ RSpec.describe 'Get the object' do
               }
             },
             identification: {
-              sourceId: 'src:99999'
+              sourceId: 'src:99999',
+              catalogLinks: []
             },
             structural: {}
           }
@@ -125,7 +126,8 @@ RSpec.describe 'Get the object' do
               }
             },
             identification: {
-              sourceId: 'src:99999'
+              sourceId: 'src:99999',
+              catalogLinks: []
             },
             structural: {
               isMemberOf: ['druid:xx888xx7777']
@@ -176,7 +178,8 @@ RSpec.describe 'Get the object' do
                                     }
                                   },
                                   identification: {
-                                    sourceId: 'src:99999'
+                                    sourceId: 'src:99999',
+                                    catalogLinks: []
                                   },
                                   structural: {}
                                 })
@@ -271,7 +274,8 @@ RSpec.describe 'Get the object' do
                                     }
                                   },
                                   identification: {
-                                    sourceId: 'src:99999'
+                                    sourceId: 'src:99999',
+                                    catalogLinks: []
                                   },
                                   structural: {
                                     hasMemberOrders: [
@@ -430,6 +434,9 @@ RSpec.describe 'Get the object' do
               { value: 'Stanford Digital Repository' }
             ]
           }
+        },
+        identification: {
+          catalogLinks: []
         }
       )
     end
