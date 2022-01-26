@@ -65,6 +65,7 @@ module Cocina
       def apply_catalog_links(catalog_links)
         return unless catalog_links
 
+        identity_md.ng_xml_will_change!
         catalog_links.filter { |l| l.catalog == 'symphony' }.each do |link|
           identity_md.add_value(:otherId, link.catalogRecordId, { name: 'catkey' })
         end

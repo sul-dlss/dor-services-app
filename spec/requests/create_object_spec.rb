@@ -68,7 +68,8 @@ RSpec.describe 'Create object' do
     let(:identification) do
       {
         sourceId: 'googlebooks:999999',
-        barcode: '36105036289127'
+        barcode: '36105036289127',
+        catalogLinks: []
       }
     end
     let(:expected_identification) { identification }

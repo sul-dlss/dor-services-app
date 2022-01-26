@@ -40,6 +40,9 @@ RSpec.describe 'Get the object' do
                                                { value: 'Stanford Digital Repository' }
                                              ]
                                            }
+                                         },
+                                         identification: {
+                                           catalogLinks: []
                                          }
                                        }).to_h
       ]

@@ -99,7 +99,7 @@ module Cocina
       end
 
       Cocina::ToFedora::Identity.apply_release_tags(fedora_object, release_tags: cocina_object.administrative&.releaseTags) if has_changed?(:administrative)
-      Cocina::ToFedora::Identity.apply_catalog_links(fedora_object, catalog_links: cocina_object.identity&.catalogLinks) if has_changed?(:administrative)
+      Cocina::ToFedora::Identity.apply_catalog_links(fedora_object, catalog_links: cocina_object.identification&.catalogLinks) if has_changed?(:administrative)
       fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy if has_changed?(:administrative)
 
       Cocina::ToFedora::CollectionAccess.apply(fedora_object, cocina_object.access) if has_changed?(:access)
@@ -187,6 +187,11 @@ module Cocina
       descriptive = FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_object.descMetadata.ng_xml, druid: fedora_object.pid)
 
       cocina_object.description.title != descriptive.fetch(:title).map { |value| Cocina::Models::Title.new(value) }
+    end
+
+    # TODO: duplicate from ObjectCreator
+    def catkey_for(cocina_object)
+      cocina_object.identification&.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
     end
 
     def add_tags(pid, cocina_object)
