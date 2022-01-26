@@ -5,7 +5,8 @@ class MetadataController < ApplicationController
   before_action :load_item
 
   def dublin_core
-    service = Publish::DublinCoreService.new(@item)
+    desc_md_xml = Publish::PublicDescMetadataService.new(@item).ng_xml(include_access_conditions: false)
+    service = Publish::DublinCoreService.new(desc_md_xml)
     render xml: service
   end
 
