@@ -20,7 +20,7 @@ RSpec.shared_examples 'valid APO mappings' do
       agreement_object_id: agreement_druid,
       administrativeMetadata: Dor::AdministrativeMetadataDS.from_xml(admin_metadata_xml),
       descMetadata: Dor::DescMetadataDS.from_xml('<mods/>'),
-      defaultObjectRights: default_object_rights_ds,
+      defaultObjectRights: Dor::DefaultObjectRightsDS.from_xml(default_object_rights_xml),
       roleMetadata: Dor::RoleMetadataDS.from_xml(role_metadata_xml)
     )
   end
@@ -85,16 +85,22 @@ RSpec.shared_examples 'valid APO mappings' do
     end
 
     describe 'DefaultRights' do
-      let(:normalized_default_rights_xml) do
-        Cocina::Normalizers::RightsNormalizer.normalize(datastream: default_object_rights_ds).to_xml
-      end
-      let(:actual_default_rights_xml) do
-        Cocina::ToFedora::DefaultRights.write(roundtrip_fedora_apo.defaultObjectRights, actual_cocina_apo_admin.defaultAccess) if actual_cocina_props[:administrative][:defaultAccess]
-        roundtrip_fedora_apo.defaultObjectRights.to_xml
+      let(:roundtrip_rights_metadata_xml) { defined?(roundtrip_default_object_rights_xml) ? roundtrip_default_object_rights_xml : default_object_rights_xml }
+
+      let(:normalized_orig_rights_xml) do
+        Cocina::Normalizers::RightsNormalizer.normalize(datastream: orig_fedora_apo_mock.defaultObjectRights)
       end
 
-      it 'roundtrips to normalized defaultObjectRights.xml' do
-        expect(actual_default_rights_xml).to be_equivalent_to(normalized_default_rights_xml)
+      before do
+        Cocina::ToFedora::DefaultRights.write(orig_fedora_apo_mock.defaultObjectRights, actual_cocina_apo_admin.defaultAccess)
+      end
+
+      it 'roundtrips to expected defaultObjectRights xml' do
+        expect(orig_fedora_apo_mock.defaultObjectRights.ng_xml).to be_equivalent_to(roundtrip_rights_metadata_xml)
+      end
+
+      it 'roundtrips to normalized original defaultObjectRights xml' do
+        expect(orig_fedora_apo_mock.defaultObjectRights.ng_xml).to be_equivalent_to(normalized_orig_rights_xml)
       end
     end
 
@@ -147,7 +153,7 @@ RSpec.shared_examples 'valid APO mappings' do
         agreement_object_id: agreement_druid,
         administrativeMetadata: Dor::AdministrativeMetadataDS.from_xml(my_roundtrip_admin_metadata_xml),
         descMetadata: Dor::DescMetadataDS.from_xml('<mods/>'),
-        defaultObjectRights: default_object_rights_ds,
+        defaultObjectRights: Dor::DefaultObjectRightsDS.from_xml(default_object_rights_xml),
         roleMetadata: Dor::RoleMetadataDS.from_xml(my_roundtrip_role_metadata_xml)
       )
     end
@@ -592,8 +598,8 @@ RSpec.describe 'APO administrative mappings' do
               </machine>
             </access>
             <use>
-              <license>https://creativecommons.org/licenses/by-nc/3.0/legalcode</license>
               <human type="useAndReproduction">Use at will.</human>
+              <license>https://creativecommons.org/licenses/by-nc/3.0/legalcode</license>
             </use>
           </rightsMetadata>
         XML
