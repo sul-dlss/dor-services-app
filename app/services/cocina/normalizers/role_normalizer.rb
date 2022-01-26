@@ -18,6 +18,7 @@ module Cocina
       end
 
       def normalize
+        normalize_empty_name_nodes
         normalize_identitifer_nodes
         regenerate_ng_xml(ng_xml.to_xml)
       end
@@ -25,6 +26,10 @@ module Cocina
       private
 
       attr_reader :ng_xml
+
+      def normalize_empty_name_nodes
+        ng_xml.xpath('//name[not(text())][not(@*)]').each(&:remove)
+      end
 
       def normalize_identitifer_nodes
         # normalize <identifier> with type="person" and prefix "sunetid:" to an <identifier> with type="sunetid" with prefix removed

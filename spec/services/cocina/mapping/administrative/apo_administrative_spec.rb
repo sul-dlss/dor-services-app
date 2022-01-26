@@ -114,8 +114,16 @@ RSpec.shared_examples 'valid APO mappings' do
         defined?(roundtrip_role_metadata_xml) ? roundtrip_role_metadata_xml : role_metadata_xml
       end
 
+      let(:expected_normalized_role_metadata_xml) do
+        Cocina::Normalizers::RoleNormalizer.normalize(role_ng_xml: Nokogiri::XML(role_metadata_xml))
+      end
+
       it 'roundtrips to expected roleMetadata.xml' do
         expect(actual_role_xml).to be_equivalent_to(expected_role_metadata_xml)
+      end
+
+      it 'roundtrips to expected normalized roleMetadata.xml' do
+        expect(actual_role_xml).to be_equivalent_to(expected_normalized_role_metadata_xml)
       end
     end
 
