@@ -600,7 +600,7 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
 
   describe 'Extent with unit and note sibling' do
     # druid:gx952gd8699
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <physicalDescription>
@@ -627,6 +627,56 @@ RSpec.describe 'MODS physicalDescription <--> cocina mappings' do
               note: [
                 {
                   value: 'The records are arranged in four series: Series 1. Administrative Records; Series 2. Photographs; Series 3. Emeriti files; Series 4. Posters.',
+                  type: 'arrangement'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Multiple extent with one sibling note' do
+    it_behaves_like 'MODS cocina mapping' do
+      # druid:bh920np8004
+      let(:mods) do
+        <<~XML
+          <physicalDescription>
+            <extent unit="Linear feet">4</extent>
+            <extent unit="boxes">5</extent>
+            <note type="arrangement">Arranged in the following 4 series: 1. Biographical Materials ; 2. Education and Research ; 3. Patents ; 4. Oversized Materials</note>
+          </physicalDescription>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          form: [
+            {
+              value: '4',
+              type: 'extent',
+              note: [
+                {
+                  value: 'Linear feet',
+                  type: 'unit'
+                }
+              ]
+            },
+            {
+              value: '5',
+              type: 'extent',
+              note: [
+                {
+                  value: 'boxes',
+                  type: 'unit'
+                }
+              ]
+            },
+            {
+              note: [
+                {
+                  value: 'Arranged in the following 4 series: 1. Biographical Materials ; 2. Education and Research ; 3. Patents ; 4. Oversized Materials',
                   type: 'arrangement'
                 }
               ]

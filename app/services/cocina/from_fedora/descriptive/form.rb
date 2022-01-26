@@ -233,10 +233,15 @@ module Cocina
             forms.concat(form_values)
             forms << { note: notes } if notes.present?
           elsif form_values.size == 1
-            forms << form_values.first.merge({
-              note: notes.presence,
-              displayLabel: physical_description_node['displayLabel']
-            }.compact)
+            if form_values.first[:note]&.first&.fetch(:type) == 'unit'
+              forms << form_values.first.compact
+              forms << { note: notes } if notes.present?
+            else
+              forms << form_values.first.merge({
+                note: notes.presence,
+                displayLabel: physical_description_node['displayLabel']
+              }.compact)
+            end
           else
             forms << {
               groupedValue: form_values,
