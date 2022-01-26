@@ -118,15 +118,11 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
     end
 
     it 'rightsMetadata roundtrips thru cocina model to provided expected rightsMetadata.xml' do
-      # for some reason, fedora_item.rightsMetadata.ng_xml.to_xml fails here, but fedora_item.rightsMetadata.to_xml passes.
-      #   ? Maybe some encoding assumptions baked in to active fedora.  Likewise, the opposite is true for the test below.
-      expect(fedora_item.rightsMetadata.to_xml).to be_equivalent_to(roundtrip_rights_metadata_xml)
+      expect(fedora_item.rightsMetadata.ng_xml).to be_equivalent_to(roundtrip_rights_metadata_xml)
     end
 
     it 'rightsMetadata roundtrips thru cocina model to normalized original rightsMetadata.xml' do
-      # for some reason, fedora_item.rightsMetadata.to_xml fails here, but fedora_item.rightsMetadata.ng_xml.to_xml passes.
-      #    ? Maybe some encoding assumptions baked in to active fedora.  Likewise, the opposite is true for the test above.
-      expect(fedora_item.rightsMetadata.ng_xml.to_xml).to be_equivalent_to(normalized_orig_rights_xml)
+      expect(fedora_item.rightsMetadata.ng_xml).to be_equivalent_to(normalized_orig_rights_xml)
     end
 
     it 'contentMetadata roundtrips thru cocina model to original contentMetadata.xml' do
