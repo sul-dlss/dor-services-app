@@ -25,6 +25,11 @@ RSpec.shared_examples 'APO Fedora Cocina mapping' do
       roleMetadata: Dor::RoleMetadataDS.from_xml(role_metadata_xml)
     )
   end
+  let(:normalized_orig_admin_xml) do
+    # the starting administrativeMetadata.xml is normalized to address discrepancies found against administrativeMetadata roundtripped
+    #  from data store (Fedora) and back
+    Cocina::Normalizers::AdminNormalizer.normalize(admin_ng_xml: Nokogiri::XML(admin_metadata_xml)).to_xml
+  end
   let(:actual_cocina_props) { Cocina::FromFedora::APO.props(orig_fedora_apo_mock) }
   let(:expected_cocina_props) do
     {
@@ -73,6 +78,10 @@ RSpec.shared_examples 'APO Fedora Cocina mapping' do
 
       it 'AdminPolicyAdministrative cocina model roundtrips to original administrativeMetadata.xml' do
         expect(actual_admin_metadata_xml).to be_equivalent_to(admin_metadata_xml)
+      end
+
+      it 'AdministrativeMetadata roundtrips thru cocina maps to normalized original administrativeMetadata.xml' do
+        expect(actual_admin_metadata_xml).to be_equivalent_to normalized_orig_admin_xml
       end
     end
 
