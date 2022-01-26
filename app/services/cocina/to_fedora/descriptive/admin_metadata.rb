@@ -24,7 +24,7 @@ module Cocina
             build_content_source
             build_description_standard
             build_record_origin
-            build_record_info_note
+            build_record_info_notes
             build_event
             build_identifier
           end
@@ -40,11 +40,18 @@ module Cocina
           end
         end
 
-        def build_record_info_note
-          record_info_note = Array(admin_metadata.note).find(&:valueAt)
-          return unless record_info_note
+        def build_record_info_notes
+          record_info_notes = Array(admin_metadata.note)
+          # return unless record_info_notes
+          return if record_info_notes.empty?
 
-          xml.recordInfoNote nil, { 'xlink:href' => record_info_note.valueAt }
+          record_info_notes.each do |info_note|
+            if info_note.valueAt.present?
+              xml.recordInfoNote nil, { 'xlink:href' => info_note.valueAt }
+            elsif info_note.type == 'record information'
+              xml.recordInfoNote info_note.value
+            end
+          end
         end
 
         def build_content_source

@@ -489,7 +489,7 @@ RSpec.describe 'MODS recordInfo <--> cocina mappings' do
   end
 
   describe 'With recordInfoNote' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <recordInfo>
