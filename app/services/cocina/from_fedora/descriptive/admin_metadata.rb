@@ -39,8 +39,9 @@ module Cocina
         def build_events
           events = []
           events << build_event_for(creation_event, 'creation') if creation_event
-          events << build_event_for(modification_event, 'modification') if modification_event
-
+          modification_events.each do |event|
+            events << build_event_for(event, 'modification')
+          end
           return nil if events.empty?
 
           events
@@ -199,8 +200,8 @@ module Cocina
           @creation_event ||= record_info.xpath('mods:recordCreationDate', mods: DESC_METADATA_NS).first
         end
 
-        def modification_event
-          @modification_event ||= record_info.xpath('mods:recordChangeDate', mods: DESC_METADATA_NS).first
+        def modification_events
+          @modification_events ||= record_info.xpath('mods:recordChangeDate', mods: DESC_METADATA_NS)
         end
 
         def record_identifiers
