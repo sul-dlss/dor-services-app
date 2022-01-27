@@ -38,6 +38,7 @@ module Cocina
         normalize_label_attr
         normalize_attr
         normalize_publish
+        normalize_empty_xml
 
         regenerate_ng_xml(ng_xml.to_s)
       end
@@ -127,6 +128,11 @@ module Cocina
           file['publish'] ||= file['deliver']
           file.delete('deliver')
         end
+      end
+
+      def normalize_empty_xml
+        # some objects have <xml> instead of <contentMetadata>, e.g. normalize <xml type="file"/> --> <contentMetadata type="file"/>
+        ng_xml.root.xpath('//xml[not(text())]').each { |node| node.name = 'contentMetadata' }
       end
     end
   end
