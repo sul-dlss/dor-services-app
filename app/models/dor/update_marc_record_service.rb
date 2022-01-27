@@ -81,8 +81,8 @@ module Dor
     end
 
     def new_856_record(ckey)
-      new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{@druid_obj.object_type}"
-      new856 += "|xbarcode:#{@druid_obj.barcode}" unless @druid_obj.barcode.nil?
+      new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{@druid_obj.type}"
+      new856 += "|xbarcode:#{@druid_obj.identification.barcode}" unless @druid_obj.identification.barcode.nil?
       new856 += "|xfile:#{thumb}" unless thumb.nil?
       new856 += get_x2_collection_info unless get_x2_collection_info.nil?
       new856 += get_x2_constituent_info unless get_x2_constituent_info.nil?
@@ -115,7 +115,6 @@ module Dor
       # @dra_object.stanford_only_rights returns a 2 element list where presence of first element indicates stanford
       # only read restriction, and second element indicates the rule on the restriction, if any (e.g. 'no-download')
       if @dra_object.access == 'stanford' || @dra_object.readLocation.present?
-#      if @dra_object.stanford_only_rights.first.present? || @dra_object.restricted_by_location?
         '|zAvailable to Stanford-affiliated users.'
       else
         ''
@@ -140,7 +139,10 @@ module Dor
 
       unless collections.empty?
         collections.each do |coll|
-          coll_info += "|xcollection:#{coll.id.sub('druid:', '')}:#{coll.catkey}:#{coll.label}"
+          catkey = coll.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
+          next if catkey.nil?
+
+          coll_info += "|xcollection:#{coll.externalIdentifier.sub('druid:', '')}:#{coll.catkey}:#{coll.label}"
         end
       end
 
