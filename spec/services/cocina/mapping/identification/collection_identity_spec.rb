@@ -225,8 +225,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
             label: label,
             version: 1,
             identification: {
-              sourceId: "#{source_id_source}:#{source_id}",
-              catalogLinks: []
+              sourceId: "#{source_id_source}:#{source_id}"
             },
             access: access_props,
             administrative: {
@@ -304,8 +303,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
             label: label,
             version: 1,
             identification: {
-              sourceId: "#{source_id_source}:#{source_id}",
-              catalogLinks: []
+              sourceId: "#{source_id_source}:#{source_id}"
             },
             access: access_props,
             administrative: {
@@ -358,8 +356,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
             label: label,
             version: 1,
             identification: {
-              sourceId: "#{source_id_source}:#{source_id}",
-              catalogLinks: []
+              sourceId: "#{source_id_source}:#{source_id}"
             },
             access: access_props,
             administrative: {
@@ -416,8 +413,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
             label: label,
             version: 1,
             identification: {
-              sourceId: "#{source_id_source}:#{source_id}",
-              catalogLinks: []
+              sourceId: "#{source_id_source}:#{source_id}"
             },
             access: access_props,
             administrative: {
