@@ -238,7 +238,8 @@ RSpec.describe 'Fedora Agreement Object identityMetadata <--> Cocina Identificat
           label: label,
           version: 1,
           identification: {
-            sourceId: "#{source_id_source}:#{source_id}"
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: []
           },
           administrative: {
             hasAdminPolicy: admin_policy_id
