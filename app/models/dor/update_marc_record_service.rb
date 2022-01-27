@@ -160,22 +160,25 @@ module Dor
     end
 
     def get_x2_part_info
-      mods_xml = @druid_obj.descMetadata.ng_xml
-      title_info = ModsUtils.primary_title_info(mods_xml)
+      # mods_xml = @druid_obj.descMetadata.ng_xml
+      # title_info = ModsUtils.primary_title_info(mods_xml)
 
+      title_info = @druid_obj.description.title
       return unless title_info
 
-      part_parts = title_info.children.select do |child|
+      part_parts = title_info.select do |child|
+        next if child.structuredValue.empty?
+
         %w(partName partNumber).include?(child.name)
       end
 
       part_label = part_parts.filter_map(&:text).join(parts_delimiter(part_parts))
 
-      part_sort = mods_xml.xpath('//*[@type="date/sequential designation"]').first
+      part_sort = @druid_obj.description.note.find { |note| note.type == 'date/sequential designation' }
 
       str = ''
       str += "|xlabel:#{part_label}" unless part_label.empty?
-      str += "|xsort:#{part_sort.text}" if part_sort
+      str += "|xsort:#{part_sort.first.value}" if part_sort
 
       str
     end
@@ -183,21 +186,25 @@ module Dor
     def get_x2_rights_info
       values = []
 
-      primary = @dra_object.index_elements[:primary]
+      # primary = @dra_object.index_elements[:primary]
 
       # make the "primary" categorization less granular + terser
-      case primary
-      when 'controlled digital lending'
-        values << 'rights:cdl'
-      when /world/
-        values << 'rights:world'
-      when /access_restricted/
-        values << 'rights:group=stanford' if @dra_object.stanford_only_rights.first.present?
-        values.concat(@dra_object.obj_lvl.location.keys.map { |k| "rights:location=#{k.to_s.gsub(/\W/, '')}" })
-        values.concat(@dra_object.obj_lvl.agent.keys.map { |k| "rights:agent=#{k.to_s.gsub(/\W/, '')}" })
-      else
-        values << "rights:#{primary}"
-      end
+      values << 'rights:cdl' if @dra_object.controlledDigitalLending.present?
+      values << 'rights:world' if @dra_object.access == 'world' && @dra_object.download == 'world'
+      values << 'rights:group=stanford' if @dra_object.access == 'stanford' && @dra_object.download == 'stanford'
+      values << "rights:location=#{@dra_object.readLocation}" if @dra_object.readLocation
+      # case @dra_object
+      # when controlledDigitalLenging.present? # 'controlled digital lending'
+      #   values << 'rights:cdl'
+      # when /world/
+      #   values << 'rights:world'
+      # when /access_restricted/
+      #   values << 'rights:group=stanford' if @dra_object.stanford_only_rights.first.present?
+      #   values.concat(@dra_object.obj_lvl.location.keys.map { |k| "rights:location=#{k.to_s.gsub(/\W/, '')}" })
+      #   values.concat(@dra_object.obj_lvl.agent.keys.map { |k| "rights:agent=#{k.to_s.gsub(/\W/, '')}" })
+      # else
+      #   values << "rights:#{primary}"
+      # end
 
       values.map { |value| "|x#{value}" }.join
     end

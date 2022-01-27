@@ -193,7 +193,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       it 'generates a single symphony record' do
         # rubocop:disable Layout/LineLength
         expect(generate_symphony_records).to eq [
-          "8832162\taa111aa1111\t.856. 41|uhttps://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123df4567%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character|xrights:world"
+          "8832162\taa111aa1111\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xhttp://cocina.sul.stanford.edu/models/object.jsonld|xbarcode:36105216275185|xfile:aa111aa1111%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character|xrights:world"
         ]
       end
     end
