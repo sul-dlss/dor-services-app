@@ -11,14 +11,15 @@ require 'diffy'
 require 'dor/services/client'
 require 'equivalent-xml'
 
-options = { random: false, druids: [], fast: false, update: false, input: 'druids.txt' }
+options = { random: false, druids: [], no_content: false, update: false, input: 'druids.txt', no_descriptive: false }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-cocina-roundtrip [options]'
 
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
   option_parser.on('-u', '--update', 'Run object update instead of object create.')
   option_parser.on('-r', '--random', 'Select random druids.')
-  option_parser.on('-f', '--fast', 'Without content metadata.')
+  option_parser.on('-f', '--no_content', 'Without content metadata (fast).')
+  option_parser.on('-n', '--no_descriptive', 'Without descriptive metadata.')
   option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
   option_parser.on('-iFILENAME', '--input FILENAME', String, 'File containing list of druids (instead of druids.txt).')
   option_parser.on('-h', '--help', 'Displays help.') do
@@ -139,18 +140,30 @@ def diff_datatreams_for(druid, label, orig_datastreams, fedora_obj, apo)
   diff_datastreams
 end
 
-def fast_content_metadata(fedora_obj, druid, create)
+def empty_content_metadata(fedora_obj, druid, create)
   content_type = fedora_obj.contentMetadata.contentType.first
   object_id = create ? "objectId='#{druid}'" : ''
   book_data = content_type&.include?('book') || content_type&.include?('manuscript') ? '<bookData readingOrder="ltr"/>' : ''
   "<contentMetadata type='#{content_type}' #{object_id}>#{book_data}</contentMetadata>"
 end
 
+def empty_desc_metadata
+  <<~XML
+    <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3"
+      version="3.7"
+      xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+      <titleInfo>
+        <title>Descriptive metadata has been removed.</title>
+      </titleInfo>
+    </mods>
+  XML
+end
+
 # rubocop:disable Metrics/AbcSize
 # rubocop:disable Metrics/CyclomaticComplexity
 # rubocop:disable Metrics/MethodLength
 # rubocop:disable Metrics/PerceivedComplexity
-def validate_druid(druid, loader, fast: false, create: false)
+def validate_druid(druid, loader, no_content: false, no_desc: false, create: false)
   return [druid, :missing] unless loader.cached?(druid)
 
   begin
@@ -164,7 +177,9 @@ def validate_druid(druid, loader, fast: false, create: false)
     return [druid, :unmapped]
   end
 
-  fedora_obj.contentMetadata.content = fast_content_metadata(fedora_obj, druid, create) if fast && fedora_obj.datastreams.include?('contentMetadata')
+  fedora_obj.contentMetadata.content = empty_content_metadata(fedora_obj, druid, create) if no_content && fedora_obj.datastreams.include?('contentMetadata')
+
+  fedora_obj.descMetadata.content = empty_desc_metadata if no_desc && fedora_obj.datastreams.include?('descMetadata')
 
   # defaultObjectRights has to be normalized before mapping
   if fedora_obj.datastreams.include?('defaultObjectRights')
@@ -250,7 +265,7 @@ else
 end
 
 results = Parallel.map(druids, progress: 'Testing') do |druid|
-  validate_druid(druid, loader, fast: options[:fast], create: !options[:update])
+  validate_druid(druid, loader, no_content: options[:no_content], no_desc: options[:no_descriptive], create: !options[:update])
 end
 counts = { different: 0, success: 0, mapping_error: 0, update_error: 0, create_error: 0, normalization_error: 0, missing: 0, unmapped: 0, expected_unmapped: 0, bad_cache: 0 }
 File.open('results/results.txt', 'w') do |file|
