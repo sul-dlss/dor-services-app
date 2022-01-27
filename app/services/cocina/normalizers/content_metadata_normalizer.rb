@@ -32,6 +32,7 @@ module Cocina
         remove_sequence
         remove_location
         remove_format
+        remove_geodata
         normalize_object_id(druid)
         normalize_reading_order(druid)
         normalize_label_attr
@@ -88,6 +89,10 @@ module Cocina
 
       def remove_format
         ng_xml.root.xpath('//file[@format]').each { |file_node| file_node.delete('format') }
+      end
+
+      def remove_geodata
+        ng_xml.root.xpath('//geoData').each(&:remove)
       end
 
       def normalize_reading_order(druid)
