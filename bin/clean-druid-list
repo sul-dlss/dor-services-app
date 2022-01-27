@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+require 'optparse'
+
+options = { input: 'druids.txt', output: 'druids.clean.txt' }
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/clean-druid-list [options]'
+
+  option_parser.on('-iFILENAME', '--input FILENAME', String, 'File containing list of druids (instead of druids.txt).')
+  option_parser.on('-oFILENAME', '--output FILENAME', String, 'File to write list of druids (instead of druids.clean.txt).')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+parser.parse!(into: options)
+
+druids = File.read(options[:input]).split
+
+count = 0
+File.open(options[:output], 'w') do |file|
+  druids.each_with_index do |druid, index|
+    puts "Finding #{druid} (#{index + 1})"
+    next if ActiveFedora::SolrService.query('*:*', fl: 'id', rows: 1, fq: "id:\"#{druid}\"").empty?
+
+    file.write("#{druid}\n")
+    count += 1
+  end
+end
+
+puts "Original: #{druids.size} druids"
+puts "Cleaned: #{count} druids"

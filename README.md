@@ -190,7 +190,8 @@ Usage: bin/validate-cocina-roundtrip [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -u, --update                     Run object update instead of object create.
     -r, --random                     Select random druids.
-    -f, --fast                       Without content metadata.
+    -f, --no_content                 Without content metadata (fast).
+    -n, --no_descriptive             Without descriptive metadata.
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
     -i, --input FILENAME             File containing list of druids (instead of druids.txt).
     -h, --help                       Displays help.
@@ -364,6 +365,15 @@ $ bin/generate-druid-list 'is_governed_by_ssim:"info:fedora/druid:rp029yq2361"'
 ```
 
 The results are written to `druids.txt`.
+
+### Removing deleted items from a list of druids
+$ bin/clean-druid-list -h
+Usage: bin/clean-druid-list [options]
+    -i, --input FILENAME             File containing list of druids (instead of druids.txt).
+    -o, --output FILENAME            File to write list of druids (instead of druids.clean.txt).
+    -h, --help                       Displays help.
+
+Solr is used to determine if an item still exists.
 
 ### Refreshing descriptive metadata
 ```
