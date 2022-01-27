@@ -154,7 +154,7 @@ module Cocina
     end
 
     def update_descriptive
-      fedora_object.descMetadata.content = Cocina::ToFedora::Descriptive.transform(cocina_object.description, fedora_object.pid).doc.to_xml
+      fedora_object.descMetadata.content = Cocina::ToFedora::Descriptive.transform(cocina_object.description, fedora_object.pid).to_xml
       fedora_object.descMetadata.content_will_change!
     end
 

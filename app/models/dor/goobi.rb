@@ -12,8 +12,8 @@ module Dor
                             Faraday::TimeoutError,
                             Faraday::RetriableResponse].freeze
 
-    def initialize(druid_obj)
-      @druid_obj = druid_obj
+    def initialize(cocina_obj)
+      @cocina_obj = cocina_obj
     end
 
     def register
@@ -31,6 +31,8 @@ module Dor
 
     private
 
+    attr_reader :cocina_obj
+
     # We send all tags to Goobi, but "DPG : Workflow : xxx" is the one tag that Goobi uses
     def goobi_xml_tags
       goobi_tag_list.map(&:to_xml).join
@@ -39,14 +41,14 @@ module Dor
     def xml_request
       <<-END
         <stanfordCreationRequest>
-            <objectId>#{@druid_obj.id}</objectId>
-            <objectType>#{@druid_obj.object_type}</objectType>
-            <sourceID>#{@druid_obj.source_id.encode(xml: :text)}</sourceID>
+            <objectId>#{cocina_obj.externalIdentifier}</objectId>
+            <objectType>item</objectType>
+            <sourceID>#{source_id&.encode(xml: :text)}</sourceID>
             <title>#{title_or_label.encode(xml: :text)}</title>
             <contentType>#{content_type}</contentType>
             <project>#{project_name.encode(xml: :text)}</project>
-            <catkey>#{@druid_obj.catkey}</catkey>
-            <barcode>#{@druid_obj.barcode}</barcode>
+            <catkey>#{catkey}</catkey>
+            <barcode>#{barcode}</barcode>
             <collectionId>#{collection_id}</collectionId>
             <collectionName>#{collection_name.encode(xml: :text)}</collectionName>
             <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
@@ -62,19 +64,31 @@ module Dor
     def goobi_workflow_name
       @goobi_workflow_name ||= begin
         dpg_workflow_tag_id = 'DPG : Workflow : '
-        content_tag = AdministrativeTags.for(pid: @druid_obj.id).select { |tag| tag.include?(dpg_workflow_tag_id) }
+        content_tag = AdministrativeTags.for(pid: cocina_obj.externalIdentifier).select { |tag| tag.include?(dpg_workflow_tag_id) }
         content_tag.empty? ? Settings.goobi.default_goobi_workflow_name : content_tag[0].split(':').last.strip
       end
+    end
+
+    def catkey
+      cocina_obj.identification&.catalogLinks&.filter { |link| link.catalog == 'symphony' }&.first&.catalogRecordId
+    end
+
+    def barcode
+      cocina_obj.identification&.barcode
+    end
+
+    def source_id
+      cocina_obj.identification&.sourceId
     end
 
     # returns the value of the content_type tag from admin tags service if it exists, else returns the value from contentMetadata object type
     # note, the content_type tag comes from value of the tag called "Process : Content Type"
     # @return [String] first collection name the item is in (blank if none)
     def content_type
-      if AdministrativeTags.content_type(pid: @druid_obj.id).empty?
-        @druid_obj.contentMetadata.contentType.first
+      if AdministrativeTags.content_type(pid: cocina_obj.externalIdentifier).empty?
+        Cocina::ToFedora::ContentType.map(cocina_obj.type)
       else
-        AdministrativeTags.content_type(pid: @druid_obj.id).first
+        AdministrativeTags.content_type(pid: cocina_obj.externalIdentifier).first
       end
     end
 
@@ -82,7 +96,7 @@ module Dor
     # @return [String] first project tag value if one exists (blank if none)
     def project_name
       project_tag_id = 'Project : '
-      content_tag = AdministrativeTags.for(pid: @druid_obj.id).select { |tag| tag.include?(project_tag_id) }
+      content_tag = AdministrativeTags.for(pid: cocina_obj.externalIdentifier).select { |tag| tag.include?(project_tag_id) }
       content_tag.empty? ? '' : content_tag[0].gsub(project_tag_id, '').strip
     end
 
@@ -90,7 +104,7 @@ module Dor
     # the name of the tag is the first namespace part of the tag (before first colon), value of the tag is everything after this
     # @return [Array] of GoobiTag objects
     def goobi_tag_list
-      AdministrativeTags.for(pid: @druid_obj.id).map do |tag|
+      AdministrativeTags.for(pid: cocina_obj.externalIdentifier).map do |tag|
         tag_split = tag.split(':', 2).map(&:strip) # only split on the first colon
         GoobiTag.new(name: tag_split[0], value: tag_split[1])
       end
@@ -101,27 +115,30 @@ module Dor
     def goobi_ocr_tag_present?
       @goobi_ocr_tag_present ||= begin
         dpg_goobi_ocr_tag = 'DPG : OCR : TRUE'
-        AdministrativeTags.for(pid: @druid_obj.id).any? { |tag| tag.casecmp(dpg_goobi_ocr_tag).zero? } # case insensitive compare
+        AdministrativeTags.for(pid: cocina_obj.externalIdentifier).any? { |tag| tag.casecmp(dpg_goobi_ocr_tag).zero? } # case insensitive compare
       end
     end
 
     # returns the first collection_id the object is contained in (if any)
     # @return [String] collection druid the item is in (blank if none)
     def collection_id
-      @collection_id ||= @druid_obj.collections.empty? ? '' : @druid_obj.collections.first.id
+      @collection_id ||= cocina_obj.structural&.isMemberOf.present? ? cocina_obj.structural.isMemberOf.first : ''
     end
 
     # returns the name of the first collection the object is contained in (if any)
     # @return [String] first collection name the item is in (blank if none)
     def collection_name
-      @collection_name ||= @druid_obj.collections.empty? ? '' : @druid_obj.collections.first.label
+      @collection_name ||= collection_id == '' ? '' : CocinaObjectStore.find(collection_id).label
     end
 
     def title_or_label
-      title_element = ModsUtils.primary_title_info(@druid_obj.descMetadata.ng_xml)
-      return title_element.content.strip if title_element.respond_to?(:content) && title_element.content.present?
+      if cocina_obj.description
+        desc_ng_xml = Cocina::ToFedora::Descriptive.transform(cocina_obj.description, cocina_obj.externalIdentifier)
+        title_element = ModsUtils.primary_title_info(desc_ng_xml)
+        return title_element.content.strip if title_element.respond_to?(:content) && title_element.content.present?
+      end
 
-      @druid_obj.label
+      cocina_obj.label
     end
   end
 end

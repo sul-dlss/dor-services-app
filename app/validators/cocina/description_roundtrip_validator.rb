@@ -16,7 +16,7 @@ module Cocina
       # Requests do not have druids.
       druid = cocina_object.respond_to?(:externalIdentifier) ? cocina_object.externalIdentifier : nil
 
-      descriptive_ng_xml = ToFedora::Descriptive.transform(cocina_object.description, druid).doc
+      descriptive_ng_xml = ToFedora::Descriptive.transform(cocina_object.description, druid)
       # Map MODS back to Cocina.
       title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: cocina_object.label)
       roundtrip_description = FromFedora::Descriptive.props(title_builder: title_builder, mods: descriptive_ng_xml, druid: druid)
@@ -37,7 +37,7 @@ module Cocina
       description_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_object.descMetadata.ng_xml, druid: fedora_object.pid)
       cocina_description = Cocina::Models::Description.new(description_props)
 
-      roundtrip_mods_ng_xml = Cocina::ToFedora::Descriptive.transform(cocina_description, fedora_object.pid).doc
+      roundtrip_mods_ng_xml = Cocina::ToFedora::Descriptive.transform(cocina_description, fedora_object.pid)
 
       # Perform approved XML normalization changes to avoid noise in roundtrip failures
       norm_original_ng_xml = Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: fedora_object.descMetadata.ng_xml, druid: fedora_object.pid, label: fedora_object.label)

@@ -2,8 +2,8 @@
 
 # rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
-  before_action :load_cocina_object, only: %i[show update_doi_metadata]
-  before_action :load_item, only: %i[show accession update_marc_record destroy notify_goobi]
+  before_action :load_cocina_object, only: %i[show update_doi_metadata notify_goobi]
+  before_action :load_item, only: %i[show accession update_marc_record destroy]
 
   # No longer be necessary when remove Fedora.
   rescue_from(Cocina::ObjectUpdater::NotImplemented) do |e|
@@ -178,7 +178,7 @@ class ObjectsController < ApplicationController
   # (code in https://github.com/sul-dlss/common-accessioning/blob/main/lib/robots/dor_repo/goobi/goobi_notify.rb)
   # This proxies a request to the Goobi server and proxies it's response to the client.
   def notify_goobi
-    response = Dor::Goobi.new(@item).register
+    response = Dor::Goobi.new(@cocina_object).register
     return json_api_error(status: :conflict, message: response.body) if response.status == 409
 
     proxy_faraday_response(response)

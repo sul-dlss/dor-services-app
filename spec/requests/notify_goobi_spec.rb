@@ -4,11 +4,11 @@ require 'rails_helper'
 
 RSpec.describe 'Notify Goobi' do
   let(:druid) { 'druid:mx123qw2323' }
-  let(:object) { Dor::Item.new(pid: druid) }
-  let(:fake_request) { "<stanfordCreationRequest><objectId>#{object.pid}</objectId></stanfordCreationRequest>" }
+  let(:object) { instance_double(Cocina::Models::DRO) }
+  let(:fake_request) { "<stanfordCreationRequest><objectId>#{druid}</objectId></stanfordCreationRequest>" }
 
   before do
-    allow(Dor).to receive(:find).and_return(object)
+    allow(CocinaObjectStore).to receive(:find).and_return(object)
     allow_any_instance_of(Dor::Goobi).to receive(:xml_request).and_return fake_request
   end
 
