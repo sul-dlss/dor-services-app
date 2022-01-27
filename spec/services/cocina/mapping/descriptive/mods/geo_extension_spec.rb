@@ -87,14 +87,7 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
               ]
             }
           ],
-          purl: 'https://purl.stanford.edu/kk138ps4721',
-          access: {
-            digitalRepository: [
-              {
-                value: 'Stanford Digital Repository'
-              }
-            ]
-          }
+          purl: 'https://purl.stanford.edu/kk138ps4721'
         }
       end
     end
@@ -174,14 +167,7 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
               ]
             }
           ],
-          purl: 'https://purl.stanford.edu/cw222pt0426',
-          access: {
-            digitalRepository: [
-              {
-                value: 'Stanford Digital Repository'
-              }
-            ]
-          }
+          purl: 'https://purl.stanford.edu/cw222pt0426'
         }
       end
     end
@@ -274,14 +260,7 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
               ]
             }
           ],
-          purl: 'https://purl.stanford.edu/xy581jd9710',
-          access: {
-            digitalRepository: [
-              {
-                value: 'Stanford Digital Repository'
-              }
-            ]
-          }
+          purl: 'https://purl.stanford.edu/xy581jd9710'
         }
       end
     end
@@ -365,14 +344,7 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
               ]
             }
           ],
-          purl: 'https://purl.stanford.edu/gq515vq0921',
-          access: {
-            digitalRepository: [
-              {
-                value: 'Stanford Digital Repository'
-              }
-            ]
-          }
+          purl: 'https://purl.stanford.edu/gq515vq0921'
         }
       end
     end
@@ -456,14 +428,7 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
               ]
             }
           ],
-          purl: 'https://purl.stanford.edu/nr717dp9096',
-          access: {
-            digitalRepository: [
-              {
-                value: 'Stanford Digital Repository'
-              }
-            ]
-          }
+          purl: 'https://purl.stanford.edu/nr717dp9096'
         }
       end
     end
@@ -547,14 +512,7 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
               ]
             }
           ],
-          purl: 'https://purl.stanford.edu/zz581px0362',
-          access: {
-            digitalRepository: [
-              {
-                value: 'Stanford Digital Repository'
-              }
-            ]
-          }
+          purl: 'https://purl.stanford.edu/zz581px0362'
         }
       end
     end
@@ -686,14 +644,7 @@ RSpec.describe 'MODS geo extension <--> cocina mappings' do
               ]
             }
           ],
-          purl: 'https://purl.stanford.edu/zg154pd4168',
-          access: {
-            digitalRepository: [
-              {
-                value: 'Stanford Digital Repository'
-              }
-            ]
-          }
+          purl: 'https://purl.stanford.edu/zg154pd4168'
         }
       end
     end

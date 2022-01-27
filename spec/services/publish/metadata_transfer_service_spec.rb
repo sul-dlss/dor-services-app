@@ -108,7 +108,7 @@ RSpec.describe Publish::MetadataTransferService do
 
       context 'with an item' do
         before do
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"type"/, 'cocina.json')
+          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<mods:mods/, 'mods')
           expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(no_args)
@@ -147,7 +147,7 @@ RSpec.describe Publish::MetadataTransferService do
         end
 
         before do
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"type"/, 'cocina.json')
+          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<mods:mods/, 'mods')
           expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(no_args)

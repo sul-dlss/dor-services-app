@@ -13,8 +13,14 @@ module Cocina
     def self.valid_from_cocina?(cocina_object)
       return Success() if cocina_object.description.nil?
 
-      # Requests do not have druids.
-      druid = cocina_object.respond_to?(:externalIdentifier) ? cocina_object.externalIdentifier : nil
+      # Requests do not have druids or purls.
+      if cocina_object.respond_to?(:externalIdentifier)
+        druid = cocina_object.externalIdentifier
+        description_class = Cocina::Models::Description
+      else
+        druid = nil
+        description_class = Cocina::Models::RequestDescription
+      end
 
       descriptive_ng_xml = ToFedora::Descriptive.transform(cocina_object.description, druid)
       # Map MODS back to Cocina.
@@ -22,7 +28,7 @@ module Cocina
       roundtrip_description = FromFedora::Descriptive.props(title_builder: title_builder, mods: descriptive_ng_xml, druid: druid)
 
       # Compare original description against roundtripped Cocina.
-      unless DeepEqual.match?(Cocina::Models::Description.new(roundtrip_description).to_h, cocina_object.description.to_h)
+      unless DeepEqual.match?(description_class.new(roundtrip_description).to_h, cocina_object.description.to_h)
         return Failure("Roundtripping of descriptive metadata unsuccessful. Expected #{JSON.generate(cocina_object.description.to_h)} but received #{JSON.generate(roundtrip_description)}.")
       end
 

@@ -24,12 +24,7 @@ RSpec.describe 'Create object' do
                                      version: 1,
                                      description: {
                                        title: [{ value: title }],
-                                       purl: 'https://purl.stanford.edu/gg777gg7777',
-                                       access: {
-                                         digitalRepository: [
-                                           { value: 'Stanford Digital Repository' }
-                                         ]
-                                       }
+                                       purl: 'https://purl.stanford.edu/gg777gg7777'
                                      },
                                      identification: {
                                        sourceId: 'hydrus:collection-456'
@@ -43,11 +38,14 @@ RSpec.describe 'Create object' do
     end
     let(:data) do
       <<~JSON
-        {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
+        {
+          "cocinaVersion":"0.0.1",
+          "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
           "label":"#{label}","version":1,"access":{},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
           "identification":{"sourceId":"hydrus:collection-456"},
-          "description":{"title":[{"value":"#{title}"}],"purl":"https://purl.stanford.edu/gg777gg7777","access":{"digitalRepository":[{"value":"Stanford Digital Repository"}]}}}
+          "description":{"title":[{"value":"#{title}"}]}
+        }
       JSON
     end
 
@@ -55,7 +53,9 @@ RSpec.describe 'Create object' do
       let(:expected_label) { title } # label derived from catalog data
       let(:data) do
         <<~JSON
-          {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
+          {
+            "cocinaVersion":"0.0.1",
+            "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
             "label":"#{label}","version":1,"access":{},
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
             "description":{"title":[{"value":"#{title}"}]},
@@ -69,12 +69,7 @@ RSpec.describe 'Create object' do
                                        version: 1,
                                        description: {
                                          title: [{ value: title }],
-                                         purl: 'https://purl.stanford.edu/gg777gg7777',
-                                         access: {
-                                           digitalRepository: [
-                                             { value: 'Stanford Digital Repository' }
-                                           ]
-                                         }
+                                         purl: 'https://purl.stanford.edu/gg777gg7777'
                                        },
                                        administrative: {
                                          hasAdminPolicy: 'druid:dd999df4567'
@@ -125,7 +120,6 @@ RSpec.describe 'Create object' do
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to equal_cocina_model(expected)
-
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
       end
@@ -134,20 +128,16 @@ RSpec.describe 'Create object' do
     context 'when a description including summary note (abstract) is provided' do
       let(:data) do
         <<~JSON
-          {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
+          {
+            "cocinaVersion":"0.0.1",
+            "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
             "label":"#{label}",
             "version":1,
             "access":{},
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "description":{
               "title":[{"value":"#{title}"}],
-              "note":[{"value":"coll abstract","type":"abstract"}],
-                                       "purl": "https://purl.stanford.edu/gg777gg7777",
-                                       "access": {
-                                           "digitalRepository": [
-                                               { "value": "Stanford Digital Repository" }
-                                           ]
-                                       }
+              "note":[{"value":"coll abstract","type":"abstract"}]
               }
             }
         JSON
@@ -163,12 +153,7 @@ RSpec.describe 'Create object' do
                                        description: {
                                          title: [{ value: title }],
                                          note: [{ value: 'coll abstract', type: 'abstract' }],
-                                         purl: 'https://purl.stanford.edu/gg777gg7777',
-                                         access: {
-                                           digitalRepository: [
-                                             { value: 'Stanford Digital Repository' }
-                                           ]
-                                         }
+                                         purl: Purl.for(druid: druid)
                                        },
                                        externalIdentifier: druid)
       end
@@ -186,7 +171,9 @@ RSpec.describe 'Create object' do
     context 'when access is provided' do
       let(:data) do
         <<~JSON
-          {"type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
+          {
+            "cocinaVersion":"0.0.1",
+            "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
             "label":"#{label}",
             "version":1,
             "access":{ "access": "world" },
@@ -204,12 +191,7 @@ RSpec.describe 'Create object' do
                                        },
                                        description: {
                                          title: [{ value: expected_label }],
-                                         purl: 'https://purl.stanford.edu/gg777gg7777',
-                                         access: {
-                                           digitalRepository: [
-                                             { value: 'Stanford Digital Repository' }
-                                           ]
-                                         }
+                                         purl: 'https://purl.stanford.edu/gg777gg7777'
                                        },
                                        externalIdentifier: druid)
       end

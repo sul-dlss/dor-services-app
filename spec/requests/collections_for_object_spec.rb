@@ -34,12 +34,7 @@ RSpec.describe 'Get the object' do
                                            title: [
                                              { value: 'Hello' }
                                            ],
-                                           purl: 'https://purl.stanford.edu/bc123df4567',
-                                           access: {
-                                             digitalRepository: [
-                                               { value: 'Stanford Digital Repository' }
-                                             ]
-                                           }
+                                           purl: 'https://purl.stanford.edu/bc123df4567'
                                          }
                                        }).to_h
       ]

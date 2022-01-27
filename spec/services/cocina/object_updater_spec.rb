@@ -49,8 +49,8 @@ RSpec.describe Cocina::ObjectUpdater do
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         version: 1,
-        administrative: { hasAdminPolicy: 'druid:dd999df4567' },
-        description: { title: [{ value: 'orig title' }] }
+        administrative: { hasAdminPolicy: 'druid:dd999df4567', hasAgreement: 'druid:jt959wc5586' },
+        description: { title: [{ value: 'orig title' }], purl: 'https://purl.stanford.edu/bc123df4567' }
       }
     end
 
@@ -94,7 +94,7 @@ RSpec.describe Cocina::ObjectUpdater do
       context 'when description has changed' do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
-            attrs[:description] = { title: [{ value: 'new title' }] }
+            attrs[:description] = { title: [{ value: 'new title' }], purl: 'https://purl.stanford.edu/bc123df4567' }
           end
         end
 
@@ -134,7 +134,7 @@ RSpec.describe Cocina::ObjectUpdater do
         it 'updates administrative' do
           update
           expect(item).to have_received(:admin_policy_object_id=).with('druid:dd999df4567')
-          expect(item).to have_received(:agreement_object_id=).with(nil) # nil is legitimate
+          expect(item).to have_received(:agreement_object_id=).with('druid:jt959wc5586')
           expect(Cocina::ToFedora::AdministrativeMetadata).to have_received(:write)
           expect(Cocina::ToFedora::Roles).to have_received(:write)
         end
@@ -213,7 +213,7 @@ RSpec.describe Cocina::ObjectUpdater do
       context 'when description has changed' do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
-            attrs[:description] = { title: [{ value: 'new title' }] }
+            attrs[:description] = { title: [{ value: 'new title' }], purl: 'https://purl.stanford.edu/bc123df4567' }
           end
         end
 
@@ -352,7 +352,7 @@ RSpec.describe Cocina::ObjectUpdater do
       context 'when description has changed' do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
-            attrs[:description] = { title: [{ value: 'new title' }] }
+            attrs[:description] = { title: [{ value: 'new title' }], purl: 'https://purl.stanford.edu/bc123df4567' }
           end
         end
 

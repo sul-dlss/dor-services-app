@@ -89,9 +89,8 @@ module Cocina
             {
               purl: Descriptive::Purl.purl_value(purl_node),
               access: {
-                note: Purl.purl_note(purl_node).presence,
-                digitalRepository: [{ value: 'Stanford Digital Repository' }]
-              }.compact
+                note: Purl.purl_note(purl_node).presence
+              }.compact.presence
             }.compact
           end
         end

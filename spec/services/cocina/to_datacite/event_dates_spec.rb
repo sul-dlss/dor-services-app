@@ -6,6 +6,7 @@ require 'rails_helper'
 RSpec.describe Cocina::ToDatacite::Event do
   let(:cocina_description) do
     cocina[:title] = [{ value: 'title' }]
+    cocina[:purl] = 'https://purl.stanford.edu/zg154pd4168'
     Cocina::Models::Description.new(cocina)
   end
   let(:cocina_item) do

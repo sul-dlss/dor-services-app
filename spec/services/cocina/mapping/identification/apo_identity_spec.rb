@@ -71,7 +71,7 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
     let(:mapped_fedora_apo) do
       Dor::AdminPolicyObject.new(pid: mapped_cocina_props[:externalIdentifier],
                                  admin_policy_object_id: mapped_cocina_props[:administrative][:hasAdminPolicy],
-                                 agreement_object_id: mapped_cocina_props[:administrative][:referencesAgreement],
+                                 agreement_object_id: mapped_cocina_props[:administrative][:hasAgreement],
                                  # source_id: cocina_admin_policy.identification.sourceId,
                                  label: mapped_cocina_props[:label])
     end
@@ -97,7 +97,7 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
                       label: mapped_cocina_props[:label],
                       current_version: '1',
                       admin_policy_object_id: mapped_cocina_props[:administrative][:hasAdminPolicy],
-                      agreement_object_id: mapped_cocina_props[:administrative][:referencesAgreement],
+                      agreement_object_id: mapped_cocina_props[:administrative][:hasAgreement],
                       identityMetadata: Dor::IdentityMetadataDS.from_xml(identity_metadata_xml),
                       descMetadata: instance_double(Dor::DescMetadataDS, ng_xml: mods_ng_xml),
                       defaultObjectRights: instance_double(Dor::DefaultObjectRightsDS, content: default_object_rights_xml),
@@ -149,18 +149,11 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
       title: [
         value: 'APO title'
       ],
-      purl: "https://purl.stanford.edu/#{pid.split(':').last}",
-      access: {
-        digitalRepository: [
-          {
-            value: 'Stanford Digital Repository'
-          }
-        ]
-      }
+      purl: "https://purl.stanford.edu/#{pid.split(':').last}"
     }
   end
 
-  context 'without adminPolicy, without referencesAgreement in identityMetadata.xml (in RELS_EXT)' do
+  context 'without adminPolicy, without hasAgreement in identityMetadata.xml (in RELS_EXT)' do
     it_behaves_like 'APO Identification Fedora Cocina mapping' do
       let(:pid) { 'druid:zd878cf9993' }
       let(:label) { 'Fondo Lanciani' }
@@ -199,7 +192,7 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
           version: 1,
           administrative: {
             hasAdminPolicy: admin_policy_id,
-            referencesAgreement: agreement_object_id,
+            hasAgreement: agreement_object_id,
             defaultAccess: default_access_props,
             defaultObjectRights: default_object_rights_xml,
             roles: []
@@ -250,7 +243,7 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
           version: 1,
           administrative: {
             hasAdminPolicy: admin_policy_id,
-            referencesAgreement: agreement_object_id,
+            hasAgreement: agreement_object_id,
             defaultAccess: default_access_props,
             defaultObjectRights: default_object_rights_xml,
             roles: []
@@ -304,7 +297,7 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
           version: 1,
           administrative: {
             hasAdminPolicy: admin_policy_id,
-            referencesAgreement: agreement_object_id,
+            hasAgreement: agreement_object_id,
             defaultAccess: default_access_props,
             defaultObjectRights: default_object_rights_xml,
             roles: []

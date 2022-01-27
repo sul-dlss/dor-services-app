@@ -199,12 +199,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
 
       let(:cocina) do
         {
-          purl: 'https://purl.stanford.edu/ys701qw6956',
-          access: {
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
-            ]
-          }
+          purl: 'https://purl.stanford.edu/ys701qw6956'
         }
       end
     end
@@ -233,12 +228,7 @@ RSpec.describe 'MODS location <--> cocina mappings' do
 
       let(:cocina) do
         {
-          purl: 'https://purl.stanford.edu/ys701qw6956',
-          access: {
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
-            ]
-          }
+          purl: 'https://purl.stanford.edu/ys701qw6956'
         }
       end
     end
@@ -296,9 +286,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                 value: 'https://swap.stanford.edu/20171107174354/https://www.le.ac.uk/english/em1060to1220/index.html',
                 displayLabel: 'Archived website'
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           }
         }
@@ -489,9 +476,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                 value: 'VICTOR\PLUS_PHOTOS_DAN\PLUS_TARD_PHOTOS_DAN_20071017\IMG_0852.JPG',
                 type: 'discovery'
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           }
         }
@@ -626,9 +610,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
               {
                 value: 'Stanford University Libraries'
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           }
         }
@@ -732,9 +713,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                   }
                 ]
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           }
         }
@@ -793,9 +771,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                   }
                 ]
               }
-            ],
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
             ]
           },
           relatedResource: [
@@ -820,9 +795,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                       }
                     ]
                   }
-                ],
-                digitalRepository: [
-                  value: 'Stanford Digital Repository'
                 ]
               }
             }
@@ -876,11 +848,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
       let(:cocina) do
         {
           purl: 'https://purl.stanford.edu/bq367mn3764',
-          access: {
-            digitalRepository: [
-              value: 'Stanford Digital Repository'
-            ]
-          },
           relatedResource: [
             {
               purl: 'https://purl.stanford.edu/cj288sh2297',
@@ -895,9 +862,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                       }
                     ]
                   }
-                ],
-                digitalRepository: [
-                  value: 'Stanford Digital Repository'
                 ]
               }
             },
@@ -914,9 +878,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                       }
                     ]
                   }
-                ],
-                digitalRepository: [
-                  value: 'Stanford Digital Repository'
                 ]
               }
             },
@@ -933,9 +894,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                       }
                     ]
                   }
-                ],
-                digitalRepository: [
-                  value: 'Stanford Digital Repository'
                 ]
               }
             }
@@ -989,11 +947,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
         {
           purl: 'https://purl.stanford.edu/gr134wb6457',
           access: {
-            digitalRepository: [
-              {
-                value: 'Stanford Digital Repository'
-              }
-            ],
             url: [
               {
                 value: 'http://clerk.assembly.ca.gov/archive-list',
@@ -1016,9 +969,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                       }
                     ]
                   }
-                ],
-                digitalRepository: [
-                  value: 'Stanford Digital Repository'
                 ]
               }
             },
@@ -1035,9 +985,6 @@ RSpec.describe 'MODS location <--> cocina mappings' do
                       }
                     ]
                   }
-                ],
-                digitalRepository: [
-                  value: 'Stanford Digital Repository'
                 ]
               }
             }

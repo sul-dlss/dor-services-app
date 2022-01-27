@@ -17,12 +17,7 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
         },
         description: {
           title: [{ value: 'Born to Run' }],
-          purl: 'https://purl.stanford.edu/ff111df4567',
-          access: {
-            digitalRepository: [
-              { value: 'Stanford Digital Repository' }
-            ]
-          }
+          purl: 'https://purl.stanford.edu/ff111df4567'
         },
         administrative: {
           hasAdminPolicy: 'druid:dd999df4567'
@@ -54,7 +49,7 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
 
     context 'when invalid' do
       before do
-        changed_cocina_hash = cocina_hash[:description].except(:purl)
+        changed_cocina_hash = cocina_hash[:description].merge(contributor: [{ name: [{ value: 'Stanford University. Department of Geophysics' }] }])
         allow(Cocina::FromFedora::Descriptive).to receive(:props).and_return(changed_cocina_hash)
       end
 
@@ -64,7 +59,28 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
     end
 
     context 'with request' do
-      let(:cocina_object) { Cocina::Models::RequestDRO.new(cocina_hash.except(:externalIdentifier)) }
+      let(:request_cocina_hash) do
+        {
+          type: Cocina::Models::Vocab.book,
+          label: 'Born to Run',
+          version: 1,
+          access: {
+            access: 'world',
+            download: 'none'
+          },
+          description: {
+            title: [{ value: 'Born to Run' }]
+          },
+          administrative: {
+            hasAdminPolicy: 'druid:dd999df4567'
+          },
+          identification: { sourceId: 'googlebooks:999999' }
+        }
+      end
+
+      let(:cocina_object) do
+        Cocina::Models::RequestDRO.new(request_cocina_hash)
+      end
 
       it 'returns success' do
         expect(result.success?).to be true
@@ -80,14 +96,7 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
                 value: 'Software Carpentry Workshop recordings from August 14, 2014'
               }
             ],
-            purl: 'https://purl.stanford.edu/tx853fp2857',
-            access: {
-              digitalRepository: [
-                {
-                  value: 'Stanford Digital Repository'
-                }
-              ]
-            }
+            purl: 'https://purl.stanford.edu/tx853fp2857'
           }
         ]
       end

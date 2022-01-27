@@ -7,7 +7,7 @@ RSpec.describe RefreshMetadataAction do
 
   subject(:refresh) { described_class.run(identifiers: ['catkey:123'], fedora_object: item) }
 
-  let(:item) { Dor::Item.new }
+  let(:item) { Dor::Item.new(pid: 'druid:bc753qt7345') }
 
   let(:mods) do
     <<~XML

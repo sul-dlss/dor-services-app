@@ -23,7 +23,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                               label: label,
                               version: 1,
                               description: {
-                                title: [{ value: title }]
+                                title: [{ value: title }],
+                                purl: purl
                               },
                               identification: {
                                 sourceId: 'sul:8.559351',
@@ -46,7 +47,13 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           dates: [],
           publicationYear: '2011',
           publisher: 'Stanford Digital Repository',
-          titles: [{ title: title }]
+          titles: [{ title: title }],
+          alternateIdentifiers: [
+            {
+              alternateIdentifier: purl,
+              alternateIdentifierType: 'PURL'
+            }
+          ]
         }
       )
     end
@@ -59,7 +66,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                               label: label,
                               version: 1,
                               description: {
-                                title: [{ value: title }]
+                                title: [{ value: title }],
+                                purl: purl
                               },
                               identification: {
                                 sourceId: 'sul:8.559351',
@@ -86,7 +94,13 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           dates: [],
           publicationYear: '2031',
           publisher: 'Stanford Digital Repository',
-          titles: [{ title: title }]
+          titles: [{ title: title }],
+          alternateIdentifiers: [
+            {
+              alternateIdentifier: purl,
+              alternateIdentifierType: 'PURL'
+            }
+          ]
         }
       )
     end
@@ -354,7 +368,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                      label: label,
                                      version: 1,
                                      description: {
-                                       title: [{ value: title }]
+                                       title: [{ value: title }],
+                                       purl: purl
                                      },
                                      identification: {},
                                      access: {},
@@ -375,10 +390,13 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                       label: label,
                                       version: 1,
                                       description: {
-                                        title: [{ value: title }]
+                                        title: [{ value: title }],
+                                        purl: purl
                                       },
                                       administrative: {
-                                        hasAdminPolicy: apo_druid
+                                        hasAdminPolicy: apo_druid,
+                                        hasAgreement: 'druid:bb423sd6663'
+
                                       })
     end
 

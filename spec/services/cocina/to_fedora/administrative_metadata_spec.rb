@@ -16,7 +16,8 @@ RSpec.describe Cocina::ToFedora::AdministrativeMetadata do
       hasAdminPolicy: 'druid:bc123df4567',
       registrationWorkflow: ['registrationWF', 'assemblyWF'],
       disseminationWorkflow: 'wasWF',
-      collectionsForRegistration: ['druid:pp562fx0548', 'druid:qy781dy0220']
+      collectionsForRegistration: ['druid:pp562fx0548', 'druid:qy781dy0220'],
+      hasAgreement: 'druid:bb423sd6663'
     )
   end
 

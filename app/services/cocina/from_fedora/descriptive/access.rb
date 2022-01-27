@@ -33,8 +33,7 @@ module Cocina
             access[:accessContact] = access_contact.presence
             access[:url] = url.presence
             access[:note] = (note + purl_note).presence
-            access[:digitalRepository] = [{ value: 'Stanford Digital Repository' }] if purl
-          end.compact
+          end.compact.presence
         end
 
         private

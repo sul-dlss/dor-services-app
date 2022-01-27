@@ -92,7 +92,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
       end
 
       it 'ignores and warns' do
@@ -121,7 +121,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
       end
 
       it 'ignores and warns' do
@@ -146,7 +146,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
       end
 
       it 'creates model' do
@@ -180,7 +180,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
       end
 
       it 'creates model' do
@@ -219,7 +219,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
       end
 
       it 'creates value from the authority record' do
@@ -296,7 +296,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
       end
 
       it 'creates value from the authority record' do
@@ -345,7 +345,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
       end
 
       it 'creates value from the authority record and warns' do
@@ -386,7 +386,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build) }.not_to raise_error
+        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
       end
 
       it 'creates simple values' do

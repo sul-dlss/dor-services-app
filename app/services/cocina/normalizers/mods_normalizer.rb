@@ -15,10 +15,17 @@ module Cocina
       # @param [String] label
       # @return [Nokogiri::Document] normalized MODS
       def self.normalize(mods_ng_xml:, druid:, label:)
-        ModsNormalizer.new(mods_ng_xml: mods_ng_xml, druid: druid, label: label).normalize
+        new(mods_ng_xml: mods_ng_xml, druid: druid, label: label).normalize
       end
 
-      def initialize(mods_ng_xml:, druid:, label:)
+      # @param [Nokogiri::Document] mods_ng_xml MODS to be normalized
+      # @param [String] druid
+      # @return [Nokogiri::Document] normalized MODS
+      def self.normalize_purl(mods_ng_xml:, druid:)
+        new(mods_ng_xml: mods_ng_xml, druid: druid).normalize_purl
+      end
+
+      def initialize(mods_ng_xml:, druid:, label: nil)
         @ng_xml = mods_ng_xml.dup
         @ng_xml.encoding = 'UTF-8' if @ng_xml.respond_to?(:encoding=) # sometimes it's a String (?)
         @druid = druid
@@ -42,7 +49,7 @@ module Cocina
         normalize_access_condition
         normalize_identifier_type
         normalize_location_physical_location
-        normalize_purl
+        normalize_purl_location
         normalize_empty_notes
         @ng_xml = Cocina::Normalizers::Mods::TitleNormalizer.normalize(mods_ng_xml: ng_xml, label: label)
         @ng_xml = Cocina::Normalizers::Mods::GeoExtensionNormalizer.normalize(mods_ng_xml: ng_xml, druid: druid)
@@ -54,6 +61,11 @@ module Cocina
         # This should be last-ish.
         normalize_empty_related_items
         remove_empty_elements(ng_xml.root) # this must be last
+        ng_xml
+      end
+
+      def normalize_purl
+        normalize_purl_location
         ng_xml
       end
 
@@ -102,7 +114,7 @@ module Cocina
         end
       end
 
-      def normalize_purl
+      def normalize_purl_location
         normalize_purl_for(ng_xml.root, purl: Purl.for(druid: druid))
         ng_xml.root.xpath('mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_purl_for(related_item_node) }
       end

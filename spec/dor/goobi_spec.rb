@@ -48,7 +48,8 @@ RSpec.describe Dor::Goobi do
             {
               value: 'Constituent label & A Special character'
             }
-          ]
+          ],
+          purl: Purl.for(druid: druid)
         }
       end
 
@@ -265,7 +266,8 @@ RSpec.describe Dor::Goobi do
             {
               value: 'Constituent label & A Special character'
             }
-          ]
+          ],
+          purl: Purl.for(druid: druid)
         }
       end
 

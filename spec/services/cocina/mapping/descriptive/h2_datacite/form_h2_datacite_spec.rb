@@ -11,7 +11,7 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
   # If no H2 subtype, map H2 type to resourceType
 
   # NOTE: Because we haven't set a title in this Cocina::Models::Description, it will not validate against the openapi.
-  let(:cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
+  let(:cocina_description) { Cocina::Models::Description.new(cocina.merge(purl: Purl.for(druid: 'druid:bb423sd6663')), false, false) }
   let(:type_attributes) { Cocina::ToDatacite::Form.type_attributes(cocina_description) }
 
   describe 'type only (no subtype)' do

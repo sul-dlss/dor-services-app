@@ -7,89 +7,90 @@ RSpec.describe 'Update DOI metadata' do
   let(:object) { Dor::Item.new(pid: druid) }
 
   let(:cocina_item) do
-    Cocina::Models.build(
-      'externalIdentifier' => 'druid:bc123df4567',
-      'type' => Cocina::Models::Vocab.image,
-      'version' => 1,
-      'label' => 'testing',
-      'access' => {},
-      'administrative' => {
-        'hasAdminPolicy' => 'druid:xx123xx4567'
-      },
-      'description' => {
-        'title' => [{ 'value' => 'Test obj' }],
-        'subject' => [{ 'type' => 'topic', 'value' => 'word' }],
-        contributor: [
-          {
-            name: [
-              {
-                structuredValue: [
-                  {
-                    value: 'Jane',
-                    type: 'forename'
-                  },
-                  {
-                    value: 'Stanford',
-                    type: 'surname'
-                  }
-                ]
-              }
-            ],
-            type: 'person'
-          }
-        ],
-        form: [
-          {
-            structuredValue: [
-              {
-                value: 'Data',
-                type: 'type'
-              }
-            ],
-            source: {
-              value: 'Stanford self-deposit resource types'
-            },
-            type: 'resource type'
-          },
-          {
-            value: 'Dataset',
-            type: 'resource type',
-            uri: 'http://id.loc.gov/vocabulary/resourceTypes/dat',
-            source: {
-              uri: 'http://id.loc.gov/vocabulary/resourceTypes/'
-            }
-          },
-          {
-            value: 'Data sets',
-            type: 'genre',
-            uri: 'https://id.loc.gov/authorities/genreForms/gf2018026119',
-            source: {
-              code: 'lcgft'
-            }
-          },
-          {
-            value: 'dataset',
-            type: 'genre',
-            source: {
-              code: 'local'
-            }
-          },
-          {
-            value: 'Dataset',
-            type: 'resource type',
-            source: {
-              value: 'DataCite resource types'
-            }
-          }
-        ]
-      },
-      'structural' => {
-        'contains' => []
-      },
-      'identification' => {
-        'doi' => '10.80343/bc123df4567'
-      }
-    )
+    Cocina::Models.build({
+                           externalIdentifier: 'druid:bc123df4567',
+                           'type' => Cocina::Models::Vocab.image,
+                           version: 1,
+                           label: 'testing',
+                           access: {},
+                           administrative: {
+                             hasAdminPolicy: 'druid:xx123xx4567'
+                           },
+                           description: {
+                             title: [{ value: 'Test obj' }],
+                             purl: 'https://purl.stanford.edu/bc123df4567',
+                             subject: [{ type: 'topic', value: 'word' }],
+                             contributor: [
+                               {
+                                 name: [
+                                   {
+                                     structuredValue: [
+                                       {
+                                         value: 'Jane',
+                                         type: 'forename'
+                                       },
+                                       {
+                                         value: 'Stanford',
+                                         type: 'surname'
+                                       }
+                                     ]
+                                   }
+                                 ],
+                                 type: 'person'
+                               }
+                             ],
+                             form: [
+                               {
+                                 structuredValue: [
+                                   {
+                                     value: 'Data',
+                                     type: 'type'
+                                   }
+                                 ],
+                                 source: {
+                                   value: 'Stanford self-deposit resource types'
+                                 },
+                                 type: 'resource type'
+                               },
+                               {
+                                 value: 'Dataset',
+                                 type: 'resource type',
+                                 uri: 'http://id.loc.gov/vocabulary/resourceTypes/dat',
+                                 source: {
+                                   uri: 'http://id.loc.gov/vocabulary/resourceTypes/'
+                                 }
+                               },
+                               {
+                                 value: 'Data sets',
+                                 type: 'genre',
+                                 uri: 'https://id.loc.gov/authorities/genreForms/gf2018026119',
+                                 source: {
+                                   code: 'lcgft'
+                                 }
+                               },
+                               {
+                                 value: 'dataset',
+                                 type: 'genre',
+                                 source: {
+                                   code: 'local'
+                                 }
+                               },
+                               {
+                                 value: 'Dataset',
+                                 type: 'resource type',
+                                 source: {
+                                   value: 'DataCite resource types'
+                                 }
+                               }
+                             ]
+                           },
+                           structural: {
+                             contains: []
+                           },
+                           identification: {
+                             doi: '10.80343/bc123df4567'
+                           }
+                         })
   end
 
   before do
@@ -124,6 +125,7 @@ RSpec.describe 'Update DOI metadata' do
           },
           'description' => {
             'title' => [{ 'value' => 'Test obj' }],
+            'purl' => 'https://purl.stanford.edu/bc123df4567',
             'subject' => [{ 'type' => 'topic', 'value' => 'word' }]
           },
           'structural' => {
