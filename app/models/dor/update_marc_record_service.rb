@@ -11,9 +11,8 @@ module Dor
 
     def initialize(druid_obj, thumbnail_service:)
       @druid_obj = druid_obj
-      @druid_id = Dor::PidUtils.remove_druid_prefix(druid_obj.id)
-      @dra_object = druid_obj.rightsMetadata.dra_object
-      @thumbnail_service = thumbnail_service
+      @druid_id = Dor::PidUtils.remove_druid_prefix(druid_obj.externalIdentifier)
+      @dra_object = druid_obj.access
     end
 
     def update
@@ -21,7 +20,9 @@ module Dor
     end
 
     def ckeys?
-      (@druid_obj.catkey.present? || previous_ckeys.present?)
+      @druid_obj.identification.catalogLinks.find {|link| link.catalog == 'symphony'}.present?
+      # (@druid_obj.catkey.present? || previous_ckeys.present?)
+      # TODO: Map previous_catkey
     end
 
     def push_symphony_records
@@ -54,8 +55,8 @@ module Dor
       records = previous_ckeys.map { |previous_catkey| get_identifier(previous_catkey) }
 
       # now add the current ckey
-      if @druid_obj.catkey.present?
-        records << (released_to_searchworks? ? new_856_record(@druid_obj.catkey) : get_identifier(@druid_obj.catkey)) # if released to searchworks, create the record
+      if @druid_obj.identification.catalogLinks.find {|link| link.catalog == 'symphony'}.present?
+        records << (released_to_searchworks? ? new_856_record(@druid_obj.identification.catalogLinks.find {|link| link.catalog == 'symphony'}.catalogRecordId) : get_identifier(@druid_obj.identification.catalogLinks.find {|link| link.catalog == 'symphony'}.catalogRecordId)) # if released to searchworks, create the record
       end
 
       records
@@ -113,7 +114,8 @@ module Dor
     def get_z_field
       # @dra_object.stanford_only_rights returns a 2 element list where presence of first element indicates stanford
       # only read restriction, and second element indicates the rule on the restriction, if any (e.g. 'no-download')
-      if @dra_object.stanford_only_rights.first.present? || @dra_object.restricted_by_location?
+      if @dra_object.access == 'stanford' || @dra_object.readLocation.present?
+#      if @dra_object.stanford_only_rights.first.present? || @dra_object.restricted_by_location?
         '|zAvailable to Stanford-affiliated users.'
       else
         ''
@@ -199,7 +201,7 @@ module Dor
     end
 
     def born_digital?
-      BORN_DIGITAL_APOS.include? @druid_obj.admin_policy_object_id
+      BORN_DIGITAL_APOS.include? @druid_obj.administrative.hasAdminPolicy
     end
 
     def released_to_searchworks?
@@ -236,7 +238,9 @@ module Dor
     # the previous ckeys for the current object
     # @return [Array] previous catkeys for the object in an array, empty array if none exist
     def previous_ckeys
-      @druid_obj.previous_catkeys.reject(&:empty?)
+      # @druid_obj.previous_catkeys.reject(&:empty?)
+      # TODO: Map previous_catkeys
+      []
     end
 
     # the @id attribute of resource/file elements including extension

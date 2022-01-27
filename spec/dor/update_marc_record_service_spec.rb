@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Dor::UpdateMarcRecordService do
-  subject(:umrs) { described_class.new(dor_item, thumbnail_service: thumbnail_service) }
+  subject(:umrs) { described_class.new cocina_object }
 
   let(:release_service) { instance_double(ReleaseTags::IdentityMetadata, released_for: release_data) }
   let(:release_data) { {} }
@@ -36,17 +36,21 @@ RSpec.describe Dor::UpdateMarcRecordService do
       XML
     end
 
-    let(:dor_item) { Dor::Item.new(pid: 'druid:aa222cc3333') }
+    let(:druid) { 'druid:bc123dg9393' }
+    let(:apo_druid) { 'druid:pp000pp0000' }
     let(:cocina_object) do
-      Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+      Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::Vocab.object,
-                              label: 'A generic label',
+                              label: 'A new map of Africa',
                               version: 1,
-                              description: build_cocina_description_metadata_1('druid:bc123df4567'),
-                              identification: {},
+                              description: {
+                                title: [{ value: 'A new map of Africa' }]
+                              },
+                              identification: {
+                                sourceId: 'sul:8.559351'
+                              },
                               access: {},
-                              administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                              structural: build_cocina_structural_metadata_1)
+                              administrative: { hasAdminPolicy: apo_druid })
     end
 
     it 'does nothing' do
@@ -56,18 +60,25 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   context 'for a druid with a catkey' do
-    let(:dor_item) { Dor::Item.new(pid: druid, catkey: '8832162') }
     let(:druid) { 'druid:bb333dd4444' }
+    let(:apo_druid) { 'druid:pp000pp0000' }
     let(:cocina_object) do
-      Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+      Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::Vocab.object,
-                              label: 'A generic label',
+                              label: 'A new map of Africa',
                               version: 1,
-                              description: build_cocina_description_metadata_1('druid:bc123df4567'),
-                              identification: {},
+                              description: {
+                                title: [{ value: 'A new map of Africa' }]
+                              },
+                              identification: {
+                                sourceId: 'sul:8.559351',
+                                catalogLinks: [{
+                                  catalog: 'symphony',
+                                  catalogRecordId: '8832162'
+                                }]
+                              },
                               access: {},
-                              administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                              structural: build_cocina_structural_metadata_1)
+                              administrative: { hasAdminPolicy: apo_druid })
     end
 
     it 'executes the UpdateMarcRecordService push_symphony_records method' do
@@ -78,18 +89,25 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   describe '.push_symphony_records' do
-    let(:dor_item) { Dor::Item.new(pid: druid) }
-    let(:druid) { 'druid:aa111aa1111' }
+    let(:druid) { 'druid:bb333dd4444' }
+    let(:apo_druid) { 'druid:pp000pp0000' }
     let(:cocina_object) do
-      Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+      Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::Vocab.object,
-                              label: 'A generic label',
+                              label: 'A new map of Africa',
                               version: 1,
-                              description: build_cocina_description_metadata_1('druid:bc123df4567'),
-                              identification: {},
+                              description: {
+                                title: [{ value: 'A new map of Africa' }]
+                              },
+                              identification: {
+                                sourceId: 'sul:8.559351',
+                                catalogLinks: [{
+                                  catalog: 'symphony',
+                                  catalogRecordId: '8832162'
+                                }]
+                              },
                               access: {},
-                              administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                              structural: build_cocina_structural_metadata_1)
+                              administrative: { hasAdminPolicy: apo_druid })
     end
 
     it 'calls the relevant methods' do
@@ -102,10 +120,29 @@ RSpec.describe Dor::UpdateMarcRecordService do
   describe '.generate_symphony_records' do
     subject(:generate_symphony_records) { umrs.generate_symphony_records }
 
-    let(:dor_item) { Dor::Item.new(pid: 'druid:aa111aa1111') }
-    let(:collection) { Dor::Collection.new(pid: 'druid:cc111cc1111', label: 'Collection label') }
+    let(:collection) do
+      Cocina::Models::Collection.new(externalIdentifier: 'druid:cc111cc1111',
+                                     type: Cocina::Models::Vocab.collection,
+                                     label: 'Collection label',
+                                     version: 1,
+                                     access: {})
+    end
     let(:constituent) { Dor::Item.new(pid: 'druid:dd111dd1111') }
     let(:release_data) { { 'Searchworks' => { 'release' => true } } }
+    let(:druid) { 'druid:bc123dg9393' }
+    let(:apo_druid) { 'druid:pp000pp0000' }
+    let(:cocina_object) do
+      Cocina::Models::DRO.new(externalIdentifier: druid,
+                              type: Cocina::Models::Vocab.object,
+                              label: 'A new map of Africa',
+                              version: 1,
+                              description: {
+                                title: [{ value: 'A new map of Africa' }]
+                              },
+                              identification: build_cocina_identity_metadata_4,
+                              access: build_cocina_rights_metadata_1,
+                              administrative: { hasAdminPolicy: apo_druid })
+    end
 
     context "when the druid object doesn't have catkey or previous catkeys" do
       let(:cocina_object) do
@@ -121,10 +158,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
 
       before do
-        dor_item.rightsMetadata.content = build_rights_metadata_1
-        dor_item.identityMetadata.content = build_identity_metadata_4
-
-        allow(dor_item).to receive_messages(collections: [collection])
+        allow(cocina_object).to receive_messages(collections: [collection])
       end
 
       it 'generates an empty array' do
@@ -134,25 +168,24 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
     context 'when an item object has a catkey' do
       let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+        Cocina::Models::DRO.new(externalIdentifier: druid,
                                 type: Cocina::Models::Vocab.object,
-                                label: 'A generic label',
+                                label: 'A new map of Africa',
                                 version: 1,
-                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
-                                identification: {},
-                                access: {},
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                description: build_cocina_description_metadata_1,
+                                identification: build_cocina_identity_metadata_1,
+                                access: build_cocina_rights_metadata_1,
+                                administrative: { hasAdminPolicy: apo_druid },
                                 structural: build_cocina_structural_metadata_1)
       end
 
       before do
-        dor_item.rightsMetadata.content = build_rights_metadata_1
-        dor_item.identityMetadata.content = build_identity_metadata_1
-        dor_item.contentMetadata.content = build_content_metadata_1
+        # cocina_object.identification = build_cocina_identity_metadata_1 # dor_item.identityMetadatatent = build_identity_metadata_1
+        # dor_item.contentMetadata.content = build_content_metadata_1
 
-        constituent.descMetadata.content = build_desc_metadata_1
+        # constituent.descMetadata.content = build_desc_metadata_1
 
-        allow(dor_item).to receive_messages(collections: [collection])
+        allow(cocina_object).to receive_messages(collections: [collection])
 
         allow(umrs).to receive(:dor_items_for_constituents).and_return([constituent])
       end

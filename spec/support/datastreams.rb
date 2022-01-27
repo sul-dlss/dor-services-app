@@ -22,6 +22,17 @@ def build_identity_metadata_1
 </identityMetadata>'
 end
 
+def build_cocina_identity_metadata_1
+  {
+    sourceId: 'sul:36105216275185',
+    catalogLinks: [{
+      catalog: 'symphony',
+      catalogRecordId: '8832162'
+    }],
+    barcode: '36105216275185'
+  }
+end
+
 def build_identity_metadata_2
   '<identityMetadata>
     <sourceId source="sul">36105216275185</sourceId>
@@ -81,6 +92,13 @@ def build_identity_metadata_4
     <tag>Remediated By : 4.1</tag>
     <release displayType="image" release="false" to="Searchworks" what="self" when="2015-07-27T21:43:27Z" who="lauraw15">false</release>
   </identityMetadata>'
+end
+
+def build_cocina_identity_metadata_4
+  {
+    sourceId: 'sul:36105216275185',
+    barcode: '36105216275185'
+  }
 end
 
 def build_identity_metadata_5
@@ -265,6 +283,14 @@ def build_rights_metadata_1
    </use>
   </rightsMetadata>
   '
+end
+
+def build_cocina_rights_metadata_1
+  {
+    access: 'world',
+    download: 'world',
+    useAndReproductionStatement: 'User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.'
+  }
 end
 
 def build_rights_metadata_2
