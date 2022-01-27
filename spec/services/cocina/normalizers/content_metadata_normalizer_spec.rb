@@ -404,4 +404,21 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       )
     end
   end
+
+  context 'when normalizing empty xml contentMetadata' do
+    # Adapted from bb423sd6663
+    let(:original_xml) do
+      <<~XML
+        <xml type="file"/>
+      XML
+    end
+
+    it 'replaces xml node with contentMetadata node' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata type="file" objectId="druid:bb035tg0974"/>
+        XML
+      )
+    end
+  end
 end
