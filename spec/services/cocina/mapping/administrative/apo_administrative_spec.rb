@@ -80,7 +80,7 @@ RSpec.shared_examples 'valid APO mappings' do
       end
 
       it 'roundtrips to normalized original administrativeMetadata.xml' do
-        expect(actual_admin_metadata_xml).to be_equivalent_to normalized_orig_admin_xml
+        expect(actual_admin_metadata_xml).to be_equivalent_to(normalized_orig_admin_xml)
       end
     end
 

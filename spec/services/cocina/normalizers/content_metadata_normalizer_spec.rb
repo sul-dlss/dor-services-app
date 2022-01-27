@@ -333,4 +333,75 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       )
     end
   end
+
+  context 'when normalizing resource nodes with geoData' do
+    # Adapted from cc377hs8114
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata objectId="cc377hs8114" type="geo">
+          <resource id="cc377hs8114_1" sequence="1" type="object">
+            <label>Data</label>
+            <file preserve="yes" shelve="yes" publish="yes" id="data.zip" mimetype="application/zip" size="1216894" role="master">
+              <geoData>
+                <rdf:Description xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" rdf:about="http://purl.stanford.edu/cc377hs8114">
+                  <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/">application/x-esri-shapefile; format=Shapefile</dc:format>
+                  <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/">Dataset#LineString</dc:type>
+                  <gml:boundedBy xmlns:gml="http://www.opengis.net/gml/3.2/">
+                    <gml:Envelope gml:srsName="EPSG:4326">
+                      <gml:lowerCorner>2.591614 4.547012</gml:lowerCorner>
+                      <gml:upperCorner>13.628449 13.74575</gml:upperCorner>
+                    </gml:Envelope>
+                  </gml:boundedBy>
+                  <dc:coverage xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:resource="" dc:language="eng" dc:title="Nigeria"/>
+                </rdf:Description>
+              </geoData>
+              <checksum type="sha1">ae052966c362af7bcfec55a9ac2f2c4fdef21738</checksum>
+              <checksum type="md5">3e620e897533e7aee47a8b2f3dec7523</checksum>
+            </file>
+            <file preserve="no" shelve="yes" publish="yes" id="data_EPSG_4326.zip" mimetype="application/zip" size="1216232" role="derivative">
+              <geoData srsName="EPSG:4326"/>
+              <checksum type="sha1">ea57ad73eab8b51f848ef53be73a2f9e6a63b2ca</checksum>
+              <checksum type="md5">6917a0345c5fc5d24c213994fcaadd44</checksum>
+            </file>
+          </resource>
+          <resource id="cc377hs8114_2" sequence="2" type="preview">
+            <label>Preview</label>
+            <file preserve="yes" shelve="yes" publish="yes" id="preview.jpg" mimetype="image/jpeg" size="5954" role="master">
+              <checksum type="sha1">69054c3a2f650fcc70e30f5cf5d96372b715b34c</checksum>
+              <checksum type="md5">e2df985a2be01d7e685d3c485ac76873</checksum>
+              <imageData width="200" height="133"/>
+              </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'removes the geoData nodes' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata objectId="druid:cc377hs8114" type="geo">
+            <resource type="object">
+              <label>Data</label>
+              <file preserve="yes" shelve="yes" publish="yes" id="data.zip" mimetype="application/zip" size="1216894" role="master">
+                <checksum type="sha1">ae052966c362af7bcfec55a9ac2f2c4fdef21738</checksum>
+                <checksum type="md5">3e620e897533e7aee47a8b2f3dec7523</checksum>
+              </file>
+              <file preserve="no" shelve="yes" publish="yes" id="data_EPSG_4326.zip" mimetype="application/zip" size="1216232" role="derivative">
+                <checksum type="sha1">ea57ad73eab8b51f848ef53be73a2f9e6a63b2ca</checksum>
+                <checksum type="md5">6917a0345c5fc5d24c213994fcaadd44</checksum>
+              </file>
+            </resource>
+            <resource type="preview">
+              <label>Preview</label>
+              <file preserve="yes" shelve="yes" publish="yes" id="preview.jpg" mimetype="image/jpeg" size="5954" role="master">
+                <checksum type="sha1">69054c3a2f650fcc70e30f5cf5d96372b715b34c</checksum>
+                <checksum type="md5">e2df985a2be01d7e685d3c485ac76873</checksum>
+                <imageData width="200" height="133"/>
+                </file>
+            </resource>
+          </contentMetadata>
+        XML
+      )
+    end
+  end
 end
