@@ -16,9 +16,10 @@ module Cocina
       def update
         initialize_use_node!
         clear_licenses
-        if uri # don't build a license node if there is no license
-          license_node = use_node.xpath('license').first || use_node.add_child('<license/>').first
+        if uri
           license_node.content = uri
+        else
+          license_node.remove
         end
 
         datastream.ng_xml_will_change!
@@ -27,6 +28,10 @@ module Cocina
       private
 
       attr_reader :uri, :datastream
+
+      def license_node
+        use_node.xpath('license').first || use_node.add_child('<license/>').first
+      end
 
       # Remove the legacy nodes
       def clear_licenses
