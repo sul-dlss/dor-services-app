@@ -96,7 +96,8 @@ RSpec.describe Cocina::ToFedora::AdministrativeMetadata do
       Cocina::Models::AdminPolicyAdministrative.new(
         hasAdminPolicy: 'druid:bc123df4567',
         registrationWorkflow: [],
-        collectionsForRegistration: []
+        collectionsForRegistration: [],
+        hasAgreement: 'druid:bb423sd6663'
       )
     end
     let(:existing) do
