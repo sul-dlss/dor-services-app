@@ -241,7 +241,8 @@ module Dor
     # the @id attribute of resource/file elements including extension
     # @return [String] thumbnail filename (nil if none found)
     def thumb
-      @thumb ||= ERB::Util.url_encode(ThumbnailService.new(@druid_obj).thumb).presence
+      cocina_object = CocinaObjectStore.find(@druid_obj.pid)
+      @thumb ||= ERB::Util.url_encode(ThumbnailService.new(cocina_object).thumb).presence
     end
   end
   # rubocop:enable Metrics/ClassLength
