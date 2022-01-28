@@ -36,6 +36,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
     described_class.new(content_metadata_ds,
                         rights_metadata: rights_metadata_ds,
                         version: 1,
+                        druid: 'druid:gs491bt1345',
                         ignore_resource_type_errors: ignore_resource_type_errors)
   end
   let(:content_metadata_ds) do
@@ -80,7 +81,9 @@ RSpec.describe Cocina::FromFedora::FileSets do
       context 'when ignore_resource_type_errors is not set' do
         it 'notifies Honeybadger' do
           instance.send(:resource_type, node)
-          expect(Honeybadger).to have_received(:notify)
+          expect(Honeybadger).to have_received(:notify).with(
+            "[DATA ERROR] Invalid resource type: 'bogus'", context: { druid: 'druid:gs491bt1345' }, tags: 'data_error'
+          )
         end
       end
 

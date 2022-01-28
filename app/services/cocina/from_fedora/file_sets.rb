@@ -4,20 +4,22 @@ module Cocina
   module FromFedora
     # builds the FileSet instance from a Dor::Item
     class FileSets
-      def self.build(content_metadata_ds, rights_metadata:, version:, ignore_resource_type_errors: false)
+      def self.build(content_metadata_ds, rights_metadata:, version:, druid:, ignore_resource_type_errors: false)
         new(
           content_metadata_ds,
           rights_metadata: rights_metadata,
           version: version,
+          druid: druid,
           ignore_resource_type_errors: ignore_resource_type_errors
         ).build
       end
 
-      def initialize(content_metadata_ds, rights_metadata:, version:, ignore_resource_type_errors:)
+      def initialize(content_metadata_ds, rights_metadata:, version:, druid:, ignore_resource_type_errors:)
         @content_metadata_ds = content_metadata_ds
         @rights_metadata = rights_metadata
         @version = version
         @ignore_resource_type_errors = ignore_resource_type_errors
+        @data_err_notifier = DataErrorNotifier.new(druid: druid)
       end
 
       def build
@@ -38,7 +40,7 @@ module Cocina
 
       private
 
-      attr_reader :content_metadata_ds, :rights_metadata, :version, :ignore_resource_type_errors
+      attr_reader :content_metadata_ds, :rights_metadata, :version, :data_err_notifier, :ignore_resource_type_errors
 
       def rights_object
         rights_metadata.dra_object
@@ -50,8 +52,8 @@ module Cocina
         if val && Cocina::Models::Vocab::Resources.respond_to?(val)
           Cocina::Models::Vocab::Resources.public_send(val)
         else
-          # skip Honeybadber alerts for Project Phoenix (old Google books) which are known to have bad resource types
-          Honeybadger.notify("Invalid resource type: '#{val}'") unless ignore_resource_type_errors
+          # skip sending alerts for Project Phoenix (old Google books) which are known to have bad resource types
+          data_err_notifier.error("Invalid resource type: '#{val}'") unless ignore_resource_type_errors
           Cocina::Models::Vocab::Resources.file
         end
       end

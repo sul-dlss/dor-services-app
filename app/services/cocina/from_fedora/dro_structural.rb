@@ -23,7 +23,8 @@ module Cocina
           # access/rights.
           contains = FileSets.build(fedora_item.contentMetadata,
                                     rights_metadata: fedora_item.rightsMetadata,
-                                    version: fedora_item.current_version.to_i)
+                                    version: fedora_item.current_version.to_i,
+                                    druid: fedora_item.pid)
           structural[:contains] = contains if contains.present?
 
           begin
