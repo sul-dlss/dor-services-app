@@ -35,6 +35,8 @@ module Cocina
       end
 
       def add_registration_nodes
+        return if administrative.registrationWorkflow.blank?
+
         registration_node = admin_node.xpath('registration').first || admin_node.add_child('<registration/>').first
         Array(administrative.registrationWorkflow).each do |wf_id|
           registration_node.add_child "<workflow id=\"#{wf_id}\" />"

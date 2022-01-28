@@ -89,4 +89,30 @@ RSpec.describe Cocina::ToFedora::AdministrativeMetadata do
       expect(datastream.content).to be_equivalent_to expected
     end
   end
+
+  context 'when the administrative xml is empty node' do
+    let(:administrative) do
+      Cocina::Models::AdminPolicyAdministrative.new(
+        hasAdminPolicy: 'druid:bc123df4567',
+        registrationWorkflow: [],
+        collectionsForRegistration: []
+      )
+    end
+    let(:existing) do
+      <<~XML
+        <administrativeMetadata/>
+      XML
+    end
+
+    let(:expected) do
+      <<~XML
+        <administrativeMetadata/>
+      XML
+    end
+
+    it 'writes the converted structure' do
+      write
+      expect(datastream.content).to be_equivalent_to expected
+    end
+  end
 end
