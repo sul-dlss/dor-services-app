@@ -32,11 +32,12 @@ RSpec.describe Cocina::FromFedora::FileSets do
     XML
   end
   let(:ignore_resource_type_errors) { false }
+  let(:notifier) { Cocina::FromFedora::DataErrorNotifier.new(druid: 'druid:gs491bt1345') }
   let(:instance) do
     described_class.new(content_metadata_ds,
                         rights_metadata: rights_metadata_ds,
                         version: 1,
-                        druid: 'druid:gs491bt1345',
+                        notifier: notifier,
                         ignore_resource_type_errors: ignore_resource_type_errors)
   end
   let(:content_metadata_ds) do

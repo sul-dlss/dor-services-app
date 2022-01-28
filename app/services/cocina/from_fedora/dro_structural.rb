@@ -4,13 +4,14 @@ module Cocina
   module FromFedora
     # builds the Structural subschema for Cocina::Models::DRO from a Dor::Item
     class DroStructural
-      def self.props(fedora_item, type:)
-        new(fedora_item, type: type).props
+      def self.props(fedora_item, type:, notifier:)
+        new(fedora_item, type: type, notifier: notifier).props
       end
 
-      def initialize(fedora_item, type:)
+      def initialize(fedora_item, type:, notifier:)
         @fedora_item = fedora_item
         @type = type
+        @notifier = notifier
       end
 
       def props
@@ -24,7 +25,7 @@ module Cocina
           contains = FileSets.build(fedora_item.contentMetadata,
                                     rights_metadata: fedora_item.rightsMetadata,
                                     version: fedora_item.current_version.to_i,
-                                    druid: fedora_item.pid)
+                                    notifier: notifier)
           structural[:contains] = contains if contains.present?
 
           begin
@@ -40,7 +41,7 @@ module Cocina
 
       private
 
-      attr_reader :fedora_item, :type
+      attr_reader :fedora_item, :type, :notifier
 
       def build_has_member_orders
         member_orders = create_member_order if type == Cocina::Models::Vocab.book

@@ -3,7 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::DroStructural do
-  subject(:structural) { described_class.props(item, type: type) }
+  subject(:structural) { described_class.props(item, type: type, notifier: notifier) }
+
+  let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
   let(:type) { Cocina::Models::Vocab.book }
 
@@ -74,6 +76,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
     before do
       # This gives every file and file set the same UUID. In reality, they would be unique.
       allow(SecureRandom).to receive(:uuid).and_return('123-456-789')
+      allow(notifier).to receive(:error)
     end
 
     let(:xml) do
@@ -129,6 +132,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
 
       resource2 = structural[:contains].second
       expect(resource2[:label]).to eq ''
+      expect(notifier).to have_received(:error).twice.with("Invalid resource type: ''")
     end
   end
 
