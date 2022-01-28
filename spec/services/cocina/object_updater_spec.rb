@@ -435,6 +435,9 @@ RSpec.describe Cocina::ObjectUpdater do
         allow(item).to receive(:source_id=)
         allow(item).to receive(:catkey=)
         allow(identity_metadata).to receive(:barcode=)
+        allow(identity_metadata).to receive(:ng_xml_will_change!)
+        allow(identity_metadata).to receive(:add_value)
+        allow(identity_metadata).to receive(:catkey)
       end
 
       context 'when identication has changed' do
@@ -453,6 +456,7 @@ RSpec.describe Cocina::ObjectUpdater do
           expect(item).to have_received(:source_id=)
           expect(item).to have_received(:catkey=)
           expect(identity_metadata).to have_received(:barcode=)
+          expect(identity_metadata).to have_received(:ng_xml_will_change!)
         end
       end
 
@@ -714,6 +718,9 @@ RSpec.describe Cocina::ObjectUpdater do
       allow(book_data_node).to receive(:remove)
       allow(Cocina::ToFedora::DROAccess).to receive(:apply)
       allow(identity_metadata).to receive(:barcode=)
+      allow(identity_metadata).to receive(:ng_xml_will_change!)
+      allow(identity_metadata).to receive(:add_value)
+      allow(identity_metadata).to receive(:catkey)
     end
 
     it 'updates but does not save' do
@@ -736,6 +743,8 @@ RSpec.describe Cocina::ObjectUpdater do
       allow(content_metadata_ng_xml).to receive(:xpath).and_return([book_data_node])
       expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
       expect(identity_metadata).to have_received(:barcode=)
+      expect(identity_metadata).to have_received(:ng_xml_will_change!)
+      expect(identity_metadata).to have_received(:add_value)
     end
   end
 end

@@ -65,16 +65,16 @@ module Cocina
       end
 
       def apply_catalog_links(catalog_links)
-        return unless catalog_links
+        return if catalog_links.blank?
 
         identity_md.ng_xml_will_change!
         catalog_links
           # only symphony links are catkeys
-          .filter { |l| l.catalog == 'symphony' }
+          .filter { |clink| clink.catalog == 'symphony' }
           # filter out object.catkey to prevent duplicates
-          .filter { |l| l.catalogRecordId != identity_md.catkey }
-          .each do |l|
-            identity_md.add_value(:otherId, l.catalogRecordId, { name: 'catkey' })
+          .filter { |clink| clink.catalogRecordId != identity_md.catkey }
+          .each do |clink|
+            identity_md.add_value(:otherId, clink.catalogRecordId, { name: 'catkey' })
           end
       end
 
