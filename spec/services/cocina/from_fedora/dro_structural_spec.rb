@@ -334,4 +334,28 @@ RSpec.describe Cocina::FromFedora::DroStructural do
 
     it { is_expected.to eq 'transcription' }
   end
+
+  context 'when there are externalFiles' do
+    let(:xml) do
+      <<~XML
+        <contentMetadata objectId="tf960jc7725" type="image">
+          <resource id="tf960jc7725_1" sequence="1" type="image">
+            <externalFile fileId="2576001.jp2" mimetype="image/jp2" objectId="druid:pj563wy4429" resourceId="pj563wy4429_1"/>
+            <relationship objectId="druid:pj563wy4429" type="alsoAvailableAs"/>
+          </resource>
+          <resource id="tf960jc7725_2" sequence="2" type="image">
+            <externalFile fileId="2576002.jp2" mimetype="image/jp2" objectId="druid:jv233bw7647" resourceId="jv233bw7647_1"/>
+            <relationship objectId="druid:jv233bw7647" type="alsoAvailableAs"/>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'returns hasMemberOrders' do
+      expect(structural[:hasMemberOrders].size).to eq 1
+      expect(structural[:hasMemberOrders][0][:members].size).to eq 2
+      expect(structural[:hasMemberOrders][0][:members]).to include('druid:pj563wy4429/2576001.jp2')
+      expect(structural[:hasMemberOrders][0][:members]).to include('druid:jv233bw7647/2576002.jp2')
+    end
+  end
 end

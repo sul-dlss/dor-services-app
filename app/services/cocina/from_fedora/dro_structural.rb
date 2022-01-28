@@ -61,7 +61,7 @@ module Cocina
       # @return [Array<String>] the identifiers of files in a sequence for a virtual object
       def build_sequence(content_metadata_ds)
         content_metadata_ds.ng_xml.xpath('//resource/externalFile').map do |resource_node|
-          "#{resource_node['resourceId']}/#{resource_node['fileId']}"
+          "#{resource_node['objectId']}/#{resource_node['fileId']}"
         end
       end
     end
