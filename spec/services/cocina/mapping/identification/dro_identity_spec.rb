@@ -141,7 +141,9 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
                       contentMetadata: Dor::ContentMetadataDS.new,
                       rightsMetadata: Dor::RightsMetadataDS.new)
     end
-    let(:roundtrip_cocina_props) { Cocina::FromFedora::DRO.props(roundtrip_fedora_item_mock) }
+    let(:roundtrip_cocina_props) { 
+      Cocina::FromFedora::DRO.props(roundtrip_fedora_item_mock) 
+    }
 
     before do
       allow(roundtrip_fedora_item_mock).to receive(:is_a?).with(Dor::Agreement).and_return(false)

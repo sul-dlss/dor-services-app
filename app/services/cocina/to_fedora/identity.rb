@@ -21,6 +21,8 @@ module Cocina
         new(fedora_object).apply_release_tags(release_tags)
       end
 
+      # @param [Dor::Item,Dor::Collection,Dor::Etd,Dor::AdminPolicyObject] fedora_object
+      # @param [Array<Cocina::Model::CatalogLink>] catalog_links for collections and items.
       def self.apply_catalog_links(fedora_object, catalog_links:)
         new(fedora_object).apply_catalog_links(catalog_links)
       end
