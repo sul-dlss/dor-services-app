@@ -206,14 +206,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       title: [
         value: 'item title'
       ],
-      purl: "https://purl.stanford.edu/#{item_id.split(':').last}",
-      access: {
-        digitalRepository: [
-          {
-            value: 'Stanford Digital Repository'
-          }
-        ]
-      }
+      purl: "https://purl.stanford.edu/#{item_id.split(':').last}"
     }
   end
 

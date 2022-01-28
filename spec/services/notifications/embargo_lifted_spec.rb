@@ -33,7 +33,8 @@ RSpec.describe Notifications::EmbargoLifted do
     let(:model) do
       Cocina::Models::AdminPolicy.new(externalIdentifier: 'druid:bc123dg9393',
                                       administrative: {
-                                        hasAdminPolicy: 'druid:gg123vx9393'
+                                        hasAdminPolicy: 'druid:gg123vx9393',
+                                        hasAgreement: 'druid:bb008zm4587'
                                       },
                                       version: 1,
                                       label: 'just an apo',

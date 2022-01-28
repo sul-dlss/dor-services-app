@@ -38,14 +38,7 @@ RSpec.shared_examples 'valid APO mappings' do
       label: apo_label,
       version: 1,
       description: {
-        purl: "#{Settings.release.purl_base_url}/apo_druid",
-        access: {
-          digitalRepository: [
-            {
-              value: 'Stanford Digital Repository'
-            }
-          ]
-        }
+        purl: "#{Settings.release.purl_base_url}/apo_druid"
       }
     }
   end
@@ -65,7 +58,7 @@ RSpec.shared_examples 'valid APO mappings' do
     let(:roundtrip_fedora_apo) do
       Dor::AdminPolicyObject.new(pid: actual_cocina_props[:externalIdentifier],
                                  admin_policy_object_id: actual_cocina_apo_admin.hasAdminPolicy,
-                                 agreement_object_id: actual_cocina_apo_admin.referencesAgreement,
+                                 agreement_object_id: actual_cocina_apo_admin.hasAgreement,
                                  label: actual_cocina_props[:label])
     end
 
@@ -237,7 +230,7 @@ RSpec.describe 'APO administrative mappings' do
             'druid:ny719df8518'
           ],
           hasAdminPolicy: ur_apo_druid,
-          referencesAgreement: agreement_druid,
+          hasAgreement: agreement_druid,
           roles: [
             {
               name: 'dor-apo-manager',
@@ -321,7 +314,7 @@ RSpec.describe 'APO administrative mappings' do
             'druid:bp350ns9783'
           ],
           hasAdminPolicy: ur_apo_druid,
-          referencesAgreement: 'druid:wn586st0695',
+          hasAgreement: 'druid:wn586st0695',
           roles: [
             {
               name: 'dor-apo-manager',
@@ -412,7 +405,7 @@ RSpec.describe 'APO administrative mappings' do
             'druid:ns135jb1096'
           ],
           hasAdminPolicy: ur_apo_druid,
-          referencesAgreement: 'druid:zh747vq3919',
+          hasAgreement: 'druid:zh747vq3919',
           roles: [
             {
               name: 'dor-apo-manager',
@@ -534,7 +527,7 @@ RSpec.describe 'APO administrative mappings' do
             'registrationWF'
           ],
           hasAdminPolicy: ur_apo_druid,
-          referencesAgreement: agreement_druid,
+          hasAgreement: agreement_druid,
           roles: [
             {
               name: 'dor-apo-manager',
@@ -683,7 +676,7 @@ RSpec.describe 'APO administrative mappings' do
             'registrationWF'
           ],
           hasAdminPolicy: ur_apo_druid,
-          referencesAgreement: agreement_druid,
+          hasAgreement: agreement_druid,
           roles: [
             {
               name: 'hydrus-collection-manager',

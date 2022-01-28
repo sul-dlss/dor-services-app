@@ -140,14 +140,7 @@ RSpec.describe 'Cocina --> MODS mappings for relatedItem' do
                   value: 'Software Carpentry Workshop recordings from August 14, 2014'
                 }
               ],
-              purl:	'https://purl.stanford.edu/tx853fp2857',
-              access: {
-                digitalRepository: [
-                  {
-                    value: 'Stanford Digital Repository'
-                  }
-                ]
-              }
+              purl:	'https://purl.stanford.edu/tx853fp2857'
             }
           ]
         }

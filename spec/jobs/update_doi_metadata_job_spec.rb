@@ -19,6 +19,7 @@ RSpec.describe UpdateDoiMetadataJob, type: :job do
       },
       'description' => {
         'title' => [{ 'value' => 'Test obj' }],
+        'purl' => 'https://purl.stanford.edu/bc123df4567',
         'subject' => [{ 'type' => 'topic', 'value' => 'word' }]
       },
       'structural' => {

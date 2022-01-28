@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> DataCite mappings for identifier and alternateIdentifier (H2 specific)' do
   # NOTE: Because we haven't set a title in this Cocina::Models::Description, it will not validate against the openapi.
-  let(:cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
+  let(:cocina_description) { Cocina::Models::Description.new(cocina.merge(purl: cocina.fetch(:purl, 'https://purl.stanford.edu/aa666bb1234')), false, false) }
   let(:identifier_attributes) { Cocina::ToDatacite::Identifier.identifier_attributes(cocina_description) }
   let(:alternate_identifier_attributes) { Cocina::ToDatacite::Identifier.alternate_identifier_attributes(cocina_description) }
 
@@ -86,31 +86,6 @@ RSpec.describe 'Cocina --> DataCite mappings for identifier and alternateIdentif
 
     it 'identifier_attributes is nil' do
       expect(identifier_attributes).to eq nil
-    end
-  end
-
-  # NOTE: purl in cocina-model openapi is a String of format uri, so it cannot be nil
-
-  context 'when cocina purl is empty string' do
-    let(:cocina) do
-      {
-        purl: ''
-      }
-    end
-
-    it 'alternate_identifier_attributes is nil' do
-      expect(alternate_identifier_attributes).to eq nil
-    end
-  end
-
-  context 'when cocina has no purl' do
-    let(:cocina) do
-      {
-      }
-    end
-
-    it 'alternate_identifier_attributes is nil' do
-      expect(alternate_identifier_attributes).to eq nil
     end
   end
 end

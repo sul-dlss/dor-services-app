@@ -43,12 +43,7 @@ RSpec.describe 'Get the object' do
               title: [
                 { value: 'Hello' }
               ],
-              purl: 'https://purl.stanford.edu/bc123df4567',
-              access: {
-                digitalRepository: [
-                  { value: 'Stanford Digital Repository' }
-                ]
-              }
+              purl: 'https://purl.stanford.edu/bc123df4567'
             },
             identification: {
               sourceId: 'src:99999'
@@ -117,12 +112,7 @@ RSpec.describe 'Get the object' do
               title: [
                 { value: 'Hello' }
               ],
-              purl: 'https://purl.stanford.edu/bc123df4567',
-              access: {
-                digitalRepository: [
-                  { value: 'Stanford Digital Repository' }
-                ]
-              }
+              purl: 'https://purl.stanford.edu/bc123df4567'
             },
             identification: {
               sourceId: 'src:99999'
@@ -168,12 +158,7 @@ RSpec.describe 'Get the object' do
                                     title: [
                                       { value: 'Hello' }
                                     ],
-                                    purl: 'https://purl.stanford.edu/bc123df4567',
-                                    access: {
-                                      digitalRepository: [
-                                        { value: 'Stanford Digital Repository' }
-                                      ]
-                                    }
+                                    purl: 'https://purl.stanford.edu/bc123df4567'
                                   },
                                   identification: {
                                     sourceId: 'src:99999'
@@ -263,12 +248,7 @@ RSpec.describe 'Get the object' do
                                     title: [
                                       { value: 'Hello' }
                                     ],
-                                    purl: 'https://purl.stanford.edu/bc123df4567',
-                                    access: {
-                                      digitalRepository: [
-                                        { value: 'Stanford Digital Repository' }
-                                      ]
-                                    }
+                                    purl: 'https://purl.stanford.edu/bc123df4567'
                                   },
                                   identification: {
                                     sourceId: 'src:99999'
@@ -424,12 +404,7 @@ RSpec.describe 'Get the object' do
           title: [
             { value: 'Hello' }
           ],
-          purl: 'https://purl.stanford.edu/bc123df4567',
-          access: {
-            digitalRepository: [
-              { value: 'Stanford Digital Repository' }
-            ]
-          }
+          purl: 'https://purl.stanford.edu/bc123df4567'
         }
       )
     end
@@ -449,6 +424,7 @@ RSpec.describe 'Get the object' do
       before do
         object.descMetadata.title_info.main_title = 'Hello'
         object.label = 'foo'
+        object.agreement_object_id = 'druid:bb008zm4587'
       end
 
       it 'returns the object' do
@@ -501,6 +477,7 @@ RSpec.describe 'Get the object' do
         XML
         object.descMetadata.title_info.main_title = 'Hello'
         object.label = 'foo'
+        object.agreement_object_id = 'druid:bb008zm4587'
       end
 
       it 'returns the object' do

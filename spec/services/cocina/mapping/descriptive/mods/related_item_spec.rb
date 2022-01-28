@@ -146,15 +146,7 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
         {
           relatedResource: [
             {
-              purl: 'https://purl.stanford.edu/ng599nr9959',
-              access: {
-
-                digitalRepository: [
-                  {
-                    value: 'Stanford Digital Repository'
-                  }
-                ]
-              }
+              purl: 'https://purl.stanford.edu/ng599nr9959'
             }
           ]
         }

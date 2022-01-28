@@ -1311,6 +1311,8 @@ components:
       type: object
       additionalProperties: true
       properties:
+        cocinaVersion:
+          $ref: '#/components/schemas/CocinaVersion'
         type:
           type: string
           enum:
@@ -1326,6 +1328,7 @@ components:
         description:
           $ref: '#/components/schemas/Description'
       required:
+        - cocinaVersion
         - administrative
         - externalIdentifier
         - label
@@ -1359,6 +1362,8 @@ components:
             type: string
         hasAdminPolicy:
           $ref: '#/components/schemas/Druid'
+        hasAgreement:
+          $ref: '#/components/schemas/Druid'
         referencesAgreement:
           $ref: '#/components/schemas/Druid'
         roles:
@@ -1368,6 +1373,7 @@ components:
             $ref: '#/components/schemas/AccessRole'
       required:
         - hasAdminPolicy
+        - hasAgreement
     AdminPolicyDefaultAccess:
       description: 'Provides the default access settings for an AdminPolicy. This is almost the same as DROAccess, but it provides no defaults.'
       type: object
@@ -1499,11 +1505,18 @@ components:
       required:
         - access
         - download
+    CocinaVersion:
+      description: The version of Cocina with which this object conforms.
+      type: string
+      pattern: '^\d+\.\d+\.\d+$'
+      example: '1.2.3'
     Collection:
       description: A group of Digital Repository Objects that indicate some type of conceptual grouping within the domain that is worth reusing across the system.
       type: object
       additionalProperties: true
       properties:
+        cocinaVersion:
+            $ref: '#/components/schemas/CocinaVersion'
         type:
           description: The content type of the Collection. Selected from an established set of values.
           type: string
@@ -1530,6 +1543,7 @@ components:
         identification:
           $ref: '#/components/schemas/CollectionIdentification'
       required:
+        - cocinaVersion
         - externalIdentifier
         - label
         - type
@@ -1668,77 +1682,15 @@ components:
     Description:
       type: object
       additionalProperties: false
-      properties:
-        title:
-          description: Titles of the resource.
-          type: array
-          minItems: 1
-          items:
-            $ref: "#/components/schemas/Title"
-        contributor:
-          description: Agents contributing in some way to the creation and history of the
-            resource.
-          type: array
-          items:
-            $ref: "#/components/schemas/Contributor"
-        event:
-          description: Events in the history of the resource.
-          type: array
-          items:
-            $ref: "#/components/schemas/Event"
-        form:
-          description: Characteristics of the resource's physical, digital, and intellectual
-            form and genre, and of its process of creation.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        geographic:
-          description: Geographic description for items with coordinates or bounding boxes.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveGeographicMetadata"
-        language:
-          description: Languages, scripts, symbolic systems, and notations used in all or
-            part of a resource.
-          type: array
-          items:
-            $ref: "#/components/schemas/Language"
-        note:
-          description: Additional information relevant to a resource.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        identifier:
-          description: Identifiers and URIs associated with the resource.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        subject:
-          description: Terms associated with the intellectual content of the resource.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        purl:
-          $ref: "#/components/schemas/Purl"
-        access:
-          $ref: "#/components/schemas/DescriptiveAccessMetadata"
-        relatedResource:
-          description: Other resources associated with the described resource.
-          type: array
-          items:
-            $ref: "#/components/schemas/RelatedResource"
-        marcEncodedData:
-          description: Data about the resource represented in MARC fixed fields and codes.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        adminMetadata:
-          $ref: "#/components/schemas/DescriptiveAdminMetadata"
-        valueAt:
-          description: URL or other pointer to the location of the resource description.
-          type: string
-      required:
-        - title
+      allOf:
+        - $ref: "#/components/schemas/RequestDescription"
+        - type: object
+          additionalProperties: false
+          properties:
+            purl:
+              $ref: "#/components/schemas/Purl"
+          required:
+            - purl
     DescriptiveAccessMetadata:
       description: Information about how to access digital and physical versions of the object.
       type: object
@@ -2024,6 +1976,8 @@ components:
       type: object
       additionalProperties: true
       properties:
+        cocinaVersion:
+          $ref: '#/components/schemas/CocinaVersion'
         type:
           description: The content type of the DRO. Selected from an established set of values.
           type: string
@@ -2064,6 +2018,7 @@ components:
         geographic:
           $ref: '#/components/schemas/Geographic'
       required:
+        - cocinaVersion
         - access
         - administrative
         - externalIdentifier
@@ -2142,9 +2097,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Druid'
-        hasAgreement:
-          description: Agreement that covers the deposit of the DRO into SDR.
-          type: string
     Druid:
       type: string
       pattern: '^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$'
@@ -2646,6 +2598,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        cocinaVersion:
+          $ref: '#/components/schemas/CocinaVersion'
         type:
           type: string
           enum:
@@ -2657,8 +2611,9 @@ components:
         administrative:
           $ref: '#/components/schemas/AdminPolicyAdministrative'
         description:
-          $ref: '#/components/schemas/Description'
+          $ref: '#/components/schemas/RequestDescription'
       required:
+        - cocinaVersion
         - administrative
         - label
         - type
@@ -2668,6 +2623,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        cocinaVersion:
+          $ref: '#/components/schemas/CocinaVersion'
         type:
           type: string
           enum:
@@ -2685,15 +2642,89 @@ components:
         administrative:
           $ref: '#/components/schemas/Administrative'
         description:
-          $ref: '#/components/schemas/Description'
+          $ref: '#/components/schemas/RequestDescription'
         identification:
           $ref: '#/components/schemas/CollectionIdentification'
       required:
+        - cocinaVersion
         - access
         - administrative
         - label
         - type
         - version
+    RequestDescription:
+      description: Description that is included in a request to create a DRO. This is the same as a Description, except excludes PURL.
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          description: Titles of the resource.
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/Title"
+        contributor:
+          description: Agents contributing in some way to the creation and history of the
+            resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/Contributor"
+        event:
+          description: Events in the history of the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        form:
+          description: Characteristics of the resource's physical, digital, and intellectual
+            form and genre, and of its process of creation.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        geographic:
+          description: Geographic description for items with coordinates or bounding boxes.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveGeographicMetadata"
+        language:
+          description: Languages, scripts, symbolic systems, and notations used in all or
+            part of a resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/Language"
+        note:
+          description: Additional information relevant to a resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        identifier:
+          description: Identifiers and URIs associated with the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        subject:
+          description: Terms associated with the intellectual content of the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        access:
+          $ref: "#/components/schemas/DescriptiveAccessMetadata"
+        relatedResource:
+          description: Other resources associated with the described resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/RelatedResource"
+        marcEncodedData:
+          description: Data about the resource represented in MARC fixed fields and codes.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        adminMetadata:
+          $ref: "#/components/schemas/DescriptiveAdminMetadata"
+        valueAt:
+          description: URL or other pointer to the location of the resource description.
+          type: string
+      required:
+        - title
     RequestDRO:
       description: A request to create a DRO.  This has the same general structure as a DRO but doesn't have externalIdentifier and doesn't require the access subschema. If no access subschema is provided, these values will be inherited from the AdminPolicy.
       type: object
@@ -2702,6 +2733,8 @@ components:
       # Since POST /v1/objects has both, setting additionalProperties to true.
       additionalProperties: true
       properties:
+        cocinaVersion:
+          $ref: '#/components/schemas/CocinaVersion'
         type:
           type: string
           enum:
@@ -2729,7 +2762,7 @@ components:
         administrative:
           $ref: '#/components/schemas/Administrative'
         description:
-          $ref: '#/components/schemas/Description'
+          $ref: '#/components/schemas/RequestDescription'
         identification:
           $ref: '#/components/schemas/RequestIdentification'
         structural:
@@ -2737,6 +2770,7 @@ components:
         geographic:
           $ref: '#/components/schemas/Geographic'
       required:
+        - cocinaVersion
         - administrative
         - identification
         - label
@@ -2760,8 +2794,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Druid'
-        hasAgreement:
-          type: string
     RequestFile:
       type: object
       additionalProperties: false

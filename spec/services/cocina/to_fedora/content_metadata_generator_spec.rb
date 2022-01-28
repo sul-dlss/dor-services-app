@@ -688,7 +688,10 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
           "type":"#{object_type}",
           "label":"The object label","version":1,"access":{},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"status":"primary","value":"the object title"}]},
+          "description":{
+            "title":[{"status":"primary","value":"the object title"}],
+            "purl":"https://purl.stanford.edu/bc123df5678"
+          },
           "identification":{"sourceId":"sul:9999999"},
           "structural":#{structural.to_json}}
       JSON

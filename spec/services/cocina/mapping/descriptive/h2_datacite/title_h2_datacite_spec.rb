@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> DataCite mappings for title (H2 specific)' do
   # Note that this instantiation of Cocina::Models::Description does NOT validate against OpenAPI due to missing title.
-  let(:cocina_description) { Cocina::Models::Description.new(cocina, false, false) }
+  let(:cocina_description) { Cocina::Models::Description.new(cocina.merge(purl: Purl.for(druid: 'druid:bb423sd6663')), false, false) }
   let(:title_attributes) { Cocina::ToDatacite::Title.title_attributes(cocina_description) }
 
   describe 'Resource title' do

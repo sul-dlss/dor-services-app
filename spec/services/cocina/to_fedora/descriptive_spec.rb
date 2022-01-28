@@ -11,7 +11,8 @@ RSpec.describe Cocina::ToFedora::Descriptive do
       Cocina::Models::Description.new(
         title: [
           { value: 'Gaudy night' }
-        ]
+        ],
+        purl: 'https://purl.stanford.edu/aa666bb1234'
       )
     end
 
@@ -23,6 +24,9 @@ RSpec.describe Cocina::ToFedora::Descriptive do
           <titleInfo>
             <title>Gaudy night</title>
           </titleInfo>
+          <location>
+            <url usage="primary display">https://purl.stanford.edu/aa666bb1234</url>
+          </location>
         </mods>
       XML
     end
@@ -35,6 +39,7 @@ RSpec.describe Cocina::ToFedora::Descriptive do
         title: [
           { value: 'Gaudy night' }
         ],
+        purl: 'https://purl.stanford.edu/aa666bb1234',
         note: [
           {
             value: 'This is an abstract.',
@@ -92,6 +97,9 @@ RSpec.describe Cocina::ToFedora::Descriptive do
           <originInfo eventType="creation">
             <dateCreated>1980</dateCreated>
           </originInfo>
+          <location>
+            <url usage="primary display">https://purl.stanford.edu/aa666bb1234</url>
+          </location>
         </mods>
       XML
     end
@@ -104,6 +112,7 @@ RSpec.describe Cocina::ToFedora::Descriptive do
         title: [
           { value: 'Gaudy night' }
         ],
+        purl: 'https://purl.stanford.edu/aa666bb1234',
         adminMetadata: {
           note: [
             {
@@ -117,16 +126,19 @@ RSpec.describe Cocina::ToFedora::Descriptive do
 
     it 'builds the xml' do
       expect(xml).to be_equivalent_to <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.7"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
-          <titleInfo>
-            <title>Gaudy night</title>
-          </titleInfo>
-          <recordInfo>
-           <recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7_SDR_v1.xsl (SUL 3.7 version 1.1 20200917; LC Revision 1.140 20200717)</recordOrigin>
-         </recordInfo>
-        </mods>
+         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="http://www.loc.gov/mods/v3" version="3.7"
+           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+           <titleInfo>
+             <title>Gaudy night</title>
+           </titleInfo>
+           <recordInfo>
+            <recordOrigin>Converted from MARCXML to MODS version 3.7 using MARC21slim2MODS3-7_SDR_v1.xsl (SUL 3.7 version 1.1 20200917; LC Revision 1.140 20200717)</recordOrigin>
+          </recordInfo>
+          <location>
+          <url usage="primary display">https://purl.stanford.edu/aa666bb1234</url>
+        </location>
+         </mods>
       XML
     end
   end

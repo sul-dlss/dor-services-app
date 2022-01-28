@@ -102,7 +102,7 @@ module Cocina
         end
 
         def find_note_value(note_type)
-          Array(access.note).find do |note|
+          Array(access&.note).find do |note|
             note.type == note_type && purl_note?(note)
           end&.value
         end

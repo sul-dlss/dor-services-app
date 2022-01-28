@@ -68,15 +68,7 @@ RSpec.describe 'Update object' do
                               copyright: 'All rights reserved unless otherwise indicated.',
                               useAndReproductionStatement: 'Property rights reside with the repository...'
                             }.merge(cocina_access.to_h),
-                            description: {
-                              title: [{ value: title }],
-                              purl: 'https://purl.stanford.edu/gg777gg7777',
-                              access: {
-                                digitalRepository: [
-                                  { value: 'Stanford Digital Repository' }
-                                ]
-                              }
-                            },
+                            description: description,
                             administrative: {
                               hasAdminPolicy: apo_druid,
                               partOfProject: 'Google Books'
@@ -86,12 +78,16 @@ RSpec.describe 'Update object' do
   end
 
   let(:description) do
-    { title: [{ value: title }] }
+    {
+      title: [{ value: title }],
+      purl: 'https://purl.stanford.edu/gg777gg7777'
+    }
   end
 
   let(:data) do
     <<~JSON
       {
+        "cocinaVersion": "0.0.1",
         "externalIdentifier": "#{druid}",
         "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
         "label":"#{label}","version":1,
@@ -146,12 +142,7 @@ RSpec.describe 'Update object' do
           { type: 'preferred citation', value: 'test citation' },
           { displayLabel: 'Contact', type: 'email', value: 'io@io.io' }
         ],
-        purl: 'https://purl.stanford.edu/gg777gg7777',
-        access: {
-          digitalRepository: [
-            { value: 'Stanford Digital Repository' }
-          ]
-        }
+        purl: 'https://purl.stanford.edu/gg777gg7777'
       }
     end
 
@@ -227,7 +218,8 @@ RSpec.describe 'Update object' do
               { value: '4', type: 'nonsorting character count' }
             ]
           }
-        ]
+        ],
+        purl: 'https://purl.stanford.edu/gg777gg7777'
       }
     end
 
@@ -294,12 +286,7 @@ RSpec.describe 'Update object' do
                                     ]
                                   }
                                 ],
-                                purl: 'https://purl.stanford.edu/gg777gg7777',
-                                access: {
-                                  digitalRepository: [
-                                    { value: 'Stanford Digital Repository' }
-                                  ]
-                                }
+                                purl: 'https://purl.stanford.edu/gg777gg7777'
                               },
                               administrative: {
                                 hasAdminPolicy: apo_druid,
@@ -311,6 +298,7 @@ RSpec.describe 'Update object' do
     let(:data) do
       <<~JSON
         {
+          "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
           "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
           "label":"#{label}","version":1,
@@ -321,7 +309,10 @@ RSpec.describe 'Update object' do
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-          "description":{"title":[{"structuredValue":[{"value":"#{title}","type":"main title"},{"value":"(repeat)","type":"subtitle"}]}]},
+          "description":{
+            "title":[{"structuredValue":[{"value":"#{title}","type":"main title"},{"value":"(repeat)","type":"subtitle"}]}],
+            "purl":"https://purl.stanford.edu/gg777gg7777"
+          },
           "identification":#{identification.to_json},
           "structural":{
             "hasMemberOrders":[{"viewingDirection":"right-to-left"}],
@@ -505,12 +496,7 @@ RSpec.describe 'Update object' do
                               },
                               description: {
                                 title: [{ value: title }],
-                                purl: 'https://purl.stanford.edu/gg777gg7777',
-                                access: {
-                                  digitalRepository: [
-                                    { value: 'Stanford Digital Repository' }
-                                  ]
-                                }
+                                purl: 'https://purl.stanford.edu/gg777gg7777'
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567',
@@ -522,6 +508,7 @@ RSpec.describe 'Update object' do
     let(:data) do
       <<~JSON
         {
+          "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
           "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
           "label":"#{expected_label}","version":1,
@@ -532,7 +519,10 @@ RSpec.describe 'Update object' do
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-          "description":{"title":[{"value":"#{title}"}]},
+          "description":{
+            "title":[{"value":"#{title}"}],
+            "purl":"https://purl.stanford.edu/gg777gg7777"
+          },
           "identification":#{identification.to_json},
           "structural":{
             "isMemberOf":["druid:xx888xx7777"]
@@ -705,6 +695,7 @@ RSpec.describe 'Update object' do
       let(:data) do
         <<~JSON
           {
+            "cocinaVersion": "0.0.1",
             "externalIdentifier": "#{druid}",
             "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
             "label":"#{label}","version":1,
@@ -715,7 +706,10 @@ RSpec.describe 'Update object' do
               "useAndReproductionStatement":"Property rights reside with the repository..."
             },
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-            "description":{"title":[{"value":"#{title}"}]},
+            "description":{
+              "title":[{"value":"#{title}"}],
+              "purl":"https://purl.stanford.edu/gg777gg7777"
+            },
             "identification":#{identification.to_json},"structural":{"contains":#{filesets.to_json}}}
         JSON
       end
@@ -826,6 +820,7 @@ RSpec.describe 'Update object' do
       let(:data) do
         <<~JSON
           {
+            "cocinaVersion":"0.0.1",
             "externalIdentifier": "#{druid}",
             "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
             "label":"#{label}","version":1,
@@ -836,7 +831,10 @@ RSpec.describe 'Update object' do
               "useAndReproductionStatement":"Property rights reside with the repository..."
             },
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
-            "description":{"title":[{"value":"#{title}"}]},
+            "description":{
+              "title":[{"value":"#{title}"}],
+              "purl":"https://purl.stanford.edu/gg777gg7777"
+            },
             "identification":#{identification.to_json},
             "structural":{"isMemberOf":["druid:xx888xx7777"]}}
         JSON
@@ -861,12 +859,7 @@ RSpec.describe 'Update object' do
                               version: 1,
                               description: {
                                 title: [{ value: title }],
-                                purl: 'https://purl.stanford.edu/gg777gg7777',
-                                access: {
-                                  digitalRepository: [
-                                    { value: 'Stanford Digital Repository' }
-                                  ]
-                                }
+                                purl: 'https://purl.stanford.edu/gg777gg7777'
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -884,6 +877,7 @@ RSpec.describe 'Update object' do
     let(:data) do
       <<~JSON
         {
+          "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
           "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
           "label":"#{label}","version":1,
@@ -892,7 +886,10 @@ RSpec.describe 'Update object' do
             "download":"world"
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"value":"#{title}"}]},
+          "description":{
+            "title":[{"value":"#{title}"}],
+            "purl":"https://purl.stanford.edu/gg777gg7777"
+          },
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{
             "hasMemberOrders":[{"viewingDirection":"right-to-left"}],
@@ -932,12 +929,7 @@ RSpec.describe 'Update object' do
                                      version: 1,
                                      description: {
                                        title: [{ value: title }],
-                                       purl: 'https://purl.stanford.edu/gg777gg7777',
-                                       access: {
-                                         digitalRepository: [
-                                           { value: 'Stanford Digital Repository' }
-                                         ]
-                                       }
+                                       purl: 'https://purl.stanford.edu/gg777gg7777'
                                      },
                                      identification: identification,
                                      administrative: {
@@ -957,13 +949,18 @@ RSpec.describe 'Update object' do
     let(:data) do
       <<~JSON
         {
+          "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
           "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
           "label":"#{label}","version":1,
           "access":{},
           "identification":#{identification.to_json},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"value":"#{title}"}]}}
+          "description":{
+            "title":[{"value":"#{title}"}],
+            "purl":"https://purl.stanford.edu/gg777gg7777"
+          }
+        }
       JSON
     end
 
@@ -1022,18 +1019,13 @@ RSpec.describe 'Update object' do
                                       version: 1,
                                       description: {
                                         title: [{ value: 'This is my title' }],
-                                        purl: 'https://purl.stanford.edu/gg777gg7777',
-                                        access: {
-                                          digitalRepository: [
-                                            { value: 'Stanford Digital Repository' }
-                                          ]
-                                        }
+                                        purl: 'https://purl.stanford.edu/gg777gg7777'
                                       },
                                       administrative: {
                                         defaultObjectRights: default_object_rights_expected,
                                         defaultAccess: default_access_expected,
                                         hasAdminPolicy: 'druid:dd999df4567',
-                                        referencesAgreement: 'druid:bc123df4567',
+                                        hasAgreement: 'druid:bc123df4567',
                                         disseminationWorkflow: 'assemblyWF',
                                         registrationWorkflow: %w[goobiWF registrationWF],
                                         collectionsForRegistration: ['druid:gg888df4567', 'druid:bb888gg4444'],
@@ -1068,6 +1060,7 @@ RSpec.describe 'Update object' do
     let(:data) do
       <<~JSON
         {
+          "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
           "type":"http://cocina.sul.stanford.edu/models/admin_policy.jsonld",
           "label":"This is my label","version":1,
@@ -1077,11 +1070,15 @@ RSpec.describe 'Update object' do
             "registrationWorkflow":["goobiWF","registrationWF"],
             "collectionsForRegistration":["druid:gg888df4567","druid:bb888gg4444"],
             "hasAdminPolicy":"druid:dd999df4567",
-            "referencesAgreement":"druid:bc123df4567",
+            "hasAgreement":"druid:bc123df4567",
             "defaultAccess":#{default_access.to_json},
             "roles":[{"name":"dor-apo-manager","members":[{"type":"workgroup","identifier":"sdr:psm-staff"}]}]
           },
-          "description":{"title":[{"value":"This is my title"}]}}
+          "description":{
+            "title":[{"value":"This is my title"}],
+            "purl":"https://purl.stanford.edu/gg777gg7777"
+          }
+        }
       JSON
     end
 
@@ -1089,6 +1086,7 @@ RSpec.describe 'Update object' do
       before do
         # This stubs out Solr:
         allow(item).to receive(:admin_policy_object_id).and_return('druid:dd999df4567')
+        allow(item).to receive(:agreement_object_id).and_return('druid:bc123df4567')
       end
 
       it 'registers the object with the registration service' do
@@ -1096,7 +1094,6 @@ RSpec.describe 'Update object' do
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to equal_cocina_model(expected)
-
         expect(response.status).to eq(200)
       end
     end
@@ -1137,6 +1134,7 @@ RSpec.describe 'Update object' do
       before do
         # This stubs out Solr:
         allow(item).to receive(:admin_policy_object_id).and_return('druid:dd999df4567')
+        allow(item).to receive(:agreement_object_id).and_return('druid:bc123df4567')
       end
 
       it 'updates the metadata' do
@@ -1157,12 +1155,7 @@ RSpec.describe 'Update object' do
                               version: 1,
                               description: {
                                 title: [{ value: 'This is my title' }],
-                                purl: 'https://purl.stanford.edu/gg777gg7777',
-                                access: {
-                                  digitalRepository: [
-                                    { value: 'Stanford Digital Repository' }
-                                  ]
-                                }
+                                purl: 'https://purl.stanford.edu/gg777gg7777'
                               },
                               administrative: {
                                 hasAdminPolicy: 'druid:dd999df4567'
@@ -1188,6 +1181,7 @@ RSpec.describe 'Update object' do
     let(:data) do
       <<~JSON
         {
+          "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
           "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
           "label":"This is my label","version":1,
@@ -1195,7 +1189,10 @@ RSpec.describe 'Update object' do
             "embargo":{"access":"world","download":"world","releaseDate":"2020-02-29"}
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"value":"This is my title"}]},
+          "description":{
+            "title":[{"value":"This is my title"}],
+            "purl":"https://purl.stanford.edu/gg777gg7777"
+          },
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
