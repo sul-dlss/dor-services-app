@@ -99,6 +99,7 @@ module Cocina
       end
 
       Cocina::ToFedora::Identity.apply_release_tags(fedora_object, release_tags: cocina_object.administrative&.releaseTags) if has_changed?(:administrative)
+      Cocina::ToFedora::Identity.apply_catalog_links(fedora_object, catalog_links: cocina_object.identification&.catalogLinks) if has_changed?(:identification)
 
       fedora_object.catkey = catkey_for(cocina_object)
       fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy if has_changed?(:administrative)
@@ -123,6 +124,7 @@ module Cocina
         identity_updater.apply_doi(cocina_object.identification.doi)
         fedora_object.source_id = cocina_object.identification.sourceId
         fedora_object.catkey = catkey_for(cocina_object)
+        identity_updater.apply_catalog_links(cocina_object.identification.catalogLinks)
         fedora_object.identityMetadata.barcode = cocina_object.identification.barcode
       end
 

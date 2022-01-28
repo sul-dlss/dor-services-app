@@ -114,6 +114,7 @@ module Cocina
         identity.apply_label(cocina_item.label)
         identity.apply_release_tags(cocina_item.administrative&.releaseTags)
         identity.apply_doi(Doi.for(druid: pid)) if assign_doi
+        identity.apply_catalog_links(cocina_item.identification&.catalogLinks)
 
         fedora_item.identityMetadata.barcode = cocina_item.identification.barcode if cocina_item.identification.barcode
 
@@ -137,6 +138,7 @@ module Cocina
         apply_default_access(fedora_collection) unless trial
         Cocina::ToFedora::CollectionAccess.apply(fedora_collection, cocina_collection.access) if cocina_collection.access
         Cocina::ToFedora::Identity.initialize_identity(fedora_collection)
+        Cocina::ToFedora::Identity.apply_catalog_links(fedora_collection, catalog_links: cocina_collection.identification&.catalogLinks)
         Cocina::ToFedora::Identity.apply_label(fedora_collection, label: cocina_collection.label)
         Cocina::ToFedora::Identity.apply_release_tags(fedora_collection, release_tags: cocina_collection.administrative&.releaseTags)
       end
