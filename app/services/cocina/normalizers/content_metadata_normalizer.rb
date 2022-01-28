@@ -33,6 +33,7 @@ module Cocina
         remove_location
         remove_format
         remove_geodata
+        remove_id
         normalize_object_id(druid)
         normalize_reading_order(druid)
         normalize_label_attr
@@ -94,6 +95,12 @@ module Cocina
 
       def remove_geodata
         ng_xml.root.xpath('//geoData').each(&:remove)
+      end
+
+      def remove_id
+        return if ng_xml.root['id'].blank?
+
+        ng_xml.root.delete('id')
       end
 
       def normalize_reading_order(druid)

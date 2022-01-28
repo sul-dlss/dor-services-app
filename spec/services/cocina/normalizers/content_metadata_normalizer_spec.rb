@@ -421,4 +421,36 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       )
     end
   end
+
+  context 'when normalizing contentMetadata node' do
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata type="webarchive-seed" id="druid:bb035tg0974">
+          <resource type="image" sequence="1" id="bb035tg0974_1">
+            <file preserve="no" publish="yes" shelve="yes" mimetype="image/jp2" id="thumbnail.jp2" size="20199">
+              <checksum type="md5">7a2e7d50f03917674f8014cacd77cc26</checksum>
+              <checksum type="sha1">9db56401e6c2c2515c9d7a75b8316ca1d5425709</checksum>
+              <imageData width="400" height="267"/>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'removes id in root element' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata type="webarchive-seed" objectId="druid:bb035tg0974">
+            <resource type="image">
+              <file preserve="no" publish="yes" shelve="yes" mimetype="image/jp2" id="thumbnail.jp2" size="20199">
+                <checksum type="md5">7a2e7d50f03917674f8014cacd77cc26</checksum>
+                <checksum type="sha1">9db56401e6c2c2515c9d7a75b8316ca1d5425709</checksum>
+                <imageData width="400" height="267"/>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      )
+    end
+  end
 end
