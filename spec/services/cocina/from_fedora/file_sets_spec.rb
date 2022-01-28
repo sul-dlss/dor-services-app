@@ -22,12 +22,19 @@ RSpec.describe Cocina::FromFedora::FileSets do
           </file>
         </resource>
         <resource id="gs491bt1345_2" sequence="2" type="file">
-          <label>Program PDF</label>
+          <attr type="label">Program PDF</attr>
           <file id="gs491bt1345_sample_md.pdf" mimetype="application/pdf" size="930089" publish="yes" shelve="yes" preserve="yes">
             <checksum type="sha1">3b342f7b87f126997088720c1220122d41c8c159</checksum>
             <checksum type="md5">6ed0004f39657ff81dff7b2b017fb9d9</checksum>
           </file>
         </resource>
+        <resource id="gs491bt1345_3" sequence="3" type="file">
+          <attr name="label">Program Text</attr>
+          <file id="gs491bt1345_sample_md.txt" mimetype="plain/text" size="100" publish="yes" shelve="yes" preserve="yes">
+            <checksum type="sha1">11342f7b87f126997088720c1220122d41c8c159</checksum>
+            <checksum type="md5">11d0004f39657ff81dff7b2b017fb9d9</checksum>
+          </file>
+         </resource>
       </contentMetadata>
     XML
   end
@@ -95,6 +102,28 @@ RSpec.describe Cocina::FromFedora::FileSets do
     end
   end
 
+  describe 'label generation for file sets' do
+    let(:structural) { instance.build }
+
+    context 'when <label> node on resource' do
+      it 'maps the label correctly' do
+        expect(structural[0][:label]).to eq('Audio file')
+      end
+    end
+
+    context 'when <attr type="label"> node on resource' do
+      it 'maps the label correctly' do
+        expect(structural[1][:label]).to eq('Program PDF')
+      end
+    end
+
+    context 'when <attr name="label"> node on resource' do
+      it 'maps the label correctly' do
+        expect(structural[2][:label]).to eq('Program Text')
+      end
+    end
+  end
+
   describe 'file-level access rights' do
     let(:rights_xml) do
       <<~XML
@@ -128,8 +157,8 @@ RSpec.describe Cocina::FromFedora::FileSets do
     end
     let(:type) { Cocina::Models::Vocab.media }
     let(:structural) { instance.build }
-    let(:audio_fileset) { structural.first[:structural][:contains] }
-    let(:text_fileset) { structural.last[:structural][:contains] }
+    let(:audio_fileset) { structural[0][:structural][:contains] }
+    let(:text_fileset) { structural[1][:structural][:contains] }
 
     context 'when controlled digital lending' do
       let(:file_specific_rights) do

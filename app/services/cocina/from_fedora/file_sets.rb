@@ -31,7 +31,7 @@ module Cocina
             version: version,
             structural: structural
           }.tap do |attrs|
-            attrs[:label] = resource_node.xpath('label', 'attr[@type="label"]').text # some will be missing labels, they will just be blank
+            attrs[:label] = resource_node.xpath('label', 'attr[@type="label"]', 'attr[@name="label"]').text # some will be missing labels, they will just be blank
           end
         end
       end

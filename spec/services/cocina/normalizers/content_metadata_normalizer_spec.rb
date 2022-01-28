@@ -220,6 +220,53 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       end
     end
 
+    context 'when normalizing type="label" or name="label" attributes' do
+      # adapted/modified from druid:bf016hc1150
+      let(:original_xml) do
+        <<~XML
+            <contentMetadata type="file" objectId="druid:bf016hc1150">
+            <resource id="bf016hc1150_1" type="main-original">
+              <attr name="label">Body of dissertation (as submitted)</attr>
+              <file id="Jiajing Wang_Dissertation_final.pdf" mimetype="application/pdf" size="10063288" shelve="yes" publish="no" preserve="yes">
+                <checksum type="md5">4730200a3f0e2e59a4b5222b24c56479</checksum>
+                <checksum type="sha1">1da942c37bf02c83a50840607e5d537981a685ca</checksum>
+              </file>
+            </resource>
+            <resource id="bf016hc1150_2" type="main-augmented" objectId="druid:hn674mz7318">
+              <attr type="label">Body of dissertation</attr>
+              <file id="Jiajing Wang_Dissertation_final-augmented.pdf" mimetype="application/pdf" size="8669074" shelve="yes" publish="yes" preserve="yes">
+                <checksum type="md5">59447a86931f3663f5c129ffb2326808</checksum>
+                <checksum type="sha1">ff3b3c6ff560927890fc6258d5f7cb5073358624</checksum>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+
+      it 'converts to label nodes' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <contentMetadata type="file" objectId="druid:bf016hc1150">
+              <resource type="main-original">
+                <label>Body of dissertation (as submitted)</label>
+                <file id="Jiajing Wang_Dissertation_final.pdf" mimetype="application/pdf" size="10063288" shelve="yes" publish="no" preserve="yes">
+                  <checksum type="md5">4730200a3f0e2e59a4b5222b24c56479</checksum>
+                  <checksum type="sha1">1da942c37bf02c83a50840607e5d537981a685ca</checksum>
+                </file>
+              </resource>
+              <resource type="main-augmented">
+                <label>Body of dissertation</label>
+                <file id="Jiajing Wang_Dissertation_final-augmented.pdf" mimetype="application/pdf" size="8669074" shelve="yes" publish="yes" preserve="yes">
+                  <checksum type="md5">59447a86931f3663f5c129ffb2326808</checksum>
+                  <checksum type="sha1">ff3b3c6ff560927890fc6258d5f7cb5073358624</checksum>
+                </file>
+              </resource>
+            </contentMetadata>
+          XML
+        )
+      end
+    end
+
     context 'when normalizing location' do
       let(:original_xml) do
         <<~XML
