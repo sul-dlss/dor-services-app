@@ -180,6 +180,71 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       end
     end
 
+    context 'when normalizing imageData' do
+      # adapted from druid:bb101rd7954
+      let(:original_xml) do
+        <<~XML
+          <contentMetadata objectId="druid:bb101rd7954" type="image">
+            <resource type="image">
+              <label>Image 1</label>
+              <file id="Thumbs.db" mimetype="image/vnd.fpx" size="17408" preserve="yes" publish="no" shelve="no">
+                <checksum type="md5">99c8d3026749b6103f20c911ea102339</checksum>
+                <checksum type="sha1">f73a49b173c741b540170a4f3aa64b87988d4db7</checksum>
+                <imageData width="" height="" size="500"/>
+              </file>
+            </resource>
+            <resource type="image">
+              <label>Image 2</label>
+              <file id="Thumbs2.db" mimetype="image/vnd.fpx" size="17408" preserve="yes" publish="no" shelve="no">
+                <checksum type="md5">99c8d3026749b6103f20c911ea102339</checksum>
+                <checksum type="sha1">f73a49b173c741b540170a4f3aa64b87988d4db7</checksum>
+                <imageData width="" height=""/>
+              </file>
+            </resource>
+            <resource type="image">
+              <label>Image 3</label>
+              <file id="Thumbs3.db" mimetype="image/vnd.fpx" size="17408" preserve="yes" publish="no" shelve="no">
+                <checksum type="md5">99c8d3026749b6103f20c911ea102339</checksum>
+                <checksum type="sha1">f73a49b173c741b540170a4f3aa64b87988d4db7</checksum>
+                <imageData/>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+
+      it 'removes blank width and height attributes and blank imageData nodes' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <contentMetadata objectId="druid:bb101rd7954" type="image">
+              <resource type="image">
+                <label>Image 1</label>
+                <file id="Thumbs.db" mimetype="image/vnd.fpx" size="17408" preserve="yes" publish="no" shelve="no">
+                  <checksum type="md5">99c8d3026749b6103f20c911ea102339</checksum>
+                  <checksum type="sha1">f73a49b173c741b540170a4f3aa64b87988d4db7</checksum>
+                  <imageData size="500"/>
+                </file>
+              </resource>
+              <resource type="image">
+                <label>Image 2</label>
+                <file id="Thumbs2.db" mimetype="image/vnd.fpx" size="17408" preserve="yes" publish="no" shelve="no">
+                  <checksum type="md5">99c8d3026749b6103f20c911ea102339</checksum>
+                  <checksum type="sha1">f73a49b173c741b540170a4f3aa64b87988d4db7</checksum>
+                </file>
+              </resource>
+              <resource type="image">
+                <label>Image 3</label>
+                <file id="Thumbs3.db" mimetype="image/vnd.fpx" size="17408" preserve="yes" publish="no" shelve="no">
+                  <checksum type="md5">99c8d3026749b6103f20c911ea102339</checksum>
+                  <checksum type="sha1">f73a49b173c741b540170a4f3aa64b87988d4db7</checksum>
+                </file>
+              </resource>
+            </contentMetadata>
+          XML
+        )
+      end
+    end
+
     context 'when normalizing format' do
       let(:original_xml) do
         <<~XML

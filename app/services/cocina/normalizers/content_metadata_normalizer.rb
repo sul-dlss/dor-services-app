@@ -40,6 +40,7 @@ module Cocina
         normalize_attr
         normalize_publish
         normalize_empty_xml
+        normalize_image_data
 
         regenerate_ng_xml(ng_xml.to_s)
       end
@@ -75,6 +76,14 @@ module Cocina
 
       def remove_location
         ng_xml.root.xpath('//location[@type="url"]').each(&:remove)
+      end
+
+      def normalize_image_data
+        # remove empty width and heigh attributes from imageData, e.g. <imageData width="" height=""/>
+        # then remove any totally empty imageData nodes, e.g. <imageData/>
+        ng_xml.root.xpath('//imageData[@height=""]').each { |node| node.remove_attribute('height') }
+        ng_xml.root.xpath('//imageData[@width=""]').each { |node| node.remove_attribute('width') }
+        ng_xml.root.xpath('//imageData[not(text())][not(@*)]').each(&:remove)
       end
 
       def normalize_object_id(druid)
