@@ -126,8 +126,7 @@ module Cocina
       end
 
       def normalize_label_attr
-        # Pending https://github.com/sul-dlss/dor-services-app/issues/2808
-        ng_xml.root.xpath('//attr[@type="label"]').each do |attr_node|
+        ng_xml.root.xpath('//attr[@type="label"] | //attr[@name="label"]').each do |attr_node|
           label_node = Nokogiri::XML::Node.new('label', ng_xml)
           label_node.content = attr_node.content
           attr_node.parent << label_node
