@@ -90,6 +90,7 @@ module Cocina
     # @raises SymphonyReader::ResponseError if symphony connection failed
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
     def create_dro(cocina_item, trial:, assign_doi:)
       pid = trial ? cocina_item.externalIdentifier : Dor::SuriService.mint_id
       klass = cocina_item.type == Cocina::Models::Vocab.agreement ? Dor::Agreement : Dor::Item
@@ -123,6 +124,7 @@ module Cocina
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
 
     # @param [Cocina::Models::RequestCollection,Cocina::Models::Collection] cocina_collection
     # @return [Dor::Collection] a persisted Collection model
