@@ -57,7 +57,8 @@ module Cocina
       def catalog_links
         fedora_object
           .identityMetadata.ng_xml.xpath('//otherId[@name="catkey"]')
-          .map { |link| { catalog: 'symphony', catalogRecordId: link.text } }
+          .map { |id| { catalog: 'symphony', catalogRecordId: id.text } }
+          .uniq { |clink| clink[:catalogRecordId] }
           .presence
       end
     end
