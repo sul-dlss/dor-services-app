@@ -369,6 +369,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
       let(:roundtrip_content_xml) do
         <<~XML
           <contentMetadata type="book" objectId="#{druid}">
+            <bookData readingOrder="ltr"/>
             <resource sequence="1" type="file" id="folder1PuSu">
               <label>Folder 1</label>
               <file mimetype="text/plain" shelve="yes" publish="yes" size="7888" preserve="no" id="folder1PuSu/story1u.txt">
@@ -396,7 +397,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                   access: { access: 'world', download: 'world' },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true },
                                                   hasMimeType: 'text/plain' }] },
-                       label: 'Folder 1' }] }
+                       label: 'Folder 1' }], hasMemberOrders: [{ viewingDirection: 'left-to-right' }] }
       end
     end
   end

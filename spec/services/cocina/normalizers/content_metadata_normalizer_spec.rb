@@ -150,8 +150,14 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         allow(AdministrativeTags).to receive(:content_type).and_return(['Book (ltr)'])
       end
 
-      it 'does nothing' do
-        expect(normalized_ng_xml).to be_equivalent_to(original_xml)
+      it 'does not add resources but adds bookData' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <contentMetadata objectId="druid:bb035tg0974" type="book">
+              <bookData readingOrder="ltr"/>
+            </contentMetadata>
+          XML
+        )
       end
     end
 
@@ -234,6 +240,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
                 <imageData/>
               </file>
             </resource>
+          </contentMetadata>
         XML
       end
 
@@ -263,6 +270,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
                   <checksum type="sha1">f73a49b173c741b540170a4f3aa64b87988d4db7</checksum>
                 </file>
               </resource>
+            </contentMetadata>
           XML
         )
       end

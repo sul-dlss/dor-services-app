@@ -77,7 +77,7 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
           },
           label: ''
         }
-      ]
+      ], hasMemberOrders: [{ viewingDirection: 'left-to-right' }]
     }
   end
 
