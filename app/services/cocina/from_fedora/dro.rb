@@ -71,7 +71,6 @@ module Cocina
           props[:description] = description unless description.nil?
           props[:geographic] = { iso19139: fedora_item.geoMetadata.content } if type == Cocina::Models::Vocab.geo
           identification = FromFedora::Identification.props(fedora_item)
-          identification[:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: fedora_item.catkey }] if fedora_item.catkey
           props[:identification] = identification unless identification.empty?
         end
       end
