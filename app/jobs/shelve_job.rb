@@ -10,7 +10,7 @@ class ShelveJob < ApplicationJob
     background_job_result.processing!
 
     begin
-      item = Dor.find(druid)
+      cocina_object = CocinaObjectStore.find(druid)
 
       # Disabling validation until pre-assembly and WAS handle this correctly.
       # validator = validator_for?(item)
@@ -24,7 +24,7 @@ class ShelveJob < ApplicationJob
       #                                                         detail: "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" }] })
       # end
 
-      ShelvingService.shelve(item)
+      ShelvingService.shelve(cocina_object)
 
       # Shelving can take a long time and can cause the database connections to get stale.
       # So reset to avoid: ActiveRecord::StatementInvalid: PG::ConnectionBad: PQconsumeInput() could not receive data from server: Connection timed out : BEGIN
