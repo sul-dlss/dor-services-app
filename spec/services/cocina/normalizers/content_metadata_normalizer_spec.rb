@@ -150,8 +150,14 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         allow(AdministrativeTags).to receive(:content_type).and_return(['Book (ltr)'])
       end
 
-      it 'does nothing' do
-        expect(normalized_ng_xml).to be_equivalent_to(original_xml)
+      it 'does not add resources but adds bookData' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <contentMetadata objectId="druid:bb035tg0974" type="book">
+              <bookData readingOrder="ltr"/>
+            </contentMetadata>
+          XML
+        )
       end
     end
 
@@ -173,6 +179,31 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
           <<~XML
             <contentMetadata objectId="druid:bb035tg0974" type="book">
               <bookData readingOrder="ltr"/>
+              <resource type="page" />
+            </contentMetadata>
+          XML
+        )
+      end
+    end
+
+    context 'when reading missing and book right-to-left' do
+      let(:original_xml) do
+        <<~XML
+          <contentMetadata objectId="druid:bb035tg0974" type="book">
+            <resource sequence="1" type="page" />
+          </contentMetadata>
+        XML
+      end
+
+      before do
+        allow(AdministrativeTags).to receive(:content_type).and_return(['Book (rtl)'])
+      end
+
+      it 'adds a "rtl" reading order' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <contentMetadata objectId="druid:bb035tg0974" type="book">
+              <bookData readingOrder="rtl"/>
               <resource type="page" />
             </contentMetadata>
           XML
