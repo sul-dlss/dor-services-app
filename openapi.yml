@@ -1189,6 +1189,9 @@ paths:
             Last-Modified:
               schema:
                 type: string
+            X-Created-At:
+              schema:
+                type: string
         '422':
           description: Unprocessable Entity
           content:
