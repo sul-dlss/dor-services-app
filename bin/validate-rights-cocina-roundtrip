@@ -87,7 +87,7 @@ def validate_druid(druid, loader)
     cocina_access_props = Cocina::FromFedora::DROAccess.props(fedora_obj.rightsMetadata, fedora_obj.embargoMetadata)
     cocina_access = Cocina::Models::DROAccess.new(cocina_access_props)
 
-    cocina_structural_props = Cocina::FromFedora::DroStructural.props(fedora_obj, type: Cocina::FromFedora::DRO.dro_type(fedora_obj))
+    cocina_structural_props = Cocina::FromFedora::DroStructural.props(fedora_obj, type: Cocina::FromFedora::DRO.dro_type(fedora_obj), notifier: DataErrorNotifier.new)
     cocina_structural = Cocina::Models::DROStructural.new(cocina_structural_props)
   rescue StandardError => e
     write_error(druid, original_ng_xml, cocina_access_props, e)

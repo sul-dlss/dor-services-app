@@ -8,8 +8,9 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
 
   let(:fedora_item) { Dor::Item.new }
   let(:druid) { 'druid:hv992ry2431' }
+  let(:notifier) { Cocina::FromFedora::DataErrorNotifier.new(druid: druid) }
   let(:object_type) { Cocina::Models::Vocab.book }
-  let(:mapped_structural_props) { Cocina::FromFedora::DroStructural.props(fedora_item, type: object_type) }
+  let(:mapped_structural_props) { Cocina::FromFedora::DroStructural.props(fedora_item, type: object_type, notifier: notifier) }
   let(:roundtrip_content_metadata_xml) { defined?(roundtrip_content_xml) ? roundtrip_content_xml : content_xml }
   let(:normalized_roundtrip_content_metadata_xml) { Cocina::Normalizers::ContentMetadataNormalizer.normalize_roundtrip(content_ng_xml: Nokogiri::XML(roundtrip_content_metadata_xml)).to_xml }
   let(:normalized_orig_content_xml) do
@@ -70,7 +71,7 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
 
   context 'when mapping from roundtrip Fedora to (roundtrip) Cocina' do
     let(:roundtrip_fedora_item) { Dor::Item.new }
-    let(:actual_roundtrip_structural_props) { Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: object_type) }
+    let(:actual_roundtrip_structural_props) { Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: object_type, notifier: notifier) }
 
     before do
       roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(rights_xml)
@@ -86,7 +87,7 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
 
   context 'when mapping from normalized orig Fedora content_xml to (roundtrip) Cocina' do
     let(:roundtrip_fedora_item) { Dor::Item.new }
-    let(:actual_roundtrip_structural_props) { Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: object_type) }
+    let(:actual_roundtrip_structural_props) { Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: object_type, notifier: notifier) }
 
     before do
       roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(rights_xml)

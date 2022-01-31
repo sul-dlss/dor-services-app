@@ -61,7 +61,7 @@ module Cocina
           version: fedora_item.current_version.to_i,
           administrative: FromFedora::Administrative.props(fedora_item),
           access: DROAccess.props(fedora_item.rightsMetadata, fedora_item.embargoMetadata),
-          structural: DroStructural.props(fedora_item, type: type)
+          structural: DroStructural.props(fedora_item, type: type, notifier: notifier)
         }.tap do |props|
           title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: fedora_item.label)
           description = FromFedora::Descriptive.props(title_builder: title_builder,
