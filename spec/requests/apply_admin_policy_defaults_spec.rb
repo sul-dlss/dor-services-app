@@ -32,8 +32,41 @@ RSpec.describe 'Apply APO access defaults to a member item' do
       type: Cocina::Models::Vocab.object,
       label: 'Dummy Object',
       access: {},
-      administrative: { hasAdminPolicy: apo_druid }
+      administrative: { hasAdminPolicy: apo_druid },
+      structural: {
+        contains: [before_file_set]
+      }
     )
+  end
+  let(:before_file_set) do
+    {
+      externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
+      version: 1,
+      type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+      label: 'Page 1',
+      structural: {
+        contains: [
+          {
+            externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
+            version: 1,
+            type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+            filename: '00001.jp2',
+            label: '00001.jp2',
+            hasMimeType: 'image/jp2',
+            administrative: {
+              publish: true,
+              sdrPreserve: true,
+              shelve: true
+            },
+            access: {
+              access: 'stanford',
+              download: 'stanford'
+            },
+            hasMessageDigests: []
+          }
+        ]
+      }
+    }
   end
   let(:default_access) do
     {
@@ -49,13 +82,41 @@ RSpec.describe 'Apply APO access defaults to a member item' do
       let(:workflow_state) { workflow_state }
 
       context 'when APO picks up default default object rights' do
+        let(:file_set_with_default_access) do
+          {
+            externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
+            version: 1,
+            type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+            label: 'Page 1',
+            structural: {
+              contains: [
+                {
+                  externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
+                  version: 1,
+                  type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                  filename: '00001.jp2',
+                  label: '00001.jp2',
+                  hasMimeType: 'image/jp2',
+                  administrative: {
+                    publish: true,
+                    sdrPreserve: true,
+                    shelve: true
+                  },
+                  access: default_access,
+                  hasMessageDigests: []
+                }
+              ]
+            }
+          }
+        end
+
         it 'copies APO defaultAccess to item access' do
           post "/v1/objects/#{object_druid}/apply_admin_policy_defaults",
                headers: { 'Authorization' => "Bearer #{jwt}" }
           expect(response).to be_successful
           expect(CocinaObjectStore).to have_received(:save)
             .once
-            .with(cocina_object_with_access(default_access))
+            .with(cocina_object_with(access: default_access, structural: { contains: [file_set_with_default_access] }))
         end
       end
 
@@ -69,13 +130,41 @@ RSpec.describe 'Apply APO access defaults to a member item' do
           }
         end
 
+        let(:file_set_with_custom_access) do
+          {
+            externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
+            version: 1,
+            type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+            label: 'Page 1',
+            structural: {
+              contains: [
+                {
+                  externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
+                  version: 1,
+                  type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                  filename: '00001.jp2',
+                  label: '00001.jp2',
+                  hasMimeType: 'image/jp2',
+                  administrative: {
+                    publish: true,
+                    sdrPreserve: true,
+                    shelve: true
+                  },
+                  access: default_access.slice(:access, :download),
+                  hasMessageDigests: []
+                }
+              ]
+            }
+          }
+        end
+
         it 'copies APO defaultAccess to item access' do
           post "/v1/objects/#{object_druid}/apply_admin_policy_defaults",
                headers: { 'Authorization' => "Bearer #{jwt}" }
           expect(response).to be_successful
           expect(CocinaObjectStore).to have_received(:save)
             .once
-            .with(cocina_object_with_access(default_access))
+            .with(cocina_object_with(access: default_access, structural: { contains: [file_set_with_custom_access] }))
         end
       end
     end

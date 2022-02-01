@@ -32,7 +32,28 @@ class AdminPolicyDefaultsController < ApplicationController
   end
 
   def updated_cocina_object
-    @cocina_object.new(access: @cocina_object.access.new(**default_access_from_apo))
+    @cocina_object.new(
+      access: @cocina_object.access.new(**default_access_from_apo),
+      structural: @cocina_object.structural.new(
+        contains: @cocina_object.structural.contains.map do |file_set|
+          file_set.new(
+            structural: file_set.structural.new(
+              contains: file_set.structural.contains.map do |file|
+                file.new(
+                  access: file.access.new(
+                    default_access_from_apo.to_h.slice(*file_access_props)
+                  )
+                )
+              end
+            )
+          )
+        end
+      )
+    )
+  end
+
+  def file_access_props
+    %i[access controlledDigitalLending download readLocation]
   end
 
   def default_access_from_apo
