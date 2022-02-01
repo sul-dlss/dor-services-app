@@ -9,10 +9,11 @@ module Dor
     # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
     BORN_DIGITAL_APOS = %w(druid:bx911tp9024 druid:jj305hm5259).freeze
 
-    def initialize(druid_obj)
+    def initialize(druid_obj, thumbnail_service:)
       @druid_obj = druid_obj
       @druid_id = Dor::PidUtils.remove_druid_prefix(druid_obj.id)
       @dra_object = druid_obj.rightsMetadata.dra_object
+      @thumbnail_service = thumbnail_service
     end
 
     def update
@@ -241,8 +242,7 @@ module Dor
     # the @id attribute of resource/file elements including extension
     # @return [String] thumbnail filename (nil if none found)
     def thumb
-      cocina_object = CocinaObjectStore.find(@druid_obj.pid)
-      @thumb ||= ERB::Util.url_encode(ThumbnailService.new(cocina_object).thumb).presence
+      @thumb ||= ERB::Util.url_encode(@thumbnail_service.thumb).presence
     end
   end
   # rubocop:enable Metrics/ClassLength

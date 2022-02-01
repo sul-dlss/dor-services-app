@@ -3,10 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Dor::UpdateMarcRecordService do
-  subject(:umrs) { described_class.new dor_item }
+  subject(:umrs) { described_class.new(dor_item, thumbnail_service: thumbnail_service) }
 
   let(:release_service) { instance_double(ReleaseTags::IdentityMetadata, released_for: release_data) }
   let(:release_data) { {} }
+  let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
 
   before do
     allow(ReleaseTags::IdentityMetadata).to receive(:for).and_return(release_service)
@@ -271,7 +272,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
       end
 
-      let(:umrs) { described_class.new(collection) }
+      let(:umrs) { described_class.new(collection, thumbnail_service: thumbnail_service) }
 
       before do
         collection.rightsMetadata.content = build_rights_metadata_1
