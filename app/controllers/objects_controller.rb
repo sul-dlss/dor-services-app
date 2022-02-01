@@ -2,8 +2,8 @@
 
 # rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
-  before_action :load_cocina_object, only: %i[show update_doi_metadata notify_goobi]
-  before_action :load_item, only: %i[show accession update_marc_record destroy]
+  before_action :load_cocina_object, only: %i[show update_doi_metadata update_marc_record notify_goobi]
+  before_action :load_item, only: %i[show accession destroy]
 
   # No longer be necessary when remove Fedora.
   rescue_from(Cocina::ObjectUpdater::NotImplemented) do |e|
@@ -143,7 +143,7 @@ class ObjectsController < ApplicationController
   end
 
   def update_marc_record
-    Dor::UpdateMarcRecordService.new(@item, thumbnail_service: ThumbnailService.new(@cocina_object)).update
+    Dor::UpdateMarcRecordService.new(@cocina_object, thumbnail_service: ThumbnailService.new(@cocina_object)).update
     head :created
   end
 

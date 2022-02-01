@@ -13,6 +13,7 @@ module Dor
       @druid_obj = druid_obj
       @druid_id = Dor::PidUtils.remove_druid_prefix(druid_obj.externalIdentifier)
       @dra_object = druid_obj.access
+      @thumbnail_service = thumbnail_service
     end
 
     def update
