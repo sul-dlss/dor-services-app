@@ -98,9 +98,22 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
     JSON
   end
 
+  let(:cocina_object) do
+    Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                            type: Cocina::Models::Vocab.object,
+                            label: 'A generic label',
+                            version: 1,
+                            description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                            identification: {},
+                            access: {},
+                            administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                            structural: build_cocina_structural_metadata_1)
+  end
+
   before do
     allow(Dor).to receive(:find).and_return(item)
     allow(LegacyMetadataService).to receive(:update_datastream_if_newer)
+    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
   end
 
   context 'when update is successful' do

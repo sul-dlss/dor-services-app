@@ -143,7 +143,7 @@ class ObjectsController < ApplicationController
   end
 
   def update_marc_record
-    Dor::UpdateMarcRecordService.new(@item).update
+    Dor::UpdateMarcRecordService.new(@item, thumbnail_service: ThumbnailService.new(@cocina_object)).update
     head :created
   end
 

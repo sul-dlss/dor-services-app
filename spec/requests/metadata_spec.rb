@@ -4,10 +4,21 @@ require 'rails_helper'
 
 RSpec.describe 'Display metadata' do
   let(:object) { Dor::Item.new(pid: 'druid:mk420bs7601') }
+  let(:cocina_object) do
+    Cocina::Models::DRO.new(externalIdentifier: 'druid:mk420bs7601',
+                            type: Cocina::Models::Vocab.object,
+                            label: 'A generic label',
+                            version: 1,
+                            description: build_cocina_description_metadata_1('druid:mk420bs7601'),
+                            identification: {},
+                            access: {},
+                            administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+  end
 
   before do
     object.descMetadata.title_info.main_title = 'Hello'
     allow(Dor).to receive(:find).and_return(object)
+    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
   end
 
   describe 'dublin core' do
