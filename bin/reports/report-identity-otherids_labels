@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def check(ng_xml)
+  ng_xml.root.xpath('//otherId[@name="label"]').map(&:content).join(', ').presence
+end
+
+Report.new(name: 'identity-otherids_labels', dsid: 'identityMetadata', report_func: method(:check)).run

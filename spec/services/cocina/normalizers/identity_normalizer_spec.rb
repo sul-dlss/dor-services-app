@@ -520,4 +520,27 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
       )
     end
   end
+
+  context 'when there are otherId labels' do
+    let(:original_xml) do
+      <<~XML
+        <identityMetadata>
+          <otherId name="catkey">12345</otherId>
+          <otherId name="label">90125</otherId>
+          <otherId name="label">24601</otherId>
+        </identityMetadata>
+      XML
+    end
+
+    it 'removes them' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <identityMetadata>
+            <objectCreator>DOR</objectCreator>
+            <otherId name="catkey">12345</otherId>
+          </identityMetadata>
+        XML
+      )
+    end
+  end
 end

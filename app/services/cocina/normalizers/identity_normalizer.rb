@@ -34,6 +34,7 @@ module Cocina
         normalize_source_id_whitespace
         normalize_release_tags
         normalize_object_creator
+        normalize_out_labels
 
         regenerate_ng_xml(ng_xml.to_xml)
       end
@@ -122,6 +123,10 @@ module Cocina
           id.remove if seen.include? id.text
           seen.add id.text
         end
+      end
+
+      def normalize_out_labels
+        ng_xml.root.xpath('//otherId[@name="label"]').each(&:remove)
       end
 
       def normalize_release_tags
