@@ -179,11 +179,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
       XML
     end
 
-    before do
-      allow(notifier).to receive(:warn)
-    end
-
-    it 'builds the cocina data structure and warns' do
+    it 'builds the cocina data structure' do
       expect(build).to eq [
         {
           source:
@@ -196,7 +192,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
           value: 'Stanford University. Libraries.'
         }
       ]
-      expect(notifier).to have_received(:warn).with('Subject contains a <name> element without a type attribute')
     end
   end
 
