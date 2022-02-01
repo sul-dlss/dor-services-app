@@ -217,12 +217,17 @@ module Cocina
           xml.classification value, attrs
         end
 
+        # Write nodes within MODS subject
         def write_topic(subject, subject_value, is_parallel: false, type: nil, subject_values_have_same_authority: true)
           type ||= subject_value.type
           topic_attributes = topic_attributes_for(subject, subject_value, type, is_parallel: is_parallel, subject_values_have_same_authority: subject_values_have_same_authority)
           case type
           when 'person'
             xml.name topic_attributes.merge(type: 'personal') do
+              xml.namePart(subject_value.value) if subject_value.value
+            end
+          when 'name'
+            xml.name topic_attributes do
               xml.namePart(subject_value.value) if subject_value.value
             end
           when 'title'
