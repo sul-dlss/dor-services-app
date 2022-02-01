@@ -3,11 +3,16 @@
 require 'rails_helper'
 
 RSpec.describe Publish::PublicXmlService do
-  subject(:service) { described_class.new(item, released_for: release_tags) }
+  subject(:service) { described_class.new(item, released_for: release_tags, thumbnail_service: thumbnail_service) }
 
   let(:release_tags) { {} }
 
   let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
+  let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
+
+  before do
+    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+  end
 
   describe '#to_xml' do
     subject(:xml) { service.to_xml }
@@ -67,6 +72,16 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'when there are no release tags' do
       let(:release_tags) { {} }
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                                type: Cocina::Models::Vocab.object,
+                                label: 'A generic label',
+                                version: 1,
+                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                identification: {},
+                                access: {},
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+      end
 
       it 'does not include a releaseData element and any info in identityMetadata' do
         expect(ng_xml.at_xpath('/publicObject/releaseData')).to be_nil
@@ -75,6 +90,17 @@ RSpec.describe Publish::PublicXmlService do
     end
 
     context 'with an embargo' do
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                                type: Cocina::Models::Vocab.object,
+                                label: 'A generic label',
+                                version: 1,
+                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                identification: {},
+                                access: {},
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+      end
+
       let(:embargo) do
         <<~XML
           <embargoMetadata>
@@ -112,6 +138,17 @@ RSpec.describe Publish::PublicXmlService do
     end
 
     context 'produces xml with' do
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                                type: Cocina::Models::Vocab.object,
+                                label: 'A generic label',
+                                version: 1,
+                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                identification: {},
+                                access: {},
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: build_cocina_structural_metadata_1)
+      end
       let(:now) { Time.now.utc }
 
       before do
@@ -189,8 +226,21 @@ RSpec.describe Publish::PublicXmlService do
         expect(item.datastreams['RELS-EXT'].content).to be_equivalent_to rels
       end
 
-      it 'does not add a thumb node if no thumb is present' do
-        expect(ng_xml.at_xpath('/publicObject/thumb')).not_to be
+      context 'when no thumb is present' do
+        let(:cocina_object) do
+          Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                                  type: Cocina::Models::Vocab.object,
+                                  label: 'A generic label',
+                                  version: 1,
+                                  description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                  identification: {},
+                                  access: {},
+                                  administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+        end
+
+        it 'does not add a thumb node' do
+          expect(ng_xml.at_xpath('/publicObject/thumb')).not_to be
+        end
       end
 
       it 'include a thumb node if a thumb is present' do
@@ -205,7 +255,7 @@ RSpec.describe Publish::PublicXmlService do
             </resource>
           </contentMetadata>
         XML
-        expect(ng_xml.at_xpath('/publicObject/thumb').to_xml).to be_equivalent_to('<thumb>bc123df4567/bc123df4567_05_0002.jp2</thumb>')
+        expect(ng_xml.at_xpath('/publicObject/thumb').to_xml).to be_equivalent_to('<thumb>bc123df4567/wt183gy6220_00_0001.jp2</thumb>')
       end
 
       context 'when there is content inside it' do
@@ -226,6 +276,18 @@ RSpec.describe Publish::PublicXmlService do
     end
 
     context 'with a collection' do
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                                type: Cocina::Models::Vocab.object,
+                                label: 'A generic label',
+                                version: 1,
+                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                identification: {},
+                                access: {},
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: build_cocina_structural_metadata_1)
+      end
+
       it 'publishes the expected datastreams' do
         expect(ng_xml.at_xpath('/publicObject/identityMetadata')).to be
         expect(ng_xml.at_xpath('/publicObject/rightsMetadata')).to be
@@ -236,6 +298,18 @@ RSpec.describe Publish::PublicXmlService do
     end
 
     context 'with external references' do
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                                type: Cocina::Models::Vocab.object,
+                                label: 'A generic label',
+                                version: 1,
+                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                identification: {},
+                                access: {},
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: build_cocina_structural_metadata_1)
+      end
+
       it 'handles externalFile references' do
         correct_content_md = Nokogiri::XML(read_fixture('hj097bm8879_publicObject.xml')).at_xpath('/publicObject/contentMetadata').to_xml
         item.contentMetadata.content = read_fixture('hj097bm8879_contentMetadata.xml')
@@ -247,7 +321,7 @@ RSpec.describe Publish::PublicXmlService do
 
         # generate publicObject XML and verify that the content metadata portion is correct and the correct thumb is present
         expect(ng_xml.at_xpath('/publicObject/contentMetadata').to_xml).to be_equivalent_to(correct_content_md)
-        expect(ng_xml.at_xpath('/publicObject/thumb').to_xml).to be_equivalent_to('<thumb>jw923xn5254/2542B.jp2</thumb>')
+        expect(ng_xml.at_xpath('/publicObject/thumb').to_xml).to be_equivalent_to('<thumb>bc123df4567/wt183gy6220_00_0001.jp2</thumb>')
       end
 
       context 'when the referenced object does not have the referenced resource' do
@@ -384,6 +458,18 @@ RSpec.describe Publish::PublicXmlService do
     end
 
     context 'with a cocina-originating object' do
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                                type: Cocina::Models::Vocab.object,
+                                label: 'A generic label',
+                                version: 1,
+                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                identification: {},
+                                access: {},
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: build_cocina_structural_metadata_1)
+      end
+
       before do
         item.contentMetadata.content = <<-XML
           <?xml version="1.0"?>

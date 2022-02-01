@@ -7,9 +7,10 @@ module Publish
 
     # @param [Dor::Item] object
     # @param [Hash{String => Boolean}] released_for keys are Project name strings, values are boolean
-    def initialize(object, released_for:)
+    def initialize(object, released_for:, thumbnail_service:)
       @object = object
       @released_for = released_for
+      @thumbnail_service = thumbnail_service
     end
 
     # @raise [Dor::DataError]
@@ -31,7 +32,7 @@ module Publish
       # Note we cannot base this on if an individual object has release tags or not, because the collection may cause one to be generated for an item,
       # so we need to calculate it and then look at the final result.
 
-      thumb = ThumbnailService.new(object).thumb
+      thumb = @thumbnail_service.thumb
       pub.add_child(Nokogiri("<thumb>#{thumb}</thumb>").root) unless thumb.nil?
 
       new_pub = Nokogiri::XML(pub.to_xml, &:noblanks)

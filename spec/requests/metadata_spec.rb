@@ -4,10 +4,21 @@ require 'rails_helper'
 
 RSpec.describe 'Display metadata' do
   let(:object) { Dor::Item.new(pid: 'druid:mk420bs7601') }
+  let(:cocina_object) do
+    Cocina::Models::DRO.new(externalIdentifier: 'druid:mk420bs7601',
+                            type: Cocina::Models::Vocab.object,
+                            label: 'A generic label',
+                            version: 1,
+                            description: build_cocina_description_metadata_1('druid:mk420bs7601'),
+                            identification: {},
+                            access: {},
+                            administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+  end
 
   before do
     object.descMetadata.title_info.main_title = 'Hello'
     allow(Dor).to receive(:find).and_return(object)
+    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
   end
 
   describe 'dublin core' do
@@ -62,6 +73,16 @@ RSpec.describe 'Display metadata' do
         </rdf:RDF>
       XML
     end
+    let(:cocina_object) do
+      Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                              type: Cocina::Models::Vocab.object,
+                              label: 'A generic label',
+                              version: 1,
+                              description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                              identification: {},
+                              access: {},
+                              administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+    end
 
     before do
       allow(ReleaseTags).to receive(:for).and_return(
@@ -70,6 +91,7 @@ RSpec.describe 'Display metadata' do
       )
       allow(Time).to receive(:now).and_return(now)
       allow_any_instance_of(PublishedRelationshipsFilter).to receive(:xml).and_return(Nokogiri::XML(relationships_xml))
+      allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
     end
 
     it 'returns the full public xml representation' do

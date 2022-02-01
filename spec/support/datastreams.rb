@@ -132,6 +132,72 @@ def build_content_metadata_1
   </contentMetadata>'
 end
 
+def build_cocina_structural_metadata_1
+  {
+    contains: [{
+      type: Cocina::Models::Vocab::Resources.image,
+      externalIdentifier: 'wt183gy6220',
+      label: 'Image 1',
+      version: 1,
+      structural: {
+        contains: [{
+          type: Cocina::Models::Vocab.file,
+          externalIdentifier: 'wt183gy6220_1',
+          label: 'Image 1',
+          filename: 'wt183gy6220_00_0001.jp2',
+          hasMimeType: 'image/jp2',
+          size: 3_182_927,
+          version: 1,
+          access: {},
+          administrative: {
+            publish: false,
+            sdrPreserve: false,
+            shelve: false
+          },
+          hasMessageDigests: []
+        }]
+      }
+    }]
+  }
+end
+
+def build_cocina_structural_metadata_2
+  {
+    hasMemberOrders: [{
+      members: ['cg767mn6478_1/2542A.jp2']
+    }]
+  }
+end
+
+def build_cocina_structural_metadata_3
+  {
+    contains: [{
+      type: Cocina::Models::Vocab::Resources.image,
+      externalIdentifier: 'wt183gy6220',
+      label: 'File 1',
+      version: 1,
+      structural: {
+        contains: [{
+          type: Cocina::Models::Vocab.file,
+          externalIdentifier: 'wt183gy6220_1',
+          label: 'File 1',
+          filename: 'some_file.pdf',
+          hasMimeType: 'file/pdf',
+          size: 3_182_927,
+          version: 1,
+          access: {},
+          administrative: {
+            publish: false,
+            sdrPreserve: false,
+            shelve: false
+          },
+          hasMessageDigests: []
+        }]
+      }
+    }]
+  }
+end
+
 def build_content_metadata_2
   '<contentMetadata objectId="wt183gy6220">
   </contentMetadata>'
@@ -154,6 +220,13 @@ def build_desc_metadata_1
   <titleInfo>
   <title>Constituent label &amp; A Special character</title>
   </titleInfo></mods>'
+end
+
+def build_cocina_description_metadata_1(druid)
+  {
+    title: [{ value: 'Constituent label &amp; A Special character' }],
+    purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+  }
 end
 
 def build_identity_metadata_with_ckey
