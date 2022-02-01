@@ -23,6 +23,42 @@ CREATE TYPE public.background_job_result_status AS ENUM (
 SET default_tablespace = '';
 
 --
+-- Name: admin_policies; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.admin_policies (
+    id bigint NOT NULL,
+    external_identifier character varying NOT NULL,
+    cocina_version character varying NOT NULL,
+    label character varying NOT NULL,
+    version integer NOT NULL,
+    administrative jsonb NOT NULL,
+    description jsonb,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: admin_policies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.admin_policies_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: admin_policies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.admin_policies_id_seq OWNED BY public.admin_policies.id;
+
+
+--
 -- Name: administrative_tags; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -99,6 +135,86 @@ ALTER SEQUENCE public.background_job_results_id_seq OWNED BY public.background_j
 
 
 --
+-- Name: collections; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.collections (
+    id bigint NOT NULL,
+    external_identifier character varying NOT NULL,
+    cocina_version character varying NOT NULL,
+    collection_type character varying NOT NULL,
+    label character varying NOT NULL,
+    version integer NOT NULL,
+    access jsonb NOT NULL,
+    administrative jsonb,
+    description jsonb,
+    identification jsonb,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: collections_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.collections_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: collections_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.collections_id_seq OWNED BY public.collections.id;
+
+
+--
+-- Name: dros; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dros (
+    id bigint NOT NULL,
+    external_identifier character varying NOT NULL,
+    cocina_version character varying NOT NULL,
+    content_type character varying NOT NULL,
+    label character varying NOT NULL,
+    version integer NOT NULL,
+    access jsonb NOT NULL,
+    administrative jsonb NOT NULL,
+    description jsonb,
+    identification jsonb,
+    structural jsonb,
+    geographic jsonb,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: dros_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dros_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dros_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dros_id_seq OWNED BY public.dros.id;
+
+
+--
 -- Name: events; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -171,6 +287,13 @@ ALTER SEQUENCE public.tag_labels_id_seq OWNED BY public.tag_labels.id;
 
 
 --
+-- Name: admin_policies id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.admin_policies ALTER COLUMN id SET DEFAULT nextval('public.admin_policies_id_seq'::regclass);
+
+
+--
 -- Name: administrative_tags id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -185,6 +308,20 @@ ALTER TABLE ONLY public.background_job_results ALTER COLUMN id SET DEFAULT nextv
 
 
 --
+-- Name: collections id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collections ALTER COLUMN id SET DEFAULT nextval('public.collections_id_seq'::regclass);
+
+
+--
+-- Name: dros id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dros ALTER COLUMN id SET DEFAULT nextval('public.dros_id_seq'::regclass);
+
+
+--
 -- Name: events id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -196,6 +333,14 @@ ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.event
 --
 
 ALTER TABLE ONLY public.tag_labels ALTER COLUMN id SET DEFAULT nextval('public.tag_labels_id_seq'::regclass);
+
+
+--
+-- Name: admin_policies admin_policies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.admin_policies
+    ADD CONSTRAINT admin_policies_pkey PRIMARY KEY (id);
 
 
 --
@@ -223,6 +368,22 @@ ALTER TABLE ONLY public.background_job_results
 
 
 --
+-- Name: collections collections_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collections
+    ADD CONSTRAINT collections_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dros dros_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dros
+    ADD CONSTRAINT dros_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: events events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -247,6 +408,13 @@ ALTER TABLE ONLY public.tag_labels
 
 
 --
+-- Name: index_admin_policies_on_external_identifier; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_admin_policies_on_external_identifier ON public.admin_policies USING btree (external_identifier);
+
+
+--
 -- Name: index_administrative_tags_on_druid; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -265,6 +433,20 @@ CREATE UNIQUE INDEX index_administrative_tags_on_druid_and_tag_label_id ON publi
 --
 
 CREATE INDEX index_administrative_tags_on_tag_label_id ON public.administrative_tags USING btree (tag_label_id);
+
+
+--
+-- Name: index_collections_on_external_identifier; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_collections_on_external_identifier ON public.collections USING btree (external_identifier);
+
+
+--
+-- Name: index_dros_on_external_identifier; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_dros_on_external_identifier ON public.dros USING btree (external_identifier);
 
 
 --
@@ -317,4 +499,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200507202909'),
 ('20200507202950'),
 ('20200507224637'),
-('20200521153735');
+('20200521153735'),
+('20220131194025'),
+('20220131194359'),
+('20220131194912');
+
+
