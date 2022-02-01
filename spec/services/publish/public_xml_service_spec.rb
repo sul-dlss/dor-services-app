@@ -3,11 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Publish::PublicXmlService do
-  subject(:service) { described_class.new(item, released_for: release_tags) }
+  subject(:service) { described_class.new(item, released_for: release_tags, thumbnail_service: thumbnail_service) }
 
   let(:release_tags) { {} }
 
   let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
+  let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
 
   before do
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)

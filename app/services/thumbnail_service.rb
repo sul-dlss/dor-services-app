@@ -14,7 +14,7 @@ class ThumbnailService
 
   # @return [String] the computed thumb filename, with the druid prefix and a slash in front of it, e.g. oo000oo0001/filenamewith space.jp2
   def thumb
-    return unless object.respond_to?(:structural) && object.structural.present?
+    return unless object.respond_to?(:structural) && object.structural
 
     object.structural.contains.each do |file_set|
       file_set.structural.contains.each do |file|
