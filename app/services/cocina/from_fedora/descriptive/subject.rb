@@ -345,10 +345,7 @@ module Cocina
 
           return nil if node['xlink:href'] && node.children.empty?
 
-          unless name_type
-            notifier.warn('Subject contains a <name> element without a type attribute') unless node['xlink:href']
-            return 'name'
-          end
+          return 'name' unless name_type
 
           return 'topic' if name_type.casecmp('topic').zero?
 

@@ -55,8 +55,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
           ]
         }
       end
-
-      let(:warnings) { [Notification.new(msg: 'Missing or empty name type attribute')] }
     end
   end
 
@@ -2315,7 +2313,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
       let(:warnings) do
         [
-          Notification.new(msg: 'Missing or empty name type attribute'),
           Notification.new(msg: 'name/namePart missing value'),
           Notification.new(msg: 'Missing name/namePart element')
         ]
@@ -2685,7 +2682,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
         let(:warnings) do
           [
-            Notification.new(msg: 'Missing or empty name type attribute'),
             Notification.new(msg: 'name/namePart missing value'),
             Notification.new(msg: 'Missing name/namePart element')
           ]
@@ -2736,7 +2732,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
         let(:warnings) do
           [
-            Notification.new(msg: 'Missing or empty name type attribute'),
             Notification.new(msg: 'name/namePart missing value'),
             Notification.new(msg: 'Missing name/namePart element')
           ]
@@ -2870,7 +2865,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
         let(:warnings) do
           [
-            Notification.new(msg: 'Missing or empty name type attribute'),
             Notification.new(msg: 'Missing name/namePart element')
           ]
         end
