@@ -34,6 +34,7 @@ module Cocina
         remove_format
         remove_geodata
         remove_id
+        remove_stacks
         normalize_object_id(druid)
         normalize_reading_order(druid)
         normalize_label_attr
@@ -110,6 +111,12 @@ module Cocina
         return if ng_xml.root['id'].blank?
 
         ng_xml.root.delete('id')
+      end
+
+      def remove_stacks
+        return if ng_xml.root['stacks'].blank?
+
+        ng_xml.root.delete('stacks')
       end
 
       def normalize_reading_order(druid)

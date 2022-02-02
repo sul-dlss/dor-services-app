@@ -596,4 +596,34 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       )
     end
   end
+
+  context 'when normalizing contentMetadata node with stacks' do
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata type="file" stacks="/web-archiving-stacks/data/collections/mm553tf6423" id="druid:bb035tg0974">
+          <resource type="file">
+            <file dataType="ARC" publish="no" shelve="yes" preserve="yes" id="CDL-20140226165709-00000-tanager.ucop.edu-00460137.arc.gz" size="50674265" mimetype="application/octet-stream">
+              <checksum type="MD5">fec654ee17994c1ea3807fd7a6428321</checksum>
+              <checksum type="SHA1">835753729f41968bc9e45c6cd1c1156fc6673812</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'removes stacks from root element' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata type="file" objectId="druid:bb035tg0974">
+            <resource type="file">
+              <file dataType="ARC" publish="no" shelve="yes" preserve="yes" id="CDL-20140226165709-00000-tanager.ucop.edu-00460137.arc.gz" size="50674265" mimetype="application/octet-stream">
+                <checksum type="MD5">fec654ee17994c1ea3807fd7a6428321</checksum>
+                <checksum type="SHA1">835753729f41968bc9e45c6cd1c1156fc6673812</checksum>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      )
+    end
+  end
 end
