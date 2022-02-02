@@ -110,7 +110,7 @@ class FedoraLoader
     return Dor::Item if models.include?('info:fedora/afmodel:Etd')
     return Dor::Item if models.include?('info:fedora/afmodel:Eems')
     return Dor::Item if models.include?('info:fedora/afmodel:Eem')
-    return Dor::Item if models.include?('info:fedora/afmodel:Dor_Agreement')
+    return Dor::Agreement if models.include?('info:fedora/afmodel:Dor_Agreement')
 
     # Expected unmapped
     raise ExpectedUnmapped if models.include?('info:fedora/afmodel:Part')
