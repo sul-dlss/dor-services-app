@@ -6,7 +6,10 @@ class WorkflowClientFactory
     logger = if Settings.workflow.logfile == 'rails'
                Rails.logger
              else
-               Logger.new(Settings.workflow.logfile, Settings.workflow.shift_age)
+               Logger.new(
+                 Rails.root.join(Settings.workflow.logfile),
+                 Settings.workflow.shift_age
+               )
              end
     Dor::Workflow::Client.new(url: Settings.workflow_url, logger: logger, timeout: Settings.workflow.timeout)
   end
