@@ -79,7 +79,7 @@ RSpec.describe 'Apply APO access defaults to a member item' do
   let(:workflow_state) { 'Registered' }
 
   describe 'object types' do
-    # NOTE: We do not explicitly test DROs here as they are tested everywhere else in this spec.
+    # NOTE: We do not explicitly test DROs here as they are tested elsewhere in this spec.
     context 'with a collection' do
       let(:cocina_object) do
         Cocina::Models::Collection.new(
@@ -130,7 +130,114 @@ RSpec.describe 'Apply APO access defaults to a member item' do
     end
   end
 
-  context 'an object without structural' do
+  context 'with a collection (supports subset of access values)' do
+    let(:cocina_object) do
+      Cocina::Models::Collection.new(
+        externalIdentifier: object_druid,
+        version: 1,
+        type: Cocina::Models::Vocab.collection,
+        label: 'Dummy Collection',
+        access: {},
+        administrative: { hasAdminPolicy: apo_druid }
+      )
+    end
+
+    context 'when APO specifies citation-only defaultAccess' do
+      let(:default_access) do
+        {
+          access: 'citation-only',
+          download: 'none'
+        }
+      end
+      let(:expected_access) do
+        {
+          access: 'world'
+        }
+      end
+
+      it 'maps to world collection access' do
+        post "/v1/objects/#{object_druid}/apply_admin_policy_defaults",
+             headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to be_successful
+        expect(CocinaObjectStore).to have_received(:save)
+          .once
+          .with(cocina_object_with(access: expected_access))
+      end
+    end
+
+    context 'when APO specifies location-based defaultAccess' do
+      let(:default_access) do
+        {
+          access: 'location-based',
+          download: 'none',
+          readLocation: 'music'
+        }
+      end
+      let(:expected_access) do
+        {
+          access: 'world'
+        }
+      end
+
+      it 'maps to world collection access' do
+        post "/v1/objects/#{object_druid}/apply_admin_policy_defaults",
+             headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to be_successful
+        expect(CocinaObjectStore).to have_received(:save)
+          .once
+          .with(cocina_object_with(access: expected_access))
+      end
+    end
+
+    context 'when APO specifies Stanford (or CDL) defaultAccess' do
+      let(:default_access) do
+        {
+          access: 'stanford',
+          download: 'none',
+          controlledDigitalLending: true
+        }
+      end
+      let(:expected_access) do
+        {
+          access: 'world'
+        }
+      end
+
+      it 'maps to world collection access' do
+        post "/v1/objects/#{object_druid}/apply_admin_policy_defaults",
+             headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to be_successful
+        expect(CocinaObjectStore).to have_received(:save)
+          .once
+          .with(cocina_object_with(access: expected_access))
+      end
+    end
+
+    context 'when APO specifies dark defaultAccess' do
+      let(:default_access) do
+        {
+          access: 'dark',
+          download: 'none'
+        }
+      end
+      let(:expected_access) do
+        {
+          access: 'dark'
+        }
+      end
+
+      it 'maps to dark collection access' do
+        post "/v1/objects/#{object_druid}/apply_admin_policy_defaults",
+             headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to be_successful
+        expect(CocinaObjectStore).to have_received(:save)
+          .once
+          .with(cocina_object_with(access: expected_access))
+      end
+    end
+  end
+
+  context 'with a DRO lacking structural metadata' do
     let(:cocina_object) do
       Cocina::Models::DRO.new(
         externalIdentifier: object_druid,

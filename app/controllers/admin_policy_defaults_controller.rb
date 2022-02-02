@@ -1,8 +1,16 @@
 # frozen_string_literal: true
 
+# TODO: This controller is doing way too much now. Consider extracting most of what is below into a new service object.
 # Applies the AdminPolicy defaults to a repository object
 class AdminPolicyDefaultsController < ApplicationController
   ALLOWED_WORKFLOW_STATES = %w[Registered Opened].freeze
+  COLLECTION_ACCESS = {
+    'citation-only' => 'world',
+    'dark' => 'dark',
+    'location-based' => 'world',
+    'stanford' => 'world',
+    'world' => 'world'
+  }.freeze
 
   before_action :load_cocina_object, only: :apply
 
@@ -78,7 +86,11 @@ class AdminPolicyDefaultsController < ApplicationController
                                       .to_h
 
     return default_access.slice(*file_access_props) if file_level
-    return default_access.slice(*collection_access_props) if @cocina_object.collection?
+
+    if @cocina_object.collection?
+      return default_access.slice(*collection_access_props)
+                           .tap { |access| access[:access] = COLLECTION_ACCESS[access[:access]] }
+    end
 
     default_access
   end
