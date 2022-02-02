@@ -11,6 +11,13 @@ class AdminPolicyDefaultsController < ApplicationController
     'stanford' => 'world',
     'world' => 'world'
   }.freeze
+  FILE_ACCESS = {
+    'citation-only' => 'dark',
+    'dark' => 'dark',
+    'location-based' => 'location-based',
+    'stanford' => 'stanford',
+    'world' => 'world'
+  }.freeze
 
   before_action :load_cocina_object, only: :apply
 
@@ -60,9 +67,7 @@ class AdminPolicyDefaultsController < ApplicationController
           file_set.new(
             structural: file_set.structural.new(
               contains: file_set.structural.contains.map do |file|
-                file.new(
-                  access: file.access.new(default_access_from_apo(file_level: true))
-                )
+                file.new(file_properties(file: file))
               end
             )
           )
@@ -79,13 +84,27 @@ class AdminPolicyDefaultsController < ApplicationController
     %i[access copyright license useAndReproductionStatement]
   end
 
+  def file_properties(file:)
+    updated_file_access = default_access_from_apo(file_level: true)
+
+    { access: updated_file_access }.tap do |props|
+      next if updated_file_access[:access] != 'dark'
+
+      props[:administrative] = file.administrative.new(shelve: false)
+    end
+  end
+
   def default_access_from_apo(file_level: false)
     default_access = CocinaObjectStore.find(@cocina_object.administrative.hasAdminPolicy)
                                       .administrative
                                       .defaultAccess
                                       .to_h
+                                      .with_indifferent_access
 
-    return default_access.slice(*file_access_props) if file_level
+    if file_level
+      return default_access.slice(*file_access_props)
+                           .tap { |access| access[:access] = FILE_ACCESS[access[:access]] }
+    end
 
     if @cocina_object.collection?
       return default_access.slice(*collection_access_props)

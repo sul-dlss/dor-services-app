@@ -306,7 +306,7 @@ RSpec.describe 'Apply APO access defaults to a member item' do
         context 'when APO specifies custom default object rights' do
           let(:default_access) do
             {
-              access: 'world',
+              access: 'dark',
               download: 'none',
               useAndReproductionStatement: 'Use at will.',
               license: 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
@@ -331,7 +331,7 @@ RSpec.describe 'Apply APO access defaults to a member item' do
                     administrative: {
                       publish: true,
                       sdrPreserve: true,
-                      shelve: true
+                      shelve: false
                     },
                     access: default_access.slice(:access, :download),
                     hasMessageDigests: []
