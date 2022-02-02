@@ -42,13 +42,13 @@ module DorServices
       parse_response_by_content_type: false,
       query_hash_key: 'action_dispatch.request.query_parameters'
     )
-
     # Ensure we are passing back valid responses when running tests
     if Rails.env.test?
       config.middleware.use(
         Committee::Middleware::ResponseValidation,
         schema_path: 'openapi.yml',
         parse_response_by_content_type: true,
+        query_hash_key: 'rack.request.query_hash',
         raise: true
       )
     end

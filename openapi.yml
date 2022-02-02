@@ -597,8 +597,20 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: 'The object is not supported for inheritance of APO access defaults because its type is not supported'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Not found
+        '422':
+          description: 'The object is in a state in which it cannot be modified: it must be either registered or opened for versioning'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error
       parameters:
