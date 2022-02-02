@@ -69,10 +69,12 @@ RSpec.describe CocinaObjectStore do
   end
 
   describe 'to ActiveRecord' do
+    let(:store) { described_class.new }
+
     describe '#ar_to_cocina_find' do
       context 'when object is not found in datastore' do
         it 'raises' do
-          expect { described_class.send(:ar_to_cocina_find, 'druid:bc123df4567') }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
+          expect { store.send(:ar_to_cocina_find, 'druid:bc123df4567') }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
         end
       end
 
@@ -80,7 +82,7 @@ RSpec.describe CocinaObjectStore do
         let(:ar_cocina_object) { create(:dro) }
 
         it 'returns Cocina::Models::DRO' do
-          expect(described_class.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_a(Cocina::Models::DRO)
+          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_a(Cocina::Models::DRO)
         end
       end
 
@@ -88,7 +90,7 @@ RSpec.describe CocinaObjectStore do
         let(:ar_cocina_object) { create(:admin_policy) }
 
         it 'returns Cocina::Models::AdminPolicy' do
-          expect(described_class.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_a(Cocina::Models::AdminPolicy)
+          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_a(Cocina::Models::AdminPolicy)
         end
       end
 
@@ -96,12 +98,14 @@ RSpec.describe CocinaObjectStore do
         let(:ar_cocina_object) { create(:collection) }
 
         it 'returns Cocina::Models::Collection' do
-          expect(described_class.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_a(Cocina::Models::Collection)
+          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_a(Cocina::Models::Collection)
         end
       end
     end
 
     describe '#cocina_to_ar_save' do
+      let(:store) { described_class.new }
+
       context 'when object is a DRO' do
         let(:cocina_object) do
           Cocina::Models::DRO.new({
@@ -117,7 +121,7 @@ RSpec.describe CocinaObjectStore do
 
         it 'saves to datastore' do
           expect(Dro.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
-          expect(described_class.send(:cocina_to_ar_save, cocina_object)).to be(cocina_object)
+          expect(store.send(:cocina_to_ar_save, cocina_object)).to be(cocina_object)
           expect(Dro.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
         end
       end
@@ -136,7 +140,7 @@ RSpec.describe CocinaObjectStore do
 
         it 'saves to datastore' do
           expect(AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
-          expect(described_class.send(:cocina_to_ar_save, cocina_object)).to be(cocina_object)
+          expect(store.send(:cocina_to_ar_save, cocina_object)).to be(cocina_object)
           expect(AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
         end
       end
@@ -155,7 +159,7 @@ RSpec.describe CocinaObjectStore do
 
         it 'saves to datastore' do
           expect(Collection.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
-          expect(described_class.send(:cocina_to_ar_save, cocina_object)).to be(cocina_object)
+          expect(store.send(:cocina_to_ar_save, cocina_object)).to be(cocina_object)
           expect(Collection.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
         end
       end
