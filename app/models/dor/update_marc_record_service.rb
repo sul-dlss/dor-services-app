@@ -94,22 +94,22 @@ module Dor
       "#{ckey}\t#{@druid_id}\t"
     end
 
-    # It returns 856 constants
+    # returns 856 constants
     def get_856_cons
       '.856.'
     end
 
-    # It returns First Indicator for HTTP (4)
+    # returns First Indicator for HTTP (4)
     def get_1st_indicator
       '4'
     end
 
-    # It returns Second Indicator for Version of resource
+    # returns Second Indicator for Version of resource
     def get_2nd_indicator
       born_digital? ? '0' : '1'
     end
 
-    # It returns text in the z field based on permissions
+    # returns text in the z field based on permissions
     def get_z_field
       # @dra_object.stanford_only_rights returns a 2 element list where presence of first element indicates stanford
       # only read restriction, and second element indicates the rule on the restriction, if any (e.g. 'no-download')
@@ -120,17 +120,17 @@ module Dor
       end
     end
 
-    # It builds the PURL uri based on the druid id
+    # builds the PURL uri based on the druid id
     def get_u_field
       "|u#{Settings.release.purl_base_url}/#{@druid_id}"
     end
 
-    # It returns the SDR-PURL subfield
+    # returns the SDR-PURL subfield
     def get_x1_sdrpurl_marker
       '|xSDR-PURL'
     end
 
-    # It returns the collection information subfields if exists
+    # returns the collection information subfields if exists
     # @return [String] the collection information druid-value:catkey-value:title format
     def get_x2_collection_info
       collections = @druid_obj.collections
@@ -145,7 +145,7 @@ module Dor
       coll_info
     end
 
-    # It returns the constituent information subfields if exists
+    # returns the constituent information subfields if exists
     # @return [String] the constituent information druid-value:catkey-value:title format
     def get_x2_constituent_info
       dor_items_for_constituents.map do |cons_obj|
