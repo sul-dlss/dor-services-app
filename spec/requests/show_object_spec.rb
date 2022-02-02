@@ -257,17 +257,17 @@ RSpec.describe 'Get the object' do
                                     hasMemberOrders: [
                                       {
                                         members: [
-                                          'kq126jw7402_1/1592A.jp2',
-                                          'cv761kr7119_1/1592B.jp2',
-                                          'kn300wd1779_1/1592c.jp2',
-                                          'rz617vr4473_1/1592001.jp2',
-                                          'sd322dt2118_1/1592002.jp2',
-                                          'hp623ch4433_1/1592003.jp2',
-                                          'sq217qj5005_1/1592004.jp2',
-                                          'vd823mb5658_1/1592005.jp2',
-                                          'zp230ft8517_1/1592006.jp2',
-                                          'xx933wk5286_1/1592007.jp2',
-                                          'qf828rv2163_1/1592008.jp2'
+                                          'druid:kq126jw7402',
+                                          'druid:cv761kr7119',
+                                          'druid:kn300wd1779',
+                                          'druid:rz617vr4473',
+                                          'druid:sd322dt2118',
+                                          'druid:hp623ch4433',
+                                          'druid:sq217qj5005',
+                                          'druid:vd823mb5658',
+                                          'druid:zp230ft8517',
+                                          'druid:xx933wk5286',
+                                          'druid:qf828rv2163'
                                         ]
                                       }
                                     ]

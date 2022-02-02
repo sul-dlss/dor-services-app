@@ -4,13 +4,17 @@ module Cocina
   # Given a Cocina model, create an ActiveFedora model.
   class ObjectCreator
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def self.create(cocina_object, event_factory: EventFactory, persister: ActiveFedoraPersister, assign_doi: false)
-      _fedora_object, cocina_object = new.create(cocina_object, event_factory: event_factory, persister: persister, assign_doi: assign_doi)
+    def self.create(cocina_object, event_factory: EventFactory, persister: ActiveFedoraPersister, assign_doi: false, cocina_object_store: CocinaObjectStore)
+      _fedora_object, cocina_object = new(cocina_object_store: cocina_object_store).create(cocina_object, event_factory: event_factory, persister: persister, assign_doi: assign_doi)
       cocina_object
     end
 
-    def self.trial_create(cocina_object, notifier:)
-      new.create(cocina_object, event_factory: nil, persister: nil, trial: true, notifier: notifier)
+    def self.trial_create(cocina_object, notifier:, cocina_object_store:)
+      new(cocina_object_store: cocina_object_store).create(cocina_object, event_factory: nil, persister: nil, trial: true, notifier: notifier)
+    end
+
+    def initialize(cocina_object_store: CocinaObjectStore)
+      @cocina_object_store = cocina_object_store
     end
 
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
@@ -41,6 +45,8 @@ module Cocina
     # rubocop:enable Metrics/ParameterLists
 
     private
+
+    attr_reader :cocina_object_store
 
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy,
     #   Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
@@ -109,7 +115,8 @@ module Cocina
 
         Cocina::ToFedora::DROAccess.apply(fedora_item, cocina_item.access, cocina_item.structural) if cocina_item.access || cocina_item.structural
 
-        fedora_item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: pid, type: cocina_item.type, structural: cocina_item.structural)
+        fedora_item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: pid, type: cocina_item.type, structural: cocina_item.structural,
+                                                                                                  cocina_object_store: cocina_object_store)
         identity = Cocina::ToFedora::Identity.new(fedora_item)
         identity.initialize_identity
         identity.apply_label(cocina_item.label)

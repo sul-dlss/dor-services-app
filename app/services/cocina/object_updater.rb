@@ -11,16 +11,20 @@ module Cocina
     # @param [#create] event_factory creates events
     # @param [boolean] trial do not persist or event; run all mappings regardless of changes
     # @param [Cocina::FromFedora::DataErrorNotifier] notifier
+    # @param [CocinaObjectStore] cocina_object_store
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
-    def self.run(fedora_object, cocina_object, event_factory: EventFactory, trial: false, notifier: nil)
-      new(fedora_object, cocina_object, trial: trial).run(event_factory: event_factory, notifier: notifier)
+    # rubocop:disable Metrics/ParameterLists
+    def self.run(fedora_object, cocina_object, event_factory: EventFactory, trial: false, notifier: nil, cocina_object_store: CocinaObjectStore)
+      new(fedora_object, cocina_object, trial: trial, cocina_object_store: cocina_object_store).run(event_factory: event_factory, notifier: notifier)
     end
+    # rubocop:enable Metrics/ParameterLists
 
-    def initialize(fedora_object, cocina_object, trial: false)
+    def initialize(fedora_object, cocina_object, cocina_object_store:, trial: false)
       @params = params
       @cocina_object = cocina_object
       @fedora_object = fedora_object
       @trial = trial
+      @cocina_object_store = cocina_object_store
     end
 
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
@@ -58,7 +62,7 @@ module Cocina
 
     private
 
-    attr_reader :cocina_object, :fedora_object, :params, :notifier, :trial
+    attr_reader :cocina_object, :fedora_object, :params, :notifier, :trial, :cocina_object_store
 
     def has_changed?(key)
       return true if trial
@@ -148,7 +152,8 @@ module Cocina
       # Note that a change to a book content type will generate completely new structural metadata, and
       # thus lead to a full replacement of the contentMetadata with the new bookData node.
       if cocina_object.structural&.contains.present?
-        fedora_object.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: fedora_object.pid, type: cocina_object.type, structural: cocina_object.structural)
+        fedora_object.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: fedora_object.pid, type: cocina_object.type, structural: cocina_object.structural,
+                                                                                                    cocina_object_store: cocina_object_store)
       else
         # remove bookData reading order node if no reading direction is specified in the cocina model
         # ...this can happen if the content type is changed from a book type to a non-book type
