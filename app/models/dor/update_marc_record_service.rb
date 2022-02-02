@@ -135,19 +135,18 @@ module Dor
     # returns the collection information subfields if exists
     # @return [String] the collection information druid-value:catkey-value:title format
     def get_x2_collection_info
-      collections = @druid_obj.collections
-      coll_info = ''
+      collections = @druid_obj.structural.isMemberOf
+      collection_info = ''
 
       unless collections.empty?
-        collections.each do |coll|
-          catkey = coll.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
-          next if catkey.nil?
-
-          coll_info += "|xcollection:#{coll.externalIdentifier.sub('druid:', '')}:#{coll.catkey}:#{coll.label}"
+        collections.each do |collection_druid|
+          collection = CocinaObjectStore.find(collection_druid)
+          catkey = collection.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
+          collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:', '')}:#{catkey&.catalogRecordId}:#{collection.label}"
         end
       end
 
-      coll_info
+      collection_info
     end
 
     # returns the constituent information subfields if exists
@@ -161,25 +160,18 @@ module Dor
     end
 
     def get_x2_part_info
-      # mods_xml = @druid_obj.descMetadata.ng_xml
-      # title_info = ModsUtils.primary_title_info(mods_xml)
+      title_info = @druid_obj.description&.title&.first
+      return unless title_info.respond_to?(:structuredValue) && title_info.structuredValue
 
-      title_info = @druid_obj.description.title
-      return unless title_info
+      part_parts = title_info.structuredValue.select { |part| ['part name', 'part number'].include? part.type }
 
-      part_parts = title_info.select do |child|
-        next if child.structuredValue.empty?
+      part_label = part_parts.filter_map(&:value).join(parts_delimiter(part_parts))
 
-        %w(partName partNumber).include?(child.name)
-      end
-
-      part_label = part_parts.filter_map(&:text).join(parts_delimiter(part_parts))
-
-      part_sort = @druid_obj.description.note.find { |note| note.type == 'date/sequential designation' }
+      part_sort = title_info.structuredValue.select { |part| 'date/sequential designation'.include? part.type }
 
       str = ''
       str += "|xlabel:#{part_label}" unless part_label.empty?
-      str += "|xsort:#{part_sort.first.value}" if part_sort
+      str += "|xsort:#{part_sort.first.value}" unless part_sort.empty?
 
       str
     end
@@ -187,25 +179,16 @@ module Dor
     def get_x2_rights_info
       values = []
 
-      # primary = @dra_object.index_elements[:primary]
+      values << 'rights:dark' if @dra_object.access == 'dark'
 
-      # make the "primary" categorization less granular + terser
-      values << 'rights:cdl' if @dra_object.controlledDigitalLending.present?
-      values << 'rights:world' if @dra_object.access == 'world' && @dra_object.download == 'world'
+      if @dra_object.access == 'world'
+        values << 'rights:cdl' if @dra_object.download == 'stanford'
+        values << 'rights:world' if @dra_object.download == 'world'
+        values << 'rights:citation' if @dra_object.download == 'none'
+      end
+
       values << 'rights:group=stanford' if @dra_object.access == 'stanford' && @dra_object.download == 'stanford'
       values << "rights:location=#{@dra_object.readLocation}" if @dra_object.readLocation
-      # case @dra_object
-      # when controlledDigitalLenging.present? # 'controlled digital lending'
-      #   values << 'rights:cdl'
-      # when /world/
-      #   values << 'rights:world'
-      # when /access_restricted/
-      #   values << 'rights:group=stanford' if @dra_object.stanford_only_rights.first.present?
-      #   values.concat(@dra_object.obj_lvl.location.keys.map { |k| "rights:location=#{k.to_s.gsub(/\W/, '')}" })
-      #   values.concat(@dra_object.obj_lvl.agent.keys.map { |k| "rights:agent=#{k.to_s.gsub(/\W/, '')}" })
-      # else
-      #   values << "rights:#{primary}"
-      # end
 
       values.map { |value| "|x#{value}" }.join
     end
@@ -226,19 +209,16 @@ module Dor
     end
 
     def dor_items_for_constituents
-      return [] unless @druid_obj.relationships(:is_constituent_of)
+      return [] unless @druid_obj.respond_to?(:structural) && @druid_obj.structural
 
-      @druid_obj.relationships(:is_constituent_of).map do |cons|
-        cons_druid = cons.sub('info:fedora/', '')
-        Dor::Item.find(cons_druid)
-      end
+      @druid_obj.structural.isMemberOf
     end
 
     # adapted from mods_display
     def parts_delimiter(elements)
       # index will retun nil which is not comparable so we call 100
       # if the element isn't present (thus meaning it's at the end of the list)
-      if (elements.index { |c| c.name == 'partNumber' } || 100) < (elements.index { |c| c.name == 'partName' } || 100)
+      if (elements.index { |c| c.type == 'part number' } || 100) < (elements.index { |c| c.type == 'part name' } || 100)
         ', '
       else
         '. '

@@ -33,6 +33,16 @@ def build_cocina_identity_metadata_1
   }
 end
 
+def build_cocina_collection_identity_metadata_1
+  {
+    sourceId: 'sul:36105216275185',
+    catalogLinks: [{
+      catalog: 'symphony',
+      catalogRecordId: '8832162'
+    }]
+  }
+end
+
 def build_identity_metadata_2
   '<identityMetadata>
     <sourceId source="sul">36105216275185</sourceId>
@@ -175,7 +185,8 @@ def build_cocina_structural_metadata_1
           hasMessageDigests: []
         }]
       }
-    }]
+    }],
+    isMemberOf: ['druid:cc111cc1111']
   }
 end
 
@@ -201,6 +212,35 @@ def build_cocina_structural_metadata_3
           label: 'File 1',
           filename: 'some_file.pdf',
           hasMimeType: 'file/pdf',
+          size: 3_182_927,
+          version: 1,
+          access: {},
+          administrative: {
+            publish: false,
+            sdrPreserve: false,
+            shelve: false
+          },
+          hasMessageDigests: []
+        }]
+      }
+    }]
+  }
+end
+
+def build_cocina_structural_metadata_no_collection
+  {
+    contains: [{
+      type: Cocina::Models::Vocab::Resources.image,
+      externalIdentifier: 'wt183gy6220',
+      label: 'Image 1',
+      version: 1,
+      structural: {
+        contains: [{
+          type: Cocina::Models::Vocab.file,
+          externalIdentifier: 'wt183gy6220_1',
+          label: 'Image 1',
+          filename: 'wt183gy6220_00_0001.jp2',
+          hasMimeType: 'image/jp2',
           size: 3_182_927,
           version: 1,
           access: {},
@@ -247,6 +287,184 @@ def build_cocina_description_metadata_1(druid)
   }
 end
 
+def build_cocina_description_metadata_with_title_parts(druid)
+  {
+    title: [
+      {
+        structuredValue: [
+          {
+            value: 'Some label',
+            type: 'main title'
+          },
+          {
+            value: '55th legislature',
+            type: 'part number'
+          },
+          {
+            value: '1997-1998',
+            type: 'part number'
+          }
+        ]
+      }
+    ],
+    purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+  }
+end
+
+def build_cocina_description_metadata_with_title_part_name(druid)
+  {
+    title: [
+      {
+        structuredValue: [
+          {
+            value: 'Some label',
+            type: 'main title'
+          },
+          {
+            value: 'Issue #3',
+            type: 'part name'
+          },
+          {
+            value: '2011',
+            type: 'part number'
+          }
+        ]
+      }
+    ],
+    purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+  }
+end
+
+def build_cocina_description_metadata_with_title_part_name_sort(druid)
+  {
+    title: [
+      {
+        structuredValue: [
+          {
+            value: 'Some label',
+            type: 'main title'
+          },
+          {
+            value: 'Issue #3',
+            type: 'part name'
+          },
+          {
+            value: '2011',
+            type: 'part number'
+          },
+          {
+            value: '123',
+            type: 'date/sequential designation'
+          }
+        ]
+      }
+    ],
+    purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+  }
+end
+
+def build_cocina_description_metadata_with_title_part_name_sort_attr(druid)
+  {
+    title: [
+      {
+        structuredValue: [
+          {
+            value: 'Some label',
+            type: 'main title'
+          },
+          {
+            value: 'Issue #3',
+            type: 'part name'
+          },
+          {
+            value: '2011',
+            type: 'part number'
+          },
+          {
+            value: '2011',
+            type: 'date/sequential designation'
+          }
+        ]
+      }
+    ],
+    purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+  }
+end
+
+def build_cocina_description_metadata_with_primary_title(druid)
+  {
+    title: [
+      {
+        value: 'Some label',
+        status: 'primary',
+        structuredValue: [
+          {
+            value: 'Some label',
+            type: 'main title'
+          },
+          {
+            value: 'Issue #3',
+            type: 'part name'
+          },
+          {
+            value: '2011',
+            type: 'part number'
+          }
+        ]
+      },
+      {
+        structuredValue: [
+          {
+            value: 'Some label',
+            type: 'alternative'
+          },
+          {
+            value: 'Some lie',
+            type: 'part name'
+          }
+        ]
+      }
+    ],
+    purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+  }
+end
+
+def build_cocina_description_metadata_with_multiple_titles(druid)
+  {
+    title: [
+      {
+        structuredValue: [
+          {
+            value: 'Some label',
+            type: 'alternative'
+          },
+          {
+            value: 'Issue #3',
+            type: 'part name'
+          },
+          {
+            value: '2011',
+            type: 'part number'
+          }
+        ]
+      },
+      {
+        structuredValue: [
+          {
+            value: 'Some label',
+            type: 'alternative'
+          },
+          {
+            value: 'Some lie',
+            type: 'part name'
+          }
+        ]
+      }
+    ],
+    purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+  }
+end
+
 def build_identity_metadata_with_ckey
   '<identityMetadata>
   <sourceId source="sul">36105216275185</sourceId>
@@ -285,11 +503,41 @@ def build_rights_metadata_1
   '
 end
 
-def build_cocina_rights_metadata_1
+def build_cocina_rights_metadata_world
   {
     access: 'world',
     download: 'world',
     useAndReproductionStatement: 'User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.'
+  }
+end
+
+def build_cocina_rights_metadata_stanford_only
+  {
+    access: 'stanford',
+    download: 'stanford',
+    useAndReproductionStatement: 'User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.'
+  }
+end
+
+def build_cocina_rights_metadata_location
+  {
+    access: 'location-based',
+    download: 'location-based',
+    readLocation: 'spec'
+  }
+end
+
+def build_cocina_rights_metadata_cdl
+  {
+    access: 'world',
+    download: 'stanford'
+  }
+end
+
+def build_cocina_rights_metadata_citation_only
+  {
+    access: 'world',
+    download: 'none'
   }
 end
 
