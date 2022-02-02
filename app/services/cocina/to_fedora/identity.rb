@@ -69,12 +69,11 @@ module Cocina
 
         identity_md.ng_xml_will_change!
 
+        identity_md.remove_other_Id('catkey')
+        identity_md.remove_other_Id('previous_catkey')
         catalog_links.each do |clink|
-          # guard against adding an otherid catkey if it has already been set
-          # on the fedora object since it will create duplicate otherId elements
-          if clink.catalog == 'symphony' && clink.catalogRecordId != identity_md.catkey
+          if clink.catalog == 'symphony'
             identity_md.add_value(:otherId, clink.catalogRecordId, { name: 'catkey' })
-          # previous_catkeys are allowed to duplicate
           elsif clink.catalog == 'previous symphony'
             identity_md.add_value(:otherId, clink.catalogRecordId, { name: 'previous_catkey' })
           end
