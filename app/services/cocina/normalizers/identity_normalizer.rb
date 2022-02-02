@@ -123,6 +123,13 @@ module Cocina
           id.remove if seen.include? id.text
           seen.add id.text
         end
+
+        # remove duplicate previous catkeys
+        seen = Set[]
+        ng_xml.root.xpath('//otherId[@name="previous_catkey"]').each do |id|
+          id.remove if seen.include? id.text
+          seen.add id.text
+        end
       end
 
       def normalize_out_labels

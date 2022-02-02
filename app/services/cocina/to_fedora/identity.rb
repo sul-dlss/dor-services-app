@@ -68,14 +68,16 @@ module Cocina
         return if catalog_links.blank?
 
         identity_md.ng_xml_will_change!
-        catalog_links
-          # only symphony links are catkeys
-          .filter { |clink| clink.catalog == 'symphony' }
-          # filter out object.catkey to prevent duplicates
-          .filter { |clink| clink.catalogRecordId != identity_md.catkey }
-          .each do |clink|
+
+        identity_md.remove_other_Id('catkey')
+        identity_md.remove_other_Id('previous_catkey')
+        catalog_links.each do |clink|
+          if clink.catalog == 'symphony'
             identity_md.add_value(:otherId, clink.catalogRecordId, { name: 'catkey' })
+          elsif clink.catalog == 'previous symphony'
+            identity_md.add_value(:otherId, clink.catalogRecordId, { name: 'previous_catkey' })
           end
+        end
       end
 
       private

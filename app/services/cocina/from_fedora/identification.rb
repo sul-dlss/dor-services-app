@@ -55,11 +55,12 @@ module Cocina
       end
 
       def catalog_links
-        fedora_object
-          .identityMetadata.ng_xml.xpath('//otherId[@name="catkey"]')
-          .map { |id| { catalog: 'symphony', catalogRecordId: id.text } }
-          .uniq { |clink| clink[:catalogRecordId] }
-          .presence
+        results = []
+        fedora_object.identityMetadata.ng_xml.xpath('//otherId[@name="catkey" or @name="previous_catkey"]').each do |clink|
+          catalog = clink['name'] == 'catkey' ? 'symphony' : 'previous symphony'
+          results << { catalog: catalog, catalogRecordId: clink.text }
+        end
+        results.uniq { |clink| "#{clink[:catalog]}::#{clink[:catalogRecordId]}" }.presence
       end
     end
   end

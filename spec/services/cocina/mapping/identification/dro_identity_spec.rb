@@ -354,6 +354,111 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     end
   end
 
+  context 'with previous catkey' do
+    it_behaves_like 'DRO Identification Fedora Cocina mapping' do
+      let(:item_id) { 'druid:bb010dx6027' }
+      let(:label) { 'The rite of spring' }
+      let(:catkey) { '8501137' }
+      let(:prev_catkey) { '8675309' }
+      let(:admin_policy_id) { 'druid:bz845pv2292' } # from RELS-EXT
+      let(:collection_ids) { [] } # not in RELS-EXT
+      let(:source_id_source) { 'sul' }
+      let(:source_id) { 'naxos_nac_8.557501' }
+      let(:identity_metadata_xml) do
+        <<~XML
+          <identityMetadata>
+            <sourceId source="#{source_id_source}">#{source_id}</sourceId>
+            <otherId name="catkey">#{catkey}</otherId>
+            <otherId name="previous_catkey">#{prev_catkey}</otherId>
+            <objectLabel>#{label}</objectLabel>
+            <objectId>#{item_id}</objectId>
+            <objectCreator>DOR</objectCreator>
+            <objectType>item</objectType>
+          </identityMetadata>
+        XML
+      end
+      let(:cocina_props) do
+        {
+          externalIdentifier: item_id,
+          type: Cocina::Models::Vocab.object,
+          label: label,
+          version: 1,
+          identification: {
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: [
+              {
+                catalog: 'symphony',
+                catalogRecordId: catkey
+              },
+              {
+                catalog: 'previous symphony',
+                catalogRecordId: prev_catkey
+              }
+            ]
+          },
+          administrative: {
+            hasAdminPolicy: admin_policy_id
+          },
+          structural: {},
+          access: access_props,
+          description: description_props
+        }
+      end
+    end
+  end
+
+  context 'with duplicate current/previous catkeys' do
+    it_behaves_like 'DRO Identification Fedora Cocina mapping' do
+      let(:item_id) { 'druid:bb010dx6027' }
+      let(:label) { 'The rite of spring' }
+      let(:catkey) { '8501137' }
+      let(:admin_policy_id) { 'druid:bz845pv2292' } # from RELS-EXT
+      let(:collection_ids) { [] } # not in RELS-EXT
+      let(:source_id_source) { 'sul' }
+      let(:source_id) { 'naxos_nac_8.557501' }
+      let(:identity_metadata_xml) do
+        <<~XML
+          <identityMetadata>
+            <sourceId source="#{source_id_source}">#{source_id}</sourceId>
+            <otherId name="previous_catkey">#{catkey}</otherId>
+            <otherId name="catkey">#{catkey}</otherId>
+            <objectLabel>#{label}</objectLabel>
+            <objectId>#{item_id}</objectId>
+            <objectCreator>DOR</objectCreator>
+            <objectType>item</objectType>
+          </identityMetadata>
+        XML
+      end
+      let(:cocina_props) do
+        {
+          externalIdentifier: item_id,
+          type: Cocina::Models::Vocab.object,
+          label: label,
+          version: 1,
+          identification: {
+            sourceId: "#{source_id_source}:#{source_id}",
+            catalogLinks: [
+              {
+                catalog: 'symphony',
+                catalogRecordId: catkey
+              },
+              {
+                catalog: 'previous symphony',
+                catalogRecordId: catkey
+              }
+            ]
+          },
+          administrative: {
+            hasAdminPolicy: admin_policy_id
+          },
+          structural: {},
+          access: access_props,
+          description: description_props
+        }
+      end
+    end
+  end
+
   context 'with doi' do
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb010dx6027' }

@@ -438,6 +438,7 @@ RSpec.describe Cocina::ObjectUpdater do
         allow(identity_metadata).to receive(:ng_xml_will_change!)
         allow(identity_metadata).to receive(:add_value)
         allow(identity_metadata).to receive(:catkey)
+        allow(identity_metadata).to receive(:remove_other_Id)
       end
 
       context 'when identication has changed' do
@@ -721,6 +722,7 @@ RSpec.describe Cocina::ObjectUpdater do
       allow(identity_metadata).to receive(:ng_xml_will_change!)
       allow(identity_metadata).to receive(:add_value)
       allow(identity_metadata).to receive(:catkey)
+      allow(identity_metadata).to receive(:remove_other_Id)
     end
 
     it 'updates but does not save' do
