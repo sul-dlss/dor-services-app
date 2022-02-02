@@ -1140,13 +1140,13 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
   end
 
   describe 'Name subject without name type' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject>
             <name>
               <namePart>Coutts, Peter, -1889</namePart>
-            <name>
+            </name>
           </subject>
         XML
       end
@@ -1165,7 +1165,7 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
   end
 
   describe 'Multiscript name subject without name type' do
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject altRepGroup="1">
@@ -1203,7 +1203,7 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
   describe 'Name subject without name type and subdivisions' do
     # druid:zf880vq0424
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject authority="lcsh">
@@ -1215,21 +1215,6 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
             <geographic>Palo Alto</geographic>
             <genre>Pictorial works</genre>
           </subject>
-        XML
-      end
-
-      let(:roundtrip_mods) do
-        <<~XML
-          <subject authority="lcsh">
-            <name>
-              <namePart>Coutts, Peter, -1889</namePart>
-            </name>
-            <topic>Homes and haunts</topic>
-            <geographic>California</geographic>
-            <geographic>Palo Alto</geographic>
-            <genre>Pictorial works</genre>
-          </subject>
-          <genre>Pictorial works</genre>
         XML
       end
 
@@ -1262,12 +1247,6 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
               source: {
                 code: 'lcsh'
               }
-            }
-          ],
-          form: [
-            {
-              value: 'Pictorial works',
-              type: 'genre'
             }
           ]
         }
