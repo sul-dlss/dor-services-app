@@ -21,6 +21,18 @@ RSpec.describe Publish::MetadataTransferService do
       i.descMetadata.mods_title = 'Fixture title'
     end
   end
+  let(:cocina_object) do
+    Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                            type: Cocina::Models::Vocab.object,
+                            label: 'google download barcode 36105049267078',
+                            version: 1,
+                            description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                            identification: {},
+                            access: {},
+                            administrative: { hasAdminPolicy: 'druid:fg890hx1234' })
+  end
+  let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
+
   let(:service) { described_class.new(item) }
 
   let(:rels) do
@@ -40,6 +52,8 @@ RSpec.describe Publish::MetadataTransferService do
   describe '#publish' do
     before do
       allow(OpenURI).to receive(:open_uri).with('https://purl-test.stanford.edu/bc123df4567.xml').and_return('<xml/>')
+      allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+      allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
     end
 
     context 'with no world discover access in rightsMetadata' do
@@ -121,7 +135,7 @@ RSpec.describe Publish::MetadataTransferService do
         it 'identityMetadta, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
           item.rightsMetadata.content = "<rightsMetadata><access type='discover'><machine><world/></machine></access></rightsMetadata>"
           service.publish
-          expect(Publish::PublicXmlService).to have_received(:new).with(item, released_for: release_tags)
+          expect(Publish::PublicXmlService).to have_received(:new).with(item, released_for: release_tags, thumbnail_service: thumbnail_service)
           expect(Publish::PublicDescMetadataService).to have_received(:new).with(item)
         end
 
@@ -166,6 +180,8 @@ RSpec.describe Publish::MetadataTransferService do
     context 'when purl-fetcher is configured' do
       before do
         allow(Settings).to receive(:purl_services_url).and_return('http://example.com/purl')
+        allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+        allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
 
         stub_request(:post, 'example.com/purl/purls/bc123df4567')
       end
@@ -183,6 +199,8 @@ RSpec.describe Publish::MetadataTransferService do
 
       before do
         allow(Settings).to receive(:purl_services_url).and_return(nil)
+        allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+        allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
       end
 
       it 'writes empty notification file' do
@@ -198,6 +216,8 @@ RSpec.describe Publish::MetadataTransferService do
     before do
       allow(Settings.stacks).to receive(:local_document_cache_root).and_return(purl_root)
       allow(Settings.stacks).to receive(:local_workspace_root).and_return(workspace_root)
+      allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+      allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
     end
 
     after do

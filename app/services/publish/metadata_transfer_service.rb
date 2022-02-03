@@ -10,6 +10,8 @@ module Publish
 
     def initialize(item)
       @item = item
+      @cocina_object = CocinaObjectStore.find(@item.pid)
+      @thumbnail_service = ThumbnailService.new(@cocina_object)
     end
 
     # Appends contentMetadata file resources from the source objects to this object
@@ -31,7 +33,7 @@ module Publish
     # @raise [Dor::DataError]
     def transfer_metadata(release_tags)
       transfer_to_document_store(PublicCocinaService.create(item), 'cocina.json')
-      transfer_to_document_store(PublicXmlService.new(item, released_for: release_tags).to_xml, 'public')
+      transfer_to_document_store(PublicXmlService.new(item, released_for: release_tags, thumbnail_service: @thumbnail_service).to_xml, 'public')
       transfer_to_document_store(PublicDescMetadataService.new(item).to_xml, 'mods')
     end
 
