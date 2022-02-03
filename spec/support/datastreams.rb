@@ -84,6 +84,25 @@ def build_identity_metadata_3
   </identityMetadata>'
 end
 
+def build_cocina_identity_metadata_3
+  {
+    sourceId: 'sul:36105216275185',
+    catalogLinks: [{
+      catalog: 'symphony',
+      catalogRecordId: '8832162'
+    },
+    {
+      catalog: 'previous symphony',
+      catalogRecordId: '123'
+    },
+    {
+      catalog: 'previous symphony',
+      catalogRecordId: '456'
+    }]
+  }
+end
+
+
 def build_identity_metadata_4
   '<identityMetadata>
     <sourceId source="sul">36105216275185</sourceId>
@@ -131,6 +150,21 @@ def build_identity_metadata_5
     <tag>Remediated By : 4.1</tag>
     <release displayType="image" release="false" to="Searchworks" what="self" when="2015-07-27T21:43:27Z" who="lauraw15">false</release>
   </identityMetadata>'
+end
+
+def build_cocina_identity_metadata_5
+  {
+    sourceId: 'sul:36105216275185',
+    barcode: '36105216275185',
+    catalogLinks: [{
+      catalog: 'previous symphony',
+      catalogRecordId: '123'
+    },
+    {
+      catalog: 'previous symphony',
+      catalogRecordId: '456'
+    }]
+  }
 end
 
 def build_identity_metadata_6
@@ -282,7 +316,7 @@ end
 
 def build_cocina_description_metadata_1(druid)
   {
-    title: [{ value: 'Constituent label &amp; A Special character' }],
+    title: [{ value: 'Constituent label & A Special character' }],
     purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
   }
 end

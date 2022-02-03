@@ -21,9 +21,7 @@ module Dor
     end
 
     def ckeys?
-      @druid_obj.identification.catalogLinks.find {|link| link.catalog == 'symphony'}.present?
-      # (@druid_obj.catkey.present? || previous_ckeys.present?)
-      # TODO: Map previous_catkey
+      @druid_obj.identification.catalogLinks.find { |link| link.catalog.include?('symphony') }.present?
     end
 
     def push_symphony_records
@@ -135,15 +133,13 @@ module Dor
     # returns the collection information subfields if exists
     # @return [String] the collection information druid-value:catkey-value:title format
     def get_x2_collection_info
-      collections = @druid_obj.structural.isMemberOf
+      collections = @druid_obj.structural&.isMemberOf
       collection_info = ''
 
-      unless collections.empty?
-        collections.each do |collection_druid|
-          collection = CocinaObjectStore.find(collection_druid)
-          catkey = collection.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
-          collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:', '')}:#{catkey&.catalogRecordId}:#{collection.label}"
-        end
+      collections.each do |collection_druid|
+        collection = CocinaObjectStore.find(collection_druid)
+        catkey = collection.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
+        collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:', '')}:#{catkey&.catalogRecordId}:#{collection.label}"
       end
 
       collection_info
@@ -152,10 +148,12 @@ module Dor
     # returns the constituent information subfields if exists
     # @return [String] the constituent information druid-value:catkey-value:title format
     def get_x2_constituent_info
-      dor_items_for_constituents.map do |cons_obj|
-        cons_obj_id = cons_obj.id.sub('druid:', '')
-        cons_obj_title = cons_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo/mods:title', mods: 'http://www.loc.gov/mods/v3').first.content
-        "|xset:#{cons_obj_id}:#{cons_obj.catkey}:#{cons_obj_title}"
+      dor_items_for_constituents.map do |cons_obj_druid|
+        cons_obj = CocinaObjectStore.find(cons_obj_druid)
+        cons_obj_id = cons_obj_druid.sub('druid:', '')
+        cons_obj_title = cons_obj.description.title.first.value # cons_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo/mods:title', mods: 'http://www.loc.gov/mods/v3').first.content
+        catkey = cons_obj.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
+        "|xset:#{cons_obj_id}:#{catkey}:#{cons_obj_title}"
       end.join
     end
 
@@ -228,9 +226,7 @@ module Dor
     # the previous ckeys for the current object
     # @return [Array] previous catkeys for the object in an array, empty array if none exist
     def previous_ckeys
-      # @druid_obj.previous_catkeys.reject(&:empty?)
-      # TODO: Map previous_catkeys
-      []
+      @druid_obj.identification.catalogLinks.select { |link| link.catalog == 'previous symphony' }.map(&:catalogRecordId)
     end
 
     # the @id attribute of resource/file elements including extension

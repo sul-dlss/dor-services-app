@@ -119,6 +119,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                      type: Cocina::Models::Vocab.collection,
                                      label: 'Collection label',
                                      version: 1,
+                                     description: build_cocina_description_metadata_1('druid:cc111cc1111'),
                                      access: {})
     end
     let(:constituent) { Dor::Item.new(pid: 'druid:dd111dd1111') }
@@ -166,27 +167,19 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 version: 1,
                                 description: build_cocina_description_metadata_1(druid),
                                 identification: build_cocina_identity_metadata_1,
-                                access: build_cocina_rights_metadata_1,
+                                access: build_cocina_rights_metadata_world,
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: build_cocina_structural_metadata_1)
       end
 
       before do
-        # cocina_object.identification = build_cocina_identity_metadata_1 # dor_item.identityMetadatatent = build_identity_metadata_1
-        # dor_item.contentMetadata.content = build_content_metadata_1
-
-        # constituent.descMetadata.content = build_desc_metadata_1
-
-        # allow(cocina_object).to receive_messages(collections: [collection])
         allow(CocinaObjectStore).to receive(:find).and_return(collection)
-
-        allow(umrs).to receive(:dor_items_for_constituents).and_return([constituent])
       end
 
-      xit 'generates a single symphony record' do
+      it 'generates a single symphony record' do
         # rubocop:disable Layout/LineLength
         expect(generate_symphony_records).to eq [
-          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xhttp://cocina.sul.stanford.edu/models/object.jsonld|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character|xrights:world"
+          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xhttp://cocina.sul.stanford.edu/models/object.jsonld|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:cc111cc1111::Constituent label & A Special character|xrights:world"
         ]
       end
     end
@@ -198,26 +191,19 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: 'A generic label',
                                 version: 1,
                                 description: build_cocina_description_metadata_1('druid:bc123df4567'),
-                                identification: {},
-                                access: {},
+                                identification: build_cocina_identity_metadata_1,
+                                access: build_cocina_rights_metadata_stanford_only,
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
                                 structural: build_cocina_structural_metadata_1)
       end
 
       before do
-        dor_item.rightsMetadata.content = build_rights_metadata_2
-        doapp/services/cocina/to_fedora/descriptive/related_resource.rbr_item.identityMetadata.content = build_identity_metadata_1
-        dor_item.contentMetadata.content = build_content_metadata_1
-
-        constituent.descMetadata.content = build_desc_metadata_1
-
-        allow(dor_item).to receive_messages(collections: [collection])
-        allow(umrs).to receive(:dor_items_for_constituents).and_return([constituent])
+        allow(CocinaObjectStore).to receive(:find).and_return(collection)
       end
 
-      xit 'generates symphony record with a z subfield' do
+      it 'generates symphony record with a z subfield' do
         expect(generate_symphony_records).to match_array [
-          "8832162\taa111aa1111\t.856. 41|zAvailable to Stanford-affiliated users.|uhttps://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123df4567%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character|xrights:group=stanford"
+          "8832162\tbc123df4567\t.856. 41|zAvailable to Stanford-affiliated users.|uhttps://purl.stanford.edu/bc123df4567|xSDR-PURL|xhttp://cocina.sul.stanford.edu/models/object.jsonld|xbarcode:36105216275185|xfile:bc123df4567%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:cc111cc1111::Constituent label & A Special character|xrights:group=stanford"
         ]
       end
     end
@@ -229,29 +215,21 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: 'A generic label',
                                 version: 1,
                                 description: build_cocina_description_metadata_1('druid:bc123df4567'),
-                                identification: {},
-                                access: {},
+                                identification: build_cocina_identity_metadata_3,
+                                access: build_cocina_rights_metadata_world,
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
                                 structural: build_cocina_structural_metadata_1)
       end
 
       before do
-        dor_item.rightsMetadata.content = build_rights_metadata_1
-        dor_item.identityMetadata.content = build_identity_metadata_3
-        dor_item.contentMetadata.content = build_content_metadata_1
-
-        constituent.descMetadata.content = build_desc_metadata_1
-
-        allow(dor_item).to receive_messages(collections: [collection])
-
-        allow(umrs).to receive(:dor_items_for_constituents).and_return([constituent])
+        allow(CocinaObjectStore).to receive(:find).and_return(collection)
       end
 
-      xit 'generates blank symphony records and a regular symphony record' do
+      it 'generates blank symphony records and a regular symphony record' do
         expect(generate_symphony_records).to match_array [
-          "123\taa111aa1111\t",
-          "456\taa111aa1111\t",
-          "8832162\taa111aa1111\t.856. 41|uhttps://purl.stanford.edu/aa111aa1111|xSDR-PURL|xitem|xfile:bc123df4567%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:dd111dd1111::Constituent label & A Special character|xrights:world"
+          "123\tbc123df4567\t",
+          "456\tbc123df4567\t",
+          "8832162\tbc123df4567\t.856. 41|uhttps://purl.stanford.edu/bc123df4567|xSDR-PURL|xhttp://cocina.sul.stanford.edu/models/object.jsonld|xfile:bc123df4567%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:cc111cc1111::Constituent label & A Special character|xrights:world"
         ]
       end
     end
@@ -263,26 +241,13 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: 'A generic label',
                                 version: 1,
                                 description: build_cocina_description_metadata_1('druid:bc123df4567'),
-                                identification: {},
+                                identification: build_cocina_identity_metadata_5,
                                 access: {},
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: build_cocina_structural_metadata_1)
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
       end
 
-      before do
-        dor_item.rightsMetadata.content = build_rights_metadata_1
-        dor_item.identityMetadata.content = build_identity_metadata_5
-        dor_item.contentMetadata.content = build_content_metadata_1
-
-        constituent.descMetadata.content = build_desc_metadata_1
-
-        allow(dor_item).to receive_messages(collections: [collection])
-
-        allow(umrs).to receive(:dor_items_for_constituents).and_return([constituent])
-      end
-
-      xit 'generates blank symphony records for an item object' do
-        expect(generate_symphony_records).to match_array %W(123\taa111aa1111\t 456\taa111aa1111\t)
+      it 'generates blank symphony records for an item object' do
+        expect(generate_symphony_records).to match_array %W(123\tbc123df4567\t 456\tbc123df4567\t)
       end
     end
 
