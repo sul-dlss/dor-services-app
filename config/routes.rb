@@ -68,9 +68,10 @@ Rails.application.routes.draw do
           patch 'legacy', action: :update_legacy_metadata
           get 'dublin_core'
           get 'descriptive'
-          get 'mods'
           get 'public_xml'
         end
+
+        resource :mods, only: %i[update show]
       end
 
       resources :events, only: [:create, :index], defaults: { format: :json }
