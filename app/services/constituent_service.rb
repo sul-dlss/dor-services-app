@@ -28,16 +28,18 @@ class ConstituentService
     return errors if errors.any?
 
     # Make sure the parent is open before making modifications
-    VersionService.open(parent, event_factory: event_factory) unless VersionService.open?(parent)
+    parent_cocina_object = find_cocina_object(parent_druid)
+    VersionService.open(parent_cocina_object, event_factory: event_factory) unless VersionService.open?(parent_cocina_object)
 
-    reset_metadata!
+    parent_fedora_object = find_fedora_object(parent_druid)
+    reset_metadata!(parent_fedora_object)
 
     child_druids.each do |child_druid|
-      add_constituent(child_druid: child_druid)
+      add_constituent(child_druid: child_druid, parent: parent_fedora_object)
     end
+    parent_fedora_object.save!
 
-    # NOTE: parent object is saved as part of closing the version
-    VersionService.close(parent,
+    VersionService.close(find_cocina_object(parent_druid),
                          {
                            description: VERSION_CLOSE_DESCRIPTION,
                            significance: VERSION_CLOSE_SIGNIFICANCE
@@ -51,11 +53,12 @@ class ConstituentService
 
   attr_reader :parent_druid, :event_factory
 
-  def add_constituent(child_druid:)
-    child = ItemQueryService.find_combinable_item(child_druid)
+  def add_constituent(child_druid:, parent:)
+    child_cocina_object = find_cocina_object(child_druid)
     # Make sure the child is open before making modifications
-    VersionService.open(child, event_factory: event_factory) unless VersionService.open?(child)
+    VersionService.open(child_cocina_object, event_factory: event_factory) unless VersionService.open?(child_cocina_object)
 
+    child = find_fedora_object(child_druid)
     child.contentMetadata.ng_xml.search('//resource').each do |resource|
       parent.contentMetadata.add_virtual_resource(child.id, resource)
     end
@@ -63,8 +66,10 @@ class ConstituentService
     child.clear_relationship :is_constituent_of
     child.add_relationship :is_constituent_of, parent
 
-    # NOTE: child object is saved as part of closing the version
-    VersionService.close(child,
+    child.save!
+
+    child_cocina_object = find_cocina_object(child_druid)
+    VersionService.close(child_cocina_object,
                          {
                            description: VERSION_CLOSE_DESCRIPTION,
                            significance: VERSION_CLOSE_SIGNIFICANCE
@@ -72,11 +77,15 @@ class ConstituentService
                          event_factory: event_factory)
   end
 
-  def reset_metadata!
-    ResetContentMetadataService.new(item: parent).reset
+  def reset_metadata!(fedora_object)
+    ResetContentMetadataService.new(item: fedora_object).reset
   end
 
-  def parent
-    @parent ||= ItemQueryService.find_combinable_item(parent_druid)
+  def find_fedora_object(druid)
+    ItemQueryService.find_combinable_item(druid)
+  end
+
+  def find_cocina_object(druid)
+    Cocina::Mapper.build(find_fedora_object(druid))
   end
 end

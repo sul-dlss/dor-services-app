@@ -35,24 +35,30 @@ class EmbargoReleaseService
 
   def self.release_item(druid)
     ei = Dor.find(druid)
+    cocina_object = Cocina::Mapper.build(ei)
+
     unless WorkflowClientFactory.build.lifecycle(druid: druid, milestone_name: 'accessioned')
       Rails.logger.warn("Skipping #{druid} - not yet accessioned")
       return
     end
 
-    unless VersionService.can_open?(ei)
+    unless VersionService.can_open?(cocina_object)
       Rails.logger.warn("Skipping #{druid} - object is already open")
       return
     end
     Rails.logger.info("Releasing embargo for #{druid}")
 
-    VersionService.open(ei, event_factory: EventFactory)
+    VersionService.open(cocina_object, event_factory: EventFactory)
+
+    # Reloading ei, since it may have changed in VersionService.open
+    ei = Dor.find(druid)
     yield ei if block_given?
     ei.save!
-    VersionService.close(ei, { description: 'embargo released', significance: 'admin' }, event_factory: EventFactory)
+    cocina_object = Cocina::Mapper.build(ei)
+    VersionService.close(cocina_object, { description: 'embargo released', significance: 'admin' }, event_factory: EventFactory)
 
     # Broadcast this action to a topic
-    Notifications::EmbargoLifted.publish(model: Cocina::Mapper.build(ei)) if Settings.rabbitmq.enabled
+    Notifications::EmbargoLifted.publish(model: cocina_object) if Settings.rabbitmq.enabled
   rescue StandardError => e
     Rails.logger.error("!!! Unable to release embargo for: #{druid}\n#{e.inspect}\n#{e.backtrace.join("\n")}")
     Honeybadger.notify "Unable to release embargo for: #{druid}", backtrace: e.backtrace
