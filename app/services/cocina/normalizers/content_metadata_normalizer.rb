@@ -29,6 +29,7 @@ module Cocina
         remove_resource_id
         remove_resource_objectid
         remove_resource_data
+        remove_external_resource_id
         remove_sequence
         remove_location
         remove_format
@@ -48,6 +49,7 @@ module Cocina
 
       def normalize_roundtrip
         remove_resource_id
+        remove_external_resource_id
         remove_sequence
 
         regenerate_ng_xml(ng_xml.to_s)
@@ -159,6 +161,10 @@ module Cocina
       def normalize_empty_xml
         # some objects have <xml> instead of <contentMetadata>, e.g. normalize <xml type="file"/> --> <contentMetadata type="file"/>
         ng_xml.root.xpath('//xml[not(text())]').each { |node| node.name = 'contentMetadata' }
+      end
+
+      def remove_external_resource_id
+        ng_xml.root.xpath('//externalFile[@resourceId]').each { |external_file_node| external_file_node.delete('resourceId') }
       end
     end
   end

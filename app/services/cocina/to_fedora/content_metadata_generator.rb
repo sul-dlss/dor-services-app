@@ -7,43 +7,64 @@ module Cocina
       # @param [String] druid the identifier of the item
       # @param [Cocina::Models::DROStructural] structural structural metadata in Cocina
       # @param [String] type object type
-      def self.generate(druid:, structural:, type:)
-        new(druid: druid, structural: structural, type: type).generate
+      # @param [CocinaObjectStore] cocina_object_store
+      def self.generate(druid:, structural:, type:, cocina_object_store: CocinaObjectStore)
+        new(druid: druid, structural: structural, type: type, cocina_object_store: cocina_object_store).generate
       end
 
-      def initialize(druid:, structural:, type:)
+      def initialize(druid:, structural:, type:, cocina_object_store:)
         @druid = druid
         @object_type = type
-        # NOTE: structural is an optional element, so we need to guard for nil.
-        @resources = structural&.contains || []
-        @orders = structural&.hasMemberOrders
+        @structural = structural
+        @cocina_object_store = cocina_object_store
       end
 
       def generate
         @xml_doc = Nokogiri::XML('<contentMetadata />')
         @xml_doc.root['objectId'] = druid
         @xml_doc.root['type'] = Cocina::ToFedora::ContentType.map(object_type)
-        add_book_data(orders.first) if orders.present?
-        resources.each_with_index do |cocina_fileset, index|
-          # each resource type description gets its own incrementing counter
-          type = cocina_fileset.type.delete_prefix('http://cocina.sul.stanford.edu/models/resources/').delete_suffix('.jsonld')
-          resource_type_counters[type] += 1
-          @xml_doc.root.add_child create_resource_node(cocina_fileset, type, index + 1)
-        end
-
+        add_book_data
+        add_structural_data
+        add_members_data
         @xml_doc.to_xml
       end
 
       private
 
-      attr_reader :object_type, :resources, :druid, :orders
+      attr_reader :object_type, :druid, :structural, :cocina_object_store
 
-      def add_book_data(sequence)
-        direction = sequence.viewingDirection == 'right-to-left' ? 'rtl' : 'ltr'
+      def add_structural_data
+        Array(structural&.contains).each_with_index do |cocina_fileset, index|
+          # each resource type description gets its own incrementing counter
+          resource_type_counters[type_for(cocina_fileset)] += 1
+          @xml_doc.root.add_child create_resource_node(cocina_fileset, index + 1)
+        end
+      end
+
+      def add_book_data
+        viewing_direction = structural&.hasMemberOrders&.first&.viewingDirection
+
+        return unless viewing_direction
+
+        direction = viewing_direction == 'right-to-left' ? 'rtl' : 'ltr'
         book_data = Nokogiri::XML::Node.new('bookData', @xml_doc).tap do |node|
           node['readingOrder'] = direction
         end
         @xml_doc.root.add_child(book_data)
+      end
+
+      def add_members_data
+        members = structural&.hasMemberOrders&.first&.members
+        return if members.blank?
+
+        index = 0
+        members.each do |external_druid|
+          cocina_object = cocina_object_store.find(external_druid)
+          Array(cocina_object.structural.contains).each do |cocina_fileset|
+            index += 1
+            @xml_doc.root.add_child create_external_resource_node(cocina_fileset, index, external_druid)
+          end
+        end
       end
 
       def resource_type_counters
@@ -95,13 +116,12 @@ module Cocina
       end
 
       # @param [Hash] cocina_fileset the cocina fileset
-      # @param [String] type resource type to use
       # @param [Integer] sequence
-      def create_resource_node(cocina_fileset, type, sequence)
+      def create_resource_node(cocina_fileset, sequence)
         Nokogiri::XML::Node.new('resource', @xml_doc).tap do |resource|
           resource['id'] = IdGenerator.generate_or_existing_fileset_id(cocina_fileset.respond_to?(:externalIdentifier) ? cocina_fileset.externalIdentifier : nil)
           resource['sequence'] = sequence
-          resource['type'] = type
+          resource['type'] = type_for(cocina_fileset)
 
           fileset_label = fileset_label(cocina_fileset, resource['type'])
           if fileset_label.present?
@@ -110,6 +130,46 @@ module Cocina
           end
           create_file_nodes(resource, cocina_fileset)
         end
+      end
+
+      def create_external_resource_node(cocina_fileset, sequence, external_druid)
+        Nokogiri::XML::Node.new('resource', @xml_doc).tap do |resource|
+          resource['id'] = IdGenerator.generate_or_existing_fileset_id(cocina_fileset.respond_to?(:externalIdentifier) ? cocina_fileset.externalIdentifier : nil)
+          resource['sequence'] = sequence
+          resource['type'] = type_for(cocina_fileset)
+
+          create_external_file_nodes(resource, cocina_fileset, external_druid)
+        end
+      end
+
+      def create_external_file_nodes(resource, cocina_fileset, external_druid)
+        #   <externalFile fileId="PC0170_s1_B_0540.jp2" mimetype="image/jp2" objectId="druid:tm207xk5096" resourceId="tm207xk5096_1"/>
+        #     <relationship objectId="druid:tm207xk5096" type="alsoAvailableAs"/>
+        # Note: Only creating if published.
+        cocina_fileset.structural.contains.filter { |cocina_file| cocina_file.administrative.publish }.each do |cocina_file|
+          resource.add_child(create_external_file_node(cocina_file, cocina_fileset.externalIdentifier, external_druid))
+          resource.add_child(create_relationship_node(external_druid))
+        end
+      end
+
+      def create_relationship_node(external_druid)
+        Nokogiri::XML::Node.new('relationship', @xml_doc).tap do |relationship|
+          relationship['objectId'] = external_druid
+          relationship['type'] = 'alsoAvailableAs'
+        end
+      end
+
+      def create_external_file_node(cocina_file, resource_id, external_druid)
+        Nokogiri::XML::Node.new('externalFile', @xml_doc).tap do |file_node|
+          file_node['fileId'] = cocina_file.filename
+          file_node['mimetype'] = cocina_file.hasMimeType
+          file_node['objectId'] = external_druid
+          file_node['resourceId'] = resource_id
+        end
+      end
+
+      def type_for(cocina_fileset)
+        cocina_fileset.type.delete_prefix('http://cocina.sul.stanford.edu/models/resources/').delete_suffix('.jsonld')
       end
 
       def create_file_nodes(resource, cocina_fileset)

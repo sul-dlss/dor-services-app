@@ -5,6 +5,7 @@ require_relative '../config/environment'
 require_relative '../lib/fedora_cache'
 require_relative '../lib/fedora_loader'
 require_relative '../lib/data_error_notifier'
+require_relative '../lib/cache_cocina_object_store'
 require 'set'
 require 'optparse'
 require 'diffy'
@@ -203,7 +204,8 @@ def validate_druid(druid, loader, no_content: false, no_desc: false, create: fal
 
   if create
     begin
-      roundtrip_fedora_obj, roundtrip_cocina_obj = Cocina::ObjectCreator.trial_create(orig_cocina_obj, notifier: DataErrorNotifier.new)
+      roundtrip_fedora_obj, roundtrip_cocina_obj = Cocina::ObjectCreator.trial_create(orig_cocina_obj, notifier: DataErrorNotifier.new,
+                                                                                                       cocina_object_store: CacheCocinaObjectStore.new(loader))
     rescue StandardError => e
       write_error(druid, e)
       return [druid, :create_error]
@@ -212,7 +214,7 @@ def validate_druid(druid, loader, no_content: false, no_desc: false, create: fal
     orig_datastreams.delete('RELS-EXT')
   else
     begin
-      roundtrip_cocina_obj = Cocina::ObjectUpdater.run(fedora_obj, orig_cocina_obj, trial: true, notifier: DataErrorNotifier.new)
+      roundtrip_cocina_obj = Cocina::ObjectUpdater.run(fedora_obj, orig_cocina_obj, trial: true, notifier: DataErrorNotifier.new, cocina_object_store: CacheCocinaObjectStore.new(loader))
       roundtrip_fedora_obj = fedora_obj
     rescue StandardError => e
       write_error(druid, e)

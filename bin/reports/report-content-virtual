@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def virtual?(ng_xml)
+  ng_xml.root.xpath('//externalFile').present?
+end
+
+Report.new(name: 'content-virtual', dsid: 'contentMetadata', report_func: method(:virtual?)).run
