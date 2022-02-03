@@ -20,6 +20,7 @@ module Cocina
       def normalize
         return regenerate_ng_xml(ng_xml.to_xml) if normalize_released?
 
+        normalize_twentypct
         normalize_empty
 
         regenerate_ng_xml(ng_xml.to_xml)
@@ -32,6 +33,13 @@ module Cocina
       def normalize_empty
         ng_xml.root.xpath('*[not(text())][not(@*)]').each(&:remove)
         ng_xml.root.remove if ng_xml.root.xpath('*').empty?
+      end
+
+      def normalize_twentypct
+        return if ng_xml.root.xpath('//twentyPctVisibilityStatus[text() = "released"]').blank?
+
+        ng_xml.root.xpath('//twentyPctVisibilityStatus').each(&:remove)
+        ng_xml.root.xpath('//twentyPctVisibilityReleaseDate').each(&:remove)
       end
 
       def normalize_released?

@@ -75,4 +75,50 @@ RSpec.describe Cocina::Normalizers::EmbargoNormalizer do
       )
     end
   end
+
+  context 'when twentyPctVisibilityStatus is released' do
+    let(:original_xml) do
+      <<~XML
+        <embargoMetadata>
+          <status/>
+          <releaseDate/>
+          <releaseAccess/>
+          <twentyPctVisibilityStatus>released</twentyPctVisibilityStatus>
+          <twentyPctVisibilityReleaseDate>2019-06-03T07:00:00Z</twentyPctVisibilityReleaseDate>
+        </embargoMetadata>
+      XML
+    end
+
+    it 'removes twentyPctVisibilityStatus and twentyPctVisibilityReleasedDate' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+        XML
+      )
+    end
+  end
+
+  context 'when twentyPctVisibilityStatus is not "released"' do
+    let(:original_xml) do
+      <<~XML
+        <embargoMetadata>
+          <status/>
+          <releaseDate/>
+          <releaseAccess/>
+          <twentyPctVisibilityStatus>???</twentyPctVisibilityStatus>
+          <twentyPctVisibilityReleaseDate>2019-06-03T07:00:00Z</twentyPctVisibilityReleaseDate>
+        </embargoMetadata>
+      XML
+    end
+
+    it "doesn't removes twentyPctVisibilityStatus and twentyPctVisibilityReleasedDate" do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <embargoMetadata>
+            <twentyPctVisibilityStatus>???</twentyPctVisibilityStatus>
+            <twentyPctVisibilityReleaseDate>2019-06-03T07:00:00Z</twentyPctVisibilityReleaseDate>
+          </embargoMetadata>
+        XML
+      )
+    end
+  end
 end
