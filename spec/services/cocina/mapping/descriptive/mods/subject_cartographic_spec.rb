@@ -115,15 +115,15 @@ RSpec.describe 'MODS subject cartographic <--> cocina mappings' do
   end
 
   describe 'Multiple cartographic subjects with altRepGroup' do
-    xit 'not implemented: multiple cartographic subjects with altRepGroup' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <subject altRepGroup="1">
+          <subject altRepGroup="2">
             <cartographics>
               <scale>Scale 1:650,000.</scale>
             </cartographics>
           </subject>
-          <subject altRepGroup="1">
+          <subject altRepGroup="2">
             <cartographics>
               <scale>&#x6BD4;&#x4F8B;&#x5C3A; 1:650,000.</scale>
             </cartographics>

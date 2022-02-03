@@ -192,7 +192,7 @@ module Cocina
         end
 
         def normalize_subject_cartographics_for(root_node)
-          carto_subject_nodes = root_node.xpath('mods:subject[mods:cartographics]', mods: ModsNormalizer::MODS_NS)
+          carto_subject_nodes = root_node.xpath('mods:subject[not(@altRepGroup)][mods:cartographics]', mods: ModsNormalizer::MODS_NS)
           return if carto_subject_nodes.empty?
 
           # Create a default carto subject.

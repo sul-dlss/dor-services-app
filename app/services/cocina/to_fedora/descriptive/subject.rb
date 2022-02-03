@@ -287,12 +287,22 @@ module Cocina
         end
 
         def write_cartographic
-          write_cartographic_without_authority
-          write_cartographic_with_authority
+          parallel_forms, other_forms = forms.partition { |form| form.parallelValue.present? }
+
+          parallel_forms.each do |parallel_form|
+            alt_rep_group = id_generator.next_altrepgroup
+            parallel_form.parallelValue.each do |form|
+              write_parallel_cartographic_without_authority([form], alt_rep_group: alt_rep_group)
+              write_cartographic_with_authority([form], alt_rep_group: alt_rep_group)
+            end
+          end
+
+          write_cartographic_without_authority(other_forms)
+          write_cartographic_with_authority(other_forms)
         end
 
         # rubocop:disable Metrics/CyclomaticComplexity
-        def write_cartographic_without_authority
+        def write_cartographic_without_authority(forms)
           # With all subject/forms without authorities.
           scale_forms = forms.select { |form| form.type == 'map scale' }.flat_map { |form| form.groupedValue.presence || form }
           projection_forms = forms.select { |form| form.type == 'map projection' && form.source.nil? }
@@ -309,11 +319,26 @@ module Cocina
         end
         # rubocop:enable Metrics/CyclomaticComplexity
 
-        def write_cartographic_with_authority
+        def write_parallel_cartographic_without_authority(forms, alt_rep_group:)
+          # With all subject/forms without authorities.
+          scale_forms = forms.select { |form| form.type == 'map scale' }.flat_map { |form| form.groupedValue.presence || form }
+          projection_forms = forms.select { |form| form.type == 'map projection' && form.source.nil? }
+          return unless scale_forms.present? || projection_forms.present?
+
+          subject_attrs = { altRepGroup: alt_rep_group }
+          xml.subject subject_attrs do
+            xml.cartographics do
+              scale_forms.each { |scale_form| xml.scale scale_form.value }
+              projection_forms.each { |projection_form| xml.projection projection_form.value }
+            end
+          end
+        end
+
+        def write_cartographic_with_authority(forms, alt_rep_group: nil)
           # Each for form with authority.
           projection_forms_with_authority = forms.select { |form| form.type == 'map projection' && form.source.present? }
           projection_forms_with_authority.each do |projection_form|
-            xml.subject carto_subject_attributes_for(projection_form) do
+            xml.subject carto_subject_attributes_for(projection_form, alt_rep_group: alt_rep_group) do
               xml.cartographics do
                 xml.projection projection_form.value
               end
@@ -321,12 +346,13 @@ module Cocina
           end
         end
 
-        def carto_subject_attributes_for(form)
+        def carto_subject_attributes_for(form, alt_rep_group: nil)
           {
             displayLabel: form.displayLabel,
             authority: form.source&.code,
             authorityURI: form.source&.uri,
-            valueURI: form.uri
+            valueURI: form.uri,
+            altRepGroup: alt_rep_group
           }.compact
         end
 
