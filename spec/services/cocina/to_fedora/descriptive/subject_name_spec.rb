@@ -276,7 +276,7 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
     end
   end
 
-  context 'with multiple person parallelValues' do
+  context 'with person parallelValue and no structuredValue' do
     let(:subjects) do
       [
         Cocina::Models::DescriptiveValue.new(
@@ -285,31 +285,19 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
               {
                 parallelValue: [
                   {
-                    structuredValue: [
-                      {
-                        value: 'Andrada',
-                        type: 'surname'
-                      },
-                      {
-                        value: 'Leitao, Francisco d\'',
-                        type: 'forename'
-                      },
-                      {
-                        value: '17th C.',
-                        type: 'life dates'
-                      }
-                    ]
-                  },
-                  {
-                    value: 'Andrada, L. F.',
+                    value: 'Holbein, Han, 1497-1543',
                     type: 'surname'
                   },
                   {
-                    value: 'Andrada, Leitao, Francisco d\', 17th C.',
+                    value: 'Holbein, Han, 1497-1543',
                     type: 'display'
                   }
                 ],
                 type: 'person'
+              },
+              {
+                value: 'Homes and haunts',
+                type: 'topic'
               }
             ]
           }
@@ -324,15 +312,10 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
           xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
           <subject>
             <name type="personal">
-              <namePart type="family">Andrada</namePart>
-              <namePart type="given">Leitao, Francisco d'</namePart>
-              <namePart type="date">17th C.</namePart>
-              <displayForm>Andrada, Leitao, Francisco d', 17th C.</displayForm>
+              <namePart type="family">Holbein, Han, 1497-1543</namePart>
+              <displayForm>Holbein, Han, 1497-1543</displayForm>
             </name>
-            <name type="personal">
-              <namePart type="family">Andrada, L. F.</namePart>
-              <displayForm>Andrada, Leitao, Francisco d', 17th C.</displayForm>
-            </name>
+            <topic>Homes and haunts</topic>
           </subject>
         </mods>
       XML

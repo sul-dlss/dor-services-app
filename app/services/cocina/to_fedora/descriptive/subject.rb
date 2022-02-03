@@ -435,22 +435,12 @@ module Cocina
           parallel_subject_values = Array(value.parallelValue)
           display_values, parallel_subject_values = parallel_subject_values.partition { |par_value| par_value.type == 'display' }
 
-          if parallel_subject_values.size == 1
-            parallel_subject_value = parallel_subject_values.first
-            if parallel_subject_value.structuredValue.present?
-              write_structured_person(value, parallel_subject_value, type: value.type, display_values: display_values)
-            else
-              write_person(value, parallel_subject_value, display_values: display_values)
-            end
-          end
-          return unless parallel_subject_values.size > 1
-
-          parallel_subject_values.each do |parallel_value|
-            if parallel_value.structuredValue.present?
-              write_structured_person(value, parallel_value, type: value.type, display_values: display_values)
-            else
-              write_person(value, parallel_value, display_values: display_values)
-            end
+          # there will not be more than one parallelValue within a structuredValue
+          parallel_subject_value = parallel_subject_values.first
+          if parallel_subject_value.structuredValue.present?
+            write_structured_person(value, parallel_subject_value, type: value.type, display_values: display_values)
+          else
+            write_person(value, parallel_subject_value, display_values: display_values)
           end
         end
       end
