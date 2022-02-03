@@ -7,13 +7,13 @@ RSpec.describe ShelveJob, type: :job do
 
   let(:druid) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
-  let(:item) { instance_double(Dor::Item) }
+  let(:cocina_object) { instance_double(Cocina::Models::DRO) }
   let(:validator) { instance_double(Cocina::ValidateDarkService, valid?: valid, invalid_filenames: invalid_filenames) }
   let(:valid) { true }
   let(:invalid_filenames) { [] }
 
   before do
-    allow(Dor).to receive(:find).with(druid).and_return(item)
+    allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_object)
     allow(result).to receive(:processing!)
     allow(EventFactory).to receive(:create)
     allow(Cocina::Mapper).to receive(:build)
@@ -32,7 +32,7 @@ RSpec.describe ShelveJob, type: :job do
     end
 
     it 'invokes the ShelvingService' do
-      expect(ShelvingService).to have_received(:shelve).with(item).once
+      expect(ShelvingService).to have_received(:shelve).with(cocina_object).once
     end
 
     it 'marks the job as complete' do
@@ -56,7 +56,7 @@ RSpec.describe ShelveJob, type: :job do
     it 'marks the job as errored' do
       perform
       expect(result).to have_received(:processing!).once
-      expect(ShelvingService).to have_received(:shelve).with(item).once
+      expect(ShelvingService).to have_received(:shelve).with(cocina_object).once
       expect(LogFailureJob).to have_received(:perform_later)
         .with(druid: druid,
               background_job_result: result,

@@ -4,27 +4,26 @@
 class ShelvingService
   class ConfigurationError < RuntimeError; end
 
-  def self.shelve(work)
-    new(work).shelve
+  def self.shelve(cocina_object)
+    new(cocina_object).shelve
   end
 
-  def initialize(work)
+  def initialize(cocina_object)
     raise ConfigurationError, 'Missing configuration Dor::Config.stacks.local_workspace_root' if Dor::Config.stacks.local_workspace_root.nil?
-    raise Dor::Exception, 'Missing contentMetadata datastream' if work.contentMetadata.nil?
+    raise Dor::Exception, 'Missing structural' if cocina_object.structural.nil?
 
-    @work = work
-    @content_metadata = work.contentMetadata.content
+    @cocina_object = cocina_object
   end
 
   def shelve
     # determine the location of the object's files in the stacks area
-    stacks_druid = DruidTools::StacksDruid.new(work.id, stacks_location)
+    stacks_druid = DruidTools::StacksDruid.new(cocina_object.externalIdentifier, stacks_location)
     stacks_object_pathname = Pathname(stacks_druid.path)
     # determine the location of the object's content files in the workspace area
-    workspace_druid = DruidTools::Druid.new(work.id, Dor::Config.stacks.local_workspace_root)
+    workspace_druid = DruidTools::Druid.new(cocina_object.externalIdentifier, Dor::Config.stacks.local_workspace_root)
 
     workspace_content_pathname = Pathname(workspace_druid.content_dir(true))
-    ShelvableFilesStager.stage(work.id, content_metadata, shelve_diff, workspace_content_pathname)
+    ShelvableFilesStager.stage(cocina_object.externalIdentifier, content_metadata, shelve_diff, workspace_content_pathname)
 
     # workspace_content_pathname = workspace_content_dir(shelve_diff, workspace_druid)
     # delete, rename, or copy files to the stacks area
@@ -35,7 +34,7 @@ class ShelvingService
 
   private
 
-  attr_reader :work, :content_metadata
+  attr_reader :cocina_object
 
   # retrieve the differences between the current contentMetadata and the previously ingested version
   # (filtering to select only the files that should be shelved to stacks)
@@ -43,19 +42,36 @@ class ShelvingService
   # @raise [ConfigurationError] if missing local workspace root.
   # @raise [Dor::Exception] if something went wrong.
   def shelve_diff
-    @shelve_diff ||= Preservation::Client.objects.shelve_content_diff(druid: work.pid, content_metadata: content_metadata)
+    @shelve_diff ||= Preservation::Client.objects.shelve_content_diff(druid: cocina_object.externalIdentifier, content_metadata: content_metadata)
   rescue Preservation::Client::Error => e
     raise Dor::Exception, e
   end
 
-  # get the stack location based on the contentMetadata stacks attribute
-  # or using the default value from the config file if it doesn't exist
   def stacks_location
-    return Dor::Config.stacks.local_stacks_root if work.contentMetadata.stacks.blank?
+    # Currently the best know way to identify objects like this is to see if the wasCrawlPreassemblyWF workflow is present.
+    # If this condition is met, then shelf to /web-archiving-stacks/data/collections/<collection_id>, where collection_id is the unnamespaced druid of the (first) collection.
+    return was_stack_location if was?
 
-    location = work.contentMetadata.stacks[0]
-    return location if location.start_with? '/' # Absolute stacks path
+    Dor::Config.stacks.local_stacks_root
+  end
 
-    raise "stacks attribute for item: #{work.id} contentMetadata should start with /. The current value is #{location}"
+  def was?
+    workflow_client.workflows(cocina_object.externalIdentifier).include?('wasCrawlPreassemblyWF')
+  end
+
+  def was_stack_location
+    collection_druid = cocina_object.structural&.isMemberOf&.first
+
+    raise Dor::Exception, 'Web archive object missing collection' unless collection_druid
+
+    "/web-archiving-stacks/data/collections/#{collection_druid.delete_prefix('druid:')}"
+  end
+
+  def content_metadata
+    @content_metadata ||= Cocina::ToFedora::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier, structural: cocina_object.structural, type: cocina_object.type)
+  end
+
+  def workflow_client
+    @workflow_client ||= WorkflowClientFactory.build
   end
 end
