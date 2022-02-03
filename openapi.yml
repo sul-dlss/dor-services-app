@@ -897,7 +897,23 @@ paths:
         - objects
       summary: Retrieve the source MODS metadata for the object
       description: ''
-      operationId: 'metadata#mods'
+      operationId: 'mods#show'
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+    put:
+      tags:
+        - objects
+      summary: Update the source MODS metadata for the object
+      description: ''
+      operationId: 'mods#update'
       responses:
         '200':
           description: OK
