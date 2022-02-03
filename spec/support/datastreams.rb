@@ -22,6 +22,12 @@ def build_identity_metadata_1
 </identityMetadata>'
 end
 
+def build_cocina_identity_metadata_basic
+  {
+    sourceId: 'sul:36105216275185'
+  }
+end
+
 def build_cocina_identity_metadata_1
   {
     sourceId: 'sul:36105216275185',
