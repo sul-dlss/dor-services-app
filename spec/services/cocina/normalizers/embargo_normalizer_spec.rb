@@ -24,9 +24,58 @@ RSpec.describe Cocina::Normalizers::EmbargoNormalizer do
       XML
     end
 
-    it 'removes embargo' do
+    it 'removes embargo (removes all XML nodes)' do
       expect(normalized_ng_xml).to be_equivalent_to(
         <<~XML
+        XML
+      )
+    end
+  end
+
+  context 'when non-released embargo' do
+    # adapted from bw190bf2187
+    let(:original_xml) do
+      <<~XML
+         <embargoMetadata>
+          <status>embargoed</status>
+          <releaseDate>2022-05-06T00:00:00Z</releaseDate>
+          <twentyPctVisibilityStatus/>
+          <twentyPctVisibilityReleaseDate/>
+          <releaseAccess>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+          </releaseAccess>
+        </embargoMetadata>
+      XML
+    end
+
+    it 'retains the releaseAccess node' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <embargoMetadata>
+            <status>embargoed</status>
+            <releaseDate>2022-05-06T00:00:00Z</releaseDate>
+            <releaseAccess>
+              <access type="discover">
+                <machine>
+                  <world/>
+                </machine>
+              </access>
+              <access type="read">
+                <machine>
+                  <world/>
+                </machine>
+              </access>
+            </releaseAccess>
+          </embargoMetadata>
         XML
       )
     end
