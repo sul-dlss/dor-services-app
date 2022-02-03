@@ -305,7 +305,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
                   <checksum type="SHA-1">50d77a392ba30dcbbf4ada379e09ded02f9658f2</checksum>
                   <checksum type="MD5">dcea2fd8ed01b2ef978093cf45ea3ce9</checksum>
                 </file>
-                <file preserve="yes" mimetype="text/html" size="19144" dataType="hocr" shelve="yes" id="00000268.html" publish="no">
+                <file preserve="yes" mimetype="text/html" size="19144" shelve="yes" id="00000268.html" publish="no">
                   <checksum type="SHA-1">335c75c2e2a13f024f73b0dd7dc5fc35fc47e7ce</checksum>
                   <checksum type="MD5">42d8261046c449230a7c3809a246b353</checksum>
                 </file>
@@ -477,6 +477,37 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     end
   end
 
+  context 'when normalizing file nodes with dataType' do
+    # Adapted from bb157dt2402
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata type="file" stacks="/web-archiving-stacks/data/collections/mm553tf6423" id="druid:bb035tg0974">
+          <resource type="file">
+            <file dataType="ARC" publish="no" shelve="yes" preserve="yes" id="CDL-20140924032424-00000-grebe.ucop.edu-00525747.arc.gz" size="14679718" mimetype="application/octet-stream">
+              <checksum type="MD5">4cd0b913acd68cec050ab48b8f38c648</checksum>
+              <checksum type="SHA1">bd758a1b039385638bfd6770d8c838ee4628eb86</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'removes the dataType attribute' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata type="file" objectId="druid:bb035tg0974">
+            <resource type="file">
+              <file publish="no" shelve="yes" preserve="yes" id="CDL-20140924032424-00000-grebe.ucop.edu-00525747.arc.gz" size="14679718" mimetype="application/octet-stream">
+                <checksum type="MD5">4cd0b913acd68cec050ab48b8f38c648</checksum>
+                <checksum type="SHA1">bd758a1b039385638bfd6770d8c838ee4628eb86</checksum>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      )
+    end
+  end
+
   context 'when normalizing resource nodes with geoData' do
     # Adapted from cc377hs8114
     let(:original_xml) do
@@ -616,7 +647,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         <<~XML
           <contentMetadata type="file" objectId="druid:bb035tg0974">
             <resource type="file">
-              <file dataType="ARC" publish="no" shelve="yes" preserve="yes" id="CDL-20140226165709-00000-tanager.ucop.edu-00460137.arc.gz" size="50674265" mimetype="application/octet-stream">
+              <file publish="no" shelve="yes" preserve="yes" id="CDL-20140226165709-00000-tanager.ucop.edu-00460137.arc.gz" size="50674265" mimetype="application/octet-stream">
                 <checksum type="MD5">fec654ee17994c1ea3807fd7a6428321</checksum>
                 <checksum type="SHA1">835753729f41968bc9e45c6cd1c1156fc6673812</checksum>
               </file>

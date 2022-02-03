@@ -32,7 +32,7 @@ module Cocina
         remove_external_resource_id
         remove_sequence
         remove_location
-        remove_format
+        remove_format_and_data_type
         remove_geodata
         remove_id
         remove_stacks
@@ -101,8 +101,9 @@ module Cocina
         end
       end
 
-      def remove_format
+      def remove_format_and_data_type
         ng_xml.root.xpath('//file[@format]').each { |file_node| file_node.delete('format') }
+        ng_xml.root.xpath('//file[@dataType]').each { |file_node| file_node.delete('dataType') }
       end
 
       def remove_geodata
