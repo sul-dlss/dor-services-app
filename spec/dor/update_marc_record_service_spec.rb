@@ -16,25 +16,25 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   context 'for a druid without a catkey' do
-    let(:build_identity_metadata_without_ckey) do
-      <<~XML
-        <identityMetadata>
-          <sourceId source="sul">36105216275185</sourceId>
-          <objectId>druid:aa222cc3333</objectId>
-          <objectCreator>DOR</objectCreator>
-          <objectLabel>A  new map of Africa</objectLabel>
-          <objectType>item</objectType>
-          <displayType>image</displayType>
-          <adminPolicy>druid:dd051ys2703</adminPolicy>
-          <otherId name="uuid">ff3ce224-9ffb-11e3-aaf2-0050569b3c3c</otherId>
-          <tag>Process : Content Type : Map</tag>
-          <tag>Project : Batchelor Maps : Batch 1</tag>
-          <tag>LAB : MAPS</tag>
-          <tag>Registered By : dfuzzell</tag>
-          <tag>Remediated By : 4.15.4</tag>
-        </identityMetadata>
-      XML
-    end
+    # let(:build_identity_metadata_without_ckey) do
+    #   <<~XML
+    #     <identityMetadata>
+    #       <sourceId source="sul">36105216275185</sourceId>
+    #       <objectId>druid:aa222cc3333</objectId>
+    #       <objectCreator>DOR</objectCreator>
+    #       <objectLabel>A  new map of Africa</objectLabel>
+    #       <objectType>item</objectType>
+    #       <displayType>image</displayType>
+    #       <adminPolicy>druid:dd051ys2703</adminPolicy>
+    #       <otherId name="uuid">ff3ce224-9ffb-11e3-aaf2-0050569b3c3c</otherId>
+    #       <tag>Process : Content Type : Map</tag>
+    #       <tag>Project : Batchelor Maps : Batch 1</tag>
+    #       <tag>LAB : MAPS</tag>
+    #       <tag>Registered By : dfuzzell</tag>
+    #       <tag>Remediated By : 4.15.4</tag>
+    #     </identityMetadata>
+    #   XML
+    # end
 
     let(:druid) { 'druid:bc123dg9393' }
     let(:apo_druid) { 'druid:pp000pp0000' }
@@ -150,10 +150,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 structural: build_cocina_structural_metadata_1)
       end
 
-      before do
-        allow(cocina_object).to receive_messages(collections: [collection])
-      end
-
       it 'generates an empty array' do
         expect(generate_symphony_records).to eq []
       end
@@ -253,27 +249,18 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
     context 'when an collection object has a catkey' do
       let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::Vocab.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
-                                identification: {},
-                                access: {},
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+        Cocina::Models::Collection.new(externalIdentifier: 'druid:cc111cc1111',
+                                       type: Cocina::Models::Vocab.collection,
+                                       label: 'Collection label',
+                                       version: 1,
+                                       description: build_cocina_description_metadata_1('druid:cc111cc1111'),
+                                       access: build_cocina_collection_rights_metadata_world,
+                                       identification: build_cocina_collection_identity_metadata_1,
+                                       administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
       end
 
-      let(:umrs) { described_class.new(collection, thumbnail_service: thumbnail_service) }
-
-      before do
-        collection.rightsMetadata.content = build_rights_metadata_1
-        collection.identityMetadata.content = build_identity_metadata_2
-
-        allow(collection).to receive_messages(collections: [])
-      end
-
-      xit 'generates a single symphony record' do
-        expect(generate_symphony_records).to match_array ["8832162\tcc111cc1111\t.856. 41|uhttps://purl.stanford.edu/cc111cc1111|xSDR-PURL|xcollection|xrights:world"]
+      it 'generates a single symphony record' do
+        expect(generate_symphony_records).to match_array ["8832162\tcc111cc1111\t.856. 41|uhttps://purl.stanford.edu/cc111cc1111|xSDR-PURL|xhttp://cocina.sul.stanford.edu/models/collection.jsonld|xrights:world"]
       end
     end
   end
@@ -1045,25 +1032,20 @@ RSpec.describe Dor::UpdateMarcRecordService do
     subject(:previous_ckeys) { umrs.send :previous_ckeys }
 
     context 'when previous_catkeys exists' do
-      let(:dor_item) { Dor::Item.new(pid: 'druid:aa111aa1111') }
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
                                 type: Cocina::Models::Vocab.object,
                                 label: 'A generic label',
                                 version: 1,
                                 description: build_cocina_description_metadata_1('druid:bc123df4567'),
-                                identification: {},
+                                identification: build_cocina_identity_metadata_3,
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
                                 structural: build_cocina_structural_metadata_1)
       end
 
-      before do
-        dor_item.identityMetadata.add_other_Id('previous_catkey', '123')
-      end
-
-      xit 'returns values for previous catkeys in identityMetadata' do
-        expect(previous_ckeys).to eq(%w(123))
+      it 'returns values for previous catkeys in identityMetadata' do
+        expect(previous_ckeys).to eq(%w(123 456))
       end
     end
 

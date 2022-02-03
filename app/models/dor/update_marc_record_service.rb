@@ -81,7 +81,7 @@ module Dor
 
     def new_856_record(ckey)
       new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{@druid_obj.type}"
-      new856 += "|xbarcode:#{@druid_obj.identification.barcode}" unless @druid_obj.identification.barcode.nil?
+      new856 += "|xbarcode:#{@druid_obj.identification.barcode}" if @druid_obj.identification.respond_to?(:barcode) && @druid_obj.identification.barcode
       new856 += "|xfile:#{thumb}" unless thumb.nil?
       new856 += get_x2_collection_info unless get_x2_collection_info.nil?
       new856 += get_x2_constituent_info unless get_x2_constituent_info.nil?
@@ -113,7 +113,7 @@ module Dor
     def get_z_field
       # @dra_object.stanford_only_rights returns a 2 element list where presence of first element indicates stanford
       # only read restriction, and second element indicates the rule on the restriction, if any (e.g. 'no-download')
-      if @dra_object.access == 'stanford' || @dra_object.readLocation.present?
+      if @dra_object.access == 'stanford' || (@dra_object.respond_to?(:readLocation) && @dra_object.readLocation)
         '|zAvailable to Stanford-affiliated users.'
       else
         ''
@@ -133,7 +133,9 @@ module Dor
     # returns the collection information subfields if exists
     # @return [String] the collection information druid-value:catkey-value:title format
     def get_x2_collection_info
-      collections = @druid_obj.structural&.isMemberOf
+      return unless @druid_obj.respond_to?(:structural) && @druid_obj.structural
+
+      collections = @druid_obj.structural.isMemberOf
       collection_info = ''
 
       collections.each do |collection_druid|
@@ -175,6 +177,8 @@ module Dor
     end
 
     def get_x2_rights_info
+      return get_x2_collection_rights_info unless @dra_object.respond_to?(:download)
+
       values = []
 
       values << 'rights:dark' if @dra_object.access == 'dark'
@@ -189,6 +193,10 @@ module Dor
       values << "rights:location=#{@dra_object.readLocation}" if @dra_object.readLocation
 
       values.map { |value| "|x#{value}" }.join
+    end
+
+    def get_x2_collection_rights_info
+      "|xrights:#{@dra_object.access}"
     end
 
     def born_digital?

@@ -102,7 +102,6 @@ def build_cocina_identity_metadata_3
   }
 end
 
-
 def build_identity_metadata_4
   '<identityMetadata>
     <sourceId source="sul">36105216275185</sourceId>
@@ -541,6 +540,13 @@ def build_cocina_rights_metadata_world
   {
     access: 'world',
     download: 'world',
+    useAndReproductionStatement: 'User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.'
+  }
+end
+
+def build_cocina_collection_rights_metadata_world
+  {
+    access: 'world',
     useAndReproductionStatement: 'User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.'
   }
 end
