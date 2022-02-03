@@ -87,18 +87,20 @@ end
 def build_cocina_identity_metadata_3
   {
     sourceId: 'sul:36105216275185',
-    catalogLinks: [{
-      catalog: 'symphony',
-      catalogRecordId: '8832162'
-    },
-    {
-      catalog: 'previous symphony',
-      catalogRecordId: '123'
-    },
-    {
-      catalog: 'previous symphony',
-      catalogRecordId: '456'
-    }]
+    catalogLinks: [
+      {
+        catalog: 'symphony',
+        catalogRecordId: '8832162'
+      },
+      {
+        catalog: 'previous symphony',
+        catalogRecordId: '123'
+      },
+      {
+        catalog: 'previous symphony',
+        catalogRecordId: '456'
+      }
+    ]
   }
 end
 
@@ -155,14 +157,16 @@ def build_cocina_identity_metadata_5
   {
     sourceId: 'sul:36105216275185',
     barcode: '36105216275185',
-    catalogLinks: [{
-      catalog: 'previous symphony',
-      catalogRecordId: '123'
-    },
-    {
-      catalog: 'previous symphony',
-      catalogRecordId: '456'
-    }]
+    catalogLinks: [
+      {
+        catalog: 'previous symphony',
+        catalogRecordId: '123'
+      },
+      {
+        catalog: 'previous symphony',
+        catalogRecordId: '456'
+      }
+    ]
   }
 end
 

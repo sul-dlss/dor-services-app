@@ -54,8 +54,9 @@ module Dor
       records = previous_ckeys.map { |previous_catkey| get_identifier(previous_catkey) }
 
       # now add the current ckey
-      if @druid_obj.identification.catalogLinks.find {|link| link.catalog == 'symphony'}.present?
-        records << (released_to_searchworks? ? new_856_record(@druid_obj.identification.catalogLinks.find {|link| link.catalog == 'symphony'}.catalogRecordId) : get_identifier(@druid_obj.identification.catalogLinks.find {|link| link.catalog == 'symphony'}.catalogRecordId)) # if released to searchworks, create the record
+      if @druid_obj.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.present?
+        catalog_record_id = @druid_obj.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.catalogRecordId
+        records << (released_to_searchworks? ? new_856_record(catalog_record_id) : get_identifier(catalog_record_id))
       end
 
       records
@@ -111,8 +112,6 @@ module Dor
 
     # returns text in the z field based on permissions
     def get_z_field
-      # @dra_object.stanford_only_rights returns a 2 element list where presence of first element indicates stanford
-      # only read restriction, and second element indicates the rule on the restriction, if any (e.g. 'no-download')
       if @dra_object.access == 'stanford' || (@dra_object.respond_to?(:readLocation) && @dra_object.readLocation)
         '|zAvailable to Stanford-affiliated users.'
       else
@@ -153,7 +152,7 @@ module Dor
       dor_items_for_constituents.map do |cons_obj_druid|
         cons_obj = CocinaObjectStore.find(cons_obj_druid)
         cons_obj_id = cons_obj_druid.sub('druid:', '')
-        cons_obj_title = cons_obj.description.title.first.value # cons_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo/mods:title', mods: 'http://www.loc.gov/mods/v3').first.content
+        cons_obj_title = cons_obj.description.title.first.value
         catkey = cons_obj.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
         "|xset:#{cons_obj_id}:#{catkey}:#{cons_obj_title}"
       end.join
