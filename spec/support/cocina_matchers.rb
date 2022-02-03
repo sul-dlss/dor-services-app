@@ -54,5 +54,5 @@ module CocinaMatchers
 end
 
 RSpec.configure do |config|
-  config.include CocinaMatchers, type: :request
+  config.include CocinaMatchers
 end
