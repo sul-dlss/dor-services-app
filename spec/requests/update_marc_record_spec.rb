@@ -10,7 +10,10 @@ RSpec.describe 'Update MARC record' do
                             type: Cocina::Models::Vocab.object,
                             label: 'A generic label',
                             version: 1,
-                            description: build_cocina_description_metadata_1(druid),
+                            description: {
+                              title: [{ value: 'Constituent label &amp; A Special character' }],
+                              purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+                            },
                             identification: {},
                             access: {},
                             administrative: { hasAdminPolicy: 'druid:pp000pp0000' })

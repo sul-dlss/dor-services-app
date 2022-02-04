@@ -98,16 +98,47 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
     JSON
   end
 
+  let(:structural) do
+    {
+      contains: [{
+        type: Cocina::Models::Vocab::Resources.image,
+        externalIdentifier: 'wt183gy6220',
+        label: 'Image 1',
+        version: 1,
+        structural: {
+          contains: [{
+            type: Cocina::Models::Vocab.file,
+            externalIdentifier: 'wt183gy6220_1',
+            label: 'Image 1',
+            filename: 'wt183gy6220_00_0001.jp2',
+            hasMimeType: 'image/jp2',
+            size: 3_182_927,
+            version: 1,
+            access: {},
+            administrative: {
+              publish: false,
+              sdrPreserve: false,
+              shelve: false
+            },
+            hasMessageDigests: []
+          }]
+        }
+      }]
+    }
+  end
   let(:cocina_object) do
     Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
                             type: Cocina::Models::Vocab.object,
                             label: 'A generic label',
                             version: 1,
-                            description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                            description: {
+                              title: [{ value: 'Constituent label &amp; A Special character' }],
+                              purl: 'https://purl.stanford.edu/bc123df4567'
+                            },
                             identification: {},
                             access: {},
                             administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                            structural: build_cocina_structural_metadata_1)
+                            structural: structural)
   end
 
   before do
