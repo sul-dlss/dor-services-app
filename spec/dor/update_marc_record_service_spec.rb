@@ -14,6 +14,107 @@ RSpec.describe Dor::UpdateMarcRecordService do
   let(:release_data) { {} }
   let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
 
+  let(:descriptive_metadata_basic) do
+    {
+      title: [{ value: 'Constituent label & A Special character' }],
+      purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+    }
+  end
+  let(:identity_metadata_basic) do
+    {
+      sourceId: 'sul:36105216275185'
+    }
+  end
+  let(:identity_metadata_catkey_barcode) do
+    {
+      sourceId: 'sul:36105216275185',
+      catalogLinks: [{
+        catalog: 'symphony',
+        catalogRecordId: '8832162'
+      }],
+      barcode: '36105216275185'
+    }
+  end
+  let(:identity_metadata_collection) do
+    {
+      sourceId: 'sul:36105216275185',
+      catalogLinks: [{
+        catalog: 'symphony',
+        catalogRecordId: '8832162'
+      }]
+    }
+  end
+  let(:identity_metadata_previous_ckey) do
+    {
+      sourceId: 'sul:36105216275185',
+      catalogLinks: [
+        {
+          catalog: 'symphony',
+          catalogRecordId: '8832162'
+        },
+        {
+          catalog: 'previous symphony',
+          catalogRecordId: '123'
+        },
+        {
+          catalog: 'previous symphony',
+          catalogRecordId: '456'
+        }
+      ]
+    }
+  end
+  let(:attachment1) do
+    {
+      type: Cocina::Models::Vocab.file,
+      externalIdentifier: 'wt183gy6220_1',
+      label: 'Image 1',
+      filename: 'wt183gy6220_00_0001.jp2',
+      hasMimeType: 'image/jp2',
+      size: 3_182_927,
+      version: 1,
+      access: {},
+      administrative: {
+        publish: false,
+        sdrPreserve: false,
+        shelve: false
+      },
+      hasMessageDigests: []
+    }
+  end
+  let(:structural_metadata) do
+    {
+      contains: [{
+        type: Cocina::Models::Vocab::Resources.image,
+        externalIdentifier: 'wt183gy6220',
+        label: 'Image 1',
+        version: 1,
+        structural: {
+          contains: [attachment1]
+        }
+      }],
+      isMemberOf: ['druid:cc111cc1111']
+    }
+  end
+  let(:access_word) do
+    {
+      access: 'world',
+      download: 'world'
+    }
+  end
+  let(:access_stanford_only) do
+    {
+      access: 'stanford',
+      download: 'stanford'
+    }
+  end
+  let(:access_location) do
+    {
+      access: 'location-based',
+      download: 'location-based',
+      readLocation: 'spec'
+    }
+  end
+
   before do
     allow(ReleaseTags::IdentityMetadata).to receive(:for).and_return(release_service)
     Settings.release.symphony_path = './spec/fixtures/sdr-purl'
@@ -25,8 +126,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               type: Cocina::Models::Vocab.object,
                               label: dro_object_label,
                               version: 1,
-                              description: build_cocina_description_metadata_1(druid),
-                              identification: build_cocina_identity_metadata_basic,
+                              description: descriptive_metadata_basic,
+                              identification: identity_metadata_basic,
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid })
     end
@@ -43,8 +144,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               type: Cocina::Models::Vocab.object,
                               label: dro_object_label,
                               version: 1,
-                              description: build_cocina_description_metadata_1(druid),
-                              identification: build_cocina_identity_metadata_1,
+                              description: descriptive_metadata_basic,
+                              identification: identity_metadata_catkey_barcode,
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid })
     end
@@ -62,8 +163,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               type: Cocina::Models::Vocab.object,
                               label: dro_object_label,
                               version: 1,
-                              description: build_cocina_description_metadata_1(druid),
-                              identification: build_cocina_identity_metadata_1,
+                              description: descriptive_metadata_basic,
+                              identification: identity_metadata_basic,
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid })
     end
@@ -83,7 +184,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                      type: Cocina::Models::Vocab.collection,
                                      label: collection_label,
                                      version: 1,
-                                     description: build_cocina_description_metadata_1(collection_druid),
+                                     description: descriptive_metadata_basic,
                                      access: {})
     end
     let(:release_data) { { 'Searchworks' => { 'release' => true } } }
@@ -98,11 +199,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'generates an empty array' do
@@ -116,11 +217,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
-                                identification: build_cocina_identity_metadata_1,
-                                access: build_cocina_rights_metadata_world,
+                                description: descriptive_metadata_basic,
+                                identification: identity_metadata_catkey_barcode,
+                                access: access_word,
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'generates a single symphony record' do
@@ -137,11 +238,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
-                                identification: build_cocina_identity_metadata_1,
-                                access: build_cocina_rights_metadata_stanford_only,
+                                description: descriptive_metadata_basic,
+                                identification: identity_metadata_catkey_barcode,
+                                access: access_stanford_only,
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'generates symphony record with a z subfield' do
@@ -157,11 +258,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
-                                identification: build_cocina_identity_metadata_3,
-                                access: build_cocina_rights_metadata_world,
+                                description: descriptive_metadata_basic,
+                                identification: identity_metadata_previous_ckey,
+                                access: access_word,
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'generates blank symphony records and a regular symphony record' do
@@ -174,13 +275,29 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
 
     context 'when an object has only previous catkeys' do
+      let(:identification) do
+        {
+          sourceId: 'sul:36105216275185',
+          barcode: '36105216275185',
+          catalogLinks: [
+            {
+              catalog: 'previous symphony',
+              catalogRecordId: '123'
+            },
+            {
+              catalog: 'previous symphony',
+              catalogRecordId: '456'
+            }
+          ]
+        }
+      end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
-                                identification: build_cocina_identity_metadata_5,
+                                description: descriptive_metadata_basic,
+                                identification: identification,
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid })
       end
@@ -191,14 +308,19 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
 
     context 'when an collection object has a catkey' do
+      let(:access) do
+        {
+          access: 'world'
+        }
+      end
       let(:cocina_object) do
         Cocina::Models::Collection.new(externalIdentifier: collection_druid,
                                        type: Cocina::Models::Vocab.collection,
                                        label: collection_label,
                                        version: 1,
-                                       description: build_cocina_description_metadata_1(collection_druid),
-                                       access: build_cocina_collection_rights_metadata_world,
-                                       identification: build_cocina_collection_identity_metadata_1,
+                                       description: descriptive_metadata_basic,
+                                       access: access,
+                                       identification: identity_metadata_collection,
                                        administrative: { hasAdminPolicy: apo_druid })
       end
 
@@ -217,11 +339,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               type: Cocina::Models::Vocab.object,
                               label: dro_object_label,
                               version: 1,
-                              description: build_cocina_description_metadata_1(druid),
+                              description: descriptive_metadata_basic,
                               identification: {},
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
-                              structural: build_cocina_structural_metadata_1)
+                              structural: structural_metadata)
     end
 
     let(:output_file) do
@@ -303,11 +425,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
-                                access: build_cocina_rights_metadata_world,
+                                access: access_word,
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns a blank z message' do
@@ -321,11 +443,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
-                                access: build_cocina_rights_metadata_stanford_only,
+                                access: access_stanford_only,
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns a non-blank z message' do
@@ -339,11 +461,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
-                                access: build_cocina_rights_metadata_location,
+                                access: access_location,
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns a non-blank z message for a location restricted object' do
@@ -358,11 +480,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               type: Cocina::Models::Vocab.object,
                               label: dro_object_label,
                               version: 1,
-                              description: build_cocina_description_metadata_1(druid),
+                              description: descriptive_metadata_basic,
                               identification: {},
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
-                              structural: build_cocina_structural_metadata_1)
+                              structural: structural_metadata)
     end
 
     it 'returns a valid sdrpurl constant' do
@@ -376,11 +498,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               type: Cocina::Models::Vocab.object,
                               label: dro_object_label,
                               version: 1,
-                              description: build_cocina_description_metadata_1(druid),
+                              description: descriptive_metadata_basic,
                               identification: {},
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
-                              structural: build_cocina_structural_metadata_1)
+                              structural: structural_metadata)
     end
 
     it 'returns 4' do
@@ -395,11 +517,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns 1 for a non born digital APO' do
@@ -413,11 +535,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:bx911tp9024' },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns 0 for an EEMs APO' do
@@ -432,11 +554,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               type: Cocina::Models::Vocab.object,
                               label: dro_object_label,
                               version: 1,
-                              description: build_cocina_description_metadata_1(druid),
+                              description: descriptive_metadata_basic,
                               identification: {},
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
-                              structural: build_cocina_structural_metadata_1)
+                              structural: structural_metadata)
     end
 
     it 'returns valid purl url' do
@@ -450,11 +572,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               type: Cocina::Models::Vocab.object,
                               label: dro_object_label,
                               version: 1,
-                              description: build_cocina_description_metadata_1(druid),
+                              description: descriptive_metadata_basic,
                               identification: {},
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
-                              structural: build_cocina_structural_metadata_1)
+                              structural: structural_metadata)
     end
 
     it 'returns a valid sdrpurl constant' do
@@ -463,16 +585,29 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   describe '.get_x2_collection_info' do
+    let(:structural_metadata_no_collection) do
+      {
+        contains: [{
+          type: Cocina::Models::Vocab::Resources.image,
+          externalIdentifier: 'wt183gy6220',
+          label: 'Image 1',
+          version: 1,
+          structural: {
+            contains: [attachment1]
+          }
+        }]
+      }
+    end
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::Vocab.object,
                               label: dro_object_label,
                               version: 1,
-                              description: build_cocina_description_metadata_1(druid),
+                              description: descriptive_metadata_basic,
                               identification: {},
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
-                              structural: build_cocina_structural_metadata_no_collection)
+                              structural: structural_metadata_no_collection)
     end
     let(:collection) do
       Cocina::Models::Collection.new(externalIdentifier: collection_druid,
@@ -480,7 +615,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                      label: collection_label,
                                      version: 1,
                                      access: {},
-                                     identification: build_cocina_collection_identity_metadata_1)
+                                     identification: identity_metadata_collection)
     end
 
     it 'returns an empty string for an object without collection' do
@@ -499,11 +634,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns the appropriate information for the collection object' do
@@ -523,7 +658,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns nil for objects with part information' do
@@ -537,11 +672,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns an empty string for objects with part information' do
@@ -550,16 +685,39 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
 
     context 'with descMetadata with some part numbers' do
+      let(:description) do
+        {
+          title: [
+            {
+              structuredValue: [
+                {
+                  value: 'Some label',
+                  type: 'main title'
+                },
+                {
+                  value: '55th legislature',
+                  type: 'part number'
+                },
+                {
+                  value: '1997-1998',
+                  type: 'part number'
+                }
+              ]
+            }
+          ],
+          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+        }
+      end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_with_title_parts(druid),
+                                description: description,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns a part label' do
@@ -568,16 +726,39 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
 
     context 'with descMetadata with a part name and number' do
+      let(:description) do
+        {
+          title: [
+            {
+              structuredValue: [
+                {
+                  value: 'Some label',
+                  type: 'main title'
+                },
+                {
+                  value: 'Issue #3',
+                  type: 'part name'
+                },
+                {
+                  value: '2011',
+                  type: 'part number'
+                }
+              ]
+            }
+          ],
+          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+        }
+      end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_with_title_part_name(druid),
+                                description: description,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns a part label' do
@@ -586,16 +767,43 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
 
     context 'with descMetadata with a sequential designation in a note' do
+      let(:description) do
+        {
+          title: [
+            {
+              structuredValue: [
+                {
+                  value: 'Some label',
+                  type: 'main title'
+                },
+                {
+                  value: 'Issue #3',
+                  type: 'part name'
+                },
+                {
+                  value: '2011',
+                  type: 'part number'
+                },
+                {
+                  value: '123',
+                  type: 'date/sequential designation'
+                }
+              ]
+            }
+          ],
+          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+        }
+      end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_with_title_part_name_sort(druid),
+                                description: description,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns both the label and part number' do
@@ -604,16 +812,43 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
 
     context 'with descMetadata with a sequential designation on a part number' do
+      let(:description) do
+        {
+          title: [
+            {
+              structuredValue: [
+                {
+                  value: 'Some label',
+                  type: 'main title'
+                },
+                {
+                  value: 'Issue #3',
+                  type: 'part name'
+                },
+                {
+                  value: '2011',
+                  type: 'part number'
+                },
+                {
+                  value: '2011',
+                  type: 'date/sequential designation'
+                }
+              ]
+            }
+          ],
+          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+        }
+      end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_with_title_part_name_sort_attr(druid),
+                                description: description,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns both the label and part number' do
@@ -622,16 +857,53 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
 
     context 'with descMetadata with multiple titles, one of them marked as the primary title' do
+      let(:description) do
+        {
+          title: [
+            {
+              value: 'Some label',
+              status: 'primary',
+              structuredValue: [
+                {
+                  value: 'Some label',
+                  type: 'main title'
+                },
+                {
+                  value: 'Issue #3',
+                  type: 'part name'
+                },
+                {
+                  value: '2011',
+                  type: 'part number'
+                }
+              ]
+            },
+            {
+              structuredValue: [
+                {
+                  value: 'Some label',
+                  type: 'alternative'
+                },
+                {
+                  value: 'Some lie',
+                  type: 'part name'
+                }
+              ]
+            }
+          ],
+          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+        }
+      end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_with_primary_title(druid),
+                                description: description,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns the label from the primary title' do
@@ -640,16 +912,53 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
 
     context 'with descMetadata with multiple titles' do
+      let(:description) do
+        {
+          title: [
+            {
+              value: 'Some label',
+              status: 'primary',
+              structuredValue: [
+                {
+                  value: 'Some label',
+                  type: 'main title'
+                },
+                {
+                  value: 'Issue #3',
+                  type: 'part name'
+                },
+                {
+                  value: '2011',
+                  type: 'part number'
+                }
+              ]
+            },
+            {
+              structuredValue: [
+                {
+                  value: 'Some label',
+                  type: 'alternative'
+                },
+                {
+                  value: 'Some lie',
+                  type: 'part name'
+                }
+              ]
+            }
+          ],
+          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+        }
+      end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_with_primary_title(druid),
+                                description: description,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns the label from the first title' do
@@ -667,11 +976,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
-                                access: build_cocina_rights_metadata_world,
+                                access: access_word,
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it { is_expected.to eq '|xrights:world' }
@@ -683,27 +992,33 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
-                                access: build_cocina_rights_metadata_stanford_only,
+                                access: access_stanford_only,
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it { is_expected.to eq '|xrights:group=stanford' }
     end
 
     context 'CDL rights' do
+      let(:access) do
+        {
+          access: 'world',
+          download: 'stanford'
+        }
+      end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
-                                access: build_cocina_rights_metadata_cdl,
+                                access: access,
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it { is_expected.to eq '|xrights:cdl' }
@@ -715,27 +1030,33 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
-                                access: build_cocina_rights_metadata_location,
+                                access: access_location,
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it { is_expected.to eq '|xrights:location=spec' }
     end
 
     context 'citation rights' do
+      let(:access) do
+        {
+          access: 'world',
+          download: 'none'
+        }
+      end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
-                                access: build_cocina_rights_metadata_citation_only,
+                                access: access,
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it { is_expected.to eq '|xrights:citation' }
@@ -747,11 +1068,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it { is_expected.to eq '|xrights:dark' }
@@ -764,11 +1085,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               type: Cocina::Models::Vocab.object,
                               label: dro_object_label,
                               version: 1,
-                              description: build_cocina_description_metadata_1(druid),
+                              description: descriptive_metadata_basic,
                               identification: {},
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
-                              structural: build_cocina_structural_metadata_1)
+                              structural: structural_metadata)
     end
 
     context 'when release_data tag has release to=Searchworks and value is true' do
@@ -835,7 +1156,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid })
@@ -852,11 +1173,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'successfully determines constituent druid' do
@@ -873,11 +1194,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               type: Cocina::Models::Vocab.object,
                               label: dro_object_label,
                               version: 1,
-                              description: build_cocina_description_metadata_1(druid),
+                              description: descriptive_metadata_basic,
                               identification: {},
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
-                              structural: build_cocina_structural_metadata_1)
+                              structural: structural_metadata)
     end
 
     context 'with valid structural metadata' do
@@ -886,11 +1207,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns a thumb' do
@@ -904,7 +1225,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid })
@@ -925,11 +1246,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
-                                identification: build_cocina_identity_metadata_3,
+                                description: descriptive_metadata_basic,
+                                identification: identity_metadata_previous_ckey,
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns values for previous catkeys in identityMetadata' do
@@ -943,11 +1264,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 type: Cocina::Models::Vocab.object,
                                 label: dro_object_label,
                                 version: 1,
-                                description: build_cocina_description_metadata_1(druid),
+                                description: descriptive_metadata_basic,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural_metadata)
       end
 
       it 'returns an empty array for previous catkeys in identityMetadata without either' do

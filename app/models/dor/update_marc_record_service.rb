@@ -12,7 +12,7 @@ module Dor
     def initialize(druid_obj, thumbnail_service:)
       @druid_obj = druid_obj
       @druid_id = Dor::PidUtils.remove_druid_prefix(druid_obj.externalIdentifier)
-      @dra_object = druid_obj.access
+      @access = druid_obj.access
       @thumbnail_service = thumbnail_service
     end
 
@@ -112,7 +112,7 @@ module Dor
 
     # returns text in the z field based on permissions
     def get_z_field
-      if @dra_object.access == 'stanford' || (@dra_object.respond_to?(:readLocation) && @dra_object.readLocation)
+      if @access.access == 'stanford' || (@access.respond_to?(:readLocation) && @access.readLocation)
         '|zAvailable to Stanford-affiliated users.'
       else
         ''
@@ -176,26 +176,26 @@ module Dor
     end
 
     def get_x2_rights_info
-      return get_x2_collection_rights_info unless @dra_object.respond_to?(:download)
+      return get_x2_collection_rights_info unless @access.respond_to?(:download)
 
       values = []
 
-      values << 'rights:dark' if @dra_object.access == 'dark'
+      values << 'rights:dark' if @access.access == 'dark'
 
-      if @dra_object.access == 'world'
-        values << 'rights:cdl' if @dra_object.download == 'stanford'
-        values << 'rights:world' if @dra_object.download == 'world'
-        values << 'rights:citation' if @dra_object.download == 'none'
+      if @access.access == 'world'
+        values << 'rights:cdl' if @access.download == 'stanford'
+        values << 'rights:world' if @access.download == 'world'
+        values << 'rights:citation' if @access.download == 'none'
       end
 
-      values << 'rights:group=stanford' if @dra_object.access == 'stanford' && @dra_object.download == 'stanford'
-      values << "rights:location=#{@dra_object.readLocation}" if @dra_object.readLocation
+      values << 'rights:group=stanford' if @access.access == 'stanford' && @access.download == 'stanford'
+      values << "rights:location=#{@access.readLocation}" if @access.readLocation
 
       values.map { |value| "|x#{value}" }.join
     end
 
     def get_x2_collection_rights_info
-      "|xrights:#{@dra_object.access}"
+      "|xrights:#{@access.access}"
     end
 
     def born_digital?
