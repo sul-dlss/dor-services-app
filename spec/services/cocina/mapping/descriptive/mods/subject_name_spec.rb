@@ -733,14 +733,14 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
   end
 
   describe 'Name subject with subelements, role, displayForm, and subject subdivision' do
-    xit 'not implemented in cocina>MODS direction' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject>
             <name type="personal">
               <role>
-                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/dpc">Depicted</roleTerm>
-                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/dpc">dpc</roleTerm>
+                <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">Depicted</roleTerm>
+                <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/dpc">dpc</roleTerm>
               </role>
               <namePart type="family">Andrada</namePart>
               <namePart type="given">Leitao, Francisco d'</namePart>

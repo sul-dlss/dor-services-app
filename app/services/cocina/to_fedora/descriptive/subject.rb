@@ -89,6 +89,7 @@ module Cocina
         end
 
         # rubocop:disable Metrics/PerceivedComplexity
+        # rubocop:disable Metrics/CyclomaticComplexity
         def write_structured_or_grouped(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
           type ||= subject_value.type || subject.type
           xml.subject(structured_attributes_for(subject_value, type, alt_rep_group: alt_rep_group)) do
@@ -106,6 +107,8 @@ module Cocina
                 if FromFedora::Descriptive::Contributor::ROLES.value?(value.type)
                   if value.structuredValue.present?
                     write_structured_person(subject, value, display_values: display_values)
+                  elsif value.parallelValue.present?
+                    write_parallel_structured_person(value)
                   else
                     write_person(subject, value, display_values: display_values)
                   end
@@ -118,6 +121,7 @@ module Cocina
           end
         end
         # rubocop:enable Metrics/PerceivedComplexity
+        # rubocop:enable Metrics/CyclomaticComplexity
 
         def write_title(subject_value)
           title = subject_value.to_h
@@ -425,6 +429,19 @@ module Cocina
 
         def edition(version)
           version.split.first.gsub(DEORDINAL_REGEX, '')
+        end
+
+        def write_parallel_structured_person(value)
+          parallel_subject_values = Array(value.parallelValue)
+          display_values, parallel_subject_values = parallel_subject_values.partition { |par_value| par_value.type == 'display' }
+
+          # there will not be more than one parallelValue within a structuredValue
+          parallel_subject_value = parallel_subject_values.first
+          if parallel_subject_value.structuredValue.present?
+            write_structured_person(value, parallel_subject_value, type: value.type, display_values: display_values)
+          else
+            write_person(value, parallel_subject_value, display_values: display_values)
+          end
         end
       end
       # rubocop:enable Metrics/ClassLength

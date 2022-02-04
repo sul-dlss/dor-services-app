@@ -275,4 +275,50 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
       XML
     end
   end
+
+  context 'with person parallelValue and no structuredValue' do
+    let(:subjects) do
+      [
+        Cocina::Models::DescriptiveValue.new(
+          {
+            structuredValue: [
+              {
+                parallelValue: [
+                  {
+                    value: 'Holbein, Han, 1497-1543',
+                    type: 'surname'
+                  },
+                  {
+                    value: 'Holbein, Han, 1497-1543',
+                    type: 'display'
+                  }
+                ],
+                type: 'person'
+              },
+              {
+                value: 'Homes and haunts',
+                type: 'topic'
+              }
+            ]
+          }
+        )
+      ]
+    end
+
+    it 'builds the xml' do
+      expect(xml).to be_equivalent_to <<~XML
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.loc.gov/mods/v3" version="3.6"
+          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <subject>
+            <name type="personal">
+              <namePart type="family">Holbein, Han, 1497-1543</namePart>
+              <displayForm>Holbein, Han, 1497-1543</displayForm>
+            </name>
+            <topic>Homes and haunts</topic>
+          </subject>
+        </mods>
+      XML
+    end
+  end
 end
