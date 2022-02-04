@@ -915,8 +915,8 @@ paths:
       description: ''
       operationId: 'mods#update'
       responses:
-        '200':
-          description: OK
+        '204':
+          description: The metadata has been updated
       parameters:
         - name: object_id
           in: path
