@@ -5,6 +5,32 @@ require 'rails_helper'
 RSpec.describe Cocina::Normalizers::IdentityNormalizer do
   let(:normalized_ng_xml) { described_class.normalize(identity_ng_xml: Nokogiri::XML(original_xml)) }
 
+  context 'when #normalize_apo_source_id' do
+    context 'with an adminPolicy object with a sourceId' do
+      let(:original_xml) do
+        <<~XML
+          <identityMetadata>
+            <sourceId source="Hydrus">adminPolicy-dhartwig-2013-06-10T18:11:42.520Z</sourceId>
+            <objectId>druid:bk068fh4950</objectId>
+            <objectType>adminPolicy</objectType>
+          </identityMetadata>
+        XML
+      end
+
+      it 'removes the sourceId' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <identityMetadata>
+              <objectId>druid:bk068fh4950</objectId>
+              <objectType>adminPolicy</objectType>
+              <objectCreator>DOR</objectCreator>
+              </identityMetadata>
+          XML
+        )
+      end
+    end
+  end
+
   context 'when #normalize_source_id_whitespace' do
     let(:original_xml) do
       <<~XML
