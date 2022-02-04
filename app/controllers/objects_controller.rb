@@ -46,7 +46,7 @@ class ObjectsController < ApplicationController
     cocina_object = Cocina::ObjectCreator.create(model_request, assign_doi: params[:assign_doi])
 
     # Broadcast this to a topic
-    Notifications::ObjectCreated.publish(model: cocina_object) if Settings.rabbitmq.enabled
+    Notifications::ObjectCreated.publish(model: cocina_object, created_at: Time.zone.now, modified_at: Time.zone.now) if Settings.rabbitmq.enabled
 
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
   rescue SymphonyReader::ResponseError => e

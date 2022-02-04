@@ -4,25 +4,27 @@ module Notifications
   # Send a message to a RabbitMQ exchange that an item has been updated.
   # The primary use case here is that an index may need to be updated (dor-indexing-app)
   class ObjectUpdated
-    def self.publish(model:)
+    def self.publish(model:, created_at:, modified_at:)
       Rails.logger.debug "Publishing Rabbitmq Message for updating #{model.externalIdentifier}"
-      new(model: model, channel: RabbitChannel.instance).publish
+      new(model: model, created_at: created_at, modified_at: modified_at, channel: RabbitChannel.instance).publish
       Rails.logger.debug "Published Rabbitmq Message for updating #{model.externalIdentifier}"
     end
 
-    def initialize(model:, channel:)
+    def initialize(model:, created_at:, modified_at:, channel:)
       @model = model
+      @created_at = created_at
+      @modified_at = modified_at
       @channel = channel
     end
 
     def publish
-      message = { model: model.to_h }
+      message = { model: model.to_h, created_at: created_at, modified_at: modified_at }
       exchange.publish(message.to_json, routing_key: routing_key)
     end
 
     private
 
-    attr_reader :model, :channel
+    attr_reader :model, :created_at, :modified_at, :channel
 
     def exchange
       channel.topic('sdr.objects.updated')
