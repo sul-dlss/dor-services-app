@@ -274,6 +274,35 @@ RSpec.describe Cocina::ObjectCreator do
         expect(result.identification.doi).to eq '10.25740/mb046vj7485'
       end
     end
+
+    context 'when retaining DOI for trial' do
+      subject(:result) { described_class.trial_create(request, cocina_object_store: nil, notifier: nil) }
+
+      let(:request) { Cocina::Models.build(params) }
+      let(:params) do
+        {
+          'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
+          'label' => ':auto',
+          'externalIdentifier' => 'druid:bb010dx6027',
+          'access' => {},
+          'version' => 1,
+          'structural' => {},
+          'administrative' => {
+            'partOfProject' => 'Naxos : 2009',
+            'hasAdminPolicy' => apo
+          },
+          'identification' => {
+            'sourceId' => 'sul:8.559351',
+            'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }],
+            'doi' => '10.25740/bb010dx6027'
+          }
+        }
+      end
+
+      it 'keeps DOI' do
+        expect(result[1].identification.doi).to eq '10.25740/bb010dx6027'
+      end
+    end
   end
 
   context 'when Cocina::Models::RequestCollection is received' do

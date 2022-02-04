@@ -114,6 +114,8 @@ def norm_roundtrip_datastream_ng_xml_for(dsid, roundtrip_datastream_ng_xml)
     Cocina::Normalizers::ContentMetadataNormalizer.normalize_roundtrip(content_ng_xml: roundtrip_datastream_ng_xml)
   when 'embargoMetadata'
     Cocina::Normalizers::EmbargoNormalizer.normalize_roundtrip(embargo_ng_xml: roundtrip_datastream_ng_xml)
+  when 'identityMetadata'
+    Cocina::Normalizers::IdentityNormalizer.normalize_roundtrip(identity_ng_xml: roundtrip_datastream_ng_xml)
   else
     roundtrip_datastream_ng_xml
   end
@@ -255,8 +257,8 @@ end
 # rubocop:enable Metrics/MethodLength
 # rubocop:enable Metrics/PerceivedComplexity
 
+# Remove file and fileSet externalIdentifiers, since usually regenerated.
 def normalize_external_identifiers(cocina_hash)
-  # Remove file and fileSet externalIdentifiers, since usually regenerated.
   Array(cocina_hash.dig(:structural, :contains)).each do |file_set|
     file_set.delete(:externalIdentifier)
     Array(file_set.dig(:structural, :contains)).each { |file| file.delete(:externalIdentifier) }
@@ -264,8 +266,19 @@ def normalize_external_identifiers(cocina_hash)
   cocina_hash
 end
 
+# DOI prefix from prod is 25740; stage is 80343
+# Original Fedora has prod prefix; roundtripped gets stage prefix
+# See Doi.rb
+def normalize_doi(cocina_hash)
+  return if cocina_hash.dig(:identification, :doi).blank?
+
+  cocina_hash[:identification][:doi].sub!('80343', '25740')
+  cocina_hash
+end
+
 def normalize_cocina(cocina_hash)
   normalize_external_identifiers(cocina_hash)
+  normalize_doi(cocina_hash)
 end
 
 def percentage(raw_num, denom)

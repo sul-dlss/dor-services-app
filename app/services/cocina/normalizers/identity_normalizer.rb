@@ -2,6 +2,7 @@
 
 module Cocina
   module Normalizers
+    # rubocop:disable Metrics/ClassLength
     # Normalizes a Fedora object identity metadata datastream, accounting for differences between Fedora rights and cocina rights that are valid but different
     # when round-tripping.
     class IdentityNormalizer
@@ -13,6 +14,12 @@ module Cocina
         new(identity_ng_xml: identity_ng_xml).normalize
       end
 
+      # @param [Nokogiri::Document] identity_ng_xml roundtripped identity metadata XML to be normalized
+      # @return [Nokogiri::Document] normalized identity metadata xml
+      def self.normalize_roundtrip(identity_ng_xml:)
+        new(identity_ng_xml: identity_ng_xml).normalize_roundtrip
+      end
+
       def initialize(identity_ng_xml:)
         @ng_xml = identity_ng_xml.dup
         @ng_xml.encoding = 'UTF-8' if @ng_xml.respond_to?(:encoding=) # sometimes it's a String (?)
@@ -20,6 +27,7 @@ module Cocina
 
       def normalize
         normalize_dissertation_id_to_source_id
+        normalize_datacite_prefix
         normalize_out_uuid
         normalize_out_admin_tags
         normalize_out_admin_policy
@@ -38,6 +46,12 @@ module Cocina
         normalize_apo_source_id
 
         regenerate_ng_xml(ng_xml.to_xml)
+      end
+
+      def normalize_roundtrip
+        normalize_datacite_prefix
+
+        regenerate_ng_xml(ng_xml.to_s)
       end
 
       private
@@ -157,6 +171,17 @@ module Cocina
         object_creator_node.content = 'DOR'
         ng_xml.root << object_creator_node
       end
+
+      def normalize_datacite_prefix
+        return if ng_xml.root.xpath('//doi').blank?
+
+        doi_node = ng_xml.root.at_xpath('//doi')
+        # DOI prefix from prod is 25740; stage is 80343
+        # Original Fedora has prod prefix; roundtripped gets stage prefix
+        # See Doi.rb
+        doi_node.content = doi_node.text.sub('80343', '25740')
+      end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

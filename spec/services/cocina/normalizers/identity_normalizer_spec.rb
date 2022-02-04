@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Cocina::Normalizers::IdentityNormalizer do
   let(:normalized_ng_xml) { described_class.normalize(identity_ng_xml: Nokogiri::XML(original_xml)) }
+  let(:normalized_roundtripped_ng_xml) { described_class.normalize_roundtrip(identity_ng_xml: Nokogiri::XML(original_xml)) }
 
   context 'when #normalize_apo_source_id' do
     context 'with an adminPolicy object with a sourceId' do
@@ -586,6 +587,56 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
           <identityMetadata>
             <objectCreator>DOR</objectCreator>
             <otherId name="catkey">12345</otherId>
+          </identityMetadata>
+        XML
+      )
+    end
+  end
+
+  context 'when there is a DOI' do
+    let(:original_xml) do
+      <<~XML
+        <identityMetadata>
+          <objectCreator>DOR</objectCreator>
+          <objectType>item</objectType>
+          <doi>10.25740/bb010dx6027</doi>
+        </identityMetadata>
+      XML
+    end
+
+    it 'uses the DOI prefix from prod' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <identityMetadata>
+            <objectCreator>DOR</objectCreator>
+            <objectType>item</objectType>
+            <doi>10.25740/bb010dx6027</doi>
+          </identityMetadata>
+        XML
+      )
+    end
+
+    it 'uses the DOI prefix from prod in roundtripped' do
+      expect(normalized_roundtripped_ng_xml).to be_equivalent_to(normalized_ng_xml)
+    end
+  end
+
+  context 'when there is not a DOI' do
+    let(:original_xml) do
+      <<~XML
+        <identityMetadata>
+          <objectCreator>DOR</objectCreator>
+          <objectType>item</objectType>
+        </identityMetadata>
+      XML
+    end
+
+    it 'does not add a DOI' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <identityMetadata>
+            <objectCreator>DOR</objectCreator>
+            <objectType>item</objectType>
           </identityMetadata>
         XML
       )

@@ -506,6 +506,20 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
           description: description_props
         }
       end
+      # Confirm DOI prefix is changed to prod
+      let(:roundtrip_identity_metadata_xml) do
+        <<~XML
+          <identityMetadata>
+            <sourceId source="#{source_id_source}">#{source_id}</sourceId>
+            <otherId name="catkey">#{catkey}</otherId>
+            <objectLabel>#{label}</objectLabel>
+            <objectId>#{item_id}</objectId>
+            <objectCreator>DOR</objectCreator>
+            <objectType>item</objectType>
+            <doi>10.25740/bb010dx6027</doi>
+          </identityMetadata>
+        XML
+      end
     end
   end
 
