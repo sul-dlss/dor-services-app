@@ -175,7 +175,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     # NOTE: name identifiers that are uris, for mods mapping purposes are 'value' rather than uri
     #  in identifier and nameIdentifier mods doesn't distinguish between a uri and other non-uri identifiers
 
-    xit 'updated mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <name type="personal" usage="primary">
