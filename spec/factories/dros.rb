@@ -15,6 +15,10 @@ FactoryBot.define do
     end
   end
 
+  factory :dro_unique_druid, parent: :dro do
+    external_identifier { generate(:unique_druid) }
+  end
+
   trait :with_dro_identification do
     identification do
       { sourceId: 'googlebooks:999999' }
@@ -31,6 +35,10 @@ FactoryBot.define do
   end
 
   trait :with_structural do
+    transient do
+      isMemberOf { [] }
+    end
+
     structural do
       { contains: [
         {
@@ -60,7 +68,9 @@ FactoryBot.define do
             ]
           }
         }
-      ] }
+      ] }.tap do |h|
+        h.merge!({ isMemberOf: isMemberOf }) if isMemberOf.present?
+      end
     end
   end
 

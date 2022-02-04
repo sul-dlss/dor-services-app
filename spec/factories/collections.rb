@@ -12,6 +12,10 @@ FactoryBot.define do
     end
   end
 
+  factory :collection_unique_druid, parent: :collection do
+    external_identifier { generate(:unique_druid) }
+  end
+
   trait :with_collection_identification do
     identification do
       { sourceId: 'googlebooks:999999' }

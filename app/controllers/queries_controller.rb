@@ -2,11 +2,13 @@
 
 # Responds to queries about objects
 class QueriesController < ApplicationController
-  before_action :load_item, only: [:collections]
+  before_action :load_cocina_object, only: [:collections]
 
   # Returns a list of collections this object is in.
   def collections
-    # If we move to Valkyrie this can be find_inverse_references_by
-    @collections = @item.collections.map { |collection| Cocina::Mapper.build(collection) }
+    # isMemberOf may be nil, in which case we want to return an empty array
+    @collections = Array(@cocina_object.structural.isMemberOf).map do |collection_id|
+      CocinaObjectStore.find(collection_id)
+    end
   end
 end
