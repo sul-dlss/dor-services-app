@@ -35,6 +35,7 @@ module Cocina
         normalize_release_tags
         normalize_object_creator
         normalize_out_labels
+        normalize_apo_source_id
 
         regenerate_ng_xml(ng_xml.to_xml)
       end
@@ -42,6 +43,12 @@ module Cocina
       private
 
       attr_reader :ng_xml
+
+      def normalize_apo_source_id
+        return unless ng_xml.root.xpath('//objectType').text == 'adminPolicy'
+
+        ng_xml.root.xpath('//sourceId').each(&:remove)
+      end
 
       def normalize_source_id_whitespace
         ng_xml.root.xpath('//sourceId').each do |source_node|
