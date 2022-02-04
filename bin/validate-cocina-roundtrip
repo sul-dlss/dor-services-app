@@ -112,6 +112,8 @@ def norm_roundtrip_datastream_ng_xml_for(dsid, roundtrip_datastream_ng_xml)
     # Additional normalizers to go here.
   when 'contentMetadata'
     Cocina::Normalizers::ContentMetadataNormalizer.normalize_roundtrip(content_ng_xml: roundtrip_datastream_ng_xml)
+  when 'embargoMetadata'
+    Cocina::Normalizers::EmbargoNormalizer.normalize_roundtrip(embargo_ng_xml: roundtrip_datastream_ng_xml)
   else
     roundtrip_datastream_ng_xml
   end

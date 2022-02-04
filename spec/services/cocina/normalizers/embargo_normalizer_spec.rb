@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Cocina::Normalizers::EmbargoNormalizer do
   let(:normalized_ng_xml) { described_class.normalize(embargo_ng_xml: Nokogiri::XML(original_xml)) }
+  let(:normalized_roundtripped_ng_xml) { described_class.normalize_roundtrip(embargo_ng_xml: Nokogiri::XML(original_xml)) }
 
   context 'when released embargo' do
     let(:original_xml) do
@@ -57,27 +58,33 @@ RSpec.describe Cocina::Normalizers::EmbargoNormalizer do
       XML
     end
 
+    let(:expected_xml) do
+      <<~XML
+        <embargoMetadata>
+          <status>embargoed</status>
+          <releaseDate>2022-05-06T00:00:00Z</releaseDate>
+          <releaseAccess>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+          </releaseAccess>
+        </embargoMetadata>
+      XML
+    end
+
     it 'retains the releaseAccess node' do
-      expect(normalized_ng_xml).to be_equivalent_to(
-        <<~XML
-          <embargoMetadata>
-            <status>embargoed</status>
-            <releaseDate>2022-05-06T00:00:00Z</releaseDate>
-            <releaseAccess>
-              <access type="discover">
-                <machine>
-                  <world/>
-                </machine>
-              </access>
-              <access type="read">
-                <machine>
-                  <world/>
-                </machine>
-              </access>
-            </releaseAccess>
-          </embargoMetadata>
-        XML
-      )
+      expect(normalized_ng_xml).to be_equivalent_to(expected_xml)
+    end
+
+    it 'retains the releaseAccess node from roundtripped' do
+      expect(normalized_roundtripped_ng_xml).to be_equivalent_to(expected_xml)
     end
   end
 
@@ -144,6 +151,18 @@ RSpec.describe Cocina::Normalizers::EmbargoNormalizer do
         XML
       )
     end
+
+    it 'always removes twentyPctVisibilityStatus and twentyPctVisibilityReleasedDate from roundtripped' do
+      expect(normalized_roundtripped_ng_xml).to be_equivalent_to(
+        <<~XML
+          <embargoMetadata>
+            <status/>
+            <releaseDate/>
+            <releaseAccess/>
+          </embargoMetadata>
+        XML
+      )
+    end
   end
 
   context 'when twentyPctVisibilityStatus is not "released"' do
@@ -165,6 +184,18 @@ RSpec.describe Cocina::Normalizers::EmbargoNormalizer do
           <embargoMetadata>
             <twentyPctVisibilityStatus>???</twentyPctVisibilityStatus>
             <twentyPctVisibilityReleaseDate>2019-06-03T07:00:00Z</twentyPctVisibilityReleaseDate>
+          </embargoMetadata>
+        XML
+      )
+    end
+
+    it 'always removes twentyPctVisibilityStatus and twentyPctVisibilityReleasedDate from roundtripped' do
+      expect(normalized_roundtripped_ng_xml).to be_equivalent_to(
+        <<~XML
+          <embargoMetadata>
+            <status/>
+            <releaseDate/>
+            <releaseAccess/>
           </embargoMetadata>
         XML
       )
