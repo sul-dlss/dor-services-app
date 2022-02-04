@@ -22,11 +22,11 @@ RSpec.describe 'Update MODS' do
       XML
     end
 
-    it 'returns the source MODS xml' do
+    it 'updates the source MODS xml' do
       put '/v1/objects/druid:mk420bs7601/metadata/mods',
           params: xml,
           headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response).to be_successful
+      expect(response).to have_http_status(:no_content)
       expect(object.descMetadata.title_info.main_title).to eq ['Hello']
     end
   end
@@ -40,7 +40,7 @@ RSpec.describe 'Update MODS' do
       XML
     end
 
-    it 'returns the source MODS xml' do
+    it 'returns an error' do
       put '/v1/objects/druid:mk420bs7601/metadata/mods',
           params: xml,
           headers: { 'Authorization' => "Bearer #{jwt}" }
