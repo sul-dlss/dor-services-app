@@ -47,7 +47,7 @@ module Cocina
       def normalize_apo_source_id
         return unless ng_xml.root.xpath('//objectType').text == 'adminPolicy'
 
-        ng_xml.root.xpath('//sourceId').each(&:remove)
+        ng_xml.root.xpath('//sourceId[@source="Hydrus"]').each(&:remove)
       end
 
       def normalize_source_id_whitespace
