@@ -18,7 +18,11 @@ module Notifications
     end
 
     def publish
-      message = { model: model.to_h, created_at: created_at, modified_at: modified_at }
+      message = {
+        model: model.to_h,
+        created_at: created_at.to_datetime.httpdate,
+        modified_at: modified_at.to_datetime.httpdate
+      }
       exchange.publish(message.to_json, routing_key: routing_key)
     end
 

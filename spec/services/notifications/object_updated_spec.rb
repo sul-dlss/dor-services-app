@@ -14,7 +14,7 @@ RSpec.describe Notifications::ObjectUpdated do
 
   let(:channel) { instance_double(Notifications::RabbitChannel, topic: topic) }
   let(:topic) { instance_double(Bunny::Exchange, publish: true) }
-  let(:message) { '{"model":{"data":"455"},"created_at":"04 Feb 2022","modified_at":"04 Feb 2022"}' }
+  let(:message) { "{\"model\":{\"data\":\"455\"},\"created_at\":\"#{created_at.to_datetime.httpdate}\",\"modified_at\":\"#{modified_at.to_datetime.httpdate}\"}" }
 
   before do
     allow(Notifications::RabbitChannel).to receive(:instance).and_return(channel)
