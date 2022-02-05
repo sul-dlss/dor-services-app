@@ -5,11 +5,14 @@ require 'rails_helper'
 RSpec.describe CocinaObjectStore do
   describe 'to Fedora' do
     let(:item) { instance_double(Dor::Item) }
+    let(:date) { Time.zone.now }
     let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid) }
     let(:druid) { 'druid:bc123df4567' }
 
     before do
       allow(ActiveFedora::ContentModel).to receive(:models_asserted_by).and_return(['info:fedora/afmodel:Item'])
+      allow(item).to receive(:create_date).and_return(date)
+      allow(item).to receive(:modified_date).and_return(date)
     end
 
     describe '#find' do
@@ -52,7 +55,7 @@ RSpec.describe CocinaObjectStore do
           expect(described_class.save(cocina_object)).to be updated_cocina_object
           expect(Dor).to have_received(:find).with(druid)
           expect(Cocina::ObjectUpdater).to have_received(:run).with(item, cocina_object)
-          expect(Notifications::ObjectUpdated).to have_received(:publish).with(model: updated_cocina_object)
+          expect(Notifications::ObjectUpdated).to have_received(:publish).with(model: updated_cocina_object, created_at: item.create_date, modified_at: item.modified_date)
         end
       end
 

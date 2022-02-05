@@ -3,15 +3,18 @@
 require 'rails_helper'
 
 RSpec.describe Notifications::ObjectUpdated do
-  subject(:publish) { described_class.publish(model: model) }
+  subject(:publish) { described_class.publish(model: model, created_at: created_at, modified_at: modified_at) }
 
   let(:data) { { data: '455' } }
+  let(:created_at) { '04 Feb 2022' }
+  let(:modified_at) { '04 Feb 2022' }
   let(:administrative) do
     instance_double(Cocina::Models::Administrative, partOfProject: 'h2')
   end
 
   let(:channel) { instance_double(Notifications::RabbitChannel, topic: topic) }
   let(:topic) { instance_double(Bunny::Exchange, publish: true) }
+  let(:message) { "{\"model\":{\"data\":\"455\"},\"created_at\":\"#{created_at.to_datetime.httpdate}\",\"modified_at\":\"#{modified_at.to_datetime.httpdate}\"}" }
 
   before do
     allow(Notifications::RabbitChannel).to receive(:instance).and_return(channel)
@@ -25,7 +28,7 @@ RSpec.describe Notifications::ObjectUpdated do
 
     it 'is successful' do
       publish
-      expect(topic).to have_received(:publish).with('{"model":{"data":"455"}}', routing_key: 'h2')
+      expect(topic).to have_received(:publish).with(message, routing_key: 'h2')
     end
   end
 
@@ -47,7 +50,7 @@ RSpec.describe Notifications::ObjectUpdated do
 
     it 'is successful' do
       publish
-      expect(topic).to have_received(:publish).with('{"model":{"data":"455"}}', routing_key: 'SDR')
+      expect(topic).to have_received(:publish).with(message, routing_key: 'SDR')
     end
   end
 end

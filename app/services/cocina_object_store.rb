@@ -33,10 +33,10 @@ class CocinaObjectStore
   end
 
   def save(cocina_object)
-    updated_cocina_object = cocina_to_fedora_save(cocina_object)
+    (updated_cocina_object, created_at, modified_at) = cocina_to_fedora_save(cocina_object)
 
     # Broadcast this update action to a topic
-    Notifications::ObjectUpdated.publish(model: updated_cocina_object) if Settings.rabbitmq.enabled
+    Notifications::ObjectUpdated.publish(model: updated_cocina_object, created_at: created_at, modified_at: modified_at) if Settings.rabbitmq.enabled
     updated_cocina_object
   end
 
@@ -53,7 +53,7 @@ class CocinaObjectStore
     # Currently this only supports an update, not a save.
     fedora_object = fedora_find(cocina_object.externalIdentifier)
     # Updating produces a different Cocina object than it was provided.
-    Cocina::ObjectUpdater.run(fedora_object, cocina_object)
+    [Cocina::ObjectUpdater.run(fedora_object, cocina_object), fedora_object.create_date, fedora_object.modified_date]
   end
 
   def fedora_find(druid)
