@@ -28,13 +28,8 @@ class CocinaObjectStore
     new.save(cocina_object)
   end
 
-  def find_with_metadata(druid)
-    fedora_to_cocina_find(druid)
-  end
-
   def find(druid)
-    # fedora_to_cocina_find(druid)
-    find_with_metadata(druid).first
+    fedora_to_cocina_find(druid)
   end
 
   def save(cocina_object)
@@ -51,7 +46,7 @@ class CocinaObjectStore
 
   def fedora_to_cocina_find(druid)
     fedora_object = fedora_find(druid)
-    [Cocina::Mapper.build(fedora_object), fedora_object.create_date, fedora_object.modified_date]
+    Cocina::Mapper.build(fedora_object)
   end
 
   def cocina_to_fedora_save(cocina_object)
