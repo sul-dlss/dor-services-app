@@ -12,7 +12,7 @@ RSpec.describe 'Get the object' do
     end
   end
 
-  let(:collection_records) { [create(:collection_unique_druid)] }
+  let(:collection_records) { [create(:collection)] }
   let(:collections) { collection_records.map(&:to_cocina) }
 
   let(:expected) do
@@ -21,7 +21,7 @@ RSpec.describe 'Get the object' do
     }
   end
 
-  let(:dro_record) { create(:dro_unique_druid, :with_structural, isMemberOf: collections.map(&:externalIdentifier)) }
+  let(:dro_record) { create(:dro, :with_structural, isMemberOf: collections.map(&:externalIdentifier)) }
   let(:dro) { dro_record.to_cocina }
 
   let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
@@ -47,7 +47,7 @@ RSpec.describe 'Get the object' do
   end
 
   describe 'more than one collection' do
-    let(:collection_records) { [create(:collection_unique_druid), create(:collection_unique_druid)] }
+    let(:collection_records) { [create(:collection), create(:collection)] }
 
     it 'returns an empty array for collections' do
       get "/v1/objects/#{dro.externalIdentifier}/query/collections",
