@@ -4,6 +4,13 @@ require 'rails_helper'
 
 RSpec.describe ThumbnailService do
   let(:instance) { described_class.new(object) }
+  let(:druid) { 'druid:bc123df4567' }
+  let(:description) do
+    {
+      title: [{ value: 'Constituent label &amp; A Special character' }],
+      purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+    }
+  end
 
   describe '#thumb' do
     subject { instance.thumb }
@@ -33,7 +40,7 @@ RSpec.describe ThumbnailService do
                                   type: Cocina::Models::Vocab.object,
                                   label: 'A new map of Africa',
                                   version: 1,
-                                  description: build_cocina_description_metadata_1(druid),
+                                  description: description,
                                   identification: {},
                                   access: {},
                                   administrative: { hasAdminPolicy: apo_druid })
@@ -45,16 +52,44 @@ RSpec.describe ThumbnailService do
       end
 
       context 'when no specific thumbs are specified' do
+        let(:structural) do
+          {
+            contains: [{
+              type: Cocina::Models::Vocab::Resources.image,
+              externalIdentifier: 'wt183gy6220',
+              label: 'Image 1',
+              version: 1,
+              structural: {
+                contains: [{
+                  type: Cocina::Models::Vocab.file,
+                  externalIdentifier: 'wt183gy6220_1',
+                  label: 'Image 1',
+                  filename: 'wt183gy6220_00_0001.jp2',
+                  hasMimeType: 'image/jp2',
+                  size: 3_182_927,
+                  version: 1,
+                  access: {},
+                  administrative: {
+                    publish: false,
+                    sdrPreserve: false,
+                    shelve: false
+                  },
+                  hasMessageDigests: []
+                }]
+              }
+            }]
+          }
+        end
         let(:object) do
           Cocina::Models::DRO.new(externalIdentifier: druid,
                                   type: Cocina::Models::Vocab.object,
                                   label: 'A new map of Africa',
                                   version: 1,
-                                  description: build_cocina_description_metadata_1(druid),
+                                  description: description,
                                   identification: {},
                                   access: {},
                                   administrative: { hasAdminPolicy: apo_druid },
-                                  structural: build_cocina_structural_metadata_1)
+                                  structural: structural)
         end
 
         it 'finds the first image as the thumb' do
@@ -63,16 +98,23 @@ RSpec.describe ThumbnailService do
       end
 
       context 'when an externalFile image resource is the only image' do
+        let(:structural) do
+          {
+            hasMemberOrders: [{
+              members: ['cg767mn6478_1/2542A.jp2']
+            }]
+          }
+        end
         let(:object) do
           Cocina::Models::DRO.new(externalIdentifier: druid,
                                   type: Cocina::Models::Vocab.object,
                                   label: 'A new map of Africa',
                                   version: 1,
-                                  description: build_cocina_description_metadata_1(druid),
+                                  description: description,
                                   identification: {},
                                   access: {},
                                   administrative: { hasAdminPolicy: apo_druid },
-                                  structural: build_cocina_structural_metadata_2)
+                                  structural: structural)
         end
 
         it 'returns the image as the thumb' do
@@ -81,16 +123,44 @@ RSpec.describe ThumbnailService do
       end
 
       context 'when no thumb is identified' do
+        let(:structural) do
+          {
+            contains: [{
+              type: Cocina::Models::Vocab::Resources.image,
+              externalIdentifier: 'wt183gy6220',
+              label: 'File 1',
+              version: 1,
+              structural: {
+                contains: [{
+                  type: Cocina::Models::Vocab.file,
+                  externalIdentifier: 'wt183gy6220_1',
+                  label: 'File 1',
+                  filename: 'some_file.pdf',
+                  hasMimeType: 'file/pdf',
+                  size: 3_182_927,
+                  version: 1,
+                  access: {},
+                  administrative: {
+                    publish: false,
+                    sdrPreserve: false,
+                    shelve: false
+                  },
+                  hasMessageDigests: []
+                }]
+              }
+            }]
+          }
+        end
         let(:object) do
           Cocina::Models::DRO.new(externalIdentifier: druid,
                                   type: Cocina::Models::Vocab.object,
                                   label: 'A new map of Africa',
                                   version: 1,
-                                  description: build_cocina_description_metadata_1(druid),
+                                  description: description,
                                   identification: {},
                                   access: {},
                                   administrative: { hasAdminPolicy: apo_druid },
-                                  structural: build_cocina_structural_metadata_3)
+                                  structural: structural)
         end
 
         it 'returns nil' do

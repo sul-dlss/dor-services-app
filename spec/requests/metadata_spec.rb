@@ -4,12 +4,18 @@ require 'rails_helper'
 
 RSpec.describe 'Display metadata' do
   let(:object) { Dor::Item.new(pid: 'druid:mk420bs7601') }
+  let(:description) do
+    {
+      title: [{ value: 'Constituent label &amp; A Special character' }],
+      purl: 'https://purl.stanford.edu/mk420bs7601'
+    }
+  end
   let(:cocina_object) do
     Cocina::Models::DRO.new(externalIdentifier: 'druid:mk420bs7601',
                             type: Cocina::Models::Vocab.object,
                             label: 'A generic label',
                             version: 1,
-                            description: build_cocina_description_metadata_1('druid:mk420bs7601'),
+                            description: description,
                             identification: {},
                             access: {},
                             administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
@@ -78,7 +84,7 @@ RSpec.describe 'Display metadata' do
                               type: Cocina::Models::Vocab.object,
                               label: 'A generic label',
                               version: 1,
-                              description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                              description: description,
                               identification: {},
                               access: {},
                               administrative: { hasAdminPolicy: 'druid:pp000pp0000' })

@@ -7,8 +7,43 @@ RSpec.describe Publish::PublicXmlService do
 
   let(:release_tags) { {} }
 
+  let(:druid) { 'druid:bc123df4567' }
   let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
   let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
+  let(:description) do
+    {
+      title: [{ value: 'Constituent label &amp; A Special character' }],
+      purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+    }
+  end
+  let(:structural) do
+    {
+      contains: [{
+        type: Cocina::Models::Vocab::Resources.image,
+        externalIdentifier: 'wt183gy6220',
+        label: 'Image 1',
+        version: 1,
+        structural: {
+          contains: [{
+            type: Cocina::Models::Vocab.file,
+            externalIdentifier: 'wt183gy6220_1',
+            label: 'Image 1',
+            filename: 'wt183gy6220_00_0001.jp2',
+            hasMimeType: 'image/jp2',
+            size: 3_182_927,
+            version: 1,
+            access: {},
+            administrative: {
+              publish: false,
+              sdrPreserve: false,
+              shelve: false
+            },
+            hasMessageDigests: []
+          }]
+        }
+      }]
+    }
+  end
 
   before do
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
@@ -77,7 +112,7 @@ RSpec.describe Publish::PublicXmlService do
                                 type: Cocina::Models::Vocab.object,
                                 label: 'A generic label',
                                 version: 1,
-                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                description: description,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
@@ -95,7 +130,7 @@ RSpec.describe Publish::PublicXmlService do
                                 type: Cocina::Models::Vocab.object,
                                 label: 'A generic label',
                                 version: 1,
-                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                description: description,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
@@ -143,11 +178,11 @@ RSpec.describe Publish::PublicXmlService do
                                 type: Cocina::Models::Vocab.object,
                                 label: 'A generic label',
                                 version: 1,
-                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                description: description,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural)
       end
       let(:now) { Time.now.utc }
 
@@ -232,7 +267,7 @@ RSpec.describe Publish::PublicXmlService do
                                   type: Cocina::Models::Vocab.object,
                                   label: 'A generic label',
                                   version: 1,
-                                  description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                  description: description,
                                   identification: {},
                                   access: {},
                                   administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
@@ -281,11 +316,11 @@ RSpec.describe Publish::PublicXmlService do
                                 type: Cocina::Models::Vocab.object,
                                 label: 'A generic label',
                                 version: 1,
-                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                description: description,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural)
       end
 
       it 'publishes the expected datastreams' do
@@ -303,11 +338,11 @@ RSpec.describe Publish::PublicXmlService do
                                 type: Cocina::Models::Vocab.object,
                                 label: 'A generic label',
                                 version: 1,
-                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                description: description,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural)
       end
 
       it 'handles externalFile references' do
@@ -463,11 +498,11 @@ RSpec.describe Publish::PublicXmlService do
                                 type: Cocina::Models::Vocab.object,
                                 label: 'A generic label',
                                 version: 1,
-                                description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                                description: description,
                                 identification: {},
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: build_cocina_structural_metadata_1)
+                                structural: structural)
       end
 
       before do

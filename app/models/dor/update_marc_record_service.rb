@@ -11,8 +11,8 @@ module Dor
 
     def initialize(druid_obj, thumbnail_service:)
       @druid_obj = druid_obj
-      @druid_id = Dor::PidUtils.remove_druid_prefix(druid_obj.id)
-      @dra_object = druid_obj.rightsMetadata.dra_object
+      @druid_id = Dor::PidUtils.remove_druid_prefix(druid_obj.externalIdentifier)
+      @access = druid_obj.access
       @thumbnail_service = thumbnail_service
     end
 
@@ -21,7 +21,7 @@ module Dor
     end
 
     def ckeys?
-      (@druid_obj.catkey.present? || previous_ckeys.present?)
+      @druid_obj.identification.catalogLinks.find { |link| link.catalog.include?('symphony') }.present?
     end
 
     def push_symphony_records
@@ -54,8 +54,9 @@ module Dor
       records = previous_ckeys.map { |previous_catkey| get_identifier(previous_catkey) }
 
       # now add the current ckey
-      if @druid_obj.catkey.present?
-        records << (released_to_searchworks? ? new_856_record(@druid_obj.catkey) : get_identifier(@druid_obj.catkey)) # if released to searchworks, create the record
+      if @druid_obj.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.present?
+        catalog_record_id = @druid_obj.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.catalogRecordId
+        records << (released_to_searchworks? ? new_856_record(catalog_record_id) : get_identifier(catalog_record_id))
       end
 
       records
@@ -80,8 +81,8 @@ module Dor
     end
 
     def new_856_record(ckey)
-      new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{@druid_obj.object_type}"
-      new856 += "|xbarcode:#{@druid_obj.barcode}" unless @druid_obj.barcode.nil?
+      new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{@druid_obj.type}"
+      new856 += "|xbarcode:#{@druid_obj.identification.barcode}" if @druid_obj.identification.respond_to?(:barcode) && @druid_obj.identification.barcode
       new856 += "|xfile:#{thumb}" unless thumb.nil?
       new856 += get_x2_collection_info unless get_x2_collection_info.nil?
       new856 += get_x2_constituent_info unless get_x2_constituent_info.nil?
@@ -111,9 +112,7 @@ module Dor
 
     # returns text in the z field based on permissions
     def get_z_field
-      # @dra_object.stanford_only_rights returns a 2 element list where presence of first element indicates stanford
-      # only read restriction, and second element indicates the rule on the restriction, if any (e.g. 'no-download')
-      if @dra_object.stanford_only_rights.first.present? || @dra_object.restricted_by_location?
+      if @access.access == 'stanford' || (@access.respond_to?(:readLocation) && @access.readLocation)
         '|zAvailable to Stanford-affiliated users.'
       else
         ''
@@ -133,73 +132,74 @@ module Dor
     # returns the collection information subfields if exists
     # @return [String] the collection information druid-value:catkey-value:title format
     def get_x2_collection_info
-      collections = @druid_obj.collections
-      coll_info = ''
+      return unless @druid_obj.respond_to?(:structural) && @druid_obj.structural
 
-      unless collections.empty?
-        collections.each do |coll|
-          coll_info += "|xcollection:#{coll.id.sub('druid:', '')}:#{coll.catkey}:#{coll.label}"
-        end
+      collections = @druid_obj.structural.isMemberOf
+      collection_info = ''
+
+      collections.each do |collection_druid|
+        collection = CocinaObjectStore.find(collection_druid)
+        catkey = collection.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
+        collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:', '')}:#{catkey&.catalogRecordId}:#{collection.label}"
       end
 
-      coll_info
+      collection_info
     end
 
     # returns the constituent information subfields if exists
     # @return [String] the constituent information druid-value:catkey-value:title format
     def get_x2_constituent_info
-      dor_items_for_constituents.map do |cons_obj|
-        cons_obj_id = cons_obj.id.sub('druid:', '')
-        cons_obj_title = cons_obj.datastreams['descMetadata'].ng_xml.xpath('//mods:mods/mods:titleInfo/mods:title', mods: 'http://www.loc.gov/mods/v3').first.content
-        "|xset:#{cons_obj_id}:#{cons_obj.catkey}:#{cons_obj_title}"
+      dor_items_for_constituents.map do |cons_obj_druid|
+        cons_obj = CocinaObjectStore.find(cons_obj_druid)
+        cons_obj_id = cons_obj_druid.sub('druid:', '')
+        cons_obj_title = cons_obj.description.title.first.value
+        catkey = cons_obj.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
+        "|xset:#{cons_obj_id}:#{catkey}:#{cons_obj_title}"
       end.join
     end
 
     def get_x2_part_info
-      mods_xml = @druid_obj.descMetadata.ng_xml
-      title_info = ModsUtils.primary_title_info(mods_xml)
+      title_info = @druid_obj.description&.title&.first
+      return unless title_info.respond_to?(:structuredValue) && title_info.structuredValue
 
-      return unless title_info
+      part_parts = title_info.structuredValue.select { |part| ['part name', 'part number'].include? part.type }
 
-      part_parts = title_info.children.select do |child|
-        %w(partName partNumber).include?(child.name)
-      end
+      part_label = part_parts.filter_map(&:value).join(parts_delimiter(part_parts))
 
-      part_label = part_parts.filter_map(&:text).join(parts_delimiter(part_parts))
-
-      part_sort = mods_xml.xpath('//*[@type="date/sequential designation"]').first
+      part_sort = title_info.structuredValue.select { |part| 'date/sequential designation'.include? part.type }
 
       str = ''
       str += "|xlabel:#{part_label}" unless part_label.empty?
-      str += "|xsort:#{part_sort.text}" if part_sort
+      str += "|xsort:#{part_sort.first.value}" unless part_sort.empty?
 
       str
     end
 
     def get_x2_rights_info
+      return get_x2_collection_rights_info unless @access.respond_to?(:download)
+
       values = []
 
-      primary = @dra_object.index_elements[:primary]
+      values << 'rights:dark' if @access.access == 'dark'
 
-      # make the "primary" categorization less granular + terser
-      case primary
-      when 'controlled digital lending'
-        values << 'rights:cdl'
-      when /world/
-        values << 'rights:world'
-      when /access_restricted/
-        values << 'rights:group=stanford' if @dra_object.stanford_only_rights.first.present?
-        values.concat(@dra_object.obj_lvl.location.keys.map { |k| "rights:location=#{k.to_s.gsub(/\W/, '')}" })
-        values.concat(@dra_object.obj_lvl.agent.keys.map { |k| "rights:agent=#{k.to_s.gsub(/\W/, '')}" })
-      else
-        values << "rights:#{primary}"
+      if @access.access == 'world'
+        values << 'rights:cdl' if @access.download == 'stanford'
+        values << 'rights:world' if @access.download == 'world'
+        values << 'rights:citation' if @access.download == 'none'
       end
+
+      values << 'rights:group=stanford' if @access.access == 'stanford' && @access.download == 'stanford'
+      values << "rights:location=#{@access.readLocation}" if @access.readLocation
 
       values.map { |value| "|x#{value}" }.join
     end
 
+    def get_x2_collection_rights_info
+      "|xrights:#{@access.access}"
+    end
+
     def born_digital?
-      BORN_DIGITAL_APOS.include? @druid_obj.admin_policy_object_id
+      BORN_DIGITAL_APOS.include? @druid_obj.administrative.hasAdminPolicy
     end
 
     def released_to_searchworks?
@@ -214,19 +214,16 @@ module Dor
     end
 
     def dor_items_for_constituents
-      return [] unless @druid_obj.relationships(:is_constituent_of)
+      return [] unless @druid_obj.respond_to?(:structural) && @druid_obj.structural
 
-      @druid_obj.relationships(:is_constituent_of).map do |cons|
-        cons_druid = cons.sub('info:fedora/', '')
-        Dor::Item.find(cons_druid)
-      end
+      @druid_obj.structural.isMemberOf
     end
 
     # adapted from mods_display
     def parts_delimiter(elements)
       # index will retun nil which is not comparable so we call 100
       # if the element isn't present (thus meaning it's at the end of the list)
-      if (elements.index { |c| c.name == 'partNumber' } || 100) < (elements.index { |c| c.name == 'partName' } || 100)
+      if (elements.index { |c| c.type == 'part number' } || 100) < (elements.index { |c| c.type == 'part name' } || 100)
         ', '
       else
         '. '
@@ -236,7 +233,7 @@ module Dor
     # the previous ckeys for the current object
     # @return [Array] previous catkeys for the object in an array, empty array if none exist
     def previous_ckeys
-      @druid_obj.previous_catkeys.reject(&:empty?)
+      @druid_obj.identification.catalogLinks.select { |link| link.catalog == 'previous symphony' }.map(&:catalogRecordId)
     end
 
     # the @id attribute of resource/file elements including extension
