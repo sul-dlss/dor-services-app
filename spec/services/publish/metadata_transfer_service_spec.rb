@@ -21,12 +21,18 @@ RSpec.describe Publish::MetadataTransferService do
       i.descMetadata.mods_title = 'Fixture title'
     end
   end
+  let(:description) do
+    {
+      title: [{ value: 'Constituent label &amp; A Special character' }],
+      purl: 'https://purl.stanford.edu/bc123df4567'
+    }
+  end
   let(:cocina_object) do
     Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
                             type: Cocina::Models::Vocab.object,
                             label: 'google download barcode 36105049267078',
                             version: 1,
-                            description: build_cocina_description_metadata_1('druid:bc123df4567'),
+                            description: description,
                             identification: {},
                             access: {},
                             administrative: { hasAdminPolicy: 'druid:fg890hx1234' })
