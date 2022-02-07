@@ -3,17 +3,13 @@
 FactoryBot.define do
   factory :collection do
     cocina_version { '0.0.1' }
-    external_identifier { 'druid:hp308wm0436' }
+    external_identifier { generate(:unique_druid) }
     collection_type { Cocina::Models::Vocab.collection }
     label { 'Test Collection' }
     version { 1 }
     access do
       { access: 'world' }
     end
-  end
-
-  factory :collection_unique_druid, parent: :collection do
-    external_identifier { generate(:unique_druid) }
   end
 
   trait :with_collection_identification do

@@ -3,10 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Collection do
+  let(:druid) { 'druid:hp308wm0436' }
   let(:minimal_cocina_collection) do
     Cocina::Models::Collection.new({
                                      cocinaVersion: '0.0.1',
-                                     externalIdentifier: 'druid:hp308wm0436',
+                                     externalIdentifier: druid,
                                      type: Cocina::Models::Vocab.collection,
                                      label: 'Test Collection',
                                      version: 1,
@@ -17,7 +18,7 @@ RSpec.describe Collection do
   let(:cocina_collection) do
     Cocina::Models::Collection.new({
                                      cocinaVersion: '0.0.1',
-                                     externalIdentifier: 'druid:hp308wm0436',
+                                     externalIdentifier: druid,
                                      type: Cocina::Models::Vocab.collection,
                                      label: 'Test Collection',
                                      version: 1,
@@ -33,7 +34,7 @@ RSpec.describe Collection do
 
   describe 'to_cocina' do
     context 'with minimal collection' do
-      let(:collection) { create(:collection) }
+      let(:collection) { create(:collection, external_identifier: druid) }
 
       it 'returns a Cocina::Model::Collection' do
         expect(collection.to_cocina).to eq(minimal_cocina_collection)
@@ -41,7 +42,7 @@ RSpec.describe Collection do
     end
 
     context 'with complete Collection' do
-      let(:collection) { create(:collection, :with_administrative, :with_collection_description, :with_collection_identification) }
+      let(:collection) { create(:collection, :with_administrative, :with_collection_description, :with_collection_identification, external_identifier: druid) }
 
       it 'returns a Cocina::Model::Collection' do
         expect(collection.to_cocina).to eq(cocina_collection)

@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :dro do
     cocina_version { '0.0.1' }
-    external_identifier { 'druid:xz456jk0987' }
+    external_identifier { generate(:unique_druid) }
     content_type { Cocina::Models::Vocab.book }
     label { 'Test DRO' }
     version { 1 }
@@ -13,10 +13,6 @@ FactoryBot.define do
     administrative do
       { hasAdminPolicy: 'druid:hy787xj5878' }
     end
-  end
-
-  factory :dro_unique_druid, parent: :dro do
-    external_identifier { generate(:unique_druid) }
   end
 
   trait :with_dro_identification do
