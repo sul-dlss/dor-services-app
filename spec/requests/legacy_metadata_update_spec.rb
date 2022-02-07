@@ -3,7 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe 'Update the legacy (datastream) metadata' do
-  let(:item) { instance_double(Dor::Item, pid: 'druid:bc123df4567', datastreams: datastreams, save!: nil) }
+  let(:item) do
+    instance_double(Dor::Item, pid: 'druid:bc123df4567', datastreams: datastreams,
+                               save!: nil,
+                               create_date: Time.zone.now,
+                               modified_date: Time.zone.now)
+  end
   let(:create_date) { Time.zone.parse('2019-08-09T19:18:15Z') }
   let(:administrative) { instance_double(Dor::AdministrativeMetadataDS, createDate: create_date) }
   let(:contentMetadata) { instance_double(Dor::ContentMetadataDS, createDate: create_date) }
@@ -98,53 +103,12 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
     JSON
   end
 
-  let(:structural) do
-    {
-      contains: [{
-        type: Cocina::Models::Vocab::Resources.image,
-        externalIdentifier: 'wt183gy6220',
-        label: 'Image 1',
-        version: 1,
-        structural: {
-          contains: [{
-            type: Cocina::Models::Vocab.file,
-            externalIdentifier: 'wt183gy6220_1',
-            label: 'Image 1',
-            filename: 'wt183gy6220_00_0001.jp2',
-            hasMimeType: 'image/jp2',
-            size: 3_182_927,
-            version: 1,
-            access: {},
-            administrative: {
-              publish: false,
-              sdrPreserve: false,
-              shelve: false
-            },
-            hasMessageDigests: []
-          }]
-        }
-      }]
-    }
-  end
-  let(:cocina_object) do
-    Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                            type: Cocina::Models::Vocab.object,
-                            label: 'A generic label',
-                            version: 1,
-                            description: {
-                              title: [{ value: 'Constituent label &amp; A Special character' }],
-                              purl: 'https://purl.stanford.edu/bc123df4567'
-                            },
-                            identification: {},
-                            access: {},
-                            administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                            structural: structural)
-  end
-
   before do
     allow(Dor).to receive(:find).and_return(item)
     allow(LegacyMetadataService).to receive(:update_datastream_if_newer)
-    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+    allow(Notifications::ObjectUpdated).to receive(:publish)
+    allow(Settings.rabbitmq).to receive(:enabled).and_return(true)
+    allow(Cocina::Mapper).to receive(:build).and_return(instance_double(Cocina::Models::DRO))
   end
 
   context 'when update is successful' do
@@ -210,6 +174,7 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
               content: '<versionMetadata></versionMetadata>',
               event_factory: EventFactory)
       expect(item).to have_received(:save!)
+      expect(Notifications::ObjectUpdated).to have_received(:publish)
     end
   end
 
