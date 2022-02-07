@@ -3,12 +3,19 @@
 require 'rails_helper'
 
 RSpec.describe 'Update MODS' do
-  let(:object) { Dor::Item.new(pid: 'druid:mk420bs7601') }
+  let(:object) do
+    Dor::Item.new(pid: 'druid:mk420bs7601',
+                  label: 'Hey',
+                  source_id: 'foo:bar',
+                  admin_policy_object_id: 'druid:dd999df4567')
+  end
 
   before do
     object.descMetadata.title_info.main_title = 'Goodbye'
     allow(Dor).to receive(:find).and_return(object)
     allow(object).to receive(:save!)
+    allow(Notifications::ObjectUpdated).to receive(:publish)
+    allow(Settings.rabbitmq).to receive(:enabled).and_return(true)
   end
 
   context 'with valid xml' do
@@ -28,6 +35,8 @@ RSpec.describe 'Update MODS' do
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:no_content)
       expect(object.descMetadata.title_info.main_title).to eq ['Hello']
+      expect(object.descMetadata.title_info.main_title).to eq ['Hello']
+      expect(Notifications::ObjectUpdated).to have_received(:publish)
     end
   end
 
