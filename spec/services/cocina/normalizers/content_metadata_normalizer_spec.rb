@@ -80,6 +80,22 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     end
   end
 
+  context 'when normalizing objectId with no type' do
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata objectId="bk689jd2364" />
+      XML
+    end
+
+    it 'prefixes with druid:' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata objectId="druid:bk689jd2364" type="file" />
+        XML
+      )
+    end
+  end
+
   context 'when normalizing missing objectId' do
     let(:original_xml) do
       <<~XML

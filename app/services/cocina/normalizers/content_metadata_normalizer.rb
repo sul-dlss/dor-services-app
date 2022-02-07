@@ -43,6 +43,7 @@ module Cocina
         normalize_publish
         normalize_checksum
         normalize_empty_xml
+        normalize_content_file_type
         normalize_image_data
 
         regenerate_ng_xml(ng_xml.to_s)
@@ -170,6 +171,13 @@ module Cocina
       def normalize_empty_xml
         # some objects have <xml> instead of <contentMetadata>, e.g. normalize <xml type="file"/> --> <contentMetadata type="file"/>
         ng_xml.root.xpath('//xml[not(text())]').each { |node| node.name = 'contentMetadata' }
+      end
+
+      def normalize_content_file_type
+        # set the type attribute on the contentMetadata node when it's missing
+        ng_xml.root.xpath('//contentMetadata[not(@type)]').each do |node|
+          node['type'] = 'file'
+        end
       end
 
       def remove_external_resource_id
