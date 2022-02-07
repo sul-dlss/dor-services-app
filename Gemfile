@@ -33,6 +33,8 @@ gem 'retries' # for ReleaseTags::PurlClient and Goobi
 gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq', '~> 6.0'
 gem 'sidekiq-statistic'
+# Pinning stanford-mods since >=3 breaks dor-services.
+gem 'stanford-mods', '~> 2.6'
 gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
 

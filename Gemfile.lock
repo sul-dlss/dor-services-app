@@ -299,8 +299,8 @@ GEM
       json
       nokogiri
       nokogiri-happymapper
-    mods (3.0.1)
-      edtf (~> 3.0)
+    mods (2.4.1)
+      edtf
       iso-639
       nokogiri (>= 1.6.6)
       nom-xml (~> 1.0)
@@ -516,9 +516,9 @@ GEM
     sshkit (1.21.2)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
-    stanford-mods (3.0.0)
+    stanford-mods (2.6.4)
       activesupport
-      mods (~> 3.0, >= 3.0.1)
+      mods (~> 2.2)
     stanford-mods-normalizer (0.1.0)
       nokogiri (~> 1.8)
     stomp (1.4.10)
@@ -615,6 +615,7 @@ DEPENDENCIES
   simplecov
   spring
   spring-watcher-listen (~> 2.0.0)
+  stanford-mods (~> 2.6)
   super_diff
   uuidtools (~> 2.1.4)
   webmock
