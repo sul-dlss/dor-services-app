@@ -41,6 +41,7 @@ module Cocina
         normalize_label_attr
         normalize_attr
         normalize_publish
+        normalize_checksum
         normalize_empty_xml
         normalize_image_data
 
@@ -51,6 +52,7 @@ module Cocina
         remove_resource_id
         remove_external_resource_id
         remove_sequence
+        normalize_checksum
 
         regenerate_ng_xml(ng_xml.to_s)
       end
@@ -156,6 +158,12 @@ module Cocina
         ng_xml.root.xpath('//file').each do |file|
           file['publish'] ||= file['deliver']
           file.delete('deliver')
+        end
+      end
+
+      def normalize_checksum
+        ng_xml.root.xpath('//file/checksum').each do |checksum|
+          checksum['type'] = checksum['type'].downcase if checksum['type']
         end
       end
 
