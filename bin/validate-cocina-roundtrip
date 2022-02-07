@@ -162,6 +162,15 @@ def empty_desc_metadata
   XML
 end
 
+def hydrus_desc_metadata
+  <<~XML
+    <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3"
+      version="3.7"
+      xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+    </mods>
+  XML
+end
+
 # rubocop:disable Metrics/AbcSize
 # rubocop:disable Metrics/CyclomaticComplexity
 # rubocop:disable Metrics/MethodLength
@@ -182,7 +191,10 @@ def validate_druid(druid, loader, no_content: false, no_desc: false, create: fal
 
   fedora_obj.contentMetadata.content = empty_content_metadata(fedora_obj, druid, create) if no_content && fedora_obj.datastreams.include?('contentMetadata')
 
-  fedora_obj.descMetadata.content = empty_desc_metadata if no_desc && fedora_obj.datastreams.include?('descMetadata')
+  if no_desc && fedora_obj.datastreams.include?('descMetadata')
+    fedora_obj.descMetadata.content = empty_desc_metadata
+    fedora_obj.descMetadata.content = fedora_obj.label == 'Hydrus' ? hydrus_desc_metadata : empty_desc_metadata
+  end
 
   # defaultObjectRights has to be normalized before mapping
   if fedora_obj.datastreams.include?('defaultObjectRights')
@@ -222,6 +234,7 @@ def validate_druid(druid, loader, no_content: false, no_desc: false, create: fal
     end
   end
   roundtrip_cocina_hash = roundtrip_cocina_obj.to_h
+  orig_datastreams.delete('descMetadata') if no_desc
 
   begin
     diff_datastreams = diff_datatreams_for(druid, label, orig_datastreams, roundtrip_fedora_obj, orig_cocina_obj.is_a?(Cocina::Models::AdminPolicy))
