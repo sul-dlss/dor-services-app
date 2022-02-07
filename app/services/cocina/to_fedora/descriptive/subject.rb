@@ -384,7 +384,6 @@ module Cocina
           name_attrs = topic_attributes_for(subject, subject_value, type).tap do |attrs|
             attrs[:type] = name_type_for(type)
           end.compact
-
           xml.name name_attrs do
             write_name_parts(subject_value)
             write_display_form(display_values)
@@ -392,6 +391,7 @@ module Cocina
             write_other_notes(subject.note, 'description')
             write_other_notes(subject.note, 'affiliation')
           end
+          write_genres(subject_value)
         end
 
         def write_display_form(display_values)
@@ -409,18 +409,27 @@ module Cocina
         end
 
         def write_name_parts(descriptive_value)
-          descriptive_value.structuredValue.each do |value|
-            write_name_part(value)
-          end
+          descriptive_value
+            .structuredValue
+            .reject { |value| value.type == 'genre' }
+            .each { |value| write_name_part(value) }
+        end
+
+        def write_genres(descriptive_value)
+          descriptive_value
+            .structuredValue
+            .select { |value| value.type == 'genre' }
+            .each { |genre| xml.genre genre.value }
         end
 
         def write_name_part(name_part)
           return unless name_part.value
 
           attributes = {}.tap do |attrs|
-            attrs[:type] = ToFedora::Descriptive::ContributorWriter::NAME_PART[name_part.type]
+            attrs[:type] = ContributorWriter::NAME_PART[name_part.type]
           end.compact
           xml.namePart name_part.value, attributes
+          write_other_notes(name_part.note, 'affiliation')
         end
 
         def name_type_for(type)
