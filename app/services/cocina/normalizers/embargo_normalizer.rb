@@ -58,6 +58,8 @@ module Cocina
       end
 
       def normalize_roundtrip_twentypct
+        return unless ng_xml.root
+
         ng_xml.root.xpath('//twentyPctVisibilityStatus').each(&:remove)
         ng_xml.root.xpath('//twentyPctVisibilityReleaseDate').each(&:remove)
       end
