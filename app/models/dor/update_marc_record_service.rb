@@ -21,6 +21,8 @@ module Dor
     end
 
     def ckeys?
+      return unless @druid_obj.identification
+
       @druid_obj.identification.catalogLinks.find { |link| link.catalog.include?('symphony') }.present?
     end
 
