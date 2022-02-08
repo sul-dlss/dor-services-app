@@ -228,7 +228,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       it 'generates a single symphony record' do
         # rubocop:disable Layout/LineLength
         expect(generate_symphony_records).to eq [
-          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xhttp://cocina.sul.stanford.edu/models/object.jsonld|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:cc111cc1111::Constituent label & A Special character|xrights:world"
+          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:cc111cc1111::Constituent label & A Special character|xrights:world"
         ]
       end
     end
@@ -248,7 +248,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
       it 'generates symphony record with a z subfield' do
         expect(generate_symphony_records).to match_array [
-          "8832162\tbc123dg9393\t.856. 41|zAvailable to Stanford-affiliated users.|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xhttp://cocina.sul.stanford.edu/models/object.jsonld|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:cc111cc1111::Constituent label & A Special character|xrights:group=stanford"
+          "8832162\tbc123dg9393\t.856. 41|zAvailable to Stanford-affiliated users.|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:cc111cc1111::Constituent label & A Special character|xrights:group=stanford"
         ]
       end
     end
@@ -270,7 +270,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
         expect(generate_symphony_records).to match_array [
           "123\tbc123dg9393\t",
           "456\tbc123dg9393\t",
-          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xhttp://cocina.sul.stanford.edu/models/object.jsonld|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:cc111cc1111::Constituent label & A Special character|xrights:world"
+          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:cc111cc1111::Constituent label & A Special character|xrights:world"
         ]
       end
     end
@@ -326,7 +326,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
 
       it 'generates a single symphony record' do
-        expect(generate_symphony_records).to match_array ["8832162\tcc111cc1111\t.856. 41|uhttps://purl.stanford.edu/cc111cc1111|xSDR-PURL|xhttp://cocina.sul.stanford.edu/models/collection.jsonld|xrights:world"]
+        expect(generate_symphony_records).to match_array ["8832162\tcc111cc1111\t.856. 41|uhttps://purl.stanford.edu/cc111cc1111|xSDR-PURL|xcollection|xrights:world"]
       end
     end
 
@@ -369,6 +369,25 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
 
       it 'generates an empty symphony record' do
+        expect(generate_symphony_records).to match_array []
+      end
+    end
+
+    context 'when an APO object is passed' do
+      let(:access) do
+        {
+          access: 'world'
+        }
+      end
+      let(:cocina_object) do
+        Cocina::Models::AdminPolicy.new(externalIdentifier: collection_druid,
+                                        type: Cocina::Models::Vocab.admin_policy,
+                                        label: collection_label,
+                                        version: 1,
+                                        administrative: { hasAdminPolicy: apo_druid, hasAgreement: apo_druid })
+      end
+
+      it 'generates a single symphony record' do
         expect(generate_symphony_records).to match_array []
       end
     end
