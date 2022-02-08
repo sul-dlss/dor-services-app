@@ -20,6 +20,7 @@ module Cocina
       def normalize
         normalize_desc_metadata_nodes
         normalize_empty_registration_and_dissemination
+        normalize_empty_dissemination_workflow
         regenerate_ng_xml(ng_xml.to_xml)
       end
 
@@ -33,9 +34,15 @@ module Cocina
       end
 
       def normalize_empty_registration_and_dissemination
-        # removes any empty nodes like this: <registration/> or <dissemation/>
+        # removes any empty nodes like this: <registration/> or <dissemination/>
         ng_xml.root.xpath('//registration[not(node())]').each(&:remove)
         ng_xml.root.xpath('//dissemination[not(node())]').each(&:remove)
+      end
+
+      def normalize_empty_dissemination_workflow
+        # remove dissemination workflow node with empty id attribute and then remove dissemination node
+        ng_xml.root.xpath('//dissemination/workflow[@id=""]').each(&:remove)
+        ng_xml.root.xpath('//dissemination[not(*)]').each(&:remove)
       end
     end
   end
