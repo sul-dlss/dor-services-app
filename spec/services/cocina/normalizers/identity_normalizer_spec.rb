@@ -591,4 +591,26 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
       )
     end
   end
+
+  context 'when there is not a DOI' do
+    let(:original_xml) do
+      <<~XML
+        <identityMetadata>
+          <objectCreator>DOR</objectCreator>
+          <objectType>item</objectType>
+        </identityMetadata>
+      XML
+    end
+
+    it 'does not add a DOI' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <identityMetadata>
+            <objectCreator>DOR</objectCreator>
+            <objectType>item</objectType>
+          </identityMetadata>
+        XML
+      )
+    end
+  end
 end

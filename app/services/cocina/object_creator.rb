@@ -122,10 +122,10 @@ module Cocina
         identity.apply_label(cocina_item.label)
         identity.apply_release_tags(cocina_item.administrative&.releaseTags)
         identity.apply_doi(Doi.for(druid: pid)) if assign_doi
+        identity.apply_doi(cocina_item.identification.doi) if trial && cocina_item.identification&.doi
         identity.apply_catalog_links(cocina_item.identification&.catalogLinks)
 
         fedora_item.identityMetadata.barcode = cocina_item.identification.barcode if cocina_item.identification.barcode
-
         fedora_item.geoMetadata.content = cocina_item.geographic.iso19139 if cocina_item&.geographic&.iso19139
       end
     end

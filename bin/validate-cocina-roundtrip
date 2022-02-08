@@ -255,8 +255,8 @@ end
 # rubocop:enable Metrics/MethodLength
 # rubocop:enable Metrics/PerceivedComplexity
 
+# Remove file and fileSet externalIdentifiers, since usually regenerated.
 def normalize_external_identifiers(cocina_hash)
-  # Remove file and fileSet externalIdentifiers, since usually regenerated.
   Array(cocina_hash.dig(:structural, :contains)).each do |file_set|
     file_set.delete(:externalIdentifier)
     Array(file_set.dig(:structural, :contains)).each { |file| file.delete(:externalIdentifier) }
