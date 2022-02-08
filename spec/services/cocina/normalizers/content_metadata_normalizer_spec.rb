@@ -42,6 +42,67 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     end
   end
 
+  context 'when normalizing labels' do
+    # adapted from dm559qb5551 and fm402pc0937
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata type="file" objectId="druid:dm559qb5551">
+          <resource id="dm559qb5551_3" type="permissions" objectId="druid:gc571ym3095">
+            <attr name="label"/>
+            <file id="OSA_Copyright_Statement.pdf" mimetype="application/pdf" size="128546" shelve="yes" publish="no" preserve="yes">
+              <checksum type="md5">6b7b69c16a839fbb17e94c7cc5ec1467</checksum>
+              <checksum type="sha1">0ebbc2d45e1b03df31d57accd8e442f2a8188b5a</checksum>
+            </file>
+          </resource>
+          <resource id="dm559qb5551_4" type="permissions" objectId="druid:rw602tg5136">
+            <attr name="label">Some cool label</attr>
+            <file id="copyxfer.pdf" mimetype="application/pdf" size="57053" shelve="yes" publish="no" preserve="yes">
+              <checksum type="md5">036df64941635bcfa525fe3faf86d84f</checksum>
+              <checksum type="sha1">87fc2454991de4f60f26c1f6fa4b51b4e7c913f3</checksum>
+            </file>
+          </resource>
+          <resource id="http://cocina.sul.stanford.edu/fileSet/18dabbd3-16fb-42be-9833-5da5401129a1" sequence="1" type="file">
+            <label/>
+            <file id="2021 March Off Highway Vehicles.pdf" mimetype="application/pdf" size="75211" publish="yes" shelve="yes" preserve="yes">
+              <checksum type="sha1">f715cfa0f2a2cdd0fc14aa73a3e75326babe9ec4</checksum>
+              <checksum type="md5">f3118304673f2135e3c37a6a233034b7</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    let(:expected_xml) do
+      <<~XML
+        <contentMetadata type="file" objectId="druid:dm559qb5551">
+          <resource type="permissions">
+            <file id="OSA_Copyright_Statement.pdf" mimetype="application/pdf" size="128546" shelve="yes" publish="no" preserve="yes">
+              <checksum type="md5">6b7b69c16a839fbb17e94c7cc5ec1467</checksum>
+              <checksum type="sha1">0ebbc2d45e1b03df31d57accd8e442f2a8188b5a</checksum>
+            </file>
+          </resource>
+          <resource type="permissions">
+            <label>Some cool label</label>
+            <file id="copyxfer.pdf" mimetype="application/pdf" size="57053" shelve="yes" publish="no" preserve="yes">
+              <checksum type="md5">036df64941635bcfa525fe3faf86d84f</checksum>
+              <checksum type="sha1">87fc2454991de4f60f26c1f6fa4b51b4e7c913f3</checksum>
+            </file>
+          </resource>
+          <resource type="file">
+            <file id="2021 March Off Highway Vehicles.pdf" mimetype="application/pdf" size="75211" publish="yes" shelve="yes" preserve="yes">
+              <checksum type="sha1">f715cfa0f2a2cdd0fc14aa73a3e75326babe9ec4</checksum>
+              <checksum type="md5">f3118304673f2135e3c37a6a233034b7</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'removes empty <label /> and <attr name="label"> nodes' do
+      expect(normalized_ng_xml).to be_equivalent_to(expected_xml)
+    end
+  end
+
   context 'when normalizing resource objectids' do
     let(:original_xml) do
       <<~XML
