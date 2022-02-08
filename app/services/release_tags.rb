@@ -4,9 +4,18 @@
 class ReleaseTags
   # Retrieve the release tags for an item and all the collections that it is a part of
   #
+  # @param item [Cocina::DRO] the DRO to list release tags for
+  # @return [Hash] (see Dor::ReleaseTags::IdentityMetadata.released_for)
+  def self.for(dro_object:)
+    item = Dor.find(dro_object.externalIdentifier)
+    IdentityMetadata.for(item).released_for({})
+  end
+
+  # Retrieve the release tags for an item and all the collections that it is a part of
+  #
   # @param item [Dor::Item] the item to list release tags for
   # @return [Hash] (see Dor::ReleaseTags::IdentityMetadata.released_for)
-  def self.for(item:)
+  def self.legacy_for(item:)
     IdentityMetadata.for(item).released_for({})
   end
 

@@ -212,7 +212,7 @@ module Dor
     private
 
     def released_for
-      ::ReleaseTags.for(item: @druid_obj)
+      ::ReleaseTags.for(dro_object: @druid_obj)
     end
 
     def dor_items_for_constituents
