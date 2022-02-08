@@ -36,6 +36,7 @@ module Cocina
         remove_geodata
         remove_id
         remove_stacks
+        remove_empty_labels
         normalize_object_id(druid)
         normalize_reading_order(druid)
         normalize_label_attr
@@ -72,6 +73,10 @@ module Cocina
 
       def remove_resource_data
         ng_xml.root.xpath('//resource[@data]').each { |resource_node| resource_node.delete('data') }
+      end
+
+      def remove_empty_labels
+        ng_xml.root.xpath('//label[not(text())][not(@*)]').each(&:remove)
       end
 
       def remove_sequence
@@ -144,9 +149,11 @@ module Cocina
 
       def normalize_label_attr
         ng_xml.root.xpath('//attr[@type="label"] | //attr[@name="label"]').each do |attr_node|
-          label_node = Nokogiri::XML::Node.new('label', ng_xml)
-          label_node.content = attr_node.content
-          attr_node.parent << label_node
+          if attr_node.content.present? # don't create new blank labels
+            label_node = Nokogiri::XML::Node.new('label', ng_xml)
+            label_node.content = attr_node.content
+            attr_node.parent << label_node
+          end
           attr_node.remove
         end
       end
