@@ -21,6 +21,7 @@ module Cocina
         normalize_empty_name_nodes
         normalize_identitifer_nodes
         normalize_object_id
+        normalize_group_without_role
         regenerate_ng_xml(ng_xml.to_xml)
       end
 
@@ -46,6 +47,10 @@ module Cocina
         ng_xml.root.xpath('//roleMetadata[@objectId]').each do |node|
           node.delete('objectId')
         end
+      end
+
+      def normalize_group_without_role
+        ng_xml.root.xpath('//roleMetadata/group').each(&:remove)
       end
     end
   end
