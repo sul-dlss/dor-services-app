@@ -328,6 +328,49 @@ RSpec.describe Dor::UpdateMarcRecordService do
         expect(generate_symphony_records).to match_array ["8832162\tcc111cc1111\t.856. 41|uhttps://purl.stanford.edu/cc111cc1111|xSDR-PURL|xhttp://cocina.sul.stanford.edu/models/collection.jsonld|xrights:world"]
       end
     end
+
+    context 'when an collection object does not include idenfitication' do
+      let(:access) do
+        {
+          access: 'world'
+        }
+      end
+      let(:cocina_object) do
+        Cocina::Models::Collection.new(externalIdentifier: collection_druid,
+                                       type: Cocina::Models::Vocab.collection,
+                                       label: collection_label,
+                                       version: 1,
+                                       description: descriptive_metadata_basic,
+                                       access: access,
+                                       administrative: { hasAdminPolicy: apo_druid })
+      end
+
+      it 'generates an empty symphony record' do
+        expect(generate_symphony_records).to match_array []
+      end
+    end
+
+    context 'when an collection object includes empty idenfitication' do
+      let(:access) do
+        {
+          access: 'world'
+        }
+      end
+      let(:cocina_object) do
+        Cocina::Models::Collection.new(externalIdentifier: collection_druid,
+                                       type: Cocina::Models::Vocab.collection,
+                                       label: collection_label,
+                                       version: 1,
+                                       description: descriptive_metadata_basic,
+                                       access: access,
+                                       identification: {},
+                                       administrative: { hasAdminPolicy: apo_druid })
+      end
+
+      it 'generates an empty symphony record' do
+        expect(generate_symphony_records).to match_array []
+      end
+    end
   end
 
   describe '.write_symphony_records' do
