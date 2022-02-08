@@ -26,7 +26,7 @@ RSpec.describe Cocina::Normalizers::RoleNormalizer do
     it 'removes empty <name> nodes' do
       expect(normalized_ng_xml).to be_equivalent_to(
         <<~XML
-          <roleMetadata objectId="druid:qv648vd4392">
+          <roleMetadata>
             <role type="dor-apo-manager">
               </group>
               <person>
@@ -62,7 +62,7 @@ RSpec.describe Cocina::Normalizers::RoleNormalizer do
     it 'converts <identifier> type="person" and prefix "sunetid:" to <identifier> type="sunetid" and removes prefix' do
       expect(normalized_ng_xml).to be_equivalent_to(
         <<~XML
-          <roleMetadata objectId="druid:qv648vd4392">
+          <roleMetadata>
             <role type="dor-apo-manager">
               </group>
               <person>

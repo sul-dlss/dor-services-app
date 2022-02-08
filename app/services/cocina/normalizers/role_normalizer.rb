@@ -20,6 +20,7 @@ module Cocina
       def normalize
         normalize_empty_name_nodes
         normalize_identitifer_nodes
+        normalize_object_id
         regenerate_ng_xml(ng_xml.to_xml)
       end
 
@@ -38,6 +39,12 @@ module Cocina
             node.content = node.content.delete_prefix('sunetid:')
             node['type'] = 'sunetid'
           end
+        end
+      end
+
+      def normalize_object_id
+        ng_xml.root.xpath('//roleMetadata[@objectId]').each do |node|
+          node.delete('objectId')
         end
       end
     end
