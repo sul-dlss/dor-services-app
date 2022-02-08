@@ -17,6 +17,13 @@ class CocinaObjectStore
     new.find(druid)
   end
 
+  # Determine if an object exists in the datastore.
+  # @param [String] druid
+  # @return [boolean] true if object exists
+  def self.exists?(druid)
+    new.exists?(druid)
+  end
+
   # Normalizes, validates, and updates a Cocina object in the datastore.
   # Since normalization is performed, the Cocina object that is returned may differ from the Cocina object that is provided.
   # @param [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object
@@ -40,6 +47,25 @@ class CocinaObjectStore
     updated_cocina_object
   end
 
+  def exists?(druid)
+    fedora_exists?(druid)
+  end
+
+  # This is only public for migration use.
+  def fedora_find(druid)
+    item = Dor.find(druid)
+    models = ActiveFedora::ContentModel.models_asserted_by(item)
+    item = item.adapt_to(Etd) if models.include?('info:fedora/afmodel:Etd')
+    item
+  rescue ActiveFedora::ObjectNotFoundError
+    raise CocinaObjectNotFoundError
+  end
+
+  # This is only public for migration use.
+  def ar_exists?(druid)
+    Dro.exists?(external_identifier: druid) || Collection.exists?(external_identifier: druid) || AdminPolicy.exists?(external_identifier: druid)
+  end
+
   private
 
   # In later steps in the migration, the *fedora* methods will be replaced by the *ar* methods.
@@ -56,13 +82,11 @@ class CocinaObjectStore
     [Cocina::ObjectUpdater.run(fedora_object, cocina_object), fedora_object.create_date, fedora_object.modified_date]
   end
 
-  def fedora_find(druid)
-    item = Dor.find(druid)
-    models = ActiveFedora::ContentModel.models_asserted_by(item)
-    item = item.adapt_to(Etd) if models.include?('info:fedora/afmodel:Etd')
-    item
-  rescue ActiveFedora::ObjectNotFoundError
-    raise CocinaObjectNotFoundError
+  def fedora_exists?(druid)
+    fedora_find(druid)
+    true
+  rescue CocinaObjectNotFoundError
+    false
   end
 
   # The *ar* methods are private. In later steps in the migration, the *ar* methods will be invoked by the
