@@ -83,7 +83,7 @@ module Dor
     end
 
     def new_856_record(ckey)
-      new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{@cocina_object.type}"
+      new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{get_object_type_from_uri}"
       new856 += "|xbarcode:#{@cocina_object.identification.barcode}" if @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
       new856 += "|xfile:#{thumb}" unless thumb.nil?
       new856 += get_x2_collection_info unless get_x2_collection_info.nil?
@@ -95,6 +95,13 @@ module Dor
 
     def get_identifier(ckey)
       "#{ckey}\t#{@druid_id}\t"
+    end
+
+    def get_object_type_from_uri
+      return 'item' if @cocina_object.dro?
+      return 'collection' if @cocina_object.collection?
+
+      raise "Error translating #{@cocina_object.type} to short form"
     end
 
     # returns 856 constants
