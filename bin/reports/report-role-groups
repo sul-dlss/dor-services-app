@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+def has_group_no_role?(ng_xml)
+  ng_xml.root.xpath('//roleMetadata/group').present?
+end
+
+Report.new(name: 'role-group-without-role', dsid: 'roleMetadata', report_func: method(:has_group_no_role?)).run

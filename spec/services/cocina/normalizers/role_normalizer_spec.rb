@@ -10,7 +10,6 @@ RSpec.describe Cocina::Normalizers::RoleNormalizer do
       <<~XML
         <roleMetadata objectId="druid:qv648vd4392">
           <role type="dor-apo-manager">
-            </group>
             <person>
               <identifier type="person">sunetid:petucket</identifier>
               <name/>
@@ -28,7 +27,6 @@ RSpec.describe Cocina::Normalizers::RoleNormalizer do
         <<~XML
           <roleMetadata>
             <role type="dor-apo-manager">
-              </group>
               <person>
                 <identifier type="sunetid">petucket</identifier>
               </person>
@@ -47,7 +45,6 @@ RSpec.describe Cocina::Normalizers::RoleNormalizer do
       <<~XML
         <roleMetadata objectId="druid:qv648vd4392">
           <role type="dor-apo-manager">
-            </group>
             <person>
               <identifier type="person">sunetid:petucket</identifier>
             </person>
@@ -64,13 +61,43 @@ RSpec.describe Cocina::Normalizers::RoleNormalizer do
         <<~XML
           <roleMetadata>
             <role type="dor-apo-manager">
-              </group>
               <person>
                 <identifier type="sunetid">petucket</identifier>
               </person>
               <group>
                 <identifier type="workgroup">sdr:metadata-staff</identifier>
               </group>
+            </role>
+          </roleMetadata>
+        XML
+      )
+    end
+  end
+
+  context 'when #normalize_group_without_role on APO like objects' do
+    let(:original_xml) do
+      <<~XML
+        <roleMetadata objectId="druid:qv648vd4392">
+          <role type="dor-apo-manager">
+            <person>
+              <identifier type="person">sunetid:petucket</identifier>
+            </person>
+          </role>
+          <group>
+            <identifier type="workgroup">sdr:metadata-staff</identifier>
+          </group>
+        </roleMetadata>
+      XML
+    end
+
+    it 'removes the group node outside of the role node' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <roleMetadata>
+            <role type="dor-apo-manager">
+              <person>
+                <identifier type="sunetid">petucket</identifier>
+              </person>
             </role>
           </roleMetadata>
         XML
