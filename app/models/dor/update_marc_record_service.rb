@@ -9,10 +9,10 @@ module Dor
     # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
     BORN_DIGITAL_APOS = %w(druid:bx911tp9024 druid:jj305hm5259).freeze
 
-    def initialize(druid_obj, thumbnail_service:)
-      @druid_obj = druid_obj
-      @druid_id = Dor::PidUtils.remove_druid_prefix(druid_obj.externalIdentifier)
-      @access = druid_obj.access
+    def initialize(cocina_object, thumbnail_service:)
+      @cocina_object = cocina_object
+      @druid_id = Dor::PidUtils.remove_druid_prefix(cocina_object.externalIdentifier)
+      @access = cocina_object.access
       @thumbnail_service = thumbnail_service
     end
 
@@ -21,9 +21,9 @@ module Dor
     end
 
     def ckeys?
-      return unless @druid_obj.identification
+      return unless @cocina_object.identification
 
-      @druid_obj.identification.catalogLinks.find { |link| link.catalog.include?('symphony') }.present?
+      @cocina_object.identification.catalogLinks.find { |link| link.catalog.include?('symphony') }.present?
     end
 
     def push_symphony_records
@@ -56,8 +56,8 @@ module Dor
       records = previous_ckeys.map { |previous_catkey| get_identifier(previous_catkey) }
 
       # now add the current ckey
-      if @druid_obj.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.present?
-        catalog_record_id = @druid_obj.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.catalogRecordId
+      if @cocina_object.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.present?
+        catalog_record_id = @cocina_object.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.catalogRecordId
         records << (released_to_searchworks? ? new_856_record(catalog_record_id) : get_identifier(catalog_record_id))
       end
 
@@ -83,8 +83,8 @@ module Dor
     end
 
     def new_856_record(ckey)
-      new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{@druid_obj.type}"
-      new856 += "|xbarcode:#{@druid_obj.identification.barcode}" if @druid_obj.identification.respond_to?(:barcode) && @druid_obj.identification.barcode
+      new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{@cocina_object.type}"
+      new856 += "|xbarcode:#{@cocina_object.identification.barcode}" if @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
       new856 += "|xfile:#{thumb}" unless thumb.nil?
       new856 += get_x2_collection_info unless get_x2_collection_info.nil?
       new856 += get_x2_constituent_info unless get_x2_constituent_info.nil?
@@ -134,9 +134,9 @@ module Dor
     # returns the collection information subfields if exists
     # @return [String] the collection information druid-value:catkey-value:title format
     def get_x2_collection_info
-      return unless @druid_obj.respond_to?(:structural) && @druid_obj.structural
+      return unless @cocina_object.respond_to?(:structural) && @cocina_object.structural
 
-      collections = @druid_obj.structural.isMemberOf
+      collections = @cocina_object.structural.isMemberOf
       collection_info = ''
 
       collections.each do |collection_druid|
@@ -161,7 +161,7 @@ module Dor
     end
 
     def get_x2_part_info
-      title_info = @druid_obj.description&.title&.first
+      title_info = @cocina_object.description&.title&.first
       return unless title_info.respond_to?(:structuredValue) && title_info.structuredValue
 
       part_parts = title_info.structuredValue.select { |part| ['part name', 'part number'].include? part.type }
@@ -201,7 +201,7 @@ module Dor
     end
 
     def born_digital?
-      BORN_DIGITAL_APOS.include? @druid_obj.administrative.hasAdminPolicy
+      BORN_DIGITAL_APOS.include? @cocina_object.administrative.hasAdminPolicy
     end
 
     def released_to_searchworks?
@@ -212,13 +212,13 @@ module Dor
     private
 
     def released_for
-      ::ReleaseTags.for(dro_object: @druid_obj)
+      ::ReleaseTags.for(dro_object: @cocina_object)
     end
 
     def dor_items_for_constituents
-      return [] unless @druid_obj.respond_to?(:structural) && @druid_obj.structural
+      return [] unless @cocina_object.respond_to?(:structural) && @cocina_object.structural
 
-      @druid_obj.structural.isMemberOf
+      @cocina_object.structural.isMemberOf
     end
 
     # adapted from mods_display
@@ -235,7 +235,7 @@ module Dor
     # the previous ckeys for the current object
     # @return [Array] previous catkeys for the object in an array, empty array if none exist
     def previous_ckeys
-      @druid_obj.identification.catalogLinks.select { |link| link.catalog == 'previous symphony' }.map(&:catalogRecordId)
+      @cocina_object.identification.catalogLinks.select { |link| link.catalog == 'previous symphony' }.map(&:catalogRecordId)
     end
 
     # the @id attribute of resource/file elements including extension
