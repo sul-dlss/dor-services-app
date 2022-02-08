@@ -116,6 +116,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   before do
+    allow(Dor).to receive(:find).and_return(instance_double(Dor::Item))
     allow(ReleaseTags::IdentityMetadata).to receive(:for).and_return(release_service)
     Settings.release.symphony_path = './spec/fixtures/sdr-purl'
   end

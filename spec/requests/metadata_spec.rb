@@ -91,7 +91,7 @@ RSpec.describe 'Display metadata' do
     end
 
     before do
-      allow(ReleaseTags).to receive(:for).and_return(
+      allow(ReleaseTags).to receive(:legacy_for).and_return(
         'SearchWorks' => { 'release' => true },
         'elsewhere' => { 'release' => false }
       )
