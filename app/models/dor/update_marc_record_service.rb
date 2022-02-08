@@ -12,7 +12,7 @@ module Dor
     def initialize(cocina_object, thumbnail_service:)
       @cocina_object = cocina_object
       @druid_id = Dor::PidUtils.remove_druid_prefix(cocina_object.externalIdentifier)
-      @access = cocina_object.access
+      @access = cocina_object.access if cocina_object.respond_to?(:access)
       @thumbnail_service = thumbnail_service
     end
 
@@ -21,7 +21,7 @@ module Dor
     end
 
     def ckeys?
-      return unless @cocina_object.identification
+      return unless @cocina_object.respond_to?(:identification) && @cocina_object.identification
 
       @cocina_object.identification.catalogLinks.find { |link| link.catalog.include?('symphony') }.present?
     end
@@ -97,11 +97,12 @@ module Dor
       "#{ckey}\t#{@druid_id}\t"
     end
 
+    # This should only be reached for dro and collection objects
     def get_object_type_from_uri
       return 'item' if @cocina_object.dro?
       return 'collection' if @cocina_object.collection?
 
-      raise "Error translating #{@cocina_object.type} to short form"
+      nil
     end
 
     # returns 856 constants

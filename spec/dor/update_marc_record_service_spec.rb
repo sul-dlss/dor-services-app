@@ -372,6 +372,25 @@ RSpec.describe Dor::UpdateMarcRecordService do
         expect(generate_symphony_records).to match_array []
       end
     end
+
+    context 'when an APO object is passed' do
+      let(:access) do
+        {
+          access: 'world'
+        }
+      end
+      let(:cocina_object) do
+        Cocina::Models::AdminPolicy.new(externalIdentifier: collection_druid,
+                                        type: Cocina::Models::Vocab.admin_policy,
+                                        label: collection_label,
+                                        version: 1,
+                                        administrative: { hasAdminPolicy: apo_druid, hasAgreement: apo_druid })
+      end
+
+      it 'generates a single symphony record' do
+        expect(generate_symphony_records).to match_array []
+      end
+    end
   end
 
   describe '.write_symphony_records' do
