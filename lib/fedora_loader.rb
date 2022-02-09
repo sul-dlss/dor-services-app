@@ -89,13 +89,10 @@ class FedoraLoader
   attr_reader :cache
 
   # rubocop:disable Metrics/CyclomaticComplexity
-  # rubocop:disable Metrics/PerceivedComplexity
   def fedora_class(rels_ext)
     rels_ext_ng_xml = Nokogiri::XML(rels_ext)
 
-    raise ExpectedUnmapped if rels_ext_ng_xml.root.xpath('//fedora:conformsTo[@rdf:resource="info:fedora/afmodel:Part"]',
-                                                         'fedora' => 'info:fedora/fedora-system:def/relations-external#',
-                                                         'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#').present?
+    raise ExpectedUnmapped unless MigrationFilter.migrate?(rels_ext_ng_xml)
 
     models = models_for(rels_ext_ng_xml)
 
@@ -112,16 +109,11 @@ class FedoraLoader
     return Dor::Item if models.include?('info:fedora/afmodel:Eem')
     return Dor::Agreement if models.include?('info:fedora/afmodel:Dor_Agreement')
 
-    # Expected unmapped
-    raise ExpectedUnmapped if models.include?('info:fedora/afmodel:Part')
-    raise ExpectedUnmapped if models.include?('info:fedora/afmodel:PermissionFile')
-
     # Otherwise unexpected unmapped
     raise Unmapped
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
-  # rubocop:enable Metrics/PerceivedComplexity
 
+  # rubocop:enable Metrics/CyclomaticComplexity
   def models_for(rels_ext_ng_xml)
     # Some items have incorrect RELS-EXT, no also checking info:fedora/fedora-system:def/relations-external#
     has_model_nodes = rels_ext_ng_xml.root.xpath('//fedora-model:hasModel',
