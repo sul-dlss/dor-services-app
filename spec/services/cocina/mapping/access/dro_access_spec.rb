@@ -521,8 +521,6 @@ RSpec.describe 'Fedora item rights/statements/licenses <--> Cocina DRO access ma
             </access>
             <use>
               <human type="useAndReproduction">Official WTO documents are free for public use.</human>
-              <human type="creativeCommons"/>
-              <machine type="creativeCommons"/>
             </use>
             <copyright>
               <human>Copyright &#xA9; World Trade Organization</human>

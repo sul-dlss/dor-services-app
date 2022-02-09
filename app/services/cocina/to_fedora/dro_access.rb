@@ -32,9 +32,11 @@ module Cocina
 
       def apply_rights
         AccessGenerator.generate(root: item.rightsMetadata.ng_xml.root, access: access, structural: structural)
-        item.rightsMetadata.copyright = access.copyright if access.copyright
+        item.rightsMetadata.copyright = access.copyright
+        # now remove any empty copyright elements
+        item.rightsMetadata.ng_xml.root.xpath('//copyright[count(*) = 0]').each(&:remove)
         item.rightsMetadata.use_statement = access.useAndReproductionStatement if access.useAndReproductionStatement
-        License.update(item.rightsMetadata, access.license) if access.license
+        License.update(item.rightsMetadata, access.license)
         item.rightsMetadata.ng_xml_will_change!
       end
     end

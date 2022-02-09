@@ -117,10 +117,7 @@ RSpec.describe Cocina::ToFedora::License do
 
     it 'writes the XML with the license removed' do
       apply
-      expect(datastream.ng_xml.xpath('//use')).to be_equivalent_to <<~XML
-        <use>
-        </use>
-      XML
+      expect(datastream.ng_xml.xpath('//use')).to be_empty
     end
   end
 end

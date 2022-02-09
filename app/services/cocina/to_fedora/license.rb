@@ -22,6 +22,8 @@ module Cocina
           license_node.remove
         end
 
+        # a call to use_node (via license_node) might add an unused "<use/>", so remove it.
+        datastream.ng_xml.xpath('/rightsMetadata/use[count(*) = 0]').each(&:remove)
         datastream.ng_xml_will_change!
       end
 
@@ -39,7 +41,6 @@ module Cocina
         datastream.ng_xml.xpath('/rightsMetadata/use/machine[@type="creativeCommons"]').each(&:remove)
         datastream.ng_xml.xpath('/rightsMetadata/use/human[@type="openDataCommons"]').each(&:remove)
         datastream.ng_xml.xpath('/rightsMetadata/use/human[@type="creativeCommons"]').each(&:remove)
-        datastream.ng_xml.xpath('/rightsMetadata/use[count(*) = 0]').each(&:remove)
       end
 
       def use_node
