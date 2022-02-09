@@ -3,10 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Dro do
+  let(:druid) { 'druid:xz456jk0987' }
+
   let(:minimal_cocina_dro) do
     Cocina::Models::DRO.new({
                               cocinaVersion: '0.0.1',
-                              externalIdentifier: 'druid:xz456jk0987',
+                              externalIdentifier: druid,
                               type: Cocina::Models::Vocab.book,
                               label: 'Test DRO',
                               version: 1,
@@ -18,7 +20,7 @@ RSpec.describe Dro do
   let(:cocina_dro) do
     Cocina::Models::DRO.new({
                               cocinaVersion: '0.0.1',
-                              externalIdentifier: 'druid:xz456jk0987',
+                              externalIdentifier: druid,
                               type: Cocina::Models::Vocab.book,
                               label: 'Test DRO',
                               version: 1,
@@ -66,7 +68,7 @@ RSpec.describe Dro do
 
   describe 'to_cocina' do
     context 'with minimal DRO' do
-      let(:dro) { create(:dro) }
+      let(:dro) { create(:dro, external_identifier: druid) }
 
       it 'returns a Cocina::Model::DRO' do
         expect(dro.to_cocina).to eq(minimal_cocina_dro)
@@ -74,7 +76,7 @@ RSpec.describe Dro do
     end
 
     context 'with complete DRO' do
-      let(:dro) { create(:dro, :with_dro_description, :with_dro_identification, :with_structural, :with_geographic) }
+      let(:dro) { create(:dro, :with_dro_description, :with_dro_identification, :with_structural, :with_geographic, external_identifier: druid) }
 
       it 'returns a Cocina::Model::DRO' do
         expect(dro.to_cocina).to eq(cocina_dro)

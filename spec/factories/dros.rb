@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :dro do
     cocina_version { '0.0.1' }
-    external_identifier { 'druid:xz456jk0987' }
+    external_identifier { generate(:unique_druid) }
     content_type { Cocina::Models::Vocab.book }
     label { 'Test DRO' }
     version { 1 }
@@ -31,6 +31,10 @@ FactoryBot.define do
   end
 
   trait :with_structural do
+    transient do
+      isMemberOf { [] }
+    end
+
     structural do
       { contains: [
         {
@@ -60,7 +64,9 @@ FactoryBot.define do
             ]
           }
         }
-      ] }
+      ] }.tap do |h|
+        h.merge!({ isMemberOf: isMemberOf }) if isMemberOf.present?
+      end
     end
   end
 
