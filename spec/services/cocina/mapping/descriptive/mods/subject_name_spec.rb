@@ -1004,19 +1004,22 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
   describe 'Name subject with name type' do
     # based on bt573bx7287
-    xit 'updated mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <subject authority="lcsh" altRepGroup="1">
-            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n83172096">
-              <namePart>Wang, Jingwei, 1883-1944</namePart>
-            </name>
+          <subject altRepGroup="1" authority="lcsh">
+          <name authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n83172096" type="personal">
+                <namePart>Wang, Jingwei, 1883-1944</namePart>
+              </name>
           </subject>
-          <subject authority="lcsh" altRepGroup="1">
-            <name type="personal" lang="chi" script="Hant">
+          <subject authority="lcsh" altRepGroup="1" lang="chi" script="Hant">
+            <name type="personal">
               <namePart>汪精衛, 1883-1944</namePart>
             </name>
           </subject>
+          <location>
+            <url usage="primary display">https://purl.stanford.edu/zn746hz1696</url>
+          </location>
         XML
       end
 
@@ -1063,21 +1066,24 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
 
   describe 'Structured subject with script' do
     # based on dp130sv2563
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <subject authority="lcsh" altRepGroup="1">
-            <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names" valueURI="http://id.loc.gov/authorities/names/n83172096">
+          <subject altRepGroup="1" authority="lcsh">
+            <name authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n83172096" type="personal">
               <namePart>Wang, Jingwei, 1883-1944</namePart>
             </name>
             <topic>Personality cult</topic>
           </subject>
-          <subject altRepGroup="1">
-            <name type="personal" lang="chi" script="Hant">
+          <subject altRepGroup="1" lang="chi" script="Hant">
+            <name type="personal">
               <namePart>汪精衛, 1883-1944</namePart>
             </name>
             <topic>個人崇拜</topic>
           </subject>
+          <location>
+            <url usage="primary display">https://purl.stanford.edu/zn746hz1696</url>
+          </location>
         XML
       end
 
@@ -1107,22 +1113,22 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
                   }
                 },
                 {
+                  valueLanguage: {
+                    code: 'chi',
+                    source: {
+                      code: 'iso639-2b'
+                    },
+                    valueScript: {
+                      code: 'Hant',
+                      source: {
+                        code: 'iso15924'
+                      }
+                    }
+                  },
                   structuredValue: [
                     {
                       value: '汪精衛, 1883-1944',
-                      type: 'person',
-                      valueLanguage: {
-                        code: 'chi',
-                        source: {
-                          code: 'iso639-2b'
-                        },
-                        valueScript: {
-                          code: 'Hant',
-                          source: {
-                            code: 'iso15924'
-                          }
-                        }
-                      }
+                      type: 'person'
                     },
                     {
                       value: '個人崇拜',
