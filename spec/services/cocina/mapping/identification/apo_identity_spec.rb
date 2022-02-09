@@ -10,7 +10,7 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
   #  otherId of type uuid -> normalize out
   #  tags -> normalize out
   #  agreementId, adminPolicy -> normalize out (we use RELS-EXT)
-  #  sourceId -> we need to KEEP
+  #  sourceId -> we don't care about Hydrus source_ids, which is all of them for APOs
 
   let(:mods_ng_xml) do
     Nokogiri::XML <<~XML
@@ -38,7 +38,8 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
   let(:fedora_apo_mock) do
     instance_double(Dor::AdminPolicyObject,
                     pid: pid,
-                    label: label,
+                    label: label, # used for TitleBuilderStrategy
+                    objectLabel: [object_label], # checked first for cocina props, Om makes it an array
                     current_version: '1',
                     admin_policy_object_id: admin_policy_id,
                     agreement_object_id: agreement_object_id,
@@ -72,7 +73,6 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
       Dor::AdminPolicyObject.new(pid: mapped_cocina_props[:externalIdentifier],
                                  admin_policy_object_id: mapped_cocina_props[:administrative][:hasAdminPolicy],
                                  agreement_object_id: mapped_cocina_props[:administrative][:hasAgreement],
-                                 # source_id: cocina_admin_policy.identification.sourceId,
                                  label: mapped_cocina_props[:label])
     end
     let(:mapped_roundtrip_identity_xml) do
@@ -85,7 +85,7 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
       expect(mapped_roundtrip_identity_xml).to be_equivalent_to(roundtrip_identity_metadata_xml)
     end
 
-    it 'identityMetadata roundtrips thru cocina maps to normalized original identityMetadata.xml' do
+    it 'identityMetadata roundtripped thru cocina maps to normalized original identityMetadata.xml' do
       expect(mapped_roundtrip_identity_xml).to be_equivalent_to normalized_orig_identity_xml
     end
   end
@@ -94,7 +94,8 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
     let(:roundtrip_fedora_apo_mock) do
       instance_double(Dor::AdminPolicyObject,
                       pid: mapped_cocina_props[:externalIdentifier],
-                      label: mapped_cocina_props[:label],
+                      label: label, # used for TitleBuilderStrategy
+                      objectLabel: [mapped_cocina_props[:label]], # checked first for cocina props, Om makes it an array
                       current_version: '1',
                       admin_policy_object_id: mapped_cocina_props[:administrative][:hasAdminPolicy],
                       agreement_object_id: mapped_cocina_props[:administrative][:hasAgreement],
@@ -115,7 +116,8 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
     let(:normalized_orig_fedora_apo_mock) do
       instance_double(Dor::AdminPolicyObject,
                       pid: pid,
-                      label: label,
+                      label: label, # used for TitleBuilderStrategy
+                      objectLabel: [object_label], # checked first for cocina props, Om makes it an array
                       current_version: '1',
                       admin_policy_object_id: admin_policy_id,
                       agreement_object_id: agreement_object_id,
@@ -157,6 +159,7 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
     it_behaves_like 'APO Identification Fedora Cocina mapping' do
       let(:pid) { 'druid:zd878cf9993' }
       let(:label) { 'Fondo Lanciani' }
+      let(:object_label) { label }
       let(:admin_policy_id) { 'druid:hv992ry2431' }
       let(:agreement_object_id) { 'druid:zh747vq3919' }
       let(:identity_metadata_xml) do
@@ -164,7 +167,7 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
           <identityMetadata>
             <objectId>#{pid}</objectId>
             <objectCreator>DOR</objectCreator>
-            <objectLabel>#{label}</objectLabel>
+            <objectLabel>#{object_label}</objectLabel>
             <objectType>adminPolicy</objectType>
             <otherId name="uuid">5844f566-282e-11e6-8872-005056a7ed61</otherId>
             <tag>Registered By : caster</tag>
@@ -178,7 +181,7 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
           <identityMetadata>
             <objectId>#{pid}</objectId>
             <objectCreator>DOR</objectCreator>
-            <objectLabel>#{label}</objectLabel>
+            <objectLabel>#{object_label}</objectLabel>
             <objectType>adminPolicy</objectType>
           </identityMetadata>
         XML
@@ -207,12 +210,13 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
     it_behaves_like 'APO Identification Fedora Cocina mapping' do
       let(:pid) { 'druid:bm077td6448' }
       let(:label) { 'Parker Manuscripts' }
+      let(:object_label) { label }
       let(:admin_policy_id) { 'druid:nt592gh9590' }
       let(:agreement_object_id) { 'druid:tx617qp8040' }
       let(:identity_metadata_xml) do
         <<~XML
           <identityMetadata>
-            <objectLabel>#{label}</objectLabel>
+            <objectLabel>#{object_label}</objectLabel>
             <adminPolicy>#{admin_policy_id}</adminPolicy>
             <agreementId>#{agreement_object_id}</agreementId>
             <objectType>adminPolicy</objectType>
@@ -227,7 +231,7 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
       let(:roundtrip_identity_metadata_xml) do
         <<~XML
           <identityMetadata>
-            <objectLabel>#{label}</objectLabel>
+            <objectLabel>#{object_label}</objectLabel>
             <objectType>adminPolicy</objectType>
             <objectId>#{pid}</objectId>
             <objectCreator>DOR</objectCreator>
@@ -258,6 +262,7 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
     it_behaves_like 'APO Identification Fedora Cocina mapping' do
       let(:pid) { 'druid:bk068fh4950' }
       let(:label) { 'APO for Stanford University, Department of Computer Science, Technical Reports' }
+      let(:object_label) { label }
       let(:admin_policy_id) { 'druid:zw306xn5593' }
       let(:agreement_object_id) { 'druid:mc322hh4254' }
       let(:identity_metadata_xml) do
@@ -266,7 +271,7 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
             <sourceId source="Hydrus">adminPolicy-dhartwig-2013-06-10T18:11:42.520Z</sourceId>
             <objectId>#{pid}</objectId>
             <objectCreator>DOR</objectCreator>
-            <objectLabel>#{label}</objectLabel>
+            <objectLabel>#{object_label}</objectLabel>
             <objectType>adminPolicy</objectType>
             <adminPolicy>#{admin_policy_id}</adminPolicy>
             <otherId name="uuid">341b275c-d1f9-11e2-ba42-0050569b3c6e</otherId>
@@ -277,6 +282,53 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
       end
 
       # Hydrus sourceId is removed
+      let(:roundtrip_identity_metadata_xml) do
+        <<~XML
+          <identityMetadata>
+            <objectId>#{pid}</objectId>
+            <objectCreator>DOR</objectCreator>
+            <objectLabel>#{object_label}</objectLabel>
+            <objectType>adminPolicy</objectType>
+          </identityMetadata>
+        XML
+      end
+
+      let(:cocina_props) do
+        {
+          externalIdentifier: pid,
+          type: Cocina::Models::Vocab.admin_policy,
+          label: label,
+          version: 1,
+          administrative: {
+            hasAdminPolicy: admin_policy_id,
+            hasAgreement: agreement_object_id,
+            defaultAccess: default_access_props,
+            defaultObjectRights: default_object_rights_xml,
+            roles: []
+          },
+          description: description_props
+        }
+      end
+    end
+  end
+
+  context 'when no objectLabel' do
+    it_behaves_like 'APO Identification Fedora Cocina mapping' do
+      let(:pid) { 'druid:bb666bb6666' }
+      let(:label) { 'not an original object label' }
+      let(:object_label) { nil }
+      let(:admin_policy_id) { 'druid:hv992ry2431' }
+      let(:agreement_object_id) { 'druid:zh747vq3919' }
+      let(:identity_metadata_xml) do
+        <<~XML
+          <identityMetadata>
+            <objectId>#{pid}</objectId>
+            <objectCreator>DOR</objectCreator>
+            <objectType>adminPolicy</objectType>
+          </identityMetadata>
+        XML
+      end
+
       let(:roundtrip_identity_metadata_xml) do
         <<~XML
           <identityMetadata>

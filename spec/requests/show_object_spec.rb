@@ -423,7 +423,8 @@ RSpec.describe 'Get the object' do
     context 'when the object exists with minimal metadata' do
       before do
         object.descMetadata.title_info.main_title = 'Hello'
-        object.label = 'foo'
+        object.label = 'foo' # used for TitleBuilderStrategy
+        object.identityMetadata.objectLabel = ['bar'] # checked first for cocina props, Om makes it an array
         object.agreement_object_id = 'druid:bb008zm4587'
       end
 
@@ -435,7 +436,7 @@ RSpec.describe 'Get the object' do
 
         expect(json['externalIdentifier']).to eq 'druid:bc123df4567'
         expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
-        expect(json['label']).to eq 'foo'
+        expect(json['label']).to eq 'bar'
         expect(json['version']).to eq 1
         expect(json['administrative']['defaultObjectRights']).to match '<rightsMetadata>'
         expect(json['administrative']['registrationWorkflow']).to eq []
@@ -476,7 +477,8 @@ RSpec.describe 'Get the object' do
           </roleMetadata>
         XML
         object.descMetadata.title_info.main_title = 'Hello'
-        object.label = 'foo'
+        object.label = 'foo' # used for TitleBuilderStrategy
+        object.identityMetadata.objectLabel = ['bar'] # checked first for cocina props, Om makes it an array
         object.agreement_object_id = 'druid:bb008zm4587'
       end
 
@@ -488,7 +490,7 @@ RSpec.describe 'Get the object' do
 
         expect(json['externalIdentifier']).to eq 'druid:bc123df4567'
         expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
-        expect(json['label']).to eq 'foo'
+        expect(json['label']).to eq 'bar'
         expect(json['version']).to eq 1
         expect(json['administrative']['defaultObjectRights']).to match '<rightsMetadata>'
         expect(json['administrative']['registrationWorkflow']).to eq %w[registrationWF goobiWF]
