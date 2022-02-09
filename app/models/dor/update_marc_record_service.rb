@@ -164,7 +164,7 @@ module Dor
         cons_obj_id = cons_obj_druid.sub('druid:', '')
         cons_obj_title = cons_obj.description.title.first.value
         catkey = cons_obj.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
-        "|xset:#{cons_obj_id}:#{catkey}:#{cons_obj_title}"
+        "|xset:#{cons_obj_id}:#{catkey&.catalogRecordId}:#{cons_obj_title}"
       end.join
     end
 

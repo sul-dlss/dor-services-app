@@ -186,7 +186,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                      label: collection_label,
                                      version: 1,
                                      description: descriptive_metadata_basic,
-                                     access: {})
+                                     access: {},
+                                     identification: identity_metadata_collection)
     end
     let(:release_data) { { 'Searchworks' => { 'release' => true } } }
 
@@ -228,7 +229,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       it 'generates a single symphony record' do
         # rubocop:disable Layout/LineLength
         expect(generate_symphony_records).to eq [
-          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:cc111cc1111::Constituent label & A Special character|xrights:world"
+          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label|xset:cc111cc1111:8832162:Constituent label & A Special character|xrights:world"
         ]
       end
     end
@@ -248,7 +249,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
       it 'generates symphony record with a z subfield' do
         expect(generate_symphony_records).to match_array [
-          "8832162\tbc123dg9393\t.856. 41|zAvailable to Stanford-affiliated users.|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:cc111cc1111::Constituent label & A Special character|xrights:group=stanford"
+          "8832162\tbc123dg9393\t.856. 41|zAvailable to Stanford-affiliated users.|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label|xset:cc111cc1111:8832162:Constituent label & A Special character|xrights:group=stanford"
         ]
       end
     end
@@ -270,7 +271,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
         expect(generate_symphony_records).to match_array [
           "123\tbc123dg9393\t",
           "456\tbc123dg9393\t",
-          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111::Collection label|xset:cc111cc1111::Constituent label & A Special character|xrights:world"
+          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label|xset:cc111cc1111:8832162:Constituent label & A Special character|xrights:world"
         ]
       end
     end
