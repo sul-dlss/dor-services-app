@@ -110,7 +110,7 @@ module Cocina
 
         unless trial
           add_dro_tags(pid, cocina_item)
-          apply_default_access(fedora_item)
+          cocina_item = default_access_for(cocina_item)
         end
 
         Cocina::ToFedora::DROAccess.apply(fedora_item, cocina_item.access, cocina_item.structural) if cocina_item.access || cocina_item.structural
@@ -144,7 +144,7 @@ module Cocina
                           label: truncate_label(cocina_collection.label)).tap do |fedora_collection|
         add_description(fedora_collection, cocina_collection, trial: trial)
         add_collection_tags(pid, cocina_collection) unless trial
-        apply_default_access(fedora_collection) unless trial
+        cocina_collection = default_access_for(cocina_collection) unless trial
         Cocina::ToFedora::CollectionAccess.apply(fedora_collection, cocina_collection.access) if cocina_collection.access
         Cocina::ToFedora::Identity.initialize_identity(fedora_collection)
         Cocina::ToFedora::Identity.apply_catalog_links(fedora_collection, catalog_links: cocina_collection.identification&.catalogLinks)
@@ -196,10 +196,15 @@ module Cocina
     # Copy the default rights, use statement and copyright statement from the
     # admin policy to the provided item.  If the user provided the access
     # subschema, they may overwrite some of these defaults.
-    def apply_default_access(fedora_object)
-      apo = Dor.find(fedora_object.admin_policy_object_id)
-      rights_xml = apo.defaultObjectRights.ng_xml
-      fedora_object.rightsMetadata.content = rights_xml.to_s
+    def default_access_for(cocina_object)
+      apo = CocinaObjectStore.find(cocina_object.administrative.hasAdminPolicy)
+      return cocina_object unless apo.administrative.respond_to?(:defaultAccess) && apo.administrative.defaultAccess
+
+      embargo = cocina_object.access&.embargo
+      default_access = apo.administrative.defaultAccess
+      # Add embargo into the DROAccess node if one exists
+      default_access = Cocina::Models::DROAccess.new(default_access.to_h.merge({ embargo: embargo })) if embargo
+      cocina_object.new(access: default_access)
     end
 
     def truncate_label(label)
