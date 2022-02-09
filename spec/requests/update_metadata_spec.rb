@@ -984,6 +984,7 @@ RSpec.describe 'Update object' do
         item.descMetadata.title_info.main_title = 'This is my title'
         item.administrativeMetadata.default_workflow = 'myWorkflow'
         item.administrativeMetadata.add_default_collection 'druid:gh333qq4444'
+        item.identityMetadata.objectLabel = 'my original objectLabel'
       end
     end
 
@@ -1015,7 +1016,7 @@ RSpec.describe 'Update object' do
 
     let(:expected) do
       Cocina::Models::AdminPolicy.new(type: Cocina::Models::Vocab.admin_policy,
-                                      label: 'This is my label',
+                                      label: 'my original objectLabel',
                                       version: 1,
                                       description: {
                                         title: [{ value: 'This is my title' }],

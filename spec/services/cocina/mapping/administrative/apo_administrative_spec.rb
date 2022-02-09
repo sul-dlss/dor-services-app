@@ -14,7 +14,8 @@ RSpec.shared_examples 'valid APO mappings' do
     instance_double(
       Dor::AdminPolicyObject,
       pid: apo_druid,
-      label: apo_label,
+      label: apo_label, # used for TitleBuilderStrategy
+      objectLabel: [apo_label], # checked first for cocina props, Om makes it an array
       current_version: '1',
       admin_policy_object_id: ur_apo_druid,
       agreement_object_id: agreement_druid,
@@ -148,7 +149,8 @@ RSpec.shared_examples 'valid APO mappings' do
       instance_double(
         Dor::AdminPolicyObject,
         pid: apo_druid,
-        label: apo_label,
+        label: apo_label, # used for TitleBuilderStrategy
+        objectLabel: [apo_label], # checked first for cocina props, Om makes it an array
         current_version: '1',
         admin_policy_object_id: ur_apo_druid,
         agreement_object_id: agreement_druid,
