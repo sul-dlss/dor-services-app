@@ -3,12 +3,23 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
+# DLSS/domain-specific dependencies
+gem 'cocina-models', '~> 0.65.0'
+gem 'datacite', '~> 0.2.0'
+gem 'dor-rights-auth', '>= 1.5.0' # required for new CDL rights
+gem 'dor-services', '~> 9.6'
+gem 'dor-workflow-client', '~> 3.17'
+gem 'marc'
+gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'
+gem 'preservation-client', '>= 3.0' # 3.x or greater is needed for token auth
+# Pinning stanford-mods since >=3 breaks dor-services.
+gem 'stanford-mods', '~> 2.6'
+
 # Ruby general dependencies
 gem 'bootsnap', '>= 1.4.2', require: false
 gem 'bunny', '~> 2.17' # Send messages to RabbitMQ
 gem 'committee' # validates Open API spec (OAS)
 gem 'config'
-gem 'datacite', '~> 0.2.0'
 gem 'deprecation'
 gem 'dry-monads'
 gem 'dry-schema', '~> 1.4'
@@ -22,7 +33,7 @@ gem 'lograge'
 # iso-639 is used by dor-services gem via stanford-mods gem
 gem 'iso-639', '~> 0.2.8'
 gem 'jbuilder'
-gem 'jwt'
+gem 'jwt' # json web token
 gem 'okcomputer'
 gem 'openapi_parser'
 gem 'pg'
@@ -33,19 +44,8 @@ gem 'retries' # for ReleaseTags::PurlClient and Goobi
 gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq', '~> 6.0'
 gem 'sidekiq-statistic'
-# Pinning stanford-mods since >=3 breaks dor-services.
-gem 'stanford-mods', '~> 2.6'
 gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
-
-# DLSS/domain-specific dependencies
-gem 'cocina-models', '~> 0.65.0'
-gem 'dor-rights-auth', '>= 1.5.0' # required for new CDL rights
-gem 'dor-services', '~> 9.6'
-gem 'dor-workflow-client', '~> 3.17'
-gem 'marc'
-gem 'moab-versioning', '~> 4.0', require: 'moab/stanford'
-gem 'preservation-client', '>= 3.0' # 3.x or greater is needed for token auth
 
 group :development do
   gem 'dor-services-client' # used by lib/fedora_cache.rb and lib/fedora_loader.rb
