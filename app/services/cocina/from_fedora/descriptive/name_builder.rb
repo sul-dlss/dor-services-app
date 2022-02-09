@@ -98,6 +98,7 @@ module Cocina
         def build_name_parts(name_node)
           name_part_nodes = name_node.xpath('mods:namePart', mods: DESC_METADATA_NS)
           alternative_name_nodes = name_node.xpath('mods:alternativeName', mods: DESC_METADATA_NS)
+          display_form = name_node.xpath('mods:displayForm', mods: DESC_METADATA_NS).first
 
           parts = []
           case name_part_nodes.size
@@ -109,13 +110,25 @@ module Cocina
                      .merge(common_authority(name_node)).merge(common_lang_script(name_node)).presence
           else
             vals = name_part_nodes.filter_map { |name_part| build_name_part(name_node, name_part).presence }
-            parts << { structuredValue: vals }.merge(common_authority(name_node)).merge(common_lang_script(name_node))
+
+            name = if display_form
+                     {
+                       parallelValue: [
+                         { structuredValue: vals },
+                         { value: display_form.text, type: 'display' }
+                       ]
+                     }
+                   else
+                     { structuredValue: vals }
+                   end
+
+            parts <<
+              name
+              .merge(common_authority(name_node))
+              .merge(common_lang_script(name_node))
           end
 
           parts = build_alternative_name(alternative_name_nodes, parts) if alternative_name_nodes.present?
-
-          display_form = name_node.xpath('mods:displayForm', mods: DESC_METADATA_NS).first
-          parts << { value: display_form.text, type: 'display' } if display_form
           parts.compact
         end
 
