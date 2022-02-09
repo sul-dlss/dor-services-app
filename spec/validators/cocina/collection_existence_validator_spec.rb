@@ -6,10 +6,17 @@ RSpec.describe Cocina::CollectionExistenceValidator do
   let(:validator) { described_class.new(item) }
 
   let(:collection_druid) { 'druid:cc111cc1111' }
-  let(:collection) { Dor::Collection.new(pid: collection_druid) }
+  let(:collection) do
+    Cocina::Models::Collection.new(externalIdentifier: collection_druid,
+                                   type: Cocina::Models::Vocab.collection,
+                                   label: 'Collection of new maps of Africa',
+                                   version: 1,
+                                   cocinaVersion: '0.0.1',
+                                   access: {})
+  end
 
   before do
-    allow(Dor).to receive(:find).with(collection_druid).and_return(collection)
+    allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
   end
 
   context 'when a dor object does not belong to a collection' do
@@ -73,7 +80,7 @@ RSpec.describe Cocina::CollectionExistenceValidator do
     end
 
     it 'returns false' do
-      allow(Dor).to receive(:find).with(collection_druid).and_return(nil)
+      allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
       expect(validator.valid?).to be false
     end
   end
