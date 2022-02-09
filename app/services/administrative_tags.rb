@@ -57,6 +57,14 @@ class AdministrativeTags
     new(pid: pid).destroy(tag: tag)
   end
 
+  # Destroy all administrative tags for an item
+  #
+  # @param pid [String] the item identifier to list administrative tags for
+  # @return [Boolean] true if successful
+  def self.destroy_all(pid:)
+    new(pid: pid).destroy_all
+  end
+
   # @param pid [String] the item identifier to list administrative tags for
   def initialize(pid:)
     @pid = pid
@@ -155,6 +163,10 @@ class AdministrativeTags
       AdministrativeTag.find_by!(druid: pid, tag_label: old_label).destroy!
       old_label.destroy! if old_label.administrative_tags.count.zero?
     end
+  end
+
+  def destroy_all
+    self.for.each { |tag| destroy(tag: tag) }
   end
 
   private

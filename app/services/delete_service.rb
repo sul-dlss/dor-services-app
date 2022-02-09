@@ -50,8 +50,9 @@ class DeleteService
   #
   # @param [string] pid the druid
   def delete_from_dor
-    ActiveFedora::Base.connection_for_pid(0).api.purge_object(pid: druid)
-    ActiveFedora::SolrService.instance.conn.delete_by_id(druid)
-    ActiveFedora::SolrService.instance.conn.commit
+    CocinaObjectStore.destroy(druid)
+    AdministrativeTags.destroy_all(pid: druid)
+    ObjectVersion.where(druid: druid).destroy_all
+    Event.where(druid: druid).destroy_all
   end
 end
