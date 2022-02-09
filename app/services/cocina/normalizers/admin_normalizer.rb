@@ -34,9 +34,10 @@ module Cocina
       end
 
       def normalize_empty_registration_and_dissemination
-        # removes any empty nodes like this: <registration/> or <dissemination/>
+        # removes any empty nodes like this: <registration/> or <dissemination/> or <dissemination><workflow id="" /></dissemination>
         ng_xml.root.xpath('//registration[not(node())]').each(&:remove)
         ng_xml.root.xpath('//dissemination[not(node())]').each(&:remove)
+        ng_xml.root.xpath('//dissemination/workflow[@id=""]').each { |node| node.parent.remove }
       end
 
       def normalize_empty_dissemination_workflow

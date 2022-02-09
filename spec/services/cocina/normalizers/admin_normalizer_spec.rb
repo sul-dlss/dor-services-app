@@ -41,6 +41,7 @@ RSpec.describe Cocina::Normalizers::AdminNormalizer do
     end
 
     context 'when #normalize_empty_registration_and_dissemination' do
+      #  adapted from bb329pr4129
       let(:original_xml) do
         <<~XML
           <administrativeMetadata>
@@ -50,6 +51,9 @@ RSpec.describe Cocina::Normalizers::AdminNormalizer do
             </registration>
             <dissemination>
               <workflow id="someNotEmptyValue"/>
+            </dissemination>
+            <dissemination>
+              <workflow id=""/>
             </dissemination>
             <registration />
             <dissemination />
