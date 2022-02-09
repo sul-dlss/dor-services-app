@@ -254,9 +254,8 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
     end
   end
 
-  context 'with sourceId, without agreementId in identityMetadata.xml (CS Tech Reports) (agreementId in RELS_EXT)' do
-    # it_behaves_like 'APO Identification Fedora Cocina mapping' do
-    xit 'to be implemented: APO objects do need support sourceId' do
+  context 'with Hydrus sourceId, without agreementId in identityMetadata.xml (CS Tech Reports) (agreementId in RELS_EXT)' do
+    it_behaves_like 'APO Identification Fedora Cocina mapping' do
       let(:pid) { 'druid:bk068fh4950' }
       let(:label) { 'APO for Stanford University, Department of Computer Science, Technical Reports' }
       let(:admin_policy_id) { 'druid:zw306xn5593' }
@@ -277,10 +276,10 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
         XML
       end
 
+      # Hydrus sourceId is removed
       let(:roundtrip_identity_metadata_xml) do
         <<~XML
           <identityMetadata>
-            <sourceId source="Hydrus">adminPolicy-dhartwig-2013-06-10T18:11:42.520Z</sourceId>
             <objectId>#{pid}</objectId>
             <objectCreator>DOR</objectCreator>
             <objectLabel>#{label}</objectLabel>
