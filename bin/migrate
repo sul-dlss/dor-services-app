@@ -21,6 +21,8 @@ parser.parse!(into: options)
 def migrate(druid)
   fedora_obj = CocinaObjectStore.new.fedora_find(druid)
 
+  return 'skipped' unless MigrationFilter.migrate?(Nokogiri::XML(fedora_obj.rels_ext.to_rels_ext))
+
   EventsMigrationService.migrate(fedora_obj)
   # To be enabled after #3311
   # VersionMigrationService.migrate(fedora_obj)
