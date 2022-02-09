@@ -1472,7 +1472,6 @@ components:
             $ref: "#/components/schemas/DescriptiveBasicValue"
     Barcode:
       description: 'A barcode'
-      nullable: true
       oneOf:
         - $ref: '#/components/schemas/BusinessBarcode'
         - $ref: '#/components/schemas/LaneMedicalBarcode'
@@ -3003,6 +3002,7 @@ components:
     StandardBarcode:
       description: The standard barcode associated with a DRO object, prefixed with 36105
       type: string
+      nullable: true
       pattern: '^36105[0-9]{9}$'
       example: '36105010362304'
     StanfordAccess:
