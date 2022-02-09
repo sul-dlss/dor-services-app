@@ -73,5 +73,25 @@ RSpec.describe Cocina::Normalizers::AdminNormalizer do
         )
       end
     end
+
+    context 'when #normalize_empty_dissemination_workflow' do
+      let(:original_xml) do
+        <<~XML
+          <administrativeMetadata>
+            <dissemination>
+              <workflow id=""/>
+            </dissemination>
+          </administrativeMetadata>
+        XML
+      end
+
+      it 'removes dissemination nodes' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <administrativeMetadata/>
+          XML
+        )
+      end
+    end
   end
 end
