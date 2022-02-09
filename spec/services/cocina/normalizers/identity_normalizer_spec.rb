@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::Normalizers::IdentityNormalizer do
-  let(:normalized_ng_xml) { described_class.normalize(identity_ng_xml: Nokogiri::XML(original_xml)) }
+  let(:normalized_ng_xml) { described_class.normalize(identity_ng_xml: Nokogiri::XML(original_xml), label: 'Some cool object label') }
 
   context 'when #normalize_apo_source_id' do
     context 'with an adminPolicy object with a sourceId' do
@@ -24,7 +24,8 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
               <objectId>druid:bk068fh4950</objectId>
               <objectType>adminPolicy</objectType>
               <objectCreator>DOR</objectCreator>
-              </identityMetadata>
+              <objectLabel>Some cool object label</objectLabel>
+            </identityMetadata>
           XML
         )
       end
@@ -46,6 +47,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
           <identityMetadata>
              <sourceId source="sul">M0443_S2_D-K_B9_F33_011</sourceId>
              <objectCreator>DOR</objectCreator>
+             <objectLabel>Some cool object label</objectLabel>
           </identityMetadata>
         XML
       )
@@ -70,6 +72,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
               <sourceId source="foo">bar</sourceId>
               <otherId name="dissertationid">0000000666</otherId>
               <objectCreator>DOR</objectCreator>
+              <objectLabel>Some cool object label</objectLabel>
             </identityMetadata>
           XML
         )
@@ -91,6 +94,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
             <identityMetadata>
               <sourceId source="dissertationid">0000000666</sourceId>
               <objectCreator>DOR</objectCreator>
+              <objectLabel>Some cool object label</objectLabel>
             </identityMetadata>
           XML
         )
@@ -146,6 +150,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
             <identityMetadata>
               <otherId name="catkey">666</otherId>
               <objectCreator>DOR</objectCreator>
+              <objectLabel>Some cool object label</objectLabel>
             </identityMetadata>
           XML
         )
@@ -172,6 +177,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
               <objectId>foo</objectId>
               <otherId name="catkey">666</otherId>
               <objectCreator>DOR</objectCreator>
+              <objectLabel>Some cool object label</objectLabel>
             </identityMetadata>
           XML
         )
@@ -198,6 +204,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
               <objectId>foo</objectId>
               <otherId name="catkey">666</otherId>
               <objectCreator>DOR</objectCreator>
+              <objectLabel>Some cool object label</objectLabel>
             </identityMetadata>
           XML
         )
@@ -224,6 +231,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
               <objectId>foo</objectId>
               <otherId name="catkey">666</otherId>
               <objectCreator>DOR</objectCreator>
+              <objectLabel>Some cool object label</objectLabel>
             </identityMetadata>
           XML
         )
@@ -249,6 +257,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
               <objectId>foo</objectId>
               <otherId name="catkey">666</otherId>
               <objectCreator>DOR</objectCreator>
+              <objectLabel>Some cool object label</objectLabel>
             </identityMetadata>
           XML
         )
@@ -520,6 +529,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
           <identityMetadata>
             <otherId name="catkey">90125</otherId>
             <objectCreator>DOR</objectCreator>
+            <objectLabel>Some cool object label</objectLabel>
           </identityMetadata>
         XML
       )
@@ -542,6 +552,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
           <identityMetadata>
             <otherId name="previous_catkey">90125</otherId>
             <objectCreator>DOR</objectCreator>
+            <objectLabel>Some cool object label</objectLabel>
           </identityMetadata>
         XML
       )
@@ -586,6 +597,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
           <identityMetadata>
             <objectCreator>DOR</objectCreator>
             <otherId name="catkey">12345</otherId>
+            <objectLabel>Some cool object label</objectLabel>
           </identityMetadata>
         XML
       )
@@ -608,9 +620,59 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
           <identityMetadata>
             <objectCreator>DOR</objectCreator>
             <objectType>item</objectType>
+            <objectLabel>Some cool object label</objectLabel>
           </identityMetadata>
         XML
       )
+    end
+  end
+
+  describe '#normalize_label' do
+    context 'when there is no objectLabel' do
+      let(:original_xml) do
+        <<~XML
+          <identityMetadata>
+            <objectCreator>DOR</objectCreator>
+            <objectType>item</objectType>
+          </identityMetadata>
+        XML
+      end
+
+      it 'adds the passed in label' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <identityMetadata>
+              <objectCreator>DOR</objectCreator>
+              <objectType>item</objectType>
+              <objectLabel>Some cool object label</objectLabel>
+            </identityMetadata>
+          XML
+        )
+      end
+    end
+
+    context 'when there is an existing objectLabel' do
+      let(:original_xml) do
+        <<~XML
+          <identityMetadata>
+            <objectCreator>DOR</objectCreator>
+            <objectType>item</objectType>
+            <objectLabel>Do not change me</objectLabel>
+          </identityMetadata>
+        XML
+      end
+
+      it 'does not replace with the passed in label' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <identityMetadata>
+              <objectCreator>DOR</objectCreator>
+              <objectType>item</objectType>
+              <objectLabel>Do not change me</objectLabel>
+            </identityMetadata>
+          XML
+        )
+      end
     end
   end
 end

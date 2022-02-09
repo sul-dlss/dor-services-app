@@ -58,7 +58,7 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
     # the starting identityMetadata.xml is normalized to address discrepancies found against identityMetadata roundtripped
     #  from data store (Fedora) and back, per Andrew's specifications.
     #  E.g., <citationTitle> and <citationCreator> are removed
-    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml)).to_xml
+    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml), label: label).to_xml
   end
   let(:roundtrip_identity_md_xml) { defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml }
   let(:roundtrip_fedora_item) do

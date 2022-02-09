@@ -53,7 +53,7 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
     # the starting identityMetadata.xml is normalized to address discrepancies found against identityMetadata roundtripped
     #  from data store (Fedora) and back, per Andrew's specifications.
     #  E.g., <adminPolicy> is removed as that information will not be carried over and is retrieved from RELS-EXT
-    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml)).to_xml
+    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml), label: label).to_xml
   end
   let(:roundtrip_identity_metadata_xml) { defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml }
 

@@ -8,12 +8,14 @@ module Cocina
       include Cocina::Normalizers::Base
 
       # @param [Nokogiri::Document] identity_ng_xml identity metadata XML to be normalized
+      # @param [String] label the object label to add when normalizing
       # @return [Nokogiri::Document] normalized identity metadata xml
-      def self.normalize(identity_ng_xml:)
-        new(identity_ng_xml: identity_ng_xml).normalize
+      def self.normalize(identity_ng_xml:, label:)
+        new(identity_ng_xml: identity_ng_xml, label: label).normalize
       end
 
-      def initialize(identity_ng_xml:)
+      def initialize(identity_ng_xml:, label:)
+        @label = label
         @ng_xml = identity_ng_xml.dup
         @ng_xml.encoding = 'UTF-8' if @ng_xml.respond_to?(:encoding=) # sometimes it's a String (?)
       end
@@ -36,6 +38,7 @@ module Cocina
         normalize_object_creator
         normalize_out_labels
         normalize_apo_source_id
+        normalize_label
 
         regenerate_ng_xml(ng_xml.to_xml)
       end
@@ -156,6 +159,15 @@ module Cocina
         object_creator_node = Nokogiri::XML::Node.new('objectCreator', ng_xml)
         object_creator_node.content = 'DOR'
         ng_xml.root << object_creator_node
+      end
+
+      # add fedora object label if no object label is present
+      def normalize_label
+        return if ng_xml.root.xpath('//objectLabel').present?
+
+        object_label_node = Nokogiri::XML::Node.new('objectLabel', ng_xml)
+        object_label_node.content = @label
+        ng_xml.root << object_label_node
       end
     end
   end
