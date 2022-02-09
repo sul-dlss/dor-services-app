@@ -734,4 +734,49 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       )
     end
   end
+
+  context 'when normalizing contentMetadata files with provider_checksum' do
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata objectId="druid:bw260mc4853" type="image">
+          <resource type="image">
+            <label>Item 1</label>
+            <file publish="no" shelve="no" preserve="yes" id="00008460_0001.tif" mimetype="image/tiff" size="502704556">
+              <provider_checksum type="md5">71d813393ab0699fa58c26b9490a159e</provider_checksum>
+              <checksum type="md5">71d813393ab0699fa58c26b9490a159e</checksum>
+              <checksum type="sha1">efe7d6b501be9a5503817d19a3ec9072c9331cba</checksum>
+              <imageData width="14785" height="11322"/>
+            </file>
+            <file id="00008460_0001.jp2" mimetype="image/jp2" size="31529801" preserve="no" publish="yes" shelve="yes">
+              <checksum type="md5">ad6ddf7db816bcb1579fae80351a092d</checksum>
+              <checksum type="sha1">3bbab77d76bcc261d1d2ef0765d75fe5919d84e8</checksum>
+              <imageData width="14785" height="11322"/>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'removes provider_checksum' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata objectId="druid:bw260mc4853" type="image">
+            <resource type="image">
+              <label>Item 1</label>
+              <file publish="no" shelve="no" preserve="yes" id="00008460_0001.tif" mimetype="image/tiff" size="502704556">
+                <checksum type="md5">71d813393ab0699fa58c26b9490a159e</checksum>
+                <checksum type="sha1">efe7d6b501be9a5503817d19a3ec9072c9331cba</checksum>
+                <imageData width="14785" height="11322"/>
+              </file>
+              <file id="00008460_0001.jp2" mimetype="image/jp2" size="31529801" preserve="no" publish="yes" shelve="yes">
+                <checksum type="md5">ad6ddf7db816bcb1579fae80351a092d</checksum>
+                <checksum type="sha1">3bbab77d76bcc261d1d2ef0765d75fe5919d84e8</checksum>
+                <imageData width="14785" height="11322"/>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      )
+    end
+  end
 end

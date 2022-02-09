@@ -37,6 +37,7 @@ module Cocina
         remove_id
         remove_stacks
         remove_empty_labels
+        remove_provider_checksum
         normalize_object_id(druid)
         normalize_reading_order(druid)
         normalize_label_attr
@@ -128,6 +129,10 @@ module Cocina
         return if ng_xml.root['stacks'].blank?
 
         ng_xml.root.delete('stacks')
+      end
+
+      def remove_provider_checksum
+        ng_xml.root.xpath('//resource/file/provider_checksum').each(&:remove)
       end
 
       def normalize_reading_order(druid)
