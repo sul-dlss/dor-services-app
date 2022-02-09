@@ -40,6 +40,29 @@ RSpec.describe CocinaObjectStore do
       end
     end
 
+    describe '#exists?' do
+      context 'when DRO is found' do
+        before do
+          allow(Dor).to receive(:find).and_return(item)
+        end
+
+        it 'returns true' do
+          expect(described_class.exists?(druid)).to be(true)
+          expect(Dor).to have_received(:find).with(druid)
+        end
+      end
+
+      context 'when DRO is not found' do
+        before do
+          allow(Dor).to receive(:find).and_raise(ActiveFedora::ObjectNotFoundError)
+        end
+
+        it 'returns false' do
+          expect(described_class.exists?(druid)).to be(false)
+        end
+      end
+    end
+
     describe '#save' do
       context 'when object is found in datastore' do
         let(:updated_cocina_object) { instance_double(Cocina::Models::DRO) }
@@ -102,6 +125,38 @@ RSpec.describe CocinaObjectStore do
 
         it 'returns Cocina::Models::Collection' do
           expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_a(Cocina::Models::Collection)
+        end
+      end
+    end
+
+    describe '#ar_exists?' do
+      context 'when object is not found in datastore' do
+        it 'returns false' do
+          expect(store.ar_exists?('druid:bc123df4567')).to be(false)
+        end
+      end
+
+      context 'when object is a DRO' do
+        let(:ar_cocina_object) { create(:dro) }
+
+        it 'returns true' do
+          expect(store.ar_exists?(ar_cocina_object.external_identifier)).to be(true)
+        end
+      end
+
+      context 'when object is an AdminPolicy' do
+        let(:ar_cocina_object) { create(:admin_policy) }
+
+        it 'returns true' do
+          expect(store.ar_exists?(ar_cocina_object.external_identifier)).to be(true)
+        end
+      end
+
+      context 'when object is a Collection' do
+        let(:ar_cocina_object) { create(:collection) }
+
+        it 'returns true' do
+          expect(store.ar_exists?(ar_cocina_object.external_identifier)).to be(true)
         end
       end
     end

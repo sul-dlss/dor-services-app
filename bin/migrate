@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+require 'optparse'
+
+options = { druids: [], input: 'druids.txt' }
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/migrate [options]'
+
+  option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
+  option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
+  option_parser.on('-iFILENAME', '--input FILENAME', String, 'File containing list of druids (instead of druids.txt).')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+parser.parse!(into: options)
+
+def migrate(druid)
+  fedora_obj = CocinaObjectStore.new.fedora_find(druid)
+
+  EventsMigrationService.migrate(fedora_obj)
+  # To be enabled after #3311
+  # VersionMigrationService.migrate(fedora_obj)
+  CocinaMigrationService.migrate(fedora_obj)
+  'success'
+rescue CocinaObjectStore::CocinaObjectNotFoundError
+  'missing'
+rescue StandardError
+  'error'
+end
+
+if options[:druids].empty?
+  druids = File.read(options[:input]).split
+  druids = druids.take(options[:sample]) if options[:sample]
+else
+  druids = options[:druids]
+end
+
+File.open('migration_results.txt', 'w') do |file|
+  druids.each_with_index do |druid, index|
+    print "Migrating #{druid} #{index + 1} of #{druids.size}: "
+    result = migrate(druid)
+    puts result
+    file.write("#{druid}=#{result}\n")
+  end
+end
