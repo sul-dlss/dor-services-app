@@ -29,7 +29,7 @@ module Cocina
 
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
     # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/CyclomaticComplexity
     def run(event_factory:, notifier: nil)
       @notifier = notifier
 
@@ -63,7 +63,7 @@ module Cocina
       raise
     end
     # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     private
 
