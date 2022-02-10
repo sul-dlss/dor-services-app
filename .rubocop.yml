@@ -11,9 +11,14 @@ AllCops:
     - 'bin/console'
     - 'bin/rails'
     - 'bin/rake'
-    - db/migrate/**
-    - db/schema.rb
-    - vendor/**/*
+    - 'cache/**/*'
+    - 'docs/**/*'
+    - 'db/migrate/**'
+    - 'db/schema.rb'
+    - 'log/**/*'
+    - 'results/**/*'
+    - 'tmp/**/*'
+    - 'vendor/**/*'
 
 Rails:
   Enabled: true
