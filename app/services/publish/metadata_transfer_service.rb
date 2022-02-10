@@ -20,7 +20,7 @@ module Publish
       return unpublish unless world_discoverable?
 
       # Retrieve release tags from identityMetadata and all collections this item is a member of
-      release_tags = ReleaseTags.legacy_for(item: item)
+      release_tags = ReleaseTags.for(cocina_object: cocina_object)
 
       transfer_metadata(release_tags)
       publish_notify_on_success

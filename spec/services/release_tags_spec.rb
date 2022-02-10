@@ -3,47 +3,33 @@
 require 'rails_helper'
 
 RSpec.describe ReleaseTags do
-  before do
-    described_class.create(work, release: true, what: 'self', when: '2018-11-30T22:41:35Z', to: 'SearchWorks')
-  end
-
-  let(:druid) { 'druid:aa123bb7890' }
-  let(:work) { Dor::Item.new(pid: druid) }
-
-  describe '.legacy_for' do
-    it 'returns the hash of release tags' do
-      expect(described_class.legacy_for(item: work)).to eq(
-        'SearchWorks' => {
-          'release' => true
-        }
-      )
-    end
-  end
-
   describe '.for' do
-    let(:dro_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid) }
-
-    before do
-      allow(Dor).to receive(:find).and_return(work)
+    let(:cocina_item) do
+      Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                              type: Cocina::Models::Vocab.object,
+                              label: 'Some Label',
+                              version: 1,
+                              identification: {},
+                              access: {},
+                              structural: {},
+                              administrative: { hasAdminPolicy: 'druid:fg890hx1234',
+                                                releaseTags: [
+                                                  {
+                                                    who: 'dhartwig',
+                                                    what: 'collection',
+                                                    date: '2019-01-18T17:03:35.000+00:00',
+                                                    to: 'Searchworks',
+                                                    release: true
+                                                  }
+                                                ] })
     end
 
     it 'returns the hash of release tags' do
-      expect(described_class.for(dro_object: dro_object)).to eq(
-        'SearchWorks' => {
+      expect(described_class.for(cocina_object: cocina_item)).to eq(
+        'Searchworks' => {
           'release' => true
         }
       )
-      expect(Dor).to have_received(:find).with(druid)
-    end
-  end
-
-  describe '.create' do
-    it 'creates a plain directory in the workspace when passed no source directory' do
-      expect(work.identityMetadata.to_xml).to be_equivalent_to <<-XML
-        <identityMetadata>
-          <release what="self" when="2018-11-30T22:41:35Z" to="SearchWorks">true</release>
-        </identityMetadata>
-      XML
     end
   end
 end

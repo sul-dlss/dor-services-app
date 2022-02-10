@@ -17,7 +17,7 @@ class MetadataController < ApplicationController
   end
 
   def public_xml
-    release_tags = ReleaseTags.legacy_for(item: @item)
+    release_tags = ReleaseTags.for(cocina_object: @cocina_object)
     service = Publish::PublicXmlService.new(@item, released_for: release_tags, thumbnail_service: ThumbnailService.new(@cocina_object))
     render xml: service
   end
