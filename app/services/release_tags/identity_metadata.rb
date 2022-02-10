@@ -3,14 +3,14 @@
 class ReleaseTags
   class IdentityMetadata
     # Determine projects in which an item is released
-    # @param dro_object [Cocina::DRO] the DRO to list release tags for
+    # @param cocina_object [Cocina::Models::DRO, Cocina::Models::Collection] the object to list release tags for
     # @return [Hash{String => Boolean}] all namespaces, keys are Project name Strings, values are Boolean
-    def self.for(dro_object)
-      new(dro_object)
+    def self.for(cocina_object)
+      new(cocina_object)
     end
 
-    def initialize(dro_object)
-      @dro_object = dro_object
+    def initialize(cocina_object)
+      @cocina_object = cocina_object
     end
 
     # Called in Dor::UpdateMarcRecordService (in dor-services-app too)
@@ -28,7 +28,7 @@ class ReleaseTags
       # Get all release tags on the item and strip out the what = self ones, we've already processed all the self tags on this item.
       # This will be where we store all tags that apply, regardless of their timestamp:
       potential_applicable_release_tags = tags_for_what_value(release_tags_for_item_and_all_governing_sets, 'collection')
-      administrative_tags = AdministrativeTags.for(pid: dro_object.externalIdentifier) # Get admin tags once here and pass them down
+      administrative_tags = AdministrativeTags.for(pid: cocina_object.externalIdentifier) # Get admin tags once here and pass them down
 
       # We now have the keys for all potential releases, we need to check the tags: the most recent timestamp with an explicit true or false wins.
       # In a nil case, the lack of an explicit false tag we do nothing.
@@ -47,10 +47,10 @@ class ReleaseTags
     def release_tags_for_item_and_all_governing_sets
       return_tags = release_tags # this objects initial release tags
 
-      return return_tags unless dro_object.dro? # no need to continue if this is a collection, since they don't nest anymore
+      return return_tags unless cocina_object.dro? # no need to continue if this is a collection, since they don't nest anymore
 
       # now go through any collections it is a member of and add them
-      dro_object.structural.isMemberOf.each do |collection_druid|
+      cocina_object.structural.isMemberOf.each do |collection_druid|
         release_service = self.class.for(CocinaObjectStore.find(collection_druid))
         return_tags = combine_two_release_tag_hashes(return_tags, release_service.release_tags)
       end
@@ -68,7 +68,7 @@ class ReleaseTags
     # e.g. {"Searchworks"=>[{"what"=>"self", "who"=>"cspitzer", "when"=>2021-02-18 21:46:36 UTC, "release"=>true}]}
     def release_tags
       tags = {}
-      dro_object.administrative.releaseTags.each do |tag|
+      cocina_object.administrative.releaseTags.each do |tag|
         tags[tag.to] ||= []
         tags[tag.to] << { 'what' => tag.what, 'who' => tag.who, 'when' => tag.date.utc, 'release' => tag.release }
       end
@@ -131,7 +131,7 @@ class ReleaseTags
       # We use false instead of [], since an item can have no admin_tags at
       # which point we'd be passing this var as [] and would not attempt to
       # retrieve it
-      admin_tags ||= AdministrativeTags.for(pid: dro_object.externalIdentifier)
+      admin_tags ||= AdministrativeTags.for(pid: cocina_object.externalIdentifier)
       admin_tags.include?(release_tag['tag'])
     end
 
@@ -152,6 +152,6 @@ class ReleaseTags
       nil # We're out of tags, no applicable ones
     end
 
-    attr_reader :dro_object
+    attr_reader :cocina_object
   end
 end

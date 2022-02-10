@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe ReleaseTags do
   describe '.for' do
-    let(:dro_object) do
+    let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
                               type: Cocina::Models::Vocab.object,
                               label: 'Some Label',
@@ -25,7 +25,7 @@ RSpec.describe ReleaseTags do
     end
 
     it 'returns the hash of release tags' do
-      expect(described_class.for(dro_object: dro_object)).to eq(
+      expect(described_class.for(cocina_object: cocina_item)).to eq(
         'Searchworks' => {
           'release' => true
         }

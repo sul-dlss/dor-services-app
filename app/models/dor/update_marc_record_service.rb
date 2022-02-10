@@ -220,7 +220,7 @@ module Dor
     private
 
     def released_for
-      ::ReleaseTags.for(dro_object: @cocina_object)
+      ::ReleaseTags.for(cocina_object: @cocina_object)
     end
 
     def dor_items_for_constituents

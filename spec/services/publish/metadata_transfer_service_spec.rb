@@ -55,7 +55,7 @@ RSpec.describe Publish::MetadataTransferService do
                                                 }
                                               ] })
   end
-  let(:cocina_object_collection) do
+  let(:cocina_collection) do
     Cocina::Models::Collection.new(externalIdentifier: 'druid:xh235dd9059',
                                    type: Cocina::Models::Vocab.collection,
                                    label: 'some collection object',
@@ -87,7 +87,7 @@ RSpec.describe Publish::MetadataTransferService do
     before do
       allow(OpenURI).to receive(:open_uri).with("https://purl-test.stanford.edu/#{pid}.xml").and_return('<xml/>')
       allow(CocinaObjectStore).to receive(:find).with("druid:#{pid}").and_return(cocina_object)
-      allow(CocinaObjectStore).to receive(:find).with('druid:xh235dd9059').and_return(cocina_object_collection) # collection object
+      allow(CocinaObjectStore).to receive(:find).with('druid:xh235dd9059').and_return(cocina_collection) # collection object
       allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
     end
 

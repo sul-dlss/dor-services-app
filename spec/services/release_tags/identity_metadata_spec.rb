@@ -6,7 +6,7 @@ RSpec.describe ReleaseTags::IdentityMetadata do
   let(:pid) { 'druid:bb004bn8654' }
   let(:collection_pid) { 'druid:xh235dd9059' }
   let(:apo_id) { 'druid:qv648vd4392' }
-  let(:dro_object) do
+  let(:cocina_item) do
     Cocina::Models::DRO.new(externalIdentifier: pid,
                             type: Cocina::Models::Vocab.object,
                             label: 'Bryar 250 Trans-American: July 9-10',
@@ -39,7 +39,7 @@ RSpec.describe ReleaseTags::IdentityMetadata do
                                                 }
                                               ] })
   end
-  let(:releases) { described_class.for(dro_object) }
+  let(:releases) { described_class.for(cocina_item) }
   let(:bryar_trans_am_admin_tags) { AdministrativeTags.for(pid: pid) }
   let(:array_of_times) do
     ['2015-01-06 23:33:47Z', '2015-01-07 23:33:47Z', '2015-01-08 23:33:47Z', '2015-01-09 23:33:47Z'].map { |x| Time.parse(x).iso8601 }
@@ -136,7 +136,7 @@ RSpec.describe ReleaseTags::IdentityMetadata do
     subject(:release_tags) { releases.release_tags }
 
     context 'for an item that does not have any release tags' do
-      let(:dro_object) do
+      let(:cocina_item) do
         Cocina::Models::DRO.new(externalIdentifier: pid,
                                 type: Cocina::Models::Vocab.object,
                                 label: 'Bryar 250 Trans-American: July 9-10',
