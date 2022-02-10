@@ -35,6 +35,7 @@ RSpec.describe Publish::MetadataTransferService do
                             description: description,
                             identification: {},
                             access: {},
+                            structural: { contains: [] },
                             administrative: { hasAdminPolicy: 'druid:fg890hx1234' })
   end
   let(:thumbnail_service) { ThumbnailService.new(cocina_object) }

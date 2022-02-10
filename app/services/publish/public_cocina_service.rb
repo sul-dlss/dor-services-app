@@ -3,8 +3,7 @@
 module Publish
   # Filters out the non-public parts of cocina for publishing to purl
   class PublicCocinaService
-    def self.create(item)
-      cocina = Cocina::Mapper.build(item)
+    def self.create(cocina)
       new(cocina).build
     end
 
@@ -16,12 +15,12 @@ module Publish
     # remove any file_set that doesn't have at least one published file
     # remove partOfProject (similar to how we remove tags from identityMetadata)
     def build
-      return cocina.to_json unless cocina.dro?
+      return cocina unless cocina.dro?
 
       build_structural
 
       cocina.new(structural: build_structural,
-                 administrative: build_administrative).to_json
+                 administrative: build_administrative)
     end
 
     private
