@@ -199,6 +199,8 @@ RSpec.describe EmbargoReleaseService do
         i
       end
 
+      let(:cocina_object) { instance_double(Cocina::Models::DRO) }
+
       let(:embargo_xml) do
         <<-EOXML
         <embargoMetadata>
@@ -217,12 +219,13 @@ RSpec.describe EmbargoReleaseService do
       before do
         allow(Dor).to receive(:find).and_return(item)
         allow(VersionService).to receive(:can_open?).and_return(true)
-        allow(VersionService).to receive(:open).with(item, event_factory)
-        allow(VersionService).to receive(:close).with(item, close_params, event_factory)
+        allow(VersionService).to receive(:open).with(cocina_object, event_factory)
+        allow(VersionService).to receive(:close).with(cocina_object, close_params, event_factory)
         allow(item).to receive(:save!)
         allow(Honeybadger).to receive(:notify)
         allow(WorkflowClientFactory).to receive(:build).and_return(client)
         allow(client).to receive(:lifecycle).with(druid: 'druid:999', milestone_name: 'accessioned').and_return(1.day.ago)
+        allow(Cocina::Mapper).to receive(:build).and_return(cocina_object)
       end
 
       it 'skips release if not accessioned' do
@@ -233,12 +236,12 @@ RSpec.describe EmbargoReleaseService do
 
       context 'when not openable' do
         before do
-          allow(VersionService).to receive(:can_open?).with(item).and_return(false)
+          allow(VersionService).to receive(:can_open?).with(cocina_object).and_return(false)
         end
 
         it 'skips release' do
           release_items
-          expect(VersionService).to have_received(:can_open?).with(item)
+          expect(VersionService).to have_received(:can_open?).with(cocina_object)
           expect(VersionService).not_to have_received(:open)
         end
       end
@@ -247,18 +250,15 @@ RSpec.describe EmbargoReleaseService do
         before do
           allow(Notifications::EmbargoLifted).to receive(:publish)
           allow(Settings.rabbitmq).to receive(:enabled).and_return(true)
-          allow(Cocina::Mapper).to receive(:build).and_return(model)
         end
-
-        let(:model) { instance_double(Cocina::Models::DRO) }
 
         it 'is successful' do
           release_items
-          expect(VersionService).to have_received(:can_open?).with(item)
-          expect(VersionService).to have_received(:open).with(item, event_factory)
+          expect(VersionService).to have_received(:can_open?).with(cocina_object)
+          expect(VersionService).to have_received(:open).with(cocina_object, event_factory)
           expect(item).to have_received(:save!)
-          expect(VersionService).to have_received(:close).with(item, close_params, event_factory)
-          expect(Notifications::EmbargoLifted).to have_received(:publish).with(model: model)
+          expect(VersionService).to have_received(:close).with(cocina_object, close_params, event_factory)
+          expect(Notifications::EmbargoLifted).to have_received(:publish).with(model: cocina_object)
         end
       end
 

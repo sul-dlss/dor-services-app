@@ -25,6 +25,8 @@ RSpec.describe Cocina::ObjectUpdater do
 
   let(:trial) { false }
 
+  let(:version_metadata) { instance_double(Dor::VersionMetadataDS, increment_version: nil) }
+
   before do
     allow(Cocina::Mapper).to receive(:build).and_return(orig_cocina_object)
     allow(Cocina::ApoExistenceValidator).to receive(:new).and_return(instance_double(Cocina::ApoExistenceValidator, valid?: true))
@@ -38,7 +40,8 @@ RSpec.describe Cocina::ObjectUpdater do
       instance_double(Dor::AdminPolicyObject, pid: 'druid:bc123df4567',
                                               save!: nil,
                                               administrativeMetadata: double,
-                                              descMetadata: desc_metadata)
+                                              descMetadata: desc_metadata,
+                                              versionMetadata: version_metadata)
     end
 
     let(:desc_metadata) { double }
@@ -149,6 +152,44 @@ RSpec.describe Cocina::ObjectUpdater do
         end
       end
     end
+
+    context 'when updating version' do
+      before do
+        allow(item).to receive(:current_version).and_return('1', '2')
+      end
+
+      context 'when version has changed' do
+        let(:cocina_attrs) do
+          orig_cocina_attrs.tap do |attrs|
+            attrs[:version] = 2
+          end
+        end
+
+        it 'update versions' do
+          update
+          expect(version_metadata).to have_received(:increment_version)
+        end
+      end
+
+      context 'when version has not changed' do
+        it 'update versions' do
+          update
+          expect(version_metadata).not_to have_received(:increment_version)
+        end
+      end
+
+      context 'when a version mismatch' do
+        let(:cocina_attrs) do
+          orig_cocina_attrs.tap do |attrs|
+            attrs[:version] = 3
+          end
+        end
+
+        it 'raises' do
+          expect { update }.to raise_error('Incremented version of 2 is not expected version 3')
+        end
+      end
+    end
   end
 
   context 'when a collection' do
@@ -168,6 +209,7 @@ RSpec.describe Cocina::ObjectUpdater do
 
     before do
       allow(item).to receive(:save!)
+      allow(item).to receive(:versionMetadata).and_return(version_metadata)
     end
 
     context 'when updating label' do
@@ -286,6 +328,44 @@ RSpec.describe Cocina::ObjectUpdater do
         end
       end
     end
+
+    context 'when updating version' do
+      before do
+        allow(item).to receive(:current_version).and_return('1', '2')
+      end
+
+      context 'when version has changed' do
+        let(:cocina_attrs) do
+          orig_cocina_attrs.tap do |attrs|
+            attrs[:version] = 2
+          end
+        end
+
+        it 'update versions' do
+          update
+          expect(version_metadata).to have_received(:increment_version)
+        end
+      end
+
+      context 'when version has not changed' do
+        it 'update versions' do
+          update
+          expect(version_metadata).not_to have_received(:increment_version)
+        end
+      end
+
+      context 'when a version mismatch' do
+        let(:cocina_attrs) do
+          orig_cocina_attrs.tap do |attrs|
+            attrs[:version] = 3
+          end
+        end
+
+        it 'raises' do
+          expect { update }.to raise_error('Incremented version of 2 is not expected version 3')
+        end
+      end
+    end
   end
 
   context 'when a DRO' do
@@ -296,7 +376,8 @@ RSpec.describe Cocina::ObjectUpdater do
                                  contentMetadata: content_metadata,
                                  descMetadata: desc_metadata,
                                  identityMetadata: identity_metadata,
-                                 geoMetadata: geo_metadata)
+                                 geoMetadata: geo_metadata,
+                                 versionMetadata: version_metadata)
     end
 
     let(:content_metadata) { double }
@@ -663,6 +744,44 @@ RSpec.describe Cocina::ObjectUpdater do
         end
       end
     end
+
+    context 'when updating version' do
+      before do
+        allow(item).to receive(:current_version).and_return('1', '2')
+      end
+
+      context 'when version has changed' do
+        let(:cocina_attrs) do
+          orig_cocina_attrs.tap do |attrs|
+            attrs[:version] = 2
+          end
+        end
+
+        it 'update versions' do
+          update
+          expect(version_metadata).to have_received(:increment_version)
+        end
+      end
+
+      context 'when version has not changed' do
+        it 'update versions' do
+          update
+          expect(version_metadata).not_to have_received(:increment_version)
+        end
+      end
+
+      context 'when a version mismatch' do
+        let(:cocina_attrs) do
+          orig_cocina_attrs.tap do |attrs|
+            attrs[:version] = 3
+          end
+        end
+
+        it 'raises' do
+          expect { update }.to raise_error('Incremented version of 2 is not expected version 3')
+        end
+      end
+    end
   end
 
   context 'when a trial' do
@@ -671,7 +790,8 @@ RSpec.describe Cocina::ObjectUpdater do
                                  label: 'orig label',
                                  contentMetadata: content_metadata,
                                  descMetadata: desc_metadata,
-                                 identityMetadata: identity_metadata)
+                                 identityMetadata: identity_metadata,
+                                 current_version: '1')
     end
 
     let(:content_metadata) { double }

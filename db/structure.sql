@@ -247,6 +247,40 @@ ALTER SEQUENCE public.events_id_seq OWNED BY public.events.id;
 
 
 --
+-- Name: object_versions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.object_versions (
+    id bigint NOT NULL,
+    druid character varying NOT NULL,
+    version integer NOT NULL,
+    tag character varying,
+    description character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: object_versions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.object_versions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: object_versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.object_versions_id_seq OWNED BY public.object_versions.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -329,6 +363,13 @@ ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.event
 
 
 --
+-- Name: object_versions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.object_versions ALTER COLUMN id SET DEFAULT nextval('public.object_versions_id_seq'::regclass);
+
+
+--
 -- Name: tag_labels id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -389,6 +430,14 @@ ALTER TABLE ONLY public.dros
 
 ALTER TABLE ONLY public.events
     ADD CONSTRAINT events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: object_versions object_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.object_versions
+    ADD CONSTRAINT object_versions_pkey PRIMARY KEY (id);
 
 
 --
@@ -471,6 +520,20 @@ CREATE INDEX index_events_on_event_type ON public.events USING btree (event_type
 
 
 --
+-- Name: index_object_versions_on_druid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_object_versions_on_druid ON public.object_versions USING btree (druid);
+
+
+--
+-- Name: index_object_versions_on_druid_and_version; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_object_versions_on_druid_and_version ON public.object_versions USING btree (druid, version);
+
+
+--
 -- Name: index_tag_labels_on_tag; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -502,6 +565,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200521153735'),
 ('20220131194025'),
 ('20220131194359'),
-('20220131194912');
+('20220131194912'),
+('20220203155057');
 
 

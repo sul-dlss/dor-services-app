@@ -14,13 +14,13 @@ RSpec.describe ConstituentService do
   end
 
   let(:parent) do
-    Dor::Item.new.tap do |item|
+    Dor::Item.new(pid: 'druid:parent1').tap do |item|
       item.contentMetadata.content = parent_content
     end
   end
 
   let(:child1) do
-    Dor::Item.new.tap do |item|
+    Dor::Item.new(pid: 'druid:child1').tap do |item|
       item.contentMetadata.content = <<~XML
         <contentMetadata>
           <resource id="bb000kg4251_1" sequence="1" type="image">
@@ -33,7 +33,7 @@ RSpec.describe ConstituentService do
   end
 
   let(:child2) do
-    Dor::Item.new.tap do |item|
+    Dor::Item.new(pid: 'druid:child2').tap do |item|
       item.contentMetadata.content = <<~XML
         <contentMetadata>
           <resource id="bb000ff1111_1" sequence="1" type="image">
@@ -55,9 +55,9 @@ RSpec.describe ConstituentService do
     let(:namespaceless) { parent.id.sub('druid:', '') }
 
     before do
-      allow(parent).to receive_messages(id: 'druid:parent1', save!: true)
-      allow(child1).to receive_messages(id: 'druid:child1', save!: true)
-      allow(child2).to receive_messages(id: 'druid:child2', save!: true)
+      allow(parent).to receive_messages(save!: true)
+      allow(child1).to receive_messages(save!: true)
+      allow(child2).to receive_messages(save!: true)
 
       # Used in ContentMetadataDS#add_virtual_resource
       allow(parent.contentMetadata).to receive(:pid).and_return('druid:parent1')
@@ -71,17 +71,20 @@ RSpec.describe ConstituentService do
     end
 
     context 'when the parent is open for modification' do
+      let(:cocina_object) { instance_double(Cocina::Models::DRO) }
+
       before do
         allow(VersionService).to receive(:open?).and_return(true)
         allow(VersionService).to receive(:open)
         allow(VersionService).to receive(:close)
         allow(child1).to receive(:clear_relationship)
         allow(child2).to receive(:clear_relationship)
+        allow(Cocina::Mapper).to receive(:build).and_return(cocina_object)
         add
       end
 
       it 'merges objects' do
-        expect(instance).to have_received(:reset_metadata!).once
+        expect(instance).to have_received(:reset_metadata!).with(parent).once
         expect(child1).to have_received(:clear_relationship).once
         expect(child2).to have_received(:clear_relationship).once
         expect(child1.object_relations[:is_constituent_of]).to eq [parent]

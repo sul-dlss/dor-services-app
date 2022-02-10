@@ -3,10 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe 'Operations regarding object versions' do
-  let(:item) { Dor::Item.new(pid: 'druid:mx123qw2323') }
+  let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: 'druid:mx123qw2323', version: version) }
+
+  let(:version) { 1 }
 
   before do
-    allow(Dor).to receive(:find).and_return(item)
+    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
   end
 
   describe '/versions/current' do
@@ -37,7 +39,7 @@ RSpec.describe 'Operations regarding object versions' do
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to match(/version 1 closed/)
         expect(VersionService).to have_received(:close)
-          .with(item,
+          .with(cocina_object,
                 { description: 'some text', significance: 'major' },
                 event_factory: EventFactory)
       end
@@ -62,9 +64,6 @@ RSpec.describe 'Operations regarding object versions' do
   end
 
   describe '/versions' do
-    # rubocop:disable RSpec/VerifiedDoubles
-    let(:fake_events_ds) { double('events') }
-    # rubocop:enable RSpec/VerifiedDoubles
     let(:open_params) do
       {
         assume_accessioned: false,
@@ -75,14 +74,12 @@ RSpec.describe 'Operations regarding object versions' do
     end
     let(:opening_user_name) { 'foo' }
 
-    before do
-      allow(item).to receive(:current_version).and_return('2')
-    end
+    let(:version) { 2 }
 
     context 'when opening a version succeeds' do
       before do
         # Do not test version service side effects in dor-services-app; that is dor-services' responsibility
-        allow(VersionService).to receive(:open)
+        allow(VersionService).to receive(:open).and_return(cocina_object)
       end
 
       it 'opens a new object version when posted to' do
@@ -96,7 +93,7 @@ RSpec.describe 'Operations regarding object versions' do
         post '/v1/objects/druid:mx123qw2323/versions',
              params: open_params.to_json,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(VersionService).to have_received(:open).with(item, open_params, event_factory: EventFactory)
+        expect(VersionService).to have_received(:open).with(cocina_object, open_params, event_factory: EventFactory)
         expect(response.body).to eq('2')
         expect(response).to be_successful
       end

@@ -35,6 +35,9 @@ module Cocina
         SynchronousIndexer.reindex_remotely(fedora_object.pid)
 
         event_factory.create(druid: fedora_object.pid, event_type: 'registration', data: cocina_object.to_h)
+
+        # This creates version 1.0.0 (Initial Version)
+        ObjectVersion.increment_version(fedora_object.pid)
       end
 
       # This will rebuild the cocina model from fedora, which shows we are only returning persisted data

@@ -1,17 +1,22 @@
 # frozen_string_literal: true
 
 class VersionsController < ApplicationController
-  before_action :load_item
+  before_action :load_cocina_object
 
   def index
-    return render json: {} unless @item.respond_to?(:versionMetadata)
+    # This can be removed after migration.
+    VersionMigrationService.find_and_migrate(@cocina_object.externalIdentifier)
+
+    object_versions = ObjectVersion.where(druid: @cocina_object.externalIdentifier)
+
+    return render json: {} if object_versions.empty?
 
     # add an entry with version id, tag and description for each version
-    versions = (1..@item.current_version.to_i).map do |version_number|
+    versions = object_versions.map do |object_version|
       {
-        versionId: version_number,
-        tag: @item.versionMetadata.tag_for_version(version_number.to_s),
-        message: @item.versionMetadata.description_for_version(version_number.to_s)
+        versionId: object_version.version,
+        tag: object_version.tag,
+        message: object_version.description
       }
     end
 
@@ -19,8 +24,8 @@ class VersionsController < ApplicationController
   end
 
   def create
-    VersionService.open(@item, open_params, event_factory: EventFactory)
-    render plain: @item.current_version
+    updated_cocina_object = VersionService.open(@cocina_object, open_params, event_factory: EventFactory)
+    render plain: updated_cocina_object.version
   rescue Dor::Exception => e
     render build_error('Unable to open version', e)
   rescue Preservation::Client::Error => e
@@ -28,18 +33,18 @@ class VersionsController < ApplicationController
   end
 
   def current
-    render plain: @item.current_version
+    render plain: @cocina_object.version
   end
 
   def close_current
-    VersionService.close(@item, close_params, event_factory: EventFactory)
-    render plain: "version #{@item.current_version} closed"
+    VersionService.close(@cocina_object, close_params, event_factory: EventFactory)
+    render plain: "version #{@cocina_object.version} closed"
   rescue Dor::Exception => e
     render build_error('Unable to close version', e)
   end
 
   def openable
-    render plain: VersionService.can_open?(@item, open_params).to_s
+    render plain: VersionService.can_open?(@cocina_object, open_params).to_s
   rescue Preservation::Client::Error => e
     render build_error('Unable to check if openable due to preservation client error', e, status: :internal_server_error)
   end

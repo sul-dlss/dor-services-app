@@ -2,8 +2,8 @@
 
 # rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
-  before_action :load_cocina_object, only: %i[show update_doi_metadata update_marc_record notify_goobi]
-  before_action :load_item, only: %i[show accession destroy]
+  before_action :load_cocina_object, only: %i[show update_doi_metadata update_marc_record notify_goobi accession]
+  before_action :load_item, only: %i[show destroy]
 
   # No longer be necessary when remove Fedora.
   rescue_from(Cocina::ObjectUpdater::NotImplemented) do |e|
@@ -94,22 +94,23 @@ class ObjectsController < ApplicationController
     workflow = params[:workflow] || default_start_accession_workflow
 
     # if this object is currently already in accessioning, we cannot start it again
-    if VersionService.in_accessioning?(@item)
+    if VersionService.in_accessioning?(@cocina_object)
       return json_api_error(status: :conflict,
                             message: 'This object is already in accessioning, it can not be accessioned again until the workflow is complete')
     end
 
+    updated_cocina_object = @cocina_object
     # if this is an existing versionable object, open and close it without starting accessionWF
-    if VersionService.can_open?(@item, params)
-      VersionService.open(@item, params, event_factory: EventFactory)
-      VersionService.close(@item, params.merge(start_accession: false), event_factory: EventFactory)
+    if VersionService.can_open?(@cocina_object, params)
+      updated_cocina_object = VersionService.open(@cocina_object, params, event_factory: EventFactory)
+      VersionService.close(@cocina_object, params.merge(start_accession: false), event_factory: EventFactory)
     # if this is an existing accessioned object that is currently open, just close it without starting accessionWF
-    elsif VersionService.open?(@item)
-      VersionService.close(@item, params.merge(start_accession: false), event_factory: EventFactory)
+    elsif VersionService.open?(@cocina_object)
+      VersionService.close(@cocina_object, params.merge(start_accession: false), event_factory: EventFactory)
     end
 
     # initialize workflow
-    workflow_client.create_workflow_by_name(@item.pid, workflow, version: @item.current_version)
+    workflow_client.create_workflow_by_name(@cocina_object.externalIdentifier, workflow, version: updated_cocina_object.version.to_s)
     head :created
   end
 

@@ -28,6 +28,8 @@ module Cocina
     end
 
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/Metrics/CyclomaticComplexity
     def run(event_factory:, notifier: nil)
       @notifier = notifier
 
@@ -46,6 +48,7 @@ module Cocina
       end
 
       update_descriptive if has_changed?(:description) && update_descriptive?
+      update_version if has_changed?(:version)
 
       fedora_object.save! unless trial
 
@@ -59,6 +62,8 @@ module Cocina
       event_factory.create(druid: fedora_object.pid, event_type: 'update', data: { success: false, error: e.message, request: cocina_object.to_h }) unless trial
       raise
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/Metrics/CyclomaticComplexity
 
     private
 
@@ -238,6 +243,18 @@ module Cocina
     # TODO: duplicate from ObjectCreator
     def truncate_label(label)
       label.length > 254 ? label[0, 254] : label
+    end
+
+    def update_version
+      return if version_match?
+
+      fedora_object.versionMetadata.increment_version
+
+      raise "Incremented version of #{fedora_object.current_version} is not expected version #{cocina_object.version}" unless version_match?
+    end
+
+    def version_match?
+      cocina_object.version.to_s == fedora_object.current_version
     end
   end
 end
