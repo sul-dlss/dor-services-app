@@ -6,6 +6,16 @@ RSpec.describe Cocina::ObjectCreator do
   subject(:result) { described_class.create(request, persister: persister, assign_doi: assign_doi) }
 
   let(:apo) { 'druid:bz845pv2292' }
+  let(:minimal_cocina_admin_policy) do
+    Cocina::Models::AdminPolicy.new({
+                                      cocinaVersion: '0.0.1',
+                                      externalIdentifier: 'druid:bz845pv2292',
+                                      type: Cocina::Models::Vocab.admin_policy,
+                                      label: 'Test Admin Policy',
+                                      version: 1,
+                                      administrative: { hasAdminPolicy: 'druid:hy787xj5878', hasAgreement: 'druid:bb033gt0615' }
+                                    })
+  end
   let(:persister) { class_double(Cocina::ActiveFedoraPersister, store: nil) }
   let(:request) { Cocina::Models.build_request(params) }
   let(:assign_doi) { false }
@@ -13,6 +23,7 @@ RSpec.describe Cocina::ObjectCreator do
   before do
     allow(Dor::SearchService).to receive(:query_by_id).and_return([])
     allow(Dor).to receive(:find).with(apo).and_return(Dor::AdminPolicyObject.new)
+    allow(CocinaObjectStore).to receive(:find).with('druid:bz845pv2292').and_return(minimal_cocina_admin_policy)
     allow(Dor::SuriService).to receive(:mint_id).and_return('druid:mb046vj7485')
     allow(RefreshMetadataAction).to receive(:run) do |args|
       args[:fedora_object].descMetadata.mods_title = 'foo'
@@ -202,6 +213,7 @@ RSpec.describe Cocina::ObjectCreator do
     context "when the collection doesn't exist" do
       before do
         allow(Dor).to receive(:find).and_raise(ActiveFedora::ObjectNotFoundError)
+        allow(CocinaObjectStore).to receive(:find).and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
       end
 
       let(:params) do

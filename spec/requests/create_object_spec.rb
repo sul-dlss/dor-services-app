@@ -3,14 +3,35 @@
 require 'rails_helper'
 
 RSpec.describe 'Create object' do
-  let(:apo) { Dor::AdminPolicyObject.new(pid: 'druid:dd999df4567') }
+  let(:apo) do
+    Cocina::Models::AdminPolicy.new({
+                                      cocinaVersion: '0.0.1',
+                                      externalIdentifier: 'druid:dd999df4567',
+                                      type: Cocina::Models::Vocab.admin_policy,
+                                      label: 'Test Admin Policy',
+                                      version: 1,
+                                      administrative: {
+                                        hasAdminPolicy: 'druid:hy787xj5878',
+                                        hasAgreement: 'druid:bb033gt0615',
+                                        defaultAccess: default_access
+                                      }
+                                    })
+  end
+  let(:default_access) do
+    {
+      access: 'world',
+      download: 'none',
+      copyright: 'All rights reserved unless otherwise indicated.',
+      useAndReproductionStatement: 'Property rights reside with the repository...'
+    }
+  end
   let(:data) { item.to_json }
   let(:druid) { 'druid:gg777gg7777' }
   let(:search_result) { [] }
 
   before do
     allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
-    allow(Dor).to receive(:find).and_return(apo)
+    allow(CocinaObjectStore).to receive(:find).with('druid:dd999df4567').and_return(apo)
     allow(Cocina::ActiveFedoraPersister).to receive(:store)
     stub_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')
     allow(Dor::SearchService).to receive(:query_by_id).and_return(search_result)
@@ -769,6 +790,12 @@ RSpec.describe 'Create object' do
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
     end
+    let(:default_access) do
+      {
+        access: 'world',
+        download: 'world'
+      }
+    end
 
     before do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
@@ -1037,6 +1064,13 @@ RSpec.describe 'Create object' do
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
     end
+    let(:default_access) do
+      {
+        access: 'stanford',
+        download: 'none',
+        controlledDigitalLending: false
+      }
+    end
 
     before do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
@@ -1091,6 +1125,13 @@ RSpec.describe 'Create object' do
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
     end
+    let(:default_access) do
+      {
+        access: 'location-based',
+        download: 'location-based',
+        readLocation: 'm&m'
+      }
+    end
 
     before do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
@@ -1143,6 +1184,12 @@ RSpec.describe 'Create object' do
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
     end
+    let(:default_access) do
+      {
+        access: 'world',
+        download: 'none'
+      }
+    end
 
     before do
       allow(Dor::SearchService).to receive(:query_by_id).and_return([])
@@ -1192,6 +1239,12 @@ RSpec.describe 'Create object' do
             "structural":{}}
         JSON
       end
+      let(:default_access) do
+        {
+          access: 'dark',
+          download: 'none'
+        }
+      end
 
       it 'registers the object' do
         post '/v1/objects',
@@ -1230,6 +1283,12 @@ RSpec.describe 'Create object' do
             "identification":{"sourceId":"googlebooks:999999"}}
         JSON
       end
+      let(:default_access) do
+        {
+          access: 'dark',
+          download: 'none'
+        }
+      end
 
       it 'registers the object' do
         post '/v1/objects',
@@ -1246,12 +1305,7 @@ RSpec.describe 'Create object' do
         Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
                                 label: 'This is my label',
                                 version: 1,
-                                access: {
-                                  access: 'world',
-                                  download: 'world',
-                                  copyright: 'resides with the creators',
-                                  useAndReproductionStatement: 'You can use it'
-                                },
+                                access: {},
                                 administrative: { hasAdminPolicy: 'druid:dd999df4567' },
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
@@ -1275,28 +1329,11 @@ RSpec.describe 'Create object' do
             "structural":{}}
         JSON
       end
-
-      before do
-        apo.defaultObjectRights.content = <<~XML
-          <rightsMetadata>
-            <access type="discover">
-              <machine>
-                <world/>
-              </machine>
-            </access>
-            <access type="read">
-              <machine>
-                <world/>
-              </machine>
-            </access>
-            <use>
-              <human type="useAndReproduction">You can use it</human>
-            </use>
-            <copyright>
-              <human>resides with the creators</human>
-            </copyright>
-          </rightsMetadata>
-        XML
+      let(:default_access) do
+        {
+          access: 'dark',
+          download: 'none'
+        }
       end
 
       it 'inherits access, copyright and use statement from the admin policy' do
@@ -1343,6 +1380,12 @@ RSpec.describe 'Create object' do
           "structural":{}}
       JSON
     end
+    let(:default_access) do
+      {
+        access: 'dark',
+        download: 'none'
+      }
+    end
 
     it 'registers the object and does not create process tag' do
       post '/v1/objects',
@@ -1387,6 +1430,12 @@ RSpec.describe 'Create object' do
           "identification":{"sourceId":"warc:999999"},
           "structural":{}}
       JSON
+    end
+    let(:default_access) do
+      {
+        access: 'dark',
+        download: 'none'
+      }
     end
 
     it 'registers the object and creates process tag' do

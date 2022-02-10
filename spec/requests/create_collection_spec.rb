@@ -3,13 +3,22 @@
 require 'rails_helper'
 
 RSpec.describe 'Create object' do
-  let(:apo) { Dor::AdminPolicyObject.new(pid: 'druid:dd999df4567') }
+  let(:minimal_cocina_admin_policy) do
+    Cocina::Models::AdminPolicy.new({
+                                      cocinaVersion: '0.0.1',
+                                      externalIdentifier: 'druid:dd999df4567',
+                                      type: Cocina::Models::Vocab.admin_policy,
+                                      label: 'Test Admin Policy',
+                                      version: 1,
+                                      administrative: { hasAdminPolicy: 'druid:hy787xj5878', hasAgreement: 'druid:bb033gt0615' }
+                                    })
+  end
   let(:data) { item.to_json }
   let(:druid) { 'druid:gg777gg7777' }
 
   before do
     allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
-    allow(Dor).to receive(:find).and_return(apo)
+    allow(CocinaObjectStore).to receive(:find).with('druid:dd999df4567').and_return(minimal_cocina_admin_policy)
     allow(Cocina::ActiveFedoraPersister).to receive(:store)
     stub_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')
   end

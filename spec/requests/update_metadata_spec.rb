@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Update object' do
   before do
     allow(Dor).to receive(:find).with(druid).and_return(item)
-    allow(Dor).to receive(:find).with(apo_druid).and_return(apo)
+    allow(CocinaObjectStore).to receive(:find).with(apo_druid).and_return(apo)
     allow(item).to receive(:save!)
     allow(item).to receive(:new_record?).and_return(false)
 
@@ -23,7 +23,16 @@ RSpec.describe 'Update object' do
   end
 
   let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
-  let(:apo) { Dor::AdminPolicyObject.new(pid: apo_druid) }
+  let(:apo) do
+    Cocina::Models::AdminPolicy.new({
+                                      cocinaVersion: '0.0.1',
+                                      externalIdentifier: apo_druid,
+                                      type: Cocina::Models::Vocab.admin_policy,
+                                      label: 'Test Admin Policy',
+                                      version: 1,
+                                      administrative: { hasAdminPolicy: 'druid:hy787xj5878', hasAgreement: 'druid:bb033gt0615' }
+                                    })
+  end
   let!(:item) do
     Dor::Item.new(pid: druid,
                   source_id: 'googlebooks:111111',

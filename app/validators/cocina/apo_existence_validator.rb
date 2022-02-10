@@ -12,9 +12,9 @@ module Cocina
     # @return [Boolean] false if the APO is not in the repository
     def valid?
       begin
-        apo = Dor.find(apo_id)
-        @error = "Expected '#{apo_id}' to be an AdminPolicy but it is a #{apo.class}" unless apo.is_a?(Dor::AdminPolicyObject)
-      rescue ActiveFedora::ObjectNotFoundError
+        apo = CocinaObjectStore.find(apo_id)
+        @error = "Expected '#{apo_id}' to be an AdminPolicy but it is a #{apo.class}" unless apo.admin_policy?
+      rescue CocinaObjectStore::CocinaObjectNotFoundError
         @error = "Unable to find adminPolicy '#{apo_id}'"
       end
 
