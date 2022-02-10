@@ -69,12 +69,13 @@ RSpec.describe 'Get the object' do
 
         embargo = Cocina::Models::Embargo.new(releaseDate: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world', download: 'world')
         Cocina::ToFedora::EmbargoMetadataGenerator.generate(embargo_metadata: object.embargoMetadata, embargo: embargo)
-        # TODO: PETER Mock the cocina structure of release tags instead here
-        # ReleaseTags.create(object, release: true,
-        #                            what: 'self',
-        #                            to: 'Searchworks',
-        #                            who: 'petucket',
-        #                            when: '2014-08-30T01:06:28Z')
+        # add a release tag to our fedora object for this test
+        object.identityMetadata.add_value(:release, true, {
+                                            what: 'self',
+                                            to: 'Searchworks',
+                                            who: 'petucket',
+                                            when: '2014-08-30T01:06:28Z'
+                                          })
       end
 
       let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }

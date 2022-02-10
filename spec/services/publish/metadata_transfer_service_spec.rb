@@ -25,7 +25,7 @@ RSpec.describe Publish::MetadataTransferService do
   let(:description) do
     {
       title: [{ value: 'Constituent label &amp; A Special character' }],
-      purl: "https://purl.stanford.edu/#{pid.gsub('druid:', '')}"
+      purl: "https://purl.stanford.edu/#{pid}"
     }
   end
   let(:cocina_object) do
@@ -230,7 +230,7 @@ RSpec.describe Publish::MetadataTransferService do
     context 'when purl-fetcher is not configured' do
       let(:purl_root) { Dir.mktmpdir }
       let(:changes_dir) { Dir.mktmpdir }
-      let(:changes_file) { File.join(changes_dir, item.pid.gsub('druid:', '')) }
+      let(:changes_file) { File.join(changes_dir, pid) }
 
       before do
         allow(Settings).to receive(:purl_services_url).and_return(nil)

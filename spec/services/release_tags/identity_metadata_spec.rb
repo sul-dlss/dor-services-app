@@ -3,19 +3,54 @@
 require 'rails_helper'
 
 RSpec.describe ReleaseTags::IdentityMetadata do
-  let(:item) { instantiate_fixture('druid:bb004bn8654', Dor::Item) }
-  let(:releases) { described_class.for(item) }
-  let(:bryar_trans_am_admin_tags) { AdministrativeTags.for(pid: item.id) }
+  let(:pid) { 'druid:bb004bn8654' }
+  let(:collection_pid) { 'druid:xh235dd9059' }
+  let(:apo_id) { 'druid:qv648vd4392' }
+  let(:dro_object) do
+    Cocina::Models::DRO.new(externalIdentifier: pid,
+                            type: Cocina::Models::Vocab.object,
+                            label: 'Bryar 250 Trans-American: July 9-10',
+                            version: 1,
+                            identification: {},
+                            access: {},
+                            structural: { isMemberOf: [collection_pid] },
+                            administrative: { hasAdminPolicy: apo_id,
+                                              releaseTags: [
+                                                {
+                                                  who: 'carrickr',
+                                                  what: 'collection',
+                                                  date: '2015-01-06T23:33:47.000+00:00',
+                                                  to: 'Revs',
+                                                  release: true
+                                                },
+                                                {
+                                                  who: 'carrickr',
+                                                  what: 'self',
+                                                  date: '2015-01-06T23:33:54.000+00:00',
+                                                  to: 'Revs',
+                                                  release: true
+                                                },
+                                                {
+                                                  who: 'carrickr',
+                                                  what: 'self',
+                                                  date: '2015-01-06T23:40:01.000+00:00',
+                                                  to: 'Revs',
+                                                  release: false
+                                                }
+                                              ] })
+  end
+  let(:releases) { described_class.for(dro_object) }
+  let(:bryar_trans_am_admin_tags) { AdministrativeTags.for(pid: pid) }
   let(:array_of_times) do
     ['2015-01-06 23:33:47Z', '2015-01-07 23:33:47Z', '2015-01-08 23:33:47Z', '2015-01-09 23:33:47Z'].map { |x| Time.parse(x).iso8601 }
   end
 
   before do
     # Create expected tags (see item fixture above) in the database
-    create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Project : Revs'))
-    create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Remediated By : 3.25.0'))
-    create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'tag : test1'))
-    create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'old : tag'))
+    create(:administrative_tag, druid: pid, tag_label: create(:tag_label, tag: 'Project : Revs'))
+    create(:administrative_tag, druid: pid, tag_label: create(:tag_label, tag: 'Remediated By : 3.25.0'))
+    create(:administrative_tag, druid: pid, tag_label: create(:tag_label, tag: 'tag : test1'))
+    create(:administrative_tag, druid: pid, tag_label: create(:tag_label, tag: 'old : tag'))
   end
 
   describe 'Tag sorting, combining, and comparision functions' do
@@ -101,7 +136,17 @@ RSpec.describe ReleaseTags::IdentityMetadata do
     subject(:release_tags) { releases.release_tags }
 
     context 'for an item that does not have any release tags' do
-      let(:item) { instantiate_fixture('druid:qv648vd4392', Dor::Item) }
+      let(:dro_object) do
+        Cocina::Models::DRO.new(externalIdentifier: pid,
+                                type: Cocina::Models::Vocab.object,
+                                label: 'Bryar 250 Trans-American: July 9-10',
+                                version: 1,
+                                identification: {},
+                                access: {},
+                                structural: {},
+                                administrative: { hasAdminPolicy: apo_id,
+                                                  releaseTags: [] })
+      end
 
       it { is_expected.to eq({}) }
     end
@@ -109,9 +154,9 @@ RSpec.describe ReleaseTags::IdentityMetadata do
     it 'returns the releases for an item that has release tags' do
       exp_result = {
         'Revs' => [
-          { 'tag' => 'true', 'what' => 'collection', 'when' => Time.zone.parse('2015-01-06 23:33:47Z'), 'who' => 'carrickr', 'release' => true },
-          { 'tag' => 'true', 'what' => 'self', 'when' => Time.zone.parse('2015-01-06 23:33:54Z'), 'who' => 'carrickr', 'release' => true },
-          { 'tag' => 'Project : Fitch : Batch2', 'what' => 'self', 'when' => Time.zone.parse('2015-01-06 23:40:01Z'), 'who' => 'carrickr', 'release' => false }
+          { 'what' => 'collection', 'when' => Time.zone.parse('2015-01-06 23:33:47Z'), 'who' => 'carrickr', 'release' => true },
+          { 'what' => 'self', 'when' => Time.zone.parse('2015-01-06 23:33:54Z'), 'who' => 'carrickr', 'release' => true },
+          { 'what' => 'self', 'when' => Time.zone.parse('2015-01-06 23:40:01Z'), 'who' => 'carrickr', 'release' => false }
         ]
       }
       expect(release_tags).to eq exp_result
@@ -119,23 +164,31 @@ RSpec.describe ReleaseTags::IdentityMetadata do
   end
 
   describe '#release_tags_for_item_and_all_governing_sets' do
-    let(:collection) { Dor::Collection.new }
-    let(:collection_result) do
+    let(:collection_object) do
+      Cocina::Models::Collection.new(externalIdentifier: collection_pid,
+                                     label: 'Some collection',
+                                     version: 1,
+                                     access: {},
+                                     type: Cocina::Models::Vocab.collection)
+    end
+    let(:collection_release_tags) do
       {
         'Searchworks' => [
           { 'tag' => 'true', 'what' => 'collection', 'when' => Time.zone.parse('2015-01-06 23:33:47Z'), 'who' => 'carrickr', 'release' => true }
         ]
       }
     end
-    let(:collection_tags) { instance_double(described_class, release_tags_for_item_and_all_governing_sets: collection_result) }
+    let(:collection_tags) { instance_double(described_class, release_tags: collection_release_tags) }
 
     before do
       releases # call releases before subbing the invocation.
-      allow(item).to receive(:collections).and_return([collection])
-      allow(described_class).to receive(:for).with(collection).and_return(collection_tags)
+      allow(CocinaObjectStore).to receive(:find).with(collection_pid).and_return(collection_object)
+      allow(described_class).to receive(:for).with(collection_object).and_return(collection_tags)
     end
 
     it 'gets tags from collections and the item' do
+      # NOTE: Revs comes from the item, Searchworks comes from the collection
+      expect(collection_release_tags.keys).not_to include('Revs')
       expect(releases.release_tags_for_item_and_all_governing_sets.keys).to include('Revs', 'Searchworks')
     end
   end
