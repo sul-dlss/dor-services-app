@@ -11,9 +11,41 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
         allow(CocinaObjectStore).to receive(:find).with('druid:tm207xk5096').and_return(child2)
       end
 
-      let(:child1) { instance_double(Cocina::Models::DRO, structural: child_structural1) }
-      let(:child2) { instance_double(Cocina::Models::DRO, structural: child_structural2) }
+      let(:child1) do
+        Cocina::Models::DRO.new(
+          externalIdentifier: 'druid:gj047zn0886',
+          version: 1,
+          label: 'Constituent 1',
+          access: {},
+          administrative: {
+            hasAdminPolicy: 'druid:bx911tp9024'
+          },
+          description: {
+            title: [{ value: 'Number 1' }],
+            purl: 'https://example.com'
+          },
+          type: Cocina::Models::Vocab.image,
+          structural: child_structural1
+        )
+      end
 
+      let(:child2) do
+        Cocina::Models::DRO.new(
+          externalIdentifier: 'druid:tm207xk5096',
+          version: 1,
+          label: 'Constituent 2',
+          access: {},
+          administrative: {
+            hasAdminPolicy: 'druid:bx911tp9024'
+          },
+          description: {
+            title: [{ value: 'Number 2' }],
+            purl: 'https://example.com'
+          },
+          type: Cocina::Models::Vocab.image,
+          structural: child_structural2
+        )
+      end
       let(:child_structural1) do
         Cocina::Models::DROStructural.new({
                                             contains: [{

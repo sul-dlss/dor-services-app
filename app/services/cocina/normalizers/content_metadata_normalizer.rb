@@ -33,6 +33,7 @@ module Cocina
         remove_resource_objectid_attribute
         remove_resource_data_attribute
         remove_external_resource_id
+        remove_external_image_data
         remove_resource_sequence_attribute
         remove_location
         remove_file_format_and_data_type_attributes
@@ -66,6 +67,7 @@ module Cocina
       def normalize_roundtrip
         remove_resource_id_attribute
         remove_external_resource_id
+        remove_external_image_data
         remove_resource_sequence_attribute
 
         regenerate_ng_xml(ng_xml.to_s)
@@ -247,6 +249,13 @@ module Cocina
 
       def remove_external_resource_id
         ng_xml.xpath('//externalFile/@resourceId').each(&:remove)
+      end
+
+      # This data is added by our to_fedora mappings, because it's required in the contentMetadata
+      # we send to PURL, however it can be ignored, because it will be regenerated when the mapping is called.
+      def remove_external_image_data
+        ng_xml.root.xpath('//externalFile/imageData').each(&:remove)
+        ng_xml.root.xpath('//externalFile/preceding-sibling::label').each(&:remove)
       end
 
       def normalize_relationship
