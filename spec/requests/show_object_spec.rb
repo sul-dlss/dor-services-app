@@ -357,6 +357,34 @@ RSpec.describe 'Get the object' do
       end
     end
 
+    context 'when mapped Cocina object is invalid' do
+      # This is missing an agreement, whcih is required
+      let(:object) { Dor::AdminPolicyObject.new(pid: 'druid:bc123df4567') }
+
+      let(:expected) do
+        {
+          errors: [
+            a_hash_including({ detail: '#/components/schemas/AdminPolicyAdministrative missing required parameters: hasAgreement',
+                               status: '422',
+                               title: 'Unexpected Cocina::Mapper.build error' })
+          ]
+        }
+      end
+
+      before do
+        object.descMetadata.title_info.main_title = 'Hello'
+        object.label = 'foo' # used for TitleBuilderStrategy
+        object.identityMetadata.objectLabel = ['bar'] # checked first for cocina props, Om makes it an array
+      end
+
+      it 'returns the error' do
+        get '/v1/objects/druid:bc123df4567',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response_model).to include(expected)
+      end
+    end
+
     context 'when there is a solr error' do
       before do
         allow(Cocina::Mapper).to receive(:build).and_raise(SolrConnectionError, 'broken')
