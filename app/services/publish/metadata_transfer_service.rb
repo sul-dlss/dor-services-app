@@ -10,7 +10,7 @@ module Publish
 
     def initialize(item)
       @item = item
-      @cocina_object = CocinaObjectStore.find(@item.pid)
+      @cocina_object = Cocina::Mapper.build(@item)
       @thumbnail_service = ThumbnailService.new(@cocina_object)
     end
 
