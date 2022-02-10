@@ -4,38 +4,10 @@
 class ReleaseTags
   # Retrieve the release tags for an item and all the collections that it is a part of
   #
-  # @param item [Cocina::DRO] the DRO to list release tags for
+  # @param dro_object [Cocina::DRO] the DRO to list release tags for
   # @return [Hash] (see Dor::ReleaseTags::IdentityMetadata.released_for)
   def self.for(dro_object:)
-    item = Dor.find(dro_object.externalIdentifier)
-    IdentityMetadata.for(item).released_for({})
-  end
-
-  # Retrieve the release tags for an item and all the collections that it is a part of
-  #
-  # @param item [Dor::Item] the item to list release tags for
-  # @return [Hash] (see Dor::ReleaseTags::IdentityMetadata.released_for)
-  def self.legacy_for(item:)
-    IdentityMetadata.for(item).released_for({})
-  end
-
-  # Add a release node for the item
-  # Will use the current time if timestamp not supplied. You can supply a timestap for correcting history, etc if desired
-  # Timestamp will be calculated by the function
-  #
-  # @param work [Dor::Item]  the work to create the release tag for
-  # @param [Hash] params all the other stuff
-  # @option params [Boolean] release: True or false for the release node
-  # @return [Nokogiri::XML::Element] the tag added if successful
-  # @raise [ArgumentError] Raised if attributes are improperly supplied
-  #
-  # @example
-  #  ReleaseTags.create(item, release: true, what: 'self', to: 'Searchworks', who: 'petucket')
-  def self.create(work, attrs)
-    release = attrs.delete(:release)
-    attrs[:when] ||= Time.now.utc.iso8601 # add the timestamp
-    validate_release_attributes(release, attrs)
-    work.identityMetadata.add_value(:release, release.to_s, attrs)
+    IdentityMetadata.for(dro_object).released_for({})
   end
 
   # Determine if the supplied tag is a valid release node that meets all requirements

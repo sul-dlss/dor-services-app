@@ -3,8 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Publish::MetadataTransferService do
+  let(:pid) { 'bc123df4567' }
   let(:item) do
-    Dor::Item.new(pid: 'druid:bc123df4567').tap do |i|
+    Dor::Item.new(pid: "druid:#{pid}").tap do |i|
       i.contentMetadata.content = '<contentMetadata/>'
       i.identityMetadata.content = <<~XML
         <identityMetadata>
@@ -24,19 +25,45 @@ RSpec.describe Publish::MetadataTransferService do
   let(:description) do
     {
       title: [{ value: 'Constituent label &amp; A Special character' }],
-      purl: 'https://purl.stanford.edu/bc123df4567'
+      purl: "https://purl.stanford.edu/#{pid.gsub('druid:', '')}"
     }
   end
   let(:cocina_object) do
-    Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+    Cocina::Models::DRO.new(externalIdentifier: "druid:#{pid}",
                             type: Cocina::Models::Vocab.object,
                             label: 'google download barcode 36105049267078',
                             version: 1,
                             description: description,
                             identification: {},
                             access: {},
-                            structural: { contains: [] },
-                            administrative: { hasAdminPolicy: 'druid:fg890hx1234' })
+                            structural: { contains: [], isMemberOf: ['druid:xh235dd9059'] },
+                            administrative: { hasAdminPolicy: 'druid:fg890hx1234',
+                                              releaseTags: [
+                                                {
+                                                  who: 'dhartwig',
+                                                  what: 'collection',
+                                                  date: '2019-01-18T17:03:35.000+00:00',
+                                                  to: 'Searchworks',
+                                                  release: true
+                                                },
+                                                {
+                                                  who: 'dhartwig',
+                                                  what: 'collection',
+                                                  date: '2020-01-18T17:03:35.000+00:00',
+                                                  to: 'Some_special_place',
+                                                  release: true
+                                                }
+                                              ] })
+  end
+  let(:cocina_object_collection) do
+    Cocina::Models::Collection.new(externalIdentifier: 'druid:xh235dd9059',
+                                   type: Cocina::Models::Vocab.collection,
+                                   label: 'some collection object',
+                                   version: 1,
+                                   description: description,
+                                   identification: {},
+                                   access: {},
+                                   administrative: { hasAdminPolicy: 'druid:fg890hx1234' })
   end
   let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
 
@@ -58,8 +85,9 @@ RSpec.describe Publish::MetadataTransferService do
 
   describe '#publish' do
     before do
-      allow(OpenURI).to receive(:open_uri).with('https://purl-test.stanford.edu/bc123df4567.xml').and_return('<xml/>')
-      allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+      allow(OpenURI).to receive(:open_uri).with("https://purl-test.stanford.edu/#{pid}.xml").and_return('<xml/>')
+      allow(CocinaObjectStore).to receive(:find).with("druid:#{pid}").and_return(cocina_object)
+      allow(CocinaObjectStore).to receive(:find).with('druid:xh235dd9059').and_return(cocina_object_collection) # collection object
       allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
     end
 
@@ -88,7 +116,7 @@ RSpec.describe Publish::MetadataTransferService do
         allow(Settings).to receive(:purl_services_url).and_return('http://example.com/purl')
         allow(Settings.stacks).to receive(:local_document_cache_root).and_return(purl_root)
 
-        stub_request(:delete, 'example.com/purl/purls/bc123df4567')
+        stub_request(:delete, "example.com/purl/purls/#{pid}")
       end
 
       after do
@@ -102,7 +130,7 @@ RSpec.describe Publish::MetadataTransferService do
         File.write(File.join(druid1.path, 'tmpfile'), 'junk')
         service.publish
         expect(File).not_to exist(druid1.path) # it should now be gone
-        expect(WebMock).to have_requested(:delete, 'example.com/purl/purls/bc123df4567')
+        expect(WebMock).to have_requested(:delete, "example.com/purl/purls/#{pid}")
       end
     end
 
@@ -155,7 +183,7 @@ RSpec.describe Publish::MetadataTransferService do
 
       context 'with a collection object' do
         let(:item) do
-          Dor::Collection.new(pid: 'druid:wz243fg4151',
+          Dor::Collection.new(pid: 'druid:xh235dd9059',
                               label: 'Simple collection',
                               admin_policy_object_id: 'druid:fg890hx1234').tap do |coll|
                                 coll.descMetadata.mods_title = 'Grand collection'
@@ -190,12 +218,12 @@ RSpec.describe Publish::MetadataTransferService do
         allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
         allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
 
-        stub_request(:post, 'example.com/purl/purls/bc123df4567')
+        stub_request(:post, "example.com/purl/purls/#{pid}")
       end
 
       it 'notifies the purl service of the update' do
         notify
-        expect(WebMock).to have_requested(:post, 'example.com/purl/purls/bc123df4567')
+        expect(WebMock).to have_requested(:post, "example.com/purl/purls/#{pid}")
       end
     end
 

@@ -3,14 +3,14 @@
 class ReleaseTags
   class IdentityMetadata
     # Determine projects in which an item is released
-    # @param [Dor::Item] item to get the release tags for
+    # @param dro_object [Cocina::DRO] the DRO to list release tags for
     # @return [Hash{String => Boolean}] all namespaces, keys are Project name Strings, values are Boolean
-    def self.for(item)
-      new(item)
+    def self.for(dro_object)
+      new(dro_object)
     end
 
-    def initialize(item)
-      @item = item
+    def initialize(dro_object)
+      @dro_object = dro_object
     end
 
     # Called in Dor::UpdateMarcRecordService (in dor-services-app too)
@@ -28,7 +28,7 @@ class ReleaseTags
       # Get all release tags on the item and strip out the what = self ones, we've already processed all the self tags on this item.
       # This will be where we store all tags that apply, regardless of their timestamp:
       potential_applicable_release_tags = tags_for_what_value(release_tags_for_item_and_all_governing_sets, 'collection')
-      administrative_tags = AdministrativeTags.for(pid: item.id) # Get admin tags once here and pass them down
+      administrative_tags = AdministrativeTags.for(pid: dro_object.externalIdentifier) # Get admin tags once here and pass them down
 
       # We now have the keys for all potential releases, we need to check the tags: the most recent timestamp with an explicit true or false wins.
       # In a nil case, the lack of an explicit false tag we do nothing.
@@ -45,36 +45,47 @@ class ReleaseTags
     # Take an item and get all of its release tags and all tags on collections it is a member of it
     # @return [Hash] a hash of all tags
     def release_tags_for_item_and_all_governing_sets
-      return_tags = release_tags || {}
-      item.collections.each do |collection|
-        next if collection.id == item.id # recursive, so parents of parents are found, but we need to avoid an infinite loop if the collection references itself (i.e. bad data)
+      return_tags = release_tags # this objects initial release tags
 
-        release_service = self.class.for(collection)
-        return_tags = combine_two_release_tag_hashes(return_tags, release_service.release_tags_for_item_and_all_governing_sets)
+      return return_tags unless dro_object.dro? # no need to continue if this is a collection, since they don't nest anymore
+
+      # now go through any collections it is a member of and add them
+      dro_object.structural.isMemberOf.each do |collection_druid|
+        release_service = self.class.for(CocinaObjectStore.find(collection_druid))
+        return_tags = combine_two_release_tag_hashes(return_tags, release_service.release_tags)
       end
       return_tags
     end
 
-    # Take a hash of tags as obtained via Dor::Item.release_tags and returns the newest tag for each namespace
-    # @param tags [Hash] a hash of tags obtained via Dor::Item.release_tags or matching format
+    # Take a hash of tags as obtained via release_tags method and returns the newest tag for each namespace
+    # @param tags [Hash] a hash of tags obtained via release_tags method or matching format
     # @return [Hash] a hash of latest tags for each to value
     def newest_release_tag(tags)
       tags.transform_values { |val| newest_release_tag_in_an_array(val) }
     end
 
+    # create hash structure from cocina administrative release tags, aggregates all releases for a specific target into an array of hashes
+    # e.g. {"Searchworks"=>[{"what"=>"self", "who"=>"cspitzer", "when"=>2021-02-18 21:46:36 UTC, "release"=>true}]}
+    def release_tags
+      tags = {}
+      dro_object.administrative.releaseTags.each do |tag|
+        tags[tag.to] ||= []
+        tags[tag.to] << { 'what' => tag.what, 'who' => tag.who, 'when' => tag.date.utc, 'release' => tag.release }
+      end
+      tags
+    end
+
     private
 
-    delegate :release_tags, to: :item
-
-    # Take a hash of tags as obtained via Dor::Item.release_tags and returns all self tags
-    # @param tags [Hash] a hash of tags obtained via Dor::Item.release_tags or matching format
+    # Take a hash of tags as obtained via release_tags method and returns all self tags
+    # @param tags [Hash] a hash of tags obtained via release_tags method or matching format
     # @return [Hash] a hash of self tags for each to value
     def self_release_tags(tags)
       tags_for_what_value(tags, 'self')
     end
 
     # Take a hash of tags and return all tags with the matching what target
-    # @param tags [Hash] a hash of tags obtained via Dor::Item.release_tags or matching format
+    # @param tags [Hash] a hash of tags obtained via release_tags method or matching format
     # @param what_target [String] the target for the 'what' key, self or collection
     # @return [Hash] a hash of self tags for each to value
     def tags_for_what_value(tags, what_target)
@@ -87,8 +98,8 @@ class ReleaseTags
     end
 
     # Take two hashes of tags and combine them, will not overwrite but will enforce uniqueness of the tags
-    # @param hash_one [Hash] a hash of tags obtained via Dor::Item.release_tags or matching format
-    # @param hash_two [Hash] a hash of tags obtained via Dor::Item.release_tags or matching format
+    # @param hash_one [Hash] a hash of tags obtained via release_tags method or matching format
+    # @param hash_two [Hash] a hash of tags obtained via release_tags method or matching format
     # @return [Hash] the combined hash with uniquiness enforced
     def combine_two_release_tag_hashes(hash_one, hash_two)
       hash_two.each_key do |key|
@@ -120,7 +131,7 @@ class ReleaseTags
       # We use false instead of [], since an item can have no admin_tags at
       # which point we'd be passing this var as [] and would not attempt to
       # retrieve it
-      admin_tags ||= AdministrativeTags.for(pid: item.id)
+      admin_tags ||= AdministrativeTags.for(pid: dro_object.externalIdentifier)
       admin_tags.include?(release_tag['tag'])
     end
 
@@ -141,6 +152,6 @@ class ReleaseTags
       nil # We're out of tags, no applicable ones
     end
 
-    attr_reader :item
+    attr_reader :dro_object
   end
 end
