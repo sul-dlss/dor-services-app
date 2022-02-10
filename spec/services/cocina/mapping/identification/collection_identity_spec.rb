@@ -36,7 +36,8 @@ RSpec.shared_examples 'Collection Identification Fedora Cocina mapping' do
     instance_double(Dor::Collection,
                     pid: collection_id,
                     id: collection_id, # see app/services/cocina/from_fedora/administrative.rb:22
-                    label: label,
+                    label: label, # used for TitleBuilderStrategy
+                    objectLabel: [object_label], # checked first for cocina props, Om makes it an array
                     current_version: '1',
                     admin_policy_object_id: defined?(admin_policy_id) ? admin_policy_id : nil,
                     catkey: defined?(catkey) ? catkey : nil,
@@ -99,10 +100,12 @@ RSpec.shared_examples 'Collection Identification Fedora Cocina mapping' do
       catalog_link[:catalogRecordId] if catalog_link
     end
     let(:roundtrip_fedora_collection_mock) do
+      mapped_cocina_props[:identification] ||= {}
       instance_double(Dor::Collection,
                       pid: mapped_cocina_props[:externalIdentifier],
                       id: mapped_cocina_props[:externalIdentifier], # see app/services/cocina/from_fedora/administrative.rb:22
-                      label: mapped_cocina_props[:label],
+                      label: label, # used for TitleBuilderStrategy
+                      objectLabel: [mapped_cocina_props[:label]], # checked first for cocina props, Om makes it an array
                       current_version: '1',
                       admin_policy_object_id: mapped_cocina_props[:administrative][:hasAdminPolicy],
                       catkey: roundtrip_catkey,
@@ -128,7 +131,8 @@ RSpec.shared_examples 'Collection Identification Fedora Cocina mapping' do
       instance_double(Dor::Collection,
                       pid: collection_id,
                       id: collection_id, # see app/services/cocina/from_fedora/administrative.rb:22
-                      label: label,
+                      label: label, # used for TitleBuilderStrategy
+                      objectLabel: [object_label], # checked first for cocina props, Om makes it an array
                       current_version: '1',
                       admin_policy_object_id: defined?(admin_policy_id) ? admin_policy_id : nil,
                       catkey: defined?(catkey) ? catkey : nil,
@@ -172,6 +176,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
       it_behaves_like 'Collection Identification Fedora Cocina mapping' do
         let(:collection_id) { 'druid:ds247vz0452' }
         let(:label) { 'Undergraduate Theses, Department of Physics' }
+        let(:object_label) { label }
         let(:admin_policy_id) { 'druid:dx569vq3421' } # from RELS-EXT
         let(:source_id_source) { 'Hydrus' }
         let(:source_id) { 'collection-hfrost-2013-02-21T21:28:38.119Z' }
@@ -257,6 +262,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
       it_behaves_like 'Collection Identification Fedora Cocina mapping' do
         let(:collection_id) { 'druid:bh036kv6092' }
         let(:label) { 'Enlace' }
+        let(:object_label) { label }
         let(:admin_policy_id) { 'druid:wp142hh6543' } # from RELS-EXT
         let(:source_id_source) { 'Hydrus' }
         let(:source_id) { 'collection-dhartwig-2013-03-19T16:43:27.792Z' }
@@ -312,6 +318,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
       it_behaves_like 'Collection Identification Fedora Cocina mapping' do
         let(:collection_id) { 'druid:rs370pv0174' }
         let(:label) { 'Stanford University, University Architect / Campus Planning and Design, records' }
+        let(:object_label) { label }
         let(:admin_policy_id) { 'druid:wp142hh6543' } # from RELS-EXT
         let(:source_id_source) { 'Hydrus' }
         let(:source_id) { 'collection-jschne-2018-02-08T16:42:44.515Z' }
@@ -365,6 +372,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
       it_behaves_like 'Collection Identification Fedora Cocina mapping' do
         let(:collection_id) { 'druid:bc225xg9715' }
         let(:label) { 'Generation Anthropocene' }
+        let(:object_label) { label }
         let(:admin_policy_id) { 'druid:yp636tj5357' } # from RELS-EXT
         let(:source_id_source) { 'Hydrus' }
         let(:source_id) { 'collection-amyhodge-2013-03-15T18:27:56.741Z' }
@@ -432,6 +440,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
     it_behaves_like 'Collection Identification Fedora Cocina mapping' do
       let(:collection_id) { 'druid:dj477pz3643' }
       let(:label) { 'Casa Zapata murals collection, 1984-1995' }
+      let(:object_label) { label }
       let(:admin_policy_id) { 'druid:yf767bj4831' } # from RELS-EXT
       let(:catkey) { '7618375' }
       let(:other_id_name) { 'uuid' }
@@ -498,6 +507,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
     it_behaves_like 'Collection Identification Fedora Cocina mapping' do
       let(:collection_id) { 'druid:jm134xy3910' }
       let(:label) { 'Stanford Power2Act, Records' }
+      let(:object_label) { label }
       let(:admin_policy_id) { 'druid:yf767bj4831' } # from RELS-EXT
       let(:catkey) { '13678509' }
       let(:identity_metadata_xml) do
@@ -525,6 +535,47 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
               }
             ]
           },
+          access: access_props,
+          administrative: {
+            hasAdminPolicy: admin_policy_id
+          },
+          description: description_props
+        }
+      end
+    end
+  end
+
+  context 'when no objectLabel' do
+    it_behaves_like 'Collection Identification Fedora Cocina mapping' do
+      let(:collection_id) { 'druid:zz777zz7777' }
+      let(:label) { 'not an original object label' }
+      let(:object_label) { nil }
+      let(:admin_policy_id) { 'druid:yf767bj4831' } # from RELS-EXT
+      let(:identity_metadata_xml) do
+        <<~XML
+          <identityMetadata>
+            <objectId>#{collection_id}</objectId>
+            <objectCreator>DOR</objectCreator>
+            <objectType>collection</objectType>
+          </identityMetadata>
+        XML
+      end
+      let(:roundtrip_identity_metadata_xml) do
+        <<~XML
+          <identityMetadata>
+            <objectId>#{collection_id}</objectId>
+            <objectCreator>DOR</objectCreator>
+            <objectType>collection</objectType>
+            <objectLabel>not an original object label</objectLabel>
+          </identityMetadata>
+        XML
+      end
+      let(:cocina_props) do
+        {
+          externalIdentifier: collection_id,
+          type: Cocina::Models::Vocab.collection,
+          label: label,
+          version: 1,
           access: access_props,
           administrative: {
             hasAdminPolicy: admin_policy_id

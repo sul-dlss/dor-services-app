@@ -3,13 +3,14 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::Mapper do
-  subject(:cocina_model) { described_class.build(item) }
+  subject(:cocina_model) { described_class.build(fedora_object) }
 
-  context 'when item is a Dor::Item' do
-    let(:item) do
+  context 'when object is a Dor::Item' do
+    let(:fedora_object) do
       Dor::Item.new(pid: 'druid:mx000xm0000',
                     source_id: source_id,
-                    label: 'test object',
+                    label: 'test object', # used for TitleBuilderStrategy
+                    objectLabel: 'object label', # checked first for cocina label prop, Om makes it an array
                     admin_policy_object_id: 'druid:sc012gz0974')
     end
 
@@ -19,14 +20,15 @@ RSpec.describe Cocina::Mapper do
     let(:source_id) { 'whaever:8888' }
 
     before do
-      allow(item).to receive(:collection_ids).and_return([])
-      item.identityMetadata.agreementId = [agreement]
-      item.identityMetadata.barcode = '36105036289127'
-      item.descMetadata.title_info.main_title = 'Hello'
-      item.contentMetadata.contentType = [content_type]
+      allow(fedora_object).to receive(:collection_ids).and_return([])
+      fedora_object.identityMetadata.agreementId = [agreement]
+      fedora_object.identityMetadata.barcode = '36105036289127'
+      fedora_object.identityMetadata.objectLabel = 'object label'
+      fedora_object.descMetadata.title_info.main_title = 'Hello'
+      fedora_object.contentMetadata.contentType = [content_type]
 
-      create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: 'Project : Google Books'))
-      create(:administrative_tag, druid: item.pid, tag_label: create(:tag_label, tag: type))
+      create(:administrative_tag, druid: fedora_object.pid, tag_label: create(:tag_label, tag: 'Project : Google Books'))
+      create(:administrative_tag, druid: fedora_object.pid, tag_label: create(:tag_label, tag: type))
     end
 
     it 'maps barcode' do
@@ -47,7 +49,7 @@ RSpec.describe Cocina::Mapper do
       let(:content_type) { 'book' }
 
       before do
-        allow(AdministrativeTags).to receive(:content_type).with(pid: item.id).and_return(['Book (rtl)'])
+        allow(AdministrativeTags).to receive(:content_type).with(pid: fedora_object.id).and_return(['Book (rtl)'])
       end
 
       it 'builds the object with type book' do
@@ -92,7 +94,7 @@ RSpec.describe Cocina::Mapper do
 
       before do
         allow(content_metadata_ds).to receive(:new?).and_return(false)
-        allow(item).to receive(:contentMetadata).and_return(content_metadata_ds)
+        allow(fedora_object).to receive(:contentMetadata).and_return(content_metadata_ds)
       end
 
       it 'builds the object with type image' do
@@ -132,7 +134,7 @@ RSpec.describe Cocina::Mapper do
       end
 
       before do
-        item.geoMetadata.content = iso19139
+        fedora_object.geoMetadata.content = iso19139
       end
 
       it 'builds the object with a geographic schema' do
@@ -143,7 +145,7 @@ RSpec.describe Cocina::Mapper do
 
     context 'when item has identityMetadata objectLabel' do
       before do
-        item.identityMetadata.objectLabel = 'Use me'
+        fedora_object.identityMetadata.objectLabel = 'Use me'
       end
 
       it 'prefers objectLabel' do
@@ -153,7 +155,7 @@ RSpec.describe Cocina::Mapper do
 
     context 'when item has an abstract in descMetadata' do
       before do
-        item.descMetadata.abstract = 'de Kooning'
+        fedora_object.descMetadata.abstract = 'de Kooning'
       end
 
       it 'populates note of type abstract in cocina model' do
@@ -164,7 +166,7 @@ RSpec.describe Cocina::Mapper do
 
     context 'when item has a cocina model error' do
       before do
-        item.descMetadata.title_info.main_title = nil
+        fedora_object.descMetadata.title_info.main_title = nil
         allow(Honeybadger).to receive(:notify)
       end
 
@@ -190,8 +192,8 @@ RSpec.describe Cocina::Mapper do
     end
   end
 
-  context 'when item is an Etd' do
-    let(:item) do
+  context 'when object is an Etd' do
+    let(:fedora_object) do
       # ETDs do not have sourceId set, but they do have dissertation in the other_ids
       Etd.new(pid: 'druid:mx000xm0000',
               admin_policy_object_id: 'druid:sc012gz0974',
@@ -200,8 +202,8 @@ RSpec.describe Cocina::Mapper do
     end
 
     before do
-      item.descMetadata.mods_title = 'Test ETD'
-      allow(item).to receive(:collection_ids).and_return([])
+      fedora_object.descMetadata.mods_title = 'Test ETD'
+      allow(fedora_object).to receive(:collection_ids).and_return([])
     end
 
     it 'builds the object with type object, a sourceId, and correct admin policy' do
@@ -261,7 +263,7 @@ RSpec.describe Cocina::Mapper do
 
       before do
         allow(content_metadata_ds).to receive(:new?).and_return(false)
-        allow(item).to receive(:contentMetadata).and_return(content_metadata_ds)
+        allow(fedora_object).to receive(:contentMetadata).and_return(content_metadata_ds)
       end
 
       it 'builds the object with filesets and files' do
@@ -284,12 +286,15 @@ RSpec.describe Cocina::Mapper do
     end
   end
 
-  context 'when item is a Dor::Collection' do
-    let(:item) { Dor::Collection.new(pid: 'druid:fh138mm2023', label: 'test object', admin_policy_object_id: 'druid:sc012gz0974') }
-    let(:identity_metadata_ds) do
-      instance_double(Dor::IdentityMetadataDS, new?: false, ng_xml: Nokogiri::XML(xml), catkey: '777777', source_id: nil, barcode: nil)
+  context 'when object is a Dor::Collection' do
+    let(:fedora_object) do
+      Dor::Collection.new(
+        pid: 'druid:fh138mm2023',
+        label: 'test object',
+        admin_policy_object_id: 'druid:sc012gz0974'
+      )
     end
-    let(:xml) do
+    let(:identity_metadata_xml) do
       <<~XML
         <?xml version="1.0"?>
         <identityMetadata>
@@ -318,11 +323,11 @@ RSpec.describe Cocina::Mapper do
     end
 
     before do
-      item.descMetadata.title_info.main_title = 'Hello'
-      allow(item).to receive(:identityMetadata).and_return(identity_metadata_ds)
+      fedora_object.descMetadata.title_info.main_title = 'Hello'
+      allow(fedora_object).to receive(:identityMetadata).and_return(Dor::IdentityMetadataDS.from_xml(identity_metadata_xml))
     end
 
-    it 'builds the collection with releaseTags' do
+    it 'builds the cocina collection with releaseTags' do
       expect(cocina_model).to be_kind_of Cocina::Models::Collection
       expect(cocina_model.administrative.hasAdminPolicy).to eq 'druid:sc012gz0974'
       expect(cocina_model.administrative.releaseTags.size).to eq 13
