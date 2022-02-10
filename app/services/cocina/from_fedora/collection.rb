@@ -16,11 +16,12 @@ module Cocina
         @notifier = notifier
       end
 
+      # rubocop:disable Metrics/AbcSize
       def props
         {
           externalIdentifier: fedora_collection.pid,
           type: Cocina::Models::Vocab.collection,
-          label: fedora_collection.label,
+          label: fedora_collection.objectLabel.first || fedora_collection.label,
           version: fedora_collection.current_version.to_i,
           administrative: FromFedora::Administrative.props(fedora_collection),
           access: CollectionAccess.props(fedora_collection.rightsMetadata)
@@ -33,6 +34,7 @@ module Cocina
           props[:identification] = identification unless identification.empty?
         end
       end
+      # rubocop:enable Metrics/AbcSize
 
       private
 
