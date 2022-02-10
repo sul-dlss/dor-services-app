@@ -38,8 +38,8 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
     instance_double(Dor::Item,
                     pid: item_id,
                     id: item_id, # see app/services/cocina/from_fedora/administrative.rb:22
-                    objectLabel: [label],
-                    label: label,
+                    objectLabel: [object_label], # checked first for cocina props, Om makes it an array
+                    label: label, # used for TitleBuilderStrategy
                     current_version: '1',
                     admin_policy_object_id: defined?(admin_policy_id) ? admin_policy_id : nil,
                     catkey: defined?(catkey) ? catkey : nil,
@@ -126,8 +126,8 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
       instance_double(Dor::Item,
                       pid: mapped_cocina_props[:externalIdentifier],
                       id: mapped_cocina_props[:externalIdentifier], # see app/services/cocina/from_fedora/administrative.rb:22
-                      objectLabel: [label],
-                      label: mapped_cocina_props[:label],
+                      objectLabel: [object_label], # checked first for cocina props, Om makes it an array
+                      label: mapped_cocina_props[:label], # used for TitleBuilderStrategy
                       current_version: '1',
                       admin_policy_object_id: mapped_cocina_props[:administrative][:hasAdminPolicy],
                       collections: roundtrip_collections,
@@ -166,8 +166,8 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
       instance_double(Dor::Item,
                       pid: item_id,
                       id: item_id, # see app/services/cocina/from_fedora/administrative.rb:22
-                      objectLabel: [label],
-                      label: mapped_cocina_props[:label],
+                      objectLabel: [object_label], # checked first for cocina props, Om makes it an array
+                      label: mapped_cocina_props[:label], # used for TitleBuilderStrategy
                       current_version: '1',
                       admin_policy_object_id: defined?(admin_policy_id) ? admin_policy_id : nil,
                       collections: collection_ids.map { |id| Dor::Collection.new(pid: id) },
@@ -217,6 +217,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb053zc5914' }
       let(:label) { 'L15_1655E_1008N' }
+      let(:object_label) { label }
       let(:admin_policy_id) { 'druid:bc198wr8388' } # from RELS-EXT
       let(:collection_ids) { ['druid:hh178mz6257'] } # from RELS-EXT
       let(:source_id_source) { 'branner' }
@@ -258,6 +259,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb010dx6027' }
       let(:label) { 'The rite of spring' }
+      let(:object_label) { label }
       let(:catkey) { '8501137' }
       let(:admin_policy_id) { 'druid:bz845pv2292' } # from RELS-EXT
       let(:collection_ids) { [] } # not in RELS-EXT
@@ -305,6 +307,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb010dx6027' }
       let(:label) { 'The rite of spring' }
+      let(:object_label) { label }
       let(:catkey1) { '8501137' }
       let(:catkey2) { '8675309' }
       let(:admin_policy_id) { 'druid:bz845pv2292' } # from RELS-EXT
@@ -358,6 +361,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb010dx6027' }
       let(:label) { 'The rite of spring' }
+      let(:object_label) { label }
       let(:catkey) { '8501137' }
       let(:prev_catkey) { '8675309' }
       let(:admin_policy_id) { 'druid:bz845pv2292' } # from RELS-EXT
@@ -411,6 +415,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb010dx6027' }
       let(:label) { 'The rite of spring' }
+      let(:object_label) { label }
       let(:catkey) { '8501137' }
       let(:admin_policy_id) { 'druid:bz845pv2292' } # from RELS-EXT
       let(:collection_ids) { [] } # not in RELS-EXT
@@ -463,6 +468,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb010dx6027' }
       let(:label) { 'The rite of spring' }
+      let(:object_label) { label }
       let(:catkey) { '8501137' }
       let(:admin_policy_id) { 'druid:bz845pv2292' } # from RELS-EXT
       let(:collection_ids) { [] } # not in RELS-EXT
@@ -513,6 +519,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb274jy1491' }
       let(:label) { 'Cashews, Harvested Area Data Quality, 1997-2003' }
+      let(:object_label) { label }
       let(:admin_policy_id) { 'druid:mh095yb8404' } # from RELS-EXT
       let(:collection_ids) { ['druid:tz390fn8810'] } # from RELS-EXT
       let(:source_id_source) { 'branner' }
@@ -570,6 +577,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb000jd2736' }
       let(:label) { 'The life of Goethe' }
+      let(:object_label) { label }
       let(:catkey) { '2003938' }
       let(:admin_policy_id) { 'druid:dx569vq3421' } # from RELS-EXT
       let(:collection_ids) { ['druid:yh583fk3400'] } # from RELS-EXT
@@ -637,6 +645,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb005bg5914' }
       let(:label) { 'Google Scanned Book, barcode 36105014928126' }
+      let(:object_label) { label }
       let(:catkey) { '405984' }
       let(:barcode) { '36105014928126' }
       let(:admin_policy_id) { 'druid:rp029yq2361' } # from RELS-EXT
@@ -711,6 +720,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:px901zd6069' }
       let(:label) { '' }
+      let(:object_label) { label }
       let(:catkey) { '8537171' }
       let(:admin_policy_id) { 'druid:bx911tp9024' } # from RELS-EXT
       let(:collection_ids) { [] } # not in RELS-EXT
@@ -789,6 +799,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:mr401cc4586' }
       let(:label) { '' }
+      let(:object_label) { label }
       let(:catkey) { '10327542' }
       let(:admin_policy_id) { 'druid:bx911tp9024' } # from RELS-EXT
       let(:collection_ids) { [] } # not in RELS-EXT
@@ -866,6 +877,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:xs522rn2310' }
       let(:label) { '' }
+      let(:object_label) { label }
       let(:catkey) { '12684953' }
       let(:admin_policy_id) { 'druid:bx911tp9024' } # from RELS-EXT
       let(:collection_ids) { [] } # not in RELS-EXT
@@ -941,6 +953,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bn012fy8818' }
       let(:label) { '"Al marito impareggiabile della signora Laura Maria Catterina Bassi", Sonetto di M.D.G.L., s.d.' }
+      let(:object_label) { label }
       let(:admin_policy_id) { 'druid:wq307yk9043' } # from RELS-EXT
       let(:collection_ids) { ['druid:nx585yw5390'] } # from RELS-EXT
       let(:source_id_source) { 'Archiginnasio' }
@@ -998,6 +1011,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:fn010kg7712' }
       let(:label) { 'Mainichi Shinbun, Japanese, shichigatsu 21' }
+      let(:object_label) { label }
       let(:admin_policy_id) { 'druid:ww057vk7675' } # from RELS-EXT
       let(:collection_ids) { ['druid:hh178mz6257'] } # from RELS-EXT
       let(:source_id_source) { 'sul' }
@@ -1059,6 +1073,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb077vq3166' }
       let(:label) { '16152_24A_SM' }
+      let(:object_label) { label }
       let(:admin_policy_id) { 'druid:qp256sh2346' } # from RELS-EXT
       let(:collection_ids) { ['druid:vx796zh5418'] } # from RELS-EXT
       let(:source_id_source) { 'sul ' }
@@ -1120,6 +1135,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:gj077jb7878' }
       let(:label) { 'Open Science Perspective' }
+      let(:object_label) { label }
       let(:admin_policy_id) { 'druid:sn486kf1487' } # from RELS-EXT
       let(:collection_ids) { ['druid:ck552zg2217'] } # from RELS-EXT
       let(:source_id_source) { 'Hydrus' }
@@ -1188,6 +1204,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bj731rx4986' }
       let(:label) { 'http://nippongenkikai.jp/' }
+      let(:object_label) { label }
       let(:admin_policy_id) { 'druid:xt299pt7593' } # from RELS-EXT
       let(:collection_ids) { ['druid:sr233xh9483'] } # from RELS-EXT
       let(:source_id_source) { 'sul' }
@@ -1262,6 +1279,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb143kr5856' }
       let(:label) { 'http://cheme.stanford.edu/' }
+      let(:object_label) { label }
       let(:admin_policy_id) { 'druid:xt299pt7593' } # from RELS-EXT
       let(:collection_ids) { ['druid:xs048zp7815'] } # from RELS-EXT
       let(:source_id_source) { 'sul' }
@@ -1313,6 +1331,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb001zc5754' }
       let(:label) { 'French Grand Prix & 12 Hour Rheims 7/4/1954' }
+      let(:object_label) { label }
       let(:xml_escaped_label) { 'French Grand Prix &amp; 12 Hour Rheims 7/4/1954' }
       let(:admin_policy_id) { 'druid:qv648vd4392' } # from RELS-EXT
       let(:collection_ids) { ['druid:nt028fd5773', 'druid:wy149zp6932'] } # from RELS-EXT
@@ -1374,6 +1393,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     xit 'to be implemented: what to do with 2 catkeys' do
       let(:item_id) { 'druid:bb029vy9696' }
       let(:label) { 'EEMs: Finite State Continuous-Time Markov Decision Processes with Applications to a Class of Optimization Problems in Queueing Theory' }
+      let(:object_label) { label }
       let(:catkey) { '10208128' }
       let(:admin_policy_id) { 'druid:jj305hm5259' } # from RELS-EXT
       let(:collection_ids) { [] } # none in RELS-EXT
@@ -1468,6 +1488,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     it_behaves_like 'DRO Identification Fedora Cocina mapping' do
       let(:item_id) { 'druid:bb016nw8128' }
       let(:label) { 'Événement du 19 fevrier 1790' }
+      let(:object_label) { label }
       let(:xml_escaped_label) { 'E&#x301;ve&#x301;nement du 19 fevrier 1790' }
       let(:admin_policy_id) { 'druid:ht275vw4351' } # from RELS-EXT
       let(:collection_ids) { ['druid:jh957jy1101'] } # from RELS-EXT
@@ -1496,6 +1517,58 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             <objectCreator>DOR</objectCreator>
             <objectLabel>#{xml_escaped_label}</objectLabel>
             <objectType>item</objectType>
+          </identityMetadata>
+        XML
+      end
+      let(:cocina_props) do
+        {
+          externalIdentifier: item_id,
+          type: Cocina::Models::Vocab.object,
+          label: label,
+          version: 1,
+          identification: {
+            sourceId: "#{source_id_source}:#{source_id}"
+          },
+          administrative: {
+            hasAdminPolicy: admin_policy_id
+          },
+          structural: {
+            isMemberOf: collection_ids
+          },
+          access: access_props,
+          description: description_props
+        }
+      end
+    end
+  end
+
+  context 'when no objectLabel' do
+    it_behaves_like 'DRO Identification Fedora Cocina mapping' do
+      let(:item_id) { 'druid:bb053zc5914' }
+      let(:label) { 'not an original object label' }
+      let(:object_label) { nil }
+      let(:admin_policy_id) { 'druid:bc198wr8388' } # from RELS-EXT
+      let(:collection_ids) { ['druid:hh178mz6257'] } # from RELS-EXT
+      let(:source_id_source) { 'branner' }
+      let(:source_id) { 'drainagecanalsSEAsia_L15_1655E_1008N.tif' }
+      let(:identity_metadata_xml) do
+        <<~XML
+          <identityMetadata>
+            <sourceId source="#{source_id_source}">#{source_id}</sourceId>
+            <objectId>#{item_id}</objectId>
+            <objectCreator>DOR</objectCreator>
+            <objectType>item</objectType>
+          </identityMetadata>
+        XML
+      end
+      let(:roundtrip_identity_metadata_xml) do
+        <<~XML
+          <identityMetadata>
+            <sourceId source="#{source_id_source}">#{source_id}</sourceId>
+            <objectId>#{item_id}</objectId>
+            <objectCreator>DOR</objectCreator>
+            <objectType>item</objectType>
+            <objectLabel>not an original object label</objectLabel>
           </identityMetadata>
         XML
       end
