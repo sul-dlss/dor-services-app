@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Cocina::Normalizers::IdentityNormalizer do
   let(:normalized_ng_xml) { described_class.normalize(identity_ng_xml: Nokogiri::XML(original_xml), label: 'Some cool object label') }
 
-  context 'when #normalize_apo_source_id' do
+  context 'when #normalize_out_apo_hydrus_source_id' do
     context 'with an adminPolicy object with a sourceId' do
       let(:original_xml) do
         <<~XML
@@ -627,7 +627,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
     end
   end
 
-  describe '#normalize_label' do
+  describe '#normalize_object_label' do
     context 'when there is no objectLabel' do
       let(:original_xml) do
         <<~XML
