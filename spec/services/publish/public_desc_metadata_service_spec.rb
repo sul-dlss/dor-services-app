@@ -10,7 +10,7 @@ RSpec.describe Publish::PublicDescMetadataService do
   describe '#ng_xml' do
     subject(:doc) { service.ng_xml }
 
-    context 'with isMemberOfCollection and isConstituentOf relationships' do
+    context 'with isMemberOfCollection relationships' do
       let(:relationships) do
         <<-EOXML
           <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:hydra="http://projecthydra.org/ns/relations#">
@@ -19,6 +19,37 @@ RSpec.describe Publish::PublicDescMetadataService do
               <fedora-model:hasModel rdf:resource="info:fedora/hydra:commonMetadata"></fedora-model:hasModel>
               <fedora:isMemberOf rdf:resource="info:fedora/druid:xh235dd9059"></fedora:isMemberOf>
               <fedora:isMemberOfCollection rdf:resource="info:fedora/druid:xh235dd9059"></fedora:isMemberOfCollection>
+            </rdf:Description>
+          </rdf:RDF>
+        EOXML
+      end
+
+      before do
+        ActiveFedora::RelsExtDatastream.from_xml(relationships, obj.rels_ext)
+
+        # load up collection items from fixture data
+        expect(Dor).to receive(:find).with('druid:xh235dd9059').and_return(instantiate_fixture('druid:xh235dd9059', Dor::Item))
+      end
+
+      it 'writes the relationships into MODS' do
+        # test that we have 2 expansions
+        expect(doc.xpath('//mods:mods/mods:relatedItem[@type="host"]', 'mods' => 'http://www.loc.gov/mods/v3').size).to eq(1)
+
+        # test the validity of the collection expansion
+        xpath_expr = '//mods:mods/mods:relatedItem[@type="host" and not(@displayLabel)]/mods:titleInfo/mods:title'
+        expect(doc.xpath(xpath_expr, 'mods' => 'http://www.loc.gov/mods/v3').first.text.strip).to eq('David Rumsey Map Collection at Stanford University Libraries')
+        xpath_expr = '//mods:mods/mods:relatedItem[@type="host" and not(@displayLabel)]/mods:location/mods:url'
+        expect(doc.xpath(xpath_expr, 'mods' => 'http://www.loc.gov/mods/v3').first.text.strip).to match(%r{^https?://purl.*\.stanford\.edu/xh235dd9059$})
+      end
+    end
+
+    context 'with isConstituentOf relationships' do
+      let(:relationships) do
+        <<-EOXML
+          <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:hydra="http://projecthydra.org/ns/relations#">
+            <rdf:Description rdf:about="info:fedora/druid:ab123cd4567">
+              <hydra:isGovernedBy rdf:resource="info:fedora/druid:789012"></hydra:isGovernedBy>
+              <fedora-model:hasModel rdf:resource="info:fedora/hydra:commonMetadata"></fedora-model:hasModel>
               <fedora:isConstituentOf rdf:resource="info:fedora/druid:hj097bm8879"></fedora:isConstituentOf>
             </rdf:Description>
           </rdf:RDF>
@@ -28,20 +59,13 @@ RSpec.describe Publish::PublicDescMetadataService do
       before do
         ActiveFedora::RelsExtDatastream.from_xml(relationships, obj.rels_ext)
 
-        # load up collection and constituent parent items from fixture data
-        expect(Dor).to receive(:find).with('druid:xh235dd9059').and_return(instantiate_fixture('druid:xh235dd9059', Dor::Item))
+        # load up constituent parent items from fixture data
         expect(Dor).to receive(:find).with('druid:hj097bm8879').and_return(instantiate_fixture('druid:hj097bm8879', Dor::Item))
       end
 
       it 'writes the relationships into MODS' do
         # test that we have 2 expansions
-        expect(doc.xpath('//mods:mods/mods:relatedItem[@type="host"]', 'mods' => 'http://www.loc.gov/mods/v3').size).to eq(2)
-
-        # test the validity of the collection expansion
-        xpath_expr = '//mods:mods/mods:relatedItem[@type="host" and not(@displayLabel)]/mods:titleInfo/mods:title'
-        expect(doc.xpath(xpath_expr, 'mods' => 'http://www.loc.gov/mods/v3').first.text.strip).to eq('David Rumsey Map Collection at Stanford University Libraries')
-        xpath_expr = '//mods:mods/mods:relatedItem[@type="host" and not(@displayLabel)]/mods:location/mods:url'
-        expect(doc.xpath(xpath_expr, 'mods' => 'http://www.loc.gov/mods/v3').first.text.strip).to match(%r{^https?://purl.*\.stanford\.edu/xh235dd9059$})
+        expect(doc.xpath('//mods:mods/mods:relatedItem[@type="host"]', 'mods' => 'http://www.loc.gov/mods/v3').size).to eq(1)
 
         # test the validity of the constituent expansion
         xpath_expr = '//mods:mods/mods:relatedItem[@type="host" and @displayLabel="Appears in"]/mods:titleInfo/mods:title'
