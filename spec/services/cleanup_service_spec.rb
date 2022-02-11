@@ -113,8 +113,8 @@ RSpec.describe CleanupService do
     let(:assembly_dir) { File.join(fixture_dir, 'assembly') }
     let(:stacks_dir) { File.join(fixture_dir, 'stacks') }
 
-    let(:druid_1) { 'druid:cd456ef7890' }
-    let(:druid_2) { 'druid:cd456gh1234' }
+    let(:druid1) { 'druid:cd456ef7890' }
+    let(:druid2) { 'druid:cd456gh1234' }
 
     before do
       allow(Settings.cleanup).to receive_messages(
@@ -141,10 +141,10 @@ RSpec.describe CleanupService do
 
     describe '.cleanup_by_druid' do
       it 'correctly prunes directories' do
-        dr1_wspace = DruidTools::Druid.new(druid_1, workspace_dir)
-        dr2_wspace = DruidTools::Druid.new(druid_2, workspace_dir)
-        dr1_assembly = DruidTools::Druid.new(druid_1, assembly_dir)
-        dr2_assembly = DruidTools::Druid.new(druid_2, assembly_dir)
+        dr1_wspace = DruidTools::Druid.new(druid1, workspace_dir)
+        dr2_wspace = DruidTools::Druid.new(druid2, workspace_dir)
+        dr1_assembly = DruidTools::Druid.new(druid1, assembly_dir)
+        dr2_assembly = DruidTools::Druid.new(druid2, assembly_dir)
 
         dr1_wspace.mkdir
         dr2_wspace.mkdir
@@ -156,7 +156,7 @@ RSpec.describe CleanupService do
         create_tempfile dr2_assembly.path
 
         # Setup the export content, remove 'druid:' prefix for bag and export/workspace dir
-        dr1 = druid_1.split(':').last
+        dr1 = druid1.split(':').last
         export_prefix = File.join(export_dir, dr1)
 
         # Create {export_dir}/druid1
@@ -169,18 +169,18 @@ RSpec.describe CleanupService do
         expect(File).to exist(dr1_wspace.path)
         expect(File).to exist(dr1_assembly.path)
 
-        # druid_1 cleaned up, including files
-        described_class.cleanup_by_druid druid_1
+        # druid1 cleaned up, including files
+        described_class.cleanup_by_druid druid1
         expect(File).not_to exist(dr1_wspace.path)
         expect(File).not_to exist(dr1_assembly.path)
         expect(File).not_to exist(export_prefix)
         expect(File).not_to exist("#{export_prefix}.tar")
 
-        # But not druid_2
+        # But not druid2
         expect(File).to exist(dr2_wspace.path)
         expect(File).to exist(dr2_assembly.path)
 
-        described_class.cleanup_by_druid druid_2
+        described_class.cleanup_by_druid druid2
         expect(File).not_to exist(dr2_wspace.path)
         expect(File).not_to exist(dr2_assembly.path)
 
@@ -189,10 +189,10 @@ RSpec.describe CleanupService do
       end
 
       it 'cleans up without assembly content' do
-        dr1_wspace = DruidTools::Druid.new(druid_1, workspace_dir)
+        dr1_wspace = DruidTools::Druid.new(druid1, workspace_dir)
         dr1_wspace.mkdir
 
-        described_class.cleanup_by_druid druid_1
+        described_class.cleanup_by_druid druid1
         expect(File).not_to exist(dr1_wspace.path)
       end
     end
