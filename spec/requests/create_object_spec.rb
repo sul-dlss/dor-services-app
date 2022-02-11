@@ -1325,6 +1325,7 @@ RSpec.describe 'Create object' do
             "type":"http://cocina.sul.stanford.edu/models/object.jsonld",
             "label":"This is my label","version":1,
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
+            "access":{},
             "identification":{"sourceId":"googlebooks:999999"},
             "structural":{}}
         JSON
