@@ -203,11 +203,14 @@ module Cocina
       apo = CocinaObjectStore.find(cocina_object.administrative.hasAdminPolicy)
       return cocina_object unless apo.administrative.respond_to?(:defaultAccess) && apo.administrative.defaultAccess
 
-      embargo = cocina_object.access&.embargo
       default_access = apo.administrative.defaultAccess
-      # Add embargo into the DROAccess node if one exists
-      default_access = Cocina::Models::DROAccess.new(default_access.to_h.merge({ embargo: embargo })) if embargo
-      cocina_object.new(access: default_access)
+      updated_access = if cocina_object.collection?
+                         # Collection access only supports dark or world, but default access is more complicated
+                         cocina_object.access.new(access: default_access.access == 'dark' ? 'dark' : 'world')
+                       else
+                         cocina_object.access.new(default_access.to_h)
+                       end
+      cocina_object.new(access: updated_access)
     end
 
     def truncate_label(label)
