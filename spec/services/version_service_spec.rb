@@ -290,7 +290,7 @@ RSpec.describe VersionService do
       end
 
       it 'raises an exception' do
-        expect { close }.to raise_error(Dor::Exception, "Trying to close version on #{druid} which is not opened for versioning")
+        expect { close }.to raise_error(Dor::Exception, "Trying to close version 2 on #{druid} which is not opened for versioning")
       end
     end
 
@@ -313,7 +313,7 @@ RSpec.describe VersionService do
       end
 
       it 'raises an exception' do
-        expect { close }.to raise_error(Dor::Exception, "Trying to close version on #{druid} which has active assemblyWF")
+        expect { close }.to raise_error(Dor::Exception, "Trying to close version 2 on #{druid} which has active assemblyWF")
         expect(workflow_client).to have_received(:workflow_status).with(hash_including(workflow: 'assemblyWF'))
       end
     end

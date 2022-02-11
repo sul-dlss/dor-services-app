@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
   let(:druid) { 'druid:mx123qw2323' }
   let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, version: 1) }
+  let(:updated_cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, version: 2) }
   let(:workflow_client) { instance_double(Dor::Workflow::Client, create_workflow_by_name: true) }
   let(:default_start_accession_workflow) { ObjectsController.new.send(:default_start_accession_workflow) }
   let(:event_factory) { { event_factory: EventFactory } }
@@ -12,7 +13,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
   before do
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
     allow(VersionService).to receive(:close)
-    allow(VersionService).to receive(:open).and_return(cocina_object)
+    allow(VersionService).to receive(:open).and_return(updated_cocina_object)
     allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
   end
 
@@ -55,9 +56,9 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     it 'opens and closes a version and starts default workflow' do
       post "/v1/objects/#{druid}/accession",
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '1')
+      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '2')
       expect(VersionService).to have_received(:open).with(cocina_object, base_params, event_factory)
-      expect(VersionService).to have_received(:close).with(cocina_object, base_params.merge('start_accession' => false), event_factory)
+      expect(VersionService).to have_received(:close).with(updated_cocina_object, base_params.merge('start_accession' => false), event_factory)
     end
 
     it 'can override the default workflow' do
@@ -65,9 +66,9 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
       post "/v1/objects/#{druid}/accession",
            params: params,
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'accessionWF', version: '1')
+      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'accessionWF', version: '2')
       expect(VersionService).to have_received(:open).with(cocina_object, base_params.merge(params), event_factory)
-      expect(VersionService).to have_received(:close).with(cocina_object, base_params.merge(params).merge('start_accession' => false), event_factory)
+      expect(VersionService).to have_received(:close).with(updated_cocina_object, base_params.merge(params).merge('start_accession' => false), event_factory)
     end
   end
 
