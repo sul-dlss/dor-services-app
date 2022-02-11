@@ -95,7 +95,7 @@ RSpec.describe ItemQueryService do
       end
 
       it 'returns a single error' do
-        expect(service.validate_combinable_items(parent: 'druid:bc123df4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
+        expect(service.validate_combinable_items(virtual_object: 'druid:bc123df4567', constituents: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
           'druid:bc123df4567' => ['Item druid:bc123df4567 has workflow errors: Boom']
         )
       end
@@ -108,7 +108,7 @@ RSpec.describe ItemQueryService do
       end
 
       it 'returns a single error if one object does not allow modification' do
-        expect(service.validate_combinable_items(parent: 'druid:bc123df4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
+        expect(service.validate_combinable_items(virtual_object: 'druid:bc123df4567', constituents: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
           'druid:bc123df4567' => ['Item druid:bc123df4567 is not open or openable']
         )
       end
@@ -122,7 +122,7 @@ RSpec.describe ItemQueryService do
       end
 
       it 'returns errors if any objects are dark' do
-        expect(service.validate_combinable_items(parent: 'druid:bc123df4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
+        expect(service.validate_combinable_items(virtual_object: 'druid:bc123df4567', constituents: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
           'druid:bc123df4567' => ['Item druid:xh235dd9059 is dark', 'Item druid:hj097bm8879 is dark']
         )
       end
@@ -136,7 +136,7 @@ RSpec.describe ItemQueryService do
       end
 
       it 'raises error if any objects are citation_only' do
-        expect(service.validate_combinable_items(parent: 'druid:bc123df4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
+        expect(service.validate_combinable_items(virtual_object: 'druid:bc123df4567', constituents: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
           'druid:bc123df4567' => ['Item druid:bc123df4567 is citation_only', 'Item druid:hj097bm8879 is citation_only']
         )
       end
@@ -150,7 +150,7 @@ RSpec.describe ItemQueryService do
       end
 
       it 'returns an empty hash otherwise' do
-        expect(service.validate_combinable_items(parent: 'druid:bc123df4567', children: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq({})
+        expect(service.validate_combinable_items(virtual_object: 'druid:bc123df4567', constituents: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq({})
       end
     end
   end

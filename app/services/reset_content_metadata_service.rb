@@ -15,7 +15,7 @@ class ResetContentMetadataService
   end
 
   def reset
-    disown_current_children!
+    disown_current_constituents!
 
     item.contentMetadata.content = "<contentMetadata objectId='#{item.id}' type='#{type}'/>"
     item.save!
@@ -23,11 +23,11 @@ class ResetContentMetadataService
 
   private
 
-  def disown_current_children!
-    item.contentMetadata.ng_xml.xpath('//resource/relationship/@objectId').map(&:content).each do |child_id|
-      child = Dor::Item.find(child_id)
-      child.clear_relationship(:is_constituent_of)
-      child.save! if child.relationships_are_dirty?
+  def disown_current_constituents!
+    item.contentMetadata.ng_xml.xpath('//resource/relationship/@objectId').map(&:content).each do |constituent_id|
+      constituent = Dor::Item.find(constituent_id)
+      constituent.clear_relationship(:is_constituent_of)
+      constituent.save! if constituent.relationships_are_dirty?
     end
   end
 end

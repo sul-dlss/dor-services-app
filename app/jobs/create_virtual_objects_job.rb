@@ -11,17 +11,17 @@ class CreateVirtualObjectsJob < ApplicationJob
     errors = []
 
     virtual_objects.each do |virtual_object|
-      parent_id, child_ids = virtual_object.values_at(:parent_id, :child_ids)
-      # Update the constituent relationship between the parent and child druids
-      result = ConstituentService.new(parent_druid: parent_id,
-                                      event_factory: EventFactory).add(child_druids: child_ids)
+      virtual_object_id, constituent_ids = virtual_object.values_at(:virtual_object_id, :constituent_ids)
+      # Update the constituent relationship between the virtual_object and constituent druids
+      result = ConstituentService.new(virtual_object_druid: virtual_object_id,
+                                      event_factory: EventFactory).add(constituent_druids: constituent_ids)
       # Do not add `nil`s to the errors array as they signify successful
       # creation of the virtual object
       errors << result if result.present?
     rescue ActiveFedora::ObjectNotFoundError, Rubydora::FedoraInvalidRequest, Dor::Exception, Preservation::Client::Error => e
-      errors << { parent_id => [e.message] }
+      errors << { virtual_object_id => [e.message] }
     rescue StandardError => e
-      errors << { parent_id => [e.message] }
+      errors << { virtual_object_id => [e.message] }
       Honeybadger.notify(e)
     end
   ensure
