@@ -11,16 +11,16 @@ class ItemQueryService
     @item_relation = item_relation
   end
 
-  # @param [String] parent a parent druid
-  # @param [Array] children a list of child druids
+  # @param [String] virtual_object a virtual_object druid
+  # @param [Array] constituents a list of constituent druids
   # @return [Hash]
-  def self.validate_combinable_items(parent:, children:)
+  def self.validate_combinable_items(virtual_object:, constituents:)
     errors = Hash.new { |hash, key| hash[key] = [] }
 
-    ([parent] + children).each do |druid|
+    ([virtual_object] + constituents).each do |druid|
       find_combinable_item(druid)
     rescue UncombinableItemError => e
-      errors[parent] << e.message
+      errors[virtual_object] << e.message
     end
 
     errors
