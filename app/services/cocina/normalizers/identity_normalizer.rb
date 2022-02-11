@@ -21,7 +21,6 @@ module Cocina
       end
 
       def normalize
-        normalize_dissertation_id_to_source_id
         normalize_out_uuid
         normalize_out_admin_tags
         normalize_out_admin_policy
@@ -33,12 +32,14 @@ module Cocina
         normalize_out_call_sequence_ids
         normalize_out_empty_other_ids
         normalize_out_catkeys
+        normalize_out_release_tags
+        normalize_out_otherid_labels
+        normalize_out_apo_hydrus_source_id
+
+        normalize_dissertation_id_to_source_id
         normalize_source_id_whitespace
-        normalize_release_tags
         normalize_object_creator
-        normalize_out_labels
-        normalize_apo_source_id
-        normalize_label
+        normalize_object_label
 
         regenerate_ng_xml(ng_xml.to_xml)
       end
@@ -47,7 +48,8 @@ module Cocina
 
       attr_reader :ng_xml
 
-      def normalize_apo_source_id
+      # for APOs only, remove Hydrus sourceId
+      def normalize_out_apo_hydrus_source_id
         return unless ng_xml.root.xpath('//objectType').text == 'adminPolicy'
 
         ng_xml.root.xpath('//sourceId[@source="Hydrus"]').each(&:remove)
@@ -142,17 +144,18 @@ module Cocina
         end
       end
 
-      def normalize_out_labels
+      def normalize_out_otherid_labels
         ng_xml.root.xpath('//otherId[@name="label"]').each(&:remove)
       end
 
-      def normalize_release_tags
+      def normalize_out_release_tags
         ng_xml.root.xpath('//release').each do |release_node|
           release_node.delete('displayType')
           release_node.delete('release')
         end
       end
 
+      # add if missing
       def normalize_object_creator
         return if ng_xml.root.xpath('//objectCreator').present?
 
@@ -161,8 +164,8 @@ module Cocina
         ng_xml.root << object_creator_node
       end
 
-      # add fedora object label if no object label is present
-      def normalize_label
+      # add objectLabel if none is present
+      def normalize_object_label
         return if ng_xml.root.xpath('//objectLabel').present?
 
         object_label_node = Nokogiri::XML::Node.new('objectLabel', ng_xml)
