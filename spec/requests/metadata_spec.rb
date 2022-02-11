@@ -28,6 +28,14 @@ RSpec.describe 'Display metadata' do
   end
 
   describe 'dublin core' do
+    before do
+      allow(ActiveFedora::SolrService.instance).to receive(:conn).and_return(solr_client)
+    end
+
+    let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }
+    let(:solr_response) { { 'response' => { 'docs' => virtual_object_solr_docs } } }
+    let(:virtual_object_solr_docs) { [] }
+
     it 'returns the DC xml' do
       get '/v1/objects/druid:mk420bs7601/metadata/dublin_core',
           headers: { 'Authorization' => "Bearer #{jwt}" }
@@ -52,6 +60,14 @@ RSpec.describe 'Display metadata' do
   end
 
   describe 'descriptive' do
+    before do
+      allow(ActiveFedora::SolrService.instance).to receive(:conn).and_return(solr_client)
+    end
+
+    let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }
+    let(:solr_response) { { 'response' => { 'docs' => virtual_object_solr_docs } } }
+    let(:virtual_object_solr_docs) { [] }
+
     it 'returns the public descriptive metadata xml' do
       get '/v1/objects/druid:mk420bs7601/metadata/descriptive',
           headers: { 'Authorization' => "Bearer #{jwt}" }
@@ -90,7 +106,13 @@ RSpec.describe 'Display metadata' do
                               administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
     end
 
+    let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }
+    let(:solr_response) { { 'response' => { 'docs' => virtual_object_solr_docs } } }
+    let(:virtual_object_solr_docs) { [] }
+
     before do
+      allow(ActiveFedora::SolrService.instance).to receive(:conn).and_return(solr_client)
+
       allow(ReleaseTags).to receive(:for).and_return(
         'SearchWorks' => { 'release' => true },
         'elsewhere' => { 'release' => false }

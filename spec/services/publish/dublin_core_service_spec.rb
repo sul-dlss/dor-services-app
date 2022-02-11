@@ -7,6 +7,13 @@ RSpec.describe Publish::DublinCoreService do
 
   let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
   let(:desc_md_xml) { Publish::PublicDescMetadataService.new(item).ng_xml(include_access_conditions: false) }
+  let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }
+  let(:solr_response) { { 'response' => { 'docs' => virtual_object_solr_docs } } }
+  let(:virtual_object_solr_docs) { [] }
+
+  before do
+    allow(ActiveFedora::SolrService.instance).to receive(:conn).and_return(solr_client)
+  end
 
   describe '#ng_xml' do
     subject(:xml) { service.ng_xml }
