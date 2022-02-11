@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+# returns true if there is such a node and it has no content
+# returns false if there is such a node and it has content
+def check(ng_xml)
+  ng_xml.root.xpath('//otherId[@name="dissertationid"]').map(&:content).join(', ').presence
+end
+
+Report.new(name: 'identity-otherid-dissertationid', dsid: 'identityMetadata', report_func: method(:check)).run
