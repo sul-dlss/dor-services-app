@@ -103,7 +103,7 @@ class ObjectsController < ApplicationController
     # if this is an existing versionable object, open and close it without starting accessionWF
     if VersionService.can_open?(@cocina_object, params)
       updated_cocina_object = VersionService.open(@cocina_object, params, event_factory: EventFactory)
-      VersionService.close(@cocina_object, params.merge(start_accession: false), event_factory: EventFactory)
+      VersionService.close(updated_cocina_object, params.merge(start_accession: false), event_factory: EventFactory)
     # if this is an existing accessioned object that is currently open, just close it without starting accessionWF
     elsif VersionService.open?(@cocina_object)
       VersionService.close(@cocina_object, params.merge(start_accession: false), event_factory: EventFactory)
