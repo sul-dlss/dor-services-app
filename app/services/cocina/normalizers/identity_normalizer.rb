@@ -4,6 +4,7 @@ module Cocina
   module Normalizers
     # Normalizes a Fedora object identity metadata datastream, accounting for differences between Fedora rights and cocina rights that are valid but different
     # when round-tripping.
+    # rubocop:disable Metrics/ClassLength
     class IdentityNormalizer
       include Cocina::Normalizers::Base
 
@@ -41,6 +42,7 @@ module Cocina
         remove_otherid_dissertationid_if_dupe
         add_missing_sourceid_from_otherid_dissertationid
         normalize_source_id_whitespace
+        normalize_label_whitespace
 
         regenerate_ng_xml(ng_xml.to_xml)
       end
@@ -141,6 +143,13 @@ module Cocina
         end
       end
 
+      def normalize_label_whitespace
+        object_label = ng_xml.root.xpath('//objectLabel').first
+        return unless object_label
+
+        object_label.content = object_label.content.delete "\r"
+      end
+
       def add_missing_object_creator
         return if ng_xml.root.xpath('//objectCreator').present?
 
@@ -181,5 +190,6 @@ module Cocina
         diss_id_node.delete('name')
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end
