@@ -21,7 +21,6 @@ module Cocina
       end
 
       def normalize
-        normalize_dissertation_id_to_source_id
         normalize_out_uuid
         normalize_out_admin_tags
         normalize_out_admin_policy
@@ -33,11 +32,13 @@ module Cocina
         normalize_out_call_sequence_ids
         normalize_out_empty_other_ids
         normalize_out_catkeys
-        normalize_source_id_whitespace
         normalize_out_release_tags
-        normalize_object_creator
         normalize_out_otherid_labels
         normalize_out_apo_hydrus_source_id
+
+        normalize_dissertation_id_to_source_id
+        normalize_source_id_whitespace
+        normalize_object_creator
         normalize_object_label
 
         regenerate_ng_xml(ng_xml.to_xml)
