@@ -558,7 +558,7 @@ RSpec.describe 'Create object' do
       end
     end
 
-    context 'when collection is provided' do
+    context 'when it is a member of a collection' do
       let(:structural) { { isMemberOf: ['druid:xx888xx7777'] } }
       let(:expected_structural) { structural }
 
@@ -600,6 +600,59 @@ RSpec.describe 'Create object' do
                 admin_policy_object_id: 'druid:dd999df4567',
                 source_id: 'googlebooks:999999',
                 collection_ids: ['druid:xx888xx7777'],
+                catkey: nil, label: 'This is my label')
+        expect(response.body).to equal_cocina_model(expected)
+        expect(response.status).to eq(201)
+        expect(response.location).to eq "/v1/objects/#{druid}"
+      end
+    end
+
+    context 'when no access is provided' do
+      let(:structural) { {} }
+      let(:expected_structural) { structural }
+
+      let(:data) do
+        <<~JSON
+          {#{' '}
+            "cocinaVersion":"0.1.0",
+            "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
+            "label":"#{label}","version":1,
+            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
+            "description":{"title":[{"value":"#{title}"}]},
+            "identification":#{identification.to_json},
+            "structural":#{structural.to_json}}
+        JSON
+      end
+
+      let(:item) do
+        Dor::Item.new(pid: druid,
+                      admin_policy_object_id: 'druid:dd999df4567',
+                      source_id: 'googlebooks:999999',
+                      label: 'This is my label')
+      end
+
+      let(:collection) do
+        Cocina::Models::Collection.new(externalIdentifier: 'druid:xx888xx7777',
+                                       type: Cocina::Models::Vocab.collection,
+                                       label: 'Collection of new maps of Africa',
+                                       version: 1,
+                                       cocinaVersion: '0.0.1')
+      end
+
+      before do
+        allow(Dor::Item).to receive(:new).and_return(item)
+        allow(item).to receive(:save!)
+      end
+
+      it 'has default access' do
+        post '/v1/objects',
+             params: data,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(Dor::Item).to have_received(:new)
+          .with(pid: druid,
+                admin_policy_object_id: 'druid:dd999df4567',
+                source_id: 'googlebooks:999999',
+                collection_ids: [],
                 catkey: nil, label: 'This is my label')
         expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(201)
