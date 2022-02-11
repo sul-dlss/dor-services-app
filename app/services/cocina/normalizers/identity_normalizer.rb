@@ -40,6 +40,7 @@ module Cocina
         normalize_source_id_whitespace
         normalize_object_creator
         normalize_object_label
+        normalize_otherid_dissertationid
 
         regenerate_ng_xml(ng_xml.to_xml)
       end
@@ -171,6 +172,14 @@ module Cocina
         object_label_node = Nokogiri::XML::Node.new('objectLabel', ng_xml)
         object_label_node.content = @label
         ng_xml.root << object_label_node
+      end
+
+      def normalize_otherid_dissertationid
+        other_id_node = ng_xml.root.xpath('//otherId[@name="dissertationid"]').first
+        source_id_node = ng_xml.root.xpath('//sourceId[@source="dissertation"]').first
+        return if other_id_node.blank? || source_id_node.blank?
+
+        other_id_node.remove if source_id_node.text == other_id_node.text
       end
     end
   end

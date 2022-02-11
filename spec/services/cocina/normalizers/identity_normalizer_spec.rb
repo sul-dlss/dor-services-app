@@ -675,4 +675,95 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
       end
     end
   end
+
+  describe '#normalize_otherid_dissertationid' do
+    context 'when otherId of type dissertationid to is duplicated by sourceId' do
+      let(:original_xml) do
+        <<~XML
+          <identityMetadata>
+            <objectId>druid:wn922bm5946</objectId>
+            <objectType>item</objectType>
+            <objectLabel>label</objectLabel>
+            <objectCreator>DOR</objectCreator>
+            <otherId name="dissertationid">0000007166</otherId>
+            <sourceId source="dissertation">0000007166</sourceId>
+          </identityMetadata>
+        XML
+      end
+
+      it 'normalizes it out' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <identityMetadata>
+              <objectId>druid:wn922bm5946</objectId>
+              <objectType>item</objectType>
+              <objectLabel>label</objectLabel>
+              <objectCreator>DOR</objectCreator>
+              <sourceId source="dissertation">0000007166</sourceId>
+            </identityMetadata>
+          XML
+        )
+      end
+    end
+
+    context 'when otherId of type dissertationid to is not duplicated by sourceId source' do
+      let(:original_xml) do
+        <<~XML
+          <identityMetadata>
+            <objectId>druid:wn922bm5946</objectId>
+            <objectType>item</objectType>
+            <objectLabel>label</objectLabel>
+            <objectCreator>DOR</objectCreator>
+            <otherId name="dissertationid">0000007166</otherId>
+            <sourceId source="foo">0000007166</sourceId>
+          </identityMetadata>
+        XML
+      end
+
+      it 'keeps it' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <identityMetadata>
+              <objectId>druid:wn922bm5946</objectId>
+              <objectType>item</objectType>
+              <objectLabel>label</objectLabel>
+              <objectCreator>DOR</objectCreator>
+              <otherId name="dissertationid">0000007166</otherId>
+              <sourceId source="foo">0000007166</sourceId>
+            </identityMetadata>
+          XML
+        )
+      end
+    end
+
+    context 'when otherId of type dissertationid to is not duplicated by sourceId value' do
+      let(:original_xml) do
+        <<~XML
+          <identityMetadata>
+            <objectId>druid:wn922bm5946</objectId>
+            <objectType>item</objectType>
+            <objectLabel>label</objectLabel>
+            <objectCreator>DOR</objectCreator>
+            <otherId name="dissertationid">0000007166</otherId>
+            <sourceId source="dissertation">0000007167</sourceId>
+          </identityMetadata>
+        XML
+      end
+
+      it 'keeps it' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <identityMetadata>
+              <objectId>druid:wn922bm5946</objectId>
+              <objectType>item</objectType>
+              <objectLabel>label</objectLabel>
+              <objectCreator>DOR</objectCreator>
+              <otherId name="dissertationid">0000007166</otherId>
+              <sourceId source="dissertation">0000007167</sourceId>
+            </identityMetadata>
+          XML
+        )
+      end
+    end
+  end
 end
