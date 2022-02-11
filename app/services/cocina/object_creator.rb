@@ -206,9 +206,9 @@ module Cocina
       default_access = apo.administrative.defaultAccess
       updated_access = if cocina_object.collection?
                          # Collection access only supports dark or world, but default access is more complicated
-                         cocina_object.access.new(access: default_access.access == 'dark' ? 'dark' : 'world')
+                         (cocina_object.access || Cocina::Models::CollectionAccess).new(access: default_access.access == 'dark' ? 'dark' : 'world')
                        else
-                         cocina_object.access.new(default_access.to_h)
+                         (cocina_object.access || Cocina::Models::DROAccess).new(default_access.to_h)
                        end
       cocina_object.new(access: updated_access)
     end
