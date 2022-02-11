@@ -44,4 +44,25 @@ RSpec.describe DeleteService do
         .from(true).to(false)
     end
   end
+
+  describe '#delete_from_dor' do
+    let(:druid) { 'druid:cd456ef7890' }
+
+    let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid) }
+
+    before do
+      allow(CocinaObjectStore).to receive(:destroy)
+      AdministrativeTags.create(pid: druid, tags: ['test : tag'])
+      Event.create!(druid: druid, event_type: 'version_close', data: { version: '4' })
+      ObjectVersion.create(druid: druid, version: 4)
+    end
+
+    it 'deletes from datastore and Solr' do
+      service.send(:delete_from_dor)
+      expect(CocinaObjectStore).to have_received(:destroy).with(druid)
+      expect(AdministrativeTags.for(pid: druid)).to be_empty
+      expect(Event.exists?(druid: druid)).to be(false)
+      expect(ObjectVersion.exists?(druid: druid)).to be(false)
+    end
+  end
 end

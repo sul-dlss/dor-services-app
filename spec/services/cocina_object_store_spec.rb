@@ -87,8 +87,38 @@ RSpec.describe CocinaObjectStore do
           allow(Dor).to receive(:find).and_raise(ActiveFedora::ObjectNotFoundError)
         end
 
-        it 'returns Cocina object' do
+        it 'raises' do
           expect { described_class.save(cocina_object) }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
+        end
+      end
+    end
+
+    describe '#destroy' do
+      context 'when DRO is found' do
+        let(:fedora_object) { instance_double(Dor::Item, destroy: nil) }
+
+        before do
+          allow(Settings.rabbitmq).to receive(:enabled).and_return(true)
+          allow(Dor).to receive(:find).and_return(fedora_object)
+          allow(Notifications::ObjectDeleted).to receive(:publish)
+          allow(described_class).to receive(:find).and_return(cocina_object)
+        end
+
+        it 'destroys Fedora object and notifies' do
+          described_class.destroy(druid)
+          expect(fedora_object).to have_received(:destroy)
+
+          expect(Notifications::ObjectDeleted).to have_received(:publish).with(model: cocina_object, deleted_at: kind_of(Time))
+        end
+      end
+
+      context 'when DRO is not found' do
+        before do
+          allow(Dor).to receive(:find).and_raise(ActiveFedora::ObjectNotFoundError)
+        end
+
+        it 'raises' do
+          expect { described_class.destroy(druid) }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
         end
       end
     end

@@ -9,7 +9,8 @@ class CocinaObjectStore
   class CocinaObjectNotFoundError < CocinaObjectStoreError; end
 
   # Retrieves a Cocina object from the datastore.
-  # @param [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object
+  # @param [String] druid
+  # @return [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object
   # @raise [SolrConnectionError] raised when cannot connect to Solr. This error will no longer be raised when Fedora is removed.
   # @raise [Cocina::Mapper::UnexpectedBuildError] raised when an mapping error occurs. This error will no longer be raised when Fedora is removed.
   # @raise [CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
@@ -33,6 +34,13 @@ class CocinaObjectStore
   # @return [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] normalized cocina object
   def self.save(cocina_object)
     new.save(cocina_object)
+  end
+
+  # Removes a Cocina object from the datastore.
+  # @param [String] druid
+  # @raise [CocinaObjectNotFoundError] raised when the Cocina object is not found.
+  def self.destroy(druid)
+    new.destroy(druid)
   end
 
   def find(druid)
@@ -66,6 +74,13 @@ class CocinaObjectStore
     Dro.exists?(external_identifier: druid) || Collection.exists?(external_identifier: druid) || AdminPolicy.exists?(external_identifier: druid)
   end
 
+  def destroy(druid)
+    cocina_object = CocinaObjectStore.find(druid)
+    fedora_destroy(druid)
+
+    Notifications::ObjectDeleted.publish(model: cocina_object, deleted_at: Time.zone.now) if Settings.rabbitmq.enabled
+  end
+
   private
 
   # In later steps in the migration, the *fedora* methods will be replaced by the *ar* methods.
@@ -89,6 +104,10 @@ class CocinaObjectStore
     false
   end
 
+  def fedora_destroy(druid)
+    fedora_find(druid).destroy
+  end
+
   # The *ar* methods are private. In later steps in the migration, the *ar* methods will be invoked by the
   # above public methods.
 
@@ -96,13 +115,20 @@ class CocinaObjectStore
   # @param [String] druid to find
   # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
   def ar_to_cocina_find(druid)
-    cocina_object = Dro.find_by(external_identifier: druid)&.to_cocina ||
-                    AdminPolicy.find_by(external_identifier: druid)&.to_cocina ||
-                    Collection.find_by(external_identifier: druid)&.to_cocina
+    ar_find(druid).to_cocina
+  end
 
-    raise CocinaObjectNotFoundError unless cocina_object
+  # Find an ActiveRecord Cocina object.
+  # @param [String] druid to find
+  # @return [Dro, AdminPolicy, Collection]
+  def ar_find(druid)
+    ar_cocina_object = Dro.find_by(external_identifier: druid) ||
+                       AdminPolicy.find_by(external_identifier: druid) ||
+                       Collection.find_by(external_identifier: druid)
 
-    cocina_object
+    raise CocinaObjectNotFoundError unless ar_cocina_object
+
+    ar_cocina_object
   end
 
   # Persist a Cocina object with ActiveRecord.
@@ -121,5 +147,9 @@ class CocinaObjectStore
                   end
     model_clazz.upsert_cocina(cocina_object)
     cocina_object
+  end
+
+  def ar_destroy(druid)
+    ar_find(druid).destroy
   end
 end

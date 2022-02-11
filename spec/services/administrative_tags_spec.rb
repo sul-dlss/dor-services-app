@@ -83,6 +83,19 @@ RSpec.describe AdministrativeTags do
     end
   end
 
+  describe '.destroy_all' do
+    let(:instance) { instance_double(described_class, destroy_all: nil) }
+
+    before do
+      allow(described_class).to receive(:new).and_return(instance)
+    end
+
+    it 'calls #destroy_all on a new instance' do
+      described_class.destroy_all(pid: pid)
+      expect(instance).to have_received(:destroy_all).once
+    end
+  end
+
   describe '#for' do
     before do
       create(:administrative_tag, druid: pid, tag_label: create(:tag_label, tag: 'Foo : Bar'))
@@ -223,6 +236,23 @@ RSpec.describe AdministrativeTags do
       expect { described_class.destroy(pid: pid, tag: tag) }
         .to change { described_class.for(pid: pid) }
         .from([tag])
+        .to([])
+    end
+  end
+
+  describe '#destroy_all' do
+    before do
+      create(:administrative_tag, druid: pid, tag_label: create(:tag_label, tag: tag))
+      create(:administrative_tag, druid: pid, tag_label: create(:tag_label, tag: tag2))
+    end
+
+    let(:tag) { 'One : Two' }
+    let(:tag2) { 'Three : Four' }
+
+    it 'destroys the administrative tags' do
+      expect { described_class.destroy_all(pid: pid) }
+        .to change { described_class.for(pid: pid) }
+        .from([tag, tag2])
         .to([])
     end
   end

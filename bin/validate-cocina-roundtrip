@@ -194,7 +194,6 @@ def validate_druid(druid, loader, no_content: false, no_desc: false, create: fal
   fedora_obj.contentMetadata.content = empty_content_metadata(fedora_obj, druid, create) if no_content && fedora_obj.datastreams.include?('contentMetadata')
 
   if no_desc && fedora_obj.datastreams.include?('descMetadata')
-    fedora_obj.descMetadata.content = empty_desc_metadata
     fedora_obj.descMetadata.content = fedora_obj.label == 'Hydrus' ? hydrus_desc_metadata : empty_desc_metadata
   end
 
