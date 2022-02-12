@@ -36,8 +36,8 @@ module Cocina
         normalize_out_otherid_labels
         normalize_out_apo_hydrus_source_id
 
-        normalize_object_creator
-        normalize_object_label
+        add_missing_object_creator
+        add_missing_object_label
         remove_otherid_dissertationid_if_dupe
         add_missing_sourceid_from_otherid_dissertationid
         normalize_source_id_whitespace
@@ -141,8 +141,7 @@ module Cocina
         end
       end
 
-      # add if missing
-      def normalize_object_creator
+      def add_missing_object_creator
         return if ng_xml.root.xpath('//objectCreator').present?
 
         object_creator_node = Nokogiri::XML::Node.new('objectCreator', ng_xml)
@@ -150,8 +149,7 @@ module Cocina
         ng_xml.root << object_creator_node
       end
 
-      # add objectLabel if none is present
-      def normalize_object_label
+      def add_missing_object_label
         return if ng_xml.root.xpath('//objectLabel').present?
 
         object_label_node = Nokogiri::XML::Node.new('objectLabel', ng_xml)
