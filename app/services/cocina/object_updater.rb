@@ -85,7 +85,7 @@ module Cocina
     def update_apo
       # fedora_object.source_id = cocina_object.identification.sourceId
       if has_changed?(:label)
-        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
+        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label, overwrite: true)
         fedora_object.label = truncate_label(cocina_object.label)
       end
 
@@ -104,7 +104,7 @@ module Cocina
     def update_collection
       if has_changed?(:label)
         fedora_object.label = truncate_label(cocina_object.label) if has_changed?(:label)
-        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
+        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label, overwrite: true)
       end
 
       if has_changed?(:administrative)
@@ -127,7 +127,7 @@ module Cocina
 
       if has_changed?(:label)
         fedora_object.label = truncate_label(cocina_object.label)
-        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
+        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label, overwrite: true)
       end
 
       identity_updater = Cocina::ToFedora::Identity.new(fedora_object)

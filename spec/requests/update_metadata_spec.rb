@@ -1025,7 +1025,7 @@ RSpec.describe 'Update object' do
 
     let(:expected) do
       Cocina::Models::AdminPolicy.new(type: Cocina::Models::Vocab.admin_policy,
-                                      label: 'my original objectLabel',
+                                      label: 'This is my label',
                                       version: 1,
                                       description: {
                                         title: [{ value: 'This is my title' }],
