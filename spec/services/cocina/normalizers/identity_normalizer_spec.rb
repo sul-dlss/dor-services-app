@@ -54,7 +54,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
     end
   end
 
-  describe '#normalize_dissertation_id_to_source_id' do
+  describe '#add_missing_sourceid_from_otherid_dissertationid' do
     context 'when there is an existing sourceId' do
       let(:original_xml) do
         <<~XML
@@ -676,7 +676,7 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
     end
   end
 
-  describe '#normalize_otherid_dissertationid' do
+  describe '#remove_otherid_dissertationid_if_dupe' do
     context 'when otherId of type dissertationid to is duplicated by sourceId' do
       let(:original_xml) do
         <<~XML
