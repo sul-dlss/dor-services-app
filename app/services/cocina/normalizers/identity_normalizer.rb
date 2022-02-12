@@ -36,10 +36,11 @@ module Cocina
         normalize_out_otherid_labels
         normalize_out_apo_hydrus_source_id
 
-        normalize_dissertation_id_to_source_id
+        add_missing_object_creator
+        add_missing_object_label
+        remove_otherid_dissertationid_if_dupe
+        add_missing_sourceid_from_otherid_dissertationid
         normalize_source_id_whitespace
-        normalize_object_creator
-        normalize_object_label
 
         regenerate_ng_xml(ng_xml.to_xml)
       end
@@ -60,21 +61,6 @@ module Cocina
           source_node['source'] = source_node['source']&.strip
           source_node.content = source_node.content&.strip
         end
-      end
-
-      # if there is no sourceId, but there is an otherId with name dissertationid, convert the dissertationid to a sourceId
-      #   (obviously only applies to (old) ETDs)
-      def normalize_dissertation_id_to_source_id
-        return if ng_xml.root.xpath('//sourceId').present?
-
-        diss_id_nodes = ng_xml.root.xpath('//otherId[@name="dissertationid"]')
-        return if diss_id_nodes.first&.content.blank?
-
-        new_source_id_node = Nokogiri::XML::Node.new('sourceId', ng_xml)
-        new_source_id_node.content = diss_id_nodes.first.content
-        new_source_id_node['source'] = 'dissertationid'
-        diss_id_nodes.first.parent.add_child(new_source_id_node)
-        diss_id_nodes.first.remove
       end
 
       # we don't care about uuids
@@ -155,8 +141,7 @@ module Cocina
         end
       end
 
-      # add if missing
-      def normalize_object_creator
+      def add_missing_object_creator
         return if ng_xml.root.xpath('//objectCreator').present?
 
         object_creator_node = Nokogiri::XML::Node.new('objectCreator', ng_xml)
@@ -164,13 +149,36 @@ module Cocina
         ng_xml.root << object_creator_node
       end
 
-      # add objectLabel if none is present
-      def normalize_object_label
+      def add_missing_object_label
         return if ng_xml.root.xpath('//objectLabel').present?
 
         object_label_node = Nokogiri::XML::Node.new('objectLabel', ng_xml)
         object_label_node.content = @label
         ng_xml.root << object_label_node
+      end
+
+      # remove otherId of type dissertation when it is duplicated by a sourceId
+      def remove_otherid_dissertationid_if_dupe
+        # NOTE: there should only ever be a single sourceId and a single dissertationId
+        other_id_node = ng_xml.root.xpath('//otherId[@name="dissertationid"]').first
+        source_id_node = ng_xml.root.xpath('//sourceId[@source="dissertation"]').first
+        # NOTE: it has been empirically proven that there are no empty elements for these
+        return if other_id_node.blank? || source_id_node.blank?
+
+        other_id_node.remove if source_id_node.text == other_id_node.text
+      end
+
+      # if there is no sourceId and there is an otherId[@name="dissertationid"], convert the otherId to a sourceId
+      #   (only applies to (old) ETDs)
+      def add_missing_sourceid_from_otherid_dissertationid
+        return if ng_xml.root.xpath('//sourceId').present?
+        # NOTE: it has been empirically proven that there are no empty elements for these
+        return if ng_xml.root.xpath('//otherId[@name="dissertationid"]').blank?
+
+        diss_id_node = ng_xml.root.xpath('//otherId[@name="dissertationid"]').first
+        diss_id_node.node_name = 'sourceId'
+        diss_id_node['source'] = diss_id_node['name']
+        diss_id_node.delete('name')
       end
     end
   end
