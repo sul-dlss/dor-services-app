@@ -11,8 +11,9 @@ module Cocina
 
       # @param [Dor::Item,Dor::Collection,Dor::Etd,Dor::AdminPolicyObject] fedora_object
       # @param [String] label the label for the cocina object.
-      def self.apply_label(fedora_object, label:)
-        new(fedora_object).apply_label(label)
+      # @param [boolean] overwrite the objectLabel if it already exists
+      def self.apply_label(fedora_object, label:, overwrite: false)
+        new(fedora_object).apply_label(label, overwrite: overwrite)
       end
 
       # @param [Dor::Item,Dor::Collection,Dor::Etd,Dor::AdminPolicyObject] fedora_object
@@ -37,8 +38,8 @@ module Cocina
         fedora_object.objectType = fedora_object.object_type # This comes from the class definition in dor-services
       end
 
-      def apply_label(label)
-        return unless fedora_object.objectLabel.empty?
+      def apply_label(label, overwrite: false)
+        return unless fedora_object.objectLabel.empty? || overwrite
 
         fedora_object.objectLabel = label
       end
